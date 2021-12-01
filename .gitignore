@@ -1,0 +1,5 @@
+.gradle/
+build/
+.idea
+dev.properties
+extensions.txt

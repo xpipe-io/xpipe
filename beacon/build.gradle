@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+java {
+    modularity.inferModulePath = true
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply from: "$rootDir/deps/slf4j.gradle"
+apply from: "$rootDir/deps/websocket.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
+apply from: "$rootDir/deps/commons.gradle"
+
+dependencies {
+    implementation project(':core')
+}
+
+test {
+    useJUnitPlatform()
+}

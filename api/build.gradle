@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+java {
+    modularity.inferModulePath = true
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+
+apply from: "$rootDir/deps/commons.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
+
+dependencies {
+    implementation project(':core')
+    implementation project(':beacon')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    //testImplementation project(':app')
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+plugins.withType(JavaPlugin).configureEach {
+    java {
+        modularity.inferModulePath = true
+    }
+}
+
+test {
+    useJUnitPlatform()
+
+    //workingDir = project(":app").projectDir
+
+    systemProperty 'io.xpipe.beacon.startInProcess', 'true'
+    systemProperty "io.xpipe.daemon.mode", 'base'
+    systemProperty "io.xpipe.storage.dir", "$projectDir/test_env"
+    systemProperty "io.xpipe.beacon.port", "21722"
+}

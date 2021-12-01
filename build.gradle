@@ -1,0 +1,9 @@
+plugins {
+    id 'java'
+}
+
+group 'io.xpipe'
+
+repositories {
+    mavenCentral()
+}
