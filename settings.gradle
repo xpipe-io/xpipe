@@ -3,5 +3,6 @@ rootProject.name = 'xpipe_java'
 include 'core'
 include 'beacon'
 include 'api'
+include 'extension'
 
 

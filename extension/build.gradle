@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+java {
+    modularity.inferModulePath = true
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+apply from: "$rootDir/deps/javafx.gradle"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':core')
+}
