@@ -98,8 +98,8 @@ public class SocketServer {
                 logger.debug("Received request: \n" + read.toPrettyString());
 
                 var req = parseRequest(read);
-                var prov = MessageProviders.byRequest(req).get();
-                prov.onRequestReceived(this, req, in, clientSocket);
+                var prov = MessageExchanges.byRequest(req).get();
+                prov.handleRequest(this, req, in, clientSocket);
             } catch (SocketException ex) {
                 try {
                     ex.printStackTrace();
@@ -131,7 +131,7 @@ public class SocketServer {
 
     public <T extends ResponseMessage> void sendResponse(Socket outSocket, T obj) throws Exception {
         ObjectNode json = JacksonHelper.newMapper().valueToTree(obj);
-        var prov = MessageProviders.byResponse(obj).get();
+        var prov = MessageExchanges.byResponse(obj).get();
         json.set("type", new TextNode(prov.getId()));
         json.set("phase", new TextNode("response"));
         var msg = JsonNodeFactory.instance.objectNode();
@@ -175,7 +175,7 @@ public class SocketServer {
         content.remove("type");
         content.remove("phase");
 
-        var prov = MessageProviders.byId(type);
+        var prov = MessageExchanges.byId(type);
         if (prov.isEmpty()) {
             throw new IllegalArgumentException();
         }

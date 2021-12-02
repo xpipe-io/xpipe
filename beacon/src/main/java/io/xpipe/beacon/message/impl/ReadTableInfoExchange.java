@@ -1,17 +1,12 @@
 package io.xpipe.beacon.message.impl;
 
-import io.xpipe.beacon.socket.SocketServer;
-import io.xpipe.beacon.message.MessageProvider;
+import io.xpipe.beacon.message.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.storage.DataSourceStorage;
 
-import java.io.InputStream;
-import java.net.Socket;
-
-public class ReadTableInfoExchange implements MessageProvider<ReadTableInfoExchange.Request, ReadTableInfoExchange.Response> {
+public class ReadTableInfoExchange implements MessageExchange<ReadTableInfoExchange.Request, ReadTableInfoExchange.Response> {
 
     @Override
     public String getId() {

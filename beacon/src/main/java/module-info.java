@@ -1,7 +1,4 @@
-import io.xpipe.app.core.BeaconProvider;
-import io.xpipe.beacon.BeaconProviderImpl;
-import io.xpipe.beacon.message.MessageProvider;
-import io.xpipe.beacon.message.impl.*;
+import io.xpipe.beacon.message.MessageExchange;
 
 module io.xpipe.beacon {
     exports io.xpipe.beacon;
@@ -23,6 +20,5 @@ module io.xpipe.beacon {
 
     requires org.apache.commons.lang;
 
-    uses MessageProvider;
-    provides MessageProvider with ListCollectionsExchange, ListEntriesExchange, ReadTableDataExchange, VersionExchange, StatusExchange, ModeExchange, ReadTableInfoExchange;
+    uses MessageExchange;
 }

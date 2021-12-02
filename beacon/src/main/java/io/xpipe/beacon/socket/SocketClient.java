@@ -88,7 +88,7 @@ public class SocketClient {
 
     private <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
         ObjectNode json = JacksonHelper.newMapper().valueToTree(req);
-        var prov = MessageProviders.byRequest(req);
+        var prov = MessageExchanges.byRequest(req);
         if (prov.isEmpty()) {
             throw new ClientException("Unknown request class " + req.getClass());
         }
@@ -177,7 +177,7 @@ public class SocketClient {
         content.remove("phase");
         //content.remove("id");
 
-        var prov = MessageProviders.byId(type);
+        var prov = MessageExchanges.byId(type);
         if (prov.isEmpty()) {
             throw new IllegalArgumentException("Unknown response id " + type);
         }

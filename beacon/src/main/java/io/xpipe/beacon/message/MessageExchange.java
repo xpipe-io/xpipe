@@ -5,7 +5,7 @@ import io.xpipe.beacon.socket.SocketServer;
 import java.io.InputStream;
 import java.net.Socket;
 
-public interface MessageProvider<RQ extends RequestMessage, RP extends ResponseMessage> {
+public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseMessage> {
 
     String getId();
 

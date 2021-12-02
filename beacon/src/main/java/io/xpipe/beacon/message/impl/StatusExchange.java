@@ -1,15 +1,10 @@
 package io.xpipe.beacon.message.impl;
 
-import io.xpipe.app.core.OperationMode;
-import io.xpipe.beacon.socket.SocketServer;
-import io.xpipe.beacon.message.MessageProvider;
+import io.xpipe.beacon.message.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 
-import java.io.InputStream;
-import java.net.Socket;
-
-public class StatusExchange implements MessageProvider<StatusExchange.Request, StatusExchange.Response> {
+public class StatusExchange implements MessageExchange<StatusExchange.Request, StatusExchange.Response> {
 
     @Override
     public String getId() {

@@ -1,15 +1,12 @@
 package io.xpipe.beacon.message.impl;
 
-import io.xpipe.beacon.socket.SocketServer;
-import io.xpipe.beacon.message.MessageProvider;
+import io.xpipe.beacon.message.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 
-import java.io.InputStream;
-import java.net.Socket;
 import java.util.List;
 
-public class ListCollectionsExchange implements MessageProvider<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
+public class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
 
     @Override
     public String getId() {
