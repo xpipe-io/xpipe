@@ -6,5 +6,5 @@ public interface DataSourceProvider {
 
     String getId();
 
-    Class<? extends DataSource> getType();
+    Class<? extends DataSource<?>> getType();
 }

@@ -7,7 +7,11 @@ import javafx.scene.layout.Region;
 
 public interface SupportedApplicationProvider {
 
-    Region createRetrieveInstructions(ObservableValue<DataSourceId> id);
+    Region createTableRetrieveInstructions(ObservableValue<DataSourceId> id);
+
+    Region createStructureRetrieveInstructions(ObservableValue<DataSourceId> id);
+
+    Region createRawRetrieveInstructions(ObservableValue<DataSourceId> id);
 
     Image getLogo();
 
