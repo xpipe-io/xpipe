@@ -10,6 +10,7 @@ java {
 }
 
 apply from: "$rootDir/deps/javafx.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
 
 repositories {
     mavenCentral()
