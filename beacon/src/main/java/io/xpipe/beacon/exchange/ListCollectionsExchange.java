@@ -1,16 +1,15 @@
-package io.xpipe.beacon.message.impl;
+package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.message.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 
 import java.util.List;
 
-public class ListEntriesExchange implements MessageExchange<ListEntriesExchange.Request, ListEntriesExchange.Response> {
+public class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
 
     @Override
     public String getId() {
-        return "listEntries";
+        return "listCollections";
     }
 
     @Override
@@ -23,11 +22,11 @@ public class ListEntriesExchange implements MessageExchange<ListEntriesExchange.
         return Response.class;
     }
 
-    public static record Request(String collection) implements RequestMessage {
+    public static record Request() implements RequestMessage {
 
     }
 
-    private static record Entry(String name, String type, String description, String date, String size) {
+    public static record Entry(String name, int count) {
 
     }
 

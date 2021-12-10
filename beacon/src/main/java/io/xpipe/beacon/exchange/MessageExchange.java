@@ -1,5 +1,7 @@
-package io.xpipe.beacon.message;
+package io.xpipe.beacon.exchange;
 
+import io.xpipe.beacon.message.RequestMessage;
+import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.beacon.socket.SocketServer;
 
 import java.io.InputStream;
@@ -13,5 +15,5 @@ public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseM
 
     Class<RP> getResponseClass();
 
-    default void handleRequest(SocketServer server, RQ msg, InputStream body, Socket clientSocket) throws Exception {}
+    void handleRequest(SocketServer server, RQ msg, InputStream body, Socket clientSocket) throws Exception;
 }

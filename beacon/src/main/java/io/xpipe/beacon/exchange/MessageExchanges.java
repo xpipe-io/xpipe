@@ -1,4 +1,7 @@
-package io.xpipe.beacon.message;
+package io.xpipe.beacon.exchange;
+
+import io.xpipe.beacon.message.RequestMessage;
+import io.xpipe.beacon.message.ResponseMessage;
 
 import java.util.Optional;
 import java.util.ServiceLoader;

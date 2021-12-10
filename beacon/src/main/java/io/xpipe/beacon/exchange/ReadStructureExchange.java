@@ -1,6 +1,5 @@
-package io.xpipe.beacon.message.impl;
+package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.message.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceId;
