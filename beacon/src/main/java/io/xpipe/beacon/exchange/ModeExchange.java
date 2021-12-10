@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 
-public class ModeExchange implements MessageExchange<ModeExchange.Request, ModeExchange.Response> {
+public abstract class ModeExchange implements MessageExchange<ModeExchange.Request, ModeExchange.Response> {
 
     @Override
     public String getId() {

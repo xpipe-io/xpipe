@@ -3,9 +3,10 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 
+import java.time.Instant;
 import java.util.List;
 
-public class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
+public abstract class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
 
     @Override
     public String getId() {
@@ -26,7 +27,7 @@ public class ListCollectionsExchange implements MessageExchange<ListCollectionsE
 
     }
 
-    public static record Entry(String name, int count) {
+    public static record Entry(String name, int count, Instant lastUsed) {
 
     }
 

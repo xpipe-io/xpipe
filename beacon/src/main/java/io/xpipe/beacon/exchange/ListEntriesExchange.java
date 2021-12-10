@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 
+import java.time.Instant;
 import java.util.List;
 
 public abstract class ListEntriesExchange implements MessageExchange<ListEntriesExchange.Request, ListEntriesExchange.Response> {
@@ -26,7 +27,7 @@ public abstract class ListEntriesExchange implements MessageExchange<ListEntries
 
     }
 
-    public static record Entry(String name, String type, String description, String date, String size) {
+    public static record Entry(String name, String type, String description, Instant lastUsed, int size) {
 
     }
 

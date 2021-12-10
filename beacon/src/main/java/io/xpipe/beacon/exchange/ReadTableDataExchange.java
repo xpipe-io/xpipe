@@ -4,7 +4,7 @@ import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceId;
 
-public class ReadTableDataExchange implements MessageExchange<ReadTableDataExchange.Request, ReadTableDataExchange.Response> {
+public abstract class ReadTableDataExchange implements MessageExchange<ReadTableDataExchange.Request, ReadTableDataExchange.Response> {
 
     @Override
     public String getId() {
@@ -21,7 +21,7 @@ public class ReadTableDataExchange implements MessageExchange<ReadTableDataExcha
         return ReadTableDataExchange.Response.class;
     }
 
-    public static record Request(DataSourceId sourceId, int maxLines) implements RequestMessage {
+    public static record Request(DataSourceId sourceId, int startow, int maxRows) implements RequestMessage {
 
     }
 
