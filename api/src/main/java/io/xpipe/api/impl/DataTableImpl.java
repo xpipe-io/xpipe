@@ -5,7 +5,7 @@ import io.xpipe.api.XPipeApiConnector;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
-import io.xpipe.beacon.socket.SocketClient;
+import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.exchange.ReadTableDataExchange;
 import io.xpipe.beacon.exchange.ReadTableInfoExchange;
 import io.xpipe.core.data.DataStructureNode;
@@ -32,7 +32,7 @@ public class DataTableImpl implements DataTable {
         var ds = DataSourceId.fromString(s);
         new XPipeApiConnector() {
             @Override
-            protected void handle(SocketClient sc) throws ClientException, ServerException, ConnectorException {
+            protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                 var req = new ReadTableInfoExchange.Request(ds);
                 ReadTableInfoExchange.Response res = performSimpleExchange(sc, req);
                 table[0] = new DataTableImpl(res.sourceId(), res.rowCount(), res.dataType());
@@ -92,7 +92,7 @@ public class DataTableImpl implements DataTable {
         List<DataStructureNode> nodes = new ArrayList<>();
         new XPipeApiConnector() {
             @Override
-            protected void handle(SocketClient sc) throws ClientException, ServerException, ConnectorException {
+            protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                 var req = new ReadTableDataExchange.Request(id, maxToRead);
                 performExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
                     TypedDataStreamReader.readStructures(in, new TypedDataStructureNodeCallback(dataType, nodes::add));
@@ -115,7 +115,7 @@ public class DataTableImpl implements DataTable {
             {
                 new XPipeApiConnector() {
                     @Override
-                    protected void handle(SocketClient sc) throws ClientException, ServerException, ConnectorException {
+                    protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                         var req = new ReadTableDataExchange.Request(id, Integer.MAX_VALUE);
                         performExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
                             input = in;

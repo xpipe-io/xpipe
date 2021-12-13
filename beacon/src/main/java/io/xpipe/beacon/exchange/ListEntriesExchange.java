@@ -27,7 +27,7 @@ public abstract class ListEntriesExchange implements MessageExchange<ListEntries
 
     }
 
-    public static record Entry(String name, String type, String description, Instant lastUsed, int size) {
+    public static record Entry(String name, String type, String description, Instant lastUsed) {
 
     }
 

@@ -1,6 +1,6 @@
 package io.xpipe.api.test;
 
-import io.xpipe.beacon.XPipeDaemon;
+import io.xpipe.beacon.BeaconServer;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -17,7 +17,7 @@ public class XPipeConfig implements BeforeAllCallback, ExtensionContext.Store.Cl
             // Your "before all tests" startup logic goes here
             // The following line registers a callback hook when the root test context is shut down
             context.getRoot().getStore(GLOBAL).put("any unique name", this);
-            XPipeDaemon.startDaemon();
+            BeaconServer.start();
         }
     }
 

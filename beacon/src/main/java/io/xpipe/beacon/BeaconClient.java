@@ -1,4 +1,4 @@
-package io.xpipe.beacon.socket;
+package io.xpipe.beacon;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import io.xpipe.beacon.*;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.message.ClientErrorMessage;
 import io.xpipe.beacon.message.RequestMessage;
@@ -26,18 +25,18 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import static io.xpipe.beacon.socket.Sockets.BODY_SEPARATOR;
+import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
-public class SocketClient {
+public class BeaconClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(BeaconClient.class);
 
     private final Socket socket;
     private final InputStream in;
     private final OutputStream out;
 
-    public SocketClient() throws IOException {
-        socket = new Socket(InetAddress.getLoopbackAddress(), SocketServer.determineUsedPort());
+    public BeaconClient() throws IOException {
+        socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
         in = socket.getInputStream();
         out = socket.getOutputStream();
     }
@@ -120,7 +119,7 @@ public class SocketClient {
             throw new ConnectorException("Couldn't read from socket", ex);
         }
 
-        if (Sockets.debugEnabled()) {
+        if (BeaconConfig.debugEnabled()) {
             System.out.println("Recieved response:");
             System.out.println(read.toPrettyString());
         }

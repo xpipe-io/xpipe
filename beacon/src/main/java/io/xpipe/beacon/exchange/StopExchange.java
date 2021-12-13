@@ -20,11 +20,11 @@ public abstract class StopExchange implements MessageExchange<StopExchange.Reque
         return StopExchange.Response.class;
     }
 
-    public static record Request(int timeout, boolean force) implements RequestMessage {
+    public static record Request(boolean force) implements RequestMessage {
 
     }
 
-    public static record Response() implements ResponseMessage {
+    public static record Response(boolean success) implements ResponseMessage {
 
     }
 }

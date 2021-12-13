@@ -2,10 +2,9 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.beacon.socket.SocketServer;
+import io.xpipe.beacon.BeaconHandler;
 
 import java.io.InputStream;
-import java.net.Socket;
 
 public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseMessage> {
 
@@ -15,5 +14,5 @@ public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseM
 
     Class<RP> getResponseClass();
 
-    void handleRequest(SocketServer server, RQ msg, InputStream body, Socket clientSocket) throws Exception;
+    void handleRequest(BeaconHandler handler, RQ msg, InputStream body) throws Exception;
 }

@@ -8,7 +8,7 @@ public abstract class ReadTableDataExchange implements MessageExchange<ReadTable
 
     @Override
     public String getId() {
-        return "readTable";
+        return "readTableData";
     }
 
     @Override
@@ -21,7 +21,7 @@ public abstract class ReadTableDataExchange implements MessageExchange<ReadTable
         return ReadTableDataExchange.Response.class;
     }
 
-    public static record Request(DataSourceId sourceId, int startow, int maxRows) implements RequestMessage {
+    public static record Request(DataSourceId sourceId, int maxRows) implements RequestMessage {
 
     }
 

@@ -14,8 +14,6 @@ module io.xpipe.beacon {
 
     opens io.xpipe.beacon;
     opens io.xpipe.beacon.exchange;
-    exports io.xpipe.beacon.socket;
-    opens io.xpipe.beacon.socket;
     opens io.xpipe.beacon.message;
 
     requires org.apache.commons.lang;

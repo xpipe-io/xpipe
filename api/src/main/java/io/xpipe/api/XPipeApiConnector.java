@@ -1,9 +1,9 @@
 package io.xpipe.api;
 
 import io.xpipe.beacon.*;
-import io.xpipe.beacon.socket.SocketClient;
+import io.xpipe.beacon.BeaconClient;
 
-public abstract class XPipeApiConnector extends XPipeConnector {
+public abstract class XPipeApiConnector extends BeaconConnector {
 
     public void execute() {
         try {
@@ -20,7 +20,7 @@ public abstract class XPipeApiConnector extends XPipeConnector {
         }
     }
 
-    protected abstract void handle(SocketClient sc) throws Exception;
+    protected abstract void handle(BeaconClient sc) throws Exception;
 
     @Override
     protected void waitForStartup() {
@@ -34,6 +34,6 @@ public abstract class XPipeApiConnector extends XPipeConnector {
     @FunctionalInterface
     public static interface Handler {
 
-        void handle(SocketClient sc) throws ClientException, ServerException;
+        void handle(BeaconClient sc) throws ClientException, ServerException;
     }
 }

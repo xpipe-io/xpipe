@@ -27,7 +27,7 @@ public abstract class ListCollectionsExchange implements MessageExchange<ListCol
 
     }
 
-    public static record Entry(String name, int count, Instant lastUsed) {
+    public static record Entry(String name, int size, Instant lastUsed) {
 
     }
 
