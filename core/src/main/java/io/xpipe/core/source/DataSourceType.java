@@ -8,5 +8,8 @@ public enum DataSourceType {
     TABLE,
 
     @JsonProperty("structure")
-    STRUCTURE
+    STRUCTURE,
+
+    @JsonProperty("raw")
+    RAW
 }

@@ -10,13 +10,13 @@ public abstract class XPipeApiConnector extends BeaconConnector {
             var socket = constructSocket();
             handle(socket);
         } catch (ConnectorException ce) {
-            throw new XPipeException("Connection error: " + ce.getMessage());
+            throw new XPipeConnectException(ce.getMessage());
         } catch (ClientException ce) {
-            throw new XPipeException("Client error: " + ce.getMessage());
+            throw new XPipeClientException(ce.getMessage());
         } catch (ServerException se) {
-            throw new XPipeException("Server error: " + se.getMessage());
+            throw new XPipeServerException(se.getMessage());
         } catch (Throwable t) {
-            throw new XPipeException("Unexpected error", t);
+            throw new XPipeConnectException(t);
         }
     }
 

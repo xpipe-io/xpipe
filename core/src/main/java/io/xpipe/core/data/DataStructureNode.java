@@ -12,9 +12,16 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
     protected abstract String getName();
 
-    private UnsupportedOperationException unuspported(String s) {
+    protected UnsupportedOperationException unuspported(String s) {
         return new UnsupportedOperationException(getName() + " does not support " + s);
     }
+
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    public abstract String toString(int indent);
 
     public boolean isTuple() {
         return false;

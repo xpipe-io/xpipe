@@ -1,6 +1,6 @@
 package io.xpipe.core.data.type.callback;
 
-import io.xpipe.core.data.generic.DataStructureNodePointer;
+import io.xpipe.core.data.DataStructureNodePointer;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 

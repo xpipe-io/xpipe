@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
-import io.xpipe.core.store.LocalFileDataInput;
+import io.xpipe.core.store.LocalFileDataStore;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -57,7 +57,7 @@ public class CoreJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
-                new NamedType(LocalFileDataInput.class),
+                new NamedType(LocalFileDataStore.class),
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class)

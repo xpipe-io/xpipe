@@ -1,7 +1,5 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSource;
-
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;

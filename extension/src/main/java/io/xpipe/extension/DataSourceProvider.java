@@ -1,10 +1,10 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSource;
+import io.xpipe.core.source.DataSourceDescriptor;
 
 public interface DataSourceProvider {
 
     String getId();
 
-    Class<? extends DataSource<?>> getType();
+    Class<? extends DataSourceDescriptor<?>> getType();
 }

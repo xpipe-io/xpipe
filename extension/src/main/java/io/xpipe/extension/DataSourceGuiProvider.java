@@ -1,6 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSource;
+import io.xpipe.core.source.DataSourceDescriptor;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.scene.image.Image;
@@ -18,9 +18,9 @@ public interface DataSourceGuiProvider {
 
     boolean supportsFile(Path file);
 
-    Region createConfigOptions(DataStore input, Property<? extends DataSource<?>> source);
+    Region createConfigOptions(DataStore input, Property<? extends DataSourceDescriptor<?>> source);
 
-    DataSource<?> createDefaultDataSource(DataStore input);
+    DataSourceDescriptor<?> createDefaultDataSource(DataStore input);
 
     String getDisplayName();
 
@@ -30,7 +30,7 @@ public interface DataSourceGuiProvider {
 
     Map<Supplier<String>, String> getFileExtensions();
 
-    String getDataSourceDescription(DataSource<?> source);
+    String getDataSourceDescription(DataSourceDescriptor<?> source);
 
-    Class<? extends DataSource<?>> getType();
+    Class<? extends DataSourceDescriptor<?>> getType();
 }
