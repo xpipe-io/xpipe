@@ -1,21 +1,24 @@
 package io.xpipe.core.data.type;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.callback.DataTypeCallback;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
 @JsonTypeName("array")
+@EqualsAndHashCode
 public class ArrayType implements DataType {
 
     public static ArrayType of(List<DataType> types) {
         if (types.size() == 0) {
-            return new ArrayType(null);
+            return new ArrayType(new WildcardType());
         }
 
         var first = types.get(0);
         var eq = types.stream().allMatch(d -> d.equals(first));
-        return new ArrayType(eq ? first : null);
+        return new ArrayType(eq ? first : new WildcardType());
     }
 
     private final DataType sharedType;
@@ -37,18 +40,18 @@ public class ArrayType implements DataType {
     }
 
     @Override
-    public boolean isTuple() {
-        return false;
+    public String getName() {
+        return "array";
+    }
+
+    @Override
+    public boolean matches(DataStructureNode node) {
+        return node.isArray();
     }
 
     @Override
     public boolean isArray() {
         return true;
-    }
-
-    @Override
-    public boolean isValue() {
-        return false;
     }
 
     @Override

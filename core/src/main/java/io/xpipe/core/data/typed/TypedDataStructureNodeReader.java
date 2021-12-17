@@ -9,11 +9,12 @@ import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.callback.DataTypeCallback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class TypedDataStructureNodeReader implements TypedDataStreamCallback {
+public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
     private int currentDataTypeIndex;
     private final List<DataType> flattened;
@@ -22,6 +23,7 @@ public class TypedDataStructureNodeReader implements TypedDataStreamCallback {
     private DataStructureNode readNode;
     private boolean initialized;
     private int arrayDepth;
+    private boolean makeImmutable;
 
     public TypedDataStructureNodeReader(DataType type) {
         flattened = new ArrayList<>();
@@ -37,6 +39,11 @@ public class TypedDataStructureNodeReader implements TypedDataStreamCallback {
         }
 
         readNode = null;
+    }
+
+    @Override
+    public boolean isDone() {
+        return readNode != null;
     }
 
     public DataStructureNode create() {
@@ -104,11 +111,15 @@ public class TypedDataStructureNodeReader implements TypedDataStreamCallback {
     }
 
     @Override
-    public void onTupleBegin(int size) {
-        if (flattened.size() == currentDataTypeIndex) {
-            int a = 0;
+    public void onGenericNode(DataStructureNode node) {
+        children.peek().add(node);
+        if (!isInArray()) {
+            currentDataTypeIndex++;
         }
+    }
 
+    @Override
+    public void onTupleBegin(TupleType type) {
         if (!isInArray() && !flattened.get(currentDataTypeIndex).isTuple()) {
             throw new IllegalStateException();
         }
@@ -133,7 +144,7 @@ public class TypedDataStructureNodeReader implements TypedDataStreamCallback {
     }
 
     @Override
-    public void onArrayBegin(int size) {
+    public void onArrayBegin(int size) throws IOException {
         if (!flattened.get(currentDataTypeIndex).isArray()) {
             throw new IllegalStateException();
         }

@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 @EqualsAndHashCode(callSuper = false)
 public class ValueNode extends DataStructureNode {
 
-    private final byte[] data;
+    private byte[] data;
 
     private ValueNode(byte[] data) {
         this.data = data;
@@ -22,6 +22,12 @@ public class ValueNode extends DataStructureNode {
 
     public static ValueNode of(Object o) {
         return new ValueNode(o.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public DataStructureNode setRawData(byte[] data) {
+        this.data = data;
+        return this;
     }
 
     @Override

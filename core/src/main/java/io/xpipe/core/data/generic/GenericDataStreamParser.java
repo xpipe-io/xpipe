@@ -1,14 +1,30 @@
 package io.xpipe.core.data.generic;
 
+import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.DataStructureNodeIO;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
-public class GenericDataStreamReader {
+public class GenericDataStreamParser {
 
-    private static final int TUPLE_ID = 1;
-    private static final int ARRAY_ID = 2;
-    private static final int VALUE_ID = 3;
-    private static final int NAME_ID = 4;
+    public static DataStructureNode read(InputStream in) throws IOException {
+        var reader = new GenericDataStructureNodeReader();
+        read(in, reader);
+        return reader.create();
+    }
+
+    public static List<DataStructureNode> readN(InputStream in, int n) throws IOException {
+        var list = new ArrayList<DataStructureNode>();
+        var reader = new GenericDataStructureNodeReader();
+        for (int i = 0; i < n ; i++) {
+            read(in, reader);
+            list.add(reader.create());
+        }
+        return list;
+    }
 
     public static void read(InputStream in, GenericDataStreamCallback cb) throws IOException {
         var b = in.read();
@@ -17,20 +33,20 @@ public class GenericDataStreamReader {
         }
 
         switch (b) {
-            case TUPLE_ID -> {
+            case DataStructureNodeIO.GENERIC_TUPLE_ID -> {
                 readTuple(in, cb);
             }
-            case ARRAY_ID -> {
+            case DataStructureNodeIO.GENERIC_ARRAY_ID -> {
                 readArray(in, cb);
             }
-            case VALUE_ID -> {
+            case DataStructureNodeIO.GENERIC_VALUE_ID -> {
                 readValue(in, cb);
             }
-            case NAME_ID -> {
+            case DataStructureNodeIO.GENERIC_NAME_ID -> {
                 readName(in, cb);
                 read(in, cb);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + b);
+            default -> throw new IllegalStateException("Unexpected type id: " + b);
         }
     }
 

@@ -8,7 +8,7 @@ import io.xpipe.core.data.node.SimpleTupleNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericTupleReader implements GenericDataStructureNodeReader {
+public class GenericTupleReader implements GenericAbstractReader {
 
     public static GenericTupleReader newReader(int length) {
         var tr = new GenericTupleReader();
@@ -21,7 +21,7 @@ public class GenericTupleReader implements GenericDataStructureNodeReader {
     private List<String> names;
     private List<DataStructureNode> nodes;
     private int currentIndex = 0;
-    private GenericDataStructureNodeReader currentReader;
+    private GenericAbstractReader currentReader;
     private DataStructureNode created;
 
     public GenericTupleReader() {

@@ -48,6 +48,13 @@ public class SimpleTupleNode extends TupleNode {
     }
 
     @Override
+    public DataStructureNode clear() {
+        nodes.clear();
+        return this;
+    }
+
+
+    @Override
     public int size() {
         return nodes.size();
     }

@@ -2,7 +2,6 @@ package io.xpipe.core.data.node;
 
 import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.ArrayType;
-import io.xpipe.core.data.type.DataType;
 import lombok.EqualsAndHashCode;
 
 import java.util.*;
@@ -32,6 +31,18 @@ public class ArrayNode extends DataStructureNode {
     }
 
     @Override
+    public DataStructureNode put(DataStructureNode node) {
+        valueNodes.add(node);
+        return this;
+    }
+
+    @Override
+    public DataStructureNode set(int index, DataStructureNode node) {
+        valueNodes.add(index, node);
+        return this;
+    }
+
+    @Override
     public Stream<DataStructureNode> stream() {
         return Collections.unmodifiableList(valueNodes).stream();
     }
@@ -58,8 +69,14 @@ public class ArrayNode extends DataStructureNode {
     }
 
     @Override
-    public DataType getDataType() {
+    public ArrayType getDataType() {
         return ArrayType.of(valueNodes.stream().map(DataStructureNode::getDataType).toList());
+    }
+
+    @Override
+    public DataStructureNode clear() {
+        valueNodes.clear();
+        return this;
     }
 
     @Override

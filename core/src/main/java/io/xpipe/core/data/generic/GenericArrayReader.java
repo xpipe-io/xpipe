@@ -7,7 +7,7 @@ import io.xpipe.core.data.node.ValueNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericArrayReader implements GenericDataStructureNodeReader {
+public class GenericArrayReader implements GenericAbstractReader {
 
     public static GenericArrayReader newReader(int length) {
         var ar = new GenericArrayReader();
@@ -19,7 +19,7 @@ public class GenericArrayReader implements GenericDataStructureNodeReader {
     private List<DataStructureNode> nodes;
     private int length;
     private int currentIndex = 0;
-    private GenericDataStructureNodeReader currentReader;
+    private GenericAbstractReader currentReader;
     private DataStructureNode created;
 
     public GenericArrayReader() {

@@ -12,13 +12,25 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
     protected abstract String getName();
 
-    protected UnsupportedOperationException unuspported(String s) {
+    protected UnsupportedOperationException unsupported(String s) {
         return new UnsupportedOperationException(getName() + " does not support " + s);
     }
 
     @Override
     public String toString() {
         return toString(0);
+    }
+
+    public DataStructureNode clear() {
+        throw unsupported("clear");
+    }
+
+    public DataStructureNode setRawData(byte[] data) {
+        throw unsupported("set raw data");
+    }
+
+    public DataStructureNode set(int index, DataStructureNode node) {
+        throw unsupported("set at index");
     }
 
     public abstract String toString(int indent);
@@ -35,48 +47,64 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         return false;
     }
 
+    public DataStructureNode put(String keyName, DataStructureNode node) {
+        throw unsupported("put node with key");
+    }
+
+    public DataStructureNode put(DataStructureNode node) {
+        throw unsupported("put node");
+    }
+
+    public DataStructureNode remove(int index) {
+        throw unsupported("index remove");
+    }
+
+    public DataStructureNode remove(String keyName) {
+        throw unsupported("key remove");
+    }
+
     public int size() {
-        throw unuspported("size computation");
+        throw unsupported("size computation");
     }
 
     public abstract DataType getDataType();
 
     public DataStructureNode at(int index) {
-        throw unuspported("integer indexing");
+        throw unsupported("integer indexing");
     }
 
     public DataStructureNode forKey(String name) {
-        throw unuspported("name indexing");
+        throw unsupported("name indexing");
     }
 
     public Optional<DataStructureNode> forKeyIfPresent(String name) {
-        throw unuspported("name indexing");
+        throw unsupported("name indexing");
     }
 
     public int asInt() {
-        throw unuspported("integer conversion");
+        throw unsupported("integer conversion");
     }
 
     public String asString() {
-        throw unuspported("string conversion");
+        throw unsupported("string conversion");
     }
 
     public Stream<DataStructureNode> stream() {
-        throw unuspported("stream creation");
+        throw unsupported("stream creation");
     }
 
     @Override
     public void forEach(Consumer<? super DataStructureNode> action) {
-        throw unuspported("for each");
+        throw unsupported("for each");
     }
 
     @Override
     public Spliterator<DataStructureNode> spliterator() {
-        throw unuspported("spliterator creation");
+        throw unsupported("spliterator creation");
     }
 
     @Override
     public Iterator<DataStructureNode> iterator() {
-        throw unuspported("iterator creation");
+        throw unsupported("iterator creation");
     }
 }

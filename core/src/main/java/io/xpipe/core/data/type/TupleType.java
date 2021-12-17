@@ -2,12 +2,15 @@ package io.xpipe.core.data.type;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.callback.DataTypeCallback;
+import lombok.EqualsAndHashCode;
 
 import java.util.Collections;
 import java.util.List;
 
 @JsonTypeName("tuple")
+@EqualsAndHashCode
 public class TupleType implements DataType {
 
     private List<String> names;
@@ -32,18 +35,18 @@ public class TupleType implements DataType {
     }
 
     @Override
+    public String getName() {
+        return "tuple";
+    }
+
+    @Override
+    public boolean matches(DataStructureNode node) {
+        return node.isTuple();
+    }
+
+    @Override
     public boolean isTuple() {
         return true;
-    }
-
-    @Override
-    public boolean isArray() {
-        return false;
-    }
-
-    @Override
-    public boolean isValue() {
-        return false;
     }
 
     @Override

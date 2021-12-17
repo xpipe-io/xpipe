@@ -2,18 +2,17 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataTable;
 import io.xpipe.api.XPipeApiConnector;
+import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
-import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.exchange.ReadTableDataExchange;
 import io.xpipe.beacon.exchange.ReadTableInfoExchange;
 import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
-import io.xpipe.core.data.node.SimpleTupleNode;
+import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.DataType;
-import io.xpipe.core.data.typed.TypedDataStreamReader;
-import io.xpipe.core.data.typed.TypedDataStreamCallback;
+import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
 import io.xpipe.core.source.DataSourceId;
 
@@ -51,7 +50,7 @@ public class DataTableImpl implements DataTable {
         this.dataType = dataType;
     }
 
-    public Stream<SimpleTupleNode> stream() {
+    public Stream<TupleNode> stream() {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED), false);
     }
@@ -95,7 +94,8 @@ public class DataTableImpl implements DataTable {
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                 var req = new ReadTableDataExchange.Request(id, maxToRead);
                 performExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
-                    TypedDataStreamReader.readStructures(in, new TypedDataStructureNodeReader(dataType, nodes::add));
+                    var r = new TypedDataStreamParser(dataType);
+                    r.readStructures(in, new TypedDataStructureNodeReader(dataType), nodes::add);
                 }, false);
             }
         }.execute();
@@ -103,14 +103,15 @@ public class DataTableImpl implements DataTable {
     }
 
     @Override
-    public Iterator<SimpleTupleNode> iterator() {
-        return new Iterator<SimpleTupleNode>() {
+    public Iterator<TupleNode> iterator() {
+        return new Iterator<TupleNode>() {
 
             private InputStream input;
             private int read;
             private final int toRead = size;
-            private TypedDataStreamCallback callback;
-            private SimpleTupleNode current;
+            private TypedDataStreamParser reader;
+            private TypedDataStructureNodeReader nodeReader;
+            private TupleNode current;
 
             {
                 new XPipeApiConnector() {
@@ -123,9 +124,8 @@ public class DataTableImpl implements DataTable {
                     }
                 }.execute();
 
-                callback = new TypedDataStructureNodeReader(dataType, dsn -> {
-                    current = (SimpleTupleNode) dsn;
-                });
+                nodeReader = new TypedDataStructureNodeReader(dataType);
+                reader = new TypedDataStreamParser(dataType);
             }
 
             private boolean hasKnownSize() {
@@ -143,16 +143,16 @@ public class DataTableImpl implements DataTable {
                 }
 
                 try {
-                    return TypedDataStreamReader.hasNext(input);
+                    return reader.hasNext(input);
                 } catch (IOException ex) {
                     throw new UncheckedIOException(ex);
                 }
             }
 
             @Override
-            public SimpleTupleNode next() {
+            public TupleNode next() {
                 try {
-                    TypedDataStreamReader.readStructure(input, callback);
+                    current = (TupleNode) reader.readStructure(input, nodeReader);
                 } catch (IOException ex) {
                     throw new UncheckedIOException(ex);
                 }

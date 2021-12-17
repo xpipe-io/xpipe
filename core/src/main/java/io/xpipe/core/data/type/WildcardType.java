@@ -1,31 +1,27 @@
 package io.xpipe.core.data.type;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.callback.DataTypeCallback;
-import lombok.EqualsAndHashCode;
 
-@JsonTypeName("value")
-@EqualsAndHashCode
-public class ValueType implements DataType {
+public class WildcardType implements DataType {
 
     @Override
     public String getName() {
-        return "value";
+        return "wildcard";
     }
 
     @Override
     public boolean matches(DataStructureNode node) {
-        return node.isValue();
+        return true;
     }
 
     @Override
-    public boolean isValue() {
+    public boolean isWildcard() {
         return true;
     }
 
     @Override
     public void traverseType(DataTypeCallback cb) {
-        cb.onValue();
+
     }
 }

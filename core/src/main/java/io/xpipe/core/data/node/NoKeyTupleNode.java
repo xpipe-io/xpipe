@@ -33,7 +33,7 @@ public class NoKeyTupleNode extends TupleNode {
 
     @Override
     public DataStructureNode forKey(String name) {
-        throw unuspported("key indexing");
+        throw unsupported("key indexing");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class NoKeyTupleNode extends TupleNode {
     }
 
     public String nameAt(int index) {
-        throw unuspported("name getter");
+        throw unsupported("name getter");
     }
 
     @Override
