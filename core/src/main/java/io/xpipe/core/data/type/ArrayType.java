@@ -1,27 +1,38 @@
 package io.xpipe.core.data.type;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.data.DataStructureNode;
-import io.xpipe.core.data.type.callback.DataTypeCallback;
+import io.xpipe.core.data.node.DataStructureNode;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
 import java.util.List;
 
+/**
+ * An array type represents an array of {@link DataStructureNode} of a certain shared type.
+ * The shared type should be the most specific data type possible.
+ */
 @JsonTypeName("array")
-@EqualsAndHashCode
-public class ArrayType implements DataType {
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Value
+public class ArrayType extends DataType {
 
-    private final DataType sharedType;
+    DataType sharedType;
 
-    public ArrayType(DataType sharedType) {
-        this.sharedType = sharedType;
+    /**
+     * Creates a new array type for a given shared data type.
+     */
+    public static ArrayType of(DataType type) {
+        return new ArrayType(type);
     }
 
-    public static ArrayType ofWildcard() {
-        return new ArrayType(WildcardType.of());
-    }
-
-    public static ArrayType of(List<DataType> types) {
+    /**
+     * Creates a new array type using either the shared type of {@code types}
+     * or a wildcard type if the elements do not share a common type.
+     */
+    public static ArrayType ofSharedType(List<DataType> types) {
         if (types.size() == 0) {
             return new ArrayType(WildcardType.of());
         }
@@ -31,18 +42,6 @@ public class ArrayType implements DataType {
         return new ArrayType(eq ? first : WildcardType.of());
     }
 
-    public boolean isSimple() {
-        return hasSharedType() && getSharedType().isValue();
-    }
-
-    public boolean hasSharedType() {
-        return sharedType != null;
-    }
-
-    public DataType getSharedType() {
-        return sharedType;
-    }
-
     @Override
     public String getName() {
         return "array";
@@ -50,7 +49,17 @@ public class ArrayType implements DataType {
 
     @Override
     public boolean matches(DataStructureNode node) {
-        return node.isArray();
+        if (!node.isArray()) {
+            return false;
+        }
+
+        var a = node.asArray();
+        for (var n : a) {
+            if (!sharedType.matches(n)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -59,7 +68,7 @@ public class ArrayType implements DataType {
     }
 
     @Override
-    public void traverseType(DataTypeCallback cb) {
-        cb.onArray(this);
+    public void visit(DataTypeVisitor visitor) {
+        visitor.onArray(this);
     }
 }

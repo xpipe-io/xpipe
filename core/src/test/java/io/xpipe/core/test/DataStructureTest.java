@@ -1,6 +1,6 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.generic.GenericDataStreamParser;
 import io.xpipe.core.data.generic.GenericDataStreamWriter;
 import io.xpipe.core.data.generic.GenericDataStructureNodeReader;
@@ -98,7 +98,7 @@ public class DataStructureTest {
             var data = dataOut.toByteArray();
 
             var reader = TypedDataStructureNodeReader.mutable(ds.type);
-            new TypedDataStreamParser(ds.type).readStructure(new ByteArrayInputStream(data), reader);
+            new TypedDataStreamParser(ds.type).parseStructure(new ByteArrayInputStream(data), reader);
             var readNode = reader.create();
 
             Assertions.assertEquals(node, readNode);
@@ -125,7 +125,7 @@ public class DataStructureTest {
             var data = dataOut.toByteArray();
 
             var reader = TypedDataStructureNodeReader.immutable(ds.type);
-            new TypedDataStreamParser(ds.type).readStructure(new ByteArrayInputStream(data), reader);
+            new TypedDataStreamParser(ds.type).parseStructure(new ByteArrayInputStream(data), reader);
             var readNode = reader.create();
 
             Assertions.assertEquals(node, readNode);
@@ -153,10 +153,10 @@ public class DataStructureTest {
 
         var data = dataOut.toByteArray();
         var in = new ByteArrayInputStream(data);
-        var reader = new TypedReusableDataStructureNodeReader(ds.type);
+        var reader = TypedReusableDataStructureNodeReader.create(ds.type);
 
         for (var node : ds.nodes) {
-            new TypedDataStreamParser(ds.type).readStructure(in, reader);
+            new TypedDataStreamParser(ds.type).parseStructure(in, reader);
             var readNode = reader.create();
             Assertions.assertEquals(node, readNode);
         }

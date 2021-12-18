@@ -1,4 +1,4 @@
-package io.xpipe.core.data;
+package io.xpipe.core.data.node;
 
 import java.util.ArrayList;
 import java.util.List;

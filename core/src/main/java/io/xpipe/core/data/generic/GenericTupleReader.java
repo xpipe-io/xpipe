@@ -1,6 +1,6 @@
 package io.xpipe.core.data.generic;
 
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.SimpleTupleNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
@@ -130,7 +130,7 @@ public class GenericTupleReader implements GenericAbstractReader {
             throw new IllegalStateException("Tuple ended but is not full yet");
         }
 
-        created = TupleNode.wrap(names, nodes);
+        created = TupleNode.of(names, nodes);
     }
 
     @Override
@@ -162,6 +162,6 @@ public class GenericTupleReader implements GenericAbstractReader {
             throw new IllegalStateException();
         }
 
-        return SimpleTupleNode.wrap(names, nodes);
+        return SimpleTupleNode.of(names, nodes);
     }
 }

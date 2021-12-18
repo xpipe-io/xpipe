@@ -1,6 +1,5 @@
 package io.xpipe.core.data.node;
 
-import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.ArrayType;
 import lombok.EqualsAndHashCode;
 
@@ -70,7 +69,7 @@ public class ArrayNode extends DataStructureNode {
 
     @Override
     public ArrayType determineDataType() {
-        return ArrayType.of(valueNodes.stream().map(DataStructureNode::determineDataType).toList());
+        return ArrayType.ofSharedType(valueNodes.stream().map(DataStructureNode::determineDataType).toList());
     }
 
     @Override

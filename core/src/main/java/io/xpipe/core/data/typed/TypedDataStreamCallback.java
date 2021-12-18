@@ -1,6 +1,6 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.type.TupleType;
 
 import java.io.IOException;

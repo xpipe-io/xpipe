@@ -1,6 +1,6 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
@@ -32,7 +32,10 @@ public class DataStructureTests {
         DATA_5(createTestDataType5(), List.of(createTestData51(), createTestData52(), createTestData53())),
 
         // Tuple with wildcard type
-        DATA_6(createTestDataType6(), List.of(createTestData61(), createTestData62()));
+        DATA_6(createTestDataType6(), List.of(createTestData61(), createTestData62())),
+
+        // Wildcard type
+        DATA_7(createTestDataType7(), List.of(createTestData71(), createTestData72(), createTestData73()));
 
 
         public DataType type;
@@ -85,7 +88,7 @@ public class DataStructureTests {
     }
 
     public static DataType createTestDataType2() {
-        return ArrayType.ofWildcard();
+        return ArrayType.of(WildcardType.of());
     }
 
     public static DataStructureNode createTestData31() {
@@ -134,7 +137,7 @@ public class DataStructureTests {
     }
 
     public static DataType createTestDataType5() {
-        return ArrayType.ofWildcard();
+        return ArrayType.of(WildcardType.of());
     }
 
     public static DataStructureNode createTestData61() {
@@ -156,5 +159,24 @@ public class DataStructureTests {
 
     public static DataType createTestDataType6() {
         return TupleType.of(List.of("key1", "key2"), List.of(WildcardType.of(), WildcardType.of()));
+    }
+
+    public static DataStructureNode createTestData71() {
+        return ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static DataStructureNode createTestData72() {
+        var val = ValueNode.of("value2".getBytes(StandardCharsets.UTF_8));
+        return TupleNode.builder().add("key1", val).build();
+    }
+
+    public static DataStructureNode createTestData73() {
+        var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
+        var array = ArrayNode.of(List.of(val, ValueNode.nullValue()));
+        return array;
+    }
+
+    public static DataType createTestDataType7() {
+        return WildcardType.of();
     }
 }

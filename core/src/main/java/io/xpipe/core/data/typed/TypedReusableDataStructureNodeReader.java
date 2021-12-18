@@ -1,10 +1,10 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
-import io.xpipe.core.data.type.callback.DataTypeCallback;
+import io.xpipe.core.data.type.DataTypeVisitors;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,17 +13,21 @@ import java.util.Stack;
 
 public class TypedReusableDataStructureNodeReader implements TypedAbstractReader {
 
+    public static TypedReusableDataStructureNodeReader create(DataType type) {
+        return new TypedReusableDataStructureNodeReader(type);
+    }
+
     private final List<DataType> flattened;
     private final TypedDataStructureNodeReader initialReader;
     private DataStructureNode node;
     private final Stack<Integer> indices;
     private int arrayDepth;
 
-    public TypedReusableDataStructureNodeReader(DataType type) {
+    private TypedReusableDataStructureNodeReader(DataType type) {
         flattened = new ArrayList<>();
         indices = new Stack<>();
         initialReader = TypedDataStructureNodeReader.mutable(type);
-        type.traverseType(DataTypeCallback.flatten(d -> flattened.add(d)));
+        type.visit(DataTypeVisitors.flatten(d -> flattened.add(d)));
     }
 
     @Override

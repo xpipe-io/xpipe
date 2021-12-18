@@ -1,18 +1,24 @@
 package io.xpipe.core.data.type;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.data.DataStructureNode;
-import io.xpipe.core.data.type.callback.DataTypeCallback;
+import io.xpipe.core.data.node.DataStructureNode;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
+/**
+ * A value type represents any node that holds some atomic value, i.e. it has no subtypes.
+ */
 @JsonTypeName("value")
-@EqualsAndHashCode
-public class ValueType implements DataType {
+@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Value
+public class ValueType extends DataType {
 
-    private ValueType() {
-
-    }
-
+    /**
+     * Creates a new instance.
+     */
     public static ValueType of() {
         return new ValueType();
     }
@@ -33,7 +39,7 @@ public class ValueType implements DataType {
     }
 
     @Override
-    public void traverseType(DataTypeCallback cb) {
-        cb.onValue();
+    public void visit(DataTypeVisitor visitor) {
+        visitor.onValue(this);
     }
 }

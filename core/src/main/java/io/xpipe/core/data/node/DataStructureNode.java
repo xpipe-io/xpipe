@@ -1,8 +1,5 @@
-package io.xpipe.core.data;
+package io.xpipe.core.data.node;
 
-import io.xpipe.core.data.node.ArrayNode;
-import io.xpipe.core.data.node.TupleNode;
-import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.DataType;
 
 import java.util.Iterator;

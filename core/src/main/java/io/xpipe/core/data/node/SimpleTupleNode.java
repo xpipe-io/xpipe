@@ -1,6 +1,5 @@
 package io.xpipe.core.data.node;
 
-import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
 import lombok.EqualsAndHashCode;

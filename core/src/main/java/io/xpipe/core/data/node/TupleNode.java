@@ -1,6 +1,5 @@
 package io.xpipe.core.data.node;
 
-import io.xpipe.core.data.DataStructureNode;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public abstract class TupleNode extends DataStructureNode {
         return new Builder();
     }
 
-    public static TupleNode wrap(List<DataStructureNode> nodes) {
+    public static TupleNode of(List<DataStructureNode> nodes) {
         if (nodes == null) {
             throw new IllegalArgumentException("Nodes must be not null");
         }
@@ -22,11 +21,11 @@ public abstract class TupleNode extends DataStructureNode {
         return new NoKeyTupleNode(nodes);
     }
 
-    public static TupleNode copy(List<DataStructureNode> nodes) {
-        return TupleNode.wrap(List.copyOf(nodes));
+    public static TupleNode copyOf(List<DataStructureNode> nodes) {
+        return TupleNode.of(List.copyOf(nodes));
     }
 
-    public static TupleNode wrap(List<String> names, List<DataStructureNode> nodes) {
+    public static TupleNode of(List<String> names, List<DataStructureNode> nodes) {
         if (names == null) {
             throw new IllegalArgumentException("Names must be not null");
         }
@@ -40,7 +39,7 @@ public abstract class TupleNode extends DataStructureNode {
         return new SimpleTupleNode(names, nodes);
     }
 
-    public static TupleNode wrapRaw(List<String> names, List<DataStructureNode> nodes) {
+    public static TupleNode ofRaw(List<String> names, List<DataStructureNode> nodes) {
         if (names == null) {
             throw new IllegalArgumentException("Names must be not null");
         }
@@ -50,8 +49,8 @@ public abstract class TupleNode extends DataStructureNode {
         return new SimpleTupleNode(names, nodes);
     }
 
-    public static TupleNode copy(List<String> names, List<DataStructureNode> nodes) {
-        return TupleNode.wrap(List.copyOf(names), List.copyOf(nodes));
+    public static TupleNode copyOf(List<String> names, List<DataStructureNode> nodes) {
+        return TupleNode.of(List.copyOf(names), List.copyOf(nodes));
     }
 
     public final boolean isTuple() {
@@ -106,10 +105,10 @@ public abstract class TupleNode extends DataStructureNode {
 
         public TupleNode build() {
             boolean hasKeys = entries.stream().anyMatch(kv -> kv.key != null);
-            return hasKeys ? TupleNode.wrap(
+            return hasKeys ? TupleNode.of(
                     entries.stream().map(kv -> kv.key).toList(),
                     entries.stream().map(kv -> kv.value).toList()) :
-                    TupleNode.wrap(entries.stream().map(kv -> kv.value).toList());
+                    TupleNode.of(entries.stream().map(kv -> kv.value).toList());
         }
     }
 }

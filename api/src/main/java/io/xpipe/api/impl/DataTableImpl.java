@@ -8,12 +8,14 @@ import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
 import io.xpipe.beacon.exchange.ReadTableDataExchange;
 import io.xpipe.beacon.exchange.ReadTableInfoExchange;
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.DataType;
+import io.xpipe.core.data.typed.TypedAbstractReader;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
+import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
 import io.xpipe.core.source.DataSourceId;
 
 import java.io.IOException;
@@ -26,9 +28,11 @@ import java.util.stream.StreamSupport;
 public class DataTableImpl implements DataTable {
 
     public static DataTable get(String s) {
-        final DataTable[] table = {null};
+        return get(DataSourceId.fromString(s));
+    }
 
-        var ds = DataSourceId.fromString(s);
+    public static DataTable get(DataSourceId ds) {
+        final DataTable[] table = {null};
         new XPipeApiConnector() {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
@@ -95,7 +99,7 @@ public class DataTableImpl implements DataTable {
                 var req = new ReadTableDataExchange.Request(id, maxToRead);
                 performExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
                     var r = new TypedDataStreamParser(dataType);
-                    r.readStructures(in, new TypedDataStructureNodeReader(dataType), nodes::add);
+                    r.parseStructures(in, TypedDataStructureNodeReader.immutable(dataType), nodes::add);
                 }, false);
             }
         }.execute();
@@ -104,28 +108,26 @@ public class DataTableImpl implements DataTable {
 
     @Override
     public Iterator<TupleNode> iterator() {
-        return new Iterator<TupleNode>() {
+        return new Iterator<>() {
 
             private InputStream input;
             private int read;
             private final int toRead = size;
-            private TypedDataStreamParser reader;
-            private TypedDataStructureNodeReader nodeReader;
-            private TupleNode current;
+            private final TypedDataStreamParser parser;
+            private final TypedAbstractReader nodeReader;
 
             {
                 new XPipeApiConnector() {
                     @Override
                     protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                         var req = new ReadTableDataExchange.Request(id, Integer.MAX_VALUE);
-                        performExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
-                            input = in;
-                        }, false);
+                        performExchange(sc, req,
+                                (ReadTableDataExchange.Response res, InputStream in) -> input = in, false);
                     }
                 }.execute();
 
-                nodeReader = new TypedDataStructureNodeReader(dataType);
-                reader = new TypedDataStreamParser(dataType);
+                nodeReader = TypedReusableDataStructureNodeReader.create(dataType);
+                parser = new TypedDataStreamParser(dataType);
             }
 
             private boolean hasKnownSize() {
@@ -143,7 +145,7 @@ public class DataTableImpl implements DataTable {
                 }
 
                 try {
-                    return reader.hasNext(input);
+                    return parser.hasNext(input);
                 } catch (IOException ex) {
                     throw new UncheckedIOException(ex);
                 }
@@ -151,8 +153,9 @@ public class DataTableImpl implements DataTable {
 
             @Override
             public TupleNode next() {
+                TupleNode current;
                 try {
-                    current = (TupleNode) reader.readStructure(input, nodeReader);
+                    current = (TupleNode) parser.parseStructure(input, nodeReader);
                 } catch (IOException ex) {
                     throw new UncheckedIOException(ex);
                 }

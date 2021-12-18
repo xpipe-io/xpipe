@@ -4,9 +4,9 @@ import io.xpipe.core.store.DataStore;
 
 public abstract class TableDataSourceDescriptor<DS extends DataStore> implements DataSourceDescriptor<DS> {
 
-    public abstract TableDataWriteConnection openWriteConnection(DS store);
+    public abstract TableDataWriteConnection newWriteConnection(DS store);
 
-    public abstract TableDataReadConnection openConnection(DS store);
+    public abstract TableDataReadConnection newReadConnection(DS store);
 
     @Override
     public DataSourceType getType() {

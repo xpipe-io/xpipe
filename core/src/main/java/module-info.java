@@ -16,10 +16,6 @@ module io.xpipe.core {
     opens io.xpipe.core.source;
     opens io.xpipe.core.data.type;
     opens io.xpipe.core.data.generic;
-    exports io.xpipe.core.data.type.callback;
-    opens io.xpipe.core.data.type.callback;
-    exports io.xpipe.core.data;
-    opens io.xpipe.core.data;
     exports io.xpipe.core.util;
     exports io.xpipe.core.data.node;
     opens io.xpipe.core.data.node;

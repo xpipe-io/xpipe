@@ -1,13 +1,13 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.SimpleTupleNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
-import io.xpipe.core.data.type.callback.DataTypeCallback;
+import io.xpipe.core.data.type.DataTypeVisitors;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
         flattened = new ArrayList<>();
         children = new Stack<>();
         nodes = new Stack<>();
-        type.traverseType(DataTypeCallback.flatten(d -> flattened.add(d)));
+        type.visit(DataTypeVisitors.flatten(d -> flattened.add(d)));
         this.makeImmutable = makeImmutable;
     }
 
@@ -114,7 +114,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
         var tupleNames = makeImmutable ?
                 Collections.unmodifiableList(tupleType.getNames()) : new ArrayList<>(tupleType.getNames());
         var tupleNodes = makeImmutable ? Collections.unmodifiableList(l) : l;
-        var newNode = TupleNode.wrapRaw(tupleNames, tupleNodes);
+        var newNode = TupleNode.ofRaw(tupleNames, tupleNodes);
         nodes.push(newNode);
     }
 

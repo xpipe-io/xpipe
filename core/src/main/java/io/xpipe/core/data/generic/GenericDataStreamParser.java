@@ -1,7 +1,7 @@
 package io.xpipe.core.data.generic;
 
-import io.xpipe.core.data.DataStructureNode;
-import io.xpipe.core.data.DataStructureNodeIO;
+import io.xpipe.core.data.node.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNodeIO;
 
 import java.io.IOException;
 import java.io.InputStream;

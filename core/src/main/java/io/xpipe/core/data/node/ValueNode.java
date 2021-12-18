@@ -1,6 +1,5 @@
 package io.xpipe.core.data.node;
 
-import io.xpipe.core.data.DataStructureNode;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.ValueType;
 import lombok.EqualsAndHashCode;
@@ -17,6 +16,10 @@ public abstract class ValueNode extends DataStructureNode {
 
     public static ValueNode immutable(byte[] data) {
         return new ImmutableValueNode(data);
+    }
+
+    public static ValueNode immutable(Object o) {
+        return immutable(o.toString().getBytes(StandardCharsets.UTF_8));
     }
 
     public static ValueNode mutableNull() {

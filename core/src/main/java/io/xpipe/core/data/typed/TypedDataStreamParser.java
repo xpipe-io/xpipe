@@ -1,7 +1,7 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.DataStructureNode;
-import io.xpipe.core.data.DataStructureNodeIO;
+import io.xpipe.core.data.node.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNodeIO;
 import io.xpipe.core.data.generic.GenericDataStreamParser;
 import io.xpipe.core.data.generic.GenericDataStructureNodeReader;
 import io.xpipe.core.data.type.ArrayType;
@@ -34,27 +34,31 @@ public class TypedDataStreamParser {
         return true;
     }
 
-    public void readStructures(InputStream in, TypedAbstractReader cb, Consumer<DataStructureNode> consumer) throws IOException {
+    public void parseStructures(InputStream in, TypedAbstractReader cb, Consumer<DataStructureNode> consumer) throws IOException {
         while (hasNext(in)) {
             cb.onNodeBegin();
-            read(in, cb, dataType);
+            parse(in, cb, dataType);
             cb.onNodeEnd();
             consumer.accept(cb.create());
         }
     }
 
-    public DataStructureNode readStructure(InputStream in, TypedAbstractReader cb) throws IOException {
+    public DataStructureNode parseStructure(InputStream in, TypedAbstractReader cb) throws IOException {
         if (!hasNext(in)) {
             throw new IllegalStateException("No structure to read");
         }
 
         cb.onNodeBegin();
-        read(in, cb, dataType);
+        parse(in, cb, dataType);
         cb.onNodeEnd();
         return cb.create();
     }
 
-    private void read(InputStream in, TypedDataStreamCallback cb, DataType type) throws IOException {
+    public void parse(InputStream in, TypedDataStreamCallback cb) throws IOException {
+        parse(in, cb, dataType);
+    }
+
+    private void parse(InputStream in, TypedDataStreamCallback cb, DataType type) throws IOException {
         var b = in.read();
 
         // Skip
@@ -69,7 +73,7 @@ public class TypedDataStreamParser {
                 }
 
                 var tt = (TupleType) type;
-                readTypedTuple(in, cb, tt);
+                parseTypedTuple(in, cb, tt);
             }
             case DataStructureNodeIO.TYPED_ARRAY_ID -> {
                 if (!type.isArray()) {
@@ -77,20 +81,23 @@ public class TypedDataStreamParser {
                 }
 
                 var at = (ArrayType) type;
-                readTypedArray(in, cb, at);
+                parseTypedArray(in, cb, at);
             }
             case DataStructureNodeIO.TYPED_VALUE_ID -> {
                 if (!type.isValue()) {
                     throw new IllegalStateException("Got value but expected " + type.getName());
                 }
 
-                readValue(in, cb);
+                parseValue(in, cb);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + b);
+            default -> {
+                GenericDataStreamParser.
+                throw new IllegalStateException("Unexpected value: " + b);
+            }
         }
     }
 
-    private void readTypedTuple(InputStream in, TypedDataStreamCallback cb, TupleType type) throws IOException {
+    private void parseTypedTuple(InputStream in, TypedDataStreamCallback cb, TupleType type) throws IOException {
         cb.onTupleBegin(type);
         for (int i = 0; i < type.getSize(); i++) {
             if (type.getTypes().get(i).isWildcard()) {
@@ -99,7 +106,7 @@ public class TypedDataStreamParser {
                 var node = r.create();
                 cb.onGenericNode(node);
             } else {
-                read(in, cb, type.getTypes().get(i));
+                parse(in, cb, type.getTypes().get(i));
             }
         }
         cb.onTupleEnd();
@@ -112,7 +119,7 @@ public class TypedDataStreamParser {
         return genericReader;
     }
 
-    private void readTypedArray(InputStream in, TypedDataStreamCallback cb, ArrayType type) throws IOException {
+    private void parseTypedArray(InputStream in, TypedDataStreamCallback cb, ArrayType type) throws IOException {
         var size = in.read();
         cb.onArrayBegin(size);
         for (int i = 0; i < size; i++) {
@@ -122,13 +129,13 @@ public class TypedDataStreamParser {
                 var node = r.create();
                 cb.onGenericNode(node);
             } else {
-                read(in, cb, type.getSharedType());
+                parse(in, cb, type.getSharedType());
             }
         }
         cb.onArrayEnd();
     }
 
-    private void readValue(InputStream in, TypedDataStreamCallback cb) throws IOException {
+    private void parseValue(InputStream in, TypedDataStreamCallback cb) throws IOException {
         var size = in.read();
         var data = in.readNBytes(size);
         cb.onValue(data);

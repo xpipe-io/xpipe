@@ -1,7 +1,7 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.DataStructureNode;
-import io.xpipe.core.data.DataStructureNodeIO;
+import io.xpipe.core.data.node.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNodeIO;
 import io.xpipe.core.data.generic.GenericDataStreamWriter;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.SimpleTupleNode;
@@ -27,8 +27,10 @@ public class TypedDataStreamWriter {
             writeArray(out, (ArrayNode) node, (ArrayType) type);
         } else if (node.isValue() && type.isValue()) {
             writeValue(out, (ValueNode) node);
+        } else if (type.isWildcard()) {
+            GenericDataStreamWriter.write(out, node);
         } else {
-            throw new AssertionError();
+            throw new IllegalStateException("Incompatible node and type");
         }
     }
 
@@ -45,11 +47,7 @@ public class TypedDataStreamWriter {
 
         out.write(DataStructureNodeIO.TYPED_TUPLE_ID);
         for (int i = 0; i < tuple.size(); i++) {
-            if (!type.getTypes().get(i).isWildcard()) {
-                write(out, tuple.at(i), type.getTypes().get(i));
-            } else {
-                GenericDataStreamWriter.write(out, tuple.at(i));
-            }
+            write(out, tuple.at(i), type.getTypes().get(i));
         }
     }
 
@@ -57,11 +55,7 @@ public class TypedDataStreamWriter {
         out.write(DataStructureNodeIO.TYPED_ARRAY_ID);
         out.write(array.size());
         for (int i = 0; i < array.size(); i++) {
-            if (!type.getSharedType().isWildcard()) {
-                write(out, array.at(i), type.getSharedType());
-            } else {
-                GenericDataStreamWriter.write(out, array.at(i));
-            }
+            write(out, array.at(i), type.getSharedType());
         }
     }
 }

@@ -20,7 +20,7 @@ public interface DataSourceGuiProvider {
 
     Region createConfigOptions(DataStore input, Property<? extends DataSourceDescriptor<?>> source);
 
-    DataSourceDescriptor<?> createDefaultDataSource(DataStore input);
+    DataSourceDescriptor<?> createDefaultDataSource(DataStore input) throws Exception;
 
     String getDisplayName();
 

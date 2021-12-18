@@ -1,7 +1,5 @@
 package io.xpipe.core.data.node;
 
-import io.xpipe.core.data.DataStructureNode;
-
 public class ImmutableValueNode extends ValueNode {
 
     private final byte[] data;
