@@ -11,6 +11,12 @@ import java.util.List;
 @EqualsAndHashCode
 public class ArrayType implements DataType {
 
+    private final DataType sharedType;
+
+    public ArrayType(DataType sharedType) {
+        this.sharedType = sharedType;
+    }
+
     public static ArrayType ofWildcard() {
         return new ArrayType(WildcardType.of());
     }
@@ -23,12 +29,6 @@ public class ArrayType implements DataType {
         var first = types.get(0);
         var eq = types.stream().allMatch(d -> d.equals(first));
         return new ArrayType(eq ? first : WildcardType.of());
-    }
-
-    private final DataType sharedType;
-
-    public ArrayType(DataType sharedType) {
-        this.sharedType = sharedType;
     }
 
     public boolean isSimple() {

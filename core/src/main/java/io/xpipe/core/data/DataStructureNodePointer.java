@@ -61,7 +61,7 @@ public class DataStructureNodePointer {
         return path;
     }
 
-    public static interface Element {
+    public interface Element {
 
         DataStructureNode tryMatch(DataStructureNode n);
 
@@ -70,7 +70,7 @@ public class DataStructureNodePointer {
         }
     }
 
-    public static final record NameElement(String name) implements Element {
+    public record NameElement(String name) implements Element {
 
         @Override
         public DataStructureNode tryMatch(DataStructureNode n) {
@@ -88,7 +88,7 @@ public class DataStructureNodePointer {
         }
     }
 
-    public static final record IndexElement(int index) implements Element {
+    public record IndexElement(int index) implements Element {
 
         @Override
         public DataStructureNode tryMatch(DataStructureNode n) {
@@ -104,7 +104,7 @@ public class DataStructureNodePointer {
         }
     }
 
-    public static final record SupplierElement(Supplier<String> keySupplier) implements Element {
+    public record SupplierElement(Supplier<String> keySupplier) implements Element {
 
         @Override
         public DataStructureNode tryMatch(DataStructureNode n) {
@@ -126,7 +126,7 @@ public class DataStructureNodePointer {
         }
     }
 
-    public static final record FunctionElement(Function<DataStructureNode, String> keyFunc) implements Element {
+    public record FunctionElement(Function<DataStructureNode, String> keyFunc) implements Element {
 
         @Override
         public DataStructureNode tryMatch(DataStructureNode n) {
@@ -148,7 +148,7 @@ public class DataStructureNodePointer {
         }
     }
 
-    public static final record SelectorElement(Predicate<DataStructureNode> selector) implements Element {
+    public record SelectorElement(Predicate<DataStructureNode> selector) implements Element {
 
         @Override
         public DataStructureNode tryMatch(DataStructureNode n) {

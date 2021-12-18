@@ -10,38 +10,6 @@ import java.util.stream.Collectors;
 
 public abstract class TupleNode extends DataStructureNode {
 
-    @Value
-    public static class KeyValue {
-
-        String key;
-        DataStructureNode value;
-    }
-
-    public static class Builder {
-
-        private final List<KeyValue> entries = new ArrayList<>();
-
-        public Builder add(String name, DataStructureNode node) {
-            Objects.requireNonNull(node);
-            entries.add(new KeyValue(name, node));
-            return this;
-        }
-
-        public Builder add(DataStructureNode node) {
-            Objects.requireNonNull(node);
-            entries.add(new KeyValue(null, node));
-            return this;
-        }
-
-        public TupleNode build() {
-            boolean hasKeys = entries.stream().anyMatch(kv -> kv.key != null);
-            return hasKeys ? TupleNode.wrap(
-                    entries.stream().map(kv -> kv.key).toList(),
-                    entries.stream().map(kv -> kv.value).toList()) :
-                    TupleNode.wrap(entries.stream().map(kv -> kv.value).toList());
-        }
-    }
-
     public static Builder builder() {
         return new Builder();
     }
@@ -112,4 +80,36 @@ public abstract class TupleNode extends DataStructureNode {
     public abstract List<String> getNames();
 
     public abstract List<DataStructureNode> getNodes();
+
+    @Value
+    public static class KeyValue {
+
+        String key;
+        DataStructureNode value;
+    }
+
+    public static class Builder {
+
+        private final List<KeyValue> entries = new ArrayList<>();
+
+        public Builder add(String name, DataStructureNode node) {
+            Objects.requireNonNull(node);
+            entries.add(new KeyValue(name, node));
+            return this;
+        }
+
+        public Builder add(DataStructureNode node) {
+            Objects.requireNonNull(node);
+            entries.add(new KeyValue(null, node));
+            return this;
+        }
+
+        public TupleNode build() {
+            boolean hasKeys = entries.stream().anyMatch(kv -> kv.key != null);
+            return hasKeys ? TupleNode.wrap(
+                    entries.stream().map(kv -> kv.key).toList(),
+                    entries.stream().map(kv -> kv.value).toList()) :
+                    TupleNode.wrap(entries.stream().map(kv -> kv.value).toList());
+        }
+    }
 }

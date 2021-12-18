@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public interface DataTypeCallback {
 
-    public static DataTypeCallback flatten(Consumer<DataType> typeConsumer) {
+    static DataTypeCallback flatten(Consumer<DataType> typeConsumer) {
         return new DataTypeCallback() {
             @Override
             public void onValue() {

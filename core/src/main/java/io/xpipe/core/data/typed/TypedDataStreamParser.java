@@ -14,6 +14,13 @@ import java.util.function.Consumer;
 
 public class TypedDataStreamParser {
 
+    private final DataType dataType;
+    private GenericDataStructureNodeReader genericReader;
+
+    public TypedDataStreamParser(DataType dataType) {
+        this.dataType = dataType;
+    }
+
     public boolean hasNext(InputStream in) throws IOException {
         var b = in.read();
         if (b == -1) {
@@ -96,13 +103,6 @@ public class TypedDataStreamParser {
             }
         }
         cb.onTupleEnd();
-    }
-
-    private DataType dataType;
-    private GenericDataStructureNodeReader genericReader;
-
-    public TypedDataStreamParser(DataType dataType) {
-        this.dataType = dataType;
     }
 
     private GenericDataStructureNodeReader getGenericReader() {

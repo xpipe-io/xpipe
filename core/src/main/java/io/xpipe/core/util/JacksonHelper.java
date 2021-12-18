@@ -28,8 +28,7 @@ public class JacksonHelper {
         init = true;
     }
 
-    private static List<Module> findModules(ModuleLayer layer)
-    {
+    private static List<Module> findModules(ModuleLayer layer) {
         ArrayList<Module> modules = new ArrayList<Module>();
         ServiceLoader<Module> loader = ServiceLoader.load(layer, Module.class);
         for (Module module : loader) {

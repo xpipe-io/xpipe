@@ -17,29 +17,28 @@ import java.util.Stack;
 
 public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
-    public static TypedDataStructureNodeReader mutable(DataType type) {
-        return new TypedDataStructureNodeReader(type, false);
-    }
-
-    public static TypedDataStructureNodeReader immutable(DataType type) {
-        return new TypedDataStructureNodeReader(type, true);
-    }
-
-    private int currentDataTypeIndex;
     private final List<DataType> flattened;
     private final Stack<List<DataStructureNode>> children;
     private final Stack<DataStructureNode> nodes;
+    private final boolean makeImmutable;
+    private int currentDataTypeIndex;
     private DataStructureNode readNode;
     private boolean initialized;
     private int arrayDepth;
-    private final boolean makeImmutable;
-
     private TypedDataStructureNodeReader(DataType type, boolean makeImmutable) {
         flattened = new ArrayList<>();
         children = new Stack<>();
         nodes = new Stack<>();
         type.traverseType(DataTypeCallback.flatten(d -> flattened.add(d)));
         this.makeImmutable = makeImmutable;
+    }
+
+    public static TypedDataStructureNodeReader mutable(DataType type) {
+        return new TypedDataStructureNodeReader(type, false);
+    }
+
+    public static TypedDataStructureNodeReader immutable(DataType type) {
+        return new TypedDataStructureNodeReader(type, true);
     }
 
     @Override

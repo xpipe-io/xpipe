@@ -13,8 +13,8 @@ import java.util.List;
 @EqualsAndHashCode
 public class TupleType implements DataType {
 
-    private List<String> names;
-    private List<DataType> types;
+    private final List<String> names;
+    private final List<DataType> types;
 
     @JsonCreator
     private TupleType(List<String> names, List<DataType> types) {

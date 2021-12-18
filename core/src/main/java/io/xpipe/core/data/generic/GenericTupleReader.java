@@ -1,20 +1,14 @@
 package io.xpipe.core.data.generic;
 
 import io.xpipe.core.data.DataStructureNode;
+import io.xpipe.core.data.node.SimpleTupleNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
-import io.xpipe.core.data.node.SimpleTupleNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GenericTupleReader implements GenericAbstractReader {
-
-    public static GenericTupleReader newReader(int length) {
-        var tr = new GenericTupleReader();
-        tr.onTupleStart(length);
-        return tr;
-    }
 
     private boolean initialized;
     private int length;
@@ -23,8 +17,13 @@ public class GenericTupleReader implements GenericAbstractReader {
     private int currentIndex = 0;
     private GenericAbstractReader currentReader;
     private DataStructureNode created;
-
     public GenericTupleReader() {
+    }
+
+    public static GenericTupleReader newReader(int length) {
+        var tr = new GenericTupleReader();
+        tr.onTupleStart(length);
+        return tr;
     }
 
     private boolean hasReader() {

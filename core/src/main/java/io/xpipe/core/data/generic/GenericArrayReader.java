@@ -9,20 +9,19 @@ import java.util.List;
 
 public class GenericArrayReader implements GenericAbstractReader {
 
-    public static GenericArrayReader newReader(int length) {
-        var ar = new GenericArrayReader();
-        ar.onArrayStart(length);
-        return ar;
-    }
-
     private boolean initialized;
     private List<DataStructureNode> nodes;
     private int length;
     private int currentIndex = 0;
     private GenericAbstractReader currentReader;
     private DataStructureNode created;
-
     public GenericArrayReader() {
+    }
+
+    public static GenericArrayReader newReader(int length) {
+        var ar = new GenericArrayReader();
+        ar.onArrayStart(length);
+        return ar;
     }
 
     private void init(int length) {

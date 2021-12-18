@@ -19,7 +19,7 @@ public class GenericDataStreamParser {
     public static List<DataStructureNode> readN(InputStream in, int n) throws IOException {
         var list = new ArrayList<DataStructureNode>();
         var reader = new GenericDataStructureNodeReader();
-        for (int i = 0; i < n ; i++) {
+        for (int i = 0; i < n; i++) {
             read(in, reader);
             list.add(reader.create());
         }

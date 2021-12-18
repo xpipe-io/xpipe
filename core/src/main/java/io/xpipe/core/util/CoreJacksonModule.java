@@ -20,40 +20,6 @@ import java.nio.file.Path;
 
 public class CoreJacksonModule extends SimpleModule {
 
-    public static class CharsetSerializer extends JsonSerializer<Charset> {
-
-        @Override
-        public void serialize(Charset value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException, JsonProcessingException {
-            jgen.writeString(value.name());
-        }
-    }
-
-    public static class CharsetDeserializer extends JsonDeserializer<Charset> {
-
-        @Override
-        public Charset deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            return Charset.forName(p.getValueAsString());
-        }
-    }
-
-    public static class LocalPathSerializer extends JsonSerializer<Path> {
-
-        @Override
-        public void serialize(Path value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException, JsonProcessingException {
-            jgen.writeString(value.toString());
-        }
-    }
-
-    public static class LocalPathDeserializer extends JsonDeserializer<Path> {
-
-        @Override
-        public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            return Path.of(p.getValueAsString());
-        }
-    }
-
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
@@ -68,5 +34,39 @@ public class CoreJacksonModule extends SimpleModule {
 
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
+    }
+
+    public static class CharsetSerializer extends JsonSerializer<Charset> {
+
+        @Override
+        public void serialize(Charset value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.name());
+        }
+    }
+
+    public static class CharsetDeserializer extends JsonDeserializer<Charset> {
+
+        @Override
+        public Charset deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return Charset.forName(p.getValueAsString());
+        }
+    }
+
+    public static class LocalPathSerializer extends JsonSerializer<Path> {
+
+        @Override
+        public void serialize(Path value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class LocalPathDeserializer extends JsonDeserializer<Path> {
+
+        @Override
+        public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return Path.of(p.getValueAsString());
+        }
     }
 }

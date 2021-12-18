@@ -46,7 +46,7 @@ public class FlatArrayTypeCallback implements DataTypeCallback {
         arrayDepth++;
     }
 
-    public static interface FlatCallback {
+    public interface FlatCallback {
 
         default void onValue() {
         }

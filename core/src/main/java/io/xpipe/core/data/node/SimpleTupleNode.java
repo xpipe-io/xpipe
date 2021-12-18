@@ -5,7 +5,10 @@ import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
 import lombok.EqualsAndHashCode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = false)
 public class SimpleTupleNode extends TupleNode {

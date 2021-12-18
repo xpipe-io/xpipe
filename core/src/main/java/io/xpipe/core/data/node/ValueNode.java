@@ -10,7 +10,10 @@ import java.nio.charset.StandardCharsets;
 @EqualsAndHashCode(callSuper = false)
 public abstract class ValueNode extends DataStructureNode {
 
-    private static final byte[] NULL = new byte[] {0};
+    private static final byte[] NULL = new byte[]{0};
+
+    protected ValueNode() {
+    }
 
     public static ValueNode immutable(byte[] data) {
         return new ImmutableValueNode(data);
@@ -38,9 +41,6 @@ public abstract class ValueNode extends DataStructureNode {
 
     public static ValueNode of(Object o) {
         return mutable(o);
-    }
-
-    protected ValueNode() {
     }
 
     @Override

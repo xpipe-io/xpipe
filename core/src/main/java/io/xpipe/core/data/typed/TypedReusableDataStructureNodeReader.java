@@ -13,10 +13,10 @@ import java.util.Stack;
 
 public class TypedReusableDataStructureNodeReader implements TypedAbstractReader {
 
-    private TypedDataStructureNodeReader initialReader;
-    private DataStructureNode node;
     private final List<DataType> flattened;
-    private Stack<Integer> indices;
+    private final TypedDataStructureNodeReader initialReader;
+    private DataStructureNode node;
+    private final Stack<Integer> indices;
     private int arrayDepth;
 
     public TypedReusableDataStructureNodeReader(DataType type) {

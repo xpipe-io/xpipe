@@ -23,11 +23,9 @@ public class TypedDataStreamWriter {
     private static void write(OutputStream out, DataStructureNode node, DataType type) throws IOException {
         if (type.isTuple() && node.isTuple()) {
             writeTuple(out, (SimpleTupleNode) node, (TupleType) type);
-        }
-        else if (node.isArray() && type.isArray()) {
+        } else if (node.isArray() && type.isArray()) {
             writeArray(out, (ArrayNode) node, (ArrayType) type);
-        }
-        else if (node.isValue() && type.isValue()) {
+        } else if (node.isValue() && type.isValue()) {
             writeValue(out, (ValueNode) node);
         } else {
             throw new AssertionError();

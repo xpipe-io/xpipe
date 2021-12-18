@@ -7,7 +7,7 @@ import lombok.Getter;
 /**
  * Represents a reference to an XPipe data source.
  * This reference consists out of a collection name and an entry name to allow for better organisation.
- *
+ * <p>
  * To allow for a simple usage of data source ids, the collection and entry names are trimmed and
  * converted to lower case names when creating them.
  * The two names are separated by a colon and are therefore not allowed to contain colons themselves.
@@ -20,12 +20,19 @@ import lombok.Getter;
 public class DataSourceId {
 
     public static final char SEPARATOR = ':';
+    private final String collectionName;
+    private final String entryName;
+    @JsonCreator
+    private DataSourceId(String collectionName, String entryName) {
+        this.collectionName = collectionName;
+        this.entryName = entryName;
+    }
 
     /**
      * Creates a new data source id from a collection name and an entry name.
      *
      * @param collectionName the collection name, which must be not null and not empty
-     * @param entryName the entry name, which must be not null and not empty
+     * @param entryName      the entry name, which must be not null and not empty
      * @throws IllegalArgumentException if any name is not valid
      */
     public static DataSourceId create(String collectionName, String entryName) {
@@ -50,15 +57,6 @@ public class DataSourceId {
         }
 
         return new DataSourceId(collectionName, entryName);
-    }
-
-    private final String collectionName;
-    private final String entryName;
-
-    @JsonCreator
-    private DataSourceId(String collectionName, String entryName) {
-        this.collectionName = collectionName;
-        this.entryName = entryName;
     }
 
     /**
