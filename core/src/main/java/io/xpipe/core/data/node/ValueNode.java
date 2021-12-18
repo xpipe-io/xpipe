@@ -8,59 +8,68 @@ import lombok.EqualsAndHashCode;
 import java.nio.charset.StandardCharsets;
 
 @EqualsAndHashCode(callSuper = false)
-public class ValueNode extends DataStructureNode {
+public abstract class ValueNode extends DataStructureNode {
 
-    private byte[] data;
+    private static final byte[] NULL = new byte[] {0};
 
-    private ValueNode(byte[] data) {
-        this.data = data;
+    public static ValueNode immutable(byte[] data) {
+        return new ImmutableValueNode(data);
     }
 
-    public static ValueNode wrap(byte[] data) {
-        return new ValueNode(data);
+    public static ValueNode mutableNull() {
+        return mutable(NULL);
+    }
+
+    public static ValueNode nullValue() {
+        return mutable(NULL);
+    }
+
+    public static ValueNode mutable(byte[] data) {
+        return new MutableValueNode(data);
+    }
+
+    public static ValueNode mutable(Object o) {
+        return mutable(o.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static ValueNode of(byte[] data) {
+        return mutable(data);
     }
 
     public static ValueNode of(Object o) {
-        return new ValueNode(o.toString().getBytes(StandardCharsets.UTF_8));
+        return mutable(o);
+    }
+
+    protected ValueNode() {
     }
 
     @Override
-    public DataStructureNode setRawData(byte[] data) {
-        this.data = data;
-        return this;
-    }
+    public abstract DataStructureNode setRawData(byte[] data);
 
     @Override
-    public boolean isValue() {
-        return true;
-    }
-
-    @Override
-    public int asInt() {
+    public final int asInt() {
         return Integer.parseInt(asString());
     }
 
     @Override
-    public String asString() {
-        return new String(data);
+    public final String asString() {
+        return new String(getRawData());
     }
 
     @Override
-    protected String getName() {
+    public final boolean isValue() {
+        return true;
+    }
+
+    @Override
+    protected final String getName() {
         return "value node";
     }
 
     @Override
-    public String toString(int indent) {
-        return new String(data);
+    public final DataType determineDataType() {
+        return ValueType.of();
     }
 
-    @Override
-    public DataType getDataType() {
-        return new ValueType();
-    }
-
-    public byte[] getRawData() {
-        return data;
-    }
+    public abstract byte[] getRawData();
 }

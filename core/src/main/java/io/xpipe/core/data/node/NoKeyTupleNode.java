@@ -17,8 +17,14 @@ public class NoKeyTupleNode extends TupleNode {
     }
 
     @Override
-    public DataType getDataType() {
-        return TupleType.wrap(null, nodes.stream().map(DataStructureNode::getDataType).toList());
+    public DataStructureNode set(int index, DataStructureNode node) {
+        nodes.set(index, node);
+        return this;
+    }
+
+    @Override
+    public DataType determineDataType() {
+        return TupleType.of(null, nodes.stream().map(DataStructureNode::determineDataType).toList());
     }
 
     @Override

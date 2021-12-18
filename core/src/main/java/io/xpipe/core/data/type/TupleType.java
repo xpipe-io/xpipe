@@ -26,7 +26,7 @@ public class TupleType implements DataType {
         return new TupleType(List.of(), List.of());
     }
 
-    public static TupleType wrap(List<String> names, List<DataType> types) {
+    public static TupleType of(List<String> names, List<DataType> types) {
         return new TupleType(names, types);
     }
 

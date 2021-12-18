@@ -19,8 +19,14 @@ public class SimpleTupleNode extends TupleNode {
     }
 
     @Override
-    public DataType getDataType() {
-        return TupleType.wrap(names, nodes.stream().map(DataStructureNode::getDataType).toList());
+    public DataStructureNode set(int index, DataStructureNode node) {
+        nodes.set(index, node);
+        return this;
+    }
+
+    @Override
+    public DataType determineDataType() {
+        return TupleType.of(names, nodes.stream().map(DataStructureNode::determineDataType).toList());
     }
 
     @Override
@@ -50,6 +56,7 @@ public class SimpleTupleNode extends TupleNode {
     @Override
     public DataStructureNode clear() {
         nodes.clear();
+        names.clear();
         return this;
     }
 

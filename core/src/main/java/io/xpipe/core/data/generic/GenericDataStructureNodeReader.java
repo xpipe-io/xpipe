@@ -84,6 +84,6 @@ public class GenericDataStructureNodeReader implements GenericDataStreamCallback
             return;
         }
 
-        node = ValueNode.wrap(value);
+        node = ValueNode.mutable(value);
     }
 }

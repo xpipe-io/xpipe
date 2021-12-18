@@ -13,7 +13,7 @@ public interface DataTypeCallback {
         return new DataTypeCallback() {
             @Override
             public void onValue() {
-                typeConsumer.accept(new ValueType());
+                typeConsumer.accept(ValueType.of());
             }
 
             @Override

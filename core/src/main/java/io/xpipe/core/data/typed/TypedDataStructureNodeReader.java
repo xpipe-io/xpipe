@@ -11,25 +11,35 @@ import io.xpipe.core.data.type.callback.DataTypeCallback;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
 public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
+    public static TypedDataStructureNodeReader mutable(DataType type) {
+        return new TypedDataStructureNodeReader(type, false);
+    }
+
+    public static TypedDataStructureNodeReader immutable(DataType type) {
+        return new TypedDataStructureNodeReader(type, true);
+    }
+
     private int currentDataTypeIndex;
     private final List<DataType> flattened;
-    private Stack<List<DataStructureNode>> children;
-    private Stack<DataStructureNode> nodes;
+    private final Stack<List<DataStructureNode>> children;
+    private final Stack<DataStructureNode> nodes;
     private DataStructureNode readNode;
     private boolean initialized;
     private int arrayDepth;
-    private boolean makeImmutable;
+    private final boolean makeImmutable;
 
-    public TypedDataStructureNodeReader(DataType type) {
+    private TypedDataStructureNodeReader(DataType type, boolean makeImmutable) {
         flattened = new ArrayList<>();
         children = new Stack<>();
         nodes = new Stack<>();
         type.traverseType(DataTypeCallback.flatten(d -> flattened.add(d)));
+        this.makeImmutable = makeImmutable;
     }
 
     @Override
@@ -61,53 +71,20 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
     @Override
     public void onValue(byte[] data) {
+        var val = makeImmutable ? ValueNode.immutable(data) : ValueNode.mutable(data);
         if (!initialized) {
-            readNode = ValueNode.wrap(data);
+            readNode = val;
             return;
         }
 
-        children.peek().add(ValueNode.wrap(data));
+        children.peek().add(val);
         if (!flattened.get(currentDataTypeIndex).isArray()) {
             currentDataTypeIndex++;
         }
     }
 
-    private void finishTuple() {
-        children.pop();
-        var popped = nodes.pop();
-        if (!popped.isTuple()) {
-            throw new IllegalStateException();
-        }
-
-        SimpleTupleNode tuple = (SimpleTupleNode) popped;
-        if (tuple.getNames().size() != tuple.getNodes().size()) {
-            throw new IllegalStateException("");
-        }
-
-        if (nodes.empty()) {
-            readNode = popped;
-        } else {
-            children.peek().add(popped);
-        }
-    }
-
     private boolean isInArray() {
         return arrayDepth >= 1;
-    }
-
-    private void finishArray() {
-        arrayDepth--;
-        if (!isInArray()) {
-            currentDataTypeIndex++;
-        }
-
-        children.pop();
-        var popped = nodes.pop();
-        if (nodes.empty()) {
-            readNode = popped;
-        } else {
-            children.peek().add(popped);
-        }
     }
 
     @Override
@@ -134,13 +111,32 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
         var l = new ArrayList<DataStructureNode>(tupleType.getSize());
         children.push(l);
-        var newNode = TupleNode.wrapRaw(tupleType.getNames(), l);
+
+        var tupleNames = makeImmutable ?
+                Collections.unmodifiableList(tupleType.getNames()) : new ArrayList<>(tupleType.getNames());
+        var tupleNodes = makeImmutable ? Collections.unmodifiableList(l) : l;
+        var newNode = TupleNode.wrapRaw(tupleNames, tupleNodes);
         nodes.push(newNode);
     }
 
     @Override
     public void onTupleEnd() {
-        finishTuple();
+        children.pop();
+        var popped = nodes.pop();
+        if (!popped.isTuple()) {
+            throw new IllegalStateException();
+        }
+
+        SimpleTupleNode tuple = (SimpleTupleNode) popped;
+        if (tuple.getNames().size() != tuple.getNodes().size()) {
+            throw new IllegalStateException("");
+        }
+
+        if (nodes.empty()) {
+            readNode = popped;
+        } else {
+            children.peek().add(popped);
+        }
     }
 
     @Override
@@ -151,13 +147,26 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
         var l = new ArrayList<DataStructureNode>();
         children.push(l);
-        var newNode = ArrayNode.wrap(l);
+
+        var arrayNodes = makeImmutable ? Collections.unmodifiableList(l) : l;
+        var newNode = ArrayNode.of(arrayNodes);
         nodes.push(newNode);
         arrayDepth++;
     }
 
     @Override
     public void onArrayEnd() {
-        finishArray();
+        arrayDepth--;
+        if (!isInArray()) {
+            currentDataTypeIndex++;
+        }
+
+        children.pop();
+        var popped = nodes.pop();
+        if (nodes.empty()) {
+            readNode = popped;
+        } else {
+            children.peek().add(popped);
+        }
     }
 }

@@ -9,6 +9,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode
 public class ValueType implements DataType {
 
+    public static ValueType of() {
+        return new ValueType();
+    }
+
+    private ValueType() {
+
+    }
+
     @Override
     public String getName() {
         return "value";

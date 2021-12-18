@@ -19,14 +19,14 @@ public class ArrayNode extends DataStructureNode {
     }
 
     public static ArrayNode of(DataStructureNode... dsn) {
-        return wrap(List.of(dsn));
+        return of(List.of(dsn));
     }
 
-    public static ArrayNode wrap(List<DataStructureNode> valueNodes) {
+    public static ArrayNode of(List<DataStructureNode> valueNodes) {
         return new ArrayNode(valueNodes);
     }
 
-    public static ArrayNode copy(List<DataStructureNode> valueNodes) {
+    public static ArrayNode copyOf(List<DataStructureNode> valueNodes) {
         return new ArrayNode(new ArrayList<>(valueNodes));
     }
 
@@ -69,8 +69,8 @@ public class ArrayNode extends DataStructureNode {
     }
 
     @Override
-    public ArrayType getDataType() {
-        return ArrayType.of(valueNodes.stream().map(DataStructureNode::getDataType).toList());
+    public ArrayType determineDataType() {
+        return ArrayType.of(valueNodes.stream().map(DataStructureNode::determineDataType).toList());
     }
 
     @Override

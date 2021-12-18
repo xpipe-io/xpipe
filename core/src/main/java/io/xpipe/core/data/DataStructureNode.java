@@ -1,5 +1,8 @@
 package io.xpipe.core.data;
 
+import io.xpipe.core.data.node.ArrayNode;
+import io.xpipe.core.data.node.TupleNode;
+import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.DataType;
 
 import java.util.Iterator;
@@ -29,6 +32,10 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         throw unsupported("set raw data");
     }
 
+    public DataStructureNode setNull() {
+        throw unsupported("set null");
+    }
+
     public DataStructureNode set(int index, DataStructureNode node) {
         throw unsupported("set at index");
     }
@@ -45,6 +52,34 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
     public boolean isValue() {
         return false;
+    }
+
+    public boolean isNull() {
+        throw unsupported("null check");
+    }
+
+    public final ValueNode asValue() {
+        if (!isValue()) {
+            throw new UnsupportedOperationException(getName() + " is not a value node");
+        }
+
+        return (ValueNode) this;
+    }
+
+    public final TupleNode asTuple() {
+        if (!isTuple()) {
+            throw new UnsupportedOperationException(getName() + " is not a tuple node");
+        }
+
+        return (TupleNode) this;
+    }
+
+    public final ArrayNode asArray() {
+        if (!isArray()) {
+            throw new UnsupportedOperationException(getName() + " is not an array node");
+        }
+
+        return (ArrayNode) this;
     }
 
     public DataStructureNode put(String keyName, DataStructureNode node) {
@@ -67,7 +102,7 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         throw unsupported("size computation");
     }
 
-    public abstract DataType getDataType();
+    public abstract DataType determineDataType();
 
     public DataStructureNode at(int index) {
         throw unsupported("integer indexing");

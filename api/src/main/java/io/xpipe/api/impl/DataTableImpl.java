@@ -99,7 +99,7 @@ public class DataTableImpl implements DataTable {
                 }, false);
             }
         }.execute();
-        return ArrayNode.wrap(nodes);
+        return ArrayNode.of(nodes);
     }
 
     @Override

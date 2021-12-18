@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class TypedReusableDataStructureNodeReader implements TypedDataStreamCallback {
+public class TypedReusableDataStructureNodeReader implements TypedAbstractReader {
 
     private TypedDataStructureNodeReader initialReader;
     private DataStructureNode node;
@@ -22,8 +22,13 @@ public class TypedReusableDataStructureNodeReader implements TypedDataStreamCall
     public TypedReusableDataStructureNodeReader(DataType type) {
         flattened = new ArrayList<>();
         indices = new Stack<>();
-        initialReader = new TypedDataStructureNodeReader(type);
+        initialReader = TypedDataStructureNodeReader.mutable(type);
         type.traverseType(DataTypeCallback.flatten(d -> flattened.add(d)));
+    }
+
+    @Override
+    public boolean isDone() {
+        return true;
     }
 
     public DataStructureNode create() {
@@ -47,10 +52,12 @@ public class TypedReusableDataStructureNodeReader implements TypedDataStreamCall
         }
 
         if (isInArray()) {
-            getCurrentParent().set(indices.peek(), ValueNode.wrap(data));
-            indices.push(indices.pop() + 1);
+            getCurrentParent().set(indices.peek(), ValueNode.mutable(data));
         } else {
             getCurrent().setRawData(data);
+        }
+
+        if (!indices.isEmpty()) {
             indices.push(indices.pop() + 1);
         }
     }
@@ -62,11 +69,8 @@ public class TypedReusableDataStructureNodeReader implements TypedDataStreamCall
             return;
         }
 
-        if (isInArray()) {
-            getCurrentParent().set(indices.peek(), node);
-            indices.push(indices.pop() + 1);
-        } else {
-            getCurrent().set(indices.peek(), node);
+        getCurrentParent().set(indices.peek(), node);
+        if (!indices.isEmpty()) {
             indices.push(indices.pop() + 1);
         }
     }
@@ -140,7 +144,9 @@ public class TypedReusableDataStructureNodeReader implements TypedDataStreamCall
 
         indices.pop();
         arrayDepth--;
-        indices.push(indices.pop() + 1);
+        if (!indices.isEmpty()) {
+            indices.push(indices.pop() + 1);
+        }
     }
 
     @Override

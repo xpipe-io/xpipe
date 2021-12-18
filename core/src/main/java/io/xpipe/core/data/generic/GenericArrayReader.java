@@ -92,7 +92,7 @@ public class GenericArrayReader implements GenericAbstractReader {
             throw new IllegalStateException("Array ended but is not full yet");
         }
 
-        created = ArrayNode.wrap(nodes);
+        created = ArrayNode.of(nodes);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class GenericArrayReader implements GenericAbstractReader {
             throw new IllegalStateException("Array is full but got another value");
         }
 
-        put(ValueNode.wrap(value));
+        put(ValueNode.mutable(value));
     }
 
     @Override
@@ -156,6 +156,6 @@ public class GenericArrayReader implements GenericAbstractReader {
             throw new IllegalStateException();
         }
 
-        return ArrayNode.wrap(nodes);
+        return ArrayNode.of(nodes);
     }
 }

@@ -11,14 +11,18 @@ import java.util.List;
 @EqualsAndHashCode
 public class ArrayType implements DataType {
 
+    public static ArrayType ofWildcard() {
+        return new ArrayType(WildcardType.of());
+    }
+
     public static ArrayType of(List<DataType> types) {
         if (types.size() == 0) {
-            return new ArrayType(new WildcardType());
+            return new ArrayType(WildcardType.of());
         }
 
         var first = types.get(0);
         var eq = types.stream().allMatch(d -> d.equals(first));
-        return new ArrayType(eq ? first : new WildcardType());
+        return new ArrayType(eq ? first : WildcardType.of());
     }
 
     private final DataType sharedType;

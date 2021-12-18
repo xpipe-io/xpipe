@@ -50,7 +50,7 @@ public class TypedDataStreamWriter {
             if (!type.getTypes().get(i).isWildcard()) {
                 write(out, tuple.at(i), type.getTypes().get(i));
             } else {
-                GenericDataStreamWriter.write(out, tuple);
+                GenericDataStreamWriter.write(out, tuple.at(i));
             }
         }
     }

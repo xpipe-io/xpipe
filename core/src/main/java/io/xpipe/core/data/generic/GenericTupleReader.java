@@ -149,7 +149,7 @@ public class GenericTupleReader implements GenericAbstractReader {
             throw new IllegalStateException("Tuple is full but got another value");
         }
 
-        putNode(ValueNode.wrap(value));
+        putNode(ValueNode.mutable(value));
     }
 
     @Override
