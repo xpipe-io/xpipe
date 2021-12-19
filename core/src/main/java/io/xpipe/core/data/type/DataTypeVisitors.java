@@ -27,6 +27,7 @@ public class DataTypeVisitors {
             @Override
             public void onArray(ArrayType type) {
                 typeConsumer.accept(type);
+                typeConsumer.accept(type.getSharedType());
             }
 
             @Override

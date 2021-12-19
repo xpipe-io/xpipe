@@ -3,10 +3,9 @@ package io.xpipe.core.data.typed;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.DataType;
-import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.DataTypeVisitors;
+import io.xpipe.core.data.type.TupleType;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -43,7 +42,6 @@ public class TypedReusableDataStructureNodeReader implements TypedAbstractReader
         return arrayDepth >= 1;
     }
 
-
     private boolean initialized() {
         return node != null;
     }
@@ -73,13 +71,25 @@ public class TypedReusableDataStructureNodeReader implements TypedAbstractReader
             return;
         }
 
-        getCurrentParent().set(indices.peek(), node);
+        if (hasParent()) {
+            getCurrentParent().set(indices.peek(), node);
+        } else {
+            this.node = node;
+        }
         if (!indices.isEmpty()) {
             indices.push(indices.pop() + 1);
         }
     }
 
+    private boolean hasParent() {
+        return indices.size() > 0;
+    }
+
     private DataStructureNode getCurrentParent() {
+        if (!hasParent()) {
+            throw new IllegalStateException("No parent available");
+        }
+
         var current = node;
         for (var index : indices.subList(0, indices.size() - 1)) {
             current = current.at(index);
@@ -93,15 +103,6 @@ public class TypedReusableDataStructureNodeReader implements TypedAbstractReader
             current = current.at(index);
         }
         return current;
-    }
-
-    private void setValue(byte[] data) {
-        var current = node;
-        for (var index : indices) {
-            current = current.at(index);
-        }
-        var value = (ValueNode) current;
-        value.setRawData(data);
     }
 
     @Override
@@ -128,7 +129,7 @@ public class TypedReusableDataStructureNodeReader implements TypedAbstractReader
     }
 
     @Override
-    public void onArrayBegin(int size) throws IOException {
+    public void onArrayBegin(int size) {
         if (!initialized()) {
             initialReader.onArrayBegin(size);
             return;
@@ -157,7 +158,6 @@ public class TypedReusableDataStructureNodeReader implements TypedAbstractReader
     public void onNodeBegin() {
         if (!initialized()) {
             initialReader.onNodeBegin();
-            return;
         }
     }
 

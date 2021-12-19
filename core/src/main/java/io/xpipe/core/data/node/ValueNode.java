@@ -2,17 +2,34 @@ package io.xpipe.core.data.node;
 
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.ValueType;
-import lombok.EqualsAndHashCode;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
-@EqualsAndHashCode(callSuper = false)
 public abstract class ValueNode extends DataStructureNode {
 
     private static final byte[] NULL = new byte[]{0};
 
     protected ValueNode() {
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ValueNode that)) return false;
+        return Arrays.equals(getRawData(), that.getRawData());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getRawData());
+    }
+
+    @Override
+    public abstract ValueNode immutableView();
+
+    @Override
+    public abstract ValueNode mutableCopy();
 
     public static ValueNode immutable(byte[] data) {
         return new ImmutableValueNode(data);

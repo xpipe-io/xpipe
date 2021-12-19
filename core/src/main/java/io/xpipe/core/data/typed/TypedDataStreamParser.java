@@ -90,9 +90,16 @@ public class TypedDataStreamParser {
 
                 parseValue(in, cb);
             }
+            case DataStructureNodeIO.GENERIC_STRUCTURE_ID -> {
+                if (!type.isWildcard()) {
+                    throw new IllegalStateException("Got structure but expected " + type.getName());
+                }
+
+                GenericDataStreamParser.parse(in, getGenericReader());
+                cb.onGenericNode(getGenericReader().create());
+            }
             default -> {
-                GenericDataStreamParser.
-                throw new IllegalStateException("Unexpected value: " + b);
+                throw new IllegalStateException("Unexpected type id: " + b);
             }
         }
     }
@@ -100,14 +107,7 @@ public class TypedDataStreamParser {
     private void parseTypedTuple(InputStream in, TypedDataStreamCallback cb, TupleType type) throws IOException {
         cb.onTupleBegin(type);
         for (int i = 0; i < type.getSize(); i++) {
-            if (type.getTypes().get(i).isWildcard()) {
-                var r = getGenericReader();
-                GenericDataStreamParser.read(in, r);
-                var node = r.create();
-                cb.onGenericNode(node);
-            } else {
-                parse(in, cb, type.getTypes().get(i));
-            }
+            parse(in, cb, type.getTypes().get(i));
         }
         cb.onTupleEnd();
     }
@@ -123,14 +123,7 @@ public class TypedDataStreamParser {
         var size = in.read();
         cb.onArrayBegin(size);
         for (int i = 0; i < size; i++) {
-            if (type.getSharedType().isWildcard()) {
-                var r = getGenericReader();
-                GenericDataStreamParser.read(in, r);
-                var node = r.create();
-                cb.onGenericNode(node);
-            } else {
-                parse(in, cb, type.getSharedType());
-            }
+            parse(in, cb, type.getSharedType());
         }
         cb.onArrayEnd();
     }

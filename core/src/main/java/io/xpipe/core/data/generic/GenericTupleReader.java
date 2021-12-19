@@ -42,6 +42,11 @@ public class GenericTupleReader implements GenericAbstractReader {
     }
 
     private void putNode(DataStructureNode node) {
+        // If no key was read, assume null key
+        if (this.names.size() == this.nodes.size()) {
+            this.names.add(null);
+        }
+
         this.nodes.add(node);
         currentIndex++;
     }

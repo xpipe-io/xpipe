@@ -2,26 +2,42 @@ package io.xpipe.core.data.node;
 
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
-import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = false)
 public class SimpleTupleNode extends TupleNode {
 
+    private final boolean mutable;
     private final List<String> names;
     private final List<DataStructureNode> nodes;
 
-    SimpleTupleNode(List<String> names, List<DataStructureNode> nodes) {
-        this.names = names;
-        this.nodes = nodes;
+    SimpleTupleNode(boolean mutable, List<String> names, List<DataStructureNode> nodes) {
+        this.mutable = mutable;
+        this.names = mutable ? names : Collections.unmodifiableList(names);
+        this.nodes = mutable ? nodes : Collections.unmodifiableList(nodes);
+    }
+
+    @Override
+    public TupleNode mutableCopy() {
+        var nodesCopy = nodes.stream()
+                .map(DataStructureNode::mutableCopy)
+                .collect(Collectors.toCollection(ArrayList::new));
+        return new SimpleTupleNode(true, new ArrayList<>(names), nodesCopy);
+    }
+
+    @Override
+    public TupleNode immutableView() {
+        var nodesCopy = nodes.stream()
+                .map(DataStructureNode::immutableView)
+                .collect(Collectors.toCollection(ArrayList::new));
+        return new SimpleTupleNode(false, names, nodesCopy);
     }
 
     @Override
     public DataStructureNode set(int index, DataStructureNode node) {
+        checkMutable();
+
         nodes.set(index, node);
         return this;
     }
@@ -34,6 +50,11 @@ public class SimpleTupleNode extends TupleNode {
     @Override
     protected String getName() {
         return "tuple node";
+    }
+
+    @Override
+    public boolean isMutable() {
+        return mutable;
     }
 
     @Override
@@ -57,6 +78,8 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public DataStructureNode clear() {
+        checkMutable();
+
         nodes.clear();
         names.clear();
         return this;
@@ -68,7 +91,7 @@ public class SimpleTupleNode extends TupleNode {
         return nodes.size();
     }
 
-    public String nameAt(int index) {
+    public String keyNameAt(int index) {
         return names.get(index);
     }
 
@@ -76,16 +99,21 @@ public class SimpleTupleNode extends TupleNode {
     public List<KeyValue> getKeyValuePairs() {
         var l = new ArrayList<KeyValue>(size());
         for (int i = 0; i < size(); i++) {
-            l.add(new KeyValue(getNames().get(i), getNodes().get(i)));
+            l.add(new KeyValue(getKeyNames().get(i), getNodes().get(i)));
         }
         return l;
     }
 
-    public List<String> getNames() {
+    public List<String> getKeyNames() {
         return Collections.unmodifiableList(names);
     }
 
     public List<DataStructureNode> getNodes() {
         return Collections.unmodifiableList(nodes);
+    }
+
+    @Override
+    protected String getIdentifier() {
+        return "S";
     }
 }

@@ -79,10 +79,10 @@ public class DataStructureTest {
     public void testGenericIo(DataStructureTests.TypedDataset ds) throws IOException {
         for (var el : ds.nodes) {
             var dataOut = new ByteArrayOutputStream();
-            GenericDataStreamWriter.write(dataOut, el);
+            GenericDataStreamWriter.writeStructure(dataOut, el);
             var data = dataOut.toByteArray();
             var reader = new GenericDataStructureNodeReader();
-            GenericDataStreamParser.read(new ByteArrayInputStream(data), reader);
+            GenericDataStreamParser.parse(new ByteArrayInputStream(data), reader);
             var readNode = reader.create();
 
             Assertions.assertEquals(el, readNode);

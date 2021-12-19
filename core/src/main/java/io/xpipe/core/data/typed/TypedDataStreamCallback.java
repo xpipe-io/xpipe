@@ -3,8 +3,6 @@ package io.xpipe.core.data.typed;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.type.TupleType;
 
-import java.io.IOException;
-
 public interface TypedDataStreamCallback {
 
     default void onValue(byte[] data) {
@@ -19,7 +17,7 @@ public interface TypedDataStreamCallback {
     default void onTupleEnd() {
     }
 
-    default void onArrayBegin(int size) throws IOException {
+    default void onArrayBegin(int size) {
     }
 
     default void onArrayEnd() {

@@ -10,7 +10,22 @@ public class ImmutableValueNode extends ValueNode {
 
     @Override
     public String toString(int indent) {
-        return getClass().getSimpleName() + "(" + new String(data) + ")";
+        return new String(data) + "(I)";
+    }
+
+    @Override
+    public boolean isMutable() {
+        return false;
+    }
+
+    @Override
+    public ValueNode immutableView() {
+        return this;
+    }
+
+    @Override
+    public ValueNode mutableCopy() {
+        return ValueNode.mutable(data);
     }
 
     @Override

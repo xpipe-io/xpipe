@@ -1,100 +1,66 @@
 package io.xpipe.core.data.node;
 
 import io.xpipe.core.data.type.ArrayType;
-import lombok.EqualsAndHashCode;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@EqualsAndHashCode(callSuper = false)
-public class ArrayNode extends DataStructureNode {
-
-    private final List<DataStructureNode> valueNodes;
-
-    private ArrayNode(List<DataStructureNode> valueNodes) {
-        this.valueNodes = valueNodes;
-    }
+public abstract class ArrayNode extends DataStructureNode {
 
     public static ArrayNode of(DataStructureNode... dsn) {
         return of(List.of(dsn));
     }
 
-    public static ArrayNode of(List<DataStructureNode> valueNodes) {
-        return new ArrayNode(valueNodes);
+    public static ArrayNode of(List<DataStructureNode> nodes) {
+        return new SimpleArrayNode(true, nodes);
     }
 
-    public static ArrayNode copyOf(List<DataStructureNode> valueNodes) {
-        return new ArrayNode(new ArrayList<>(valueNodes));
+    public static ArrayNode of(boolean mutable, List<DataStructureNode> nodes) {
+        return new SimpleArrayNode(mutable, nodes);
     }
 
-    @Override
-    public DataStructureNode put(DataStructureNode node) {
-        valueNodes.add(node);
-        return this;
+    protected ArrayNode() {
     }
 
     @Override
-    public DataStructureNode set(int index, DataStructureNode node) {
-        valueNodes.add(index, node);
-        return this;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArrayNode that)) return false;
+        return getNodes().equals(that.getNodes());
     }
 
     @Override
-    public Stream<DataStructureNode> stream() {
-        return Collections.unmodifiableList(valueNodes).stream();
+    public int hashCode() {
+        return Objects.hash(getNodes());
     }
 
     @Override
-    public boolean isArray() {
+    public final boolean isArray() {
         return true;
     }
 
     @Override
-    public int size() {
-        return valueNodes.size();
-    }
-
-    @Override
-    protected String getName() {
+    protected final String getName() {
         return "array node";
     }
 
     @Override
-    public String toString(int indent) {
-        var content = valueNodes.stream().map(n -> n.toString(indent)).collect(Collectors.joining(", "));
-        return "[" + content + "]";
+    public abstract ArrayNode immutableView();
+
+    @Override
+    public abstract ArrayNode mutableCopy();
+
+    protected abstract String getIdentifier();
+
+    @Override
+    public final String toString(int indent) {
+        var content = getNodes().stream().map(n -> n.toString(indent)).collect(Collectors.joining(", "));
+        return "(" + getIdentifier() + ") [" + content + "]";
     }
 
     @Override
-    public ArrayType determineDataType() {
-        return ArrayType.ofSharedType(valueNodes.stream().map(DataStructureNode::determineDataType).toList());
-    }
-
-    @Override
-    public DataStructureNode clear() {
-        valueNodes.clear();
-        return this;
-    }
-
-    @Override
-    public DataStructureNode at(int index) {
-        return valueNodes.get(index);
-    }
-
-    @Override
-    public void forEach(Consumer<? super DataStructureNode> action) {
-        valueNodes.forEach(action);
-    }
-
-    @Override
-    public Spliterator<DataStructureNode> spliterator() {
-        return valueNodes.spliterator();
-    }
-
-    @Override
-    public Iterator<DataStructureNode> iterator() {
-        return valueNodes.iterator();
+    public final ArrayType determineDataType() {
+        return ArrayType.ofSharedType(getNodes().stream().map(DataStructureNode::determineDataType).toList());
     }
 }

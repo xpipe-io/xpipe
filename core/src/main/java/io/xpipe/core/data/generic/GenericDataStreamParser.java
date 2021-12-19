@@ -10,71 +10,75 @@ import java.util.List;
 
 public class GenericDataStreamParser {
 
-    public static DataStructureNode read(InputStream in) throws IOException {
+    public static DataStructureNode parse(InputStream in) throws IOException {
         var reader = new GenericDataStructureNodeReader();
-        read(in, reader);
+        parse(in, reader);
         return reader.create();
     }
 
-    public static List<DataStructureNode> readN(InputStream in, int n) throws IOException {
+    public static List<DataStructureNode> parseN(InputStream in, int n) throws IOException {
         var list = new ArrayList<DataStructureNode>();
         var reader = new GenericDataStructureNodeReader();
         for (int i = 0; i < n; i++) {
-            read(in, reader);
+            parse(in, reader);
             list.add(reader.create());
         }
         return list;
     }
 
-    public static void read(InputStream in, GenericDataStreamCallback cb) throws IOException {
+    public static void parse(InputStream in, GenericDataStreamCallback cb) throws IOException {
         var b = in.read();
         if (b == -1) {
             return;
         }
 
+        if (b == DataStructureNodeIO.GENERIC_STRUCTURE_ID) {
+            b = in.read();
+        }
+
         switch (b) {
             case DataStructureNodeIO.GENERIC_TUPLE_ID -> {
-                readTuple(in, cb);
+                parseTuple(in, cb);
             }
             case DataStructureNodeIO.GENERIC_ARRAY_ID -> {
-                readArray(in, cb);
+                parseArray(in, cb);
             }
             case DataStructureNodeIO.GENERIC_VALUE_ID -> {
-                readValue(in, cb);
+                parseValue(in, cb);
             }
             case DataStructureNodeIO.GENERIC_NAME_ID -> {
-                readName(in, cb);
-                read(in, cb);
+                parseName(in, cb);
+                parse(in, cb);
             }
             default -> throw new IllegalStateException("Unexpected type id: " + b);
         }
     }
 
-    private static void readName(InputStream in, GenericDataStreamCallback cb) throws IOException {
+    private static void parseName(InputStream in, GenericDataStreamCallback cb) throws IOException {
         var nameLength = in.read();
         var name = new String(in.readNBytes(nameLength));
         cb.onName(name);
     }
 
-    private static void readTuple(InputStream in, GenericDataStreamCallback cb) throws IOException {
+    private static void parseTuple(InputStream in, GenericDataStreamCallback cb) throws IOException {
         var size = in.read();
         cb.onTupleStart(size);
         for (int i = 0; i < size; i++) {
-            read(in, cb);
+            parse(in, cb);
         }
         cb.onTupleEnd();
     }
 
-    private static void readArray(InputStream in, GenericDataStreamCallback cb) throws IOException {
+    private static void parseArray(InputStream in, GenericDataStreamCallback cb) throws IOException {
         var size = in.read();
         cb.onArrayStart(size);
         for (int i = 0; i < size; i++) {
-            read(in, cb);
+            parse(in, cb);
         }
         cb.onArrayEnd();
     }
 
-    private static void readValue(InputStream in, GenericDataStreamCallback cb) throws IOException {
+    private static void parseValue(InputStream in, GenericDataStreamCallback cb) throws IOException {
         var size = in.read();
         var data = in.readNBytes(size);
         cb.onValue(data);

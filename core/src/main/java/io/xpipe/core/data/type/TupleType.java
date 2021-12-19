@@ -68,11 +68,11 @@ public class TupleType extends DataType {
 
         int counter = 0;
         for (var kv : t.getKeyValuePairs()) {
-            if (!Objects.equals(kv.getKey(), names.get(counter))) {
+            if (!Objects.equals(kv.key(), names.get(counter))) {
                 return false;
             }
 
-            if (!types.get(counter).matches(kv.getValue())) {
+            if (!types.get(counter).matches(kv.value())) {
                 return false;
             }
             counter++;

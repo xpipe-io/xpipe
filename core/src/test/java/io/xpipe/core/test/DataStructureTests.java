@@ -8,6 +8,7 @@ import io.xpipe.core.data.type.*;
 import lombok.AllArgsConstructor;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataStructureTests {
@@ -144,7 +145,7 @@ public class DataStructureTests {
         var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
         var array = ArrayNode.of(List.of(val, ValueNode.nullValue()));
         var tuple = TupleNode.builder()
-                .add("key1", val).add("key2", array).build();
+                .add(val).add("key2", array).build();
         return tuple;
     }
 
@@ -153,12 +154,15 @@ public class DataStructureTests {
         var flatTuple = TupleNode.builder().add("key1", val).build();
 
         var tuple = TupleNode.builder()
-                .add("key1", flatTuple).add("key2", val).build();
+                .add(flatTuple).add("key2", val).build();
         return tuple;
     }
 
     public static DataType createTestDataType6() {
-        return TupleType.of(List.of("key1", "key2"), List.of(WildcardType.of(), WildcardType.of()));
+        var keys = new ArrayList<String>();
+        keys.add(null);
+        keys.add("key2");
+        return TupleType.of(keys, List.of(WildcardType.of(), WildcardType.of()));
     }
 
     public static DataStructureNode createTestData71() {

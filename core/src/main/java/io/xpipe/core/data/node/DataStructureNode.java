@@ -3,6 +3,7 @@ package io.xpipe.core.data.node;
 import io.xpipe.core.data.type.DataType;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -10,11 +11,36 @@ import java.util.stream.Stream;
 
 public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
+    public abstract DataStructureNode mutableCopy();
+
+    public String keyNameAt(int index) {
+        throw unsupported("key name at");
+    }
+
+    public List<KeyValue> getKeyValuePairs() {
+        throw unsupported("get key value pairs");
+    }
+
+    public List<String> getKeyNames() {
+        throw unsupported("get key names");
+    }
+
+    public List<DataStructureNode> getNodes() {
+        throw unsupported("get nodes");
+    }
+
+    public record KeyValue(String key, DataStructureNode value) {
+    }
+
     protected abstract String getName();
 
     protected UnsupportedOperationException unsupported(String s) {
         return new UnsupportedOperationException(getName() + " does not support " + s);
     }
+
+    public abstract boolean isMutable();
+
+    public abstract DataStructureNode immutableView();
 
     @Override
     public String toString() {

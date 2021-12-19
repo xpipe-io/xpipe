@@ -28,7 +28,7 @@ public class TypedDataStreamWriter {
         } else if (node.isValue() && type.isValue()) {
             writeValue(out, (ValueNode) node);
         } else if (type.isWildcard()) {
-            GenericDataStreamWriter.write(out, node);
+            GenericDataStreamWriter.writeStructure(out, node);
         } else {
             throw new IllegalStateException("Incompatible node and type");
         }
