@@ -24,7 +24,4 @@ module io.xpipe.core {
 
     uses com.fasterxml.jackson.databind.Module;
     provides com.fasterxml.jackson.databind.Module with CoreJacksonModule;
-
-    requires org.apache.commons.lang;
-    requires org.apache.commons.io;
 }

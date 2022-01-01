@@ -1,0 +1,60 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
+}
+
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/jackson.gradle"
+apply from: "$rootDir/deps/lombok.gradle"
+apply from: "$rootDir/deps/javafx-static.gradle"
+
+version '0.1'
+group 'io.xpipe'
+jar.archiveBaseName = 'xpipe'
+
+java {
+    modularity.inferModulePath = true
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+javadoc{
+    source = sourceSets.main.allJava
+    options {
+        addStringOption('-release', '17')
+        addStringOption('link', 'https://docs.oracle.com/en/java/javase/17/docs/api/')
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(projectDir)
+
+            srcDir("$rootDir/api/src/main/java")
+            exclude {
+                return it.getFile() == file("$rootDir/api/src/main/java/module-info.java")
+            }
+
+            srcDir("$rootDir/core/src/main/java")
+            exclude {
+                return it.getFile() == file("$rootDir/core/src/main/java/module-info.java")
+            }
+
+            srcDir("$rootDir/beacon/src/main/java")
+            exclude {
+                return it.getFile() == file("$rootDir/beacon/src/main/java/module-info.java")
+            }
+
+            srcDir("$rootDir/extension/src/main/java")
+            exclude {
+                return it.getFile() == file("$rootDir/extension/src/main/java/module-info.java")
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'XPipe'
+                description = 'XPipe library.'
+                url = 'https://github.com/xpipe-io/xpipe_java'
+                licenses {
+                    license {
+                        name = 'The MIT License (MIT)'
+                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'crschnick'
+                        name = 'Christopher Schnick'
+                        email = 'crschnick@xpipe.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/xpipe-io/xpipe_java.git'
+                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe_java.git'
+                    url = 'https://github.com/xpipe-io/xpipe_java'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                setUsername "${project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : ''}"
+                setPassword "${project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : ''}"
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}

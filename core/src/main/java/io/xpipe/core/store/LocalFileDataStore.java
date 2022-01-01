@@ -3,7 +3,6 @@ package io.xpipe.core.store;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class LocalFileDataStore extends FileDataStore {
 
     @Override
     public Optional<String> determineDefaultName() {
-        return Optional.of(FilenameUtils.getBaseName(file.toString()));
+        return Optional.of(file.getFileName().toString());
     }
 
     @Override
