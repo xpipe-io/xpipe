@@ -2,52 +2,42 @@ package io.xpipe.beacon;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import org.apache.commons.lang3.function.FailableBiConsumer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.function.Consumer;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class BeaconConnector {
 
-    protected abstract void waitForStartup();
+    protected abstract BeaconClient constructSocket() throws ConnectorException;
 
-    protected BeaconClient constructSocket() throws ConnectorException {
-        if (!BeaconServer.isRunning()) {
-            try {
-                BeaconServer.start();
-                waitForStartup();
-                if (!BeaconServer.isRunning()) {
-                    throw new ConnectorException("Unable to start xpipe daemon");
-                }
-            } catch (Exception ex) {
-                throw new ConnectorException("Unable to start xpipe daemon: " + ex.getMessage());
-            }
-        }
-
-        try {
-            return new BeaconClient();
-        } catch (Exception ex) {
-            throw new ConnectorException("Unable to connect to running xpipe daemon: " + ex.getMessage());
-        }
-    }
-
-    protected <REQ extends RequestMessage, RES extends ResponseMessage> void performExchange(
+    protected <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
             BeaconClient socket,
             REQ req,
-            FailableBiConsumer<RES, InputStream, IOException> responseConsumer,
-            boolean keepOpen) throws ServerException, ConnectorException, ClientException {
-        performExchange(socket, req, null, responseConsumer, keepOpen);
+            BeaconClient.FailableBiConsumer<RES, InputStream, IOException> responseConsumer) throws ServerException, ConnectorException, ClientException {
+        performInputOutputExchange(socket, req, null, responseConsumer);
     }
 
-    protected <REQ extends RequestMessage, RES extends ResponseMessage> void performExchange(
+    protected <REQ extends RequestMessage, RES extends ResponseMessage> void performInputOutputExchange(
             BeaconClient socket,
             REQ req,
-            Consumer<OutputStream> output,
-            FailableBiConsumer<RES, InputStream, IOException> responseConsumer,
-            boolean keepOpen) throws ServerException, ConnectorException, ClientException {
-        socket.exchange(req, output, responseConsumer, keepOpen);
+            BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter,
+            BeaconClient.FailableBiConsumer<RES, InputStream, IOException> responseConsumer)
+            throws ServerException, ConnectorException, ClientException {
+        socket.exchange(req, reqWriter, responseConsumer);
+    }
+
+    protected <REQ extends RequestMessage, RES extends ResponseMessage> RES performOutputExchange(
+            BeaconClient socket,
+            REQ req,
+            BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter)
+            throws ServerException, ConnectorException, ClientException {
+        AtomicReference<RES> response = new AtomicReference<>();
+        socket.exchange(req, reqWriter, (RES res, InputStream in) -> {
+            response.set(res);
+        });
+        return response.get();
     }
 
     protected <REQ extends RequestMessage, RES extends ResponseMessage> RES performSimpleExchange(

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,7 +66,7 @@ public class LocalFileDataStore extends FileDataStore {
 
     @Override
     public InputStream openInput() throws Exception {
-        return Files.newInputStream(file);
+        return new BufferedInputStream(Files.newInputStream(file));
     }
 
     @Override

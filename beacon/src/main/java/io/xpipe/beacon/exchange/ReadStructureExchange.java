@@ -4,7 +4,7 @@ import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceId;
 
-public abstract class ReadStructureExchange implements MessageExchange<ReadStructureExchange.Request, ReadStructureExchange.Response> {
+public class ReadStructureExchange implements MessageExchange<ReadStructureExchange.Request, ReadStructureExchange.Response> {
 
     @Override
     public String getId() {

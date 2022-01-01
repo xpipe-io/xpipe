@@ -7,9 +7,8 @@ import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
 import io.xpipe.beacon.exchange.ReadTableDataExchange;
-import io.xpipe.beacon.exchange.ReadTableInfoExchange;
-import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.typed.TypedAbstractReader;
@@ -17,6 +16,7 @@ import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
 import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
 import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,30 +25,14 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class DataTableImpl implements DataTable {
-
-    public static DataTable get(String s) {
-        return get(DataSourceId.fromString(s));
-    }
-
-    public static DataTable get(DataSourceId ds) {
-        final DataTable[] table = {null};
-        new XPipeApiConnector() {
-            @Override
-            protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = new ReadTableInfoExchange.Request(ds);
-                ReadTableInfoExchange.Response res = performSimpleExchange(sc, req);
-                table[0] = new DataTableImpl(res.sourceId(), res.rowCount(), res.dataType());
-            }
-        }.execute();
-        return table[0];
-    }
+public class DataTableImpl extends DataSourceImpl implements DataTable {
 
     private final DataSourceId id;
     private final int size;
     private final DataType dataType;
 
     public DataTableImpl(DataSourceId id, int size, DataType dataType) {
+        super(id);
         this.id = id;
         this.size = size;
         this.dataType = dataType;
@@ -62,6 +46,11 @@ public class DataTableImpl implements DataTable {
     @Override
     public DataSourceId getId() {
         return id;
+    }
+
+    @Override
+    public DataSourceType getType() {
+        return DataSourceType.TABLE;
     }
 
     @Override
@@ -96,11 +85,12 @@ public class DataTableImpl implements DataTable {
         new XPipeApiConnector() {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = new ReadTableDataExchange.Request(id, maxToRead);
-                performExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
+                var req = ReadTableDataExchange.Request.builder()
+                        .sourceId(id).maxRows(maxToRead).build();
+                performInputExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
                     var r = new TypedDataStreamParser(dataType);
                     r.parseStructures(in, TypedDataStructureNodeReader.immutable(dataType), nodes::add);
-                }, false);
+                });
             }
         }.execute();
         return ArrayNode.of(nodes);
@@ -120,9 +110,10 @@ public class DataTableImpl implements DataTable {
                 new XPipeApiConnector() {
                     @Override
                     protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                        var req = new ReadTableDataExchange.Request(id, Integer.MAX_VALUE);
-                        performExchange(sc, req,
-                                (ReadTableDataExchange.Response res, InputStream in) -> input = in, false);
+                        var req = ReadTableDataExchange.Request.builder()
+                                .sourceId(id).maxRows(Integer.MAX_VALUE).build();
+                        performInputExchange(sc, req,
+                                (ReadTableDataExchange.Response res, InputStream in) -> input = in);
                     }
                 }.execute();
 

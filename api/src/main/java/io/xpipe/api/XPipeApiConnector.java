@@ -1,7 +1,8 @@
 package io.xpipe.api;
 
 import io.xpipe.beacon.*;
-import io.xpipe.beacon.BeaconClient;
+
+import java.util.Optional;
 
 public abstract class XPipeApiConnector extends BeaconConnector {
 
@@ -23,12 +24,48 @@ public abstract class XPipeApiConnector extends BeaconConnector {
     protected abstract void handle(BeaconClient sc) throws Exception;
 
     @Override
-    protected void waitForStartup() {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    protected BeaconClient constructSocket() throws ConnectorException {
+        if (!BeaconServer.isRunning()) {
+            try {
+                start();
+            } catch (Exception ex) {
+                throw new ConnectorException("Unable to start xpipe daemon", ex);
+            }
+
+            var r = waitForStartup();
+            if (r.isEmpty()) {
+                throw new ConnectorException("Wait for xpipe daemon timed out");
+            } else {
+                return r.get();
+            }
         }
+
+        try {
+            return new BeaconClient();
+        } catch (Exception ex) {
+            throw new ConnectorException("Unable to connect to running xpipe daemon", ex);
+        }
+    }
+
+    private void start() throws Exception {
+        if (!BeaconServer.tryStart()) {
+            throw new UnsupportedOperationException("Unable to determine xpipe daemon launch command");
+        };
+    }
+
+    private Optional<BeaconClient> waitForStartup() {
+        for (int i = 0; i < 40; i++) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
+
+            var s = BeaconClient.tryConnect();
+            if (s.isPresent()) {
+                return s;
+            }
+        }
+        return Optional.empty();
     }
 
     @FunctionalInterface

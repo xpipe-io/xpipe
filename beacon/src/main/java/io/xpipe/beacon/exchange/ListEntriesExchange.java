@@ -2,11 +2,14 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.Instant;
 import java.util.List;
 
-public abstract class ListEntriesExchange implements MessageExchange<ListEntriesExchange.Request, ListEntriesExchange.Response> {
+public class ListEntriesExchange implements MessageExchange<ListEntriesExchange.Request, ListEntriesExchange.Response> {
 
     @Override
     public String getId() {
@@ -23,15 +26,21 @@ public abstract class ListEntriesExchange implements MessageExchange<ListEntries
         return Response.class;
     }
 
-    public static record Request(String collection) implements RequestMessage {
-
+    @Jacksonized
+    @Builder
+    @Value
+    public static class Request implements RequestMessage {
+        String collection;
     }
 
     public static record Entry(String name, String type, String description, Instant lastUsed) {
 
     }
 
-    public static record Response(List<Entry> entries) implements ResponseMessage {
-
+    @Jacksonized
+    @Builder
+    @Value
+    public static class Response implements ResponseMessage {
+        List<Entry> entries;
     }
 }

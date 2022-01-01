@@ -7,35 +7,38 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class ReadTableDataExchange implements MessageExchange<ReadTableDataExchange.Request, ReadTableDataExchange.Response> {
+import java.util.Map;
+import java.util.UUID;
+
+public class StoreEndExchange implements MessageExchange<StoreEndExchange.Request, StoreEndExchange.Response> {
 
     @Override
     public String getId() {
-        return "readTableData";
+        return "storeEnd";
     }
 
     @Override
-    public Class<ReadTableDataExchange.Request> getRequestClass() {
-        return ReadTableDataExchange.Request.class;
+    public Class<StoreEndExchange.Request> getRequestClass() {
+        return StoreEndExchange.Request.class;
     }
 
     @Override
-    public Class<ReadTableDataExchange.Response> getResponseClass() {
-        return ReadTableDataExchange.Response.class;
+    public Class<StoreEndExchange.Response> getResponseClass() {
+        return StoreEndExchange.Response.class;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        DataSourceId sourceId;
-        int maxRows;
+        UUID entryId;
+        Map<String, String> values;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-
+        DataSourceId sourceId;
     }
 }

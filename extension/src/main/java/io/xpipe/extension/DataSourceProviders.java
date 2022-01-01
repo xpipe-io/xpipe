@@ -1,5 +1,6 @@
 package io.xpipe.extension;
 
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -30,6 +31,14 @@ public class DataSourceProviders {
         }
 
         return ALL.stream().filter(d -> d.getId().equals(name)).findAny();
+    }
+
+    public static Optional<DataSourceProvider> byFile(Path file) {
+        if (ALL == null) {
+            throw new IllegalStateException("Not initialized");
+        }
+
+        return ALL.stream().filter(d -> d.supportsFile(file)).findAny();
     }
 
     public static Set<DataSourceProvider> getAll() {

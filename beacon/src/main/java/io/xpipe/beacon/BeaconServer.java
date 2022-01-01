@@ -20,19 +20,19 @@ public class BeaconServer {
         return !isPortAvailable(port);
     }
 
-    public static void start() throws Exception {
+    public static boolean tryStart() throws Exception {
         if (BeaconConfig.shouldStartInProcess()) {
             startInProcess();
-            return;
+            return true;
         }
 
         var custom = BeaconConfig.getCustomExecCommand();
         if (custom != null) {
-            Runtime.getRuntime().exec(System.getenv(custom));
-            return;
+            var proc = new ProcessBuilder("cmd", "/c", "CALL", "C:\\Projects\\xpipe\\xpipe\\gradlew.bat", ":app:run").inheritIO().start();
+            return true;
         }
 
-        throw new IllegalArgumentException("Unable to start xpipe daemon");
+        return false;
     }
 
     private static void startInProcess() throws Exception {

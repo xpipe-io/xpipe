@@ -2,8 +2,11 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-public abstract class StatusExchange implements MessageExchange<StatusExchange.Request, StatusExchange.Response> {
+public class StatusExchange implements MessageExchange<StatusExchange.Request, StatusExchange.Response> {
 
     @Override
     public String getId() {
@@ -20,11 +23,16 @@ public abstract class StatusExchange implements MessageExchange<StatusExchange.R
         return Response.class;
     }
 
-    public static record Request() implements RequestMessage {
-
+    @Jacksonized
+    @Builder
+    @Value
+    public static class Request implements RequestMessage {
     }
 
-    public static record Response(String mode) implements ResponseMessage {
-
+    @Jacksonized
+    @Builder
+    @Value
+    public static class Response implements ResponseMessage {
+        String mode;
     }
 }

@@ -8,8 +8,10 @@ module io.xpipe.extension {
     requires javafx.graphics;
 
     exports io.xpipe.extension;
+    exports io.xpipe.extension.cli;
 
     uses DataSourceProvider;
     uses DataSourceGuiProvider;
     uses SupportedApplicationProvider;
+    uses io.xpipe.extension.I18n;
 }

@@ -10,9 +10,9 @@ import java.io.OutputStream;
 
 public interface TableDataReadConnection extends DataSourceConnection {
 
-    TupleType determineDataType() throws Exception;
+    TupleType getDataType() throws Exception;
 
-    int determineRowCount() throws Exception;
+    int getRowCount() throws Exception;
 
     void withLines(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception;
 

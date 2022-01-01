@@ -11,12 +11,12 @@ public abstract class TupleNode extends DataStructureNode {
         return new Builder();
     }
 
-    public static TupleNode of(List<DataStructureNode> nodes) {
+    public static TupleNode of(List<? extends DataStructureNode> nodes) {
         if (nodes == null) {
             throw new IllegalArgumentException("Nodes must be not null");
         }
 
-        return new NoKeyTupleNode(true, nodes);
+        return new NoKeyTupleNode(true, (List<DataStructureNode>) nodes);
     }
 
     public static TupleNode of(List<String> names, List<DataStructureNode> nodes) {

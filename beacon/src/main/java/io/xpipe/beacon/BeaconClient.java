@@ -12,9 +12,6 @@ import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.beacon.message.ServerErrorMessage;
 import io.xpipe.core.util.JacksonHelper;
-import org.apache.commons.lang3.function.FailableBiConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,13 +20,34 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
 public class BeaconClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(BeaconClient.class);
+    @FunctionalInterface
+    public interface FailableBiConsumer<T, U, E extends Throwable> {
+
+        void accept(T var1, U var2) throws E;
+    }
+
+    @FunctionalInterface
+    public interface FailableConsumer<T, E extends Throwable> {
+
+        void accept(T var1) throws E;
+    }
+
+    public static Optional<BeaconClient> tryConnect() {
+        if (BeaconConfig.debugEnabled()) {
+            System.out.println("Attempting connection to server at port " + BeaconConfig.getUsedPort());
+        }
+
+        try {
+            return Optional.of(new BeaconClient());
+        } catch (IOException ex) {
+            return Optional.empty();
+        }
+    }
 
     private final Socket socket;
     private final InputStream in;
@@ -51,29 +69,27 @@ public class BeaconClient {
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void exchange(
             REQ req,
-            Consumer<OutputStream> output,
-            FailableBiConsumer<RES, InputStream, IOException> responseConsumer,
-            boolean keepOpen) throws ConnectorException, ClientException, ServerException {
+            FailableConsumer<OutputStream, IOException> reqWriter,
+            FailableBiConsumer<RES, InputStream, IOException> resReader)
+            throws ConnectorException, ClientException, ServerException {
         try {
             sendRequest(req);
-            if (output != null) {
+            if (reqWriter != null) {
                 out.write(BODY_SEPARATOR);
-                output.accept(out);
+                reqWriter.accept(out);
             }
 
             var res = this.<RES>receiveResponse();
             var sep = in.readNBytes(BODY_SEPARATOR.length);
-            if (!Arrays.equals(BODY_SEPARATOR, sep)) {
+            if (sep.length != 0 && !Arrays.equals(BODY_SEPARATOR, sep)) {
                 throw new ConnectorException("Invalid body separator");
             }
 
-            responseConsumer.accept(res, in);
+            resReader.accept(res, in);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't communicate with socket", ex);
         } finally {
-            if (!keepOpen) {
-                close();
-            }
+            close();
         }
     }
 

@@ -1,20 +1,15 @@
 package io.xpipe.api;
 
-import io.xpipe.api.impl.DataTableImpl;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.DataType;
-import io.xpipe.core.source.DataSourceId;
 
 import java.util.OptionalInt;
+import java.util.stream.Stream;
 
-public interface DataTable extends Iterable<TupleNode> {
+public interface DataTable extends Iterable<TupleNode>, DataSource {
 
-    static DataTable get(String s) {
-        return DataTableImpl.get(s);
-    }
-
-    DataSourceId getId();
+    Stream<TupleNode> stream();
 
     int getRowCount();
 

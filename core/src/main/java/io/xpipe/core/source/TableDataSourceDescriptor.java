@@ -4,9 +4,21 @@ import io.xpipe.core.store.DataStore;
 
 public abstract class TableDataSourceDescriptor<DS extends DataStore> implements DataSourceDescriptor<DS> {
 
-    public abstract TableDataWriteConnection newWriteConnection(DS store);
+    public final TableDataReadConnection openReadConnection(DS store) throws Exception {
+        var con = newReadConnection(store);
+        con.init();
+        return con;
+    }
 
-    public abstract TableDataReadConnection newReadConnection(DS store);
+    public final TableDataWriteConnection openWriteConnection(DS store) throws Exception {
+        var con = newWriteConnection(store);
+        con.init();
+        return con;
+    }
+
+    protected abstract TableDataWriteConnection newWriteConnection(DS store);
+
+    protected abstract TableDataReadConnection newReadConnection(DS store);
 
     @Override
     public DataSourceType getType() {

@@ -1,7 +1,6 @@
 module io.xpipe.api {
-    requires io.xpipe.core;
-    requires io.xpipe.beacon;
-    requires org.apache.commons.lang;
+    requires transitive io.xpipe.core;
+    requires transitive io.xpipe.beacon;
 
     exports io.xpipe.api;
 }

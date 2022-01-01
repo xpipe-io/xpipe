@@ -2,8 +2,11 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
-public abstract class VersionExchange implements MessageExchange<VersionExchange.Request, VersionExchange.Response> {
+public class VersionExchange implements MessageExchange<VersionExchange.Request, VersionExchange.Response> {
 
     @Override
     public String getId() {
@@ -20,18 +23,20 @@ public abstract class VersionExchange implements MessageExchange<VersionExchange
         return VersionExchange.Response.class;
     }
 
-    public static record Request() implements RequestMessage {
+    @lombok.extern.jackson.Jacksonized
+    @lombok.Builder
+    @lombok.Value
+    public static class Request implements RequestMessage {
 
     }
 
+    @Jacksonized
+    @Builder
+    @Value
     public static class Response implements ResponseMessage {
 
-        public final String version;
-        public final String jvmVersion;
-
-        public Response(String version, String jvmVersion) {
-            this.version = version;
-            this.jvmVersion = jvmVersion;
-        }
+        String version;
+        String buildVersion;
+        String jvmVersion;
     }
 }

@@ -14,12 +14,14 @@ repositories {
 }
 
 apply from: "$rootDir/deps/slf4j.gradle"
-apply from: "$rootDir/deps/websocket.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
-apply from: "$rootDir/deps/commons.gradle"
 
 dependencies {
     implementation project(':core')
+    implementation project(':extension')
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
 }
 
 test {

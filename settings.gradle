@@ -5,4 +5,10 @@ include 'beacon'
 include 'api'
 include 'extension'
 
+include 'sample_extension'
+project(":sample_extension").projectDir = file("$projectDir/samples/sample_extension")
+
+include 'sample_program'
+project(":sample_program").projectDir = file("$projectDir/samples/sample_program")
+
 

@@ -3,7 +3,6 @@ package io.xpipe.extension;
 import io.xpipe.core.source.DataSourceDescriptor;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 
 import java.nio.file.Path;
@@ -24,13 +23,15 @@ public interface DataSourceGuiProvider {
 
     String getDisplayName();
 
-    Image getImage();
+    String getDisplayImage();
 
-    Supplier<String> getFileName();
+    String getFileName();
 
     Map<Supplier<String>, String> getFileExtensions();
 
-    String getDataSourceDescription(DataSourceDescriptor<?> source);
+    String getDataSourceShortDescription(DataSourceDescriptor<?> source);
+
+    String getDataSourceLongDescription(DataSourceDescriptor<?> source);
 
     Class<? extends DataSourceDescriptor<?>> getType();
 }
