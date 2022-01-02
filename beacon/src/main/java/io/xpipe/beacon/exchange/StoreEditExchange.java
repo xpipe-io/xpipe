@@ -2,43 +2,43 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
+import io.xpipe.core.source.DataSourceConfig;
 import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Map;
-import java.util.UUID;
+import java.net.URL;
 
-public class StoreEndExchange implements MessageExchange<StoreEndExchange.Request, StoreEndExchange.Response> {
+public class StoreEditExchange implements MessageExchange<StoreEditExchange.Request, StoreEditExchange.Response> {
 
     @Override
     public String getId() {
-        return "storeEnd";
+        return "storeEdit";
     }
 
     @Override
-    public Class<StoreEndExchange.Request> getRequestClass() {
-        return StoreEndExchange.Request.class;
+    public Class<StoreEditExchange.Request> getRequestClass() {
+        return StoreEditExchange.Request.class;
     }
 
     @Override
-    public Class<StoreEndExchange.Response> getResponseClass() {
-        return StoreEndExchange.Response.class;
+    public Class<StoreEditExchange.Response> getResponseClass() {
+        return StoreEditExchange.Response.class;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        UUID entryId;
-        Map<String, String> values;
+        DataSourceId sourceId;
+        DataSourceConfig config;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        DataSourceId sourceId;
     }
 }

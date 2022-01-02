@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.data.type.DataType;
+import io.xpipe.core.source.DataSourceConfig;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
@@ -39,6 +40,7 @@ public class ReadInfoExchange implements MessageExchange<ReadInfoExchange.Reques
     public static class Response implements ResponseMessage {
         DataSourceId sourceId;
         DataSourceType type;
+        DataSourceConfig config;
         Object data;
 
         public TableData getTableData() {

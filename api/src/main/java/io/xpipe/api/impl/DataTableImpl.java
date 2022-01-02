@@ -15,6 +15,7 @@ import io.xpipe.core.data.typed.TypedAbstractReader;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
 import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
+import io.xpipe.core.source.DataSourceConfig;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceType;
 
@@ -31,8 +32,8 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
     private final int size;
     private final DataType dataType;
 
-    public DataTableImpl(DataSourceId id, int size, DataType dataType) {
-        super(id);
+    public DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, int size, DataType dataType) {
+        super(id, sourceConfig);
         this.id = id;
         this.size = size;
         this.dataType = dataType;

@@ -19,6 +19,12 @@ public class HomePricesSample {
         // It allows us however to bundle the data with this sample program.
         homePricesTable = DataSource.wrap(resource).asTable();
 
+        // As we didn't pass any configuration parameters, X-Pipe will try to automatically detect
+        // the correct configuration parameters. You can access these parameters like this:
+        System.out.println("Determined configuration: " + homePricesTable.getConfig());
+        // In case these some parameters are not chosen correctly, you can pass the proper values
+        // to the wrap() method.
+
         System.out.println("The highest selling house entry is: " + getHighestSellingHouse());
     }
 

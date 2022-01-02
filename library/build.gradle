@@ -11,7 +11,7 @@ apply from: "$rootDir/deps/javafx-static.gradle"
 
 version '0.1'
 group 'io.xpipe'
-jar.archiveBaseName = 'xpipe'
+archivesBaseName = 'xpipe'
 
 java {
     modularity.inferModulePath = true

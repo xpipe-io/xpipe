@@ -1,9 +1,11 @@
 package io.xpipe.api;
 
 import io.xpipe.api.impl.DataSourceImpl;
+import io.xpipe.core.source.DataSourceConfig;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceType;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
@@ -34,6 +36,18 @@ public interface DataSource {
         return DataSourceImpl.get(id);
     }
 
+    static DataSource wrap(InputStream in, String type, Map<String, String> configOptions) {
+        return DataSourceImpl.wrap(in, type, configOptions);
+    }
+
+    static DataSource wrap(InputStream in, String type) {
+        return DataSourceImpl.wrap(in, type, Map.of());
+    }
+
+    static DataSource wrap(InputStream in) {
+        return DataSourceImpl.wrap(in, null, Map.of());
+    }
+
     /**
      * Retrieves a reference to the given local data source that is specified by a URL.
      *
@@ -41,26 +55,38 @@ public interface DataSource {
      * i.e. it is not added to the XPipe data source storage.
      *
      * @param url the url that points to the data
+     * @param type the data source type
      * @param configOptions additional configuration options for the specific data source type
      * @return a reference to the data source that can be used to access the underlying data source
      */
-    static DataSource wrap(URL url, Map<String, String> configOptions) {
-        return null;
+    static DataSource wrap(URL url, String type, Map<String, String> configOptions) {
+        return DataSourceImpl.wrap(url, type, configOptions);
     }
 
     /**
-     * Wrapper for {@link #wrap(URL, Map)} that passes no configuration options.
+     * Wrapper for {@link #wrap(URL, String, Map)} that passes no configuration options.
+     * As a result, the data source configuration is automatically determined by X-Pipe for the given type.
+     */
+    static DataSource wrap(URL url, String type) {
+        return wrap(url, type, Map.of());
+    }
+
+    /**
+     * Wrapper for {@link #wrap(URL, String, Map)} that passes no type and no configuration options.
+     * As a result, the data source type and configuration is automatically determined by X-Pipe.
      */
     static DataSource wrap(URL url) {
-        return wrap(url, Map.of());
+        return wrap(url, null, Map.of());
     }
 
     DataSourceId getId();
 
     DataSourceType getType();
 
+    DataSourceConfig getConfig();
+
     /**
-     * Attemps to cast this object to a {@link DataTable}.
+     * Attempts to cast this object to a {@link DataTable}.
      *
      * @throws UnsupportedOperationException if the data source is not a table
      */
