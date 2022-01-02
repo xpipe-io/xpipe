@@ -10,7 +10,7 @@ public interface BeaconHandler {
 
     void prepareBody() throws IOException;
 
-    void startBodyRead() throws IOException;
+    InputStream startBodyRead() throws IOException;
 
     public <T extends ResponseMessage> void sendResponse(T obj) throws Exception;
 

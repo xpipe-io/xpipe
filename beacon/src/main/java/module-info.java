@@ -26,5 +26,6 @@ module io.xpipe.beacon {
             ReadInfoExchange,
             StatusExchange,
             StopExchange,
+            StoreResourceExchange,
             VersionExchange;
 }

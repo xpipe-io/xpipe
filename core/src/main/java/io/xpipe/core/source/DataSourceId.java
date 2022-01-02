@@ -12,6 +12,8 @@ import lombok.Getter;
  * converted to lower case names when creating them.
  * The two names are separated by a colon and are therefore not allowed to contain colons themselves.
  *
+ * A missing collection name indicates that the data source exists only temporarily.
+ *
  * @see #create(String, String)
  * @see #fromString(String)
  */
@@ -31,18 +33,15 @@ public class DataSourceId {
     /**
      * Creates a new data source id from a collection name and an entry name.
      *
-     * @param collectionName the collection name, which must be not null and not empty
+     * @param collectionName the collection name, which may be null but not an empty string
      * @param entryName      the entry name, which must be not null and not empty
      * @throws IllegalArgumentException if any name is not valid
      */
     public static DataSourceId create(String collectionName, String entryName) {
-        if (collectionName == null) {
-            throw new IllegalArgumentException("Collection name is null");
-        }
-        if (collectionName.trim().length() == 0) {
+        if (collectionName != null && collectionName.trim().length() == 0) {
             throw new IllegalArgumentException("Trimmed collection name is empty");
         }
-        if (collectionName.contains("" + SEPARATOR)) {
+        if (collectionName != null && collectionName.contains("" + SEPARATOR)) {
             throw new IllegalArgumentException("Separator character " + SEPARATOR + " is not allowed in the collection name");
         }
 
@@ -78,9 +77,7 @@ public class DataSourceId {
 
         var cn = split[0].trim().toLowerCase();
         var en = split[1].trim().toLowerCase();
-        if (cn.length() == 0) {
-            throw new IllegalArgumentException("Collection name must not be empty");
-        }
+        cn = cn.isEmpty() ? null : cn;
         if (en.length() == 0) {
             throw new IllegalArgumentException("Entry name must not be empty");
         }

@@ -6,6 +6,7 @@ import io.xpipe.beacon.message.ResponseMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class BeaconConnector {
@@ -38,6 +39,10 @@ public abstract class BeaconConnector {
             response.set(res);
         });
         return response.get();
+    }
+
+    protected void writeLength(BeaconClient socket, int bytes) throws IOException {
+        socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(bytes).array());
     }
 
     protected <REQ extends RequestMessage, RES extends ResponseMessage> RES performSimpleExchange(

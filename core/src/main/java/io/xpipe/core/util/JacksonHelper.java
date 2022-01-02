@@ -44,4 +44,8 @@ public class JacksonHelper {
 
         return INSTANCE.copy();
     }
+
+    public static boolean isInit() {
+        return init;
+    }
 }

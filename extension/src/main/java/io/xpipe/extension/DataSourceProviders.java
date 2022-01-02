@@ -1,5 +1,7 @@
 package io.xpipe.extension;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -39,6 +41,19 @@ public class DataSourceProviders {
         }
 
         return ALL.stream().filter(d -> d.supportsFile(file)).findAny();
+    }
+
+    public static Optional<DataSourceProvider> byURL(URL url) {
+        if (ALL == null) {
+            throw new IllegalStateException("Not initialized");
+        }
+
+        try {
+            var path = Path.of(url.toURI());
+            return byFile(path);
+        } catch (URISyntaxException e) {
+            return Optional.empty();
+        }
     }
 
     public static Set<DataSourceProvider> getAll() {

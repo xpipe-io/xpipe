@@ -17,7 +17,7 @@ public class HomePricesSample {
         // Note that while this is possible, it is not recommended as
         // all queries are routed through the XPipe client anyway.
         // It allows us however to bundle the data with this sample program.
-        homePricesTable = DataSource.wrap(resource).asTable();
+        homePricesTable = DataSource.wrap(resource, "csv").asTable();
 
         // As we didn't pass any configuration parameters, X-Pipe will try to automatically detect
         // the correct configuration parameters. You can access these parameters like this:

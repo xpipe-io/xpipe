@@ -1,6 +1,7 @@
 package io.xpipe.api;
 
 import io.xpipe.beacon.*;
+import io.xpipe.core.util.JacksonHelper;
 
 import java.util.Optional;
 
@@ -10,14 +11,8 @@ public abstract class XPipeApiConnector extends BeaconConnector {
         try {
             var socket = constructSocket();
             handle(socket);
-        } catch (ConnectorException ce) {
-            throw new XPipeConnectException(ce.getMessage());
-        } catch (ClientException ce) {
-            throw new XPipeClientException(ce.getMessage());
-        } catch (ServerException se) {
-            throw new XPipeServerException(se.getMessage());
-        } catch (Throwable t) {
-            throw new XPipeConnectException(t);
+        } catch (Throwable ce) {
+            throw new XPipeException(ce);
         }
     }
 
@@ -25,6 +20,10 @@ public abstract class XPipeApiConnector extends BeaconConnector {
 
     @Override
     protected BeaconClient constructSocket() throws ConnectorException {
+        if (!JacksonHelper.isInit()) {
+            JacksonHelper.init(ModuleLayer.boot());
+        }
+
         if (!BeaconServer.isRunning()) {
             try {
                 start();

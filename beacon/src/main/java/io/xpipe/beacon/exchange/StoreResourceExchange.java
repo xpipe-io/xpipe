@@ -33,7 +33,7 @@ public class StoreResourceExchange implements MessageExchange<StoreResourceExcha
     @Value
     public static class Request implements RequestMessage {
         URL url;
-        String type;
+        String providerId;
     }
 
     @Jacksonized

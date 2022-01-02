@@ -11,8 +11,15 @@ java {
 repositories {
     mavenCentral()
 }
+apply from: "$rootDir/deps/jackson.gradle"
 
 dependencies {
-    implementation project(':api')
-    implementation project(':core')
+    implementation files(project(':library').jar.archivePath)
+}
+
+compileJava.dependsOn(project(':library').jar)
+
+application {
+    mainModule = 'io.xpipe.sample'
+    mainClass = 'io.xpipe.sample.HomePricesSample'
 }

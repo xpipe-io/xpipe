@@ -36,24 +36,24 @@ sourceSets {
         java {
             srcDir(projectDir)
 
-            srcDir("$rootDir/api/src/main/java")
+            srcDir("../api/src/main/java")
             exclude {
-                return it.getFile() == file("$rootDir/api/src/main/java/module-info.java")
+                return it.getFile() == file("../api/src/main/java/module-info.java")
             }
 
-            srcDir("$rootDir/core/src/main/java")
+            srcDir("../core/src/main/java")
             exclude {
-                return it.getFile() == file("$rootDir/core/src/main/java/module-info.java")
+                return it.getFile() == file("../core/src/main/java/module-info.java")
             }
 
-            srcDir("$rootDir/beacon/src/main/java")
+            srcDir("../beacon/src/main/java")
             exclude {
-                return it.getFile() == file("$rootDir/beacon/src/main/java/module-info.java")
+                return it.getFile() == file("../beacon/src/main/java/module-info.java")
             }
 
-            srcDir("$rootDir/extension/src/main/java")
+            srcDir("../extension/src/main/java")
             exclude {
-                return it.getFile() == file("$rootDir/extension/src/main/java/module-info.java")
+                return it.getFile() == file("../extension/src/main/java/module-info.java")
             }
         }
     }

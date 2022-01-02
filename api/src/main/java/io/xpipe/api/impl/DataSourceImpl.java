@@ -46,8 +46,13 @@ public abstract class DataSourceImpl implements DataSource {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                 var req = StoreResourceExchange.Request.builder()
-                        .url(url).type(type).build();
-                StoreResourceExchange.Response res = performSimpleExchange(sc, req);
+                        .url(url).providerId(type).build();
+                StoreResourceExchange.Response res = performOutputExchange(sc, req, out -> {
+                    try (var s = url.openStream()) {
+                        writeLength(sc, s.available());
+                        s.transferTo(out);
+                    }
+                });
                 switch (res.getSourceType()) {
                     case TABLE -> {
                         var data = res.getTableData();
