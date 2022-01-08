@@ -10,5 +10,7 @@ public interface DataSourceDescriptor<DS extends DataStore> {
         return Optional.empty();
     }
 
+    DataSourceInfo determineInfo(DS store) throws Exception;
+
     DataSourceType getType();
 }

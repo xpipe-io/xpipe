@@ -31,15 +31,28 @@ module io.xpipe {
     opens io.xpipe.core.store;
     opens io.xpipe.core.source;
     opens io.xpipe.core.data.typed;
+    opens io.xpipe.core.data.type;
 
     // core services
     uses com.fasterxml.jackson.databind.Module;
     provides com.fasterxml.jackson.databind.Module with io.xpipe.core.util.CoreJacksonModule;
 
+    // extension
+    requires static io.xpipe.fxcomps;
+    requires static javafx.base;
+    requires static javafx.graphics;
+    requires static javafx.controls;
+    requires static org.apache.commons.collections4;
+    exports io.xpipe.extension;
+    exports io.xpipe.extension.comp;
+    uses io.xpipe.extension.DataSourceProvider;
+    uses io.xpipe.extension.DataSourceGuiProvider;
+    uses io.xpipe.extension.SupportedApplicationProvider;
+    uses io.xpipe.extension.I18n;
+
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.module.paramnames;
+    requires org.slf4j;
     requires static lombok;
-    requires static javafx.base;
-    requires static javafx.graphics;
 }

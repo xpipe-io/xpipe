@@ -2,7 +2,6 @@ package io.xpipe.core.util;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -12,6 +11,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
+import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.store.LocalFileDataStore;
 
 import java.io.IOException;
@@ -26,7 +26,8 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(LocalFileDataStore.class),
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
-                new NamedType(ArrayType.class)
+                new NamedType(ArrayType.class),
+                new NamedType(DataSourceInfo.Table.class)
         );
 
         addSerializer(Charset.class, new CharsetSerializer());

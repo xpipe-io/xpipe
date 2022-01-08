@@ -12,6 +12,8 @@ import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.beacon.message.ServerErrorMessage;
 import io.xpipe.core.util.JacksonHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +27,18 @@ import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
 public class BeaconClient {
 
+    private static final Logger log = LoggerFactory.getLogger("beacon");
+
     @FunctionalInterface
     public interface FailableBiConsumer<T, U, E extends Throwable> {
 
         void accept(T var1, U var2) throws E;
+    }
+
+    @FunctionalInterface
+    public interface FailableBiPredicate<T, U, E extends Throwable> {
+
+        boolean test(T var1, U var2) throws E;
     }
 
     @FunctionalInterface
@@ -70,7 +80,7 @@ public class BeaconClient {
     public <REQ extends RequestMessage, RES extends ResponseMessage> void exchange(
             REQ req,
             FailableConsumer<OutputStream, IOException> reqWriter,
-            FailableBiConsumer<RES, InputStream, IOException> resReader)
+            FailableBiPredicate<RES, InputStream, IOException> resReader)
             throws ConnectorException, ClientException, ServerException {
         try {
             sendRequest(req);
@@ -85,11 +95,12 @@ public class BeaconClient {
                 throw new ConnectorException("Invalid body separator");
             }
 
-            resReader.accept(res, in);
+            if (resReader.test(res, in)) {
+                close();
+            }
         } catch (IOException ex) {
-            throw new ConnectorException("Couldn't communicate with socket", ex);
-        } finally {
             close();
+            throw new ConnectorException("Couldn't communicate with socket", ex);
         }
     }
 
@@ -116,6 +127,7 @@ public class BeaconClient {
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeMessage", json);
 
+        log.atTrace().addKeyValue("class", req.getClass().getSimpleName()).log("Sending request to server");
 
         try {
             var mapper = JacksonHelper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);

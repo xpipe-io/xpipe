@@ -25,16 +25,7 @@ public abstract class DataSourceImpl implements DataSource {
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                 var req = ReadInfoExchange.Request.builder().sourceId(ds).build();
                 ReadInfoExchange.Response res = performSimpleExchange(sc, req);
-                switch (res.getType()) {
-                    case TABLE -> {
-                        var data = res.getTableData();
-                        source[0] = new DataTableImpl(res.getSourceId(), res.getConfig(), data.getRowCount(), data.getDataType());
-                    }
-                    case STRUCTURE -> {
-                    }
-                    case RAW -> {
-                    }
-                }
+
             }
         }.execute();
         return source[0];
@@ -53,10 +44,10 @@ public abstract class DataSourceImpl implements DataSource {
                         s.transferTo(out);
                     }
                 });
-                switch (res.getSourceType()) {
+                switch (res.getInfo().getType()) {
                     case TABLE -> {
-                        var data = res.getTableData();
-                        source[0] = new DataTableImpl(res.getSourceId(), res.getConfig(), data.getRowCount(), data.getDataType());
+                        var data = res.getInfo().asTable();
+                        source[0] = new DataTableImpl(res.getSourceId(), res.getConfig(), data);
                     }
                     case STRUCTURE -> {
                     }
@@ -75,16 +66,7 @@ public abstract class DataSourceImpl implements DataSource {
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
                 var req = StoreStreamExchange.Request.builder().type(type).build();
                 StoreStreamExchange.Response res = performOutputExchange(sc, req, in::transferTo);
-                switch (res.getSourceType()) {
-                    case TABLE -> {
-                        var data = res.getTableData();
-                        source[0] = new DataTableImpl(res.getSourceId(), res.getConfig(), data.getRowCount(), data.getDataType());
-                    }
-                    case STRUCTURE -> {
-                    }
-                    case RAW -> {
-                    }
-                }
+
             }
         }.execute();
         return source[0];

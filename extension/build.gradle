@@ -11,6 +11,8 @@ java {
 
 apply from: "$rootDir/deps/javafx.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
+apply from: "$rootDir/deps/commons.gradle"
+apply from: "$rootDir/deps/lombok.gradle"
 
 repositories {
     mavenCentral()
@@ -18,4 +20,5 @@ repositories {
 
 dependencies {
     implementation project(':core')
+    compileOnly project(':fxcomps')
 }

@@ -18,7 +18,5 @@ public interface BeaconHandler {
 
     public void sendServerErrorResponse(Throwable ex) throws Exception;
 
-    InputStream getInputStream() throws Exception;
-
     OutputStream getOutputStream() throws Exception;
 }

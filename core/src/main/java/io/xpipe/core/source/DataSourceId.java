@@ -87,6 +87,6 @@ public class DataSourceId {
 
     @Override
     public String toString() {
-        return collectionName + SEPARATOR + entryName;
+        return (collectionName != null ? collectionName : "") + SEPARATOR + entryName;
     }
 }

@@ -64,7 +64,12 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public DataStructureNode forKey(String name) {
-        return nodes.get(names.indexOf(name));
+        var index = names.indexOf(name);
+        if (index == -1) {
+            throw new IllegalArgumentException("Key " + name + " not found");
+        }
+
+        return nodes.get(index);
     }
 
     @Override
