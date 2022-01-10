@@ -1,0 +1,31 @@
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            pom {
+                name = 'X-Pipe core'
+                description = 'Core classes ued by all X-Pipe components.'
+                url = 'https://github.com/xpipe-io/xpipe_java/core'
+                licenses {
+                    license {
+                        name = 'The MIT License (MIT)'
+                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE.md'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'crschnick'
+                        name = 'Christopher Schnick'
+                        email = 'crschnick@xpipe.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/xpipe-io/xpipe_java.git'
+                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe_java.git'
+                    url = 'https://github.com/xpipe-io/xpipe_java'
+                }
+            }
+        }
+    }
+}

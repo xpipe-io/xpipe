@@ -1,29 +1,27 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-java {
-    modularity.inferModulePath = true
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
+apply from: "$rootDir/deps/java.gradle"
+apply from: "$rootDir/deps/commons.gradle"
+apply from: "$rootDir/deps/slf4j.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
+apply from: "$rootDir/deps/lombok.gradle"
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/publish-base.gradle"
+
+version = file('../version').text
+group = 'io.xpipe'
+archivesBaseName = 'beacon'
 
 repositories {
     mavenCentral()
 }
 
-apply from: "$rootDir/deps/slf4j.gradle"
-apply from: "$rootDir/deps/jackson.gradle"
-
 dependencies {
     implementation project(':core')
     implementation project(':extension')
-
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-}
-
-test {
-    useJUnitPlatform()
 }

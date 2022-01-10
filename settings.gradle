@@ -4,7 +4,6 @@ include 'core'
 include 'beacon'
 include 'api'
 include 'extension'
-include 'library'
 
 include 'sample_extension'
 project(":sample_extension").projectDir = file("samples/sample_extension")

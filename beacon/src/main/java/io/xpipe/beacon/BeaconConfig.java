@@ -29,17 +29,6 @@ public class BeaconConfig {
 
 
 
-    private static final String IN_PROCESS_PROP = "io.xpipe.beacon.startInProcess";
-
-    public static boolean shouldStartInProcess() {
-        if (System.getProperty(IN_PROCESS_PROP) != null) {
-            return Boolean.parseBoolean(System.getProperty(IN_PROCESS_PROP));
-        }
-        return false;
-    }
-
-
-
     private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.exec";
 
     public static String getCustomExecCommand() {

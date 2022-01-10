@@ -1,5 +1,10 @@
 package io.xpipe.extension;
 
+import io.xpipe.core.data.type.TupleType;
+import io.xpipe.core.source.TableDataSourceDescriptor;
+import io.xpipe.core.store.LocalFileDataStore;
+import io.xpipe.extension.event.ErrorEvent;
+
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -16,6 +21,18 @@ public class DataSourceProviders {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataSourceProvider.class).stream()
                     .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static TableDataSourceDescriptor<LocalFileDataStore> createLocalTableDescriptor(TupleType type) {
+        try {
+            return (TableDataSourceDescriptor<LocalFileDataStore>)
+                    DataSourceProviders.byId("xpbt").orElseThrow().getType()
+                            .getDeclaredConstructors()[0].newInstance(type);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+            return null;
         }
     }
 

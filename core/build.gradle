@@ -1,38 +1,21 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-java {
-    modularity.inferModulePath = true
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
+apply from: "$rootDir/deps/java.gradle"
+apply from: "$rootDir/deps/commons.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
+apply from: "$rootDir/deps/lombok.gradle"
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/publish-base.gradle"
+
+version = file('../version').text
+group = 'io.xpipe'
+archivesBaseName = 'core'
 
 repositories {
     mavenCentral()
-}
-
-apply from: "$rootDir/deps/commons.gradle"
-apply from: "$rootDir/deps/jackson.gradle"
-
-dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.22'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-}
-
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
 }

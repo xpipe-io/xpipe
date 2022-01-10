@@ -1,21 +1,16 @@
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
 
             pom {
-                name = 'XPipe'
-                description = 'XPipe library.'
-                url = 'https://github.com/xpipe-io/xpipe_java'
+                name = 'X-Pipe beacon'
+                description = 'The socket-based implementation used for the communication with X-Pipe.'
+                url = 'https://github.com/xpipe-io/xpipe_java/beacon'
                 licenses {
                     license {
                         name = 'The MIT License (MIT)'
-                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE'
+                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE.md'
                     }
                 }
                 developers {
@@ -33,18 +28,4 @@ publishing {
             }
         }
     }
-
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            credentials {
-                setUsername "${project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : ''}"
-                setPassword "${project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : ''}"
-            }
-        }
-    }
-}
-
-signing {
-    sign publishing.publications.mavenJava
 }

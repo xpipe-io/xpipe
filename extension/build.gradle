@@ -1,18 +1,21 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-java {
-    modularity.inferModulePath = true
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
+apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/javafx.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
 apply from: "$rootDir/deps/commons.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/publish-base.gradle"
+
+version = file('../version').text
+group = 'io.xpipe'
+archivesBaseName = 'core'
 
 repositories {
     mavenCentral()
@@ -20,5 +23,5 @@ repositories {
 
 dependencies {
     implementation project(':core')
-    compileOnly project(':fxcomps')
+    implementation project(':fxcomps')
 }

@@ -17,6 +17,10 @@ public class TrackEvent {
             this.category("window");
             return this;
         }
+
+        public void handle() {
+            build().handle();
+        }
     }
 
     public static TrackEventBuilder fromMessage(String type, String message) {
@@ -33,6 +37,10 @@ public class TrackEvent {
 
     public static TrackEventBuilder withTrace(String message) {
         return builder().type("trace").message(message);
+    }
+
+    public static TrackEventBuilder withTrace(String cat, String message) {
+        return builder().category(cat).type("trace").message(message);
     }
 
     public static void info(String message) {
