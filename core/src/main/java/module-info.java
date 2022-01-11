@@ -1,9 +1,9 @@
 import io.xpipe.core.util.CoreJacksonModule;
 
 module io.xpipe.core {
-    requires transitive com.fasterxml.jackson.core;
-    requires transitive com.fasterxml.jackson.databind;
-    requires transitive com.fasterxml.jackson.module.paramnames;
+    requires com.fasterxml.jackson.core;
+    requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.module.paramnames;
 
     requires static lombok;
 

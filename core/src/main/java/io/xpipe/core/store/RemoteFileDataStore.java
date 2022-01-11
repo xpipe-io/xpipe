@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.time.Instant;
 import java.util.Optional;
 
-public class RemoteFileDataStore extends FileDataStore {
+public class RemoteFileDataStore implements StreamDataStore {
 
     @Override
     public Optional<String> determineDefaultName() {
@@ -13,28 +13,8 @@ public class RemoteFileDataStore extends FileDataStore {
     }
 
     @Override
-    public Optional<Instant> getLastModified() {
+    public Optional<Instant> determineLastModified() {
         return Optional.empty();
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public boolean isLocal() {
-        return false;
-    }
-
-    @Override
-    public LocalFileDataStore getLocal() {
-        return null;
-    }
-
-    @Override
-    public RemoteFileDataStore getRemote() {
-        return null;
     }
 
     @Override

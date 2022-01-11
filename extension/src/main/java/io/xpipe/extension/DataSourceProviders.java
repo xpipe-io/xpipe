@@ -28,7 +28,7 @@ public class DataSourceProviders {
     public static TableDataSourceDescriptor<LocalFileDataStore> createLocalTableDescriptor(TupleType type) {
         try {
             return (TableDataSourceDescriptor<LocalFileDataStore>)
-                    DataSourceProviders.byId("xpbt").orElseThrow().getType()
+                    DataSourceProviders.byId("xpbt").orElseThrow().getDescriptorClass()
                             .getDeclaredConstructors()[0].newInstance(type);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
@@ -36,12 +36,12 @@ public class DataSourceProviders {
         }
     }
 
-    public static Optional<DataSourceProvider> byDataSourceClass(Class<?> clazz) {
+    public static Optional<DataSourceProvider> byDescriptorClass(Class<?> clazz) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.getType().equals(clazz)).findAny();
+        return ALL.stream().filter(d -> d.getDescriptorClass().equals(clazz)).findAny();
     }
 
     public static Optional<DataSourceProvider> byId(String name) {
@@ -57,7 +57,8 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.supportsFile(file)).findAny();
+        return ALL.stream().filter(d -> d.getFileProvider() != null)
+                .filter(d -> d.getFileProvider().supportsFile(file)).findAny();
     }
 
     public static Optional<DataSourceProvider> byURL(URL url) {

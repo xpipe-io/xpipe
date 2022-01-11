@@ -15,7 +15,7 @@ apply from: "$rootDir/deps/publish-base.gradle"
 
 version = file('../version').text
 group = 'io.xpipe'
-archivesBaseName = 'core'
+archivesBaseName = 'extension'
 
 repositories {
     mavenCentral()

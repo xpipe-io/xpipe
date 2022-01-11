@@ -2,8 +2,9 @@ package io.xpipe.extension;
 
 import io.xpipe.core.source.DataSourceId;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
+
+import java.util.function.Supplier;
 
 public interface SupportedApplicationProvider {
 
@@ -11,11 +12,11 @@ public interface SupportedApplicationProvider {
 
     Region createStructureRetrieveInstructions(ObservableValue<DataSourceId> id);
 
-    Region createRawRetrieveInstructions(ObservableValue<DataSourceId> id);
+    Region createTextRetrieveInstructions(ObservableValue<DataSourceId> id);
 
-    Image getLogo();
+    Region createRawRetrieveInstructions(ObservableValue<DataSourceId> id);
 
     String getId();
 
-    String getName();
+    Supplier<String> getName();
 }

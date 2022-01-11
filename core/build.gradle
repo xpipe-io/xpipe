@@ -6,7 +6,6 @@ plugins {
 }
 
 apply from: "$rootDir/deps/java.gradle"
-apply from: "$rootDir/deps/commons.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 apply from: 'publish.gradle'

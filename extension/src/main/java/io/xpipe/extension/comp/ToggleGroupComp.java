@@ -46,6 +46,9 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
             }
         }
         box.getChildren().get(0).getStyleClass().add("first");
+        for (int i = 1; i < box.getChildren().size() - 1; i++) {
+            box.getChildren().get(i).getStyleClass().add("center");
+        }
         box.getChildren().get(box.getChildren().size() - 1).getStyleClass().add("last");
 
         group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {

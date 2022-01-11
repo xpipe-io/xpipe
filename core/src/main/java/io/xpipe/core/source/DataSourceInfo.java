@@ -7,6 +7,15 @@ import io.xpipe.core.data.type.TupleType;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+/**
+ * A data source info instances contains all required
+ * essential information of a specific data source type.
+ *
+ * This information is usually determined only once on data
+ * source creation, as this process might be expensive.
+ *
+ * @see DataSourceType
+ */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public abstract class DataSourceInfo {
 
@@ -31,6 +40,9 @@ public abstract class DataSourceInfo {
         }
     }
 
+    /**
+     * Casts this instance to a table info.
+     */
     public Table asTable() {
         if (!getType().equals(DataSourceType.TABLE)) {
             throw new IllegalStateException("Not a table");

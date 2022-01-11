@@ -1,7 +1,6 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.io.BufferedInputStream;
@@ -14,7 +13,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @JsonTypeName("local")
-public class LocalFileDataStore extends FileDataStore {
+public class LocalFileDataStore implements StreamDataStore {
 
     private final Path file;
 
@@ -29,34 +28,13 @@ public class LocalFileDataStore extends FileDataStore {
     }
 
     @Override
-    public Optional<Instant> getLastModified() {
+    public Optional<Instant> determineLastModified() {
         try {
             var l = Files.getLastModifiedTime(file);
             return Optional.of(l.toInstant());
         } catch (IOException e) {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public String getName() {
-        return file.getFileName().toString();
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isLocal() {
-        return true;
-    }
-
-    @Override
-    public LocalFileDataStore getLocal() {
-        return this;
-    }
-
-    @Override
-    public RemoteFileDataStore getRemote() {
-        throw new UnsupportedOperationException();
     }
 
     public Path getFile() {

@@ -12,8 +12,6 @@ import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.beacon.message.ServerErrorMessage;
 import io.xpipe.core.util.JacksonHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +24,6 @@ import java.util.Optional;
 import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
 public class BeaconClient {
-
-    private static final Logger log = LoggerFactory.getLogger("beacon");
 
     @FunctionalInterface
     public interface FailableBiConsumer<T, U, E extends Throwable> {
@@ -127,7 +123,9 @@ public class BeaconClient {
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeMessage", json);
 
-        log.atTrace().addKeyValue("class", req.getClass().getSimpleName()).log("Sending request to server");
+        if (BeaconConfig.debugEnabled()) {
+            System.out.println("Sending request to server of type " + req.getClass().getSimpleName());
+        }
 
         try {
             var mapper = JacksonHelper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);

@@ -4,6 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * A data store that is only represented by an InputStream.
+ * One common use case of this class are piped inputs.
+ *
+ * As the data in a pipe can only be read once, this implementation
+ * internally uses a BufferedInputStream to support mark/rest.
+ */
 public class InputStreamDataStore implements StreamDataStore {
 
     private final InputStream in;

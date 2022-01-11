@@ -37,6 +37,9 @@ public class JacksonHelper {
         return modules;
     }
 
+    /**
+     * Constructs a new ObjectMapper that is able to map all required X-Pipe classes and also possible extensions.
+     */
     public static ObjectMapper newMapper() {
         if (!init) {
             throw new IllegalStateException("Not initialized");
