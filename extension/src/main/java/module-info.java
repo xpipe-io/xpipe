@@ -18,4 +18,12 @@ module io.xpipe.extension {
     uses SupportedApplicationProvider;
     uses io.xpipe.extension.I18n;
     uses io.xpipe.extension.event.EventHandler;
+
+    requires java.desktop;
+    requires org.fxmisc.richtext;
+    requires org.fxmisc.flowless;
+    requires org.fxmisc.undofx;
+    requires org.fxmisc.wellbehavedfx;
+    requires org.reactfx;
+    requires org.kordamp.ikonli.javafx;
 }

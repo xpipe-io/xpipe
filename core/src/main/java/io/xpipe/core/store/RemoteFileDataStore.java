@@ -26,4 +26,9 @@ public class RemoteFileDataStore implements StreamDataStore {
     public OutputStream openOutput() throws Exception {
         return null;
     }
+
+    @Override
+    public boolean exists() {
+        return false;
+    }
 }

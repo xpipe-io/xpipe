@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
-public class BeaconClient {
+public class BeaconClient implements AutoCloseable {
 
     @FunctionalInterface
     public interface FailableBiConsumer<T, U, E extends Throwable> {
@@ -76,7 +76,7 @@ public class BeaconClient {
     public <REQ extends RequestMessage, RES extends ResponseMessage> void exchange(
             REQ req,
             FailableConsumer<OutputStream, IOException> reqWriter,
-            FailableBiPredicate<RES, InputStream, IOException> resReader)
+            FailableBiConsumer<RES, InputStream, IOException> resReader)
             throws ConnectorException, ClientException, ServerException {
         try {
             sendRequest(req);
@@ -91,23 +91,16 @@ public class BeaconClient {
                 throw new ConnectorException("Invalid body separator");
             }
 
-            if (resReader.test(res, in)) {
-                close();
-            }
+            resReader.accept(res, in);
         } catch (IOException ex) {
-            close();
             throw new ConnectorException("Couldn't communicate with socket", ex);
         }
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES simpleExchange(REQ req)
-            throws ServerException, ConnectorException, ClientException {
-        try {
-            sendRequest(req);
-            return this.receiveResponse();
-        } finally {
-            close();
-        }
+        throws ServerException, ConnectorException, ClientException {
+        sendRequest(req);
+        return this.receiveResponse();
     }
 
     private <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {

@@ -7,9 +7,11 @@ plugins {
 
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/javafx.gradle"
+apply from: "$rootDir/deps/richtextfx.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
 apply from: "$rootDir/deps/commons.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
+apply from: "$rootDir/deps/ikonli.gradle"
 apply from: 'publish.gradle'
 apply from: "$rootDir/deps/publish-base.gradle"
 

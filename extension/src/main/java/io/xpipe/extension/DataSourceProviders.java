@@ -2,12 +2,10 @@ package io.xpipe.extension;
 
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.source.TableDataSourceDescriptor;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LocalFileDataStore;
 import io.xpipe.extension.event.ErrorEvent;
 
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -52,26 +50,13 @@ public class DataSourceProviders {
         return ALL.stream().filter(d -> d.getId().equals(name)).findAny();
     }
 
-    public static Optional<DataSourceProvider> byFile(Path file) {
+    public static Optional<DataSourceProvider> byStore(DataStore store) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
         return ALL.stream().filter(d -> d.getFileProvider() != null)
-                .filter(d -> d.getFileProvider().supportsFile(file)).findAny();
-    }
-
-    public static Optional<DataSourceProvider> byURL(URL url) {
-        if (ALL == null) {
-            throw new IllegalStateException("Not initialized");
-        }
-
-        try {
-            var path = Path.of(url.toURI());
-            return byFile(path);
-        } catch (URISyntaxException e) {
-            return Optional.empty();
-        }
+                .filter(d -> d.supportsStore(store)).findAny();
     }
 
     public static Set<DataSourceProvider> getAll() {

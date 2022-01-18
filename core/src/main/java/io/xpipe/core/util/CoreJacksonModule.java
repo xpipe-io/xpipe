@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.xpipe.core.data.type.ArrayType;
@@ -35,6 +36,8 @@ public class CoreJacksonModule extends SimpleModule {
 
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
+
+        context.setMixInAnnotations(Throwable.class, ExceptionTypeMixIn.class);
     }
 
     public static class CharsetSerializer extends JsonSerializer<Charset> {
@@ -69,5 +72,11 @@ public class CoreJacksonModule extends SimpleModule {
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return Path.of(p.getValueAsString());
         }
+    }
+
+    @JsonSerialize(as = Throwable.class)
+    public abstract static class ExceptionTypeMixIn {
+
+
     }
 }

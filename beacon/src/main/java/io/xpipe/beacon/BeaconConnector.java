@@ -16,7 +16,7 @@ public abstract class BeaconConnector {
     protected <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
             BeaconClient socket,
             REQ req,
-            BeaconClient.FailableBiPredicate<RES, InputStream, IOException> responseConsumer) throws ServerException, ConnectorException, ClientException {
+            BeaconClient.FailableBiConsumer<RES, InputStream, IOException> responseConsumer) throws ServerException, ConnectorException, ClientException {
         performInputOutputExchange(socket, req, null, responseConsumer);
     }
 
@@ -24,7 +24,7 @@ public abstract class BeaconConnector {
             BeaconClient socket,
             REQ req,
             BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter,
-            BeaconClient.FailableBiPredicate<RES, InputStream, IOException> responseConsumer)
+            BeaconClient.FailableBiConsumer<RES, InputStream, IOException> responseConsumer)
             throws ServerException, ConnectorException, ClientException {
         socket.exchange(req, reqWriter, responseConsumer);
     }
@@ -37,7 +37,6 @@ public abstract class BeaconConnector {
         AtomicReference<RES> response = new AtomicReference<>();
         socket.exchange(req, reqWriter, (RES res, InputStream in) -> {
             response.set(res);
-            return true;
         });
         return response.get();
     }

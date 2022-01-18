@@ -1,0 +1,41 @@
+.code-snippet {
+-fx-padding: 0.3em 0.5em 0.3em 0.5em;
+-fx-border-width: 0 0 0 1px;
+-fx-border-color: -xp-border;
+-fx-spacing: 0;
+-fx-font-family: Monospace;
+}
+
+.code-snippet-container {
+-fx-border-width: 1px;
+-fx-border-color: -xp-border;
+-fx-background-color: transparent;
+-fx-border-radius: 4px;
+-fx-background-radius: 4px;
+-fx-padding: 3px;
+}
+
+.copy {
+
+}
+
+.line-number {
+-fx-alignment: center-right;
+-fx-font-family: Monospace;
+-fx-text-fill: grey;
+}
+
+.line-numbers {
+-fx-padding: 0.3em 0.2em 0.3em 0.5em;
+-fx-background-color: #073B4C11;
+}
+
+.code-snippet .line {
+-fx-padding: 0.1em 0 0 0;
+-fx-background-color: transparent;
+}
+
+.code-snippet .spacer {
+-fx-pref-width: 1px;
+-fx-background-color: #073B4C43;
+}

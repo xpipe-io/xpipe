@@ -50,6 +50,10 @@ public class TupleType extends DataType {
         return new TupleType(Collections.nCopies(types.size(), null), types);
     }
 
+    public boolean hasAllNames() {
+        return names.stream().allMatch(Objects::nonNull);
+    }
+
     @Override
     public String getName() {
         return "tuple";

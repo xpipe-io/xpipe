@@ -2,6 +2,7 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.EqualsAndHashCode;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @JsonTypeName("local")
+@EqualsAndHashCode
 public class LocalFileDataStore implements StreamDataStore {
 
     private final Path file;
@@ -49,5 +51,10 @@ public class LocalFileDataStore implements StreamDataStore {
     @Override
     public OutputStream openOutput() throws Exception {
         return Files.newOutputStream(file);
+    }
+
+    @Override
+    public boolean exists() {
+        return Files.exists(file);
     }
 }

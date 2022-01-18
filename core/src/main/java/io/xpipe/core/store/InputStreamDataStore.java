@@ -36,4 +36,9 @@ public class InputStreamDataStore implements StreamDataStore {
     public OutputStream openOutput() throws Exception {
         throw new UnsupportedOperationException("No output available");
     }
+
+    @Override
+    public boolean exists() {
+        return true;
+    }
 }
