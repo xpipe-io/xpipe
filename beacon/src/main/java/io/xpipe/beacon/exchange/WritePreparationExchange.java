@@ -41,7 +41,6 @@ public class WritePreparationExchange implements MessageExchange<WritePreparatio
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
         DataStore dataStore;
 
         @NonNull

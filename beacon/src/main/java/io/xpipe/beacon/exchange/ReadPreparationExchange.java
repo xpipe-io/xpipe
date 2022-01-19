@@ -3,8 +3,9 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceConfigInstance;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.StreamDataStore;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -30,6 +31,7 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
     @Value
     public static class Request implements RequestMessage {
         String providerType;
+        @NonNull
         String dataStore;
     }
 
@@ -38,6 +40,6 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
     @Value
     public static class Response implements ResponseMessage {
         DataSourceConfigInstance config;
-        DataStore dataStore;
+        StreamDataStore dataStore;
     }
 }

@@ -9,6 +9,7 @@ import io.xpipe.core.store.StreamDataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -72,6 +73,8 @@ public interface DataSourceProvider {
         Map<String, String> toConfigOptions(DataSourceDescriptor<?> desc);
 
         Map<DataSourceConfig.Option, Function<String, ?>> getConverters();
+
+        List<String> getPossibleNames();
     }
 
     boolean supportsStore(DataStore store);
@@ -83,6 +86,8 @@ public interface DataSourceProvider {
     CliProvider getCliProvider();
 
     String getId();
+
+    DataSourceDescriptor<?> createDefaultDescriptor();
 
     /**
      * Attempt to create a useful data source descriptor from a data store.

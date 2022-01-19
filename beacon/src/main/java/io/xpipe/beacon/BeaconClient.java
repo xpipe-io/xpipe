@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -134,6 +135,8 @@ public class BeaconClient implements AutoCloseable {
         try {
             var in = socket.getInputStream();
             read = JacksonHelper.newMapper().disable(JsonParser.Feature.AUTO_CLOSE_SOURCE).readTree(in);
+        } catch (SocketException ex) {
+            throw new ConnectorException("Connection to xpipe daemon closed unexpectedly");
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't read from socket", ex);
         }

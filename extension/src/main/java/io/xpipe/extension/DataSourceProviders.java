@@ -50,6 +50,15 @@ public class DataSourceProviders {
         return ALL.stream().filter(d -> d.getId().equals(name)).findAny();
     }
 
+    public static Optional<DataSourceProvider> byName(String name) {
+        if (ALL == null) {
+            throw new IllegalStateException("Not initialized");
+        }
+
+        return ALL.stream().filter(d -> d.getCliProvider() != null && d.getCliProvider().getPossibleNames().stream()
+                .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
+    }
+
     public static Optional<DataSourceProvider> byStore(DataStore store) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");

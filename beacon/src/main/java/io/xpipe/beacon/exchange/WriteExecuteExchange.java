@@ -33,7 +33,7 @@ public class WriteExecuteExchange implements MessageExchange<WriteExecuteExchang
     public static class Request implements RequestMessage {
         @NonNull
         DataSourceId sourceId;
-        @NonNull
+
         DataStore dataStore;
         @NonNull
         DataSourceConfigInstance config;
