@@ -27,7 +27,6 @@ public class StopExchange implements MessageExchange<StopExchange.Request, StopE
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        boolean force;
     }
 
     @Jacksonized

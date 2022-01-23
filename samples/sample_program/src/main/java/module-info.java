@@ -1,3 +1,3 @@
 module io.xpipe.sample {
-    requires io.xpipe;
+    requires io.xpipe.api;
 }

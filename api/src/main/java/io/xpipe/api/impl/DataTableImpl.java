@@ -95,7 +95,6 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
                 performInputExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
                     var r = new TypedDataStreamParser(info.getDataType());
                     r.parseStructures(in, TypedDataStructureNodeReader.immutable(info.getDataType()), nodes::add);
-                    return true;
                 });
             }
         }.execute();
@@ -121,7 +120,6 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
                         performInputExchange(sc, req,
                                 (ReadTableDataExchange.Response res, InputStream in) -> {
                             input = in;
-                                    return false;
                                 });
                     }
                 }.execute();
