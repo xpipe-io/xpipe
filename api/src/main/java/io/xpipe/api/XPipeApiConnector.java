@@ -21,7 +21,7 @@ public abstract class XPipeApiConnector extends BeaconConnector {
     @Override
     protected BeaconClient constructSocket() throws ConnectorException {
         if (!JacksonHelper.isInit()) {
-            JacksonHelper.init(ModuleLayer.boot());
+            JacksonHelper.initModularized(ModuleLayer.boot());
         }
 
         if (!BeaconServer.isRunning()) {

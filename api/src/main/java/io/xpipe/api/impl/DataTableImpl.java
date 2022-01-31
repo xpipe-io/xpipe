@@ -6,14 +6,12 @@ import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
-import io.xpipe.beacon.exchange.ReadTableDataExchange;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedAbstractReader;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
-import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
 import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
 import io.xpipe.core.source.DataSourceConfig;
 import io.xpipe.core.source.DataSourceId;
@@ -90,12 +88,12 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         new XPipeApiConnector() {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = ReadTableDataExchange.Request.builder()
-                        .sourceId(id).maxRows(maxToRead).build();
-                performInputExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
-                    var r = new TypedDataStreamParser(info.getDataType());
-                    r.parseStructures(in, TypedDataStructureNodeReader.immutable(info.getDataType()), nodes::add);
-                });
+//                var req = ReadTableDataExchange.Request.builder()
+//                        .sourceId(id).maxRows(maxToRead).build();
+//                performInputExchange(sc, req, (ReadTableDataExchange.Response res, InputStream in) -> {
+//                    var r = new TypedDataStreamParser(info.getDataType());
+//                    r.parseStructures(in, TypedDataStructureNodeReader.immutable(info.getDataType()), nodes::add);
+//                });
             }
         }.execute();
         return ArrayNode.of(nodes);
@@ -115,12 +113,12 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
                 new XPipeApiConnector() {
                     @Override
                     protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                        var req = ReadTableDataExchange.Request.builder()
-                                .sourceId(id).maxRows(Integer.MAX_VALUE).build();
-                        performInputExchange(sc, req,
-                                (ReadTableDataExchange.Response res, InputStream in) -> {
-                            input = in;
-                                });
+//                        var req = ReadTableDataExchange.Request.builder()
+//                                .sourceId(id).maxRows(Integer.MAX_VALUE).build();
+//                        performInputExchange(sc, req,
+//                                (ReadTableDataExchange.Response res, InputStream in) -> {
+//                            input = in;
+//                                });
                     }
                 }.execute();
 

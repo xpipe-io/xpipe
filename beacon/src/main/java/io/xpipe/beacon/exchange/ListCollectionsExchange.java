@@ -1,12 +1,12 @@
 package io.xpipe.beacon.exchange;
 
+import io.xpipe.beacon.exchange.data.CollectionListEntry;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.Instant;
 import java.util.List;
 
 public class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
@@ -33,14 +33,10 @@ public class ListCollectionsExchange implements MessageExchange<ListCollectionsE
 
     }
 
-    public static record Entry(String name, int size, Instant lastUsed) {
-
-    }
-
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        List<Entry> entries;
+        List<CollectionListEntry> entries;
     }
 }

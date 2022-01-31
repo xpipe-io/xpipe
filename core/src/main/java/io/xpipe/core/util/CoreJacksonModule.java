@@ -37,7 +37,7 @@ public class CoreJacksonModule extends SimpleModule {
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
 
-        context.setMixInAnnotations(Throwable.class, ExceptionTypeMixIn.class);
+        context.setMixInAnnotations(Throwable.class, ThrowableTypeMixIn.class);
     }
 
     public static class CharsetSerializer extends JsonSerializer<Charset> {
@@ -75,8 +75,6 @@ public class CoreJacksonModule extends SimpleModule {
     }
 
     @JsonSerialize(as = Throwable.class)
-    public abstract static class ExceptionTypeMixIn {
-
-
+    public abstract static class ThrowableTypeMixIn {
     }
 }

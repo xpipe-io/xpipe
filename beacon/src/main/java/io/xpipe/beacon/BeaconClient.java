@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
-import io.xpipe.beacon.message.ClientErrorMessage;
+import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.beacon.message.ServerErrorMessage;
+import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.util.JacksonHelper;
 
 import java.io.IOException;

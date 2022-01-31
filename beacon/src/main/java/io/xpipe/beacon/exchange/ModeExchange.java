@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -27,6 +28,7 @@ public class ModeExchange implements MessageExchange<ModeExchange.Request, ModeE
     @Builder
     @Value
     public static class Request implements RequestMessage {
+        @NonNull
         String modeId;
     }
 

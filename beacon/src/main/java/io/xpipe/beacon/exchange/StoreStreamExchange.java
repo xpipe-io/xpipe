@@ -41,9 +41,5 @@ public class StoreStreamExchange implements MessageExchange<StoreStreamExchange.
         DataSourceType sourceType;
         DataSourceConfig config;
         Object data;
-
-        public ReadInfoExchange.TableData getTableData() {
-            return (ReadInfoExchange.TableData) data;
-        }
     }
 }

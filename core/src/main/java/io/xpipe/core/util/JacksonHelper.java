@@ -14,7 +14,11 @@ public class JacksonHelper {
     private static final ObjectMapper INSTANCE = new ObjectMapper();
     private static boolean init = false;
 
-    public static synchronized void init(ModuleLayer layer) {
+    public static synchronized void initClassBased() {
+        initModularized(null);
+    }
+
+    public static synchronized void initModularized(ModuleLayer layer) {
         ObjectMapper objectMapper = INSTANCE;
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
@@ -30,7 +34,8 @@ public class JacksonHelper {
 
     private static List<Module> findModules(ModuleLayer layer) {
         ArrayList<Module> modules = new ArrayList<Module>();
-        ServiceLoader<Module> loader = ServiceLoader.load(layer, Module.class);
+        ServiceLoader<Module> loader = layer != null ?
+                ServiceLoader.load(layer, Module.class) : ServiceLoader.load(Module.class);
         for (Module module : loader) {
             modules.add(module);
         }

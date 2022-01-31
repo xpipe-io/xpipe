@@ -7,12 +7,13 @@ module io.xpipe.beacon {
 
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
-    requires com.fasterxml.jackson.module.paramnames;
     requires transitive io.xpipe.core;
 
     opens io.xpipe.beacon;
     opens io.xpipe.beacon.exchange;
     opens io.xpipe.beacon.message;
+    exports io.xpipe.beacon.exchange.data;
+    opens io.xpipe.beacon.exchange.data;
 
     requires static lombok;
 
@@ -20,8 +21,7 @@ module io.xpipe.beacon {
     provides io.xpipe.beacon.exchange.MessageExchange with
             ListCollectionsExchange,
             ListEntriesExchange,
-            ReadTableDataExchange,
-            ReadInfoExchange,
+            ModeExchange,
             StatusExchange,
             StopExchange,
             StoreResourceExchange,

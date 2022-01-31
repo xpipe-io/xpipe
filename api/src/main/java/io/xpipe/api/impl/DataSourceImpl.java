@@ -6,7 +6,7 @@ import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
-import io.xpipe.beacon.exchange.ReadInfoExchange;
+import io.xpipe.beacon.exchange.InfoExchange;
 import io.xpipe.beacon.exchange.StoreResourceExchange;
 import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.source.DataSourceConfig;
@@ -23,8 +23,8 @@ public abstract class DataSourceImpl implements DataSource {
         new XPipeApiConnector() {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = ReadInfoExchange.Request.builder().sourceId(ds).build();
-                ReadInfoExchange.Response res = performSimpleExchange(sc, req);
+                var req = InfoExchange.Request.builder().id(ds).build();
+                InfoExchange.Response res = performSimpleExchange(sc, req);
 
             }
         }.execute();
