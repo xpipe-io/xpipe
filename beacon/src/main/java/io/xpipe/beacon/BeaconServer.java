@@ -42,16 +42,16 @@ public class BeaconServer {
         return false;
     }
 
-    private static Optional<Path> getPortableExecutable() {
+    private static Optional<Path> getPortableLauncherExecutable() {
         var env = System.getenv("XPIPE_HOME");
         Path file = null;
 
         // Prepare for invalid XPIPE_HOME path value
         try {
             if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(env, "xpipe.exe");
+                file = Path.of(env, "xpipe-launcher.exe");
             } else {
-                file = Path.of(env, "xpipe");
+                file = Path.of(env, "xpipe-launcher");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {
@@ -60,7 +60,7 @@ public class BeaconServer {
     }
 
     public static Optional<Path> getLauncherExecutable() {
-        var portable = getPortableExecutable();
+        var portable = getPortableLauncherExecutable();
         if (portable.isPresent()) {
             return portable;
         }
@@ -68,9 +68,9 @@ public class BeaconServer {
         try {
             Path file = null;
             if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "xpipe.exe");
+                file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "xpipe-launcher.exe");
             } else {
-                file = Path.of("/opt/xpipe/xpipe");
+                file = Path.of("/opt/xpipe/xpipe-launcher");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {
@@ -84,7 +84,7 @@ public class BeaconServer {
             if (System.getProperty("os.name").startsWith("Windows")) {
                 file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpipe.exe");
             } else {
-                file = Path.of("/opt/xpipe/app/bin/xpipe");
+                file = Path.of("/opt/xpipe/bin/xpipe");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {
