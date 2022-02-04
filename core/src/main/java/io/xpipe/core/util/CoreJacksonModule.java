@@ -13,6 +13,7 @@ import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
 import io.xpipe.core.source.DataSourceInfo;
+import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.LocalFileDataStore;
 
 import java.io.IOException;
@@ -37,7 +38,31 @@ public class CoreJacksonModule extends SimpleModule {
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
 
+        addSerializer(DataSourceReference.class, new DataSourceReferenceSerializer());
+        addDeserializer(DataSourceReference.class, new DataSourceReferenceDeserializer());
+
         context.setMixInAnnotations(Throwable.class, ThrowableTypeMixIn.class);
+        context.setMixInAnnotations(DataSourceReference.class, DataSourceReferenceTypeMixIn.class);
+
+        context.addSerializers(_serializers);
+        context.addDeserializers(_deserializers);
+    }
+
+    public static class DataSourceReferenceSerializer extends JsonSerializer<DataSourceReference> {
+
+        @Override
+        public void serialize(DataSourceReference value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.toRefString());
+        }
+    }
+
+    public static class DataSourceReferenceDeserializer extends JsonDeserializer<DataSourceReference> {
+
+        @Override
+        public DataSourceReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return DataSourceReference.parse(p.getValueAsString());
+        }
     }
 
     public static class CharsetSerializer extends JsonSerializer<Charset> {
@@ -76,5 +101,9 @@ public class CoreJacksonModule extends SimpleModule {
 
     @JsonSerialize(as = Throwable.class)
     public abstract static class ThrowableTypeMixIn {
+    }
+
+    @JsonSerialize(as = DataSourceReference.class)
+    public abstract static class DataSourceReferenceTypeMixIn {
     }
 }

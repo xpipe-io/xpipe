@@ -22,7 +22,6 @@ import lombok.Getter;
 public class DataSourceId {
 
     public static final char SEPARATOR = ':';
-    public static final DataSourceId ANONYMOUS = new DataSourceId(null, null);
 
     private final String collectionName;
     private final String entryName;
@@ -41,10 +40,6 @@ public class DataSourceId {
      * @throws IllegalArgumentException if any name is not valid
      */
     public static DataSourceId create(String collectionName, String entryName) {
-        if (collectionName == null && entryName == null) {
-            return ANONYMOUS;
-        }
-
         if (collectionName != null && collectionName.trim().length() == 0) {
             throw new IllegalArgumentException("Trimmed collection name is empty");
         }
@@ -77,10 +72,6 @@ public class DataSourceId {
             throw new IllegalArgumentException("String is null");
         }
 
-        if (s.equals(String.valueOf(SEPARATOR))) {
-            return ANONYMOUS;
-        }
-
         var split = s.split(String.valueOf(SEPARATOR));
         if (split.length != 2) {
             throw new IllegalArgumentException("Data source id must contain exactly one " + SEPARATOR);
@@ -98,6 +89,6 @@ public class DataSourceId {
 
     @Override
     public String toString() {
-        return (collectionName != null ? collectionName.toLowerCase() : "") + SEPARATOR + (entryName != null ? entryName.toLowerCase() : "");
+        return collectionName.toLowerCase() + SEPARATOR + (entryName != null ? entryName.toLowerCase() : "");
     }
 }

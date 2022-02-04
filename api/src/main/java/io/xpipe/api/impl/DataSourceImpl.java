@@ -23,7 +23,7 @@ public abstract class DataSourceImpl implements DataSource {
         new XPipeApiConnector() {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = InfoExchange.Request.builder().id(ds).build();
+                var req = InfoExchange.Request.builder().ref(ds).build();
                 InfoExchange.Response res = performSimpleExchange(sc, req);
 
             }

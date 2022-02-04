@@ -2,8 +2,9 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -28,7 +29,8 @@ public class SelectExchange implements MessageExchange<SelectExchange.Request, S
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        DataSourceId id;
+        @NonNull
+        DataSourceReference ref;
     }
 
     @Jacksonized

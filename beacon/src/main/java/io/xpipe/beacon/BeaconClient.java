@@ -44,11 +44,13 @@ public class BeaconClient implements AutoCloseable {
         void accept(T var1) throws E;
     }
 
-    public static Optional<BeaconClient> tryConnect() {
-        if (BeaconConfig.debugEnabled()) {
-            System.out.println("Attempting connection to server at port " + BeaconConfig.getUsedPort());
-        }
+    @FunctionalInterface
+    public interface FailableRunnable<E extends Throwable> {
 
+        void run() throws E;
+    }
+
+    public static Optional<BeaconClient> tryConnect() {
         try {
             return Optional.of(new BeaconClient());
         } catch (IOException ex) {

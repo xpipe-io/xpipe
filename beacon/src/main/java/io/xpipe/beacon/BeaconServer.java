@@ -25,7 +25,7 @@ public class BeaconServer {
     public static boolean tryStart() throws Exception {
         var custom = BeaconConfig.getCustomExecCommand();
         if (custom != null) {
-            new ProcessBuilder("cmd", "/c", "CALL", custom).inheritIO().start();
+            Runtime.getRuntime().exec(custom);
             return true;
         }
 
