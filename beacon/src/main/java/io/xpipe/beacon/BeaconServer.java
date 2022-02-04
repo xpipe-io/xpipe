@@ -1,5 +1,7 @@
 package io.xpipe.beacon;
 
+import io.xpipe.beacon.exchange.StopExchange;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
@@ -42,6 +44,11 @@ public class BeaconServer {
         return false;
     }
 
+    public static boolean tryStop(BeaconClient client) throws Exception {
+        StopExchange.Response res = client.simpleExchange(StopExchange.Request.builder().build());
+        return res.isSuccess();
+    }
+
     private static Optional<Path> getPortableLauncherExecutable() {
         var env = System.getenv("XPIPE_HOME");
         Path file = null;
@@ -49,9 +56,9 @@ public class BeaconServer {
         // Prepare for invalid XPIPE_HOME path value
         try {
             if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(env, "xpipe-launcher.exe");
+                file = Path.of(env, "xpipe_launcher.exe");
             } else {
-                file = Path.of(env, "xpipe-launcher");
+                file = Path.of(env, "xpipe_launcher");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {
@@ -68,9 +75,9 @@ public class BeaconServer {
         try {
             Path file = null;
             if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "xpipe-launcher.exe");
+                file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "xpipe_launcher.exe");
             } else {
-                file = Path.of("/opt/xpipe/xpipe-launcher");
+                file = Path.of("/opt/xpipe/xpipe_launcher");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {

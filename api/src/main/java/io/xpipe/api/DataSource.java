@@ -33,7 +33,8 @@ public interface DataSource {
      * @return a reference to the data source that can be used to access the underlying data source
      */
     static DataSource get(DataSourceId id) {
-        return DataSourceImpl.get(id);
+        return null;
+        //return DataSourceImpl.get(id);
     }
 
     static DataSource wrap(InputStream in, String type, Map<String, String> configOptions) {

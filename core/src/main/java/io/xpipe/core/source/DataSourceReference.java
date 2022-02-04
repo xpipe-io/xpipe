@@ -21,7 +21,7 @@ public interface DataSourceReference {
             return new Id(DataSourceId.fromString(s));
         }
 
-        return new Name(s);
+        return new Name(s.trim());
     }
 
     enum Type {

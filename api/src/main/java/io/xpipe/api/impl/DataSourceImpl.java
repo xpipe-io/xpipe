@@ -11,6 +11,7 @@ import io.xpipe.beacon.exchange.StoreResourceExchange;
 import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.source.DataSourceConfig;
 import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceReference;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 public abstract class DataSourceImpl implements DataSource {
 
-    public static DataSource get(DataSourceId ds) {
+    public static DataSource get(DataSourceReference ds) {
         final DataSource[] source = new DataSource[1];
         new XPipeApiConnector() {
             @Override

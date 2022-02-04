@@ -11,9 +11,6 @@ public class DataSourceIdTest {
     @Test
     public void testCreateInvalidParameters() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create(null, "abc");
-        });
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
             DataSourceId.create("a:bc", "abc");
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -46,7 +43,7 @@ public class DataSourceIdTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"abc", "abc:", "ab::c", ":abc", "  :ab", "::::", "", " "})
+    @ValueSource(strings = {"abc", "abc:", "ab::c", "::abc", "  ab", "::::", "", " "})
     public void testFromStringInvalidParameters(String arg) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             DataSourceId.fromString(arg);

@@ -1,9 +1,9 @@
 package io.xpipe.api.test;
 
+import io.xpipe.beacon.BeaconClient;
+import io.xpipe.beacon.BeaconServer;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-
-import static org.junit.jupiter.api.extension.ExtensionContext.Namespace.GLOBAL;
 
 public class XPipeConfig implements BeforeAllCallback, ExtensionContext.Store.CloseableResource {
 
@@ -13,15 +13,17 @@ public class XPipeConfig implements BeforeAllCallback, ExtensionContext.Store.Cl
     public void beforeAll(ExtensionContext context) throws Exception {
         if (!started) {
             started = true;
-            // Your "before all tests" startup logic goes here
-            // The following line registers a callback hook when the root test context is shut down
-            context.getRoot().getStore(GLOBAL).put("any unique name", this);
-            //BeaconServer.start();
+            if (BeaconServer.tryStart()) {
+                throw new AssertionError();
+            }
         }
     }
 
     @Override
-    public void close() {
-        // Your "after all tests" logic goes here
+    public void close() throws Exception {
+        var client = new BeaconClient();
+        if (BeaconServer.tryStop(client)) {
+            throw new AssertionError();
+        }
     }
 }
