@@ -1,9 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSourceConfig;
-import io.xpipe.core.source.DataSourceDescriptor;
-import io.xpipe.core.source.DataSourceInfo;
-import io.xpipe.core.source.TableReadConnection;
+import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
 import javafx.beans.property.Property;
@@ -76,6 +73,8 @@ public interface DataSourceProvider {
 
         List<String> getPossibleNames();
     }
+
+    DataSourceType getType();
 
     boolean supportsStore(DataStore store);
 

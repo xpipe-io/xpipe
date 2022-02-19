@@ -1,6 +1,6 @@
 .code-snippet {
 -fx-padding: 0.3em 0.5em 0.3em 0.5em;
--fx-border-width: 0 0 0 1px;
+-fx-border-width: 0;
 -fx-border-color: -xp-border;
 -fx-spacing: 0;
 -fx-font-family: Monospace;
@@ -30,12 +30,7 @@
 -fx-background-color: #073B4C11;
 }
 
-.code-snippet .line {
--fx-padding: 0.1em 0 0 0;
--fx-background-color: transparent;
-}
-
-.code-snippet .spacer {
+.code-snippet-container .spacer {
 -fx-pref-width: 1px;
--fx-background-color: #073B4C43;
+-fx-background-color: -xp-border;
 }

@@ -12,6 +12,10 @@ public class ExceptionConverter {
             return I18n.get("fileNotFound", msg);
         }
 
+        if (ex instanceof ClassNotFoundException) {
+            return I18n.get("classNotFound", msg);
+        }
+
         return msg;
     }
 }

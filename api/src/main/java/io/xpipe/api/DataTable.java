@@ -9,6 +9,13 @@ import java.util.stream.Stream;
 
 public interface DataTable extends Iterable<TupleNode>, DataSource {
 
+    /**
+     * @see DataSource#supplySource()
+     */
+    static DataTable supplySource() {
+        return null;
+    }
+
     Stream<TupleNode> stream();
 
     int getRowCount();

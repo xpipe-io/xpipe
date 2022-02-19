@@ -18,6 +18,22 @@ import java.util.Map;
 public interface DataSource {
 
     /**
+     * Creates a new supplier data source that will be interpreted as the generated data source.
+     * In case this program should be a data source generator, this method has to be called at
+     * least once to register that it actually generates a data source.
+     *
+     * All content that is written to this data source until the generator program terminates is
+     * will be available later on when the data source is used as a supplier later on.
+     *
+     * In case this method is called multiple times, the same data source is returned.
+     *
+     * @return the generator data source
+     */
+    static DataSource supplySource() {
+        return null;
+    }
+
+    /**
      * Wrapper for {@link #get(DataSourceId)}.
      *
      * @throws IllegalArgumentException if {@code id} is not a valid data source id

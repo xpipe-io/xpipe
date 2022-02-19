@@ -89,6 +89,6 @@ public class DataSourceId {
 
     @Override
     public String toString() {
-        return collectionName.toLowerCase() + SEPARATOR + (entryName != null ? entryName.toLowerCase() : "");
+        return (collectionName != null ? collectionName.toLowerCase() : "") + SEPARATOR + entryName;
     }
 }

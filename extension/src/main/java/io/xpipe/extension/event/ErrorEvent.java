@@ -11,6 +11,17 @@ import java.util.List;
 @Getter
 public class ErrorEvent {
 
+    public static class ErrorEventBuilder {
+
+        public ErrorEventBuilder omit() {
+            return omitted(true);
+        }
+
+        public void handle() {
+            build().handle();
+        }
+    }
+
     public static ErrorEventBuilder fromThrowable(Throwable t) {
         return builder().throwable(t)
                 .description(ExceptionConverter.convertMessage(t));
