@@ -1,7 +1,7 @@
 package io.xpipe.api.impl;
 
 import io.xpipe.api.DataTable;
-import io.xpipe.api.XPipeApiConnector;
+import io.xpipe.api.connector.XPipeApiConnector;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
@@ -9,7 +9,6 @@ import io.xpipe.beacon.ServerException;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
-import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedAbstractReader;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
@@ -27,12 +26,10 @@ import java.util.stream.StreamSupport;
 
 public class DataTableImpl extends DataSourceImpl implements DataTable {
 
-    private final DataSourceId id;
     private final DataSourceInfo.Table info;
 
-    public DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, DataSourceInfo.Table info) {
+    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, DataSourceInfo.Table info) {
         super(id, sourceConfig);
-        this.id = id;
         this.info = info;
     }
 
@@ -41,38 +38,19 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         return this;
     }
 
+    @Override
+    public DataSourceInfo.Table getInfo() {
+        return info;
+    }
+
     public Stream<TupleNode> stream() {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED), false);
     }
 
     @Override
-    public DataSourceId getId() {
-        return id;
-    }
-
-    @Override
     public DataSourceType getType() {
         return DataSourceType.TABLE;
-    }
-
-    @Override
-    public int getRowCount() {
-        if (info.getRowCount() == -1) {
-            throw new UnsupportedOperationException("Row count is unknown");
-        }
-
-        return info.getRowCount();
-    }
-
-    @Override
-    public OptionalInt getRowCountIfPresent() {
-        return info.getRowCount() != -1 ? OptionalInt.of(info.getRowCount()) : OptionalInt.empty();
-    }
-
-    @Override
-    public TupleType getDataType() {
-        return info.getDataType();
     }
 
     @Override

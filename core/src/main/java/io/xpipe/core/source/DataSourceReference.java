@@ -6,15 +6,56 @@ import lombok.Value;
 
 import java.util.Objects;
 
+/**
+ * Represents a reference to an X-Pipe data source.
+ * Using {@link DataSourceReference} instances instead of {@link DataSourceId}
+ * instances is mainly done for user convenience purposes.
+ *
+ * While a {@link DataSourceId} represents a unique and canonical identifier for an X-Pipe data source,
+ * there also exist easier and shorter ways to address a data source.
+ * This convenience comes at the price of ambiguity and instability for other types of references.
+ */
 public interface DataSourceReference {
 
-    static DataSourceReference empty() {
-        return new Empty();
+    /**
+     * Creates a reference that always refers to the latest data source.
+     *
+     * @see Latest
+     */
+    static DataSourceReference latest() {
+        return new Latest();
     }
 
-    public static DataSourceReference parse(String s) {
+    /**
+     * Creates a reference using only the data source name.
+     *
+     * @see Name
+     */
+    static DataSourceReference name(String name) {
+        return new Name(name);
+    }
+
+    /**
+     * Convenience method for {@link #id(DataSourceId)}
+     *
+     * @see DataSourceId#fromString(String)
+     */
+    static DataSourceReference id(String id) {
+        return new Id(DataSourceId.fromString(id));
+    }
+
+    /**
+     * Creates a reference by using a canonical data source id.
+     *
+     * @see Id
+     */
+    static DataSourceReference id(DataSourceId id) {
+        return new Id(id);
+    }
+
+    static DataSourceReference parse(String s) {
         if (s == null || s.trim().length() == 0) {
-            return new Empty();
+            return new Latest();
         }
 
         if (s.contains(":")) {
@@ -27,15 +68,23 @@ public interface DataSourceReference {
     enum Type {
         ID,
         NAME,
-        EMPTY
+        LATEST
     }
 
     Type getType();
     DataSourceId getId();
     String getName();
+
+    /**
+     * Returns the internal string representation of this reference.
+     */
     String toRefString();
+
     String toString();
 
+    /**
+     * A wrapper class for {@link DataSourceId} instances.
+     */
     @Value
     @AllArgsConstructor
     static class Id implements DataSourceReference {
@@ -81,6 +130,11 @@ public interface DataSourceReference {
         }
     }
 
+    /**
+     * Using only the data source name allows for a shorthand way of referring to data sources.
+     * This works as long there are no two different data sources with the same name in different collections.
+     * If this name reference is ambiguous, the data source referral fails.
+     */
     @Value
     @AllArgsConstructor
     static class Name implements DataSourceReference {
@@ -126,7 +180,12 @@ public interface DataSourceReference {
         }
     }
 
-    static class Empty implements DataSourceReference {
+    /**
+     * Specifying the latest reference allows the user to always address the latest data source.
+     * Data source referral this way is unstable however as adding or
+     * removing data sources might change the referral behaviour and is therefore not recommended.
+     */
+    static class Latest implements DataSourceReference {
 
         @Override
         public String toRefString() {
@@ -135,7 +194,7 @@ public interface DataSourceReference {
 
         @Override
         public String toString() {
-            return "none";
+            return "latest";
         }
 
         @Override
@@ -151,7 +210,7 @@ public interface DataSourceReference {
 
         @Override
         public Type getType() {
-            return Type.EMPTY;
+            return Type.LATEST;
         }
 
         @Override

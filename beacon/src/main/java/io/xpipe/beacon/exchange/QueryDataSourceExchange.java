@@ -2,30 +2,28 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
-import io.xpipe.core.source.DataSourceInfo;
-import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class InfoExchange implements MessageExchange<InfoExchange.Request, InfoExchange.Response> {
+public class QueryDataSourceExchange implements MessageExchange<QueryDataSourceExchange.Request, QueryDataSourceExchange.Response> {
 
     @Override
     public String getId() {
-        return "info";
+        return "queryDataSource";
     }
 
     @Override
-    public Class<InfoExchange.Request> getRequestClass() {
-        return InfoExchange.Request.class;
+    public Class<QueryDataSourceExchange.Request> getRequestClass() {
+        return QueryDataSourceExchange.Request.class;
     }
 
     @Override
-    public Class<InfoExchange.Response> getResponseClass() {
-        return InfoExchange.Response.class;
+    public Class<QueryDataSourceExchange.Response> getResponseClass() {
+        return QueryDataSourceExchange.Response.class;
     }
 
     @Jacksonized
@@ -41,9 +39,13 @@ public class InfoExchange implements MessageExchange<InfoExchange.Request, InfoE
     @Value
     public static class Response implements ResponseMessage {
         @NonNull
+        DataSourceId id;
+        @NonNull
         DataSourceInfo info;
         @NonNull
         DataStore store;
+        @NonNull
+        DataSourceDescriptor<?> descriptor;
         @NonNull
         DataSourceConfigInstance config;
     }

@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 @Jacksonized
 public class DataSourceConfig {
-    String description;
 
     @Singular
     List<Option> options;

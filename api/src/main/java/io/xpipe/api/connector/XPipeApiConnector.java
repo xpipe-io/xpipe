@@ -1,4 +1,4 @@
-package io.xpipe.api;
+package io.xpipe.api.connector;
 
 import io.xpipe.beacon.*;
 import io.xpipe.core.util.JacksonHelper;
@@ -12,7 +12,7 @@ public abstract class XPipeApiConnector extends BeaconConnector {
             var socket = constructSocket();
             handle(socket);
         } catch (Throwable ce) {
-            throw new XPipeException(ce);
+            throw new RuntimeException(ce);
         }
     }
 

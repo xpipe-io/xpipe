@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 
 public record CodeSnippet(List<CodeSnippet.Line> lines) {
 
+    public String toString() {
+        return getRawString();
+    }
+
     public String getRawString() {
         return lines.stream().map(line -> line.elements().stream()
                 .map(Element::text).collect(Collectors.joining()))

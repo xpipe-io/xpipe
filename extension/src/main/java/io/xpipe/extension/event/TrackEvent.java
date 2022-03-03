@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Singular;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Builder
@@ -16,6 +17,16 @@ public class TrackEvent {
         public TrackEventBuilder windowCategory() {
             this.category("window");
             return this;
+        }
+
+        public TrackEventBuilder copy() {
+            var copy = builder();
+            copy.category = category;
+            copy.message = message;
+            copy.tags$key = new ArrayList<>(tags$key);
+            copy.tags$value = new ArrayList<>(tags$value);
+            copy.type = type;
+            return copy;
         }
 
         public void handle() {
@@ -33,6 +44,10 @@ public class TrackEvent {
 
     public static TrackEventBuilder withInfo(String message) {
         return builder().type("info").message(message);
+    }
+
+    public static TrackEventBuilder withWarn(String message) {
+        return builder().type("warn").message(message);
     }
 
     public static TrackEventBuilder withTrace(String message) {
@@ -55,12 +70,20 @@ public class TrackEvent {
         return builder().type("debug").message(message);
     }
 
+    public static void debug(String cat, String message) {
+        builder().category(cat).type("debug").message(message).build().handle();
+    }
+
     public static void debug(String message) {
         builder().type("debug").message(message).build().handle();
     }
 
     public static void trace(String message) {
         builder().type("trace").message(message).build().handle();
+    }
+
+    public static void info(String cat, String message) {
+        builder().category(cat).type("info").message(message).build().handle();
     }
 
     public static void trace(String cat, String message) {

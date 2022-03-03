@@ -11,8 +11,8 @@ public class DataSourceReferenceTest {
 
     @Test
     public void parseValidParameters() {
-        Assertions.assertEquals(DataSourceReference.parse(" ").getType(), DataSourceReference.Type.EMPTY);
-        Assertions.assertEquals(DataSourceReference.parse(null).getType(), DataSourceReference.Type.EMPTY);
+        Assertions.assertEquals(DataSourceReference.parse(" ").getType(), DataSourceReference.Type.LATEST);
+        Assertions.assertEquals(DataSourceReference.parse(null).getType(), DataSourceReference.Type.LATEST);
 
         Assertions.assertEquals(DataSourceReference.parse("abc").getType(), DataSourceReference.Type.NAME);
         Assertions.assertEquals(DataSourceReference.parse(" abc_ d e").getName(), "abc_ d e");

@@ -3,4 +3,5 @@ module io.xpipe.api {
     requires io.xpipe.beacon;
 
     exports io.xpipe.api;
+    exports io.xpipe.api.connector;
 }

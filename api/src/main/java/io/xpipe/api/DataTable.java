@@ -2,27 +2,15 @@ package io.xpipe.api;
 
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.TupleNode;
-import io.xpipe.core.data.type.TupleType;
+import io.xpipe.core.source.DataSourceInfo;
 
-import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 public interface DataTable extends Iterable<TupleNode>, DataSource {
 
-    /**
-     * @see DataSource#supplySource()
-     */
-    static DataTable supplySource() {
-        return null;
-    }
+    DataSourceInfo.Table getInfo();
 
     Stream<TupleNode> stream();
-
-    int getRowCount();
-
-    OptionalInt getRowCountIfPresent();
-
-    TupleType getDataType();
 
     ArrayNode readAll();
 

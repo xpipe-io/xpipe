@@ -1,12 +1,12 @@
 package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSource;
-import io.xpipe.api.XPipeApiConnector;
+import io.xpipe.api.connector.XPipeApiConnector;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ConnectorException;
 import io.xpipe.beacon.ServerException;
-import io.xpipe.beacon.exchange.InfoExchange;
+import io.xpipe.beacon.exchange.QueryDataSourceExchange;
 import io.xpipe.beacon.exchange.StoreResourceExchange;
 import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.source.DataSourceConfig;
@@ -24,9 +24,26 @@ public abstract class DataSourceImpl implements DataSource {
         new XPipeApiConnector() {
             @Override
             protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = InfoExchange.Request.builder().ref(ds).build();
-                InfoExchange.Response res = performSimpleExchange(sc, req);
-
+                var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
+                QueryDataSourceExchange.Response res = performSimpleExchange(sc, req);
+                switch (res.getInfo().getType()) {
+                    case TABLE -> {
+                        var data = res.getInfo().asTable();
+                        source[0] = new DataTableImpl(res.getId(), res.getConfig().getConfig(), data);
+                    }
+                    case STRUCTURE -> {
+                        var info = res.getInfo().asStructure();
+                        source[0] = new DataStructureImpl(res.getId(), res.getConfig().getConfig(), info);
+                    }
+                    case TEXT -> {
+                        var info = res.getInfo().asText();
+                        source[0] = new DataTextImpl(res.getId(), res.getConfig().getConfig(), info);
+                    }
+                    case RAW -> {
+                        var info = res.getInfo().asRaw();
+                        source[0] = new DataRawImpl(res.getId(), res.getConfig().getConfig(), info);
+                    }
+                }
             }
         }.execute();
         return source[0];

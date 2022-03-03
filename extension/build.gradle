@@ -8,6 +8,7 @@ plugins {
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/javafx.gradle"
 apply from: "$rootDir/deps/richtextfx.gradle"
+apply from: "$rootDir/deps/preferencesfx.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
 apply from: "$rootDir/deps/commons.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
@@ -26,4 +27,5 @@ repositories {
 dependencies {
     implementation project(':core')
     implementation project(':fxcomps')
+    implementation group: 'com.dlsc.preferencesfx', name: 'preferencesfx-core', version: '11.8.0'
 }

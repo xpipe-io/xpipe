@@ -1,6 +1,5 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSourceId;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
@@ -13,13 +12,7 @@ public interface SupportedApplicationProvider {
         APPLICATION
     }
 
-    Region createTableRetrieveInstructions(ObservableValue<DataSourceId> id);
-
-    Region createStructureRetrieveInstructions(ObservableValue<DataSourceId> id);
-
-    Region createTextRetrieveInstructions(ObservableValue<DataSourceId> id);
-
-    Region createRawRetrieveInstructions(ObservableValue<DataSourceId> id);
+    Region createRetrieveInstructions(DataSourceProvider provider, ObservableValue<String> id);
 
     String getId();
 

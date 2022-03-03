@@ -3,6 +3,7 @@ package io.xpipe.extension.comp;
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.util.PlatformUtil;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,8 +24,13 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
     private final ObservableValue<Boolean> showLineNumbers;
     private final ObservableValue<CodeSnippet> value;
 
+    public CodeSnippetComp(boolean showLineNumbers, ObservableValue<CodeSnippet> value) {
+        this.showLineNumbers = new SimpleBooleanProperty(showLineNumbers);
+        this.value = PlatformUtil.wrap(value);
+    }
+
     public CodeSnippetComp(ObservableValue<Boolean> showLineNumbers, ObservableValue<CodeSnippet> value) {
-        this.showLineNumbers = showLineNumbers;
+        this.showLineNumbers = PlatformUtil.wrap(showLineNumbers);
         this.value = PlatformUtil.wrap(value);
     }
 
@@ -88,10 +94,7 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
         lineNumbers.getStyleClass().add("line-numbers");
         fillArea(lineNumbers, s);
         value.addListener((c,o,n) -> {
-            PlatformUtil.runLaterIfNeeded(() -> {
-                fillArea(lineNumbers, s);
-                s.setMaxHeight(5);
-            });
+            fillArea(lineNumbers, s);
         });
 
         var spacer = new Region();
@@ -103,7 +106,7 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
             content.getChildren().add(0, lineNumbers);
             content.getChildren().add(1, spacer);
         }
-        PlatformUtil.wrap(showLineNumbers).addListener((c,o,n) -> {
+        showLineNumbers.addListener((c,o,n) -> {
             if (n) {
                 content.getChildren().add(0, lineNumbers);
                 content.getChildren().add(1, spacer);

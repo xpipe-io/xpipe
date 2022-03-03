@@ -16,8 +16,8 @@ public class BeaconConfig {
 
 
 
-    private static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
-    private static final int DEFAULT_PORT = 21721;
+    public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
+    public static final int DEFAULT_PORT = 21721;
 
     public static int getUsedPort() {
         if (System.getProperty(BEACON_PORT_PROP) != null) {

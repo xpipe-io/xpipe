@@ -1,5 +1,7 @@
+import com.fasterxml.jackson.databind.Module;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.SupportedApplicationProvider;
+import io.xpipe.extension.prefs.PrefsChoiceValueModule;
 
 module io.xpipe.extension {
     requires io.xpipe.core;
@@ -13,12 +15,18 @@ module io.xpipe.extension {
     exports io.xpipe.extension;
     exports io.xpipe.extension.comp;
     exports io.xpipe.extension.event;
+    exports io.xpipe.extension.prefs;
 
     uses DataSourceProvider;
     uses SupportedApplicationProvider;
     uses io.xpipe.extension.I18n;
     uses io.xpipe.extension.event.EventHandler;
+    uses io.xpipe.extension.prefs.PrefsProvider;
 
+    provides Module with PrefsChoiceValueModule;
+
+    requires com.dlsc.preferencesfx;
+    requires com.dlsc.formsfx;
     requires java.desktop;
     requires org.fxmisc.richtext;
     requires org.fxmisc.flowless;
@@ -26,4 +34,5 @@ module io.xpipe.extension {
     requires org.fxmisc.wellbehavedfx;
     requires org.reactfx;
     requires org.kordamp.ikonli.javafx;
+    requires com.fasterxml.jackson.databind;
 }
