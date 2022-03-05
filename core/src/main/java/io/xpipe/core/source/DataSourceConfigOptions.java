@@ -12,7 +12,11 @@ import java.util.List;
 @Value
 @Builder
 @Jacksonized
-public class DataSourceConfig {
+public class DataSourceConfigOptions {
+
+    public static DataSourceConfigOptions empty() {
+        return new DataSourceConfigOptions(List.of());
+    }
 
     @Singular
     List<Option> options;

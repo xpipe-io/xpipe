@@ -1,13 +1,14 @@
 package io.xpipe.api;
 
 import io.xpipe.api.impl.DataSourceImpl;
-import io.xpipe.core.source.DataSourceConfig;
-import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceReference;
-import io.xpipe.core.source.DataSourceType;
+import io.xpipe.core.source.*;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -67,7 +68,7 @@ public interface DataSource {
     }
 
     /**
-     * Retrieves a reference to the given data source.
+     * Retrieves the data source for a given reference.
      *
      * @param ref the data source reference
      */
@@ -83,54 +84,75 @@ public interface DataSource {
         throw new UnsupportedOperationException();
     }
 
-    static DataSource wrap(InputStream in, String type, Map<String, String> configOptions) {
-        return DataSourceImpl.wrap(in, type, configOptions);
-    }
-
-    static DataSource wrap(InputStream in, String type) {
-        return DataSourceImpl.wrap(in, type, Map.of());
-    }
-
-    static DataSource wrap(InputStream in) {
-        return DataSourceImpl.wrap(in, null, Map.of());
+    /**
+     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)} that creates an anonymous data source.
+     */
+    public static DataSource createAnonymous(String type, Map<String,String> config, Path path) {
+        return create(null, type, config, path);
     }
 
     /**
-     * Retrieves a reference to the given local data source that is specified by a URL.
+     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)}.
+     */
+    public static DataSource create(DataSourceId id, String type, Map<String,String> config, Path path) {
+        try (var in = Files.newInputStream(path)) {
+            return create(id, type, config, in);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)} that creates an anonymous data source.
+     */
+    public static DataSource createAnonymous(String type, Map<String,String> config, URL url) {
+        return create(null, type, config, url);
+    }
+
+    /**
+     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)}.
+     */
+    public static DataSource create(DataSourceId id, String type, Map<String,String> config, URL url) {
+        try (var in = url.openStream()) {
+            return create(id, type, config, in);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+
+    /**
+     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)} that creates an anonymous data source.
+     */
+    public static DataSource createAnonymous(String type, Map<String,String> config, InputStream in) {
+        return create(null, type, config, in);
+    }
+
+    /**
+     * Creates a new data source from an input stream.
      *
-     * This wrapped data source is only available temporarily and locally,
-     * i.e. it is not added to the XPipe data source storage.
-     *
-     * @param url the url that points to the data
+     * @param id the data source id
      * @param type the data source type
-     * @param configOptions additional configuration options for the specific data source type
-     * @return a reference to the data source that can be used to access the underlying data source
+     * @param config additional configuration options for the specific data source type
+     * @param in the input stream to read
+     * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    static DataSource wrap(URL url, String type, Map<String, String> configOptions) {
-        return DataSourceImpl.wrap(url, type, configOptions);
+    public static DataSource create(DataSourceId id, String type, Map<String,String> config, InputStream in) {
+        return DataSourceImpl.create(id, type, config, in);
     }
 
     /**
-     * Wrapper for {@link #wrap(URL, String, Map)} that passes no configuration options.
-     * As a result, the data source configuration is automatically determined by X-Pipe for the given type.
+     * Returns the id of this data source.
      */
-    static DataSource wrap(URL url, String type) {
-        return wrap(url, type, Map.of());
-    }
-
-    /**
-     * Wrapper for {@link #wrap(URL, String, Map)} that passes no type and no configuration options.
-     * As a result, the data source type and configuration is automatically determined by X-Pipe.
-     */
-    static DataSource wrap(URL url) {
-        return wrap(url, null, Map.of());
-    }
-
     DataSourceId getId();
 
+    /**
+     * Returns the type of this data source.
+     */
     DataSourceType getType();
 
-    DataSourceConfig getConfig();
+
+    DataSourceConfigInstance getConfig();
 
     /**
      * Attempts to cast this object to a {@link DataTable}.

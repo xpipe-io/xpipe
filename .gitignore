@@ -3,3 +3,4 @@ build/
 .idea
 dev.properties
 extensions.txt
+local/

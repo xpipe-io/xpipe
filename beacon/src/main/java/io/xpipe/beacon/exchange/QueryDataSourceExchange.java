@@ -45,8 +45,6 @@ public class QueryDataSourceExchange implements MessageExchange<QueryDataSourceE
         @NonNull
         DataStore store;
         @NonNull
-        DataSourceDescriptor<?> descriptor;
-        @NonNull
         DataSourceConfigInstance config;
     }
 }

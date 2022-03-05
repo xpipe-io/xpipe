@@ -63,13 +63,13 @@ public interface DataSourceProvider {
             };
         }
 
-        DataSourceConfig getConfig();
+        DataSourceConfigOptions getConfig();
 
         DataSourceDescriptor<?> toDescriptor(Map<String, String> values);
 
         Map<String, String> toConfigOptions(DataSourceDescriptor<?> desc);
 
-        Map<DataSourceConfig.Option, Function<String, ?>> getConverters();
+        Map<DataSourceConfigOptions.Option, Function<String, ?>> getConverters();
 
         List<String> getPossibleNames();
     }

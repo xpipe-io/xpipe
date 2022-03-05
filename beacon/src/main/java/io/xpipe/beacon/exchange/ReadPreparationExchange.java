@@ -30,9 +30,10 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String providerType;
+        String provider;
+
         @NonNull
-        String dataStore;
+        StreamDataStore store;
     }
 
     @Jacksonized
@@ -40,6 +41,6 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
     @Value
     public static class Response implements ResponseMessage {
         DataSourceConfigInstance config;
-        StreamDataStore dataStore;
+        StreamDataStore store;
     }
 }

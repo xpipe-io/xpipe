@@ -68,6 +68,10 @@ public class BeaconClient implements AutoCloseable {
         out = socket.getOutputStream();
     }
 
+    public boolean isClosed() {
+        return socket.isClosed();
+    }
+
     public void close() throws ConnectorException {
         try {
             socket.close();
@@ -100,13 +104,32 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
+    public void receiveBody() throws ConnectorException {
+        try {
+            var sep = in.readNBytes(BODY_SEPARATOR.length);
+            if (sep.length != 0 && !Arrays.equals(BODY_SEPARATOR, sep)) {
+                throw new ConnectorException("Invalid body separator");
+            }
+        } catch (IOException ex) {
+            throw new ConnectorException(ex);
+        }
+    }
+
+    public void startBody() throws ConnectorException {
+        try {
+            out.write(BODY_SEPARATOR);
+        } catch (IOException ex) {
+            throw new ConnectorException(ex);
+        }
+    }
+
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES simpleExchange(REQ req)
         throws ServerException, ConnectorException, ClientException {
         sendRequest(req);
         return this.receiveResponse();
     }
 
-    private <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
+    public  <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
         ObjectNode json = JacksonHelper.newMapper().valueToTree(req);
         var prov = MessageExchanges.byRequest(req);
         if (prov.isEmpty()) {
@@ -132,7 +155,7 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
-    private <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
+    public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
         JsonNode read;
         try {
             var in = socket.getInputStream();

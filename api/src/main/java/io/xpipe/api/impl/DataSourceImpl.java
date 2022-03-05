@@ -1,101 +1,81 @@
 package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSource;
-import io.xpipe.api.connector.XPipeApiConnector;
-import io.xpipe.beacon.BeaconClient;
-import io.xpipe.beacon.ClientException;
-import io.xpipe.beacon.ConnectorException;
-import io.xpipe.beacon.ServerException;
+import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.beacon.exchange.PreStoreExchange;
 import io.xpipe.beacon.exchange.QueryDataSourceExchange;
-import io.xpipe.beacon.exchange.StoreResourceExchange;
-import io.xpipe.beacon.exchange.StoreStreamExchange;
-import io.xpipe.core.source.DataSourceConfig;
+import io.xpipe.beacon.exchange.ReadExecuteExchange;
+import io.xpipe.beacon.exchange.ReadPreparationExchange;
+import io.xpipe.core.source.DataSourceConfigInstance;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 
 public abstract class DataSourceImpl implements DataSource {
 
     public static DataSource get(DataSourceReference ds) {
-        final DataSource[] source = new DataSource[1];
-        new XPipeApiConnector() {
-            @Override
-            protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
-                QueryDataSourceExchange.Response res = performSimpleExchange(sc, req);
-                switch (res.getInfo().getType()) {
-                    case TABLE -> {
-                        var data = res.getInfo().asTable();
-                        source[0] = new DataTableImpl(res.getId(), res.getConfig().getConfig(), data);
-                    }
-                    case STRUCTURE -> {
-                        var info = res.getInfo().asStructure();
-                        source[0] = new DataStructureImpl(res.getId(), res.getConfig().getConfig(), info);
-                    }
-                    case TEXT -> {
-                        var info = res.getInfo().asText();
-                        source[0] = new DataTextImpl(res.getId(), res.getConfig().getConfig(), info);
-                    }
-                    case RAW -> {
-                        var info = res.getInfo().asRaw();
-                        source[0] = new DataRawImpl(res.getId(), res.getConfig().getConfig(), info);
-                    }
+        return XPipeConnection.execute(con -> {
+            var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
+            QueryDataSourceExchange.Response res = con.performSimpleExchange(req);
+            switch (res.getInfo().getType()) {
+                case TABLE -> {
+                    var data = res.getInfo().asTable();
+                    return new DataTableImpl(res.getId(), res.getConfig(), data);
+                }
+                case STRUCTURE -> {
+                    var info = res.getInfo().asStructure();
+                    return new DataStructureImpl(res.getId(), res.getConfig(), info);
+                }
+                case TEXT -> {
+                    var info = res.getInfo().asText();
+                    return new DataTextImpl(res.getId(), res.getConfig(), info);
+                }
+                case RAW -> {
+                    var info = res.getInfo().asRaw();
+                    return new DataRawImpl(res.getId(), res.getConfig(), info);
                 }
             }
-        }.execute();
-        return source[0];
+            throw new AssertionError();
+        });
     }
 
-    public static DataSource wrap(URL url, String type, Map<String,String> config) {
-        final DataSource[] source = new DataSource[1];
-        new XPipeApiConnector() {
-            @Override
-            protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = StoreResourceExchange.Request.builder()
-                        .url(url).providerId(type).build();
-                StoreResourceExchange.Response res = performOutputExchange(sc, req, out -> {
-                    try (var s = url.openStream()) {
-                        writeLength(sc, s.available());
-                        s.transferTo(out);
-                    }
-                });
-                switch (res.getInfo().getType()) {
-                    case TABLE -> {
-                        var data = res.getInfo().asTable();
-                        source[0] = new DataTableImpl(res.getSourceId(), res.getConfig(), data);
-                    }
-                    case STRUCTURE -> {
-                    }
-                    case RAW -> {
-                    }
-                }
-            }
-        }.execute();
-        return source[0];
-    }
+    public static DataSource create(DataSourceId id, String type, Map<String,String> config, InputStream in) {
+        var res = XPipeConnection.execute(con -> {
+            var req = PreStoreExchange.Request.builder().build();
+            PreStoreExchange.Response r = con.performOutputExchange(req, in::transferTo);
+            return r;
+        });
 
-    public static DataSource wrap(InputStream in, String type, Map<String,String> config) {
-        final DataSource[] source = new DataSource[1];
-        new XPipeApiConnector() {
-            @Override
-            protected void handle(BeaconClient sc) throws ClientException, ServerException, ConnectorException {
-                var req = StoreStreamExchange.Request.builder().type(type).build();
-                StoreStreamExchange.Response res = performOutputExchange(sc, req, in::transferTo);
+        var store = res.getStore();
 
-            }
-        }.execute();
-        return source[0];
+        var startReq = ReadPreparationExchange.Request.builder()
+                .provider(type)
+                .store(store)
+                .build();
+        var startRes = XPipeConnection.execute(con -> {
+            ReadPreparationExchange.Response r = con.performSimpleExchange(startReq);
+            return r;
+        });
+
+        var configInstance = startRes.getConfig();
+        configInstance.getCurrentValues().putAll(config);
+        var endReq = ReadExecuteExchange.Request.builder()
+                .target(id).dataStore(store).config(configInstance).build();
+        XPipeConnection.execute(con -> {
+            con.performSimpleExchange(endReq);
+        });
+        var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
+        return get(ref);
     }
 
     private final DataSourceId sourceId;
-    private final DataSourceConfig sourceConfig;
+    private final DataSourceConfigInstance config;
 
-    public DataSourceImpl(DataSourceId sourceId, DataSourceConfig sourceConfig) {
+    public DataSourceImpl(DataSourceId sourceId, DataSourceConfigInstance config) {
         this.sourceId = sourceId;
-        this.sourceConfig = sourceConfig;
+        this.config = config;
     }
 
     @Override
@@ -104,7 +84,7 @@ public abstract class DataSourceImpl implements DataSource {
     }
 
     @Override
-    public DataSourceConfig getConfig() {
-        return sourceConfig;
+    public DataSourceConfigInstance getConfig() {
+        return config;
     }
 }

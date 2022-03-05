@@ -4,7 +4,7 @@ import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceType;
-import io.xpipe.core.source.DataSourceConfig;
+import io.xpipe.core.source.DataSourceConfigOptions;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -39,7 +39,7 @@ public class StoreStreamExchange implements MessageExchange<StoreStreamExchange.
     public static class Response implements ResponseMessage {
         DataSourceId sourceId;
         DataSourceType sourceType;
-        DataSourceConfig config;
+        DataSourceConfigOptions config;
         Object data;
     }
 }

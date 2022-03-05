@@ -29,11 +29,14 @@ test {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
+    workingDir = rootDir
 
-    systemProperty 'io.xpipe.beacon.exec', 'start_test_daemon.bat'
-    systemProperty "io.xpipe.daemon.mode", 'base'
-    systemProperty "io.xpipe.storage.dir", "$projectDir/test_env"
-    systemProperty "io.xpipe.beacon.port", "21722"
+    systemProperty "io.xpipe.storage.dir", "$projectDir/local/storage"
+    systemProperty "io.xpipe.storage.persist", "false"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.logLevel', "trace"
+
+    systemProperty "io.xpipe.beacon.exec", "cmd.exe /c \"$rootDir\\gradlew.bat\" :app:run -Dio.xpipe.daemon.mode=tray -Dio.xpipe.beacon.port=21722 -Dio.xpipe.app.dataDir=$projectDir/local/"
+    systemProperty 'io.xpipe.beacon.debugOutput', "true"
+    systemProperty "io.xpipe.beacon.port", "21722"
 }

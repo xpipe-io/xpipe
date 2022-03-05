@@ -2,12 +2,10 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.store.LocalFileDataStore;
+import io.xpipe.core.store.StreamDataStore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.nio.file.Path;
 
 public class PreStoreExchange implements MessageExchange<PreStoreExchange.Request, PreStoreExchange.Response> {
 
@@ -36,6 +34,6 @@ public class PreStoreExchange implements MessageExchange<PreStoreExchange.Reques
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        LocalFileDataStore store;
+        StreamDataStore store;
     }
 }

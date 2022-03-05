@@ -2,16 +2,13 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataStructure;
 import io.xpipe.core.data.node.DataStructureNode;
-import io.xpipe.core.source.DataSourceConfig;
-import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceInfo;
-import io.xpipe.core.source.DataSourceType;
+import io.xpipe.core.source.*;
 
 public class DataStructureImpl extends DataSourceImpl implements DataStructure {
 
     private final DataSourceInfo.Structure info;
 
-    public DataStructureImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Structure info) {
+    public DataStructureImpl(DataSourceId sourceId, DataSourceConfigInstance sourceConfig, DataSourceInfo.Structure info) {
         super(sourceId, sourceConfig);
         this.info = info;
     }

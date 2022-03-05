@@ -11,9 +11,9 @@ java {
 repositories {
     mavenCentral()
 }
-apply from: "$rootDir/deps/jackson.gradle"
 
 dependencies {
+    implementation project(':core')
     implementation project(':api')
 }
 

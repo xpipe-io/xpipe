@@ -2,7 +2,7 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfig;
+import io.xpipe.core.source.DataSourceConfigOptions;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceInfo;
 import lombok.Builder;
@@ -41,7 +41,7 @@ public class StoreResourceExchange implements MessageExchange<StoreResourceExcha
     @Value
     public static class Response implements ResponseMessage {
         DataSourceId sourceId;
-        DataSourceConfig config;
+        DataSourceConfigOptions config;
         DataSourceInfo info;
     }
 }

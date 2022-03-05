@@ -1,10 +1,12 @@
 package io.xpipe.sample;
 
+
 import io.xpipe.api.DataSource;
 import io.xpipe.api.DataTable;
 import io.xpipe.core.data.node.TupleNode;
 
 import java.util.Comparator;
+import java.util.Map;
 
 public class HomePricesSample {
 
@@ -17,7 +19,7 @@ public class HomePricesSample {
         // Note that while this is possible, it is not recommended as
         // all queries are routed through the XPipe client anyway.
         // It allows us however to bundle the data with this sample program.
-        homePricesTable = DataSource.wrap(resource, "csv").asTable();
+        homePricesTable = DataSource.createAnonymous("csv", Map.of(), resource).asTable();
 
         // As we didn't pass any configuration parameters, X-Pipe will try to automatically detect
         // the correct configuration parameters. You can access these parameters like this:

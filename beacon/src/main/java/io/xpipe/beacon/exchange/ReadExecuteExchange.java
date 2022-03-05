@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceConfigInstance;
-import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.store.DataStore;
 import lombok.Builder;
 import lombok.NonNull;
@@ -35,8 +35,8 @@ public class ReadExecuteExchange implements MessageExchange<ReadExecuteExchange.
         DataStore dataStore;
         @NonNull
         DataSourceConfigInstance config;
-        @NonNull
-        DataSourceReference target;
+
+        DataSourceId target;
     }
 
     @Jacksonized

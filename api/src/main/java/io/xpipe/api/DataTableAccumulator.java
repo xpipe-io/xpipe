@@ -20,9 +20,20 @@ public interface DataTableAccumulator {
      */
     DataTable finish(DataSourceId id);
 
+    /**
+     * Adds a row to the table.
+     *
+     * @param row the row to add
+     */
     void add(TupleNode row);
 
+    /**
+     * Creates a tuple acceptor that adds all accepted tuples to the table.
+     */
     DataStructureNodeAcceptor<TupleNode> acceptor();
 
+    /**
+     * Returns the current amount of rows added to the table.
+     */
     int getCurrentRows();
 }
