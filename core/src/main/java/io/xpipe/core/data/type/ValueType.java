@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.Optional;
+
 /**
  * A value type represents any node that holds some atomic value, i.e. it has no subtypes.
  */
@@ -26,6 +28,20 @@ public class ValueType extends DataType {
     @Override
     public String getName() {
         return "value";
+    }
+
+    @Override
+    public Optional<DataStructureNode> convert(DataStructureNode node) {
+        if (matches(node)) {
+            return Optional.of(node);
+        }
+
+        if (node.size() == 1) {
+            var n = node.at(0);
+            return convert(n);
+        }
+
+        return Optional.empty();
     }
 
     @Override

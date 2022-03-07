@@ -17,6 +17,8 @@ public final class XPipeConnection extends BeaconConnection {
         try (var con = new XPipeConnection()) {
             con.constructSocket();
             handler.handle(con);
+        } catch (BeaconException e) {
+            throw e;
         } catch (Exception e) {
             throw new BeaconException(e);
         }
@@ -26,6 +28,8 @@ public final class XPipeConnection extends BeaconConnection {
         try (var con = new XPipeConnection()) {
             con.constructSocket();
             return mapper.handle(con);
+        } catch (BeaconException e) {
+            throw e;
         } catch (Exception e) {
             throw new BeaconException(e);
         }

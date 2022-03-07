@@ -1,11 +1,7 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.node.DataStructureNode;
-import io.xpipe.core.data.node.DataStructureNodeIO;
 import io.xpipe.core.data.generic.GenericDataStreamWriter;
-import io.xpipe.core.data.node.ArrayNode;
-import io.xpipe.core.data.node.SimpleTupleNode;
-import io.xpipe.core.data.node.ValueNode;
+import io.xpipe.core.data.node.*;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
@@ -22,7 +18,7 @@ public class TypedDataStreamWriter {
 
     private static void write(OutputStream out, DataStructureNode node, DataType type) throws IOException {
         if (type.isTuple() && node.isTuple()) {
-            writeTuple(out, (SimpleTupleNode) node, (TupleType) type);
+            writeTuple(out, (TupleNode) node, (TupleType) type);
         } else if (node.isArray() && type.isArray()) {
             writeArray(out, (ArrayNode) node, (ArrayType) type);
         } else if (node.isValue() && type.isValue()) {
@@ -40,7 +36,7 @@ public class TypedDataStreamWriter {
         out.write(n.getRawData());
     }
 
-    private static void writeTuple(OutputStream out, SimpleTupleNode tuple, TupleType type) throws IOException {
+    private static void writeTuple(OutputStream out, TupleNode tuple, TupleType type) throws IOException {
         if (tuple.size() != type.getSize()) {
             throw new IllegalArgumentException("Tuple size mismatch");
         }

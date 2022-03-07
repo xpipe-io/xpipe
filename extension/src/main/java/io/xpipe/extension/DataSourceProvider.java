@@ -33,7 +33,7 @@ public interface DataSourceProvider {
         Supplier<String> getDescription(DataSourceDescriptor<?> source);
     }
 
-    interface CliProvider {
+    interface ConfigProvider {
 
         static String booleanName(String name) {
             return name + " (y/n)";
@@ -82,7 +82,7 @@ public interface DataSourceProvider {
 
     GuiProvider getGuiProvider();
 
-    CliProvider getCliProvider();
+    ConfigProvider getConfigProvider();
 
     String getId();
 

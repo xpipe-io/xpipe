@@ -55,7 +55,7 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.getCliProvider() != null && d.getCliProvider().getPossibleNames().stream()
+        return ALL.stream().filter(d -> d.getConfigProvider().getPossibleNames().stream()
                 .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
     }
 

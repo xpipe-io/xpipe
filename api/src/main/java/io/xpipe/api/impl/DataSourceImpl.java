@@ -44,7 +44,7 @@ public abstract class DataSourceImpl implements DataSource {
     public static DataSource create(DataSourceId id, String type, Map<String,String> config, InputStream in) {
         var res = XPipeConnection.execute(con -> {
             var req = PreStoreExchange.Request.builder().build();
-            PreStoreExchange.Response r = con.performOutputExchange(req, in::transferTo);
+            PreStoreExchange.Response r = con.performOutputExchange(req, out -> in.transferTo(out));
             return r;
         });
 

@@ -21,6 +21,7 @@ public class JacksonHelper {
     public static synchronized void initModularized(ModuleLayer layer) {
         ObjectMapper objectMapper = INSTANCE;
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 
         objectMapper.registerModules(findModules(layer));
         objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()

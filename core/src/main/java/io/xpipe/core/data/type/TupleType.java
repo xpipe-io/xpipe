@@ -3,14 +3,13 @@ package io.xpipe.core.data.type;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.data.node.DataStructureNode;
+import io.xpipe.core.data.node.TupleNode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A tuple type in the context of XPipe is defined as an ordered,
@@ -25,6 +24,13 @@ public class TupleType extends DataType {
 
     List<String> names;
     List<DataType> types;
+
+    /**
+     * Creates a new tuple type that represents a table data type.
+     */
+    public static TupleType tableType(List<String> names) {
+        return TupleType.of(names, Collections.nCopies(names.size(), WildcardType.of()));
+    }
 
     /**
      * Creates a new tuple type that contains no entries.
@@ -57,6 +63,33 @@ public class TupleType extends DataType {
     @Override
     public String getName() {
         return "tuple";
+    }
+
+    @Override
+    public Optional<DataStructureNode> convert(DataStructureNode node) {
+        if (matches(node)) {
+            return Optional.of(node);
+        }
+
+        if (node.isValue() && types.size() == 1) {
+            return types.get(0).convert(node);
+        }
+
+        if (node.size() != types.size()) {
+            return Optional.empty();
+        }
+
+        List<DataStructureNode> nodes = new ArrayList<>(node.size());
+        for (int i = 0; i < node.size(); i++) {
+            var converted = types.get(i).convert(node.at(i));
+            if (converted.isEmpty()) {
+                return Optional.empty();
+            }
+
+            nodes.add(converted.get());
+        }
+
+        return Optional.of(TupleNode.of(names, nodes));
     }
 
     @Override

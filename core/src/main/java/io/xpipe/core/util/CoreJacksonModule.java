@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
+import io.xpipe.core.data.type.WildcardType;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.LocalFileDataStore;
@@ -29,6 +30,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
+                new NamedType(WildcardType.class),
                 new NamedType(DataSourceInfo.Table.class)
         );
 

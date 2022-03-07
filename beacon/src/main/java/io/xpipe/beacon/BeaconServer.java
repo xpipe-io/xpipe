@@ -2,7 +2,9 @@ package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.StopExchange;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.nio.file.Files;
@@ -24,10 +26,26 @@ public class BeaconServer {
         return !isPortAvailable(port);
     }
 
+    private static void startFork(String custom) throws IOException {
+        boolean print = true;
+        var proc = Runtime.getRuntime().exec(custom);
+        new Thread(null, () -> {
+            try {
+                InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                BufferedReader br = new BufferedReader(isr);
+                String line = null;
+                while ((line = br.readLine()) != null)
+                    System.out.println("[xpiped] " + line);
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }, "daemon fork").start();
+    }
+
     public static boolean tryStart() throws Exception {
         var custom = BeaconConfig.getCustomExecCommand();
         if (custom != null) {
-            Runtime.getRuntime().exec(custom);
+            startFork(custom);
             return true;
         }
 
@@ -45,7 +63,8 @@ public class BeaconServer {
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {
-        StopExchange.Response res = client.simpleExchange(StopExchange.Request.builder().build());
+        client.sendRequest(StopExchange.Request.builder().build());
+        StopExchange.Response res =client.receiveResponse();
         return res.isSuccess();
     }
 

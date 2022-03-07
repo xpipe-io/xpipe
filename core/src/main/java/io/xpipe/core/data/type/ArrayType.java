@@ -1,13 +1,16 @@
 package io.xpipe.core.data.type;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * An array type represents an array of {@link DataStructureNode} of a certain shared type.
@@ -45,6 +48,29 @@ public class ArrayType extends DataType {
     @Override
     public String getName() {
         return "array";
+    }
+
+    @Override
+    public Optional<DataStructureNode> convert(DataStructureNode node) {
+        if (matches(node)) {
+            return Optional.of(node);
+        }
+
+        if (node.isValue()) {
+            return Optional.of(ArrayNode.of(node));
+        }
+
+        List<DataStructureNode> nodes = new ArrayList<>(node.size());
+        for (int i = 0; i < node.size(); i++) {
+            var converted = sharedType.convert(node.at(i));
+            if (converted.isEmpty()) {
+                return Optional.empty();
+            }
+
+            nodes.add(converted.get());
+        }
+
+        return Optional.of(ArrayNode.of(nodes));
     }
 
     @Override

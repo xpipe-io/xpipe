@@ -10,7 +10,7 @@ import java.util.Map;
 public class DataTableTest extends DaemonControl {
 
     @BeforeAll
-    static void setup() throws Exception {
+    public static void setupStorage() throws Exception {
         DataSource.create(DataSourceId.fromString(":usernames"), "csv", Map.of(), DataTableTest.class.getResource("username.csv"));
     }
 

@@ -8,9 +8,7 @@ public interface BeaconHandler {
 
     void postResponse(BeaconClient.FailableRunnable<Exception> r);
 
-    void prepareBody() throws IOException;
+    OutputStream sendBody() throws IOException;
 
-    InputStream startBodyRead() throws IOException;
-
-    OutputStream getOutputStream() throws Exception;
+    InputStream receiveBody() throws IOException;
 }

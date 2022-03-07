@@ -6,12 +6,12 @@ import org.junit.jupiter.api.BeforeAll;
 public class DaemonControl {
 
     @BeforeAll
-    static void setup() throws Exception {
+    public static void setup() throws Exception {
         ConnectionFactory.start();
     }
 
     @AfterAll
-    static void teardown() throws Exception {
+    public static void teardown() throws Exception {
         ConnectionFactory.stop();
     }
 }

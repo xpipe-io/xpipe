@@ -3,6 +3,8 @@ package io.xpipe.core.data.type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.data.node.DataStructureNode;
 
+import java.util.Optional;
+
 /**
  * Represents the type of a {@link DataStructureNode} object.
  * To check whether a {@link DataStructureNode} instance conforms to the specified type,
@@ -15,6 +17,11 @@ public abstract class DataType {
      * Returns the readable name of this data type that can be used for error messages.
      */
     public abstract String getName();
+
+    /**
+     * Checks whether a node can be converted to this data type.
+     */
+    public abstract Optional<DataStructureNode> convert(DataStructureNode node);
 
     /**
      * Checks whether a node conforms to this data type.

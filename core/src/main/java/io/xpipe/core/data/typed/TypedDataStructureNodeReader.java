@@ -67,6 +67,9 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
         if (nodes.size() != 0 || children.size() != 0 || readNode == null) {
             throw new IllegalStateException("Reader is not finished yet");
         }
+
+        expectedType = flattened.get(0);
+        currentExpectedTypeIndex = 0;
     }
 
     private void finishNode(DataStructureNode node) {

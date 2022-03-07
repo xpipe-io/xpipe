@@ -104,29 +104,25 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
-    public void receiveBody() throws ConnectorException {
+    public InputStream receiveBody() throws ConnectorException {
         try {
             var sep = in.readNBytes(BODY_SEPARATOR.length);
             if (sep.length != 0 && !Arrays.equals(BODY_SEPARATOR, sep)) {
                 throw new ConnectorException("Invalid body separator");
             }
+            return BeaconFormat.readBlocks(socket);
         } catch (IOException ex) {
             throw new ConnectorException(ex);
         }
     }
 
-    public void startBody() throws ConnectorException {
+    public OutputStream sendBody() throws ConnectorException {
         try {
             out.write(BODY_SEPARATOR);
+            return BeaconFormat.writeBlocks(socket);
         } catch (IOException ex) {
             throw new ConnectorException(ex);
         }
-    }
-
-    public <REQ extends RequestMessage, RES extends ResponseMessage> RES simpleExchange(REQ req)
-        throws ServerException, ConnectorException, ClientException {
-        sendRequest(req);
-        return this.receiveResponse();
     }
 
     public  <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
@@ -244,5 +240,9 @@ public class BeaconClient implements AutoCloseable {
 
     public OutputStream getOutputStream() {
         return out;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 }

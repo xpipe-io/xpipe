@@ -33,8 +33,7 @@ public class QueryTableDataExchange implements MessageExchange<QueryTableDataExc
         @NonNull
         DataSourceId id;
 
-        @Builder.Default
-        int maxRows = -1;
+        int maxRows;
     }
 
     @Jacksonized

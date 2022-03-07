@@ -11,6 +11,9 @@ public abstract class BeaconConnection implements AutoCloseable {
 
     protected BeaconClient socket;
 
+    private InputStream bodyInput;
+    private OutputStream bodyOutput;
+
     protected abstract void constructSocket();
 
     @Override
@@ -23,14 +26,6 @@ public abstract class BeaconConnection implements AutoCloseable {
         } catch (Exception e) {
             socket = null;
             throw new BeaconException("Could not close beacon connection", e);
-        }
-    }
-
-    public void closeOutput() {
-        try {
-            socket.getOutputStream().close();
-        } catch (Exception e) {
-            throw new BeaconException("Could not close beacon output stream", e);
         }
     }
 
@@ -59,13 +54,21 @@ public abstract class BeaconConnection implements AutoCloseable {
     public OutputStream getOutputStream() {
         checkClosed();
 
-        return socket.getOutputStream();
+        if (bodyOutput == null) {
+            throw new IllegalStateException("Body output has not started yet");
+        }
+
+        return bodyOutput;
     }
 
     public InputStream getInputStream() {
         checkClosed();
 
-        return socket.getInputStream();
+        if (bodyInput == null) {
+            throw new IllegalStateException("Body input has not started yet");
+        }
+
+        return bodyInput;
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
@@ -83,7 +86,16 @@ public abstract class BeaconConnection implements AutoCloseable {
         checkClosed();
 
         try {
-            socket.exchange(req, reqWriter, responseConsumer);
+            socket.sendRequest(req);
+            if (reqWriter != null) {
+                try (var out = socket.sendBody()) {
+                    reqWriter.accept(out);
+                }
+            }
+            RES res = socket.receiveResponse();
+            try (var in = socket.receiveBody()) {
+                responseConsumer.accept(res, in);
+            }
         } catch (Exception e) {
             throw new BeaconException("Could not communicate with beacon", e);
         }
@@ -110,21 +122,23 @@ public abstract class BeaconConnection implements AutoCloseable {
         }
     }
 
-    public void sendBodyStart() {
+    public OutputStream sendBody() {
         checkClosed();
 
         try {
-            socket.startBody();
+            bodyOutput = socket.sendBody();
+            return bodyOutput;
         } catch (Exception e) {
             throw new BeaconException("Could not communicate with beacon", e);
         }
     }
 
-    public void receiveBody() {
+    public InputStream receiveBody() {
         checkClosed();
 
         try {
-            socket.receiveBody();
+            bodyInput = socket.receiveBody();
+            return bodyInput;
         } catch (Exception e) {
             throw new BeaconException("Could not communicate with beacon", e);
         }
@@ -137,25 +151,22 @@ public abstract class BeaconConnection implements AutoCloseable {
 
         try {
             socket.sendRequest(req);
-            socket.startBody();
-            reqWriter.accept(socket.getOutputStream());
+            try (var out = socket.sendBody()) {
+                reqWriter.accept(out);
+            }
             return socket.receiveResponse();
         } catch (Exception e) {
             throw new BeaconException("Could not communicate with beacon", e);
         }
     }
 
-//    public void writeLength(int bytes) throws IOException {
-//        checkClosed();
-//        socket.getOutputStream().write(ByteBuffer.allocate(4).putInt(bytes).array());
-//    }
-
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performSimpleExchange(
             REQ req) {
         checkClosed();
 
         try {
-            return socket.simpleExchange(req);
+            socket.sendRequest(req);
+            return socket.receiveResponse();
         } catch (Exception e) {
             throw new BeaconException("Could not communicate with beacon", e);
         }

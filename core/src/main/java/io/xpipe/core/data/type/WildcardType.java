@@ -5,6 +5,8 @@ import io.xpipe.core.data.node.DataStructureNode;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.Optional;
+
 /**
  * A wildcard type matches any {@link DataStructureNode} instance.
  * For simplicity reasons it is not possible to further specify a wildcard instance to only match a certain
@@ -27,6 +29,11 @@ public class WildcardType extends DataType {
     @Override
     public String getName() {
         return "wildcard";
+    }
+
+    @Override
+    public Optional<DataStructureNode> convert(DataStructureNode node) {
+        return Optional.of(node);
     }
 
     @Override

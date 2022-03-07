@@ -31,12 +31,17 @@ test {
     }
     workingDir = rootDir
 
-    systemProperty "io.xpipe.storage.dir", "$projectDir/local/storage"
-    systemProperty "io.xpipe.storage.persist", "false"
-    systemProperty 'io.xpipe.app.writeSysOut', "true"
-    systemProperty 'io.xpipe.app.logLevel', "trace"
+    // Daemon properties
+    systemProperty "io.xpipe.beacon.exec", "cmd.exe /c \"$rootDir\\gradlew.bat\" :app:run" +
+            " -Dio.xpipe.app.mode=tray" +
+            " -Dio.xpipe.beacon.port=21722" +
+            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+            " -Dio.xpipe.storage.persist=false" +
+            " -Dio.xpipe.app.writeSysOut=true" +
+            " -Dio.xpipe.beacon.debugOutput=true" +
+            " -Dio.xpipe.app.logLevel=trace"
 
-    systemProperty "io.xpipe.beacon.exec", "cmd.exe /c \"$rootDir\\gradlew.bat\" :app:run -Dio.xpipe.daemon.mode=tray -Dio.xpipe.beacon.port=21722 -Dio.xpipe.app.dataDir=$projectDir/local/"
-    systemProperty 'io.xpipe.beacon.debugOutput', "true"
+    // API properties
+    // systemProperty 'io.xpipe.beacon.debugOutput', "true"
     systemProperty "io.xpipe.beacon.port", "21722"
 }

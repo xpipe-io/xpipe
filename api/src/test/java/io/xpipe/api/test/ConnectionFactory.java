@@ -6,7 +6,14 @@ import io.xpipe.beacon.BeaconServer;
 
 public class ConnectionFactory {
 
+    private static boolean alreadyStarted;
+
     public static void start() throws Exception {
+        if (BeaconServer.isRunning()) {
+            alreadyStarted = true;
+            return;
+        }
+
         if (!BeaconServer.tryStart()) {
             throw new AssertionError();
         }
@@ -18,6 +25,10 @@ public class ConnectionFactory {
     }
 
     public static void stop() throws Exception {
+        if (alreadyStarted) {
+            return;
+        }
+
         if (!BeaconServer.isRunning()) {
             return;
         }
