@@ -10,6 +10,9 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Sends stream-based data to a daemon.
+ */
 public class ReadExecuteExchange implements MessageExchange<ReadExecuteExchange.Request, ReadExecuteExchange.Response> {
 
     @Override

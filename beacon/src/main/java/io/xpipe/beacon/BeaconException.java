@@ -1,5 +1,8 @@
 package io.xpipe.beacon;
 
+/**
+ * An unchecked exception that will be thrown in any case of an underlying exception.
+ */
 public class BeaconException extends RuntimeException {
 
     public BeaconException() {

@@ -4,8 +4,8 @@ publishing {
             from components.java
 
             pom {
-                name = 'X-Pipe beacon'
-                description = 'The socket-based implementation used for the communication with X-Pipe.'
+                name = 'X-Pipe Beacon'
+                description = 'The socket-based implementation used for the communication with the X-Pipe daemon.'
                 url = 'https://github.com/xpipe-io/xpipe_java/beacon'
                 licenses {
                     license {

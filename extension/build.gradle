@@ -27,5 +27,4 @@ repositories {
 dependencies {
     implementation project(':core')
     implementation project(':fxcomps')
-    implementation group: 'com.dlsc.preferencesfx', name: 'preferencesfx-core', version: '11.8.0'
 }

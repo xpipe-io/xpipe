@@ -24,11 +24,6 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
     workingDir = rootDir
 
     // Daemon properties
@@ -38,10 +33,11 @@ test {
             " -Dio.xpipe.app.dataDir=$projectDir/local/" +
             " -Dio.xpipe.storage.persist=false" +
             " -Dio.xpipe.app.writeSysOut=true" +
-            " -Dio.xpipe.beacon.debugOutput=true" +
+            // " -Dio.xpipe.beacon.debugOutput=true" +
             " -Dio.xpipe.app.logLevel=trace"
 
     // API properties
     // systemProperty 'io.xpipe.beacon.debugOutput', "true"
+    systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
     systemProperty "io.xpipe.beacon.port", "21722"
 }

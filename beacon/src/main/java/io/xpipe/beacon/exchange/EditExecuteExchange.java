@@ -9,6 +9,9 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Performs an edit for a data source.
+ */
 public class EditExecuteExchange implements MessageExchange<EditExecuteExchange.Request, EditExecuteExchange.Response> {
 
     @Override

@@ -1,6 +1,7 @@
-package io.xpipe.beacon.exchange;
+package io.xpipe.beacon.exchange.cli;
 
-import io.xpipe.beacon.exchange.data.EntryListEntry;
+import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.beacon.exchange.data.CollectionListEntry;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import lombok.Builder;
@@ -9,11 +10,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
-public class ListEntriesExchange implements MessageExchange<ListEntriesExchange.Request, ListEntriesExchange.Response> {
+public class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
 
     @Override
     public String getId() {
-        return "listEntries";
+        return "listCollections";
     }
 
     @Override
@@ -30,13 +31,13 @@ public class ListEntriesExchange implements MessageExchange<ListEntriesExchange.
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String collection;
+
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        List<EntryListEntry> entries;
+        List<CollectionListEntry> entries;
     }
 }

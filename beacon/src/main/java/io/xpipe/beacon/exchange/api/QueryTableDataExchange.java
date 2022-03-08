@@ -9,6 +9,9 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Queries data of a table data source in the xpbt format.
+ */
 public class QueryTableDataExchange implements MessageExchange<QueryTableDataExchange.Request, QueryTableDataExchange.Response> {
 
     @Override

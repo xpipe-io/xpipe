@@ -2,13 +2,14 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceType;
-import io.xpipe.core.source.DataSourceConfigOptions;
+import io.xpipe.core.store.StreamDataStore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Stores a stream of data in a storage.
+ */
 public class StoreStreamExchange implements MessageExchange<StoreStreamExchange.Request, StoreStreamExchange.Response> {
 
     @Override
@@ -30,16 +31,12 @@ public class StoreStreamExchange implements MessageExchange<StoreStreamExchange.
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String type;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        DataSourceId sourceId;
-        DataSourceType sourceType;
-        DataSourceConfigOptions config;
-        Object data;
+        StreamDataStore store;
     }
 }

@@ -1,27 +1,29 @@
-package io.xpipe.beacon.exchange;
+package io.xpipe.beacon.exchange.cli;
 
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
+import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class ModeExchange implements MessageExchange<ModeExchange.Request, ModeExchange.Response> {
+public class SelectExchange implements MessageExchange<SelectExchange.Request, SelectExchange.Response> {
 
     @Override
     public String getId() {
-        return "mode";
+        return "select";
     }
 
     @Override
-    public Class<ModeExchange.Request> getRequestClass() {
-        return ModeExchange.Request.class;
+    public Class<SelectExchange.Request> getRequestClass() {
+        return SelectExchange.Request.class;
     }
 
     @Override
-    public Class<ModeExchange.Response> getResponseClass() {
-        return ModeExchange.Response.class;
+    public Class<SelectExchange.Response> getResponseClass() {
+        return SelectExchange.Response.class;
     }
 
     @Jacksonized
@@ -29,13 +31,12 @@ public class ModeExchange implements MessageExchange<ModeExchange.Request, ModeE
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        String modeId;
+        DataSourceReference ref;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-
     }
 }

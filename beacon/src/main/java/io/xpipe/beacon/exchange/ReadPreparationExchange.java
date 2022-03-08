@@ -9,6 +9,9 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Prepares a client to send stream-based data to a daemon.
+ */
 public class ReadPreparationExchange implements MessageExchange<ReadPreparationExchange.Request, ReadPreparationExchange.Response> {
 
     @Override

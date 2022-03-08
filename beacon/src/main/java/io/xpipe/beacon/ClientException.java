@@ -1,5 +1,8 @@
 package io.xpipe.beacon;
 
+/**
+ * Indicates that a client request caused an issue.
+ */
 public class ClientException extends Exception {
 
     public ClientException() {

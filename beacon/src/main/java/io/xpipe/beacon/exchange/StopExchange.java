@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Requests the daemon to stop.
+ */
 public class StopExchange implements MessageExchange<StopExchange.Request, StopExchange.Response> {
 
     @Override

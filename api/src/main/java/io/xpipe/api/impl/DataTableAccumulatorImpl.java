@@ -5,7 +5,7 @@ import io.xpipe.api.DataTable;
 import io.xpipe.api.DataTableAccumulator;
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.api.util.TypeDescriptor;
-import io.xpipe.beacon.exchange.PreStoreExchange;
+import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.beacon.exchange.ReadExecuteExchange;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
@@ -29,14 +29,14 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
     public DataTableAccumulatorImpl(TupleType type) {
         this.type = type;
         connection = XPipeConnection.open();
-        connection.sendRequest(PreStoreExchange.Request.builder().build());
+        connection.sendRequest(StoreStreamExchange.Request.builder().build());
         connection.sendBody();
     }
 
     @Override
     public synchronized DataTable finish(DataSourceId id) {
         connection.withOutputStream(OutputStream::close);
-        PreStoreExchange.Response res = connection.receiveResponse();
+        StoreStreamExchange.Response res = connection.receiveResponse();
         connection.close();
 
         var req = ReadExecuteExchange.Request.builder()

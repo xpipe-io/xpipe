@@ -1,7 +1,10 @@
 package io.xpipe.beacon;
 
+import lombok.experimental.UtilityClass;
+
 import java.nio.charset.StandardCharsets;
 
+@UtilityClass
 public class BeaconConfig {
 
     public static final byte[] BODY_SEPARATOR = "\n\n".getBytes(StandardCharsets.UTF_8);
@@ -10,6 +13,16 @@ public class BeaconConfig {
     public static boolean debugEnabled() {
         if (System.getProperty(DEBUG_PROP) != null) {
             return Boolean.parseBoolean(System.getProperty(DEBUG_PROP));
+        }
+        return false;
+    }
+
+
+    private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.debugExecOutput";
+
+    public static boolean execDebugEnabled() {
+        if (System.getProperty(EXEC_DEBUG_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(EXEC_DEBUG_PROP));
         }
         return false;
     }

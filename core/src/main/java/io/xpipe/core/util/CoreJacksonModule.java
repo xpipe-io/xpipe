@@ -1,5 +1,7 @@
 package io.xpipe.core.util;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -103,6 +105,9 @@ public class CoreJacksonModule extends SimpleModule {
 
     @JsonSerialize(as = Throwable.class)
     public abstract static class ThrowableTypeMixIn {
+
+        @JsonIdentityInfo(generator= ObjectIdGenerators.StringIdGenerator.class, property="$id")
+        private Throwable cause;
     }
 
     @JsonSerialize(as = DataSourceReference.class)

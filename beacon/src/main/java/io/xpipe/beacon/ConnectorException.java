@@ -1,5 +1,8 @@
 package io.xpipe.beacon;
 
+/**
+ * Indicates that a connection error occurred.
+ */
 public class ConnectorException extends Exception {
 
     public ConnectorException() {

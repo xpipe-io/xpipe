@@ -4,8 +4,8 @@ publishing {
             from components.java
 
             pom {
-                name = 'X-Pipe API'
-                description = 'Contains everything necessary to use and interact with X-Pipe.'
+                name = 'X-Pipe Java API'
+                description = 'Contains everything necessary to interact with X-Pipe from Java applications.'
                 url = 'https://github.com/xpipe-io/xpipe_java/api'
                 licenses {
                     license {
@@ -24,10 +24,6 @@ publishing {
                     connection = 'scm:git:git://github.com/xpipe-io/xpipe_java.git'
                     developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe_java.git'
                     url = 'https://github.com/xpipe-io/xpipe_java'
-                }
-
-                withXml {
-                    //asNode().appendNode('dependencies').appendNode('dependency').appendNode('my-property', 'my-value')
                 }
             }
         }

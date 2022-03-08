@@ -68,10 +68,6 @@ public class BeaconClient implements AutoCloseable {
         out = socket.getOutputStream();
     }
 
-    public boolean isClosed() {
-        return socket.isClosed();
-    }
-
     public void close() throws ConnectorException {
         try {
             socket.close();
@@ -132,14 +128,14 @@ public class BeaconClient implements AutoCloseable {
             throw new ClientException("Unknown request class " + req.getClass());
         }
 
-        json.set("type", new TextNode(prov.get().getId()));
-        json.set("phase", new TextNode("request"));
+        json.set("messageType", new TextNode(prov.get().getId()));
+        json.set("messagePhase", new TextNode("request"));
         //json.set("id", new TextNode(UUID.randomUUID().toString()));
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeMessage", json);
 
         if (BeaconConfig.debugEnabled()) {
-            System.out.println("Sending request to server of type " + req.getClass().getSimpleName());
+            System.out.println("Sending request to server of type " + req.getClass().getName());
         }
 
         try {
@@ -163,7 +159,7 @@ public class BeaconClient implements AutoCloseable {
         }
 
         if (BeaconConfig.debugEnabled()) {
-            System.out.println("Recieved response:");
+            System.out.println("Received response:");
             System.out.println(read.toPrettyString());
         }
 
@@ -211,14 +207,14 @@ public class BeaconClient implements AutoCloseable {
     private <T extends ResponseMessage> T parseResponse(JsonNode header) throws ConnectorException {
         ObjectNode content = (ObjectNode) header.required("xPipeMessage");
 
-        var type = content.required("type").textValue();
-        var phase = content.required("phase").textValue();
+        var type = content.required("messageType").textValue();
+        var phase = content.required("messagePhase").textValue();
         //var requestId = UUID.fromString(content.required("id").textValue());
         if (!phase.equals("response")) {
             throw new IllegalArgumentException();
         }
-        content.remove("type");
-        content.remove("phase");
+        content.remove("messageType");
+        content.remove("messagePhase");
         //content.remove("id");
 
         var prov = MessageExchanges.byId(type);

@@ -3,7 +3,6 @@ package io.xpipe.api;
 import io.xpipe.api.impl.DataTableAccumulatorImpl;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
-import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.source.DataSourceId;
 
@@ -11,7 +10,7 @@ import io.xpipe.core.source.DataSourceId;
  * An accumulator for table data.
  *
  * This class can be used to construct new table data sources by
- * accumulating the rows using {@link #add(TupleNode)} or {@link #acceptor()} and then calling
+ * accumulating the rows using {@link #add(DataStructureNode)} or {@link #acceptor()} and then calling
  * {@link #finish(DataSourceId)} to complete the construction process and create a new data source.
  */
 public interface DataTableAccumulator {

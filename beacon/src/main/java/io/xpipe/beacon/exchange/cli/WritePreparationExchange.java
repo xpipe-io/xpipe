@@ -1,5 +1,6 @@
-package io.xpipe.beacon.exchange;
+package io.xpipe.beacon.exchange.cli;
 
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceConfigInstance;
@@ -10,6 +11,9 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Prepares a client to output the data source contents.
+ */
 public class WritePreparationExchange implements MessageExchange<WritePreparationExchange.Request, WritePreparationExchange.Response> {
 
     @Override
@@ -31,7 +35,7 @@ public class WritePreparationExchange implements MessageExchange<WritePreparatio
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String providerType;
+        String type;
         String output;
         @NonNull
         DataSourceReference ref;
@@ -41,7 +45,7 @@ public class WritePreparationExchange implements MessageExchange<WritePreparatio
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        DataStore dataStore;
+        DataStore store;
 
         @NonNull
         DataSourceConfigInstance config;

@@ -9,6 +9,9 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+/**
+ * Queries general information about a data source.
+ */
 public class QueryDataSourceExchange implements MessageExchange<QueryDataSourceExchange.Request, QueryDataSourceExchange.Response> {
 
     @Override

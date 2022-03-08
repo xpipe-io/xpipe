@@ -1,18 +1,22 @@
 package io.xpipe.beacon;
 
+import lombok.experimental.UtilityClass;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
+@UtilityClass
 public class BeaconFormat {
 
+    private static final int SEGMENT_SIZE = 65536;
+
     public static OutputStream writeBlocks(Socket socket) throws IOException {
-        int size = 65536 - 4;
         var out = socket.getOutputStream();
         return new OutputStream() {
-            private final byte[] currentBytes = new byte[size];
+            private final byte[] currentBytes = new byte[SEGMENT_SIZE];
             private int index;
 
             @Override
@@ -43,21 +47,9 @@ public class BeaconFormat {
                 index = 0;
             }
         };
-//        while (true) {
-//            var bytes = in.readNBytes(size);
-//            int length = bytes.length;
-//            var lengthBuffer = ByteBuffer.allocate(4).putInt(length);
-//            socket.getOutputStream().write(lengthBuffer.array());
-//            socket.getOutputStream().write(bytes);
-//
-//            if (length == 0) {
-//                return;
-//            }
-//        }
     }
 
     public static InputStream readBlocks(Socket socket) throws IOException {
-        int size = 65536 - 4;
         var in = socket.getInputStream();
         return new InputStream() {
 
@@ -90,7 +82,7 @@ public class BeaconFormat {
 
                 currentBytes = in.readNBytes(lengthInt);
                 index = 0;
-                if (lengthInt < size) {
+                if (lengthInt < SEGMENT_SIZE) {
                     finished = true;
                 }
             }

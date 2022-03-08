@@ -1,6 +1,7 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.StopExchange;
+import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,10 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
+/**
+ * Contains basic functionality to start, communicate, and stop a beacon server.
+ */
+@UtilityClass
 public class BeaconServer {
 
     private static boolean isPortAvailable(int port) {
-        try (var ss = new ServerSocket(port); var ds = new DatagramSocket(port)) {
+        try (var ignored = new ServerSocket(port); var ignored1 = new DatagramSocket(port)) {
             return true;
         } catch (IOException e) {
             return false;
@@ -27,15 +32,18 @@ public class BeaconServer {
     }
 
     private static void startFork(String custom) throws IOException {
-        boolean print = true;
+        boolean print = BeaconConfig.execDebugEnabled();
         var proc = Runtime.getRuntime().exec(custom);
         new Thread(null, () -> {
             try {
                 InputStreamReader isr = new InputStreamReader(proc.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
-                String line = null;
-                while ((line = br.readLine()) != null)
-                    System.out.println("[xpiped] " + line);
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (print) {
+                        System.out.println("[xpiped] " + line);
+                    }
+                }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
             }
@@ -70,7 +78,7 @@ public class BeaconServer {
 
     private static Optional<Path> getPortableLauncherExecutable() {
         var env = System.getenv("XPIPE_HOME");
-        Path file = null;
+        Path file;
 
         // Prepare for invalid XPIPE_HOME path value
         try {
@@ -92,7 +100,7 @@ public class BeaconServer {
         }
 
         try {
-            Path file = null;
+            Path file;
             if (System.getProperty("os.name").startsWith("Windows")) {
                 file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "xpipe_launcher.exe");
             } else {
@@ -106,7 +114,7 @@ public class BeaconServer {
 
     public static Optional<Path> getDaemonExecutable() {
         try {
-            Path file = null;
+            Path file;
             if (System.getProperty("os.name").startsWith("Windows")) {
                 file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpipe.exe");
             } else {
