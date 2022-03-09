@@ -19,15 +19,22 @@ repositories {
 }
 
 dependencies {
+    // Fix warnings about missing annotations
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
+    testCompileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
+
     implementation project(':core')
     implementation project(':beacon')
 }
+
+def canTestWithDev = findProject(':app') != null
+def daemonCommand = canTestWithDev ? "cmd.exe /c \"$rootDir\\gradlew.bat\" :app:run" : 'xpipe.exe'
 
 test {
     workingDir = rootDir
 
     // Daemon properties
-    systemProperty "io.xpipe.beacon.exec", "cmd.exe /c \"$rootDir\\gradlew.bat\" :app:run" +
+    systemProperty "io.xpipe.beacon.exec", daemonCommand +
             " -Dio.xpipe.app.mode=tray" +
             " -Dio.xpipe.beacon.port=21722" +
             " -Dio.xpipe.app.dataDir=$projectDir/local/" +
@@ -38,6 +45,6 @@ test {
 
     // API properties
     // systemProperty 'io.xpipe.beacon.debugOutput', "true"
-    systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
+    // systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
     systemProperty "io.xpipe.beacon.port", "21722"
 }

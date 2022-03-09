@@ -14,8 +14,11 @@ module io.xpipe.extension {
     requires io.xpipe.fxcomps;
     requires org.apache.commons.collections4;
     requires static lombok;
-    requires com.dlsc.preferencesfx;
-    requires com.dlsc.formsfx;
+    requires static com.dlsc.preferencesfx;
+    requires static com.dlsc.formsfx;
+    requires static org.slf4j;
+    requires static com.google.gson;
+    requires static org.controlsfx.controls;
     requires java.desktop;
     requires org.fxmisc.richtext;
     requires org.fxmisc.flowless;
