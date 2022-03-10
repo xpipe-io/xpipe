@@ -19,3 +19,4 @@ repository, which is shared between all components and integrated as a git submo
 Some unit tests depend on a connection to an X-Pipe daemon to properly function.
 To launch the installed daemon, it is required that the `XPIPE_HOME` environment variable
 is set or the `xpipe` / `xpipe.exe` CLI executable is added to the `PATH` variable.
+

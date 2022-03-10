@@ -36,7 +36,6 @@ public class BeaconServer {
         if (print) {
             System.out.println("Executing custom daemon launch command: " + custom);
         }
-        System.out.println(System.getenv());
         var proc = Runtime.getRuntime().exec(custom);
         new Thread(null, () -> {
             try {

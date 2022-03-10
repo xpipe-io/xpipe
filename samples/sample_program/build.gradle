@@ -12,6 +12,11 @@ repositories {
     mavenCentral()
 }
 
+// The used X-Pipe API version.
+// In your case, you have to fix this value to the target API version,
+// which you can find at https://search.maven.org/artifact/io.xpipe/api/
+def apiVersion = file('../../version').text
+
 dependencies {
     implementation project(':core')
     implementation project(':api')

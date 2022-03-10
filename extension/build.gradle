@@ -27,8 +27,8 @@ repositories {
 
 dependencies {
     implementation project(':core')
-    implementation project(':fxcomps')
 
+    implementation 'io.xpipe:fxcomps:0.1'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.controlsfx:controlsfx:11.1.1'
 }

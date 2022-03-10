@@ -1,3 +1,8 @@
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/core)
+[![javadoc](https://javadoc.io/badge2/io.xpipe/core/javadoc.svg)](https://javadoc.io/doc/io.xpipe/core)
+[![Build Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/core-build.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/core-build.yml)
+
+
 ## X-Pipe Core
 
 The X-Pipe core component contains all the shared core classes used by the API, beacon, and daemon.
