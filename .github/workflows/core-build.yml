@@ -18,7 +18,6 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v2
         with:
-          token: ${{ secrets.GH_PAT }}
           submodules: 'true'
 
       - name: Set up GraalVM
