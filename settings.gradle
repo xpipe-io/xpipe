@@ -1,8 +1,8 @@
 rootProject.name = 'xpipe_java'
 
+include 'api'
 include 'core'
 include 'beacon'
-include 'api'
 include 'extension'
 
 include 'sample_extension'

@@ -15,3 +15,7 @@ All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [moditect](https://github.com/moditect/moditect-gradle-plugin).
 These dependency generation rules are accumulated in the [X-Pipe dependencies](https://github.com/xpipe-io/xpipe_java_deps)
 repository, which is shared between all components and integrated as a git submodule.
+
+Some unit tests depend on a connection to an X-Pipe daemon to properly function.
+To launch the installed daemon, it is required that the `XPIPE_HOME` environment variable
+is set or the `xpipe` / `xpipe.exe` CLI executable is added to the `PATH` variable.

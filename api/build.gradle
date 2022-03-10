@@ -28,7 +28,10 @@ dependencies {
 }
 
 def canTestWithDev = findProject(':app') != null
-def daemonCommand = canTestWithDev ? "cmd.exe /c \"$rootDir\\gradlew.bat\" :app:run" : 'xpipe.exe'
+def home = System.getenv('XPIPE_HOME')
+String daemonCommand = canTestWithDev ?
+        "cmd.exe /c \\\"$rootDir\\gradlew.bat\\\" :app:run" :
+        "cmd.exe /c \\\"$home\\app\\xpipe.exe\\\""
 
 test {
     workingDir = rootDir
@@ -40,11 +43,12 @@ test {
             " -Dio.xpipe.app.dataDir=$projectDir/local/" +
             " -Dio.xpipe.storage.persist=false" +
             " -Dio.xpipe.app.writeSysOut=true" +
+            " -Dio.xpipe.app.writeLogs=true" +
             // " -Dio.xpipe.beacon.debugOutput=true" +
             " -Dio.xpipe.app.logLevel=trace"
 
     // API properties
     // systemProperty 'io.xpipe.beacon.debugOutput', "true"
-    // systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
+    systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
     systemProperty "io.xpipe.beacon.port", "21722"
 }

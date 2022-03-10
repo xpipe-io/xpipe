@@ -18,7 +18,7 @@ public class ConnectionFactory {
             throw new AssertionError();
         }
 
-        XPipeConnection.waitForStartup();
+        XPipeConnection.waitForStartup().orElseThrow();
         if (!BeaconServer.isRunning()) {
             throw new AssertionError();
         }

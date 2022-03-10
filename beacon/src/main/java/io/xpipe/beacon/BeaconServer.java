@@ -33,6 +33,10 @@ public class BeaconServer {
 
     private static void startFork(String custom) throws IOException {
         boolean print = BeaconConfig.execDebugEnabled();
+        if (print) {
+            System.out.println("Executing custom daemon launch command: " + custom);
+        }
+        System.out.println(System.getenv());
         var proc = Runtime.getRuntime().exec(custom);
         new Thread(null, () -> {
             try {
@@ -44,10 +48,29 @@ public class BeaconServer {
                         System.out.println("[xpiped] " + line);
                     }
                 }
-            } catch (IOException ioe) {
+            } catch (Exception ioe) {
                 ioe.printStackTrace();
             }
-        }, "daemon fork").start();
+        }, "daemon fork sysout").start();
+
+        new Thread(null, () -> {
+            try {
+                InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                BufferedReader br = new BufferedReader(isr);
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (print) {
+                        System.err.println("[xpiped] " + line);
+                    }
+                }
+                int exit = proc.waitFor();
+                if (exit != 0) {
+                    System.err.println("Daemon launch command failed");
+                }
+            } catch (Exception ioe) {
+                ioe.printStackTrace();
+            }
+        }, "daemon fork syserr").start();
     }
 
     public static boolean tryStart() throws Exception {
@@ -57,10 +80,10 @@ public class BeaconServer {
             return true;
         }
 
-        var launcher = getLauncherExecutable();
-        if (launcher.isPresent()) {
-            // Tell launcher that we launched from an external tool
-            new ProcessBuilder(launcher.get().toString(), "--external")
+        var daemonExecutable = getDaemonExecutable();
+        if (daemonExecutable.isPresent()) {
+            // Tell daemon that we launched from an external tool
+            new ProcessBuilder(daemonExecutable.get().toString(), "--external")
                     .redirectErrorStream(true)
                     .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                     .start();
@@ -76,35 +99,20 @@ public class BeaconServer {
         return res.isSuccess();
     }
 
-    private static Optional<Path> getPortableLauncherExecutable() {
+    private static Optional<Path> getDaemonExecutableFromHome() {
         var env = System.getenv("XPIPE_HOME");
+        if (env == null) {
+            return Optional.empty();
+        }
+
         Path file;
 
         // Prepare for invalid XPIPE_HOME path value
         try {
             if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(env, "xpipe_launcher.exe");
+                file = Path.of(env, "app", "xpipe.exe");
             } else {
-                file = Path.of(env, "xpipe_launcher");
-            }
-            return Files.exists(file) ? Optional.of(file) : Optional.empty();
-        } catch (Exception ex) {
-            return Optional.empty();
-        }
-    }
-
-    public static Optional<Path> getLauncherExecutable() {
-        var portable = getPortableLauncherExecutable();
-        if (portable.isPresent()) {
-            return portable;
-        }
-
-        try {
-            Path file;
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "xpipe_launcher.exe");
-            } else {
-                file = Path.of("/opt/xpipe/xpipe_launcher");
+                file = Path.of(env, "app", "bin", "xpipe");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {
@@ -113,15 +121,21 @@ public class BeaconServer {
     }
 
     public static Optional<Path> getDaemonExecutable() {
-        try {
-            Path file;
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpipe.exe");
-            } else {
-                file = Path.of("/opt/xpipe/bin/xpipe");
-            }
-            return Files.exists(file) ? Optional.of(file) : Optional.empty();
-        } catch (Exception ex) {
+        var home = getDaemonExecutableFromHome();
+        if (home.isPresent()) {
+            return home;
+        }
+
+        Path file;
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpipe.exe");
+        } else {
+            file = Path.of("/opt/xpipe/app/bin/xpipe");
+        }
+
+        if (Files.exists(file)) {
+            return Optional.of(file);
+        } else {
             return Optional.empty();
         }
     }
