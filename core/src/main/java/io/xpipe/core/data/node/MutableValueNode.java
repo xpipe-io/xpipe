@@ -1,16 +1,27 @@
 package io.xpipe.core.data.node;
 
+import java.nio.charset.StandardCharsets;
+
 public class MutableValueNode extends ValueNode {
 
-    private byte[] data;
+    static final MutableValueNode NULL = new MutableValueNode(null, false);
 
-    MutableValueNode(byte[] data) {
+    private byte[] data;
+    private boolean textual;
+
+    MutableValueNode(byte[] data, boolean textual) {
         this.data = data;
+        this.textual = textual;
     }
 
     @Override
     public String toString(int indent) {
-        return new String(data) + "(M)";
+        return (textual ? "\"" : "") + new String(data) + (textual ? "\"" : "") +  " (M)";
+    }
+
+    @Override
+    public boolean isTextual() {
+        return textual;
     }
 
     @Override
@@ -20,17 +31,46 @@ public class MutableValueNode extends ValueNode {
 
     @Override
     public ValueNode immutableView() {
-        return new ImmutableValueNode(data);
+        return new ImmutableValueNode(data, textual);
     }
 
     @Override
     public ValueNode mutableCopy() {
-        return new MutableValueNode(data);
+        return new MutableValueNode(data, textual);
     }
 
     @Override
-    public DataStructureNode setRawData(byte[] data) {
+    public DataStructureNode setRaw(byte[] data) {
         this.data = data;
+        return this;
+    }
+
+    @Override
+    public DataStructureNode set(Object newValue) {
+        if (newValue == null) {
+            this.data = null;
+            this.textual = false;
+        } else {
+            setRaw(newValue.toString().getBytes(StandardCharsets.UTF_8));
+        }
+
+        return this;
+    }
+
+    @Override
+    public DataStructureNode set(Object newValue, boolean textual) {
+        if (newValue == null && textual) {
+            throw new IllegalArgumentException("Can't set a textual null");
+        }
+
+        if (newValue == null) {
+            this.data = null;
+            this.textual = false;
+        } else {
+            setRaw(newValue.toString().getBytes(StandardCharsets.UTF_8));
+            this.textual = textual;
+        }
+
         return this;
     }
 

@@ -129,8 +129,9 @@ public class TypedDataStreamParser {
     }
 
     private void parseValue(InputStream in, TypedDataStreamCallback cb) throws IOException {
+        var textual = in.read() != 0;
         var size = in.read();
         var data = in.readNBytes(size);
-        cb.onValue(data);
+        cb.onValue(data, textual);
     }
 }

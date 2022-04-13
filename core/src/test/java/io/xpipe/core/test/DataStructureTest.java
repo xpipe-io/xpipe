@@ -134,7 +134,7 @@ public class DataStructureTest {
                     readNode.clear();
                     Assertions.assertEquals(readNode.size(), 0);
                 } else {
-                    readNode.setRawData("abc".getBytes(StandardCharsets.UTF_8));
+                    readNode.setRaw("abc".getBytes(StandardCharsets.UTF_8));
                 }
             });
             if (readNode.isTuple() || readNode.isArray()) {

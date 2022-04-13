@@ -33,7 +33,10 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
                 new NamedType(WildcardType.class),
-                new NamedType(DataSourceInfo.Table.class)
+                new NamedType(DataSourceInfo.Table.class),
+                new NamedType(DataSourceInfo.Structure.class),
+                new NamedType(DataSourceInfo.Text.class),
+                new NamedType(DataSourceInfo.Raw.class)
         );
 
         addSerializer(Charset.class, new CharsetSerializer());

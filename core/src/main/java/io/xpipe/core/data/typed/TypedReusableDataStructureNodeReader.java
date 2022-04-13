@@ -47,16 +47,16 @@ public class TypedReusableDataStructureNodeReader implements TypedAbstractReader
     }
 
     @Override
-    public void onValue(byte[] data) {
+    public void onValue(byte[] data, boolean textual) {
         if (!initialized()) {
-            initialReader.onValue(data);
+            initialReader.onValue(data, textual);
             return;
         }
 
         if (isInArray()) {
-            getCurrentParent().set(indices.peek(), ValueNode.mutable(data));
+            getCurrentParent().set(indices.peek(), ValueNode.mutable(data, textual));
         } else {
-            getCurrent().setRawData(data);
+            getCurrent().setRaw(data);
         }
 
         if (!indices.isEmpty()) {

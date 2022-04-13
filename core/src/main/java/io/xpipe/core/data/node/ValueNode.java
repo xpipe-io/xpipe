@@ -8,8 +8,6 @@ import java.util.Arrays;
 
 public abstract class ValueNode extends DataStructureNode {
 
-    private static final byte[] NULL = new byte[]{0};
-
     protected ValueNode() {
     }
 
@@ -31,40 +29,57 @@ public abstract class ValueNode extends DataStructureNode {
     @Override
     public abstract ValueNode mutableCopy();
 
-    public static ValueNode immutable(byte[] data) {
-        return new ImmutableValueNode(data);
+    public static ValueNode immutable(byte[] data, boolean textual) {
+        return new ImmutableValueNode(data, textual);
     }
 
-    public static ValueNode immutable(Object o) {
-        return immutable(o.toString().getBytes(StandardCharsets.UTF_8));
+    public static ValueNode immutable(Object o, boolean textual) {
+        return immutable(o.toString().getBytes(StandardCharsets.UTF_8), textual);
+    }
+
+    public static ValueNode immutableNull() {
+        return MutableValueNode.NULL.immutableView();
     }
 
     public static ValueNode mutableNull() {
-        return mutable(NULL);
+        return MutableValueNode.NULL.mutableCopy();
     }
 
-    public static ValueNode nullValue() {
-        return mutable(NULL);
+    public static ValueNode mutable(byte[] data, boolean textual) {
+        return new MutableValueNode(data, textual);
     }
 
-    public static ValueNode mutable(byte[] data) {
-        return new MutableValueNode(data);
-    }
-
-    public static ValueNode mutable(Object o) {
-        return mutable(o.toString().getBytes(StandardCharsets.UTF_8));
+    public static ValueNode mutable(Object o, boolean textual) {
+        return mutable(o.toString().getBytes(StandardCharsets.UTF_8), textual);
     }
 
     public static ValueNode of(byte[] data) {
-        return mutable(data);
+        return mutable(data, false);
     }
 
     public static ValueNode of(Object o) {
-        return mutable(o);
+        return mutable(o, false);
+    }
+
+    public static ValueNode ofText(byte[] data) {
+        return mutable(data, true);
+    }
+
+    public static ValueNode ofText(Object o) {
+        return mutable(o, true);
     }
 
     @Override
-    public abstract DataStructureNode setRawData(byte[] data);
+    public abstract boolean isTextual();
+
+    @Override
+    public abstract DataStructureNode setRaw(byte[] data);
+
+    @Override
+    public abstract DataStructureNode set(Object newValue);
+
+    @Override
+    public abstract DataStructureNode set(Object newValue, boolean textual);
 
     @Override
     public final int asInt() {

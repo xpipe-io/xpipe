@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @JsonTypeName("local")
 @EqualsAndHashCode
-public class LocalFileDataStore implements StreamDataStore {
+public class LocalFileDataStore implements FileDataStore {
 
     private final Path file;
 
@@ -56,5 +56,10 @@ public class LocalFileDataStore implements StreamDataStore {
     @Override
     public boolean exists() {
         return Files.exists(file);
+    }
+
+    @Override
+    public String getFileName() {
+        return file.getFileName().toString();
     }
 }

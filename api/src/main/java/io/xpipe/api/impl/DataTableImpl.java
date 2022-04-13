@@ -59,7 +59,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         List<DataStructureNode> nodes = new ArrayList<>();
         XPipeConnection.execute(con -> {
             var req = QueryTableDataExchange.Request.builder()
-                    .id(getId()).maxRows(maxRows).build();
+                    .ref(DataSourceReference.id(getId())).maxRows(maxRows).build();
             con.performInputExchange(req, (QueryTableDataExchange.Response res, InputStream in) -> {
                     var r = new TypedDataStreamParser(info.getDataType());
                     r.parseStructures(in, TypedDataStructureNodeReader.immutable(info.getDataType()), nodes::add);
@@ -82,7 +82,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
                 connection = XPipeConnection.open();
                 var req = QueryTableDataExchange.Request.builder()
-                        .id(getId()).build();
+                        .ref(DataSourceReference.id(getId())).build();
                 connection.sendRequest(req);
                 connection.receiveResponse();
                 connection.receiveBody();

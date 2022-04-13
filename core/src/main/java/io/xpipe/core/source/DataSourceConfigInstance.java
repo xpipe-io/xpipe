@@ -1,9 +1,10 @@
 package io.xpipe.core.source;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import io.xpipe.core.config.ConfigOptionSet;
+import io.xpipe.core.config.ConfigOptionSetInstance;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.Map;
 
@@ -12,13 +13,11 @@ import java.util.Map;
  * This configuration can either be in progress or complete.
  */
 @Value
-@Builder
-@Jacksonized
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_={@JsonCreator})
 public class DataSourceConfigInstance {
 
     public static DataSourceConfigInstance xpbt() {
-        return new DataSourceConfigInstance("xpbt", DataSourceConfigOptions.empty(), Map.of());
+        return new DataSourceConfigInstance("xpbt", ConfigOptionSet.empty(), Map.of());
     }
 
     /**
@@ -29,7 +28,7 @@ public class DataSourceConfigInstance {
     /**
      * The available configuration options.
      */
-    DataSourceConfigOptions configOptions;
+    ConfigOptionSet configOptions;
 
     /**
      * The current configuration options that are set.
@@ -38,5 +37,11 @@ public class DataSourceConfigInstance {
 
     public boolean isComplete() {
         return currentValues.size() == configOptions.getOptions().size();
+    }
+
+    public DataSourceConfigInstance(String provider, ConfigOptionSetInstance cInstance) {
+        this.provider = provider;
+        this.configOptions = cInstance.getConfigOptions();
+        this.currentValues = cInstance.getCurrentValues();
     }
 }

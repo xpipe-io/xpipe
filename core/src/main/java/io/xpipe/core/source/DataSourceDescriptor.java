@@ -31,4 +31,8 @@ public interface DataSourceDescriptor<DS extends DataStore> {
      * Returns the general data source type.
      */
     DataSourceType getType();
+
+    DataSourceReadConnection openReadConnection(DS store) throws Exception;
+
+    DataSourceConnection openWriteConnection(DS store) throws Exception;
 }

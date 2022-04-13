@@ -127,9 +127,9 @@ public class GenericArrayReader implements GenericAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] value) {
+    public void onValue(byte[] value, boolean textual) {
         if (currentReader != null) {
-            currentReader.onValue(value);
+            currentReader.onValue(value, textual);
             return;
         }
 
@@ -141,7 +141,7 @@ public class GenericArrayReader implements GenericAbstractReader {
             throw new IllegalStateException("Array is full but got another value");
         }
 
-        put(ValueNode.mutable(value));
+        put(ValueNode.mutable(value, textual));
     }
 
     @Override

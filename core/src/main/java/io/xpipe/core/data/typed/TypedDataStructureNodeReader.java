@@ -81,12 +81,12 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] data) {
+    public void onValue(byte[] data, boolean textual) {
         if (!expectedType.isValue()) {
             throw new IllegalStateException("Expected " + expectedType.getName() + " but got value");
         }
 
-        var val = makeImmutable ? ValueNode.immutable(data) : ValueNode.mutable(data);
+        var val = makeImmutable ? ValueNode.immutable(data, textual) : ValueNode.mutable(data, textual);
         finishNode(val);
         moveExpectedType(false);
     }

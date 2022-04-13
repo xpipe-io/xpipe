@@ -138,6 +138,11 @@ public class BeaconClient implements AutoCloseable {
             System.out.println("Sending request to server of type " + req.getClass().getName());
         }
 
+        if (BeaconConfig.debugEnabled()) {
+            System.out.println("Sending raw request:");
+            System.out.println(msg.toPrettyString());
+        }
+
         try {
             var mapper = JacksonHelper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
             var gen = mapper.createGenerator(socket.getOutputStream());

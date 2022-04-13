@@ -67,11 +67,14 @@ public abstract class DataSourceInfo {
     @Value
     @JsonTypeName("text")
     public static class Text extends DataSourceInfo {
-        Charset encoding;
+        Charset charset;
+
+        int lineCount;
 
         @JsonCreator
-        public Text(Charset encoding) {
-            this.encoding = encoding;
+        public Text(Charset charset, int lineCount) {
+            this.charset = charset;
+            this.lineCount = lineCount;
         }
 
         @Override

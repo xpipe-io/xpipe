@@ -17,6 +17,6 @@ public interface GenericDataStreamCallback {
     default void onTupleEnd() {
     }
 
-    default void onValue(byte[] value) {
+    default void onValue(byte[] value, boolean textual) {
     }
 }

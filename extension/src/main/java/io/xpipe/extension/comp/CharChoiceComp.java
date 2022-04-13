@@ -36,7 +36,9 @@ public class CharChoiceComp extends Comp<CompStructure<HBox>> {
     public CompStructure<HBox> createBase() {
         var charChoice = new CharComp(value);
         var rangeCopy = new DualLinkedHashBidiMap<>(range);
-        rangeCopy.put(null, customName);
+        if (customName != null) {
+            rangeCopy.put(null, customName);
+        }
         var choice = new ChoiceComp<Character>(charChoiceValue, rangeCopy);
         var charChoiceR = charChoice.createRegion();
         var choiceR = choice.createRegion();

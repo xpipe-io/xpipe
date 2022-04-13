@@ -78,12 +78,12 @@ public class GenericDataStructureNodeReader implements GenericDataStreamCallback
     }
 
     @Override
-    public void onValue(byte[] value) {
+    public void onValue(byte[] value, boolean textual) {
         if (hasReader()) {
-            reader.onValue(value);
+            reader.onValue(value, textual);
             return;
         }
 
-        node = ValueNode.mutable(value);
+        node = ValueNode.mutable(value, textual);
     }
 }

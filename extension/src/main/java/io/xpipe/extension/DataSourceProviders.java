@@ -1,6 +1,7 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.data.type.TupleType;
+import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.source.TableDataSourceDescriptor;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LocalFileDataStore;
@@ -20,6 +21,25 @@ public class DataSourceProviders {
             ALL = ServiceLoader.load(layer, DataSourceProvider.class).stream()
                     .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
         }
+    }
+
+    public static DataSourceProvider getNativeProviderForType(DataSourceType t) {
+        switch (t) {
+            case TABLE -> {
+                return DataSourceProviders.byId("xpbt").orElseThrow();
+            }
+            case STRUCTURE -> {
+                return DataSourceProviders.byId("xpbs").orElseThrow();
+            }
+            case TEXT -> {
+                return DataSourceProviders.byId("xpbx").orElseThrow();
+            }
+            case RAW -> {
+                return DataSourceProviders.byId("xpbb").orElseThrow();
+            }
+        }
+
+        throw new AssertionError();
     }
 
     @SuppressWarnings("unchecked")

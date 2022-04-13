@@ -79,8 +79,9 @@ public class GenericDataStreamParser {
     }
 
     private static void parseValue(InputStream in, GenericDataStreamCallback cb) throws IOException {
+        var textual = in.read() != 0;
         var size = in.read();
         var data = in.readNBytes(size);
-        cb.onValue(data);
+        cb.onValue(data, textual);
     }
 }

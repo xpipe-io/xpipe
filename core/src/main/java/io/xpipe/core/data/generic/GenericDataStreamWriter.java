@@ -53,6 +53,7 @@ public class GenericDataStreamWriter {
 
     private static void writeValue(OutputStream out, ValueNode value) throws IOException {
         out.write(DataStructureNodeIO.GENERIC_VALUE_ID);
+        out.write(value.isTextual() ? 1 : 0);
         out.write(value.getRawData().length);
         out.write(value.getRawData());
     }

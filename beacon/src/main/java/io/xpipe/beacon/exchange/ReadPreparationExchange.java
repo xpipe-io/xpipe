@@ -43,7 +43,8 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
     @Builder
     @Value
     public static class Response implements ResponseMessage {
+        String determinedType;
+
         DataSourceConfigInstance config;
-        StreamDataStore store;
     }
 }

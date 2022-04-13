@@ -139,9 +139,9 @@ public class GenericTupleReader implements GenericAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] value) {
+    public void onValue(byte[] value, boolean textual) {
         if (currentReader != null) {
-            currentReader.onValue(value);
+            currentReader.onValue(value, textual);
             return;
         }
 
@@ -153,7 +153,7 @@ public class GenericTupleReader implements GenericAbstractReader {
             throw new IllegalStateException("Tuple is full but got another value");
         }
 
-        putNode(ValueNode.mutable(value));
+        putNode(ValueNode.mutable(value, textual));
     }
 
     @Override

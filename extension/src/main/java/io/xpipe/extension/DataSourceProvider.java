@@ -1,11 +1,15 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.*;
+import io.xpipe.core.config.ConfigOption;
+import io.xpipe.core.config.ConfigOptionSet;
+import io.xpipe.core.source.DataSourceDescriptor;
+import io.xpipe.core.source.DataSourceInfo;
+import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.StreamDataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -14,8 +18,6 @@ import java.util.function.Supplier;
 public interface DataSourceProvider {
 
     interface FileProvider {
-
-        void write(StreamDataStore store, DataSourceDescriptor<StreamDataStore> desc, TableReadConnection con) throws Exception;
 
         String getFileName();
 
@@ -34,6 +36,13 @@ public interface DataSourceProvider {
     }
 
     interface ConfigProvider {
+
+        ConfigOption
+                CHARSET_OPTION = new ConfigOption("Charset", "charset");
+        Function<String, Charset>
+                CHARSET_CONVERTER = ConfigProvider.charsetConverter();
+        Function<Charset, String>
+                CHARSET_STRING = Charset::name;
 
         static String booleanName(String name) {
             return name + " (y/n)";
@@ -63,18 +72,24 @@ public interface DataSourceProvider {
             };
         }
 
-        DataSourceConfigOptions getConfig();
+        static Function<String, Charset> charsetConverter() {
+            return Charset::forName;
+        }
+
+        ConfigOptionSet getConfig();
 
         DataSourceDescriptor<?> toDescriptor(Map<String, String> values);
 
         Map<String, String> toConfigOptions(DataSourceDescriptor<?> desc);
 
-        Map<DataSourceConfigOptions.Option, Function<String, ?>> getConverters();
+        Map<ConfigOption, Function<String, ?>> getConverters();
 
         List<String> getPossibleNames();
     }
 
     DataSourceType getType();
+
+    boolean prefersStore(DataStore store);
 
     boolean supportsStore(DataStore store);
 

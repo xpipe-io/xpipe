@@ -51,12 +51,20 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         throw unsupported("clear");
     }
 
-    public DataStructureNode setRawData(byte[] data) {
+    public boolean isTextual() {
+        throw unsupported("textual check");
+    }
+
+    public DataStructureNode setRaw(byte[] data) {
         throw unsupported("set raw data");
     }
 
-    public DataStructureNode setNull() {
-        throw unsupported("set null");
+    public DataStructureNode set(Object newValue) {
+        throw unsupported("set");
+    }
+
+    public DataStructureNode set(Object newValue, boolean textual) {
+        throw unsupported("set");
     }
 
     public DataStructureNode set(int index, DataStructureNode node) {

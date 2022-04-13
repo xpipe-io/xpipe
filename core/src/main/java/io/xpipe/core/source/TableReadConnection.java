@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * A connection for sequentially reading the data of a table data source.
  */
-public interface TableReadConnection extends DataSourceConnection {
+public interface TableReadConnection extends DataSourceReadConnection {
 
     /**
      * Returns the data type of the table data.
@@ -39,6 +39,10 @@ public interface TableReadConnection extends DataSourceConnection {
      * Writes the rows to an OutputStream in the X-Pipe binary format.
      */
     default void forwardRows(OutputStream out, int maxLines) throws Exception {
+        if (maxLines == 0) {
+            return;
+        }
+
         var dataType = getDataType();
         AtomicInteger rowCounter = new AtomicInteger();
         withRows(l -> {
@@ -46,5 +50,12 @@ public interface TableReadConnection extends DataSourceConnection {
             rowCounter.getAndIncrement();
             return rowCounter.get() != maxLines;
         });
+    }
+
+    default void forward(DataSourceConnection con) throws Exception {
+        try (var tCon = (TableWriteConnection) con) {
+            tCon.init();
+            withRows(tCon.writeLinesAcceptor());
+        }
     }
 }

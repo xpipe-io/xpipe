@@ -9,24 +9,21 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- * Queries data of a table data source in the xpbt format.
- */
-public class QueryTableDataExchange implements MessageExchange<QueryTableDataExchange.Request, QueryTableDataExchange.Response> {
+public class QueryTextDataExchange implements MessageExchange<QueryTextDataExchange.Request, QueryTextDataExchange.Response> {
 
     @Override
     public String getId() {
-        return "queryTableData";
+        return "queryTextData";
     }
 
     @Override
-    public Class<QueryTableDataExchange.Request> getRequestClass() {
-        return QueryTableDataExchange.Request.class;
+    public Class<QueryTextDataExchange.Request> getRequestClass() {
+        return QueryTextDataExchange.Request.class;
     }
 
     @Override
-    public Class<QueryTableDataExchange.Response> getResponseClass() {
-        return QueryTableDataExchange.Response.class;
+    public Class<QueryTextDataExchange.Response> getResponseClass() {
+        return QueryTextDataExchange.Response.class;
     }
 
     @Jacksonized
@@ -36,7 +33,7 @@ public class QueryTableDataExchange implements MessageExchange<QueryTableDataExc
         @NonNull
         DataSourceReference ref;
 
-        int maxRows;
+        int maxLines;
     }
 
     @Jacksonized
