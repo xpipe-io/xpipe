@@ -7,10 +7,10 @@ module io.xpipe.extension {
     exports io.xpipe.extension.event;
     exports io.xpipe.extension.prefs;
 
-    requires io.xpipe.core;
-    requires javafx.base;
+    requires transitive io.xpipe.core;
+    requires transitive javafx.base;
     requires javafx.graphics;
-    requires javafx.controls;
+    requires transitive javafx.controls;
     requires io.xpipe.fxcomps;
     requires org.apache.commons.collections4;
     requires static lombok;

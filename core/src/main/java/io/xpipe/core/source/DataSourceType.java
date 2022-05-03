@@ -18,5 +18,8 @@ public enum DataSourceType {
     TEXT,
 
     @JsonProperty("raw")
-    RAW
+    RAW,
+
+    @JsonProperty("collection")
+    COLLECTION
 }

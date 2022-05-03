@@ -7,8 +7,6 @@ import io.xpipe.core.data.type.TupleType;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 import java.util.OptionalInt;
 
 /**
@@ -53,8 +51,11 @@ public abstract class DataSourceInfo {
     @JsonTypeName("structure")
     public static class Structure extends DataSourceInfo {
 
+        int entries;
+
         @JsonCreator
-        public Structure() {
+        public Structure(int entries) {
+            this.entries = entries;
         }
 
         @Override
@@ -65,15 +66,30 @@ public abstract class DataSourceInfo {
 
     @EqualsAndHashCode(callSuper = false)
     @Value
+    @JsonTypeName("collection")
+    public static class Collection extends DataSourceInfo {
+
+        int entries;
+
+        @JsonCreator
+        public Collection(int entries) {
+            this.entries = entries;
+        }
+
+        @Override
+        public DataSourceType getType() {
+            return DataSourceType.COLLECTION;
+        }
+    }
+
+    @EqualsAndHashCode(callSuper = false)
+    @Value
     @JsonTypeName("text")
     public static class Text extends DataSourceInfo {
-        Charset charset;
-
         int lineCount;
 
         @JsonCreator
-        public Text(Charset charset, int lineCount) {
-            this.charset = charset;
+        public Text(int lineCount) {
             this.lineCount = lineCount;
         }
 
@@ -89,12 +105,10 @@ public abstract class DataSourceInfo {
     @JsonTypeName("raw")
     public static class Raw extends DataSourceInfo {
         int byteCount;
-        ByteOrder byteOrder;
 
         @JsonCreator
-        public Raw(int byteCount, ByteOrder byteOrder) {
+        public Raw(int byteCount) {
             this.byteCount = byteCount;
-            this.byteOrder = byteOrder;
         }
 
         @Override

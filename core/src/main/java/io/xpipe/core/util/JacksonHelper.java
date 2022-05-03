@@ -1,6 +1,7 @@
 package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -22,6 +23,7 @@ public class JacksonHelper {
         ObjectMapper objectMapper = INSTANCE;
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         objectMapper.registerModules(findModules(layer));
         objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()

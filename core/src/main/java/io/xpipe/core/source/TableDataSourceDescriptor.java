@@ -19,9 +19,4 @@ public abstract class TableDataSourceDescriptor<DS extends DataStore> implements
     protected abstract TableWriteConnection newWriteConnection(DS store);
 
     protected abstract TableReadConnection newReadConnection(DS store);
-
-    @Override
-    public DataSourceType getType() {
-        return DataSourceType.TABLE;
-    }
 }

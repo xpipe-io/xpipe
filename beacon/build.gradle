@@ -11,6 +11,10 @@ apply from: "$rootDir/deps/lombok.gradle"
 apply from: 'publish.gradle'
 apply from: "$rootDir/deps/publish-base.gradle"
 
+configurations {
+    compileOnly.extendsFrom(dep)
+}
+
 version = file('../version').text
 group = 'io.xpipe'
 archivesBaseName = 'beacon'

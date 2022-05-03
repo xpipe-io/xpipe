@@ -33,12 +33,14 @@ module io.xpipe.beacon {
             WriteExecuteExchange,
             SelectExchange,
             ReadPreparationExchange,
+            QueryTextDataExchange,
             ReadExecuteExchange,
             DialogExchange,
             QueryDataSourceExchange,
             StoreStreamExchange,
             EditPreparationExchange,
             EditExecuteExchange,
+            ConvertExchange,
             QueryTableDataExchange,
             VersionExchange;
 }

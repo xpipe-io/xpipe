@@ -1,12 +1,13 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.data.type.TupleType;
-import io.xpipe.core.source.DataSourceType;
-import io.xpipe.core.source.TableDataSourceDescriptor;
+import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LocalFileDataStore;
-import io.xpipe.extension.event.ErrorEvent;
+import io.xpipe.core.store.StreamDataStore;
+import lombok.SneakyThrows;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -23,35 +24,54 @@ public class DataSourceProviders {
         }
     }
 
-    public static DataSourceProvider getNativeProviderForType(DataSourceType t) {
-        switch (t) {
-            case TABLE -> {
-                return DataSourceProviders.byId("xpbt").orElseThrow();
-            }
-            case STRUCTURE -> {
-                return DataSourceProviders.byId("xpbs").orElseThrow();
-            }
-            case TEXT -> {
-                return DataSourceProviders.byId("xpbx").orElseThrow();
-            }
-            case RAW -> {
-                return DataSourceProviders.byId("xpbb").orElseThrow();
-            }
+    @SuppressWarnings("unchecked")
+    public static DataSourceDescriptor<StreamDataStore> getNativeDataSourceDescriptorForType(DataSourceType t) {
+        try {
+            return switch (t) {
+                case TABLE -> (DataSourceDescriptor<StreamDataStore>) DataSourceProviders.byId("xpbt").orElseThrow()
+                        .getDescriptorClass().getConstructors()[0].newInstance();
+                case STRUCTURE -> (DataSourceDescriptor<StreamDataStore>) DataSourceProviders.byId("xpbs").orElseThrow()
+                        .getDescriptorClass().getConstructors()[0].newInstance();
+                case TEXT -> (DataSourceDescriptor<StreamDataStore>) DataSourceProviders.byId("text").orElseThrow()
+                        .getDescriptorClass().getConstructors()[0].newInstance(StandardCharsets.UTF_8);
+                case RAW -> (DataSourceDescriptor<StreamDataStore>) DataSourceProviders.byId("xpbr").orElseThrow()
+                        .getDescriptorClass().getConstructors()[0].newInstance();
+            };
+        } catch (Exception ex) {
+            throw new AssertionError(ex);
         }
-
-        throw new AssertionError();
     }
 
     @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public static StructureDataSourceDescriptor<LocalFileDataStore> createLocalStructureDescriptor() {
+        return (StructureDataSourceDescriptor<LocalFileDataStore>)
+                DataSourceProviders.byId("json").orElseThrow().getDescriptorClass()
+                        .getDeclaredConstructors()[0].newInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public static RawDataSourceDescriptor<LocalFileDataStore> createLocalRawDescriptor() {
+        return (RawDataSourceDescriptor<LocalFileDataStore>)
+                DataSourceProviders.byId("binary").orElseThrow().getDescriptorClass()
+                        .getDeclaredConstructors()[0].newInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    public static TextDataSourceDescriptor<LocalFileDataStore> createLocalTextDescriptor() {
+        return (TextDataSourceDescriptor<LocalFileDataStore>)
+                DataSourceProviders.byId("text").orElseThrow().getDescriptorClass()
+                        .getDeclaredConstructors()[0].newInstance();
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
     public static TableDataSourceDescriptor<LocalFileDataStore> createLocalTableDescriptor(TupleType type) {
-        try {
-            return (TableDataSourceDescriptor<LocalFileDataStore>)
-                    DataSourceProviders.byId("xpbt").orElseThrow().getDescriptorClass()
-                            .getDeclaredConstructors()[0].newInstance(type);
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
-            return null;
-        }
+        return (TableDataSourceDescriptor<LocalFileDataStore>)
+                DataSourceProviders.byId("xpbt").orElseThrow().getDescriptorClass()
+                        .getDeclaredConstructors()[0].newInstance(type);
     }
 
     public static Optional<DataSourceProvider> byDescriptorClass(Class<?> clazz) {
@@ -85,7 +105,7 @@ public class DataSourceProviders {
         }
 
         return ALL.stream().filter(d -> d.getFileProvider() != null)
-                .filter(d -> d.supportsStore(store)).findAny();
+                .filter(d -> d.couldSupportStore(store)).findAny();
     }
 
     public static Set<DataSourceProvider> getAll() {
