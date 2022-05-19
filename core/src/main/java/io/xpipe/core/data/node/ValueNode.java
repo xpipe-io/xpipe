@@ -30,7 +30,7 @@ public abstract class ValueNode extends DataStructureNode {
     public abstract ValueNode mutableCopy();
 
     public static ValueNode immutable(byte[] data, boolean textual) {
-        return new ImmutableValueNode(data, textual);
+        return new SimpleImmutableValueNode(data, textual);
     }
 
     public static ValueNode immutable(Object o, boolean textual) {
@@ -84,11 +84,6 @@ public abstract class ValueNode extends DataStructureNode {
     @Override
     public final int asInt() {
         return Integer.parseInt(asString());
-    }
-
-    @Override
-    public final String asString() {
-        return new String(getRawData());
     }
 
     @Override

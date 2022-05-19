@@ -24,9 +24,8 @@ public class LocalFileDataStore implements FileDataStore {
         this.file = file;
     }
 
-    @Override
-    public Optional<String> determineDefaultName() {
-        return Optional.of(file.getFileName().toString());
+    public String toString() {
+        return getFileName();
     }
 
     @Override

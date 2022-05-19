@@ -34,12 +34,16 @@ public interface StreamDataStore extends DataStore {
     /**
      * Opens an input stream. This input stream does not necessarily have to be a new instance.
      */
-    InputStream openInput() throws Exception;
+    default InputStream openInput() throws Exception {
+        throw new UnsupportedOperationException("Can't open store input");
+    }
 
     /**
      * Opens an output stream. This output stream does not necessarily have to be a new instance.
      */
-    OutputStream openOutput() throws Exception;
+    default OutputStream openOutput() throws Exception {
+        throw new UnsupportedOperationException("Can't open store output");
+    }
 
     boolean exists();
 }

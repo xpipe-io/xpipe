@@ -3,7 +3,11 @@ package io.xpipe.core.source;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.store.DataStore;
 
-public interface StructureDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+public abstract class StructureDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+
+    public StructureDataSourceDescriptor(DS store) {
+        super(store);
+    }
 
     private int countEntries(DataStructureNode n) {
         if (n.isValue()) {
@@ -18,26 +22,27 @@ public interface StructureDataSourceDescriptor<DS extends DataStore> extends Dat
     }
 
     @Override
-    default DataSourceInfo determineInfo(DS store) throws Exception {
-        try (var con = openReadConnection(store)) {
+    public final DataSourceInfo determineInfo() throws Exception {
+        try (var con = openReadConnection()) {
             var n = con.read();
             var c = countEntries(n);
             return new DataSourceInfo.Structure(c);
         }
     }
 
-    default StructureReadConnection openReadConnection(DS store) throws Exception {
-        var con = newReadConnection(store);
+    public final StructureReadConnection openReadConnection() throws Exception {
+        var con = newReadConnection();
         con.init();
         return con;
     }
 
-    default StructureWriteConnection openWriteConnection(DS store) throws Exception {
-        var con = newWriteConnection(store);
+    public final StructureWriteConnection openWriteConnection() throws Exception {
+        var con = newWriteConnection();
         con.init();
         return con;
     }
-    StructureWriteConnection newWriteConnection(DS store);
 
-    StructureReadConnection newReadConnection(DS store);
+    protected abstract StructureWriteConnection newWriteConnection();
+
+    protected abstract StructureReadConnection newReadConnection();
 }

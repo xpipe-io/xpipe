@@ -9,5 +9,7 @@ public interface DataSourceConnection extends AutoCloseable {
      * Initializes this connection. Required to be called
      * exactly once prior to attempting to use this connection.
      */
-    void init() throws Exception;
+    default void init() throws Exception {}
+
+    default void close() throws Exception {}
 }

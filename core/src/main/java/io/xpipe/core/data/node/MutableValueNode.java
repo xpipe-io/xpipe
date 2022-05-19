@@ -31,7 +31,7 @@ public class MutableValueNode extends ValueNode {
 
     @Override
     public ValueNode immutableView() {
-        return new ImmutableValueNode(data, textual);
+        return new SimpleImmutableValueNode(data, textual);
     }
 
     @Override

@@ -17,6 +17,8 @@ import io.xpipe.core.data.type.ValueType;
 import io.xpipe.core.data.type.WildcardType;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.store.CollectionEntryDataStore;
+import io.xpipe.core.store.LocalDirectoryDataStore;
 import io.xpipe.core.store.LocalFileDataStore;
 
 import java.io.IOException;
@@ -29,6 +31,8 @@ public class CoreJacksonModule extends SimpleModule {
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
                 new NamedType(LocalFileDataStore.class),
+                new NamedType(LocalDirectoryDataStore.class),
+                new NamedType(CollectionEntryDataStore.class),
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
@@ -36,6 +40,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(DataSourceInfo.Table.class),
                 new NamedType(DataSourceInfo.Structure.class),
                 new NamedType(DataSourceInfo.Text.class),
+                new NamedType(DataSourceInfo.Collection.class),
                 new NamedType(DataSourceInfo.Raw.class)
         );
 

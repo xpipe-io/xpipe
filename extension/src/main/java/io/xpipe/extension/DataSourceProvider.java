@@ -3,20 +3,42 @@ package io.xpipe.extension;
 import io.xpipe.core.config.ConfigOption;
 import io.xpipe.core.config.ConfigOptionSet;
 import io.xpipe.core.source.DataSourceDescriptor;
-import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-public interface DataSourceProvider {
+public interface DataSourceProvider<T extends DataSourceDescriptor<?>> {
+
+    static enum GeneralType {
+        FILE,
+        DATABASE;
+    }
+
+    default GeneralType getGeneralType() {
+        if (getFileProvider() != null) {
+            return GeneralType.FILE;
+        }
+
+        throw new ExtensionException("Provider has no general type");
+    }
+
+    default boolean supportsConversion(T in, DataSourceType t) {
+        return false;
+    }
+
+    default DataSourceDescriptor<?> convert(T in, DataSourceType t) throws Exception {
+        throw new ExtensionException();
+    }
+
+    default void init() {
+    }
 
     default String i18n(String key) {
         return I18n.get(getId() + "." + key);
@@ -34,12 +56,16 @@ public interface DataSourceProvider {
         return i18n("displayName");
     }
 
-    default String getDisplayImageFile() {
-        return "logo.png";
+    default String getDisplayDescription() {
+        return i18n("displayDescription");
     }
 
-    default String getDescription(DataSourceDescriptor<?> source) {
-        return i18n("description");
+    default String getDisplayIconFileName() {
+        return getId() + ":icon.png";
+    }
+
+    default String getSourceDescription(T source) {
+        return getDisplayName();
     }
 
     interface FileProvider {
@@ -49,22 +75,22 @@ public interface DataSourceProvider {
         Map<String, List<String>> getFileExtensions();
     }
 
-    interface ConfigProvider {
+    interface ConfigProvider<T extends DataSourceDescriptor<?>> {
 
-        static ConfigProvider empty(List<String> names, Supplier<DataSourceDescriptor<?>> supplier) {
-            return new ConfigProvider() {
+        static <T extends DataSourceDescriptor<?>> ConfigProvider<T> empty(List<String> names, Function<DataStore, T> func) {
+            return new ConfigProvider<>() {
                 @Override
                 public ConfigOptionSet getConfig() {
                     return ConfigOptionSet.empty();
                 }
 
                 @Override
-                public DataSourceDescriptor<?> toDescriptor(Map<String, String> values) {
-                    return supplier.get();
+                public T toDescriptor(DataStore store, Map<String, String> values) {
+                    return func.apply(store);
                 }
 
                 @Override
-                public Map<String, String> toConfigOptions(DataSourceDescriptor<?> desc) {
+                public Map<String, String> toConfigOptions(T source) {
                     return Map.of();
                 }
 
@@ -121,9 +147,9 @@ public interface DataSourceProvider {
 
         ConfigOptionSet getConfig();
 
-        DataSourceDescriptor<?> toDescriptor(Map<String, String> values);
+        T toDescriptor(DataStore store, Map<String, String> values);
 
-        Map<String, String> toConfigOptions(DataSourceDescriptor<?> desc);
+        Map<String, String> toConfigOptions(T desc);
 
         Map<ConfigOption, Function<String, ?>> getConverters();
 
@@ -160,9 +186,15 @@ public interface DataSourceProvider {
         return false;
     }
 
-    FileProvider getFileProvider();
+    default FileProvider getFileProvider() {
+        return null;
+    }
 
-    ConfigProvider getConfigProvider();
+    default boolean hasDirectoryProvider() {
+        return false;
+    }
+
+    ConfigProvider<T> getConfigProvider();
 
     default String getId() {
         var n = getClass().getPackageName();
@@ -170,17 +202,20 @@ public interface DataSourceProvider {
         return i != -1 ? n.substring(i + 1) : n;
     }
 
-    DataSourceDescriptor<?> createDefaultDescriptor();
-
     /**
      * Attempt to create a useful data source descriptor from a data store.
      * The result does not need to be always right, it should only reflect the best effort.
      */
-    DataSourceDescriptor<?> createDefaultDescriptor(DataStore input) throws Exception;
+    T createDefaultDescriptor(DataStore input) throws Exception;
 
-    DataSourceDescriptor<?> createDefaultWriteDescriptor(DataStore input, DataSourceInfo info) throws Exception;
+    default T createDefaultWriteDescriptor(DataStore input) throws Exception {
+        return createDefaultDescriptor(input);
+    }
 
-    Class<? extends DataSourceDescriptor<?>> getDescriptorClass();
-
-    Optional<String> determineDefaultName(DataStore store);
+    @SuppressWarnings("unchecked")
+    default Class<T> getDescriptorClass() {
+        return (Class<T>) Arrays.stream(getClass().getDeclaredClasses())
+                .filter(c -> c.getName().endsWith("Descriptor")).findFirst()
+                .orElseThrow(() -> new AssertionError("Descriptor class not found"));
+    }
 }

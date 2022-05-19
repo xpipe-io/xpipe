@@ -1,35 +1,25 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.source.DataSourceDescriptor;
-import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.store.DataStore;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-public interface UniformDataSourceProvider extends DataSourceProvider {
+public interface UniformDataSourceProvider<T extends DataSourceDescriptor<?>> extends DataSourceProvider<T> {
 
     @Override
-    default ConfigProvider getConfigProvider() {
+    default ConfigProvider<T> getConfigProvider() {
         return ConfigProvider.empty(List.of(getId()), this::createDefaultDescriptor);
     }
 
     @Override
-    default DataSourceDescriptor<?> createDefaultDescriptor() {
+    @SuppressWarnings("unchecked")
+    default T createDefaultDescriptor(DataStore input) {
         try {
-            return (DataSourceDescriptor<?>) getDescriptorClass().getDeclaredConstructors()[0].newInstance();
+            return (T) getDescriptorClass().getDeclaredConstructors()[0].newInstance(input);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new AssertionError(e);
         }
-    }
-
-    @Override
-    default DataSourceDescriptor<?> createDefaultDescriptor(DataStore input) throws Exception {
-        return createDefaultDescriptor();
-    }
-
-    @Override
-    default DataSourceDescriptor<?> createDefaultWriteDescriptor(DataStore input, DataSourceInfo info) throws Exception {
-        return createDefaultDescriptor();
     }
 }

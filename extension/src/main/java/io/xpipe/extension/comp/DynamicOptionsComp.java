@@ -4,6 +4,7 @@ import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -13,7 +14,6 @@ import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
 
@@ -37,7 +37,8 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
             var line = new HBox();
             line.setSpacing(5);
 
-            var name = new Label(entry.name().get());
+            var name = new Label();
+            name.textProperty().bind(entry.name());
             name.prefHeightProperty().bind(line.heightProperty());
             name.setMinWidth(Region.USE_PREF_SIZE);
             name.setAlignment(Pos.CENTER_LEFT);
@@ -78,7 +79,7 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
         return entries;
     }
 
-    public static record Entry(Supplier<String> name, Comp<?> comp) {
+    public static record Entry(ObservableValue<String> name, Comp<?> comp) {
 
     }
 }

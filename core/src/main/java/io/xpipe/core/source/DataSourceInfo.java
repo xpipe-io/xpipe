@@ -117,24 +117,6 @@ public abstract class DataSourceInfo {
         }
     }
 
-
-    @EqualsAndHashCode(callSuper = false)
-    @Value
-    @JsonTypeName("archive")
-    public static class Archive extends DataSourceInfo {
-        int contentCount;
-
-        @JsonCreator
-        public Archive(int contentCount) {
-            this.contentCount = contentCount;
-        }
-
-        @Override
-        public DataSourceType getType() {
-            return null;
-        }
-    }
-
     /**
      * Casts this instance to a table info.
      */
@@ -177,5 +159,16 @@ public abstract class DataSourceInfo {
         }
 
         return (Raw) this;
+    }
+
+    /**
+     * Casts this instance to a collection info.
+     */
+    public Collection asCollection() {
+        if (!getType().equals(DataSourceType.COLLECTION)) {
+            throw new IllegalStateException("Not a collection");
+        }
+
+        return (Collection) this;
     }
 }

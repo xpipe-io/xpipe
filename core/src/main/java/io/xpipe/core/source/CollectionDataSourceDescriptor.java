@@ -2,29 +2,49 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
 
-public interface CollectionDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+import java.util.HashMap;
+import java.util.Map;
+
+public abstract class CollectionDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+
+    private final Map<String, String> preferredProviders;
+
+    public CollectionDataSourceDescriptor(DS store) {
+        super(store);
+        this.preferredProviders = new HashMap<>();
+    }
+
+    public CollectionDataSourceDescriptor<DS> annotate(String file, String provider) {
+        preferredProviders.put(file, provider);
+        return this;
+    }
+
+    public CollectionDataSourceDescriptor<DS> annotate(Map<String, String> preferredProviders) {
+        this.preferredProviders.putAll(preferredProviders);
+        return this;
+    }
 
     @Override
-    default DataSourceInfo determineInfo(DS store) throws Exception {
-        try (var con = openReadConnection(store)) {
+    public final DataSourceInfo determineInfo() throws Exception {
+        try (var con = openReadConnection()) {
             var c = (int) con.listEntries().count();
-            return new DataSourceInfo.Structure(c);
+            return new DataSourceInfo.Collection(c);
         }
     }
 
-    default CollectionReadConnection openReadConnection(DS store) throws Exception {
-        var con = newReadConnection(store);
+    public final CollectionReadConnection openReadConnection() throws Exception {
+        var con = newReadConnection();
         con.init();
         return con;
     }
 
-    default CollectionWriteConnection openWriteConnection(DS store) throws Exception {
-        var con = newWriteConnection(store);
+    public final CollectionWriteConnection openWriteConnection() throws Exception {
+        var con = newWriteConnection();
         con.init();
         return con;
     }
 
-    CollectionWriteConnection newWriteConnection(DS store);
+    protected abstract CollectionWriteConnection newWriteConnection();
 
-    CollectionReadConnection newReadConnection(DS store);
+    protected abstract CollectionReadConnection newReadConnection();
 }

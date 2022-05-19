@@ -1,5 +1,6 @@
 package io.xpipe.extension;
 
+import io.xpipe.core.source.DataSourceDescriptor;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileDataStore;
 import io.xpipe.core.store.StreamDataStore;
@@ -7,20 +8,8 @@ import io.xpipe.core.store.StreamDataStore;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public interface SimpleFileDataSourceProvider extends DataSourceProvider {
-
-    @Override
-    default Optional<String> determineDefaultName(DataStore store) {
-        if (store instanceof FileDataStore l) {
-            var n = l.getFileName();
-            var i = n.lastIndexOf('.');
-            return Optional.of(i != -1 ? n.substring(0, i) : n);
-        }
-
-        return Optional.empty();
-    }
+public interface SimpleFileDataSourceProvider<T extends DataSourceDescriptor<?>> extends DataSourceProvider<T> {
 
     @Override
     default boolean prefersStore(DataStore store) {
