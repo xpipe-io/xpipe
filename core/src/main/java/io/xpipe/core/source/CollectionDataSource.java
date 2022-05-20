@@ -5,21 +5,21 @@ import io.xpipe.core.store.DataStore;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class CollectionDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+public abstract class CollectionDataSource<DS extends DataStore> extends DataSourceDescriptor<DS> {
 
     private final Map<String, String> preferredProviders;
 
-    public CollectionDataSourceDescriptor(DS store) {
+    public CollectionDataSource(DS store) {
         super(store);
         this.preferredProviders = new HashMap<>();
     }
 
-    public CollectionDataSourceDescriptor<DS> annotate(String file, String provider) {
+    public CollectionDataSource<DS> annotate(String file, String provider) {
         preferredProviders.put(file, provider);
         return this;
     }
 
-    public CollectionDataSourceDescriptor<DS> annotate(Map<String, String> preferredProviders) {
+    public CollectionDataSource<DS> annotate(Map<String, String> preferredProviders) {
         this.preferredProviders.putAll(preferredProviders);
         return this;
     }
