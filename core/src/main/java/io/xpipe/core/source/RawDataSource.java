@@ -2,11 +2,11 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
 
-public abstract class RawDataSourceDescriptor <DS extends DataStore> extends DataSourceDescriptor<DS>  {
+public abstract class RawDataSource<DS extends DataStore> extends DataSource<DS> {
 
     private static final int MAX_BYTES_READ = 100000;
 
-    public RawDataSourceDescriptor(DS store) {
+    public RawDataSource(DS store) {
         super(store);
     }
 

@@ -1,7 +1,7 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.xpipe.core.source.DataSourceDescriptor;
+import io.xpipe.core.source.DataSource;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -11,7 +11,7 @@ import java.util.Optional;
  * It does not contain any information on what data is stored,
  * how the data is stored inside, or what part of the data store makes up the actual data source.
  *
- * @see DataSourceDescriptor
+ * @see DataSource
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {

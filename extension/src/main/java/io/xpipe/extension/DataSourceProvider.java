@@ -2,7 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.config.ConfigOption;
 import io.xpipe.core.config.ConfigOptionSet;
-import io.xpipe.core.source.DataSourceDescriptor;
+import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface DataSourceProvider<T extends DataSourceDescriptor<?>> {
+public interface DataSourceProvider<T extends DataSource<?>> {
 
     static enum GeneralType {
         FILE,
@@ -33,7 +33,7 @@ public interface DataSourceProvider<T extends DataSourceDescriptor<?>> {
         return false;
     }
 
-    default DataSourceDescriptor<?> convert(T in, DataSourceType t) throws Exception {
+    default DataSource<?> convert(T in, DataSourceType t) throws Exception {
         throw new ExtensionException();
     }
 
@@ -48,7 +48,7 @@ public interface DataSourceProvider<T extends DataSourceDescriptor<?>> {
         return getId() + "." + key;
     }
 
-    default Region createConfigOptions(DataStore input, Property<? extends DataSourceDescriptor<?>> source) {
+    default Region createConfigOptions(DataStore input, Property<? extends DataSource<?>> source) {
         return null;
     }
 
@@ -75,9 +75,9 @@ public interface DataSourceProvider<T extends DataSourceDescriptor<?>> {
         Map<String, List<String>> getFileExtensions();
     }
 
-    interface ConfigProvider<T extends DataSourceDescriptor<?>> {
+    interface ConfigProvider<T extends DataSource<?>> {
 
-        static <T extends DataSourceDescriptor<?>> ConfigProvider<T> empty(List<String> names, Function<DataStore, T> func) {
+        static <T extends DataSource<?>> ConfigProvider<T> empty(List<String> names, Function<DataStore, T> func) {
             return new ConfigProvider<>() {
                 @Override
                 public ConfigOptionSet getConfig() {

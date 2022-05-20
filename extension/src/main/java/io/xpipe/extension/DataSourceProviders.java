@@ -39,40 +39,40 @@ public class DataSourceProviders {
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static StructureDataSourceDescriptor<LocalFileDataStore> createLocalStructureDescriptor(DataStore store) {
-        return (StructureDataSourceDescriptor<LocalFileDataStore>)
+    public static StructureDataSource<LocalFileDataStore> createLocalStructureDescriptor(DataStore store) {
+        return (StructureDataSource<LocalFileDataStore>)
                 DataSourceProviders.byId("xpbs").getDescriptorClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static RawDataSourceDescriptor<LocalFileDataStore> createLocalRawDescriptor(DataStore store) {
-        return (RawDataSourceDescriptor<LocalFileDataStore>)
+    public static RawDataSource<LocalFileDataStore> createLocalRawDescriptor(DataStore store) {
+        return (RawDataSource<LocalFileDataStore>)
                 DataSourceProviders.byId("binary").getDescriptorClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static RawDataSourceDescriptor<LocalFileDataStore> createLocalCollectionDescriptor(DataStore store) {
-        return (RawDataSourceDescriptor<LocalFileDataStore>)
+    public static RawDataSource<LocalFileDataStore> createLocalCollectionDescriptor(DataStore store) {
+        return (RawDataSource<LocalFileDataStore>)
                 DataSourceProviders.byId("br").getDescriptorClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static TextDataSourceDescriptor<LocalFileDataStore> createLocalTextDescriptor(DataStore store) {
-        return (TextDataSourceDescriptor<LocalFileDataStore>)
+    public static TextDataSource<LocalFileDataStore> createLocalTextDescriptor(DataStore store) {
+        return (TextDataSource<LocalFileDataStore>)
                 DataSourceProviders.byId("text").getDescriptorClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static TableDataSourceDescriptor<LocalFileDataStore> createLocalTableDescriptor(DataStore store) {
-        return (TableDataSourceDescriptor<LocalFileDataStore>)
+    public static TableDataSource<LocalFileDataStore> createLocalTableDescriptor(DataStore store) {
+        return (TableDataSource<LocalFileDataStore>)
                 DataSourceProviders.byId("xpbt").getDescriptorClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
@@ -89,7 +89,7 @@ public class DataSourceProviders {
 
 
     @SuppressWarnings("unchecked")
-    public static <C extends DataSourceDescriptor<?>, T extends DataSourceProvider<C>> T byDataSourceClass(Class<C> c) {
+    public static <C extends DataSource<?>, T extends DataSourceProvider<C>> T byDataSourceClass(Class<C> c) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }

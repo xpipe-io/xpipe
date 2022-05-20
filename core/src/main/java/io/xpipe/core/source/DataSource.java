@@ -10,15 +10,15 @@ import java.util.Optional;
  *
  * This instance is only valid in combination with its associated data store instance.
  */
-public abstract class DataSourceDescriptor<DS extends DataStore> {
+public abstract class DataSource<DS extends DataStore> {
 
     protected DS store;
 
-    public DataSourceDescriptor(DS store) {
+    public DataSource(DS store) {
         this.store = store;
     }
 
-    public DataSourceDescriptor<DS> withStore(DS newStore) {
+    public DataSource<DS> withStore(DS newStore) {
         return null;
     }
 
@@ -26,7 +26,7 @@ public abstract class DataSourceDescriptor<DS extends DataStore> {
      * Casts this instance to the required type without checking whether a cast is possible.
      */
     @SuppressWarnings("unchecked")
-    public final <DSD extends DataSourceDescriptor<?>> DSD asNeeded() {
+    public final <DSD extends DataSource<?>> DSD asNeeded() {
         return (DSD) this;
     }
 

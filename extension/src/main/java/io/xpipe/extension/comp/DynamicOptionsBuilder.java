@@ -1,6 +1,6 @@
 package io.xpipe.extension.comp;
 
-import io.xpipe.core.source.DataSourceDescriptor;
+import io.xpipe.core.source.DataSource;
 import io.xpipe.fxcomps.Comp;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class DynamicOptionsBuilder<T extends DataSourceDescriptor<?>> {
+public class DynamicOptionsBuilder<T extends DataSource<?>> {
 
     private final  List<DynamicOptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();

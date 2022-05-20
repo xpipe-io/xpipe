@@ -5,7 +5,7 @@ import io.xpipe.core.store.DataStore;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class CollectionDataSource<DS extends DataStore> extends DataSourceDescriptor<DS> {
+public abstract class CollectionDataSource<DS extends DataStore> extends DataSource<DS> {
 
     private final Map<String, String> preferredProviders;
 

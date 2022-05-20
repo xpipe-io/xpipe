@@ -3,9 +3,9 @@ package io.xpipe.core.source;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.store.DataStore;
 
-public abstract class StructureDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+public abstract class StructureDataSource<DS extends DataStore> extends DataSource<DS> {
 
-    public StructureDataSourceDescriptor(DS store) {
+    public StructureDataSource(DS store) {
         super(store);
     }
 

@@ -2,9 +2,9 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
 
-public abstract class TableDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS> {
+public abstract class TableDataSource<DS extends DataStore> extends DataSource<DS> {
 
-    public TableDataSourceDescriptor(DS store) {
+    public TableDataSource(DS store) {
         super(store);
     }
 

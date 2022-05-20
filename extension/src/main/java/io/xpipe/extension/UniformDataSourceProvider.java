@@ -1,12 +1,12 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSourceDescriptor;
+import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-public interface UniformDataSourceProvider<T extends DataSourceDescriptor<?>> extends DataSourceProvider<T> {
+public interface UniformDataSourceProvider<T extends DataSource<?>> extends DataSourceProvider<T> {
 
     @Override
     default ConfigProvider<T> getConfigProvider() {

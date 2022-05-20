@@ -2,11 +2,11 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
 
-public abstract class TextDataSourceDescriptor<DS extends DataStore> extends DataSourceDescriptor<DS>  {
+public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS> {
 
     private static final int MAX_LINE_READ = 1000;
 
-    public TextDataSourceDescriptor(DS store) {
+    public TextDataSource(DS store) {
         super(store);
     }
 

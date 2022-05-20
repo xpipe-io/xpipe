@@ -1,6 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.source.DataSourceDescriptor;
+import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileDataStore;
 import io.xpipe.core.store.StreamDataStore;
@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public interface SimpleFileDataSourceProvider<T extends DataSourceDescriptor<?>> extends DataSourceProvider<T> {
+public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends DataSourceProvider<T> {
 
     @Override
     default boolean prefersStore(DataStore store) {
