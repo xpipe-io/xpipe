@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+apply from: "$rootDir/deps/java.gradle"
+apply from: "$rootDir/deps/commons.gradle"
+apply from: "$rootDir/deps/junit.gradle"
+apply from: "$rootDir/deps/lombok.gradle"
+
+configurations {
+    compileOnly.extendsFrom(dep)
+}
+
