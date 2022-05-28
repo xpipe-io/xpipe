@@ -15,6 +15,11 @@ public class MutableValueNode extends ValueNode {
     }
 
     @Override
+    public String asString() {
+        return new String(data);
+    }
+
+    @Override
     public String toString(int indent) {
         return (textual ? "\"" : "") + new String(data) + (textual ? "\"" : "") +  " (M)";
     }

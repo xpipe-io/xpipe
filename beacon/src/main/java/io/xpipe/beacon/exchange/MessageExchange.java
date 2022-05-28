@@ -20,12 +20,19 @@ public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseM
     @SneakyThrows
     @SuppressWarnings("unchecked")
     default Class<RQ> getRequestClass() {
-        var name = getClass().getName() + "$Request";
+        var c = getClass().getSuperclass();
+        var name = (MessageExchange.class.isAssignableFrom(c) ? c : getClass()).getName() + "$Request";
         return (Class<RQ>) Class.forName(name);
     }
 
     /**
      * Returns the response class, needed for serialization.
      */
-    Class<RP> getResponseClass();
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    default Class<RP> getResponseClass() {
+        var c = getClass().getSuperclass();
+        var name = (MessageExchange.class.isAssignableFrom(c) ? c : getClass()).getName() + "$Response";
+        return (Class<RP>) Class.forName(name);
+    }
 }

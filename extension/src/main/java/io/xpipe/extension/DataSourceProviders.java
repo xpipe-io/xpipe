@@ -107,13 +107,13 @@ public class DataSourceProviders {
                 .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
     }
 
-    public static Optional<DataSourceProvider<?>> byStore(DataStore store) {
+    public static Optional<DataSourceProvider<?>> byPreferredStore(DataStore store) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
         return ALL.stream().filter(d -> d.getFileProvider() != null)
-                .filter(d -> d.couldSupportStore(store)).findAny();
+                .filter(d -> d.prefersStore(store)).findAny();
     }
 
     public static Set<DataSourceProvider<?>> getAll() {

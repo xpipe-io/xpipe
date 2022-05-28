@@ -18,8 +18,14 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
                 continue;
             }
 
-            if (store instanceof FileDataStore l) {
-                return l.getFileName().matches("\\." + e.getValue() + "$");
+            for (var ext : e.getValue()) {
+                if (ext == null) {
+                    continue;
+                }
+
+                if (store instanceof FileDataStore l) {
+                    return l.getFileName().endsWith("." + ext);
+                }
             }
         }
         return false;

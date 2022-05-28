@@ -40,7 +40,13 @@ module io.xpipe.beacon {
             StoreStreamExchange,
             EditPreparationExchange,
             EditExecuteExchange,
+            RemoveEntryExchange,
+            RemoveCollectionExchange,
+            RenameCollectionExchange,
+            RenameEntryExchange,
+            ProviderListExchange,
             ConvertExchange,
+            QueryRawDataExchange,
             QueryTableDataExchange,
             VersionExchange;
 }

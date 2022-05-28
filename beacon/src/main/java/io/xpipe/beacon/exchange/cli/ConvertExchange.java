@@ -6,6 +6,7 @@ import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.core.source.DataSourceConfigInstance;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -18,16 +19,6 @@ public class ConvertExchange implements MessageExchange<ConvertExchange.Request,
         return "convert";
     }
 
-    @Override
-    public Class<ConvertExchange.Request> getRequestClass() {
-        return ConvertExchange.Request.class;
-    }
-
-    @Override
-    public Class<ConvertExchange.Response> getResponseClass() {
-        return ConvertExchange.Response.class;
-    }
-
     @Jacksonized
     @Builder
     @Value
@@ -35,15 +26,18 @@ public class ConvertExchange implements MessageExchange<ConvertExchange.Request,
         @NonNull
         DataSourceReference ref;
 
-        @NonNull DataSourceId copyId;
+        String newProvider;
 
-        @NonNull
-        DataSourceConfigInstance config;
+        DataSourceType newType;
+
+        DataSourceId copyId;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
+        @NonNull
+        DataSourceConfigInstance config;
     }
 }

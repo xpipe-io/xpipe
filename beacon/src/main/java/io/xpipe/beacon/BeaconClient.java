@@ -168,6 +168,10 @@ public class BeaconClient implements AutoCloseable {
             System.out.println(read.toPrettyString());
         }
 
+        if (read.isMissingNode()) {
+            throw new ConnectorException("Received unexpected EOF");
+        }
+
         var se = parseServerError(read);
         if (se.isPresent()) {
             se.get().throwError();

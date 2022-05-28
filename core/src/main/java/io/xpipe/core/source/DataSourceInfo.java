@@ -86,10 +86,12 @@ public abstract class DataSourceInfo {
     @Value
     @JsonTypeName("text")
     public static class Text extends DataSourceInfo {
+        int characters;
         int lineCount;
 
         @JsonCreator
-        public Text(int lineCount) {
+        public Text(int characters, int lineCount) {
+            this.characters = characters;
             this.lineCount = lineCount;
         }
 

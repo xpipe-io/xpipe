@@ -75,12 +75,17 @@ public class BeaconServer {
     public static boolean tryStart() throws Exception {
         var custom = BeaconConfig.getCustomExecCommand();
         if (custom != null) {
+            System.out.println("Starting fork: " + custom);
             startFork(custom);
             return true;
         }
 
         var daemonExecutable = getDaemonExecutable();
         if (daemonExecutable.isPresent()) {
+            if (BeaconConfig.debugEnabled()) {
+                System.out.println("Starting daemon executable: " + daemonExecutable.get());
+            }
+
             // Tell daemon that we launched from an external tool
             new ProcessBuilder(daemonExecutable.get().toString(), "--external")
                     .redirectErrorStream(true)

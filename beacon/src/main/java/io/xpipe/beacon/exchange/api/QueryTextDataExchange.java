@@ -16,16 +16,6 @@ public class QueryTextDataExchange implements MessageExchange<QueryTextDataExcha
         return "queryTextData";
     }
 
-    @Override
-    public Class<QueryTextDataExchange.Request> getRequestClass() {
-        return QueryTextDataExchange.Request.class;
-    }
-
-    @Override
-    public Class<QueryTextDataExchange.Response> getResponseClass() {
-        return QueryTextDataExchange.Response.class;
-    }
-
     @Jacksonized
     @Builder
     @Value

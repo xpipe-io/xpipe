@@ -1,6 +1,11 @@
 package io.xpipe.core.source;
 
+import com.fasterxml.jackson.databind.util.TokenBuffer;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.JacksonHelper;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 
 import java.util.Optional;
 
@@ -10,16 +15,25 @@ import java.util.Optional;
  *
  * This instance is only valid in combination with its associated data store instance.
  */
+@AllArgsConstructor
 public abstract class DataSource<DS extends DataStore> {
 
+    @NonNull
     protected DS store;
 
-    public DataSource(DS store) {
-        this.store = store;
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public DataSource<DS> copy() {
+        var mapper = JacksonHelper.newMapper();
+        TokenBuffer tb = new TokenBuffer(mapper, false);
+        mapper.writeValue(tb, this);
+        return mapper.readValue(tb.asParser(), getClass());
     }
 
-    public DataSource<DS> withStore(DS newStore) {
-        return null;
+    public DataSource<DS> withStore(DS store) {
+        var c = copy();
+        c.store = store;
+        return c;
     }
 
     /**
