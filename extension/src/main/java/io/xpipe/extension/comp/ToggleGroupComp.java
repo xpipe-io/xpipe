@@ -4,24 +4,23 @@ import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.util.PlatformUtil;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import org.apache.commons.collections4.BidiMap;
 
-import java.util.function.Supplier;
-
 public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
 
     private final Property<T> value;
-    private final BidiMap<T, Supplier<String>> range;
+    private final BidiMap<T, ObservableValue<String>> range;
 
-    public ToggleGroupComp(Property<T> value, BidiMap<T, Supplier<String>> range) {
+    public ToggleGroupComp(Property<T> value, BidiMap<T, ObservableValue<String>> range) {
         this.value = value;
         this.range = range;
     }
 
-    public BidiMap<T, Supplier<String>> getRange() {
+    public BidiMap<T, ObservableValue<String>> getRange() {
         return range;
     }
 
@@ -31,7 +30,7 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
         box.getStyleClass().add("toggle-group-comp");
         ToggleGroup group = new ToggleGroup();
         for (var entry : range.entrySet()) {
-            var b = new ToggleButton(entry.getValue().get());
+            var b = new ToggleButton(entry.getValue().getValue());
             b.setOnAction(e -> {
                 value.setValue(entry.getKey());
                 e.consume();

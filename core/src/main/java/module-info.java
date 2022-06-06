@@ -18,6 +18,7 @@ module io.xpipe.core {
     opens io.xpipe.core.data.typed;
     exports io.xpipe.core.config;
     opens io.xpipe.core.config;
+    exports io.xpipe.core.connection;
 
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;

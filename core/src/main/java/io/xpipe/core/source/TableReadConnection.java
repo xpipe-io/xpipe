@@ -15,6 +15,30 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public interface TableReadConnection extends DataSourceReadConnection {
 
+    public static TableReadConnection empty() {
+        return new TableReadConnection() {
+            @Override
+            public TupleType getDataType() throws Exception {
+                return TupleType.empty();
+            }
+
+            @Override
+            public int getRowCount() throws Exception {
+                return 0;
+            }
+
+            @Override
+            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
+
+            }
+
+            @Override
+            public ArrayNode readRows(int maxLines) throws Exception {
+                return ArrayNode.of();
+            }
+        };
+    }
+
     /**
      * Returns the data type of the table data.
      */
@@ -53,9 +77,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
     }
 
     default void forward(DataSourceConnection con) throws Exception {
-        try (var tCon = (TableWriteConnection) con) {
-            tCon.init();
-            withRows(tCon.writeLinesAcceptor());
-        }
+        var tCon = (TableWriteConnection) con;
+        withRows(tCon.writeLinesAcceptor());
     }
 }

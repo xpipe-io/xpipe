@@ -1,14 +1,16 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.config.ConfigOption;
-import io.xpipe.core.config.ConfigOptionSet;
+import io.xpipe.charsetter.NewLine;
+import io.xpipe.core.config.ConfigConverter;
+import io.xpipe.core.config.ConfigParameter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
+import lombok.SneakyThrows;
+import lombok.Value;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +28,17 @@ public interface DataSourceProvider<T extends DataSource<?>> {
             return GeneralType.FILE;
         }
 
+        if (getDatabaseProvider() != null) {
+            return GeneralType.DATABASE;
+        }
+
         throw new ExtensionException("Provider has no general type");
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    default T createDefault() {
+        return (T) getSourceClass().getDeclaredConstructors()[0].newInstance();
     }
 
     default boolean supportsConversion(T in, DataSourceType t) {
@@ -37,7 +49,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         throw new ExtensionException();
     }
 
-    default void init() {
+    default void init() throws Exception {
     }
 
     default String i18n(String key) {
@@ -48,7 +60,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getId() + "." + key;
     }
 
-    default Region createConfigOptions(DataStore input, Property<? extends DataSource<?>> source) {
+    default Region createConfigGui(Property<T> source) {
         return null;
     }
 
@@ -75,27 +87,32 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         Map<String, List<String>> getFileExtensions();
     }
 
+    interface DatabaseProvider {
+
+    }
+
     interface ConfigProvider<T extends DataSource<?>> {
+
+        @Value
+        static class Parameter {
+            ConfigParameter parameter;
+            Object currentValue;
+            boolean required;
+        }
 
         static <T extends DataSource<?>> ConfigProvider<T> empty(List<String> names, Function<DataStore, T> func) {
             return new ConfigProvider<>() {
                 @Override
-                public ConfigOptionSet getConfig() {
-                    return ConfigOptionSet.empty();
+                public void applyConfig(T source, Map<ConfigParameter, Object> values) {
                 }
 
                 @Override
-                public T toDescriptor(DataStore store, Map<String, String> values) {
-                    return func.apply(store);
-                }
-
-                @Override
-                public Map<String, String> toConfigOptions(T source) {
+                public Map<ConfigParameter, Function<T, Object>> toCompleteConfig() {
                     return Map.of();
                 }
 
                 @Override
-                public Map<ConfigOption, Function<String, ?>> getConverters() {
+                public Map<ConfigParameter, Object> toRequiredReadConfig(T desc) {
                     return Map.of();
                 }
 
@@ -106,52 +123,29 @@ public interface DataSourceProvider<T extends DataSource<?>> {
             };
         }
 
-        ConfigOption
-                CHARSET_OPTION = new ConfigOption("Charset", "charset");
-        Function<String, Charset>
-                CHARSET_CONVERTER = ConfigProvider.charsetConverter();
-        Function<Charset, String>
-                CHARSET_STRING = Charset::name;
+        ConfigParameter CHARSET = new ConfigParameter(
+                "charset", ConfigConverter.CHARSET);
 
-        static String booleanName(String name) {
-            return name + " (y/n)";
-        }
+        public static final ConfigConverter<NewLine> NEW_LINE_CONVERTER = new ConfigConverter<NewLine>() {
+            @Override
+            protected NewLine fromString(String s) {
+                return NewLine.id(s);
+            }
 
-        static Function<String, Boolean> booleanConverter() {
-            return s -> {
-                if (s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes")) {
-                    return true;
-                }
+            @Override
+            protected String toString(NewLine value) {
+                return value.getId();
+            }
+        };
 
-                if (s.equalsIgnoreCase("n") || s.equalsIgnoreCase("no")) {
-                    return false;
-                }
+        ConfigParameter NEWLINE = new ConfigParameter(
+                "newline", NEW_LINE_CONVERTER);
 
-              throw new IllegalArgumentException("Invalid boolean: " + s);
-            };
-        }
+        void applyConfig(T source, Map<ConfigParameter, Object> values);
 
-        static Function<String, Character> characterConverter() {
-            return s -> {
-                if (s.length() != 1) {
-                    throw new IllegalArgumentException("Invalid character: " + s);
-                }
+        Map<ConfigParameter, Function<T, Object>> toCompleteConfig();
 
-                return s.toCharArray()[0];
-            };
-        }
-
-        static Function<String, Charset> charsetConverter() {
-            return Charset::forName;
-        }
-
-        ConfigOptionSet getConfig();
-
-        T toDescriptor(DataStore store, Map<String, String> values);
-
-        Map<String, String> toConfigOptions(T desc);
-
-        Map<ConfigOption, Function<String, ?>> getConverters();
+        Map<ConfigParameter, Object> toRequiredReadConfig(T desc);
 
         List<String> getPossibleNames();
     }
@@ -190,6 +184,10 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return null;
     }
 
+    default DatabaseProvider getDatabaseProvider() {
+        return null;
+    }
+
     default boolean hasDirectoryProvider() {
         return false;
     }
@@ -206,16 +204,16 @@ public interface DataSourceProvider<T extends DataSource<?>> {
      * Attempt to create a useful data source descriptor from a data store.
      * The result does not need to be always right, it should only reflect the best effort.
      */
-    T createDefaultDescriptor(DataStore input) throws Exception;
+    T createDefaultSource(DataStore input) throws Exception;
 
-    default T createDefaultWriteDescriptor(DataStore input) throws Exception {
-        return createDefaultDescriptor(input);
+    default T createDefaultWriteSource(DataStore input) throws Exception {
+        return createDefaultSource(input);
     }
 
     @SuppressWarnings("unchecked")
-    default Class<T> getDescriptorClass() {
+    default Class<T> getSourceClass() {
         return (Class<T>) Arrays.stream(getClass().getDeclaredClasses())
-                .filter(c -> c.getName().endsWith("Descriptor")).findFirst()
-                .orElseThrow(() -> new AssertionError("Descriptor class not found"));
+                .filter(c -> c.getName().endsWith("Source")).findFirst()
+                .orElseThrow(() -> new ExtensionException("Descriptor class not found for " + getId()));
     }
 }

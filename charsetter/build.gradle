@@ -7,6 +7,8 @@ apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/commons.gradle"
 apply from: "$rootDir/deps/junit.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
+
 
 configurations {
     compileOnly.extendsFrom(dep)

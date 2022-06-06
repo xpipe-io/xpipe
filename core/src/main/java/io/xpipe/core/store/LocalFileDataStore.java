@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -50,6 +51,11 @@ public class LocalFileDataStore implements FileDataStore {
     @Override
     public OutputStream openOutput() throws Exception {
         return Files.newOutputStream(file);
+    }
+
+    @Override
+    public OutputStream openAppendingOutput() throws Exception {
+        return Files.newOutputStream(file, StandardOpenOption.APPEND);
     }
 
     @Override

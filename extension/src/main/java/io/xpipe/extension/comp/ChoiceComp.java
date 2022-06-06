@@ -4,19 +4,18 @@ import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.util.PlatformUtil;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 import org.apache.commons.collections4.BidiMap;
 
-import java.util.function.Supplier;
-
 public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
     private final Property<T> value;
-    private final BidiMap<T, Supplier<String>> range;
+    private final BidiMap<T, ObservableValue<String>> range;
 
-    public ChoiceComp(Property<T> value, BidiMap<T, Supplier<String>> range) {
+    public ChoiceComp(Property<T> value, BidiMap<T, ObservableValue<String>> range) {
         this.value = value;
         this.range = range;
     }
@@ -28,7 +27,11 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(T object) {
-                return range.get(object).get();
+                if (object == null) {
+                    return "null";
+                }
+
+                return range.get(object).getValue();
             }
 
             @Override

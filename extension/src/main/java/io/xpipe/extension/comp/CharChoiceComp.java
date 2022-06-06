@@ -4,21 +4,20 @@ import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualLinkedHashBidiMap;
 
-import java.util.function.Supplier;
-
 public class CharChoiceComp extends Comp<CompStructure<HBox>> {
 
     private final Property<Character> value;
     private final Property<Character> charChoiceValue;
-    private final BidiMap<Character, Supplier<String>> range;
-    private final Supplier<String> customName;
+    private final BidiMap<Character, ObservableValue<String>> range;
+    private final ObservableValue<String> customName;
 
-    public CharChoiceComp(Property<Character> value, BidiMap<Character, Supplier<String>> range, Supplier<String> customName) {
+    public CharChoiceComp(Property<Character> value, BidiMap<Character, ObservableValue<String>> range, ObservableValue<String> customName) {
         this.value = value;
         this.range = range;
         this.customName = customName;

@@ -3,6 +3,7 @@ package io.xpipe.extension;
 import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LocalFileDataStore;
+import io.xpipe.extension.event.ErrorEvent;
 import lombok.SneakyThrows;
 
 import java.util.Optional;
@@ -18,7 +19,13 @@ public class DataSourceProviders {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataSourceProvider.class).stream()
                     .map(p -> (DataSourceProvider<?>) p.get()).collect(Collectors.toSet());
-            ALL.forEach(DataSourceProvider::init);
+            ALL.forEach(p -> {
+                try {
+                    p.init();
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+            });
         }
     }
 
@@ -41,7 +48,7 @@ public class DataSourceProviders {
     @SneakyThrows
     public static StructureDataSource<LocalFileDataStore> createLocalStructureDescriptor(DataStore store) {
         return (StructureDataSource<LocalFileDataStore>)
-                DataSourceProviders.byId("xpbs").getDescriptorClass()
+                DataSourceProviders.byId("xpbs").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -49,7 +56,7 @@ public class DataSourceProviders {
     @SneakyThrows
     public static RawDataSource<LocalFileDataStore> createLocalRawDescriptor(DataStore store) {
         return (RawDataSource<LocalFileDataStore>)
-                DataSourceProviders.byId("binary").getDescriptorClass()
+                DataSourceProviders.byId("binary").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -57,7 +64,7 @@ public class DataSourceProviders {
     @SneakyThrows
     public static RawDataSource<LocalFileDataStore> createLocalCollectionDescriptor(DataStore store) {
         return (RawDataSource<LocalFileDataStore>)
-                DataSourceProviders.byId("br").getDescriptorClass()
+                DataSourceProviders.byId("br").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -65,7 +72,7 @@ public class DataSourceProviders {
     @SneakyThrows
     public static TextDataSource<LocalFileDataStore> createLocalTextDescriptor(DataStore store) {
         return (TextDataSource<LocalFileDataStore>)
-                DataSourceProviders.byId("text").getDescriptorClass()
+                DataSourceProviders.byId("text").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -73,7 +80,7 @@ public class DataSourceProviders {
     @SneakyThrows
     public static TableDataSource<LocalFileDataStore> createLocalTableDescriptor(DataStore store) {
         return (TableDataSource<LocalFileDataStore>)
-                DataSourceProviders.byId("xpbt").getDescriptorClass()
+                DataSourceProviders.byId("xpbt").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -94,7 +101,7 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (T) ALL.stream().filter(d -> d.getDescriptorClass().equals(c)).findAny()
+        return (T) ALL.stream().filter(d -> d.getSourceClass().equals(c)).findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Provider for " + c.getSimpleName() + " not found"));
     }
 

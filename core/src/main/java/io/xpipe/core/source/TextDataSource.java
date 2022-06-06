@@ -1,9 +1,11 @@
 package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+@NoArgsConstructor
 public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS> {
 
     private static final int MAX_LINE_READ = 1000;

@@ -8,6 +8,10 @@ import java.util.stream.Collectors;
 
 public abstract class ArrayNode extends DataStructureNode {
 
+    public static ArrayNode empty() {
+        return of(List.of());
+    }
+
     public static ArrayNode of(DataStructureNode... dsn) {
         return of(List.of(dsn));
     }

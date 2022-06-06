@@ -10,14 +10,14 @@ public interface UniformDataSourceProvider<T extends DataSource<?>> extends Data
 
     @Override
     default ConfigProvider<T> getConfigProvider() {
-        return ConfigProvider.empty(List.of(getId()), this::createDefaultDescriptor);
+        return ConfigProvider.empty(List.of(getId()), this::createDefaultSource);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    default T createDefaultDescriptor(DataStore input) {
+    default T createDefaultSource(DataStore input) {
         try {
-            return (T) getDescriptorClass().getDeclaredConstructors()[0].newInstance(input);
+            return (T) getSourceClass().getDeclaredConstructors()[0].newInstance(input);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new AssertionError(e);
         }

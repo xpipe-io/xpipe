@@ -1,12 +1,13 @@
 package io.xpipe.core.source;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import io.xpipe.core.config.ConfigOptionSet;
-import io.xpipe.core.config.ConfigOptionSetInstance;
+import io.xpipe.core.config.ConfigParameter;
+import io.xpipe.core.config.ConfigParameterSetInstance;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Represents the current configuration of a data source.
@@ -17,7 +18,7 @@ import java.util.Map;
 public class DataSourceConfigInstance {
 
     public static DataSourceConfigInstance xpbt() {
-        return new DataSourceConfigInstance("xpbt", ConfigOptionSet.empty(), Map.of());
+        return new DataSourceConfigInstance("xpbt", new ConfigParameterSetInstance(Map.of()));
     }
 
     /**
@@ -26,22 +27,21 @@ public class DataSourceConfigInstance {
     String provider;
 
     /**
-     * The available configuration options.
+     * The available configuration parameters.
      */
-    ConfigOptionSet configOptions;
+    ConfigParameterSetInstance configInstance;
 
-    /**
-     * The current configuration options that are set.
-     */
-    Map<String, String> currentValues;
-
-    public boolean isComplete() {
-        return currentValues.size() == configOptions.getOptions().size();
+    public DataSourceConfigInstance(String provider, Map<ConfigParameter, Object> map) {
+        this.provider = provider;
+        this.configInstance = new ConfigParameterSetInstance(map);
     }
 
-    public DataSourceConfigInstance(String provider, ConfigOptionSetInstance cInstance) {
+    public <X, T extends Function<X,?>> DataSourceConfigInstance(String provider, Map<ConfigParameter, T> map, Object val) {
         this.provider = provider;
-        this.configOptions = cInstance.getConfigOptions();
-        this.currentValues = cInstance.getCurrentValues();
+        this.configInstance = new ConfigParameterSetInstance(map, val);
+    }
+
+    public Map<ConfigParameter, Object> evaluate() {
+        return configInstance.evaluate();
     }
 }

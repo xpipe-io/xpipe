@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.util.TokenBuffer;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonHelper;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.util.Optional;
@@ -15,25 +16,30 @@ import java.util.Optional;
  *
  * This instance is only valid in combination with its associated data store instance.
  */
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public abstract class DataSource<DS extends DataStore> {
 
-    @NonNull
     protected DS store;
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public DataSource<DS> copy() {
+    public <T extends DataSource<DS>> T copy() {
         var mapper = JacksonHelper.newMapper();
         TokenBuffer tb = new TokenBuffer(mapper, false);
         mapper.writeValue(tb, this);
-        return mapper.readValue(tb.asParser(), getClass());
+        return (T) mapper.readValue(tb.asParser(), getClass());
     }
 
     public DataSource<DS> withStore(DS store) {
         var c = copy();
         c.store = store;
         return c;
+    }
+
+    public boolean isComplete() {
+        return true;
     }
 
     /**
@@ -62,6 +68,10 @@ public abstract class DataSource<DS extends DataStore> {
     public abstract DataSourceReadConnection openReadConnection() throws Exception;
 
     public abstract DataSourceConnection openWriteConnection() throws Exception;
+
+    public DataSourceConnection openAppendingWriteConnection() throws Exception {
+        throw new UnsupportedOperationException("Appending write is not supported");
+    }
 
     public DS getStore() {
         return store;

@@ -37,6 +37,8 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
 
         @NonNull
         StreamDataStore store;
+
+        boolean configureAll;
     }
 
     @Jacksonized
@@ -45,6 +47,7 @@ public class ReadPreparationExchange implements MessageExchange<ReadPreparationE
     public static class Response implements ResponseMessage {
         String determinedType;
 
+        @NonNull
         DataSourceConfigInstance config;
     }
 }

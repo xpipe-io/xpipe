@@ -60,7 +60,7 @@ public abstract class DataSourceImpl implements DataSource {
         });
 
         var configInstance = startRes.getConfig();
-        configInstance.getCurrentValues().putAll(config);
+        configInstance.getConfigInstance().getCurrentValues().putAll(config);
         var endReq = ReadExecuteExchange.Request.builder()
                 .target(id).dataStore(store).config(configInstance).build();
         XPipeConnection.execute(con -> {

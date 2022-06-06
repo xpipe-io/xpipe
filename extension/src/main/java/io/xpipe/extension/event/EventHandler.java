@@ -15,7 +15,11 @@ public abstract class EventHandler {
 
         @Override
         public void handle(TrackEvent te) {
-            LoggerFactory.getLogger(te.getCategory()).info(te.getMessage());
+            var cat = te.getCategory();
+            if (cat == null) {
+                cat = "log";
+            }
+            LoggerFactory.getLogger(cat).info(te.getMessage());
         }
 
         @Override

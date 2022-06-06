@@ -38,7 +38,6 @@ public class DialogExchange implements MessageExchange<DialogExchange.Request, D
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        DataSourceConfigInstance instance;
         String errorMsg;
     }
 }

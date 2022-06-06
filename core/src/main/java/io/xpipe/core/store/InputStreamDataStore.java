@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -15,7 +16,6 @@ public class InputStreamDataStore implements StreamDataStore {
 
     private final InputStream in;
     private BufferedInputStream bufferedInputStream;
-    private boolean opened = false;
 
     public InputStreamDataStore(InputStream in) {
         this.in = in;
@@ -23,13 +23,84 @@ public class InputStreamDataStore implements StreamDataStore {
 
     @Override
     public InputStream openInput() throws Exception {
-        if (opened) {
+        if (bufferedInputStream != null) {
+            bufferedInputStream.reset();
             return bufferedInputStream;
         }
 
-        opened = true;
         bufferedInputStream = new BufferedInputStream(in);
-        return bufferedInputStream;
+        bufferedInputStream.mark(Integer.MAX_VALUE);
+        return new InputStream() {
+            @Override
+            public int read() throws IOException {
+                return bufferedInputStream.read();
+            }
+
+            @Override
+            public int read(byte[] b) throws IOException {
+                return bufferedInputStream.read(b);
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                return bufferedInputStream.read(b, off, len);
+            }
+
+            @Override
+            public byte[] readAllBytes() throws IOException {
+                return bufferedInputStream.readAllBytes();
+            }
+
+            @Override
+            public byte[] readNBytes(int len) throws IOException {
+                return bufferedInputStream.readNBytes(len);
+            }
+
+            @Override
+            public int readNBytes(byte[] b, int off, int len) throws IOException {
+                return bufferedInputStream.readNBytes(b, off, len);
+            }
+
+            @Override
+            public long skip(long n) throws IOException {
+                return bufferedInputStream.skip(n);
+            }
+
+            @Override
+            public void skipNBytes(long n) throws IOException {
+                bufferedInputStream.skipNBytes(n);
+            }
+
+            @Override
+            public int available() throws IOException {
+                return bufferedInputStream.available();
+            }
+
+            @Override
+            public void close() throws IOException {
+                reset();
+            }
+
+            @Override
+            public synchronized void mark(int readlimit) {
+                bufferedInputStream.mark(readlimit);
+            }
+
+            @Override
+            public synchronized void reset() throws IOException {
+                bufferedInputStream.reset();
+            }
+
+            @Override
+            public boolean markSupported() {
+                return bufferedInputStream.markSupported();
+            }
+
+            @Override
+            public long transferTo(OutputStream out) throws IOException {
+                return bufferedInputStream.transferTo(out);
+            }
+        };
     }
 
     @Override
