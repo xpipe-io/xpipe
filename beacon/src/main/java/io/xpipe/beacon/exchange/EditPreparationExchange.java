@@ -12,21 +12,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Requests to edit a data source.
  */
-public class EditPreparationExchange implements MessageExchange<EditPreparationExchange.Request, EditPreparationExchange.Response> {
+public class EditPreparationExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "editPreparation";
-    }
-
-    @Override
-    public Class<EditPreparationExchange.Request> getRequestClass() {
-        return EditPreparationExchange.Request.class;
-    }
-
-    @Override
-    public Class<EditPreparationExchange.Response> getResponseClass() {
-        return EditPreparationExchange.Response.class;
     }
 
     @Jacksonized

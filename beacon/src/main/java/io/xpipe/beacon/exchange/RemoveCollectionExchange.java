@@ -7,7 +7,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class RemoveCollectionExchange implements MessageExchange<RemoveCollectionExchange.Request, RemoveCollectionExchange.Response> {
+public class RemoveCollectionExchange implements MessageExchange {
 
     @Override
     public String getId() {

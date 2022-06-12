@@ -7,21 +7,11 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class VersionExchange implements MessageExchange<VersionExchange.Request, VersionExchange.Response> {
+public class VersionExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "version";
-    }
-
-    @Override
-    public Class<VersionExchange.Request> getRequestClass() {
-        return VersionExchange.Request.class;
-    }
-
-    @Override
-    public Class<VersionExchange.Response> getResponseClass() {
-        return VersionExchange.Response.class;
     }
 
     @lombok.extern.jackson.Jacksonized

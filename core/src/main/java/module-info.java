@@ -22,7 +22,9 @@ module io.xpipe.core {
 
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
+    requires java.net.http;
     requires static lombok;
+    requires java.sql;
 
     uses com.fasterxml.jackson.databind.Module;
     provides com.fasterxml.jackson.databind.Module with CoreJacksonModule;

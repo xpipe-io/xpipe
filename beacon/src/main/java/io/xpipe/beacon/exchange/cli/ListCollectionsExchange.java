@@ -10,21 +10,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
-public class ListCollectionsExchange implements MessageExchange<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
+public class ListCollectionsExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "listCollections";
-    }
-
-    @Override
-    public Class<Request> getRequestClass() {
-        return Request.class;
-    }
-
-    @Override
-    public Class<Response> getResponseClass() {
-        return Response.class;
     }
 
     @Jacksonized

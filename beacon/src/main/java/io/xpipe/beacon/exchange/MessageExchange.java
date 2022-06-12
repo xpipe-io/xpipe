@@ -1,13 +1,11 @@
 package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
 import lombok.SneakyThrows;
 
 /**
  * A message exchange scheme that implements a certain functionality.
  */
-public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseMessage> {
+public interface MessageExchange {
 
     /**
      * The unique id of this exchange that will be included in the messages.
@@ -19,10 +17,10 @@ public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseM
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    default Class<RQ> getRequestClass() {
+    default Class<?> getRequestClass() {
         var c = getClass().getSuperclass();
         var name = (MessageExchange.class.isAssignableFrom(c) ? c : getClass()).getName() + "$Request";
-        return (Class<RQ>) Class.forName(name);
+        return Class.forName(name);
     }
 
     /**
@@ -30,9 +28,9 @@ public interface MessageExchange<RQ extends RequestMessage, RP extends ResponseM
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    default Class<RP> getResponseClass() {
+    default Class<?> getResponseClass() {
         var c = getClass().getSuperclass();
         var name = (MessageExchange.class.isAssignableFrom(c) ? c : getClass()).getName() + "$Response";
-        return (Class<RP>) Class.forName(name);
+        return Class.forName(name);
     }
 }

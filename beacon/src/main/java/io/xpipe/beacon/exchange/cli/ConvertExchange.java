@@ -12,7 +12,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class ConvertExchange implements MessageExchange<ConvertExchange.Request, ConvertExchange.Response> {
+public class ConvertExchange implements MessageExchange {
 
     @Override
     public String getId() {

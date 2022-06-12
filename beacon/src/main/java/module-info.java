@@ -29,6 +29,7 @@ module io.xpipe.beacon {
             ModeExchange,
             StatusExchange,
             StopExchange,
+            StoreAddExchange,
             WritePreparationExchange,
             WriteExecuteExchange,
             SelectExchange,

@@ -18,7 +18,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
     public static TableReadConnection empty() {
         return new TableReadConnection() {
             @Override
-            public TupleType getDataType() throws Exception {
+            public TupleType getDataType() {
                 return TupleType.empty();
             }
 
@@ -42,7 +42,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
     /**
      * Returns the data type of the table data.
      */
-    TupleType getDataType() throws Exception;
+    TupleType getDataType();
 
     /**
      * Returns the amount of rows to be read or -1 if the amount is unknown.

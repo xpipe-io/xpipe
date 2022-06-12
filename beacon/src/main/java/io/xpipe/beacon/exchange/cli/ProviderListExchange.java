@@ -13,7 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.List;
 import java.util.Map;
 
-public class ProviderListExchange implements MessageExchange<ProviderListExchange.Request, ProviderListExchange.Response> {
+public class ProviderListExchange implements MessageExchange {
 
     @Override
     public String getId() {

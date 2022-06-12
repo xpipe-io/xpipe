@@ -11,6 +11,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.xpipe.core.config.BaseQueryElement;
+import io.xpipe.core.config.ChoiceElement;
+import io.xpipe.core.config.HeaderElement;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
@@ -18,6 +21,7 @@ import io.xpipe.core.data.type.WildcardType;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.CollectionEntryDataStore;
+import io.xpipe.core.store.HttpRequestStore;
 import io.xpipe.core.store.LocalDirectoryDataStore;
 import io.xpipe.core.store.LocalFileDataStore;
 
@@ -33,6 +37,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(LocalFileDataStore.class),
                 new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(CollectionEntryDataStore.class),
+                new NamedType(HttpRequestStore.class),
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
@@ -41,7 +46,10 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(DataSourceInfo.Structure.class),
                 new NamedType(DataSourceInfo.Text.class),
                 new NamedType(DataSourceInfo.Collection.class),
-                new NamedType(DataSourceInfo.Raw.class)
+                new NamedType(DataSourceInfo.Raw.class),
+                new NamedType(BaseQueryElement.class),
+                new NamedType(ChoiceElement.class),
+                new NamedType(HeaderElement.class)
         );
 
         addSerializer(Charset.class, new CharsetSerializer());

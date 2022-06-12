@@ -3,12 +3,14 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
+import io.xpipe.core.config.DialogElement;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class DialogExchange implements MessageExchange<DialogExchange.Request, DialogExchange.Response> {
+import java.util.UUID;
+
+public class DialogExchange implements MessageExchange {
 
     @Override
     public String getId() {
@@ -29,8 +31,7 @@ public class DialogExchange implements MessageExchange<DialogExchange.Request, D
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        DataSourceConfigInstance instance;
-        String key;
+        UUID dialogKey;
         String value;
     }
 
@@ -38,6 +39,7 @@ public class DialogExchange implements MessageExchange<DialogExchange.Request, D
     @Builder
     @Value
     public static class Response implements ResponseMessage {
+        DialogElement element;
         String errorMsg;
     }
 }

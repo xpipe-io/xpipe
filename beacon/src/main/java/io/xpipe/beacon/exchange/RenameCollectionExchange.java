@@ -7,7 +7,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class RenameCollectionExchange implements MessageExchange<RenameCollectionExchange.Request, RenameCollectionExchange.Response> {
+public class RenameCollectionExchange implements MessageExchange {
 
     @Override
     public String getId() {

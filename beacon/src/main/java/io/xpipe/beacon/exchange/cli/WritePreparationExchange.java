@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Prepares a client to output the data source contents.
  */
-public class WritePreparationExchange implements MessageExchange<WritePreparationExchange.Request, WritePreparationExchange.Response> {
+public class WritePreparationExchange implements MessageExchange {
 
     @Override
     public String getId() {

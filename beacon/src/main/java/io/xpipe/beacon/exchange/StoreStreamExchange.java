@@ -10,21 +10,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Stores a stream of data in a storage.
  */
-public class StoreStreamExchange implements MessageExchange<StoreStreamExchange.Request, StoreStreamExchange.Response> {
+public class StoreStreamExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "storeStream";
-    }
-
-    @Override
-    public Class<StoreStreamExchange.Request> getRequestClass() {
-        return StoreStreamExchange.Request.class;
-    }
-
-    @Override
-    public Class<StoreStreamExchange.Response> getResponseClass() {
-        return StoreStreamExchange.Response.class;
     }
 
     @Jacksonized

@@ -38,8 +38,12 @@ public abstract class DataSource<DS extends DataStore> {
         return c;
     }
 
-    public boolean isComplete() {
-        return true;
+    protected boolean supportsRead() {
+        return false;
+    }
+
+    protected boolean supportsWrite() {
+        return false;
     }
 
     /**
@@ -65,9 +69,13 @@ public abstract class DataSource<DS extends DataStore> {
      */
     public abstract DataSourceInfo determineInfo() throws Exception;
 
-    public abstract DataSourceReadConnection openReadConnection() throws Exception;
+    public DataSourceReadConnection openReadConnection() throws Exception {
+        throw new UnsupportedOperationException();
+    }
 
-    public abstract DataSourceConnection openWriteConnection() throws Exception;
+    public DataSourceConnection openWriteConnection() throws Exception {
+        throw new UnsupportedOperationException();
+    }
 
     public DataSourceConnection openAppendingWriteConnection() throws Exception {
         throw new UnsupportedOperationException("Appending write is not supported");

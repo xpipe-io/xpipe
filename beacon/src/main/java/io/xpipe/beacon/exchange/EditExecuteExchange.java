@@ -13,7 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Performs an edit for a data source.
  */
-public class EditExecuteExchange implements MessageExchange<EditExecuteExchange.Request, EditExecuteExchange.Response> {
+public class EditExecuteExchange implements MessageExchange {
 
     @Override
     public String getId() {

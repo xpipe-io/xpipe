@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class QueryTextDataExchange implements MessageExchange<QueryTextDataExchange.Request, QueryTextDataExchange.Response> {
+public class QueryTextDataExchange implements MessageExchange {
 
     @Override
     public String getId() {

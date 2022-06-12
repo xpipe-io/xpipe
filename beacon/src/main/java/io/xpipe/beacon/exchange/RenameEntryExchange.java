@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class RenameEntryExchange implements MessageExchange<RenameEntryExchange.Request, RenameEntryExchange.Response> {
+public class RenameEntryExchange implements MessageExchange {
 
     @Override
     public String getId() {

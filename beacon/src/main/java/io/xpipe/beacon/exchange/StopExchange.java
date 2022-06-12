@@ -9,21 +9,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Requests the daemon to stop.
  */
-public class StopExchange implements MessageExchange<StopExchange.Request, StopExchange.Response> {
+public class StopExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "stop";
-    }
-
-    @Override
-    public Class<StopExchange.Request> getRequestClass() {
-        return StopExchange.Request.class;
-    }
-
-    @Override
-    public Class<StopExchange.Response> getResponseClass() {
-        return StopExchange.Response.class;
     }
 
     @Jacksonized

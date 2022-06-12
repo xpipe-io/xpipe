@@ -12,21 +12,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Queries general information about a data source.
  */
-public class QueryDataSourceExchange implements MessageExchange<QueryDataSourceExchange.Request, QueryDataSourceExchange.Response> {
+public class QueryDataSourceExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "queryDataSource";
-    }
-
-    @Override
-    public Class<QueryDataSourceExchange.Request> getRequestClass() {
-        return QueryDataSourceExchange.Request.class;
-    }
-
-    @Override
-    public Class<QueryDataSourceExchange.Response> getResponseClass() {
-        return QueryDataSourceExchange.Response.class;
     }
 
     @Jacksonized

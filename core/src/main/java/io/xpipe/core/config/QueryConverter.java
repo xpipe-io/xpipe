@@ -2,9 +2,9 @@ package io.xpipe.core.config;
 
 import java.nio.charset.Charset;
 
-public abstract class ConfigConverter<T> {
+public abstract class QueryConverter<T> {
 
-    public static final ConfigConverter<Charset> CHARSET = new ConfigConverter<Charset>() {
+    public static final QueryConverter<Charset> CHARSET = new QueryConverter<Charset>() {
         @Override
         protected Charset fromString(String s) {
             return Charset.forName(s);
@@ -16,7 +16,7 @@ public abstract class ConfigConverter<T> {
         }
     };
 
-    public static final ConfigConverter<String> STRING = new ConfigConverter<String>() {
+    public static final QueryConverter<String> STRING = new QueryConverter<String>() {
         @Override
         protected String fromString(String s) {
             return s;
@@ -28,7 +28,19 @@ public abstract class ConfigConverter<T> {
         }
     };
 
-    public static final ConfigConverter<Character> CHARACTER = new ConfigConverter<Character>() {
+    public static final QueryConverter<Integer> INTEGER = new QueryConverter<Integer>() {
+        @Override
+        protected Integer fromString(String s) {
+            return Integer.parseInt(s);
+        }
+
+        @Override
+        protected String toString(Integer value) {
+            return value.toString();
+        }
+    };
+
+    public static final QueryConverter<Character> CHARACTER = new QueryConverter<Character>() {
         @Override
         protected Character fromString(String s) {
             if (s.length() != 1) {
@@ -44,7 +56,7 @@ public abstract class ConfigConverter<T> {
         }
     };
 
-    public static final ConfigConverter<Boolean> BOOLEAN = new ConfigConverter<Boolean>() {
+    public static final QueryConverter<Boolean> BOOLEAN = new QueryConverter<Boolean>() {
         @Override
         protected Boolean fromString(String s) {
             if (s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("true")) {

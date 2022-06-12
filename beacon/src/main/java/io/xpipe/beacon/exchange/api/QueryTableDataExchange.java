@@ -12,21 +12,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Queries data of a table data source in the xpbt format.
  */
-public class QueryTableDataExchange implements MessageExchange<QueryTableDataExchange.Request, QueryTableDataExchange.Response> {
+public class QueryTableDataExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "queryTableData";
-    }
-
-    @Override
-    public Class<QueryTableDataExchange.Request> getRequestClass() {
-        return QueryTableDataExchange.Request.class;
-    }
-
-    @Override
-    public Class<QueryTableDataExchange.Response> getResponseClass() {
-        return QueryTableDataExchange.Response.class;
     }
 
     @Jacksonized

@@ -17,10 +17,10 @@ public class ConfigParameter {
     }
 
     @JsonIgnore
-    ConfigConverter<?> converter;
+    QueryConverter<?> converter;
 
     @SuppressWarnings("unchecked")
-    public <T> ConfigConverter<T> getConverter() {
-        return (ConfigConverter<T>) converter;
+    public <T> QueryConverter<T> getConverter() {
+        return (QueryConverter<T>) converter;
     }
 }

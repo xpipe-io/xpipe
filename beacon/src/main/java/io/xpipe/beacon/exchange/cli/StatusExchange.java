@@ -7,21 +7,11 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class StatusExchange implements MessageExchange<StatusExchange.Request, StatusExchange.Response> {
+public class StatusExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "status";
-    }
-
-    @Override
-    public Class<Request> getRequestClass() {
-        return Request.class;
-    }
-
-    @Override
-    public Class<Response> getResponseClass() {
-        return Response.class;
     }
 
     @Jacksonized

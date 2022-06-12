@@ -13,7 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Output the data source contents.
  */
-public class WriteExecuteExchange implements MessageExchange<WriteExecuteExchange.Request, WriteExecuteExchange.Response> {
+public class WriteExecuteExchange implements MessageExchange {
 
     @Override
     public String getId() {

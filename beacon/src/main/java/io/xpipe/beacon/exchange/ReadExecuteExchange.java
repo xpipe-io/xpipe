@@ -13,21 +13,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Sends stream-based data to a daemon.
  */
-public class ReadExecuteExchange implements MessageExchange<ReadExecuteExchange.Request, ReadExecuteExchange.Response> {
+public class ReadExecuteExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "readExecute";
-    }
-
-    @Override
-    public Class<ReadExecuteExchange.Request> getRequestClass() {
-        return ReadExecuteExchange.Request.class;
-    }
-
-    @Override
-    public Class<ReadExecuteExchange.Response> getResponseClass() {
-        return ReadExecuteExchange.Response.class;
     }
 
     @Jacksonized

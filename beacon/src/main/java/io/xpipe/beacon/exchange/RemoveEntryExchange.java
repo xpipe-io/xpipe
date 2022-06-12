@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class RemoveEntryExchange implements MessageExchange<RemoveEntryExchange.Request, RemoveEntryExchange.Response> {
+public class RemoveEntryExchange implements MessageExchange {
 
     @Override
     public String getId() {

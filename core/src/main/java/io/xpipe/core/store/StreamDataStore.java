@@ -49,7 +49,9 @@ public interface StreamDataStore extends DataStore {
         throw new UnsupportedOperationException("Can't open store output");
     }
 
-    boolean exists();
+    default boolean exists() {
+        return false;
+    }
 
     default boolean persistent() {
         return false;

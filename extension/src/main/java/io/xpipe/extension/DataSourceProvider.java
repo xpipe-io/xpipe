@@ -1,7 +1,7 @@
 package io.xpipe.extension;
 
 import io.xpipe.charsetter.NewLine;
-import io.xpipe.core.config.ConfigConverter;
+import io.xpipe.core.config.QueryConverter;
 import io.xpipe.core.config.ConfigParameter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
@@ -9,7 +9,6 @@ import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 import lombok.SneakyThrows;
-import lombok.Value;
 
 import java.util.Arrays;
 import java.util.List;
@@ -93,13 +92,6 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     interface ConfigProvider<T extends DataSource<?>> {
 
-        @Value
-        static class Parameter {
-            ConfigParameter parameter;
-            Object currentValue;
-            boolean required;
-        }
-
         static <T extends DataSource<?>> ConfigProvider<T> empty(List<String> names, Function<DataStore, T> func) {
             return new ConfigProvider<>() {
                 @Override
@@ -124,9 +116,9 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         }
 
         ConfigParameter CHARSET = new ConfigParameter(
-                "charset", ConfigConverter.CHARSET);
+                "charset", QueryConverter.CHARSET);
 
-        public static final ConfigConverter<NewLine> NEW_LINE_CONVERTER = new ConfigConverter<NewLine>() {
+        public static final QueryConverter<NewLine> NEW_LINE_CONVERTER = new QueryConverter<NewLine>() {
             @Override
             protected NewLine fromString(String s) {
                 return NewLine.id(s);

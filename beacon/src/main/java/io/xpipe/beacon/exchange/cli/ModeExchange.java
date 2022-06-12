@@ -8,21 +8,11 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class ModeExchange implements MessageExchange<ModeExchange.Request, ModeExchange.Response> {
+public class ModeExchange implements MessageExchange {
 
     @Override
     public String getId() {
         return "mode";
-    }
-
-    @Override
-    public Class<ModeExchange.Request> getRequestClass() {
-        return ModeExchange.Request.class;
-    }
-
-    @Override
-    public Class<ModeExchange.Response> getResponseClass() {
-        return ModeExchange.Response.class;
     }
 
     @Jacksonized
