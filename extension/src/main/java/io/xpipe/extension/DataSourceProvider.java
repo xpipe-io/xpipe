@@ -1,8 +1,8 @@
 package io.xpipe.extension;
 
 import io.xpipe.charsetter.NewLine;
-import io.xpipe.core.config.QueryConverter;
-import io.xpipe.core.config.ConfigParameter;
+import io.xpipe.core.dialog.QueryConverter;
+import io.xpipe.core.dialog.ConfigParameter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;

@@ -1,5 +1,7 @@
-package io.xpipe.core.config;
+package io.xpipe.core.dialog;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.Charset;
 
 public abstract class QueryConverter<T> {
@@ -25,6 +27,22 @@ public abstract class QueryConverter<T> {
         @Override
         protected String toString(String value) {
             return value;
+        }
+    };
+
+    public static final QueryConverter<URL> URL = new QueryConverter<URL>() {
+        @Override
+        protected URL fromString(String s) {
+            try {
+                return new URL(s);
+            } catch (MalformedURLException e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
+
+        @Override
+        protected String toString(URL value) {
+            return value.toString();
         }
     };
 

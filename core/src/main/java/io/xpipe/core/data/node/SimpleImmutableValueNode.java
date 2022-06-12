@@ -26,6 +26,10 @@ public class SimpleImmutableValueNode extends ImmutableValueNode {
 
     @Override
     public final String asString() {
+        if (getRawData() == null) {
+            return "null";
+        }
+
         return new String(getRawData());
     }
 }

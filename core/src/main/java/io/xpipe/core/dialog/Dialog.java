@@ -1,4 +1,4 @@
-package io.xpipe.core.config;
+package io.xpipe.core.dialog;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -66,6 +66,29 @@ public abstract class Dialog {
                 return currentElement;
             }
         };
+    }
+
+    public static Dialog repeatIf(Dialog d, Supplier<Boolean> shouldRepeat) {
+        return new Dialog() {
+
+
+            @Override
+            public DialogElement start() {
+                return d.start();
+            }
+
+            @Override
+            public DialogElement receive(String answer) {
+                var next = d.receive(answer);
+                if (next == null) {
+                    if (shouldRepeat.get()) {
+                        return d.start();
+                    }
+                }
+
+                return next;
+            }
+        }.evaluateTo(d.onCompletion);
     }
 
     public static Dialog of(DialogElement e) {

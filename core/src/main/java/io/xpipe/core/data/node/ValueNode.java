@@ -34,6 +34,10 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public static ValueNode immutable(Object o, boolean textual) {
+        if (o == null) {
+            return immutableNull();
+        }
+
         return immutable(o.toString().getBytes(StandardCharsets.UTF_8), textual);
     }
 

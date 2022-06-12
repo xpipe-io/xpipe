@@ -1,4 +1,4 @@
-package io.xpipe.core.config;
+package io.xpipe.core.dialog;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

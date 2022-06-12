@@ -1,4 +1,4 @@
-package io.xpipe.core.config;
+package io.xpipe.core.dialog;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;

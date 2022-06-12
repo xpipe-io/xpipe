@@ -1,8 +1,8 @@
 package io.xpipe.core.source;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import io.xpipe.core.config.ConfigParameter;
-import io.xpipe.core.config.ConfigParameterSetInstance;
+import io.xpipe.core.dialog.ConfigParameter;
+import io.xpipe.core.dialog.ConfigParameterSetInstance;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 

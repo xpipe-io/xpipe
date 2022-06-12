@@ -25,14 +25,6 @@ public class DynamicOptionsBuilder<T extends DataSource<?>> {
     private final  List<DynamicOptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
 
-    public DynamicOptionsBuilder<T> addText(ObservableValue<String> name, Property<String> prop) {
-        var comp = new TextField();
-        comp.textProperty().bindBidirectional(prop);
-        entries.add(new DynamicOptionsComp.Entry(name, Comp.of(() -> comp)));
-        props.add(prop);
-        return this;
-    }
-
     public DynamicOptionsBuilder<T> addNewLine(Property<NewLine> prop) {
         var map = new LinkedHashMap<NewLine, ObservableValue<String>>();
         for (var e : NewLine.values()) {
@@ -68,6 +60,19 @@ public class DynamicOptionsBuilder<T extends DataSource<?>> {
     public DynamicOptionsBuilder<T> addCharset(Property<Charset> prop) {
         var comp = new CharsetChoiceComp(prop);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable("charset"), comp));
+        props.add(prop);
+        return this;
+    }
+
+    public DynamicOptionsBuilder<T> addString(ObservableValue<String> name, Property<String> prop) {
+        var comp = Comp.of(() -> {
+            var tf = new TextField(prop.getValue());
+            tf.textProperty().addListener((c, o, n) -> {
+                prop.setValue(n.length() > 0 ? n : null);
+            });
+            return tf;
+        });
+        entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
     }

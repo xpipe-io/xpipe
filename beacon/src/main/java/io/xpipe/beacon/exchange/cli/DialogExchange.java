@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.config.DialogElement;
+import io.xpipe.core.dialog.DialogElement;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

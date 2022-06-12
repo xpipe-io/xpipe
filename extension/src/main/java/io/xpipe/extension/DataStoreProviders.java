@@ -1,6 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.config.Dialog;
+import io.xpipe.core.dialog.Dialog;
 import io.xpipe.extension.event.ErrorEvent;
 
 import java.net.URL;
@@ -17,7 +17,7 @@ public class DataStoreProviders {
     public static void init(ModuleLayer layer) {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
-                    .map(p -> (DataStoreProvider) p.get()).collect(Collectors.toSet());
+                    .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
             ALL.forEach(p -> {
                 try {
                     p.init();

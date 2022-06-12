@@ -1,6 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.config.Dialog;
+import io.xpipe.core.dialog.Dialog;
 
 import java.net.URL;
 import java.util.List;

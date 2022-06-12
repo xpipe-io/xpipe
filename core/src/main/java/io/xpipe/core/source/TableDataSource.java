@@ -41,9 +41,15 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
         return con;
     }
 
-    protected abstract TableWriteConnection newWriteConnection();
+    protected TableWriteConnection newWriteConnection() {
+        throw new UnsupportedOperationException();
+    }
 
-    protected abstract TableWriteConnection newAppendingWriteConnection();
+    protected TableWriteConnection newAppendingWriteConnection() {
+        throw new UnsupportedOperationException();
+    }
 
-    protected abstract TableReadConnection newReadConnection();
+    protected TableReadConnection newReadConnection() {
+        throw new UnsupportedOperationException();
+    }
 }

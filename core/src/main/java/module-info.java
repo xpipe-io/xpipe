@@ -8,6 +8,8 @@ module io.xpipe.core {
     exports io.xpipe.core.util;
     exports io.xpipe.core.data.node;
     exports io.xpipe.core.data.typed;
+    exports io.xpipe.core.dialog;
+    exports io.xpipe.core.connection;
 
     opens io.xpipe.core.store;
     opens io.xpipe.core.source;
@@ -16,15 +18,12 @@ module io.xpipe.core {
     opens io.xpipe.core.util;
     opens io.xpipe.core.data.node;
     opens io.xpipe.core.data.typed;
-    exports io.xpipe.core.config;
-    opens io.xpipe.core.config;
-    exports io.xpipe.core.connection;
+    opens io.xpipe.core.dialog;
 
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires java.net.http;
     requires static lombok;
-    requires java.sql;
 
     uses com.fasterxml.jackson.databind.Module;
     provides com.fasterxml.jackson.databind.Module with CoreJacksonModule;
