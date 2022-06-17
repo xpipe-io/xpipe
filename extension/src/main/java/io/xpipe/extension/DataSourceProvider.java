@@ -1,8 +1,8 @@
 package io.xpipe.extension;
 
 import io.xpipe.charsetter.NewLine;
+import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
-import io.xpipe.core.dialog.ConfigParameter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
@@ -10,10 +10,10 @@ import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 import lombok.SneakyThrows;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 public interface DataSourceProvider<T extends DataSource<?>> {
 
@@ -90,57 +90,27 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     }
 
-    interface ConfigProvider<T extends DataSource<?>> {
+    public static Dialog charset(Charset c)  {
+        return Dialog.query("charset", false, false, c, QueryConverter.CHARSET);
+    }
 
-        static <T extends DataSource<?>> ConfigProvider<T> empty(List<String> names, Function<DataStore, T> func) {
-            return new ConfigProvider<>() {
-                @Override
-                public void applyConfig(T source, Map<ConfigParameter, Object> values) {
-                }
+    public static Dialog newLine(NewLine l)  {
+        return Dialog.query("newline", false, false, l, NEW_LINE_CONVERTER);
+    }
 
-                @Override
-                public Map<ConfigParameter, Function<T, Object>> toCompleteConfig() {
-                    return Map.of();
-                }
-
-                @Override
-                public Map<ConfigParameter, Object> toRequiredReadConfig(T desc) {
-                    return Map.of();
-                }
-
-                @Override
-                public List<String> getPossibleNames() {
-                    return names;
-                }
-            };
+    public static final QueryConverter<NewLine> NEW_LINE_CONVERTER = new QueryConverter<NewLine>() {
+        @Override
+        protected NewLine fromString(String s) {
+            return NewLine.id(s);
         }
 
-        ConfigParameter CHARSET = new ConfigParameter(
-                "charset", QueryConverter.CHARSET);
+        @Override
+        protected String toString(NewLine value) {
+            return value.getId();
+        }
+    };
 
-        public static final QueryConverter<NewLine> NEW_LINE_CONVERTER = new QueryConverter<NewLine>() {
-            @Override
-            protected NewLine fromString(String s) {
-                return NewLine.id(s);
-            }
-
-            @Override
-            protected String toString(NewLine value) {
-                return value.getId();
-            }
-        };
-
-        ConfigParameter NEWLINE = new ConfigParameter(
-                "newline", NEW_LINE_CONVERTER);
-
-        void applyConfig(T source, Map<ConfigParameter, Object> values);
-
-        Map<ConfigParameter, Function<T, Object>> toCompleteConfig();
-
-        Map<ConfigParameter, Object> toRequiredReadConfig(T desc);
-
-        List<String> getPossibleNames();
-    }
+    Dialog configDialog(T source, boolean all);
 
     default boolean isHidden() {
         return false;
@@ -184,12 +154,8 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return false;
     }
 
-    ConfigProvider<T> getConfigProvider();
-
     default String getId() {
-        var n = getClass().getPackageName();
-        var i = n.lastIndexOf('.');
-        return i != -1 ? n.substring(i + 1) : n;
+        return getPossibleNames().get(0);
     }
 
     /**
@@ -208,4 +174,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
                 .filter(c -> c.getName().endsWith("Source")).findFirst()
                 .orElseThrow(() -> new ExtensionException("Descriptor class not found for " + getId()));
     }
+
+
+    List<String> getPossibleNames();
 }

@@ -1,21 +1,14 @@
 package io.xpipe.core.dialog;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(as = BaseQueryElement.class)
 public class QueryElement extends BaseQueryElement {
 
-    @JsonIgnore
     private final QueryConverter<?> converter;
 
-    public QueryElement(String description, boolean required, String value, QueryConverter<?> converter) {
-        super(description, required, value);
-        this.converter = converter;
-    }
-
-    public QueryElement(String description, boolean required, Object value, QueryConverter<?> converter) {
-        super(description, required, value != null ? value.toString() : null);
+    public QueryElement(String description, boolean newLine, boolean required, Object value, QueryConverter<?> converter, boolean hidden) {
+        super(description, newLine, required, hidden, value != null ? value.toString() : null);
         this.converter = converter;
     }
 

@@ -2,7 +2,8 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
+import io.xpipe.core.dialog.DialogReference;
+import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
@@ -12,11 +13,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Requests to edit a data source.
  */
-public class EditPreparationExchange implements MessageExchange {
+public class EditExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "editPreparation";
+        return "edit";
     }
 
     @Jacksonized
@@ -31,6 +32,9 @@ public class EditPreparationExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        DataSourceConfigInstance config;
+        @NonNull
+        DialogReference config;
+
+        DataSourceId id;
     }
 }

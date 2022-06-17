@@ -16,6 +16,17 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
 
+    default void validate() throws Exception {
+    }
+
+    default boolean delete() throws Exception {
+        return false;
+    }
+
+    default String toDisplay() {
+        return null;
+    }
+
     /**
      * Casts this instance to the required type without checking whether a cast is possible.
      */

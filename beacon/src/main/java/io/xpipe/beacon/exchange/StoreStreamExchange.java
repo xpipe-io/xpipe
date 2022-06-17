@@ -2,7 +2,7 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.store.StreamDataStore;
+import io.xpipe.core.store.FileStore;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -27,6 +27,6 @@ public class StoreStreamExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        StreamDataStore store;
+        FileStore store;
     }
 }

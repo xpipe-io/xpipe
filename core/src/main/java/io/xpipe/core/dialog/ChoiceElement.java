@@ -2,17 +2,14 @@ package io.xpipe.core.dialog;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
 @JsonTypeName("choice")
 public class ChoiceElement extends DialogElement {
 
-    private final List<Element> elements;
+    private final String description;
+    private final List<Choice> elements;
 
     private int selected;
 
@@ -42,26 +39,22 @@ public class ChoiceElement extends DialogElement {
         return false;
     }
 
-    @Value
-    @Builder
-    @Jacksonized
-    @AllArgsConstructor
-    public static class Element {
-        Character character;
-        String description;
-    }
-
     @JsonCreator
-    public ChoiceElement(List<Element> elements, int selected) {
+    public ChoiceElement(String description, List<Choice> elements, int selected) {
+        this.description = description;
         this.elements = elements;
         this.selected = selected;
     }
 
-    public List<Element> getElements() {
+    public List<Choice> getElements() {
         return elements;
     }
 
     public int getSelected() {
         return selected;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

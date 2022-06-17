@@ -1,6 +1,7 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
+import io.xpipe.core.store.DataStore;
 
 import java.net.URL;
 import java.util.List;
@@ -34,13 +35,19 @@ public interface DataStoreProvider {
         return null;
     }
 
+    default Dialog dialogForString(String s) {
+        return null;
+    }
+
     Dialog defaultDialog();
+
+    default String display(DataStore store) {
+        return store.toDisplay();
+    }
 
     List<String> getPossibleNames();
 
     default String getId() {
-        var n = getClass().getPackageName();
-        var i = n.lastIndexOf('.');
-        return i != -1 ? n.substring(i + 1) : n;
+        return getPossibleNames().get(0);
     }
 }

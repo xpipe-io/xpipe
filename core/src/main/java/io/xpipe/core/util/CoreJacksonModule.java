@@ -11,19 +11,20 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.xpipe.core.dialog.BaseQueryElement;
-import io.xpipe.core.dialog.ChoiceElement;
-import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
 import io.xpipe.core.data.type.WildcardType;
+import io.xpipe.core.dialog.BaseQueryElement;
+import io.xpipe.core.dialog.BusyElement;
+import io.xpipe.core.dialog.ChoiceElement;
+import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.CollectionEntryDataStore;
-import io.xpipe.core.store.HttpRequestStore;
+import io.xpipe.core.store.FileStore;
 import io.xpipe.core.store.LocalDirectoryDataStore;
-import io.xpipe.core.store.LocalFileDataStore;
+import io.xpipe.core.store.LocalMachineStore;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -34,10 +35,9 @@ public class CoreJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
-                new NamedType(LocalFileDataStore.class),
+                new NamedType(FileStore.class),
                 new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(CollectionEntryDataStore.class),
-                new NamedType(HttpRequestStore.class),
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
@@ -49,6 +49,8 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(DataSourceInfo.Raw.class),
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
+                new NamedType(BusyElement.class),
+                new NamedType(LocalMachineStore.class),
                 new NamedType(HeaderElement.class)
         );
 
@@ -57,6 +59,9 @@ public class CoreJacksonModule extends SimpleModule {
 
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
+
+        addSerializer(Secret.class, new SecretSerializer());
+        addDeserializer(Secret.class, new SecretDeserializer());
 
         addSerializer(DataSourceReference.class, new DataSourceReferenceSerializer());
         addDeserializer(DataSourceReference.class, new DataSourceReferenceDeserializer());
@@ -116,6 +121,23 @@ public class CoreJacksonModule extends SimpleModule {
         @Override
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return Path.of(p.getValueAsString());
+        }
+    }
+
+    public static class SecretSerializer extends JsonSerializer<Secret> {
+
+        @Override
+        public void serialize(Secret value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
+            jgen.writeString(value.getValue());
+        }
+    }
+
+    public static class SecretDeserializer extends JsonDeserializer<Secret> {
+
+        @Override
+        public Secret deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return Secret.parse(p.getValueAsString());
         }
     }
 

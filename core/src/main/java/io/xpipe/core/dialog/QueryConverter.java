@@ -1,8 +1,12 @@
 package io.xpipe.core.dialog;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import io.xpipe.core.util.Secret;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.util.AbstractMap;
+import java.util.Map;
 
 public abstract class QueryConverter<T> {
 
@@ -30,18 +34,51 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<URL> URL = new QueryConverter<URL>() {
+    public static final QueryConverter<Secret> SECRET = new QueryConverter<Secret>() {
         @Override
-        protected URL fromString(String s) {
+        protected Secret fromString(String s) {
+            return Secret.parse(s);
+        }
+
+        @Override
+        protected String toString(Secret value) {
+            return value.getValue();
+        }
+    };
+
+    public static final QueryConverter<Map.Entry<String, String>> HTTP_HEADER = new QueryConverter<Map.Entry<String, String>>() {
+        @Override
+        protected Map.Entry<String, String> fromString(String s) {
+            if (!s.contains(":")) {
+                throw new IllegalArgumentException("Missing colon");
+            }
+
+            var split = s.split(":");
+            if (split.length != 2) {
+                throw new IllegalArgumentException("Too many colons");
+            }
+
+            return new AbstractMap.SimpleEntry<>(split[0].trim(), split[1].trim());
+        }
+
+        @Override
+        protected String toString(Map.Entry<String, String> value) {
+            return value.getKey() + ": " + value.getValue();
+        }
+    };
+
+    public static final QueryConverter<URI> URI = new QueryConverter<URI>() {
+        @Override
+        protected URI fromString(String s) {
             try {
-                return new URL(s);
-            } catch (MalformedURLException e) {
-                throw new IllegalArgumentException(e);
+                return new URI(s);
+            } catch (URISyntaxException e) {
+                throw new IllegalArgumentException(e.getMessage());
             }
         }
 
         @Override
-        protected String toString(URL value) {
+        protected String toString(URI value) {
             return value.toString();
         }
     };

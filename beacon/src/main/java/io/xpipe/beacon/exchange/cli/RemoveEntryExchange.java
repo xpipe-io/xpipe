@@ -1,43 +1,35 @@
-package io.xpipe.beacon.exchange;
+package io.xpipe.beacon.exchange.cli;
 
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.dialog.DialogReference;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- * Prepares a client to send stream-based data to a daemon.
- */
-public class ReadPreparationExchange implements MessageExchange {
+public class RemoveEntryExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "readPreparation";
+        return "removeEntry";
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String provider;
-
         @NonNull
-        DataStore store;
-
-        boolean configureAll;
+        DataSourceReference ref;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        String determinedType;
-
         @NonNull
-        DialogReference config;
+        DataSourceId id;
     }
 }

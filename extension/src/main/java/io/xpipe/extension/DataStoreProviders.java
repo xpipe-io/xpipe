@@ -45,6 +45,14 @@ public class DataStoreProviders {
         return ALL.stream().map(d -> d.dialogForURL(url)).filter(Objects::nonNull).findAny();
     }
 
+    public static Optional<Dialog> byString(String s) {
+        if (ALL == null) {
+            throw new IllegalStateException("Not initialized");
+        }
+
+        return ALL.stream().map(d -> d.dialogForString(s)).filter(Objects::nonNull).findAny();
+    }
+
     public static Set<DataStoreProvider> getAll() {
         return ALL;
     }

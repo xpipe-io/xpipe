@@ -3,13 +3,11 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.dialog.DialogElement;
+import io.xpipe.core.dialog.DialogReference;
+import io.xpipe.core.store.DataStore;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.UUID;
 
 public class StoreAddExchange implements MessageExchange {
 
@@ -22,15 +20,17 @@ public class StoreAddExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
         String input;
+        DataStore storeInput;
+
+        String type;
+        String name;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        UUID dialogKey;
-        DialogElement dialogElement;
+        DialogReference config;
     }
 }

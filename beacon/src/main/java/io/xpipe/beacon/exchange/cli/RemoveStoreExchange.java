@@ -1,23 +1,18 @@
-package io.xpipe.beacon.exchange;
+package io.xpipe.beacon.exchange.cli;
 
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
-import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- * Performs an edit for a data source.
- */
-public class EditExecuteExchange implements MessageExchange {
+public class RemoveStoreExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "editExecute";
+        return "removeStore";
     }
 
     @Jacksonized
@@ -25,16 +20,14 @@ public class EditExecuteExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        DataSourceReference ref;
+        String storeName;
 
-        @NonNull
-        DataSourceConfigInstance config;
+        boolean removeUnderlying;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        DataSourceId id;
     }
 }

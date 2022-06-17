@@ -2,7 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.LocalFileDataStore;
+import io.xpipe.core.store.FileStore;
 import io.xpipe.extension.event.ErrorEvent;
 import lombok.SneakyThrows;
 
@@ -46,40 +46,40 @@ public class DataSourceProviders {
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static StructureDataSource<LocalFileDataStore> createLocalStructureDescriptor(DataStore store) {
-        return (StructureDataSource<LocalFileDataStore>)
+    public static StructureDataSource<FileStore> createLocalStructureDescriptor(DataStore store) {
+        return (StructureDataSource<FileStore>)
                 DataSourceProviders.byId("xpbs").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static RawDataSource<LocalFileDataStore> createLocalRawDescriptor(DataStore store) {
-        return (RawDataSource<LocalFileDataStore>)
+    public static RawDataSource<FileStore> createLocalRawDescriptor(DataStore store) {
+        return (RawDataSource<FileStore>)
                 DataSourceProviders.byId("binary").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static RawDataSource<LocalFileDataStore> createLocalCollectionDescriptor(DataStore store) {
-        return (RawDataSource<LocalFileDataStore>)
+    public static RawDataSource<FileStore> createLocalCollectionDescriptor(DataStore store) {
+        return (RawDataSource<FileStore>)
                 DataSourceProviders.byId("br").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static TextDataSource<LocalFileDataStore> createLocalTextDescriptor(DataStore store) {
-        return (TextDataSource<LocalFileDataStore>)
+    public static TextDataSource<FileStore> createLocalTextDescriptor(DataStore store) {
+        return (TextDataSource<FileStore>)
                 DataSourceProviders.byId("text").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    public static TableDataSource<LocalFileDataStore> createLocalTableDescriptor(DataStore store) {
-        return (TableDataSource<LocalFileDataStore>)
+    public static TableDataSource<FileStore> createLocalTableDescriptor(DataStore store) {
+        return (TableDataSource<FileStore>)
                 DataSourceProviders.byId("xpbt").getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
@@ -110,7 +110,7 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.getConfigProvider().getPossibleNames().stream()
+        return ALL.stream().filter(d -> d.getPossibleNames().stream()
                 .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
     }
 

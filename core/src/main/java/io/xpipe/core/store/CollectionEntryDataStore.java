@@ -1,6 +1,6 @@
 package io.xpipe.core.store;
 
-public abstract class CollectionEntryDataStore implements FileDataStore {
+public abstract class CollectionEntryDataStore implements StreamDataStore, FilenameStore {
 
     private final boolean directory;
     private final String name;

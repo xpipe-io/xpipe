@@ -1,42 +1,33 @@
 package io.xpipe.beacon.exchange.cli;
 
 import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.beacon.exchange.data.StoreListEntry;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.dialog.DialogReference;
-import io.xpipe.core.source.DataSourceReference;
-import io.xpipe.core.store.StreamDataStore;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- * Prepares a client to output the data source contents.
- */
-public class WritePreparationExchange implements MessageExchange {
+import java.util.List;
+
+public class ListStoresExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "writePreparation";
+        return "listStores";
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String type;
-        @NonNull
-        StreamDataStore output;
-        @NonNull
-        DataSourceReference ref;
+
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        DialogReference config;
+        List<StoreListEntry> entries;
     }
 }

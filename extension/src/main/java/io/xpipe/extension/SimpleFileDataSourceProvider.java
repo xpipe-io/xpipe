@@ -2,7 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileDataStore;
+import io.xpipe.core.store.FileStore;
 import io.xpipe.core.store.StreamDataStore;
 
 import java.util.LinkedHashMap;
@@ -23,7 +23,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
                     continue;
                 }
 
-                if (store instanceof FileDataStore l) {
+                if (store instanceof FileStore l) {
                     return l.getFileName().endsWith("." + ext);
                 }
             }

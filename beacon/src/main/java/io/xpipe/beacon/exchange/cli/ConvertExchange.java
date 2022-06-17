@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.message.RequestMessage;
 import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
+import io.xpipe.core.dialog.DialogReference;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
@@ -38,6 +38,6 @@ public class ConvertExchange implements MessageExchange {
     @Value
     public static class Response implements ResponseMessage {
         @NonNull
-        DataSourceConfigInstance config;
+        DialogReference config;
     }
 }
