@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.util.JacksonHelper;
 
@@ -30,12 +28,6 @@ public class BeaconClient implements AutoCloseable {
     public interface FailableBiConsumer<T, U, E extends Throwable> {
 
         void accept(T var1, U var2) throws E;
-    }
-
-    @FunctionalInterface
-    public interface FailableBiPredicate<T, U, E extends Throwable> {
-
-        boolean test(T var1, U var2) throws E;
     }
 
     @FunctionalInterface
@@ -73,30 +65,6 @@ public class BeaconClient implements AutoCloseable {
             socket.close();
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't close socket", ex);
-        }
-    }
-
-    public <REQ extends RequestMessage, RES extends ResponseMessage> void exchange(
-            REQ req,
-            FailableConsumer<OutputStream, IOException> reqWriter,
-            FailableBiConsumer<RES, InputStream, IOException> resReader)
-            throws ConnectorException, ClientException, ServerException {
-        try {
-            sendRequest(req);
-            if (reqWriter != null) {
-                out.write(BODY_SEPARATOR);
-                reqWriter.accept(out);
-            }
-
-            var res = this.<RES>receiveResponse();
-            var sep = in.readNBytes(BODY_SEPARATOR.length);
-            if (sep.length != 0 && !Arrays.equals(BODY_SEPARATOR, sep)) {
-                throw new ConnectorException("Invalid body separator");
-            }
-
-            resReader.accept(res, in);
-        } catch (IOException ex) {
-            throw new ConnectorException("Couldn't communicate with socket", ex);
         }
     }
 
@@ -237,17 +205,5 @@ public class BeaconClient implements AutoCloseable {
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse response", ex);
         }
-    }
-
-    public InputStream getInputStream() {
-        return in;
-    }
-
-    public OutputStream getOutputStream() {
-        return out;
-    }
-
-    public Socket getSocket() {
-        return socket;
     }
 }

@@ -1,5 +1,6 @@
 package io.xpipe.api.impl;
 
+import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataTable;
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.beacon.BeaconConnection;
@@ -24,7 +25,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
     private final DataSourceInfo.Table info;
 
-    DataTableImpl(DataSourceId id, DataSourceConfigInstance sourceConfig, DataSourceInfo.Table info) {
+    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, DataSourceInfo.Table info) {
         super(id, sourceConfig);
         this.info = info;
     }

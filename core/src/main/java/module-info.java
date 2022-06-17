@@ -9,7 +9,6 @@ module io.xpipe.core {
     exports io.xpipe.core.data.node;
     exports io.xpipe.core.data.typed;
     exports io.xpipe.core.dialog;
-    exports io.xpipe.core.connection;
 
     opens io.xpipe.core.store;
     opens io.xpipe.core.source;
@@ -19,6 +18,7 @@ module io.xpipe.core {
     opens io.xpipe.core.data.node;
     opens io.xpipe.core.data.typed;
     opens io.xpipe.core.dialog;
+    exports io.xpipe.core.charsetter;
 
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;

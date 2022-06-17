@@ -1,5 +1,6 @@
 ## X-Pipe Java
 
+The fundamental components of the [X-Pipe project]().
 This repository contains the following four modules:
 
 - Core - Shared core classes of the Java API and the X-Pipe daemon implementation
@@ -7,6 +8,18 @@ This repository contains the following four modules:
 - Beacon - The X-Pipe beacon component is responsible for handling all communications between the X-Pipe daemon
   and the client applications, for example the various programming language APIs and the CLI
 - Extension - An API to create all different kinds of extensions for the X-Pipe platform
+
+## Installation / Usage
+
+The *core* and *extension* libraries are used in X-Pipe extension development.
+For setup instructions, see the [X-Pipe extension development]() section.
+
+The *beacon* library handles all communication and serves as a
+reference when implementing an API or program that communicates with the X-Pipe daemon.
+
+The *api* library serves as a reference implementation for other potential X-Pipe APIs
+and is also used to enable your Java program to communicate with X-Pipe.
+For setup instructions, see the [X-Pipe Java API Usage]() section.
 
 ## Development
 

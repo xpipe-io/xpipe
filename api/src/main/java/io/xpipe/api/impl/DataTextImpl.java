@@ -1,5 +1,6 @@
 package io.xpipe.api.impl;
 
+import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataText;
 import io.xpipe.core.source.*;
 
@@ -10,7 +11,7 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
 
     private final DataSourceInfo.Text info;
 
-    public DataTextImpl(DataSourceId sourceId, DataSourceConfigInstance sourceConfig, DataSourceInfo.Text info) {
+    public DataTextImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Text info) {
         super(sourceId, sourceConfig);
         this.info = info;
     }

@@ -1,4 +1,4 @@
-package io.xpipe.charsetter;
+package io.xpipe.core.charsetter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

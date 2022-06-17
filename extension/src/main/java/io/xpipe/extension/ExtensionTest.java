@@ -1,7 +1,7 @@
 package io.xpipe.extension;
 
-import io.xpipe.charsetter.Charsetter;
-import io.xpipe.charsetter.CharsetterContext;
+import io.xpipe.core.charsetter.Charsetter;
+import io.xpipe.core.charsetter.CharsetterContext;
 import io.xpipe.core.util.JacksonHelper;
 import io.xpipe.extension.util.ModuleHelper;
 import org.junit.jupiter.api.AfterAll;

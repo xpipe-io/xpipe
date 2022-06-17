@@ -12,4 +12,8 @@ public class DataStructureNodeIO {
     public static final int TYPED_TUPLE_ID = 6;
     public static final int TYPED_ARRAY_ID = 7;
     public static final int TYPED_VALUE_ID = 8;
+
+    public static final int VALUE_TYPE_BARE = 0;
+    public static final int VALUE_TYPE_TEXT = 1;
+    public static final int VALUE_TYPE_NULL = 2;
 }

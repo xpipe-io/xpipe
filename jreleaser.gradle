@@ -1,0 +1,100 @@
+def isPreRelease = project.version.endsWith('-pre')
+def isFullRelease = !isPreRelease && !project.version.endsWith('-SNAPSHOT')
+def proj = project
+def canonicalVersion = file('canonical_version').text
+
+jreleaser {
+    environment {
+        properties.put('rawChangelog', file("changelogs/${canonicalVersion}.txt").exists() ?
+                file("changelogs/${canonicalVersion}.txt").text.replace('\r\n', '\n') : "")
+    }
+
+    project {
+        name = 'Pdx-Unlimiter'
+        description = 'A smart savegame manager, editor, and toolbox for all current major Paradox Grand Strategy games.'
+        longDescription = 'The Pdx-Unlimiter is a tool for all major Paradox Grand Strategy games that provides a ' +
+                'powerful and smart savegame manager to quickly organize and play all of your savegames with ease. ' +
+                'Furthermore, it also comes with an Ironman converter, a powerful savegame editor, some savescumming ' +
+                'tools, integrations for various other great community-made tools for all major Paradox games.'
+        website = 'https://github.com/crschnick/pdx_unlimiter'
+        authors = ['Christopher Schnick']
+        license = 'GPL3'
+        copyright = ' '
+
+        java {
+            groupId = 'com.crschnick.pdxu'
+            version = '17'
+            multiProject = true
+        }
+
+        snapshot {
+            enabled = true
+            pattern = '.*-SNAPSHOT'
+            label = 'early-access'
+        }
+    }
+
+    release {
+        github {
+            skipRelease = !isFullRelease && !isPreRelease
+            skipTag = !isFullRelease && !isPreRelease
+            owner = 'crschnick'
+            overwrite = false
+            tagName = '{{projectVersion}}'
+            releaseName = '{{tagName}}'
+            token = proj.hasProperty("PDXU_GITHUB_TOKEN") ? proj.property("PDXU_GITHUB_TOKEN") : System.getenv("JRELEASER_GITHUB_TOKEN")
+
+            files = true
+            artifacts = true
+            checksums = false
+            signatures = false
+
+            // Always set a pre-release, as drafts do not fully work
+            prerelease {
+                enabled = true
+                pattern = '.*'
+            }
+
+            update {
+                enabled = true
+                section('ASSETS')
+                section('TITLE')
+                section('BODY')
+            }
+
+            changelog {
+                enabled = true
+                formatted = 'ALWAYS'
+                contentTemplate = isFullRelease ? file('misc/github_full.tpl') : file('misc/github_pre.tpl')
+            }
+        }
+    }
+    distributions {
+        app {
+            if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+                artifact {
+                    distributionType = 'BINARY'
+                    path = 'build/pdx_unlimiter-windows.zip'
+                    platform = 'windows'
+                }
+            } else {
+                artifact {
+                    distributionType = 'BINARY'
+                    path = 'build/pdx_unlimiter-linux.zip'
+                    platform = 'linux'
+                }
+            }
+        }
+    }
+
+    announce {
+        enabled = isFullRelease || isPreRelease
+        discord {
+            active = 'ALWAYS'
+
+            webhook = proj.hasProperty("PDXU_DISCORD_WEBHOOK") ? proj.property("PDXU_DISCORD_WEBHOOK") : System.getenv("JRELEASER_DISCORD_WEBHOOK")
+
+            messageTemplate = isFullRelease ? 'misc/discord_full.tpl' : 'misc/discord_pre.tpl'
+        }
+    }
+}

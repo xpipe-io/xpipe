@@ -129,7 +129,13 @@ public class TypedDataStreamParser {
     }
 
     private void parseValue(InputStream in, TypedDataStreamCallback cb) throws IOException {
-        var textual = in.read() != 0;
+        var type = in.read();
+        if (type == DataStructureNodeIO.VALUE_TYPE_NULL) {
+            cb.onValue(null, false);
+            return;
+        }
+
+        var textual = type == DataStructureNodeIO.VALUE_TYPE_TEXT;
         var size = in.read();
         var data = in.readNBytes(size);
         cb.onValue(data, textual);

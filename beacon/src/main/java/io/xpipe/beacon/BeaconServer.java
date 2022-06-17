@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 /**
- * Contains basic functionality to start, communicate, and stop a beacon server.
+ * Contains basic functionality to start, communicate, and stop a remote beacon server.
  */
 @UtilityClass
 public class BeaconServer {

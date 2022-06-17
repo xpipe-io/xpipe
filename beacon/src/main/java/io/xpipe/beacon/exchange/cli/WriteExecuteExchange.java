@@ -1,9 +1,8 @@
 package io.xpipe.beacon.exchange.cli;
 
 import io.xpipe.beacon.exchange.MessageExchange;
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
+import io.xpipe.beacon.RequestMessage;
+import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
@@ -26,9 +25,6 @@ public class WriteExecuteExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         DataSourceReference ref;
-
-        @NonNull
-        DataSourceConfigInstance config;
     }
 
     @Jacksonized

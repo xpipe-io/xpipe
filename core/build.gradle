@@ -14,6 +14,7 @@ apply from: "$rootDir/deps/publish-base.gradle"
 
 configurations {
     compileOnly.extendsFrom(dep)
+    testImplementation.extendsFrom(dep)
 }
 
 version = file('../version').text

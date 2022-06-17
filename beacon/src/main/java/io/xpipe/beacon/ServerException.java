@@ -1,11 +1,8 @@
 package io.xpipe.beacon;
 
-import lombok.experimental.StandardException;
-
 /**
  * Indicates that an internal server error occurred.
  */
-@StandardException
 public class ServerException extends Exception {
 
     public ServerException() {

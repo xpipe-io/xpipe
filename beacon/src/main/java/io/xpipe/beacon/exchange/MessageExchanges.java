@@ -1,7 +1,7 @@
 package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
+import io.xpipe.beacon.RequestMessage;
+import io.xpipe.beacon.ResponseMessage;
 
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -15,26 +15,23 @@ public class MessageExchanges {
     private static void loadAll() {
         if (ALL == null) {
             ALL = ServiceLoader.load(MessageExchange.class).stream()
-                    .map(s -> (MessageExchange) s.get()).collect(Collectors.toSet());
+                    .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
         }
     }
 
-    public static <RQ extends RequestMessage, RP extends ResponseMessage> Optional<MessageExchange> byId(String name) {
+    public static Optional<MessageExchange> byId(String name) {
         loadAll();
-        var r = ALL.stream().filter(d -> d.getId().equals(name)).findAny();
-        return Optional.ofNullable((MessageExchange) r.orElse(null));
+        return ALL.stream().filter(d -> d.getId().equals(name)).findAny();
     }
 
-    public static <RQ extends RequestMessage, RP extends ResponseMessage> Optional<MessageExchange> byRequest(RQ req) {
+    public static <RQ extends RequestMessage> Optional<MessageExchange> byRequest(RQ req) {
         loadAll();
-        var r = ALL.stream().filter(d -> d.getRequestClass().equals(req.getClass())).findAny();
-        return r;
+        return ALL.stream().filter(d -> d.getRequestClass().equals(req.getClass())).findAny();
     }
 
-    public static <RQ extends RequestMessage, RP extends ResponseMessage> Optional<MessageExchange> byResponse(RP rep) {
+    public static <RP extends ResponseMessage> Optional<MessageExchange> byResponse(RP rep) {
         loadAll();
-        var r = ALL.stream().filter(d -> d.getResponseClass().equals(rep.getClass())).findAny();
-        return r;
+        return ALL.stream().filter(d -> d.getResponseClass().equals(rep.getClass())).findAny();
     }
 
     public static Set<MessageExchange> getAll() {

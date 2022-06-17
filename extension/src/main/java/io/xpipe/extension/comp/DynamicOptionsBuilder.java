@@ -1,6 +1,6 @@
 package io.xpipe.extension.comp;
 
-import io.xpipe.charsetter.NewLine;
+import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.extension.I18n;
 import io.xpipe.fxcomps.Comp;

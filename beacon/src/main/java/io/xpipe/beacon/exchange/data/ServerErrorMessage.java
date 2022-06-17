@@ -8,6 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
+@SuppressWarnings("ClassCanBeRecord")
 @Value
 @Builder
 @Jacksonized

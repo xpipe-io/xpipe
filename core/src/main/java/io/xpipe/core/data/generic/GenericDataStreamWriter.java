@@ -51,10 +51,15 @@ public class GenericDataStreamWriter {
         }
     }
 
-    private static void writeValue(OutputStream out, ValueNode value) throws IOException {
+    private static void writeValue(OutputStream out, ValueNode n) throws IOException {
         out.write(DataStructureNodeIO.GENERIC_VALUE_ID);
-        out.write(value.isTextual() ? 1 : 0);
-        out.write(value.getRawData().length);
-        out.write(value.getRawData());
+        if (n.isNull()) {
+            out.write(DataStructureNodeIO.VALUE_TYPE_NULL);
+            return;
+        }
+
+        out.write(n.isTextual() ? DataStructureNodeIO.VALUE_TYPE_TEXT : DataStructureNodeIO.VALUE_TYPE_BARE);
+        out.write(n.getRawData().length);
+        out.write(n.getRawData());
     }
 }

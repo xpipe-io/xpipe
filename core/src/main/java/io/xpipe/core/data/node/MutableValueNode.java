@@ -21,7 +21,16 @@ public class MutableValueNode extends ValueNode {
 
     @Override
     public String toString(int indent) {
+        if (isNull()) {
+            return "null (M)";
+        }
+
         return (textual ? "\"" : "") + new String(data) + (textual ? "\"" : "") +  " (M)";
+    }
+
+    @Override
+    public boolean isNull() {
+        return data == null;
     }
 
     @Override

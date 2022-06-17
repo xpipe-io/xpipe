@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+@SuppressWarnings("ClassCanBeRecord")
 @Value
 @Builder
 @Jacksonized

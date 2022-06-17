@@ -1,8 +1,5 @@
 package io.xpipe.beacon;
 
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

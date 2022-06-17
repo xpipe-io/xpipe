@@ -1,4 +1,4 @@
-package io.xpipe.charsetter;
+package io.xpipe.core.charsetter;
 
 import java.nio.charset.Charset;
 

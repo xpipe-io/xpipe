@@ -5,7 +5,6 @@ import io.xpipe.beacon.exchange.cli.*;
 module io.xpipe.beacon {
     exports io.xpipe.beacon;
     exports io.xpipe.beacon.exchange;
-    exports io.xpipe.beacon.message;
     exports io.xpipe.beacon.exchange.api;
     exports io.xpipe.beacon.exchange.data;
     exports io.xpipe.beacon.exchange.cli;
@@ -13,7 +12,6 @@ module io.xpipe.beacon {
     opens io.xpipe.beacon;
     opens io.xpipe.beacon.exchange;
     opens io.xpipe.beacon.exchange.api;
-    opens io.xpipe.beacon.message;
     opens io.xpipe.beacon.exchange.data;
     opens io.xpipe.beacon.exchange.cli;
 

@@ -28,7 +28,6 @@ module io.xpipe.extension {
     requires org.kordamp.ikonli.javafx;
     requires com.fasterxml.jackson.databind;
     requires static org.junit.jupiter.api;
-    requires io.xpipe.charsetter;
 
     uses DataSourceProvider;
     uses SupportedApplicationProvider;

@@ -1,8 +1,8 @@
 package io.xpipe.beacon.exchange.cli;
 
 import io.xpipe.beacon.exchange.MessageExchange;
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
+import io.xpipe.beacon.RequestMessage;
+import io.xpipe.beacon.ResponseMessage;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

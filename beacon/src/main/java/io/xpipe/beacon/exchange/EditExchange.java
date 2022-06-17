@@ -1,7 +1,7 @@
 package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
+import io.xpipe.beacon.RequestMessage;
+import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.dialog.DialogReference;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;

@@ -152,7 +152,7 @@ public interface DataSource {
     DataSourceType getType();
 
 
-    DataSourceConfigInstance getConfig();
+    DataSourceConfig getConfig();
 
     /**
      * Attempts to cast this object to a {@link DataTable}.

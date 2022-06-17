@@ -1,8 +1,7 @@
 package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.message.RequestMessage;
-import io.xpipe.beacon.message.ResponseMessage;
-import io.xpipe.core.source.DataSourceConfigInstance;
+import io.xpipe.beacon.RequestMessage;
+import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.store.DataStore;
 import lombok.Builder;
@@ -26,8 +25,6 @@ public class ReadExecuteExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         DataStore dataStore;
-        @NonNull
-        DataSourceConfigInstance config;
 
         DataSourceId target;
     }

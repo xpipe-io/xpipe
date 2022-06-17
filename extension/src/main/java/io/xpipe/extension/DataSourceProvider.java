@@ -1,6 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.charsetter.NewLine;
+import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.source.DataSource;

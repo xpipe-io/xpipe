@@ -1,12 +1,11 @@
 package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSource;
+import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.connector.XPipeConnection;
-import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.beacon.exchange.QueryDataSourceExchange;
-import io.xpipe.beacon.exchange.ReadExecuteExchange;
 import io.xpipe.beacon.exchange.ReadPreparationExchange;
-import io.xpipe.core.source.DataSourceConfigInstance;
+import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 
@@ -19,22 +18,23 @@ public abstract class DataSourceImpl implements DataSource {
         return XPipeConnection.execute(con -> {
             var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
             QueryDataSourceExchange.Response res = con.performSimpleExchange(req);
+            var config = new DataSourceConfig(res.getProvider(), res.getConfig());
             switch (res.getInfo().getType()) {
                 case TABLE -> {
                     var data = res.getInfo().asTable();
-                    return new DataTableImpl(res.getId(), res.getConfig(), data);
+                    return new DataTableImpl(res.getId(), config, data);
                 }
                 case STRUCTURE -> {
                     var info = res.getInfo().asStructure();
-                    return new DataStructureImpl(res.getId(), res.getConfig(), info);
+                    return new DataStructureImpl(res.getId(), config, info);
                 }
                 case TEXT -> {
                     var info = res.getInfo().asText();
-                    return new DataTextImpl(res.getId(), res.getConfig(), info);
+                    return new DataTextImpl(res.getId(), config, info);
                 }
                 case RAW -> {
                     var info = res.getInfo().asRaw();
-                    return new DataRawImpl(res.getId(), res.getConfig(), info);
+                    return new DataRawImpl(res.getId(), config, info);
                 }
             }
             throw new AssertionError();
@@ -60,20 +60,21 @@ public abstract class DataSourceImpl implements DataSource {
         });
 
         var configInstance = startRes.getConfig();
-        configInstance.getConfigInstance().getCurrentValues().putAll(config);
-        var endReq = ReadExecuteExchange.Request.builder()
-                .target(id).dataStore(store).config(configInstance).build();
-        XPipeConnection.execute(con -> {
-            con.performSimpleExchange(endReq);
-        });
+        //TODO
+//        configInstance.getConfigInstance().getCurrentValues().putAll(config);
+//        var endReq = ReadExecuteExchange.Request.builder()
+//                .target(id).dataStore(store).config(configInstance).build();
+//        XPipeConnection.execute(con -> {
+//            con.performSimpleExchange(endReq);
+//        });
         var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
         return get(ref);
     }
 
     private final DataSourceId sourceId;
-    private final DataSourceConfigInstance config;
+    private final DataSourceConfig config;
 
-    public DataSourceImpl(DataSourceId sourceId, DataSourceConfigInstance config) {
+    public DataSourceImpl(DataSourceId sourceId, DataSourceConfig config) {
         this.sourceId = sourceId;
         this.config = config;
     }
@@ -84,7 +85,7 @@ public abstract class DataSourceImpl implements DataSource {
     }
 
     @Override
-    public DataSourceConfigInstance getConfig() {
+    public DataSourceConfig getConfig() {
         return config;
     }
 }

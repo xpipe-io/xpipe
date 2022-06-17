@@ -5,14 +5,13 @@ import io.xpipe.api.DataTable;
 import io.xpipe.api.DataTableAccumulator;
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.api.util.TypeDescriptor;
-import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.beacon.exchange.ReadExecuteExchange;
+import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
-import io.xpipe.core.source.DataSourceConfigInstance;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 
@@ -40,7 +39,7 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
         connection.close();
 
         var req = ReadExecuteExchange.Request.builder()
-                .target(id).dataStore(res.getStore()).config(DataSourceConfigInstance.xpbt()).build();
+                .target(id).dataStore(res.getStore()).build();
         XPipeConnection.execute(con -> {
             con.performSimpleExchange(req);
         });
