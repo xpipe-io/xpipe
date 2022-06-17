@@ -23,12 +23,6 @@ jreleaser {
             version = '17'
             multiProject = true
         }
-
-        snapshot {
-            enabled = true
-            pattern = '.*-SNAPSHOT'
-            label = 'early-access'
-        }
     }
 
     release {
@@ -72,6 +66,30 @@ jreleaser {
                 distributionType = 'SINGLE_JAR'
                 path = 'api/build/libs/api-{{version}}.jar'
                 transform = 'build/xpipe-api-{{version}}.jar'
+            }
+        }
+
+        core {
+            artifact {
+                distributionType = 'SINGLE_JAR'
+                path = 'core/build/libs/core-{{version}}.jar'
+                transform = 'build/xpipe-core-{{version}}.jar'
+            }
+        }
+
+        beacon {
+            artifact {
+                distributionType = 'SINGLE_JAR'
+                path = 'beacon/build/libs/beacon-{{version}}.jar'
+                transform = 'build/xpipe-beacon-{{version}}.jar'
+            }
+        }
+
+        extension {
+            artifact {
+                distributionType = 'SINGLE_JAR'
+                path = 'extension/build/libs/extension-{{version}}.jar'
+                transform = 'build/xpipe-extension-{{version}}.jar'
             }
         }
     }

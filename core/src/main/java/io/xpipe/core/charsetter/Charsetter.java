@@ -31,6 +31,8 @@ public abstract class Charsetter {
         NewLine newLine;
     }
 
+    protected Charsetter() {}
+
     public static Charsetter INSTANCE;
 
     public static Charsetter get() {
