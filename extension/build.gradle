@@ -21,7 +21,7 @@ configurations {
     compileOnly.extendsFrom(dep)
 }
 
-version = file('../version').text
+version = file('../misc/version').text
 group = 'io.xpipe'
 archivesBaseName = 'extension'
 

@@ -1,28 +1,25 @@
 def isPreRelease = project.version.endsWith('-pre')
 def isFullRelease = !isPreRelease && !project.version.endsWith('-SNAPSHOT')
 def proj = project
-def canonicalVersion = file('canonical_version').text
+def canonicalVersion = file('misc/canonical_version').text
 
 jreleaser {
     environment {
-        properties.put('rawChangelog', file("changelogs/${canonicalVersion}.txt").exists() ?
-                file("changelogs/${canonicalVersion}.txt").text.replace('\r\n', '\n') : "")
+        properties.put('rawChangelog', file("misc/changelogs/${canonicalVersion}.txt").exists() ?
+                file("misc/changelogs/${canonicalVersion}.txt").text.replace('\r\n', '\n') : "")
     }
 
     project {
-        name = 'Pdx-Unlimiter'
-        description = 'A smart savegame manager, editor, and toolbox for all current major Paradox Grand Strategy games.'
-        longDescription = 'The Pdx-Unlimiter is a tool for all major Paradox Grand Strategy games that provides a ' +
-                'powerful and smart savegame manager to quickly organize and play all of your savegames with ease. ' +
-                'Furthermore, it also comes with an Ironman converter, a powerful savegame editor, some savescumming ' +
-                'tools, integrations for various other great community-made tools for all major Paradox games.'
-        website = 'https://github.com/crschnick/pdx_unlimiter'
+        name = 'X-Pipe Java'
+        description = '<TODO>'
+        longDescription = '<TODO>'
+        website = 'https://github.com/xpipe-io/xpipe_java'
         authors = ['Christopher Schnick']
-        license = 'GPL3'
-        copyright = ' '
+        license = 'MIT'
+        copyright = '2022, Christopher Schnick'
 
         java {
-            groupId = 'com.crschnick.pdxu'
+            groupId = 'io.xpipe'
             version = '17'
             multiProject = true
         }
@@ -38,11 +35,11 @@ jreleaser {
         github {
             skipRelease = !isFullRelease && !isPreRelease
             skipTag = !isFullRelease && !isPreRelease
-            owner = 'crschnick'
+            owner = 'xpipe-io'
             overwrite = false
             tagName = '{{projectVersion}}'
             releaseName = '{{tagName}}'
-            token = proj.hasProperty("PDXU_GITHUB_TOKEN") ? proj.property("PDXU_GITHUB_TOKEN") : System.getenv("JRELEASER_GITHUB_TOKEN")
+            token = proj.hasProperty("XPIPE_GITHUB_TOKEN") ? proj.property("XPIPE_GITHUB_TOKEN") : System.getenv("XPIPE_GITHUB_TOKEN")
 
             files = true
             artifacts = true
@@ -70,30 +67,19 @@ jreleaser {
         }
     }
     distributions {
-        app {
-            if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-                artifact {
-                    distributionType = 'BINARY'
-                    path = 'build/pdx_unlimiter-windows.zip'
-                    platform = 'windows'
-                }
-            } else {
-                artifact {
-                    distributionType = 'BINARY'
-                    path = 'build/pdx_unlimiter-linux.zip'
-                    platform = 'linux'
-                }
+        api {
+            artifact {
+                distributionType = 'SINGLE_JAR'
+                path = 'api/build/libs/api-{{version}}.jar'
+                transform = 'build/xpipe-api-{{version}}.jar'
             }
         }
     }
 
     announce {
-        enabled = isFullRelease || isPreRelease
         discord {
-            active = 'ALWAYS'
-
-            webhook = proj.hasProperty("PDXU_DISCORD_WEBHOOK") ? proj.property("PDXU_DISCORD_WEBHOOK") : System.getenv("JRELEASER_DISCORD_WEBHOOK")
-
+            active = 'RELEASE'
+            webhook = proj.hasProperty("XPIPE_DISCORD_WEBHOOK") ? proj.property("XPIPE_DISCORD_WEBHOOK") : System.getenv("XPIPE_DISCORD_WEBHOOK")
             messageTemplate = isFullRelease ? 'misc/discord_full.tpl' : 'misc/discord_pre.tpl'
         }
     }

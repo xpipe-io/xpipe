@@ -10,12 +10,16 @@ apply from: "$rootDir/deps/junit.gradle"
 apply from: 'publish.gradle'
 apply from: "$rootDir/deps/publish-base.gradle"
 
-version = file('../version').text
+version = file('../misc/version').text
 group = 'io.xpipe'
 archivesBaseName = 'api'
 
 repositories {
     mavenCentral()
+}
+
+test {
+    enabled = false
 }
 
 dependencies {

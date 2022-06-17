@@ -1,0 +1,6 @@
+plugins {
+    id 'org.jreleaser' version '1.0.0'
+}
+
+version file('misc/version').text
+apply from: 'jreleaser.gradle'
