@@ -158,6 +158,12 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getPossibleNames().get(0);
     }
 
+    default String getModuleName() {
+        var n = getClass().getPackageName();
+        var i = n.lastIndexOf('.');
+        return i != -1 ? n.substring(i + 1) : n;
+    }
+
     /**
      * Attempt to create a useful data source descriptor from a data store.
      * The result does not need to be always right, it should only reflect the best effort.

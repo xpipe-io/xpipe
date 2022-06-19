@@ -13,4 +13,5 @@ public interface MachineStore extends DataStore {
 
     OutputStream openOutput(String file) throws Exception;
 
+    public boolean exists(String file);
 }

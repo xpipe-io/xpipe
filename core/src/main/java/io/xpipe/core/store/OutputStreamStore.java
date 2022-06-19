@@ -22,7 +22,7 @@ public class OutputStreamStore implements StreamDataStore {
     }
 
     @Override
-    public boolean exists() {
+    public boolean canOpen() {
         return true;
     }
 }

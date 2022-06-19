@@ -40,7 +40,7 @@ public class StdoutDataStore implements StreamDataStore {
     }
 
     @Override
-    public boolean exists() {
+    public boolean canOpen() {
         return false;
     }
 }

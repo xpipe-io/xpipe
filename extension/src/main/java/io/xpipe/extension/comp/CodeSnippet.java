@@ -88,6 +88,21 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
             }
             return new CodeSnippet(lines);
         }
+
+        public Builder snippet(CodeSnippet s) {
+            if (s.lines.size() == 0) {
+                return this;
+            }
+
+            var first = s.lines.get(0);
+            var line = new ArrayList<>(currentLine);
+            line.addAll(first.elements);
+            lines.add(new Line(new ArrayList<>(line)));
+            currentLine.clear();
+
+            s.lines.stream().skip(1).forEach(l -> lines.add(l));
+            return this;
+        }
     }
 
     public static record StaticElement(String value, Color color) implements Element {

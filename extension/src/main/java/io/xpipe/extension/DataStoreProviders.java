@@ -53,6 +53,16 @@ public class DataStoreProviders {
         return ALL.stream().map(d -> d.dialogForString(s)).filter(Objects::nonNull).findAny();
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T extends DataStoreProvider> T byStoreClass(Class<?> c) {
+        if (ALL == null) {
+            throw new IllegalStateException("Not initialized");
+        }
+
+        return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Provider for " + c.getSimpleName() + " not found"));
+    }
+
     public static Set<DataStoreProvider> getAll() {
         return ALL;
     }

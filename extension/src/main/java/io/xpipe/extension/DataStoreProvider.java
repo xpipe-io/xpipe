@@ -27,8 +27,14 @@ public interface DataStoreProvider {
         return i18n("displayDescription");
     }
 
+    default String getModuleName() {
+        var n = getClass().getPackageName();
+        var i = n.lastIndexOf('.');
+        return i != -1 ? n.substring(i + 1) : n;
+    }
+
     default String getDisplayIconFileName() {
-        return getId() + ":icon.png";
+        return getModuleName() + ":" + getId() + ".png";
     }
 
     default Dialog dialogForURL(URL url) {
@@ -50,4 +56,6 @@ public interface DataStoreProvider {
     default String getId() {
         return getPossibleNames().get(0);
     }
+
+    List<Class<?>> getStoreClasses();
 }

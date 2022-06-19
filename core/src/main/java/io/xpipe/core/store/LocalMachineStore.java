@@ -11,6 +11,11 @@ import java.nio.file.Path;
 public class LocalMachineStore implements MachineStore {
 
     @Override
+    public boolean exists(String file) {
+        return Files.exists(Path.of(file));
+    }
+
+    @Override
     public String toDisplay() {
         return "local";
     }

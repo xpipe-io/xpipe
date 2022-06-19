@@ -109,7 +109,7 @@ public class InputStreamDataStore implements StreamDataStore {
     }
 
     @Override
-    public boolean exists() {
+    public boolean canOpen() {
         return true;
     }
 }

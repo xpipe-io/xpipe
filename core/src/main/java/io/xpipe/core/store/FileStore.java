@@ -28,6 +28,11 @@ public class FileStore implements StreamDataStore, FilenameStore {
     }
 
     @Override
+    public boolean canOpen() {
+        return machine.exists(file);
+    }
+
+    @Override
     public String toDisplay() {
         return file + "@" + machine.toDisplay();
     }

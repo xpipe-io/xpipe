@@ -23,12 +23,8 @@ public interface StreamDataStore extends DataStore {
         throw new UnsupportedOperationException("Can't open store output");
     }
 
-    default OutputStream openAppendingOutput() throws Exception {
-        throw new UnsupportedOperationException("Can't open store output");
-    }
-
-    default boolean exists() {
-        return false;
+    default boolean canOpen() {
+        return true;
     }
 
     default boolean persistent() {
