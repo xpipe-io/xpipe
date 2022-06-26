@@ -126,7 +126,7 @@ public class BeaconClient implements AutoCloseable {
             var in = socket.getInputStream();
             read = JacksonHelper.newMapper().disable(JsonParser.Feature.AUTO_CLOSE_SOURCE).readTree(in);
         } catch (SocketException ex) {
-            throw new ConnectorException("Connection to xpipe daemon closed unexpectedly");
+            throw new ConnectorException("Connection to xpipe daemon closed unexpectedly", ex);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't read from socket", ex);
         }

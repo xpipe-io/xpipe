@@ -31,9 +31,9 @@ repositories {
 
 dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    compileOnly 'com.jfoenix:jfoenix:9.0.10'
     implementation project(':core')
 
-    implementation 'io.xpipe:fxcomps:0.1'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'io.xpipe:fxcomps:0.2'
     implementation 'org.controlsfx:controlsfx:11.1.1'
 }

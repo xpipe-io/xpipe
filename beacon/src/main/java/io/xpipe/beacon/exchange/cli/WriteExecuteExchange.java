@@ -9,6 +9,8 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.UUID;
+
 /**
  * Output the data source contents.
  */
@@ -25,6 +27,9 @@ public class WriteExecuteExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         DataSourceReference ref;
+
+        @NonNull
+        UUID id;
     }
 
     @Jacksonized

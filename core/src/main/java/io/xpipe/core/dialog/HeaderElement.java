@@ -2,8 +2,12 @@ package io.xpipe.core.dialog;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @JsonTypeName("header")
+@EqualsAndHashCode(callSuper = true)
+@ToString
 public class HeaderElement extends DialogElement {
 
     protected String header;
@@ -11,6 +15,11 @@ public class HeaderElement extends DialogElement {
     @JsonCreator
     public HeaderElement(String header) {
         this.header = header;
+    }
+
+    @Override
+    public String toDisplayString() {
+        return header;
     }
 
     @Override

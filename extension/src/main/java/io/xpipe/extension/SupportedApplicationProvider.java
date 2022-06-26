@@ -12,7 +12,7 @@ public interface SupportedApplicationProvider {
         APPLICATION
     }
 
-    Region createRetrieveInstructions(DataSourceProvider<?> provider, ObservableValue<String> id);
+    Region createRetrieveInstructions(ObservableValue<String> id);
 
     String getId();
 

@@ -6,6 +6,7 @@ import lombok.Singular;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Builder
@@ -109,6 +110,9 @@ public class TrackEvent {
 
     @Singular
     private Map<String, Object> tags;
+
+    @Singular
+    private List<String> elements;
 
     public void handle() {
         EventHandler.get().handle(this);

@@ -5,6 +5,7 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.dialog.DialogElement;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -31,8 +32,10 @@ public class DialogExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
+        @NonNull
         UUID dialogKey;
         String value;
+        boolean cancel;
     }
 
     @Jacksonized

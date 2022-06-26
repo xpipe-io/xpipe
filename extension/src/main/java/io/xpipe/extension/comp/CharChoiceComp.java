@@ -2,6 +2,7 @@ package io.xpipe.extension.comp;
 
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
+import io.xpipe.fxcomps.SimpleCompStructure;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -45,6 +46,6 @@ public class CharChoiceComp extends Comp<CompStructure<HBox>> {
         box.setAlignment(Pos.CENTER);
         choiceR.prefWidthProperty().bind(box.widthProperty().subtract(charChoiceR.widthProperty()));
         box.getStyleClass().add("char-choice-comp");
-        return new CompStructure<>(box);
+        return new SimpleCompStructure<>(box);
     }
 }

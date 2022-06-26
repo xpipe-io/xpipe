@@ -28,7 +28,7 @@ public class ConvertExchange implements MessageExchange {
 
         String newProvider;
 
-        DataSourceType newType;
+        DataSourceType newCategory;
 
         DataSourceId copyId;
     }

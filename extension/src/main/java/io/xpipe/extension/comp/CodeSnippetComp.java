@@ -2,7 +2,8 @@ package io.xpipe.extension.comp;
 
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
-import io.xpipe.fxcomps.util.PlatformUtil;
+import io.xpipe.fxcomps.SimpleCompStructure;
+import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
@@ -26,12 +27,12 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
 
     public CodeSnippetComp(boolean showLineNumbers, ObservableValue<CodeSnippet> value) {
         this.showLineNumbers = new SimpleBooleanProperty(showLineNumbers);
-        this.value = PlatformUtil.wrap(value);
+        this.value = PlatformThread.sync(value);
     }
 
     public CodeSnippetComp(ObservableValue<Boolean> showLineNumbers, ObservableValue<CodeSnippet> value) {
-        this.showLineNumbers = PlatformUtil.wrap(showLineNumbers);
-        this.value = PlatformUtil.wrap(value);
+        this.showLineNumbers = PlatformThread.sync(showLineNumbers);
+        this.value = PlatformThread.sync(value);
     }
 
     private static String toRGBCode(Color color) {
@@ -131,6 +132,6 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
         AnchorPane.setRightAnchor(copyButton, 10.0);
         c.getChildren().add(pane);
 
-        return new CompStructure<>(c);
+        return new SimpleCompStructure<>(c);
     }
 }

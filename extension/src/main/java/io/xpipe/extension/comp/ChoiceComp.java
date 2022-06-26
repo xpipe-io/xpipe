@@ -1,8 +1,10 @@
 package io.xpipe.extension.comp;
 
+import io.xpipe.extension.I18n;
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
-import io.xpipe.fxcomps.util.PlatformUtil;
+import io.xpipe.fxcomps.SimpleCompStructure;
+import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,7 +30,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
             @Override
             public String toString(T object) {
                 if (object == null) {
-                    return "null";
+                    return I18n.get("extension.none");
                 }
 
                 return range.get(object).getValue();
@@ -39,8 +41,8 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
                 throw new UnsupportedOperationException();
             }
         });
-        PlatformUtil.connect(value, cb.valueProperty());
+        PlatformThread.connect(value, cb.valueProperty());
         cb.getStyleClass().add("choice-comp");
-        return new CompStructure<>(cb);
+        return new SimpleCompStructure<>(cb);
     }
 }

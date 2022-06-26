@@ -21,10 +21,7 @@ import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
-import io.xpipe.core.store.CollectionEntryDataStore;
-import io.xpipe.core.store.FileStore;
-import io.xpipe.core.store.LocalDirectoryDataStore;
-import io.xpipe.core.store.LocalMachineStore;
+import io.xpipe.core.store.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -36,21 +33,28 @@ public class CoreJacksonModule extends SimpleModule {
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
                 new NamedType(FileStore.class),
+                new NamedType(StdinDataStore.class),
+                new NamedType(StdoutDataStore.class),
                 new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(CollectionEntryDataStore.class),
+                new NamedType(StringStore.class),
+                new NamedType(LocalMachineStore.class),
+                new NamedType(NamedStore.class),
+
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
                 new NamedType(WildcardType.class),
+
                 new NamedType(DataSourceInfo.Table.class),
                 new NamedType(DataSourceInfo.Structure.class),
                 new NamedType(DataSourceInfo.Text.class),
                 new NamedType(DataSourceInfo.Collection.class),
                 new NamedType(DataSourceInfo.Raw.class),
+
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),
-                new NamedType(LocalMachineStore.class),
                 new NamedType(HeaderElement.class)
         );
 
@@ -129,7 +133,7 @@ public class CoreJacksonModule extends SimpleModule {
         @Override
         public void serialize(Secret value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
-            jgen.writeString(value.getValue());
+            jgen.writeString(value.getEncryptedValue());
         }
     }
 
@@ -137,7 +141,7 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public Secret deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return Secret.parse(p.getValueAsString());
+            return Secret.create(p.getValueAsString());
         }
     }
 

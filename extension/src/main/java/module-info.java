@@ -6,18 +6,18 @@ module io.xpipe.extension {
     exports io.xpipe.extension.comp;
     exports io.xpipe.extension.event;
     exports io.xpipe.extension.prefs;
+    exports io.xpipe.extension.util;
 
     requires transitive io.xpipe.core;
     requires transitive javafx.base;
     requires javafx.graphics;
     requires transitive javafx.controls;
     requires io.xpipe.fxcomps;
-    requires org.apache.commons.collections4;
+    requires static org.apache.commons.collections4;
     requires static lombok;
     requires static com.dlsc.preferencesfx;
     requires static com.dlsc.formsfx;
     requires static org.slf4j;
-    requires static com.google.gson;
     requires static org.controlsfx.controls;
     requires java.desktop;
     requires org.fxmisc.richtext;
@@ -28,6 +28,7 @@ module io.xpipe.extension {
     requires org.kordamp.ikonli.javafx;
     requires com.fasterxml.jackson.databind;
     requires static org.junit.jupiter.api;
+    requires static com.jfoenix;
 
     uses DataSourceProvider;
     uses SupportedApplicationProvider;

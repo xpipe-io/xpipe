@@ -1,6 +1,7 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.source.DataSource;
+import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileStore;
 import io.xpipe.core.store.StreamDataStore;
@@ -10,6 +11,16 @@ import java.util.List;
 import java.util.Map;
 
 public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends DataSourceProvider<T> {
+
+    @Override
+    default boolean supportsConversion(T in, DataSourceType t) {
+        return t == DataSourceType.RAW;
+    }
+
+    @Override
+    default DataSource<?> convert(T in, DataSourceType t) throws Exception {
+        return DataSourceProviders.byId("binary").createDefaultSource(in.getStore());
+    }
 
     @Override
     default boolean prefersStore(DataStore store) {

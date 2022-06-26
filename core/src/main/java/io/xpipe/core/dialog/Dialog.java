@@ -14,11 +14,13 @@ public abstract class Dialog {
         return new Dialog() {
             @Override
             public DialogElement start() throws Exception {
+                complete();
                 return null;
             }
 
             @Override
             protected DialogElement next(String answer) throws Exception {
+                complete();
                 return null;
             }
         };
@@ -28,8 +30,8 @@ public abstract class Dialog {
 
         private final ChoiceElement element;
 
-        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, int selected) {
-            this.element = new ChoiceElement(description, elements, selected);
+        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
+            this.element = new ChoiceElement(description, elements, required, selected);
         }
 
         @Override
@@ -51,18 +53,27 @@ public abstract class Dialog {
         }
     }
 
-    public static Dialog.Choice choice(String description, List<io.xpipe.core.dialog.Choice> elements, int selected) {
-        Dialog.Choice c = new Dialog.Choice(description, elements, selected);
+    public static Dialog.Choice choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
+        Dialog.Choice c = new Dialog.Choice(description, elements, required, selected);
         c.evaluateTo(c::getSelected);
         return c;
     }
 
     @SafeVarargs
-    public static <T> Dialog.Choice choice(String description, Function<T, String> toString, T def, T... vals) {
+    public static <T> Dialog.Choice choice(String description, Function<T, String> toString, boolean required, T def, T... vals) {
         var elements = Arrays.stream(vals).map(v -> new io.xpipe.core.dialog.Choice(null, toString.apply(v))).toList();
         var index = Arrays.asList(vals).indexOf(def);
-        var c = choice(description, elements, index);
-        c.evaluateTo(() -> vals[c.getSelected()]);
+        if (def != null && index == -1) {
+            throw new IllegalArgumentException("Default value " + def.toString() + " is not in possible values");
+        }
+
+        var c = choice(description, elements, required, index);
+        c.evaluateTo(() -> {
+            if (c.getSelected() == -1) {
+                return null;
+            }
+            return vals[c.getSelected()];
+        });
         return c;
     }
 
@@ -70,8 +81,8 @@ public abstract class Dialog {
 
         private final QueryElement element;
 
-        private Query(String description, boolean newLine, boolean required, Object value, QueryConverter<?> converter, boolean hidden) {
-            this.element = new QueryElement(description, newLine, required,value, converter, hidden);
+        private <T> Query(String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter, boolean hidden) {
+            this.element = new QueryElement(description, newLine, required, quiet, value, converter, hidden);
         }
 
         @Override
@@ -98,13 +109,13 @@ public abstract class Dialog {
         }
     }
 
-    public static Dialog.Query query(String description, boolean newLine, boolean required, Object value, QueryConverter<?> converter) {
-        var q = new Dialog.Query(description, newLine, required, value, converter, false);
+    public static <T> Dialog.Query query(String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter) {
+        var q = new <T>Dialog.Query(description, newLine, required, quiet, value, converter, false);
         q.evaluateTo(q::getConvertedValue);
         return q;
     }
     public static Dialog.Query querySecret(String description, boolean newLine, boolean required, Secret value) {
-        var q = new Dialog.Query(description, newLine, required, value, QueryConverter.SECRET, true);
+        var q = new Dialog.Query(description, newLine, required, false, value, QueryConverter.SECRET, true);
         q.evaluateTo(q::getConvertedValue);
         return q;
     }
@@ -118,7 +129,16 @@ public abstract class Dialog {
             public DialogElement start() throws Exception {
                 current = 0;
                 eval = null;
-                return ds[0].start();
+                DialogElement start;
+                do {
+                    start = ds[current].start();
+                    if (start != null) {
+                        return start;
+                    }
+                } while (++current < ds.length);
+
+                current = ds.length - 1;
+                return null;
             }
 
             @Override
@@ -127,7 +147,6 @@ public abstract class Dialog {
                 if (currentElement == null) {
                     DialogElement next = null;
                     while (current < ds.length - 1 && (next = ds[++current].start()) == null) {
-
                     };
                     return next;
                 }
@@ -200,8 +219,9 @@ public abstract class Dialog {
             public DialogElement start() throws Exception {
                 eval = null;
                 dialog = d.get();
+                var start = dialog.start();
                 evaluateTo(dialog);
-                return dialog.start();
+                return start;
             }
 
             @Override
@@ -283,11 +303,15 @@ public abstract class Dialog {
         }.evaluateTo(d.evaluation).onCompletion(d.completion);
     }
 
-    public static Dialog fork(String description, List<io.xpipe.core.dialog.Choice> elements, int selected, Function<Integer, Dialog> c) {
-        var choice = new ChoiceElement(description, elements, selected);
+    public static Dialog fork(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected, Function<Integer, Dialog> c) {
+        var choice = new ChoiceElement(description, elements, required, selected);
         return new Dialog() {
 
             private Dialog choiceMade;
+
+            {
+                evaluateTo(() -> choiceMade);
+            }
 
             @Override
             public DialogElement start() throws Exception {
@@ -310,7 +334,7 @@ public abstract class Dialog {
 
                 return choice;
             }
-        }.evaluateTo(() -> choice.getSelected());
+        };
     }
 
     protected Object eval;
@@ -324,7 +348,7 @@ public abstract class Dialog {
     }
 
     public Dialog evaluateTo(Dialog d) {
-        evaluation = d.evaluation;
+        evaluation = () -> d.evaluation.get();
         return this;
     }
 

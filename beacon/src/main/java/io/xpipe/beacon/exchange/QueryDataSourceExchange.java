@@ -5,7 +5,6 @@ import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
-import io.xpipe.core.store.DataStore;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -35,13 +34,13 @@ public class QueryDataSourceExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
         DataSourceId id;
+        boolean disabled;
         @NonNull
         DataSourceInfo info;
         @NonNull
-        DataStore store;
-        @NonNull
+        String storeDisplay;
+
         String provider;
         @NonNull
         Map<String, String> config;

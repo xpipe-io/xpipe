@@ -16,6 +16,10 @@ public class ExceptionConverter {
             return I18n.get("classNotFound", msg);
         }
 
+        if (ex instanceof NullPointerException) {
+            return I18n.get("extension.nullPointer", msg);
+        }
+
         return msg;
     }
 }

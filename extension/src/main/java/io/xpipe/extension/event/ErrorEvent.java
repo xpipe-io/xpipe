@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Singular;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -49,10 +50,16 @@ public class ErrorEvent {
     private Throwable throwable;
 
     @Singular
-    private List<Path> diagnostics;
-
-    @Singular
-    private List<Path> sensitiveDiagnostics;
+    private List<Path> attachments;
 
     private final List<TrackEvent> trackEvents = EventHandler.get().snapshotEvents();
+
+    public void addAttachment(Path file) {
+        attachments = new ArrayList<>(attachments);
+        attachments.add(file);
+    }
+
+    public void clearAttachments() {
+        attachments = new ArrayList<>();
+    }
 }

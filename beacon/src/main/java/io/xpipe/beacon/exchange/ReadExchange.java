@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.dialog.DialogReference;
+import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.store.DataStore;
 import lombok.Builder;
 import lombok.NonNull;
@@ -12,11 +13,11 @@ import lombok.extern.jackson.Jacksonized;
 /**
  * Prepares a client to send stream-based data to a daemon.
  */
-public class ReadPreparationExchange implements MessageExchange {
+public class ReadExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "readPreparation";
+        return "read";
     }
 
     @Jacksonized
@@ -28,6 +29,8 @@ public class ReadPreparationExchange implements MessageExchange {
         @NonNull
         DataStore store;
 
+        DataSourceId target;
+
         boolean configureAll;
     }
 
@@ -35,8 +38,6 @@ public class ReadPreparationExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        String determinedType;
-
         @NonNull
         DialogReference config;
     }

@@ -2,7 +2,8 @@ package io.xpipe.extension.comp;
 
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
-import io.xpipe.fxcomps.util.PlatformUtil;
+import io.xpipe.fxcomps.SimpleCompStructure;
+import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleButton;
@@ -38,7 +39,7 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
             box.getChildren().add(b);
             b.setToggleGroup(group);
             value.addListener((c, o, n) -> {
-                PlatformUtil.runLaterIfNeeded(() -> b.setSelected(entry.equals(n)));
+                PlatformThread.runLaterIfNeeded(() -> b.setSelected(entry.equals(n)));
             });
             if (entry.getKey().equals(value.getValue())) {
                 b.setSelected(true);
@@ -55,6 +56,6 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                 oldVal.setSelected(true);
         });
 
-        return new CompStructure<>(box);
+        return new SimpleCompStructure<>(box);
     }
 }

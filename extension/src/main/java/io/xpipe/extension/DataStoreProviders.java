@@ -3,7 +3,7 @@ package io.xpipe.extension;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.extension.event.ErrorEvent;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -37,12 +37,12 @@ public class DataStoreProviders {
                 .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
     }
 
-    public static Optional<Dialog> byURL(URL url) {
+    public static Optional<Dialog> byURI(URI uri) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().map(d -> d.dialogForURL(url)).filter(Objects::nonNull).findAny();
+        return ALL.stream().map(d -> d.dialogForURI(uri)).filter(Objects::nonNull).findAny();
     }
 
     public static Optional<Dialog> byString(String s) {

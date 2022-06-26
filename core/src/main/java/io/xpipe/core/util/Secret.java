@@ -10,7 +10,15 @@ import java.util.Base64;
 @EqualsAndHashCode
 public class Secret {
 
-    public static Secret parse(String s) {
+    public static Secret create(String s) {
+        if (s == null) {
+            return null;
+        }
+
+        if (s.length() < 2) {
+            return new Secret(s);
+        }
+
         return new Secret(Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8)));
     }
 
@@ -20,11 +28,15 @@ public class Secret {
         return "*".repeat(value.length());
     }
 
-    public String getValue() {
+    public String getEncryptedValue() {
         return value;
     }
 
-    public String getSecret() {
+    public String getSecretValue() {
+        if (value.length() < 2) {
+            return value;
+        }
+
         return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
     }
 }

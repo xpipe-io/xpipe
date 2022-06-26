@@ -8,10 +8,8 @@ import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
-import lombok.SneakyThrows;
 
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +18,11 @@ public interface DataSourceProvider<T extends DataSource<?>> {
     static enum GeneralType {
         FILE,
         DATABASE;
+    }
+
+    default void validate() throws Exception {
+        getGeneralType();
+        getSourceClass();
     }
 
     default GeneralType getGeneralType() {
@@ -32,12 +35,6 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         }
 
         throw new ExtensionException("Provider has no general type");
-    }
-
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    default T createDefault() {
-        return (T) getSourceClass().getDeclaredConstructors()[0].newInstance();
     }
 
     default boolean supportsConversion(T in, DataSourceType t) {
@@ -90,12 +87,16 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     }
 
-    public static Dialog charset(Charset c)  {
-        return Dialog.query("charset", false, false, c, QueryConverter.CHARSET);
+    public static Dialog charset(Charset c, boolean all)  {
+        return Dialog.query("charset", false, false, c != null &&!all, c, QueryConverter.CHARSET);
     }
 
-    public static Dialog newLine(NewLine l)  {
-        return Dialog.query("newline", false, false, l, NEW_LINE_CONVERTER);
+    public static Dialog newLine(NewLine l, boolean all)  {
+        return Dialog.query("newline", false, false, l != null &&!all, l, NEW_LINE_CONVERTER);
+    }
+
+    static <T> Dialog query(String desc, T value, boolean required, QueryConverter<T> c, boolean all)  {
+        return Dialog.query(desc, false, required, value != null && !all, value, c);
     }
 
     public static final QueryConverter<NewLine> NEW_LINE_CONVERTER = new QueryConverter<NewLine>() {
@@ -174,12 +175,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return createDefaultSource(input);
     }
 
-    @SuppressWarnings("unchecked")
-    default Class<T> getSourceClass() {
-        return (Class<T>) Arrays.stream(getClass().getDeclaredClasses())
-                .filter(c -> c.getName().endsWith("Source")).findFirst()
-                .orElseThrow(() -> new ExtensionException("Descriptor class not found for " + getId()));
-    }
+    Class<T> getSourceClass();
 
 
     List<String> getPossibleNames();

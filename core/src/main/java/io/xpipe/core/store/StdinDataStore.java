@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -9,6 +10,7 @@ import java.io.OutputStream;
 
 @EqualsAndHashCode
 @Value
+@JsonTypeName("stdin")
 public class StdinDataStore implements StreamDataStore {
 
     @Override

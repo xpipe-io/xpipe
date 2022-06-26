@@ -1,18 +1,22 @@
 package io.xpipe.core.dialog;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.NonNull;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
 @Value
-@Builder
-@Jacksonized
-@AllArgsConstructor
 public class DialogReference {
 
+    @NonNull
     UUID dialogId;
+
     DialogElement start;
+
+    @JsonCreator
+    public DialogReference(UUID dialogId, DialogElement start) {
+        this.dialogId = dialogId;
+        this.start = start;
+    }
 }

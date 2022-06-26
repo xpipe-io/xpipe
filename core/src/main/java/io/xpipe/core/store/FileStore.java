@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 
 @Value
@@ -28,6 +30,16 @@ public class FileStore implements StreamDataStore, FilenameStore {
     }
 
     @Override
+    public InputStream openInput() throws Exception {
+        return machine.openInput(file);
+    }
+
+    @Override
+    public OutputStream openOutput() throws Exception {
+        return machine.openOutput(file);
+    }
+
+    @Override
     public boolean canOpen() {
         return machine.exists(file);
     }
@@ -44,6 +56,6 @@ public class FileStore implements StreamDataStore, FilenameStore {
 
     @Override
     public String getFileName() {
-        return file;
+        return Path.of(file).getFileName().toString();
     }
 }

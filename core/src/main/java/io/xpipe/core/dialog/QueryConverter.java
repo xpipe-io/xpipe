@@ -37,12 +37,12 @@ public abstract class QueryConverter<T> {
     public static final QueryConverter<Secret> SECRET = new QueryConverter<Secret>() {
         @Override
         protected Secret fromString(String s) {
-            return Secret.parse(s);
+            return new Secret(s);
         }
 
         @Override
         protected String toString(Secret value) {
-            return value.getValue();
+            return value.getEncryptedValue();
         }
     };
 

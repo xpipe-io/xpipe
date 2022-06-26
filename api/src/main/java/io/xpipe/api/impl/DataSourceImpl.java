@@ -4,7 +4,7 @@ import io.xpipe.api.DataSource;
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.beacon.exchange.QueryDataSourceExchange;
-import io.xpipe.beacon.exchange.ReadPreparationExchange;
+import io.xpipe.beacon.exchange.ReadExchange;
 import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
@@ -50,12 +50,12 @@ public abstract class DataSourceImpl implements DataSource {
 
         var store = res.getStore();
 
-        var startReq = ReadPreparationExchange.Request.builder()
+        var startReq = ReadExchange.Request.builder()
                 .provider(type)
                 .store(store)
                 .build();
         var startRes = XPipeConnection.execute(con -> {
-            ReadPreparationExchange.Response r = con.performSimpleExchange(startReq);
+            ReadExchange.Response r = con.performSimpleExchange(startReq);
             return r;
         });
 

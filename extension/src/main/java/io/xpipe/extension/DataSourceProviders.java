@@ -19,11 +19,14 @@ public class DataSourceProviders {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataSourceProvider.class).stream()
                     .map(p -> (DataSourceProvider<?>) p.get()).collect(Collectors.toSet());
-            ALL.forEach(p -> {
+            ALL.removeIf(p -> {
                 try {
                     p.init();
+                    p.validate();
+                    return false;
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).handle();
+                    return true;
                 }
             });
         }
