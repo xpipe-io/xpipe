@@ -30,10 +30,12 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'net.synedra:validatorfx:0.3.1'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     compileOnly 'com.jfoenix:jfoenix:9.0.10'
     implementation project(':core')
 
-    implementation 'io.xpipe:fxcomps:0.2'
+    implementation project(':fxcomps')
+    //implementation 'io.xpipe:fxcomps:0.2'
     implementation 'org.controlsfx:controlsfx:11.1.1'
 }

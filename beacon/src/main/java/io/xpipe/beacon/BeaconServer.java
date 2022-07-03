@@ -114,9 +114,9 @@ public class BeaconServer {
         // Prepare for invalid XPIPE_HOME path value
         try {
             if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(env, "app", "xpipe.exe");
+                file = Path.of(env, "app", "xpiped.exe");
             } else {
-                file = Path.of(env, "app", "bin", "xpipe");
+                file = Path.of(env, "app", "bin", "xpiped");
             }
             return Files.exists(file) ? Optional.of(file) : Optional.empty();
         } catch (Exception ex) {
@@ -132,9 +132,9 @@ public class BeaconServer {
 
         Path file;
         if (System.getProperty("os.name").startsWith("Windows")) {
-            file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpipe.exe");
+            file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpiped.exe");
         } else {
-            file = Path.of("/opt/xpipe/app/bin/xpipe");
+            file = Path.of("/opt/xpipe/app/bin/xpiped");
         }
 
         if (Files.exists(file)) {

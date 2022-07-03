@@ -37,7 +37,7 @@ public interface StreamDataStore extends DataStore {
         throw new UnsupportedOperationException("Can't open store output");
     }
 
-    default boolean canOpen() {
+    default boolean canOpen() throws Exception {
         return true;
     }
 

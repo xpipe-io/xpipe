@@ -13,20 +13,27 @@ import java.nio.file.Path;
 public class FileStore implements StreamDataStore, FilenameStore {
 
     public static FileStore local(Path p) {
-        return new FileStore(MachineStore.local(), p.toString());
+        return new FileStore(MachineFileStore.local(), p.toString());
     }
 
     public static FileStore local(String p) {
-        return new FileStore(MachineStore.local(), p);
+        return new FileStore(MachineFileStore.local(), p);
     }
 
-    MachineStore machine;
+    MachineFileStore machine;
     String file;
 
     @JsonCreator
-    public FileStore(MachineStore machine, String file) {
+    public FileStore(MachineFileStore machine, String file) {
         this.machine = machine;
         this.file = file;
+    }
+
+    @Override
+    public void validate() throws Exception {
+        if (!machine.exists(file)) {
+            throw new IllegalStateException("File " + file + " could not be found on machine " + machine.toDisplay());
+        }
     }
 
     @Override
@@ -40,7 +47,7 @@ public class FileStore implements StreamDataStore, FilenameStore {
     }
 
     @Override
-    public boolean canOpen() {
+    public boolean canOpen() throws Exception {
         return machine.exists(file);
     }
 
@@ -56,6 +63,6 @@ public class FileStore implements StreamDataStore, FilenameStore {
 
     @Override
     public String getFileName() {
-        return Path.of(file).getFileName().toString();
+        return file;
     }
 }

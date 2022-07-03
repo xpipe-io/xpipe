@@ -1,7 +1,7 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.io.ByteArrayInputStream;
@@ -10,10 +10,14 @@ import java.nio.charset.StandardCharsets;
 
 @Value
 @JsonTypeName("string")
-@AllArgsConstructor
 public class StringStore implements StreamDataStore {
 
     byte[] value;
+
+    @JsonCreator
+    public StringStore(byte[] value) {
+        this.value = value;
+    }
 
     public StringStore(String s) {
         value = s.getBytes(StandardCharsets.UTF_8);

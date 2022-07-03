@@ -38,7 +38,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(CollectionEntryDataStore.class),
                 new NamedType(StringStore.class),
-                new NamedType(LocalMachineStore.class),
+                new NamedType(LocalStore.class),
                 new NamedType(NamedStore.class),
 
                 new NamedType(ValueType.class),

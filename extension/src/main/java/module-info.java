@@ -21,6 +21,7 @@ module io.xpipe.extension {
     requires static org.controlsfx.controls;
     requires java.desktop;
     requires org.fxmisc.richtext;
+    requires static net.synedra.validatorfx;
     requires org.fxmisc.flowless;
     requires org.fxmisc.undofx;
     requires org.fxmisc.wellbehavedfx;

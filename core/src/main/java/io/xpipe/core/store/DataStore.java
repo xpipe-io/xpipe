@@ -16,6 +16,10 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
 
+    default boolean isComplete() {
+        return true;
+    }
+
     default void validate() throws Exception {
     }
 

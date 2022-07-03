@@ -2,9 +2,10 @@ package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.MachineFileStore;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StreamDataStore;
 import javafx.beans.property.Property;
-import javafx.scene.layout.Region;
 
 import java.net.URI;
 import java.util.List;
@@ -13,19 +14,25 @@ public interface DataStoreProvider {
 
     enum Category {
         STREAM,
+        MACHINE,
         DATABASE;
     }
 
     default Category getCategory() {
-        if (StreamDataStore.class.isAssignableFrom(getStoreClasses().get(0))) {
+        var c = getStoreClasses().get(0);
+        if (StreamDataStore.class.isAssignableFrom(c)) {
             return Category.STREAM;
+        }
+
+        if (MachineFileStore.class.isAssignableFrom(c) || ShellStore.class.isAssignableFrom(c)) {
+            return Category.MACHINE;
         }
 
         throw new ExtensionException("Provider " + getId() + " has no set category");
     }
 
-    default Region createConfigGui(Property<DataStore> store) {
-        return null;
+    default GuiDialog guiDialog(Property<DataStore> store) {
+        throw new ExtensionException("Gui Dialog is not implemented by provider " + getId());
     }
 
     default void init() throws Exception {
@@ -65,7 +72,9 @@ public interface DataStoreProvider {
         return null;
     }
 
-    Dialog defaultDialog();
+    default Dialog defaultDialog() {
+        throw new ExtensionException("CLI Dialog not implemented by provider");
+    }
 
     default String display(DataStore store) {
         return store.toDisplay();

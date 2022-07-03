@@ -3,11 +3,14 @@ package io.xpipe.extension.comp;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
 import io.xpipe.extension.I18n;
+import io.xpipe.extension.Validator;
+import io.xpipe.extension.Validators;
 import io.xpipe.fxcomps.Comp;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+import net.synedra.validatorfx.Check;
 import org.apache.commons.collections4.bidimap.DualLinkedHashBidiMap;
 
 import java.nio.charset.Charset;
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DynamicOptionsBuilder<T> {
 
@@ -38,6 +41,17 @@ public class DynamicOptionsBuilder<T> {
     public DynamicOptionsBuilder(ObservableValue<String> title) {
         this.wrap = false;
         this.title = title;
+    }
+
+    public DynamicOptionsBuilder<T> decorate(Check c) {
+        entries.get(entries.size() - 1).comp().apply(s -> c.decorates(s.get()));
+        return this;
+    }
+
+    public DynamicOptionsBuilder<T> nonNull(Validator v) {
+        var e = entries.get(entries.size() - 1);
+        var p = props.get(props.size() - 1);
+        return decorate(Validators.nonNull(v, e.name(), p));
     }
 
     public DynamicOptionsBuilder<T> addNewLine(Property<NewLine> prop) {
@@ -79,6 +93,13 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
+    public DynamicOptionsBuilder<T> addString(String nameKey, Property<String> prop) {
+        var comp = new TextFieldComp(prop);
+        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        props.add(prop);
+        return this;
+    }
+
     public DynamicOptionsBuilder<T> addString(ObservableValue<String> name, Property<String> prop) {
         var comp = new TextFieldComp(prop);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
@@ -86,8 +107,8 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public DynamicOptionsBuilder<T> addComp(Comp<?> comp) {
-        entries.add(new DynamicOptionsComp.Entry(null, comp));
+    public DynamicOptionsBuilder<T> addComp(ObservableValue<String> name, Comp<?> comp) {
+        entries.add(new DynamicOptionsComp.Entry(name, comp));
         return this;
     }
 
@@ -105,19 +126,20 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public <V extends T> Comp<?> buildComp(Function<T, V> creator, Property<T> toSet) {
+    public <V extends T> Comp<?> buildComp(Supplier<V> creator, Property<T> toSet) {
         props.forEach(prop -> {
             prop.addListener((c,o,n) -> {
-                toSet.setValue(creator.apply(toSet.getValue()));
+                toSet.setValue(creator.get());
             });
         });
+        toSet.setValue(creator.get());
         if (title != null) {
             entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
         }
         return new DynamicOptionsComp(entries, wrap);
     }
 
-    public <V extends T> Region build(Function<T, V> creator, Property<T> toSet) {
+    public <V extends T> Region build(Supplier<V> creator, Property<T> toSet) {
         return buildComp(creator, toSet).createRegion();
     }
 }
