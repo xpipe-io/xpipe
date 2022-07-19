@@ -8,19 +8,27 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A store whose contents are stored in memory.
+ */
 @Value
-@JsonTypeName("string")
-public class StringStore implements StreamDataStore {
+@JsonTypeName("inMemory")
+public class InMemoryStore implements StreamDataStore {
 
     byte[] value;
 
     @JsonCreator
-    public StringStore(byte[] value) {
+    public InMemoryStore(byte[] value) {
         this.value = value;
     }
 
-    public StringStore(String s) {
+    public InMemoryStore(String s) {
         value = s.getBytes(StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public boolean isLocalToApplication() {
+        return true;
     }
 
     @Override
@@ -30,6 +38,6 @@ public class StringStore implements StreamDataStore {
 
     @Override
     public String toDisplay() {
-        return "string";
+        return "inMemory";
     }
 }

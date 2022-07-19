@@ -1,5 +1,8 @@
 package io.xpipe.core.dialog;
 
+/**
+ * An exception indicating that the user aborted the dialogue.
+ */
 public class DialogCancelException extends Exception {
 
     public DialogCancelException() {

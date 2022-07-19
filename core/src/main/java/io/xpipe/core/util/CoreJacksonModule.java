@@ -37,7 +37,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(StdoutDataStore.class),
                 new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(CollectionEntryDataStore.class),
-                new NamedType(StringStore.class),
+                new NamedType(InMemoryStore.class),
                 new NamedType(LocalStore.class),
                 new NamedType(NamedStore.class),
 
@@ -141,7 +141,7 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public Secret deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return Secret.create(p.getValueAsString());
+            return new Secret(p.getValueAsString());
         }
     }
 

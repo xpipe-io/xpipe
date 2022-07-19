@@ -7,6 +7,10 @@ import lombok.Getter;
 import java.time.Instant;
 import java.util.Optional;
 
+/**
+ * A store that refers to another store in the X-Pipe storage.
+ * The referenced store has to be resolved by the caller manually, as this class does not act as a resolver.
+ */
 @JsonTypeName("named")
 public final class NamedStore implements DataStore {
 

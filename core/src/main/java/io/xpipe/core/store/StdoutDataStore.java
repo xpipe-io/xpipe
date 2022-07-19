@@ -14,6 +14,7 @@ public class StdoutDataStore implements StreamDataStore {
 
     @Override
     public OutputStream openOutput() throws Exception {
+        // Create an output stream that will write to standard out but will not close it
         return new OutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -39,10 +40,5 @@ public class StdoutDataStore implements StreamDataStore {
             public void close() throws IOException {
             }
         };
-    }
-
-    @Override
-    public boolean canOpen() {
-        return false;
     }
 }

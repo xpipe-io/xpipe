@@ -1,13 +1,18 @@
 package io.xpipe.core.store;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
 public interface StandardShellStore extends ShellStore {
 
     static interface ShellType {
+
+        List<String> switchTo(List<String> cmd);
+
+        default ProcessControl prepareElevatedCommand(ShellStore st, InputStream in, List<String> cmd, String pw) throws Exception {
+            return st.prepareCommand(in, cmd);
+        }
 
         List<String> createFileReadCommand(String file);
 
@@ -18,44 +23,9 @@ public interface StandardShellStore extends ShellStore {
         Charset getCharset();
 
         String getName();
+
+        String getDisplayName();
     }
 
-    default String executeAndRead(List<String> cmd) throws Exception {
-        var type = determineType();
-        var p = prepare(cmd).redirectErrorStream(true);
-        var proc = p.start();
-        var s = new String(proc.getInputStream().readAllBytes(), type.getCharset());
-        return s;
-    }
-
-    List<String> createCommand(List<String> cmd);
-
-    ShellType determineType();
-
-    @Override
-    default InputStream openInput(String file) throws Exception {
-        var type = determineType();
-        var cmd = type.createFileReadCommand(file);
-        var p = prepare(cmd).redirectErrorStream(true);
-        var proc = p.start();
-        return proc.getInputStream();
-    }
-
-    @Override
-    default OutputStream openOutput(String file) throws Exception {
-        var type = determineType();
-        var cmd = type.createFileWriteCommand(file);
-        var p = prepare(cmd).redirectErrorStream(true);
-        var proc = p.start();
-        return proc.getOutputStream();
-    }
-
-    @Override
-    default boolean exists(String file) throws Exception {
-        var type = determineType();
-        var cmd = type.createFileExistsCommand(file);
-        var p = prepare(cmd).redirectErrorStream(true);
-        var proc = p.start();
-        return proc.waitFor() == 0;
-    }
+    ShellType determineType() throws Exception;
 }

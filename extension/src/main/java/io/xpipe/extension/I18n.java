@@ -15,6 +15,10 @@ public interface I18n {
     }
 
     public static ObservableValue<String> observable(String s, Object... vars) {
+        if (s == null) {
+            return null;
+        }
+
         return Bindings.createStringBinding(() -> {
             return get(s, vars);
         });

@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
+/**
+ * Represents a file located on a certain machine.
+ */
 @Value
 @JsonTypeName("file")
 public class FileStore implements StreamDataStore, FilenameStore {
@@ -16,6 +19,9 @@ public class FileStore implements StreamDataStore, FilenameStore {
         return new FileStore(MachineFileStore.local(), p.toString());
     }
 
+    /**
+     * Creates a file store for a file that is local to the callers machine.
+     */
     public static FileStore local(String p) {
         return new FileStore(MachineFileStore.local(), p);
     }

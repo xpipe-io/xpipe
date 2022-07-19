@@ -38,6 +38,10 @@ public interface DataStoreProvider {
     default void init() throws Exception {
     }
 
+    default boolean isHidden() {
+        return false;
+    }
+
     default String i18n(String key) {
         return I18n.get(getId() + "." + key);
     }

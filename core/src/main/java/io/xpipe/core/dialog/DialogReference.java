@@ -6,6 +6,9 @@ import lombok.Value;
 
 import java.util.UUID;
 
+/**
+ * A reference to a dialogue instance that will be exchanged whenever a dialogue is started.
+ */
 @Value
 public class DialogReference {
 

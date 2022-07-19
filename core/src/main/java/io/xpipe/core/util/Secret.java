@@ -10,7 +10,7 @@ import java.util.Base64;
 @EqualsAndHashCode
 public class Secret {
 
-    public static Secret create(String s) {
+    public static Secret createForSecretValue(String s) {
         if (s == null) {
             return null;
         }

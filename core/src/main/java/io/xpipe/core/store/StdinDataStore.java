@@ -16,6 +16,7 @@ public class StdinDataStore implements StreamDataStore {
     @Override
     public InputStream openInput() throws Exception {
         var in = System.in;
+        // Prevent closing the standard in when the returned input stream is closed
         return new InputStream() {
             @Override
             public int read() throws IOException {
@@ -86,10 +87,5 @@ public class StdinDataStore implements StreamDataStore {
                 return in.transferTo(out);
             }
         };
-    }
-
-    @Override
-    public boolean canOpen() {
-        return false;
     }
 }

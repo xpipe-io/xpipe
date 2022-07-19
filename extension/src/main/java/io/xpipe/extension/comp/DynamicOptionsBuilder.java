@@ -93,6 +93,13 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
+    public DynamicOptionsBuilder<T> addStringArea(String nameKey, Property<String> prop) {
+        var comp = new TextAreaComp(prop);
+        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        props.add(prop);
+        return this;
+    }
+
     public DynamicOptionsBuilder<T> addString(String nameKey, Property<String> prop) {
         var comp = new TextFieldComp(prop);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
@@ -107,8 +114,9 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public DynamicOptionsBuilder<T> addComp(ObservableValue<String> name, Comp<?> comp) {
+    public DynamicOptionsBuilder<T> addComp(ObservableValue<String> name, Comp<?> comp, Property<?> prop) {
         entries.add(new DynamicOptionsComp.Entry(name, comp));
+        props.add(prop);
         return this;
     }
 

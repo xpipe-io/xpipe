@@ -8,8 +8,25 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * A Dialog is a sequence of questions and answers.
+ *
+ * The dialogue API is only used for the command line interface.
+ * Therefore, the actual implementation is handled by the command line component.
+ * This API provides a way of creating server-side dialogues which makes
+ * it possible to create extensions that provide a commandline configuration component.
+ *
+ * When a Dialog is completed, it can also be optionally evaluated to a value, which can be queried by calling {@link #getResult()}.
+ * The evaluation function can be set with {@link #evaluateTo(Supplier)}.
+ * Alternatively, a dialogue can also copy the evaluation function of another dialogue with {@link #evaluateTo(Dialog)}.
+ * An evaluation result can also be mapped to another type with {@link #map(Function)}.
+ * It is also possible to listen for the completion of this dialogue with {@link #onCompletion(Consumer)}.
+ */
 public abstract class Dialog {
 
+    /**
+     * Creates an empty dialogue. This dialogue completes immediately and does not handle any questions or answers.
+     */
     public static Dialog empty() {
         return new Dialog() {
             @Override
@@ -53,12 +70,29 @@ public abstract class Dialog {
         }
     }
 
+    /**
+     * Creates a choice dialogue.
+     *
+     * @param description the shown question description
+     * @param elements the available elements to choose from
+     * @param required signals whether a choice is required or can be left empty
+     * @param selected the selected element index
+     */
     public static Dialog.Choice choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
         Dialog.Choice c = new Dialog.Choice(description, elements, required, selected);
         c.evaluateTo(c::getSelected);
         return c;
     }
 
+    /**
+     * Creates a choice dialogue from a set of objects.
+     *
+     * @param description the shown question description
+     * @param toString a function that maps the objects to a string
+     * @param required signals whether choices required or can be left empty
+     * @param def the element which is selected by default
+     * @param vals the range of possible elements
+     */
     @SafeVarargs
     public static <T> Dialog.Choice choice(String description, Function<T, String> toString, boolean required, T def, T... vals) {
         var elements = Arrays.stream(vals).map(v -> new io.xpipe.core.dialog.Choice(null, toString.apply(v))).toList();
@@ -86,11 +120,6 @@ public abstract class Dialog {
         }
 
         @Override
-        public Optional<Map.Entry<String, String>> toValue() {
-            return Optional.of(new AbstractMap.SimpleEntry<>(element.getDescription(), element.getValue()));
-        }
-
-        @Override
         public DialogElement start() throws Exception {
             return element;
         }
@@ -109,17 +138,38 @@ public abstract class Dialog {
         }
     }
 
+    /**
+     * Creates a simple query dialogue.
+     *
+     * @param description the shown question description
+     * @param newLine signals whether the query should be done on a new line or not
+     * @param required signals whether the query can be left empty or not
+     * @param quiet signals whether the user should be explicitly queried for the value.
+     *              In case the user is not queried, a value can still be set using the command line arguments
+     *              that allow to set the specific value for a configuration query parameter
+     * @param value the default value
+     * @param converter the converter
+     */
     public static <T> Dialog.Query query(String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter) {
         var q = new <T>Dialog.Query(description, newLine, required, quiet, value, converter, false);
         q.evaluateTo(q::getConvertedValue);
         return q;
     }
+
+    /**
+     * A special wrapper for secret values of {@link #query(String, boolean, boolean, boolean, Object, QueryConverter)}.
+     */
     public static Dialog.Query querySecret(String description, boolean newLine, boolean required, Secret value) {
         var q = new Dialog.Query(description, newLine, required, false, value, QueryConverter.SECRET, true);
         q.evaluateTo(q::getConvertedValue);
         return q;
     }
 
+    /**
+     * Chains multiple dialogues together.
+     *
+     * @param ds the dialogues
+     */
     public static Dialog chain(Dialog... ds) {
         return new Dialog() {
 
@@ -156,6 +206,9 @@ public abstract class Dialog {
         }.evaluateTo(ds[ds.length - 1]);
     }
 
+    /**
+     * Creates a dialogue that starts from the beginning if the repeating condition is true.
+     */
     public static <T> Dialog repeatIf(Dialog d, Predicate<T> shouldRepeat) {
         return new Dialog() {
 
@@ -180,10 +233,16 @@ public abstract class Dialog {
         }.evaluateTo(d).onCompletion(d.completion);
     }
 
+    /**
+     * Create a simple dialogue that will print a message.
+     */
     public static Dialog header(String msg) {
         return of(new HeaderElement(msg)).evaluateTo(() -> msg);
     }
 
+    /**
+     * Create a simple dialogue that will print a message.
+     */
     public static Dialog header(Supplier<String> msg) {
         final String[] msgEval = {null};
         return new Dialog() {
@@ -200,7 +259,9 @@ public abstract class Dialog {
         }.evaluateTo(() -> msgEval[0]);
     }
 
-
+    /**
+     * Creates a dialogue that will show a loading icon until the next dialogue question is sent.
+     */
     public static Dialog busy() {
         return of(new BusyElement());
     }
@@ -210,6 +271,10 @@ public abstract class Dialog {
         T get() throws Exception;
     }
 
+    /**
+     * Creates a dialogue that will only evaluate when needed.
+     * This allows a dialogue to incorporate completion information about a previous dialogue.
+     */
     public static Dialog lazy(FailableSupplier<Dialog> d) {
         return new Dialog() {
 
@@ -231,7 +296,7 @@ public abstract class Dialog {
         };
     }
 
-    public static Dialog of(DialogElement e) {
+    private static Dialog of(DialogElement e) {
         return new Dialog() {
 
 
@@ -253,6 +318,9 @@ public abstract class Dialog {
     }
 
 
+    /**
+     * Creates a dialogue that will not be executed if the condition is true.
+     */
     public static Dialog skipIf(Dialog d, Supplier<Boolean> check) {
         return new Dialog() {
 
@@ -271,6 +339,9 @@ public abstract class Dialog {
         }.evaluateTo(d).onCompletion(d.completion);
     }
 
+    /**
+     * Creates a dialogue that will repeat with an error message if the condition is met.
+     */
     public static <T> Dialog retryIf(Dialog d, Function<T, String> msg) {
         return new Dialog() {
 
@@ -303,6 +374,15 @@ public abstract class Dialog {
         }.evaluateTo(d.evaluation).onCompletion(d.completion);
     }
 
+    /**
+     * Creates a dialogue that will fork the control flow.
+     *
+     * @param description the shown question description
+     * @param elements the available elements to choose from
+     * @param required signals whether a choice is required or not
+     * @param selected the index of the element that is selected by default
+     * @param c the dialogue index mapping function
+     */
     public static Dialog fork(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected, Function<Integer, Dialog> c) {
         var choice = new ChoiceElement(description, elements, required, selected);
         return new Dialog() {
@@ -342,10 +422,6 @@ public abstract class Dialog {
     private final List<Consumer<?>> completion = new ArrayList<>();
 
     public abstract DialogElement start() throws Exception;
-
-    public Optional<Map.Entry<String, String>> toValue() {
-        return Optional.empty();
-    }
 
     public Dialog evaluateTo(Dialog d) {
         evaluation = () -> d.evaluation.get();
