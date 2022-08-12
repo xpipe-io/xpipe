@@ -1,7 +1,6 @@
 def isPreRelease = project.version.endsWith('-pre')
 def isFullRelease = !isPreRelease && !project.version.endsWith('-SNAPSHOT')
 def proj = project
-def canonicalVersion = file('misc/canonical_version').text
 
 jreleaser {
     environment {
