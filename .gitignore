@@ -4,3 +4,5 @@ build/
 dev.properties
 extensions.txt
 local/
+.vscode
+bin

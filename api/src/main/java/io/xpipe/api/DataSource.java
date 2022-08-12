@@ -1,7 +1,9 @@
 package io.xpipe.api;
 
 import io.xpipe.api.impl.DataSourceImpl;
-import io.xpipe.core.source.*;
+import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.DataSourceType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,7 +11,6 @@ import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 
 /**
  * Represents a reference to a data source that is managed by X-Pipe.
@@ -85,36 +86,36 @@ public interface DataSource {
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)} that creates an anonymous data source.
+     * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
-    public static DataSource createAnonymous(String type, Map<String,String> config, Path path) {
-        return create(null, type, config, path);
+    public static DataSource createAnonymous(String type, Path path) {
+        return create(null, type, path);
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)}.
+     * Wrapper for {@link #create(DataSourceId, String, InputStream)}.
      */
-    public static DataSource create(DataSourceId id, String type, Map<String,String> config, Path path) {
+    public static DataSource create(DataSourceId id, String type, Path path) {
         try (var in = Files.newInputStream(path)) {
-            return create(id, type, config, in);
+            return create(id, type, in);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)} that creates an anonymous data source.
+     * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
-    public static DataSource createAnonymous(String type, Map<String,String> config, URL url) {
-        return create(null, type, config, url);
+    public static DataSource createAnonymous(String type, URL url) {
+        return create(null, type, url);
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)}.
+     * Wrapper for {@link #create(DataSourceId, String, InputStream)}.
      */
-    public static DataSource create(DataSourceId id, String type, Map<String,String> config, URL url) {
+    public static DataSource create(DataSourceId id, String type, URL url) {
         try (var in = url.openStream()) {
-            return create(id, type, config, in);
+            return create(id, type, in);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -122,10 +123,10 @@ public interface DataSource {
 
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, Map, InputStream)} that creates an anonymous data source.
+     * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
-    public static DataSource createAnonymous(String type, Map<String,String> config, InputStream in) {
-        return create(null, type, config, in);
+    public static DataSource createAnonymous(String type, InputStream in) {
+        return create(null, type, in);
     }
 
     /**
@@ -133,12 +134,11 @@ public interface DataSource {
      *
      * @param id the data source id
      * @param type the data source type
-     * @param config additional configuration options for the specific data source type
      * @param in the input stream to read
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    public static DataSource create(DataSourceId id, String type, Map<String,String> config, InputStream in) {
-        return DataSourceImpl.create(id, type, config, in);
+    public static DataSource create(DataSourceId id, String type, InputStream in) {
+        return DataSourceImpl.create(id, type, in);
     }
 
     /**

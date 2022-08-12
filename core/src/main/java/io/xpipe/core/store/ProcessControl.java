@@ -14,7 +14,6 @@ public abstract class ProcessControl {
         start();
         var errT = discardErr();
         var string = new String(getStdout().readAllBytes(), getCharset());
-        errT.join();
         waitFor();
         return string;
     }
@@ -33,9 +32,6 @@ public abstract class ProcessControl {
         });
         t.setDaemon(true);
         t.start();
-
-        outT.join();
-        t.join();
 
         var ec = waitFor();
         return ec != 0 ? Optional.of(read.get()) : Optional.empty();

@@ -1,24 +1,52 @@
 package io.xpipe.extension;
 
+import io.xpipe.core.source.DataSource;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
-
-import java.util.function.Supplier;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
 public interface SupportedApplicationProvider {
 
     enum Category {
         PROGRAMMING_LANGUAGE,
-        APPLICATION
+        APPLICATION,
+        OTHER
     }
 
-    Region createRetrieveInstructions(ObservableValue<String> id);
+    enum AccessType {
+        ACTIVE,
+        PASSIVE
+    }
+
+    @Value
+    @AllArgsConstructor
+    public static class InstructionsDisplay {
+        Region region;
+        Runnable onFinish;
+
+        public InstructionsDisplay(Region region) {
+            this.region = region;
+            onFinish = null;
+        }
+    }
+
+
+    default InstructionsDisplay createRetrievalInstructions(DataSource<?> source, ObservableValue<String> id) {
+        return null;
+    }
+
+    default InstructionsDisplay createUpdateInstructions(DataSource<?> source, ObservableValue<String> id) {
+        return null;
+    }
 
     String getId();
 
-    Supplier<String> getName();
+    ObservableValue<String> getName();
 
     Category getCategory();
+
+    AccessType getAccessType();
 
     String getSetupGuideURL();
 
@@ -26,3 +54,4 @@ public interface SupportedApplicationProvider {
         return null;
     }
 }
+

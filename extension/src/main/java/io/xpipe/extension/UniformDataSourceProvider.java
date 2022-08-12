@@ -10,7 +10,7 @@ public interface UniformDataSourceProvider<T extends DataSource<?>> extends Data
 
     @Override
     default Dialog configDialog(T source, boolean all) {
-        return Dialog.empty();
+        return Dialog.empty().evaluateTo(() -> source);
     }
 
     @Override
@@ -19,7 +19,7 @@ public interface UniformDataSourceProvider<T extends DataSource<?>> extends Data
         try {
             return (T) getSourceClass().getDeclaredConstructors()[0].newInstance(input);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new AssertionError(e);
+            throw new ExtensionException(e);
         }
     }
 }

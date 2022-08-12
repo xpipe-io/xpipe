@@ -13,7 +13,6 @@ module io.xpipe.extension {
     requires javafx.graphics;
     requires transitive javafx.controls;
     requires io.xpipe.fxcomps;
-    requires static org.apache.commons.collections4;
     requires static lombok;
     requires static com.dlsc.preferencesfx;
     requires static com.dlsc.formsfx;

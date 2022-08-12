@@ -20,8 +20,8 @@ module io.xpipe.core {
     opens io.xpipe.core.data.typed;
     opens io.xpipe.core.dialog;
 
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires static com.fasterxml.jackson.core;
+    requires static com.fasterxml.jackson.databind;
     requires java.net.http;
     requires static lombok;
 

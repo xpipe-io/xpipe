@@ -1,6 +1,7 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.event.ErrorEvent;
 
 import java.net.URI;
@@ -51,6 +52,11 @@ public class DataStoreProviders {
         }
 
         return ALL.stream().map(d -> d.dialogForString(s)).filter(Objects::nonNull).findAny();
+    }
+
+
+    public static <T extends DataStoreProvider> T byStore(DataStore store) {
+        return byStoreClass(store.getClass());
     }
 
     @SuppressWarnings("unchecked")

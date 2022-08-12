@@ -24,3 +24,7 @@ archivesBaseName = 'core'
 repositories {
     mavenCentral()
 }
+
+dependencies{
+    compileOnly 'org.apache.commons:commons-exec:1.3'
+}

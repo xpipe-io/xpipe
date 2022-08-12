@@ -4,3 +4,12 @@ include 'api'
 include 'core'
 include 'beacon'
 include 'extension'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+    }
+}

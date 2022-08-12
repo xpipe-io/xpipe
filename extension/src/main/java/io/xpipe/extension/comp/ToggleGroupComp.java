@@ -9,20 +9,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
-import org.apache.commons.collections4.BidiMap;
+
+import java.util.Map;
 
 public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
 
     private final Property<T> value;
-    private final BidiMap<T, ObservableValue<String>> range;
+    private final Map<T, ObservableValue<String>> range;
 
-    public ToggleGroupComp(Property<T> value, BidiMap<T, ObservableValue<String>> range) {
+    public ToggleGroupComp(Property<T> value, Map<T, ObservableValue<String>> range) {
         this.value = value;
         this.range = range;
-    }
-
-    public BidiMap<T, ObservableValue<String>> getRange() {
-        return range;
     }
 
     @Override

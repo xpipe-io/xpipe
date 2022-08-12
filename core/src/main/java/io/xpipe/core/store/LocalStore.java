@@ -1,33 +1,39 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.Secret;
 import lombok.Value;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @JsonTypeName("local")
 @Value
-public class LocalStore implements ShellProcessStore {
+public class LocalStore extends StandardShellStore implements MachineFileStore {
 
+    @Override
+    public boolean isLocal() {
+        return true;
+    }
 
     static class LocalProcessControl extends ProcessControl {
 
-        private final InputStream input;
+        private final List<Secret> input;
         private final ProcessBuilder builder;
+        private final Integer timeout;
 
         private Process process;
 
-        LocalProcessControl(InputStream input, List<String> cmd) {
+        LocalProcessControl(List<Secret> input, List<String> cmd, Integer timeout) {
             this.input = input;
+            this.timeout = timeout;
             var l = new ArrayList<String>();
             l.add("cmd");
             l.add("/c");
@@ -35,13 +41,19 @@ public class LocalStore implements ShellProcessStore {
             builder = new ProcessBuilder(l);
         }
 
+        private InputStream createInputStream() {
+            var string = input.stream().map(secret -> secret.getSecretValue()).collect(Collectors.joining("\n")) + "\r\n";
+            return new ByteArrayInputStream(string.getBytes(StandardCharsets.US_ASCII));
+        }
+
         @Override
         public void start() throws IOException {
             process = builder.start();
 
             var t = new Thread(() -> {
-                try {
-                    input.transferTo(process.getOutputStream());
+                try (var inputStream = createInputStream()){
+                    process.getOutputStream().flush();
+                    inputStream.transferTo(process.getOutputStream());
                     process.getOutputStream().close();
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
@@ -53,7 +65,11 @@ public class LocalStore implements ShellProcessStore {
 
         @Override
         public int waitFor() throws Exception {
-            return process.waitFor();
+            if (timeout != null) {
+                return process.waitFor(timeout, TimeUnit.SECONDS) ? 0 : -1;
+            } else {
+                return process.waitFor();
+            }
         }
 
         @Override
@@ -68,7 +84,11 @@ public class LocalStore implements ShellProcessStore {
 
         @Override
         public Charset getCharset() {
-            return StandardCharsets.UTF_8;
+            return StandardCharsets.US_ASCII;
+        }
+
+        public Integer getTimeout() {
+            return timeout;
         }
     }
 
@@ -78,8 +98,8 @@ public class LocalStore implements ShellProcessStore {
     }
 
     @Override
-    public String toDisplay() {
-        return "local";
+    public String toSummaryString() {
+        return "localhost";
     }
 
     @Override
@@ -95,17 +115,17 @@ public class LocalStore implements ShellProcessStore {
     }
 
     @Override
-    public ProcessControl prepareCommand(InputStream input, List<String> cmd) {
-        return new LocalProcessControl(input, cmd);
+    public ProcessControl prepareCommand(List<Secret> input, List<String> cmd, Integer timeout) {
+        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeout));
     }
 
     @Override
-    public ProcessControl preparePrivilegedCommand(InputStream input, List<String> cmd) throws Exception {
-        return new LocalProcessControl(input, cmd);
+    public ProcessControl preparePrivilegedCommand(List<Secret> input, List<String> cmd, Integer timeOut) throws Exception {
+        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeOut));
     }
 
     @Override
-    public ShellType determineType() {
-        return ShellTypes.CMD;
+    public ShellType determineType() throws Exception {
+        return ShellTypes.determine(this);
     }
 }

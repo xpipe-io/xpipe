@@ -5,6 +5,8 @@ import io.xpipe.api.DataTable;
 import io.xpipe.api.DataTableAccumulator;
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.api.util.TypeDescriptor;
+import io.xpipe.beacon.BeaconException;
+import io.xpipe.beacon.exchange.ReadExchange;
 import io.xpipe.beacon.exchange.StoreStreamExchange;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
@@ -14,6 +16,7 @@ import io.xpipe.core.data.typed.TypedDataStreamWriter;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -23,25 +26,35 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
     private final TupleType type;
     private int rows;
     private TupleType writtenDescriptor;
+    private OutputStream bodyOutput;
 
     public DataTableAccumulatorImpl(TupleType type) {
         this.type = type;
         connection = XPipeConnection.open();
         connection.sendRequest(StoreStreamExchange.Request.builder().build());
-        connection.sendBody();
+        bodyOutput = connection.sendBody();
     }
 
     @Override
     public synchronized DataTable finish(DataSourceId id) {
-        connection.withOutputStream(OutputStream::close);
+        try {
+            bodyOutput.close();
+        } catch (IOException e) {
+            throw new BeaconException(e);
+        }
+
         StoreStreamExchange.Response res = connection.receiveResponse();
         connection.close();
 
-//        var req = ReadExecuteExchange.Request.builder()
-//                .target(id).dataStore(res.getStore()).build();
-//        XPipeConnection.execute(con -> {
-//            con.performSimpleExchange(req);
-//        });
+        var req = ReadExchange.Request.builder()
+                .target(id).store(res.getStore()).provider("xpbt").configureAll(false).build();
+        ReadExchange.Response response = XPipeConnection.execute(con -> {
+            return con.performSimpleExchange(req);
+        });
+
+        var configInstance = response.getConfig();
+        XPipeConnection.finishDialog(configInstance);
+
         return DataSource.get(DataSourceReference.id(id)).asTable();
     }
 

@@ -1,7 +1,9 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.xpipe.core.util.Secret;
+
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -10,28 +12,28 @@ import java.util.List;
 public class ShellTypes {
 
     public static StandardShellStore.ShellType determine(ShellStore store) throws Exception {
-        var o = store.executeAndCheckOut(InputStream.nullInputStream(), List.of("echo", "$0"));
-        if (o.isPresent() && !o.get().equals("$0")) {
+        var o = store.executeAndCheckOut(List.of(), List.of("echo", "$0"), null).strip();
+        if (!o.equals("$0")) {
             return SH;
         } else {
-            o = store.executeAndCheckOut(InputStream.nullInputStream(), List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"));
-            if (o.isPresent() && o.get().equals("PowerShell")) {
+            o = store.executeAndCheckOut(List.of(), List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"), null).trim();
+            if (o.equals("PowerShell")) {
                 return POWERSHELL;
-            } else {
+            } else
                 return CMD;
             }
         }
-    }
 
     public static StandardShellStore.ShellType[] getAvailable(ShellStore store) throws Exception {
-        var o = store.executeAndCheckOut(InputStream.nullInputStream(), List.of("echo", "$0"));
-        if (o.isPresent() && !o.get().trim().equals("$0")) {
+        var o = store.executeAndCheckOut(List.of(), List.of("echo", "$0"), null);
+        if (!o.trim().equals("$0")) {
             return getLinuxShells();
         } else {
             return getWindowsShells();
         }
     }
 
+    @JsonProperty("powershell")
     public static final StandardShellStore.ShellType POWERSHELL = new StandardShellStore.ShellType() {
 
         @Override
@@ -70,8 +72,14 @@ public class ShellTypes {
         public String getDisplayName() {
             return "PowerShell";
         }
+
+        @Override
+        public List<String> getOperatingSystemNameCommand() {
+            return List.of("systeminfo", "|", "findstr", "/B", "/C:\"OS Name\"");
+        }
     };
 
+    @JsonProperty("cmd")
     public static final StandardShellStore.ShellType CMD = new StandardShellStore.ShellType() {
 
         @Override
@@ -83,9 +91,9 @@ public class ShellTypes {
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(ShellStore st, InputStream in, List<String> cmd, String pw) throws Exception {
+        public ProcessControl prepareElevatedCommand(ShellStore st, List<Secret> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             var l = List.of("net", "session", ";", "if", "%errorLevel%", "!=", "0");
-            return st.prepareCommand(InputStream.nullInputStream(), l);
+            return st.prepareCommand(List.of(), l, timeout);
         }
 
         @Override
@@ -117,8 +125,14 @@ public class ShellTypes {
         public String getDisplayName() {
             return "cmd.exe";
         }
+
+        @Override
+        public List<String> getOperatingSystemNameCommand() {
+            return List.of("Get-ComputerInfo");
+        }
     };
 
+    @JsonProperty("sh")
     public static final StandardShellStore.ShellType SH = new StandardShellStore.ShellType() {
 
         @Override
@@ -127,12 +141,12 @@ public class ShellTypes {
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(ShellStore st, InputStream in, List<String> cmd, String pw) throws Exception {
+        public ProcessControl prepareElevatedCommand(ShellStore st, List<Secret> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             var l = new ArrayList<>(cmd);
             l.add(0, "sudo");
             l.add(1, "-S");
             var pws = new ByteArrayInputStream(pw.getBytes(getCharset()));
-            return st.prepareCommand(pws, l);
+            return st.prepareCommand(List.of(Secret.createForSecretValue(pw)), l, timeout);
         }
 
         @Override
@@ -163,6 +177,11 @@ public class ShellTypes {
         @Override
         public String getDisplayName() {
             return "/bin/sh";
+        }
+
+        @Override
+        public List<String> getOperatingSystemNameCommand() {
+            return List.of("uname", "-o");
         }
     };
 

@@ -33,7 +33,7 @@ public final class NamedStore implements DataStore {
     }
 
     @Override
-    public String toDisplay() {
+    public String toSummaryString() {
         throw new UnsupportedOperationException();
     }
 

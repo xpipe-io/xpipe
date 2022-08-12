@@ -5,8 +5,8 @@ def canonicalVersion = file('misc/canonical_version').text
 
 jreleaser {
     environment {
-        properties.put('rawChangelog', file("misc/changelogs/${canonicalVersion}.txt").exists() ?
-                file("misc/changelogs/${canonicalVersion}.txt").text.replace('\r\n', '\n') : "")
+        properties.put('rawChangelog', file("misc/changelogs/${version}.txt").exists() ?
+                file("misc/changelogs/${version}.txt").text.replace('\r\n', '\n') : "")
     }
 
     project {

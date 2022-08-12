@@ -7,6 +7,7 @@ plugins {
 
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/junit.gradle"
+apply from: "$rootDir/deps/jackson.gradle"
 apply from: 'publish.gradle'
 apply from: "$rootDir/deps/publish-base.gradle"
 
@@ -19,16 +20,16 @@ repositories {
 }
 
 test {
-    enabled = false
+    enabled = true
 }
 
 dependencies {
-    // Fix warnings about missing annotations
-    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
-    testCompileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
-
     implementation project(':core')
     implementation project(':beacon')
+}
+
+configurations {
+    testImplementation.extendsFrom(dep)
 }
 
 def canTestWithDev = findProject(':app') != null
@@ -52,7 +53,7 @@ test {
             " -Dio.xpipe.app.logLevel=trace"
 
     // API properties
-    // systemProperty 'io.xpipe.beacon.debugOutput', "true"
+    systemProperty 'io.xpipe.beacon.debugOutput', "true"
     systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
     systemProperty "io.xpipe.beacon.port", "21722"
 }

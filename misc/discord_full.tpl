@@ -2,10 +2,7 @@
 
 🚀 {{projectName}} {{projectVersion}} has been released: {{releaseNotesUrl}}
 
-If you have already installed {{projectName}} and have updates enabled,
-this update will be automatically installed when launching it the next time.
-
-You can get the standalone version here: {{releaseNotesUrl}}
+The documentation and maven repositories should be automatically updated within the next couple of hours.
 
 Changes in {{projectVersion}}:
 {{{rawChangelog}}}

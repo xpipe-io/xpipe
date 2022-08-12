@@ -10,12 +10,12 @@ import java.util.function.Supplier;
 
 /**
  * A Dialog is a sequence of questions and answers.
- *
+ * <p>
  * The dialogue API is only used for the command line interface.
  * Therefore, the actual implementation is handled by the command line component.
  * This API provides a way of creating server-side dialogues which makes
  * it possible to create extensions that provide a commandline configuration component.
- *
+ * <p>
  * When a Dialog is completed, it can also be optionally evaluated to a value, which can be queried by calling {@link #getResult()}.
  * The evaluation function can be set with {@link #evaluateTo(Supplier)}.
  * Alternatively, a dialogue can also copy the evaluation function of another dialogue with {@link #evaluateTo(Dialog)}.
@@ -74,9 +74,9 @@ public abstract class Dialog {
      * Creates a choice dialogue.
      *
      * @param description the shown question description
-     * @param elements the available elements to choose from
-     * @param required signals whether a choice is required or can be left empty
-     * @param selected the selected element index
+     * @param elements    the available elements to choose from
+     * @param required    signals whether a choice is required or can be left empty
+     * @param selected    the selected element index
      */
     public static Dialog.Choice choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
         Dialog.Choice c = new Dialog.Choice(description, elements, required, selected);
@@ -88,10 +88,10 @@ public abstract class Dialog {
      * Creates a choice dialogue from a set of objects.
      *
      * @param description the shown question description
-     * @param toString a function that maps the objects to a string
-     * @param required signals whether choices required or can be left empty
-     * @param def the element which is selected by default
-     * @param vals the range of possible elements
+     * @param toString    a function that maps the objects to a string
+     * @param required    signals whether choices required or can be left empty
+     * @param def         the element which is selected by default
+     * @param vals        the range of possible elements
      */
     @SafeVarargs
     public static <T> Dialog.Choice choice(String description, Function<T, String> toString, boolean required, T def, T... vals) {
@@ -133,7 +133,7 @@ public abstract class Dialog {
             return element;
         }
 
-        private  <T> T getConvertedValue() {
+        private <T> T getConvertedValue() {
             return element.getConvertedValue();
         }
     }
@@ -142,13 +142,13 @@ public abstract class Dialog {
      * Creates a simple query dialogue.
      *
      * @param description the shown question description
-     * @param newLine signals whether the query should be done on a new line or not
-     * @param required signals whether the query can be left empty or not
-     * @param quiet signals whether the user should be explicitly queried for the value.
-     *              In case the user is not queried, a value can still be set using the command line arguments
-     *              that allow to set the specific value for a configuration query parameter
-     * @param value the default value
-     * @param converter the converter
+     * @param newLine     signals whether the query should be done on a new line or not
+     * @param required    signals whether the query can be left empty or not
+     * @param quiet       signals whether the user should be explicitly queried for the value.
+     *                    In case the user is not queried, a value can still be set using the command line arguments
+     *                    that allow to set the specific value for a configuration query parameter
+     * @param value       the default value
+     * @param converter   the converter
      */
     public static <T> Dialog.Query query(String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter) {
         var q = new <T>Dialog.Query(description, newLine, required, quiet, value, converter, false);
@@ -197,7 +197,8 @@ public abstract class Dialog {
                 if (currentElement == null) {
                     DialogElement next = null;
                     while (current < ds.length - 1 && (next = ds[++current].start()) == null) {
-                    };
+                    }
+                    ;
                     return next;
                 }
 
@@ -378,10 +379,10 @@ public abstract class Dialog {
      * Creates a dialogue that will fork the control flow.
      *
      * @param description the shown question description
-     * @param elements the available elements to choose from
-     * @param required signals whether a choice is required or not
-     * @param selected the index of the element that is selected by default
-     * @param c the dialogue index mapping function
+     * @param elements    the available elements to choose from
+     * @param required    signals whether a choice is required or not
+     * @param selected    the index of the element that is selected by default
+     * @param c           the dialogue index mapping function
      */
     public static Dialog fork(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected, Function<Integer, Dialog> c) {
         var choice = new ChoiceElement(description, elements, required, selected);
@@ -424,7 +425,7 @@ public abstract class Dialog {
     public abstract DialogElement start() throws Exception;
 
     public Dialog evaluateTo(Dialog d) {
-        evaluation = () -> d.evaluation.get();
+        evaluation = () -> d.evaluation != null ? d.evaluation.get() : null;
         return this;
     }
 

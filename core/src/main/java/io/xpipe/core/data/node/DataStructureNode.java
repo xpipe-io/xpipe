@@ -86,7 +86,7 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     }
 
     public boolean isNull() {
-        throw unsupported("null check");
+        return false;
     }
 
     public final ValueNode asValue() {

@@ -10,7 +10,6 @@ import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 
 import java.io.InputStream;
-import java.util.Map;
 
 public abstract class DataSourceImpl implements DataSource {
 
@@ -19,29 +18,30 @@ public abstract class DataSourceImpl implements DataSource {
             var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
             QueryDataSourceExchange.Response res = con.performSimpleExchange(req);
             var config = new DataSourceConfig(res.getProvider(), res.getConfig());
-            switch (res.getInfo().getType()) {
+            return switch (res.getInfo().getType()) {
                 case TABLE -> {
                     var data = res.getInfo().asTable();
-                    return new DataTableImpl(res.getId(), config, data);
+                    yield new DataTableImpl(res.getId(), config, data);
                 }
                 case STRUCTURE -> {
                     var info = res.getInfo().asStructure();
-                    return new DataStructureImpl(res.getId(), config, info);
+                    yield new DataStructureImpl(res.getId(), config, info);
                 }
                 case TEXT -> {
                     var info = res.getInfo().asText();
-                    return new DataTextImpl(res.getId(), config, info);
+                    yield new DataTextImpl(res.getId(), config, info);
                 }
                 case RAW -> {
                     var info = res.getInfo().asRaw();
-                    return new DataRawImpl(res.getId(), config, info);
+                    yield new DataRawImpl(res.getId(), config, info);
                 }
-            }
-            throw new AssertionError();
+                case COLLECTION -> throw new UnsupportedOperationException("Unimplemented case: " + res.getInfo().getType());
+                default -> throw new IllegalArgumentException("Unexpected value: " + res.getInfo().getType());
+            };
         });
     }
 
-    public static DataSource create(DataSourceId id, String type, Map<String,String> config, InputStream in) {
+    public static DataSource create(DataSourceId id, String type, InputStream in) {
         var res = XPipeConnection.execute(con -> {
             var req = StoreStreamExchange.Request.builder().build();
             StoreStreamExchange.Response r = con.performOutputExchange(req, out -> in.transferTo(out));
@@ -53,6 +53,8 @@ public abstract class DataSourceImpl implements DataSource {
         var startReq = ReadExchange.Request.builder()
                 .provider(type)
                 .store(store)
+                .target(id)
+                .configureAll(false)
                 .build();
         var startRes = XPipeConnection.execute(con -> {
             ReadExchange.Response r = con.performSimpleExchange(startReq);
@@ -60,13 +62,8 @@ public abstract class DataSourceImpl implements DataSource {
         });
 
         var configInstance = startRes.getConfig();
-        //TODO
-//        configInstance.getConfigInstance().getCurrentValues().putAll(config);
-//        var endReq = ReadExecuteExchange.Request.builder()
-//                .target(id).dataStore(store).config(configInstance).build();
-//        XPipeConnection.execute(con -> {
-//            con.performSimpleExchange(endReq);
-//        });
+        XPipeConnection.finishDialog(configInstance);
+
         var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
         return get(ref);
     }

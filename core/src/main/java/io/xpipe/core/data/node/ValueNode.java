@@ -106,4 +106,10 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public abstract byte[] getRawData();
+
+    @Override
+    public boolean isNull() {
+        return getRawData() == null;
+    }
+
 }

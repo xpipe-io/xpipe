@@ -25,7 +25,10 @@ public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
 
         for (var e : entries) {
             Tab tab = new Tab();
-            var ll = new Label(null, new FontIcon(e.graphic()));
+            var ll = new Label(null);
+            if (e.graphic != null) {
+                ll.setGraphic(new FontIcon(e.graphic()));
+            }
             ll.textProperty().bind(e.name());
             ll.getStyleClass().add("name");
             ll.setAlignment(Pos.CENTER);

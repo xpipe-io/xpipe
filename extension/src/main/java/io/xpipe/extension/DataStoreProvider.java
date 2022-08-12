@@ -1,10 +1,7 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.MachineFileStore;
-import io.xpipe.core.store.ShellStore;
-import io.xpipe.core.store.StreamDataStore;
+import io.xpipe.core.store.*;
 import javafx.beans.property.Property;
 
 import java.net.URI;
@@ -35,8 +32,13 @@ public interface DataStoreProvider {
         throw new ExtensionException("Gui Dialog is not implemented by provider " + getId());
     }
 
-    default void init() throws Exception {
+    default boolean init() throws Exception {
+        return true;
     }
+
+    String queryInformationString(DataStore store, int length) throws Exception;
+
+    public String toSummaryString(DataStore store, int length);
 
     default boolean isHidden() {
         return false;
@@ -81,7 +83,7 @@ public interface DataStoreProvider {
     }
 
     default String display(DataStore store) {
-        return store.toDisplay();
+        return store.toSummaryString();
     }
 
     List<String> getPossibleNames();

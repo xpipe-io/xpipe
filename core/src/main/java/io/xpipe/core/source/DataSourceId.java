@@ -32,6 +32,11 @@ public class DataSourceId {
         this.entryName = entryName;
     }
 
+    public static String cleanString(String input) {
+        var replaced = input.replaceAll(":", "");
+        return replaced.length() == 0 ? "-" : replaced;
+    }
+
     /**
      * Creates a new data source id from a collection name and an entry name.
      *

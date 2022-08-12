@@ -15,7 +15,7 @@ import java.util.Map;
 
 public interface DataSourceProvider<T extends DataSource<?>> {
 
-    static enum GeneralType {
+    static enum Category {
         FILE,
         DATABASE;
     }
@@ -25,13 +25,13 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         getSourceClass();
     }
 
-    default GeneralType getGeneralType() {
+    default Category getGeneralType() {
         if (getFileProvider() != null) {
-            return GeneralType.FILE;
+            return Category.FILE;
         }
 
         if (getDatabaseProvider() != null) {
-            return GeneralType.DATABASE;
+            return Category.DATABASE;
         }
 
         throw new ExtensionException("Provider has no general type");
@@ -56,7 +56,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getId() + "." + key;
     }
 
-    default Region createConfigGui(Property<T> source) {
+    default Region createConfigGui(Property<T> source, Property<T> appliedSource) {
         return null;
     }
 

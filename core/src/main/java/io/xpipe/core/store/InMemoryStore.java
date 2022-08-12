@@ -37,7 +37,7 @@ public class InMemoryStore implements StreamDataStore {
     }
 
     @Override
-    public String toDisplay() {
+    public String toSummaryString() {
         return "inMemory";
     }
 }

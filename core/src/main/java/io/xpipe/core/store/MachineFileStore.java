@@ -5,9 +5,10 @@ import java.io.OutputStream;
 
 public interface MachineFileStore extends DataStore {
 
-    static MachineFileStore local() {
-         return new LocalStore();
+    default boolean isLocal(){
+        return false;
     }
+
 
     InputStream openInput(String file) throws Exception;
 

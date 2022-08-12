@@ -11,7 +11,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import net.synedra.validatorfx.Check;
-import org.apache.commons.collections4.bidimap.DualLinkedHashBidiMap;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ public class DynamicOptionsBuilder<T> {
 
     private final  List<DynamicOptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
+    private final List<Property<?>> lazyProperties = new ArrayList<>();
 
     private final ObservableValue<String> title;
     private final boolean wrap;
@@ -43,7 +43,15 @@ public class DynamicOptionsBuilder<T> {
         this.title = title;
     }
 
+    public DynamicOptionsBuilder<T> makeLazy() {
+        var p = props.get(props.size() - 1);
+        props.remove(p);
+        lazyProperties.add(p);
+        return this;
+    }
+
     public DynamicOptionsBuilder<T> decorate(Check c) {
+
         entries.get(entries.size() - 1).comp().apply(s -> c.decorates(s.get()));
         return this;
     }
@@ -59,28 +67,42 @@ public class DynamicOptionsBuilder<T> {
         for (var e : NewLine.values()) {
             map.put(e, I18n.observable("extension." + e.getId()));
         }
-        var comp = new ChoiceComp<>(prop, new DualLinkedHashBidiMap<>(map));
+        var comp = new ChoiceComp<>(prop,map);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable("extension.newLine"), comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder<T> addCharacter(Property<Character> prop, ObservableValue<String> name, Map<Character, ObservableValue<String>> names) {
-        var comp = new CharChoiceComp(prop, new DualLinkedHashBidiMap<>(names), null);
+        var comp = new CharChoiceComp(prop, names, null);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder<T> addCharacter(Property<Character> prop, ObservableValue<String> name, Map<Character, ObservableValue<String>> names, ObservableValue<String> customName) {
-        var comp = new CharChoiceComp(prop, new DualLinkedHashBidiMap<>(names), customName);
+        var comp = new CharChoiceComp(prop, names, customName);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
     }
 
     public <V> DynamicOptionsBuilder<T> addToggle(Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
-        var comp = new ToggleGroupComp<>(prop, new DualLinkedHashBidiMap<>(names));
+        var comp = new ToggleGroupComp<>(prop, names);
+        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        props.add(prop);
+        return this;
+    }
+
+    public <V> DynamicOptionsBuilder<T> addChoice(Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
+        var comp = new ChoiceComp<>(prop, names);
+        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        props.add(prop);
+        return this;
+    }
+
+    public <V> DynamicOptionsBuilder<T> addChoice(Property<V> prop, ObservableValue<String> name, ObservableValue<Map<V, ObservableValue<String>>> names) {
+        var comp = new ChoiceComp<>(prop, names);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
@@ -107,6 +129,14 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
+    public DynamicOptionsBuilder<T> addLazyString(String nameKey, Property<String> prop, Property<String> lazy) {
+        var comp = new TextFieldComp(prop, lazy);
+        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        props.add(prop);
+        lazyProperties.add(lazy);
+        return this;
+    }
+
     public DynamicOptionsBuilder<T> addString(ObservableValue<String> name, Property<String> prop) {
         var comp = new TextFieldComp(prop);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
@@ -118,6 +148,10 @@ public class DynamicOptionsBuilder<T> {
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
+    }
+
+    public DynamicOptionsBuilder<T> addSecret(String nameKey, Property<Secret> prop) {
+        return addSecret(I18n.observable(nameKey), prop);
     }
 
     public DynamicOptionsBuilder<T> addSecret(ObservableValue<String> name, Property<Secret> prop) {
@@ -134,20 +168,61 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public <V extends T> Comp<?> buildComp(Supplier<V> creator, Property<T> toSet) {
+    public DynamicOptionsBuilder<T> addInteger(String nameKey, Property<Integer> prop) {
+        var comp = new IntFieldComp(prop);
+        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        props.add(prop);
+        return this;
+    }
+
+    @SafeVarargs
+    public final <V extends T> DynamicOptionsBuilder<T> bind(Supplier<V> creator, Property<T>... toSet) {
         props.forEach(prop -> {
-            prop.addListener((c,o,n) -> {
-                toSet.setValue(creator.get());
+            prop.addListener((c, o, n) -> {
+                for (Property<T> p : toSet) {
+                    p.setValue(creator.get());
+                }
             });
         });
-        toSet.setValue(creator.get());
+        for (Property<T> p : toSet) {
+            p.setValue(creator.get());
+        }
+        return this;
+    }
+
+    public <V extends T> DynamicOptionsBuilder<T> bindLazy(Supplier<V> creator, Property<T> toLazySet) {
+        lazyProperties.forEach(prop -> {
+            prop.addListener((c,o,n) -> {
+                toLazySet.setValue(creator.get());
+            });
+        });
+        toLazySet.setValue(creator.get());
+
+        return this;
+    }
+
+    public <V extends T> Comp<?> buildComp() {
         if (title != null) {
             entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
         }
         return new DynamicOptionsComp(entries, wrap);
     }
 
-    public <V extends T> Region build(Supplier<V> creator, Property<T> toSet) {
-        return buildComp(creator, toSet).createRegion();
+    public <V extends T> Comp<?> buildBindingComp(Supplier<Property<? extends V>> creator, Property<T> toSet) {
+        props.forEach(prop -> {
+            prop.addListener((c,o,n) -> {
+                toSet.unbind();
+                toSet.bind(creator.get());
+            });
+        });
+        toSet.bind(creator.get());
+        if (title != null) {
+            entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
+        }
+        return new DynamicOptionsComp(entries, wrap);
+    }
+
+    public <V extends T> Region build() {
+        return buildComp().createRegion();
     }
 }

@@ -41,11 +41,15 @@ public interface DataStore {
 
     /**
      * Creates a display string of this store.
-     * This can be a multiline string.
      */
-    default String toDisplay() {
+    default String toSummaryString() {
         return null;
     }
+
+    default String queryInformationString() throws Exception {
+        return null;
+    }
+
 
     /**
      * Casts this instance to the required type without checking whether a cast is possible.

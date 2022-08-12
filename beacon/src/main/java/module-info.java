@@ -15,8 +15,8 @@ module io.xpipe.beacon {
     opens io.xpipe.beacon.exchange.data;
     opens io.xpipe.beacon.exchange.cli;
 
-    requires com.fasterxml.jackson.core;
-    requires com.fasterxml.jackson.databind;
+    requires static com.fasterxml.jackson.core;
+    requires static com.fasterxml.jackson.databind;
     requires transitive io.xpipe.core;
     requires static lombok;
 

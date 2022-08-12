@@ -33,6 +33,11 @@ public class ErrorEvent {
                 .description(msg);
     }
 
+    public static ErrorEventBuilder fromMessage(String msg) {
+        return builder()
+                .description(msg);
+    }
+
     public void handle() {
         EventHandler.get().handle(this);
     }

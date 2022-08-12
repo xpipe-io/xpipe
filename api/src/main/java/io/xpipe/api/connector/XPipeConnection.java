@@ -1,6 +1,8 @@
 package io.xpipe.api.connector;
 
 import io.xpipe.beacon.*;
+import io.xpipe.beacon.exchange.cli.DialogExchange;
+import io.xpipe.core.dialog.DialogReference;
 import io.xpipe.core.util.JacksonHelper;
 
 import java.util.Optional;
@@ -11,6 +13,22 @@ public final class XPipeConnection extends BeaconConnection {
         var con = new XPipeConnection();
         con.constructSocket();
         return con;
+    }
+
+    public static void finishDialog(DialogReference reference) {
+        try (var con = new XPipeConnection()) {
+            con.constructSocket();
+            while (true) {
+                DialogExchange.Response response = con.performSimpleExchange(DialogExchange.Request.builder().dialogKey(reference.getDialogId()).build());
+                if (response.getElement() == null) {
+                    break;
+                }
+            }
+        } catch (BeaconException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BeaconException(e);
+        }
     }
 
     public static void execute(Handler handler) {
@@ -74,7 +92,7 @@ public final class XPipeConnection extends BeaconConnection {
     }
 
     public static Optional<BeaconClient> waitForStartup() {
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 80; i++) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ignored) {
