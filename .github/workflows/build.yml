@@ -1,6 +1,6 @@
-name: API Build
+name: Build
 
-on: []
+on: [push, pull_request]
 
 jobs:
   build:
@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
@@ -28,4 +30,4 @@ jobs:
         uses: gradle/wrapper-validation-action@v1
 
       - name: Execute build
-        run: ./gradlew :api:clean :api:build
+        run: ./gradlew clean build

@@ -1,0 +1,38 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+
+      - name: Set up GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '21.3.0'
+          java-version: '17'
+
+      - name: Verify Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Publish
+        run: ./gradlew publish
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_KEY: ${{ secrets.GPG_KEY }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+
+      - name: JReleaser
+        run: ./gradlew jreleaserRelease jreleaserAnnounce
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          JRELEASER_DISCORD_WEBHOOK: ${{ secrets.JRELEASER_DISCORD_WEBHOOK }}
