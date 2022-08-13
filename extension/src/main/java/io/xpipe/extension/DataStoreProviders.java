@@ -4,7 +4,6 @@ import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.event.ErrorEvent;
 
-import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -19,11 +18,12 @@ public class DataStoreProviders {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
                     .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
-            ALL.forEach(p -> {
+            ALL.removeIf(p -> {
                 try {
-                    p.init();
+                    return !p.init();
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).handle();
+                    return true;
                 }
             });
         }
@@ -38,13 +38,6 @@ public class DataStoreProviders {
                 .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
     }
 
-    public static Optional<Dialog> byURI(URI uri) {
-        if (ALL == null) {
-            throw new IllegalStateException("Not initialized");
-        }
-
-        return ALL.stream().map(d -> d.dialogForURI(uri)).filter(Objects::nonNull).findAny();
-    }
 
     public static Optional<Dialog> byString(String s) {
         if (ALL == null) {
@@ -56,17 +49,16 @@ public class DataStoreProviders {
 
 
     public static <T extends DataStoreProvider> T byStore(DataStore store) {
-        return byStoreClass(store.getClass());
+        return (T) byStoreClass(store.getClass()).orElseThrow(() -> new IllegalArgumentException("Provider for " + store.getClass().getSimpleName() + " not found"));
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends DataStoreProvider> T byStoreClass(Class<?> c) {
+    public static <T extends DataStoreProvider> Optional<T> byStoreClass(Class<?> c) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Provider for " + c.getSimpleName() + " not found"));
+        return (Optional<T>) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny();
     }
 
     public static Set<DataStoreProvider> getAll() {

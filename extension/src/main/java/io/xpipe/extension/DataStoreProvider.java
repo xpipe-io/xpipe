@@ -1,10 +1,12 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.MachineFileStore;
+import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.StreamDataStore;
 import javafx.beans.property.Property;
 
-import java.net.URI;
 import java.util.List;
 
 public interface DataStoreProvider {
@@ -71,10 +73,6 @@ public interface DataStoreProvider {
     }
 
     default Dialog dialogForString(String s) {
-        return null;
-    }
-
-    default Dialog dialogForURI(URI uri) {
         return null;
     }
 
