@@ -34,5 +34,5 @@ jobs:
       - name: JReleaser
         run: ./gradlew jreleaserRelease jreleaserAnnounce
         env:
-          JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
-          JRELEASER_DISCORD_WEBHOOK: ${{ secrets.JRELEASER_DISCORD_WEBHOOK }}
+          XPIPE_GITHUB_TOKEN: ${{ secrets.XPIPE_GITHUB_TOKEN }}
+          XPIPE_DISCORD_WEBHOOK: ${{ secrets.XPIPE_DISCORD_WEBHOOK }}
