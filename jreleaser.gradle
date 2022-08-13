@@ -1,5 +1,4 @@
-def isPreRelease = project.version.endsWith('-pre')
-def isFullRelease = !isPreRelease && !project.version.endsWith('-SNAPSHOT')
+def isFullRelease = !project.version.endsWith('-SNAPSHOT')
 def proj = project
 
 jreleaser {
@@ -26,8 +25,8 @@ jreleaser {
 
     release {
         github {
-            skipRelease = !isFullRelease && !isPreRelease
-            skipTag = !isFullRelease && !isPreRelease
+            skipRelease = !isFullRelease
+            skipTag = !isFullRelease
             owner = 'xpipe-io'
             overwrite = false
             tagName = '{{projectVersion}}'
@@ -38,19 +37,6 @@ jreleaser {
             artifacts = true
             checksums = false
             signatures = false
-
-            // Always set a pre-release, as drafts do not fully work
-            prerelease {
-                enabled = true
-                pattern = '.*'
-            }
-
-            update {
-                enabled = true
-                section('ASSETS')
-                section('TITLE')
-                section('BODY')
-            }
 
             changelog {
                 enabled = true
