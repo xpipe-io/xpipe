@@ -1,6 +1,5 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/beacon/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/beacon)
 [![javadoc](https://javadoc.io/badge2/io.xpipe/beacon/javadoc.svg)](https://javadoc.io/doc/io.xpipe/beacon)
-[![Build Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/beacon.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/beacon.yml)
 
 ## X-Pipe Beacon
 

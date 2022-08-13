@@ -1,6 +1,9 @@
+[![Build Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/build.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/build.yml)
+[![Publish Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/publishb.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/publish.yml)
+
 ## X-Pipe Java
 
-The fundamental components of the [X-Pipe project]().
+The fundamental components of the [X-Pipe project](https://docs.xpipe.io).
 This repository contains the following four modules:
 
 - Core - Shared core classes of the Java API and the X-Pipe daemon implementation
@@ -12,7 +15,7 @@ This repository contains the following four modules:
 ## Installation / Usage
 
 The *core* and *extension* libraries are used in X-Pipe extension development.
-For setup instructions, see the [X-Pipe extension development]() section.
+For setup instructions, see the [X-Pipe extension development](https://xpipe-io.readthedocs.io/en/latest/dev/extensions.html) section.
 
 The *beacon* library handles all communication and serves as a
 reference when implementing an API or program that communicates with the X-Pipe daemon.
