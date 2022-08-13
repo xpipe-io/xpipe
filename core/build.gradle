@@ -9,8 +9,6 @@ apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 apply from: "$rootDir/deps/junit.gradle"
-apply from: 'publish.gradle'
-apply from: "$rootDir/deps/publish-base.gradle"
 
 configurations {
     compileOnly.extendsFrom(dep)
@@ -28,3 +26,6 @@ repositories {
 dependencies{
     compileOnly 'org.apache.commons:commons-exec:1.3'
 }
+
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/publish-base.gradle"

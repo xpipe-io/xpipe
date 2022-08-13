@@ -8,8 +8,6 @@ plugins {
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/junit.gradle"
 apply from: "$rootDir/deps/jackson.gradle"
-apply from: 'publish.gradle'
-apply from: "$rootDir/deps/publish-base.gradle"
 
 version = file('../misc/version').text
 group = 'io.xpipe'
@@ -57,3 +55,6 @@ test {
     systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
     systemProperty "io.xpipe.beacon.port", "21722"
 }
+
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/publish-base.gradle"

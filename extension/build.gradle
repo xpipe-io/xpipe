@@ -14,8 +14,6 @@ apply from: "$rootDir/deps/commons.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 apply from: "$rootDir/deps/ikonli.gradle"
 apply from: "$rootDir/deps/slf4j.gradle"
-apply from: 'publish.gradle'
-apply from: "$rootDir/deps/publish-base.gradle"
 
 configurations {
     compileOnly.extendsFrom(dep)
@@ -35,3 +33,6 @@ dependencies {
     implementation 'io.xpipe:fxcomps:0.2.1'
     implementation 'org.controlsfx:controlsfx:11.1.1'
 }
+
+apply from: 'publish.gradle'
+apply from: "$rootDir/deps/publish-base.gradle"
