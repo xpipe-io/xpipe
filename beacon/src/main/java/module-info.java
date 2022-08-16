@@ -22,6 +22,8 @@ module io.xpipe.beacon {
 
     uses MessageExchange;
     provides io.xpipe.beacon.exchange.MessageExchange with
+            EditStoreExchange,
+            StoreProviderListExchange,
             ListCollectionsExchange,
             ListEntriesExchange,
             ModeExchange,
@@ -45,7 +47,7 @@ module io.xpipe.beacon {
             RemoveCollectionExchange,
             RenameCollectionExchange,
             RenameEntryExchange,
-            ProviderListExchange,
+            SourceProviderListExchange,
             ConvertExchange,
             QueryRawDataExchange,
             QueryTableDataExchange,

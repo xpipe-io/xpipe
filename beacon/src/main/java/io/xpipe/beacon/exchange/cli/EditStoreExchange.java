@@ -1,35 +1,33 @@
 package io.xpipe.beacon.exchange.cli;
 
-import io.xpipe.beacon.exchange.MessageExchange;
-import io.xpipe.beacon.exchange.data.ProviderEntry;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
-import io.xpipe.core.source.DataSourceType;
+import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.core.dialog.DialogReference;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
-import java.util.Map;
-
-public class ProviderListExchange implements MessageExchange {
+public class EditStoreExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "providerList";
+        return "editEntry";
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Request implements RequestMessage {
+        @NonNull
+        String name;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull Map<DataSourceType, List<ProviderEntry>> entries;
+        @NonNull DialogReference dialog;
     }
 }

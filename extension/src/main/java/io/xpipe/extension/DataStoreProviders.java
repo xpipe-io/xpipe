@@ -44,7 +44,15 @@ public class DataStoreProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().map(d -> d.dialogForString(s)).filter(Objects::nonNull).findAny();
+        return ALL.stream().map(d -> {
+                    var store = d.storeForString(s);
+                    if (store != null) {
+                        return d.dialogForStore(store);
+                    } else {
+                        return null;
+                    }
+                }
+        ).filter(Objects::nonNull).findAny();
     }
 
 

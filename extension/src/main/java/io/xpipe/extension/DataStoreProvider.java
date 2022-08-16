@@ -72,11 +72,13 @@ public interface DataStoreProvider {
         return getModuleName() + ":" + getId() + "_icon.png";
     }
 
-    default Dialog dialogForString(String s) {
+    DataStore storeForString(String s);
+
+    default Dialog dialogForStore(DataStore store) {
         return null;
     }
 
-    default Dialog defaultDialog() {
+    default DataStore defaultStore() {
         throw new ExtensionException("CLI Dialog not implemented by provider");
     }
 

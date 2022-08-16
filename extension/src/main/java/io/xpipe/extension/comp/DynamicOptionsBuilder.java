@@ -201,14 +201,7 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public <V extends T> Comp<?> buildComp() {
-        if (title != null) {
-            entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
-        }
-        return new DynamicOptionsComp(entries, wrap);
-    }
-
-    public <V extends T> Comp<?> buildBindingComp(Supplier<Property<? extends V>> creator, Property<T> toSet) {
+    public final <V extends T> DynamicOptionsBuilder<T> bindChoice(Supplier<Property<? extends V>> creator,  Property<T> toSet) {
         props.forEach(prop -> {
             prop.addListener((c,o,n) -> {
                 toSet.unbind();
@@ -216,11 +209,16 @@ public class DynamicOptionsBuilder<T> {
             });
         });
         toSet.bind(creator.get());
+        return this;
+    }
+
+    public Comp<?> buildComp() {
         if (title != null) {
             entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
         }
         return new DynamicOptionsComp(entries, wrap);
     }
+
 
     public <V extends T> Region build() {
         return buildComp().createRegion();

@@ -36,4 +36,5 @@ module io.xpipe.extension {
     uses io.xpipe.extension.event.EventHandler;
     uses io.xpipe.extension.prefs.PrefsProvider;
     uses io.xpipe.extension.DataStoreProvider;
+    uses io.xpipe.extension.XPipeDaemon;
 }

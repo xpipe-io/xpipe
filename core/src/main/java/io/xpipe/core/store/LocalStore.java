@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -23,22 +22,19 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
         return true;
     }
 
-    static class LocalProcessControl extends ProcessControl {
+     class LocalProcessControl extends ProcessControl {
 
         private final List<Secret> input;
-        private final ProcessBuilder builder;
         private final Integer timeout;
+        private final List<String> command;
+        private Charset charset;
 
         private Process process;
 
         LocalProcessControl(List<Secret> input, List<String> cmd, Integer timeout) {
             this.input = input;
             this.timeout = timeout;
-            var l = new ArrayList<String>();
-            l.add("cmd");
-            l.add("/c");
-            l.addAll(cmd);
-            builder = new ProcessBuilder(l);
+            this.command = cmd;
         }
 
         private InputStream createInputStream() {
@@ -47,8 +43,12 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
         }
 
         @Override
-        public void start() throws IOException {
+        public void start() throws Exception {
+            var type = LocalStore.this.determineType();
+            var l = type.switchTo(command);
+            var builder = new ProcessBuilder(l);
             process = builder.start();
+            charset = type.getCharset();
 
             var t = new Thread(() -> {
                 try (var inputStream = createInputStream()){
@@ -84,7 +84,7 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
 
         @Override
         public Charset getCharset() {
-            return StandardCharsets.US_ASCII;
+            return charset;
         }
 
         public Integer getTimeout() {
@@ -126,6 +126,6 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
 
     @Override
     public ShellType determineType() throws Exception {
-        return ShellTypes.determine(this);
+        return ShellTypes.getDefault();
     }
 }
