@@ -6,8 +6,6 @@ import lombok.experimental.UtilityClass;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -18,17 +16,12 @@ import java.util.Optional;
 @UtilityClass
 public class BeaconServer {
 
-    private static boolean isPortAvailable(int port) {
-        try (var ignored = new ServerSocket(port); var ignored1 = new DatagramSocket(port)) {
+    public static boolean isRunning() {
+        try (var socket = new BeaconClient()) {
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             return false;
         }
-    }
-
-    public static boolean isRunning() {
-        var port = BeaconConfig.getUsedPort();
-        return !isPortAvailable(port);
     }
 
     private static void startFork(String custom) throws IOException {
@@ -72,14 +65,17 @@ public class BeaconServer {
         }, "daemon fork syserr").start();
     }
 
-    public static boolean tryStart() throws Exception {
+    public static boolean tryStartFork() throws Exception {
         var custom = BeaconConfig.getCustomExecCommand();
         if (custom != null) {
             System.out.println("Starting fork: " + custom);
             startFork(custom);
             return true;
         }
+        return false;
+    }
 
+    public static boolean tryStart() throws Exception {
         var daemonExecutable = getDaemonExecutable();
         if (daemonExecutable.isPresent()) {
             if (BeaconConfig.debugEnabled()) {
@@ -99,7 +95,7 @@ public class BeaconServer {
 
     public static boolean tryStop(BeaconClient client) throws Exception {
         client.sendRequest(StopExchange.Request.builder().build());
-        StopExchange.Response res =client.receiveResponse();
+        StopExchange.Response res = client.receiveResponse();
         return res.isSuccess();
     }
 

@@ -28,7 +28,6 @@ public interface TextReadConnection extends DataSourceReadConnection {
 
     default void forward(DataSourceConnection con) throws Exception {
         try (var tCon = (TextWriteConnection) con) {
-            tCon.init();
             for (var it = lines().iterator(); it.hasNext(); ) {
                 tCon.writeLine(it.next());
             }

@@ -30,7 +30,7 @@ public class BeaconConfig {
 
 
     public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
-    public static final int DEFAULT_PORT = 21721;
+    public static final int DEFAULT_PORT = System.getProperty("os.name").startsWith("Windows") ? 21721 : 21722;
 
     public static int getUsedPort() {
         if (System.getProperty(BEACON_PORT_PROP) != null) {

@@ -78,9 +78,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default DataStore defaultStore() {
-        throw new ExtensionException("CLI Dialog not implemented by provider");
-    }
+    DataStore defaultStore();
 
     default String display(DataStore store) {
         return store.toSummaryString();

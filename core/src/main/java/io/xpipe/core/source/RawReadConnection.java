@@ -18,7 +18,6 @@ public interface RawReadConnection extends DataSourceReadConnection {
 
     default void forward(DataSourceConnection con) throws Exception {
         try (var tCon = (RawWriteConnection) con) {
-            tCon.init();
             byte[] b;
             while ((b = readBytes(BUFFER_SIZE)).length > 0) {
                 tCon.write(b);

@@ -11,7 +11,6 @@ public interface StructureReadConnection extends DataSourceReadConnection {
 
     default void forward(DataSourceConnection con) throws Exception {
         try (var tCon = (StructureWriteConnection) con) {
-            tCon.init();
             tCon.write(read());
         }
     }
