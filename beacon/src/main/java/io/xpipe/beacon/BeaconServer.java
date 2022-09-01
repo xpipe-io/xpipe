@@ -4,7 +4,6 @@ import io.xpipe.beacon.exchange.StopExchange;
 import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +15,14 @@ import java.util.Optional;
 @UtilityClass
 public class BeaconServer {
 
+    public static void main(String[] args) throws Exception {
+        if (tryStartCustom() == null) {
+            if (tryStart() == null) {
+                System.exit(1);
+            }
+        }
+    }
+
     public static boolean isRunning() {
         try (var socket = new BeaconClient()) {
             return true;
@@ -24,26 +31,56 @@ public class BeaconServer {
         }
     }
 
-    private static void startFork(String custom) throws IOException {
-        boolean print = BeaconConfig.execDebugEnabled();
-        if (print) {
-            System.out.println("Executing custom daemon launch command: " + custom);
+    public static Process tryStartCustom() throws Exception {
+        var custom = BeaconConfig.getCustomDaemonCommand();
+        if (custom != null) {
+            var command = custom + " " + (BeaconConfig.getDaemonArguments() != null ?
+                    BeaconConfig.getDaemonArguments() :
+                    "");
+            Process process =  Runtime.getRuntime().exec(command);
+            printDaemonOutput(process, command);
+            return process;
         }
-        var proc = Runtime.getRuntime().exec(custom);
+        return null;
+    }
+
+    public static Process tryStart() throws Exception {
+        var daemonExecutable = getDaemonExecutable();
+        if (daemonExecutable.isPresent()) {
+            var command = "\"" + daemonExecutable.get() + "\" --external " + (BeaconConfig.getDaemonArguments() != null ?
+                    BeaconConfig.getDaemonArguments() :
+                    "");
+            // Tell daemon that we launched from an external tool
+            Process process =  Runtime.getRuntime().exec(command);
+            printDaemonOutput(process, command);
+            return process;
+        }
+
+        return null;
+    }
+
+    private static void printDaemonOutput(Process proc, String command) {
+        boolean print = BeaconConfig.printDaemonOutput();
+        if (print) {
+            System.out.println("Starting daemon: " + command);
+        }
+
+        if (!print) {
+            return;
+        }
+
         new Thread(null, () -> {
             try {
                 InputStreamReader isr = new InputStreamReader(proc.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
                 String line;
                 while ((line = br.readLine()) != null) {
-                    if (print) {
-                        System.out.println("[xpiped] " + line);
-                    }
+                    System.out.println("[xpiped] " + line);
                 }
             } catch (Exception ioe) {
                 ioe.printStackTrace();
             }
-        }, "daemon fork sysout").start();
+        }, "daemon sysout").start();
 
         new Thread(null, () -> {
             try {
@@ -51,46 +88,12 @@ public class BeaconServer {
                 BufferedReader br = new BufferedReader(isr);
                 String line;
                 while ((line = br.readLine()) != null) {
-                    if (print) {
-                        System.err.println("[xpiped] " + line);
-                    }
-                }
-                int exit = proc.waitFor();
-                if (exit != 0) {
-                    System.err.println("Daemon launch command failed");
+                    System.err.println("[xpiped] " + line);
                 }
             } catch (Exception ioe) {
                 ioe.printStackTrace();
             }
-        }, "daemon fork syserr").start();
-    }
-
-    public static boolean tryStartFork() throws Exception {
-        var custom = BeaconConfig.getCustomExecCommand();
-        if (custom != null) {
-            System.out.println("Starting fork: " + custom);
-            startFork(custom);
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean tryStart() throws Exception {
-        var daemonExecutable = getDaemonExecutable();
-        if (daemonExecutable.isPresent()) {
-            if (BeaconConfig.debugEnabled()) {
-                System.out.println("Starting daemon executable: " + daemonExecutable.get());
-            }
-
-            // Tell daemon that we launched from an external tool
-            new ProcessBuilder(daemonExecutable.get().toString(), "--external")
-                    .redirectErrorStream(true)
-                    .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                    .start();
-            return true;
-        }
-
-        return false;
+        }, "daemon syserr").start();
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {
@@ -99,40 +102,59 @@ public class BeaconServer {
         return res.isSuccess();
     }
 
-    private static Optional<Path> getDaemonExecutableFromHome() {
-        var env = System.getenv("XPIPE_HOME");
-        if (env == null) {
-            return Optional.empty();
-        }
-
-        Path file;
-
+    private static Optional<Path> getDaemonBasePath() {
+        Path base = null;
         // Prepare for invalid XPIPE_HOME path value
         try {
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                file = Path.of(env, "app", "xpiped.exe");
-            } else {
-                file = Path.of(env, "app", "bin", "xpiped");
-            }
-            return Files.exists(file) ? Optional.of(file) : Optional.empty();
+            var environmentVariable = System.getenv("XPIPE_HOME");
+            base = environmentVariable != null ? Path.of(environmentVariable) : null;
         } catch (Exception ex) {
-            return Optional.empty();
         }
+
+
+        if (base == null) {
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                base = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe");
+            } else {
+                base = Path.of("/opt/xpipe/");
+            }
+            if (!Files.exists(base)) {
+                base = null;
+            }
+        }
+
+        return Optional.ofNullable(base);
     }
 
     public static Optional<Path> getDaemonExecutable() {
-        var home = getDaemonExecutableFromHome();
-        if (home.isPresent()) {
-            return home;
-        }
+        var base = getDaemonBasePath().orElseThrow();
+        var debug = BeaconConfig.launchDaemonInDebugMode();
+        Path executable = null;
+        if (!debug) {
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                executable = Path.of("app", "xpiped.exe");
+            } else {
+                executable = Path.of("app/bin/xpiped");
+            }
 
-        Path file;
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            file = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe", "app", "xpiped.exe");
         } else {
-            file = Path.of("/opt/xpipe/app/bin/xpiped");
+            String scriptName = null;
+            if (BeaconConfig.attachDebuggerToDaemon()) {
+                scriptName = "xpiped_debug_attach";
+            } else {
+                scriptName = "xpiped_debug";
+            }
+
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                scriptName = scriptName + ".bat";
+            } else {
+                scriptName = scriptName + ".sh";
+            }
+
+            executable = Path.of("app", "scripts", scriptName);
         }
 
+        Path file = base.resolve(executable);
         if (Files.exists(file)) {
             return Optional.of(file);
         } else {

@@ -2,17 +2,33 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataText;
-import io.xpipe.core.source.*;
+import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.beacon.BeaconConnection;
+import io.xpipe.beacon.BeaconException;
+import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
+import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceInfo;
+import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.DataSourceType;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class DataTextImpl extends DataSourceImpl implements DataText {
 
     private final DataSourceInfo.Text info;
 
-    public DataTextImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Text info) {
-        super(sourceId, sourceConfig);
+    public DataTextImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Text info, io.xpipe.core.source.DataSource<?> internalSource) {
+        super(sourceId, sourceConfig, internalSource);
         this.info = info;
     }
 
@@ -33,26 +49,80 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
 
     @Override
     public List<String> readAllLines() {
-        return null;
+        return readLines(Integer.MAX_VALUE);
     }
 
     @Override
     public List<String> readLines(int maxLines) {
-        return null;
+        try (Stream<String> lines = lines()) {
+            return lines.limit(maxLines).toList();
+        }
+    }
+
+    @Override
+    public Stream<String> lines() {
+        var iterator = new Iterator<String>() {
+
+            private final BeaconConnection connection;
+            private final BufferedReader reader;
+            private String nextValue;
+
+            {
+                connection = XPipeConnection.open();
+                var req = QueryTextDataExchange.Request.builder()
+                        .ref(DataSourceReference.id(getId())).maxLines(-1).build();
+                connection.sendRequest(req);
+                connection.receiveResponse();
+                reader = new BufferedReader(new InputStreamReader(connection.receiveBody(), StandardCharsets.UTF_8));
+            }
+
+            private void close() {
+                connection.close();
+            }
+
+            @Override
+            public boolean hasNext() {
+                connection.checkClosed();
+
+                try {
+                    nextValue = reader.readLine();
+                } catch (IOException e) {
+                    throw new BeaconException(e);
+                }
+                return nextValue != null;
+            }
+
+            @Override
+            public String next() {
+                return nextValue;
+            }
+        };
+
+        return StreamSupport
+                .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+                .onClose(iterator::close);
     }
 
     @Override
     public String readAll() {
-        return null;
+        try (Stream<String> lines = lines()) {
+            return lines.collect(Collectors.joining("\n"));
+        }
     }
 
     @Override
     public String read(int maxCharacters) {
-        return null;
+        StringBuilder builder = new StringBuilder();
+        lines().takeWhile(s -> {
+            if (builder.length() > maxCharacters) {
+                return false;
+            }
+
+            builder.append(s);
+            return true;
+        });
+        return builder.toString();
     }
 
-    @Override
-    public Iterator<String> iterator() {
-        return null;
-    }
+
 }

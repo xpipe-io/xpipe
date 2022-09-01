@@ -17,14 +17,10 @@ configurations {
 
 version = file('../misc/version').text
 group = 'io.xpipe'
-archivesBaseName = 'core'
+archivesBaseName = 'xpipe-core'
 
 repositories {
     mavenCentral()
-}
-
-dependencies{
-    compileOnly 'org.apache.commons:commons-exec:1.3'
 }
 
 apply from: 'publish.gradle'

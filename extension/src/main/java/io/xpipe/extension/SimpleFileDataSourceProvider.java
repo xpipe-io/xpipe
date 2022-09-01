@@ -3,7 +3,7 @@ package io.xpipe.extension;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileStore;
+import io.xpipe.core.store.FilenameStore;
 import io.xpipe.core.store.StreamDataStore;
 
 import java.util.LinkedHashMap;
@@ -19,11 +19,16 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
 
     @Override
     default DataSource<?> convert(T in, DataSourceType t) throws Exception {
-        return DataSourceProviders.byId("binary").createDefaultSource(in.getStore());
+        return DataSourceProviders.byId("binary")
+                .createDefaultSource(in.getStore());
     }
 
     @Override
-    default boolean prefersStore(DataStore store) {
+    default boolean prefersStore(DataStore store, DataSourceType type) {
+        if (type != null && type != getPrimaryType()) {
+            return false;
+        }
+
         for (var e : getSupportedExtensions().entrySet()) {
             if (e.getValue() == null) {
                 continue;
@@ -34,8 +39,9 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
                     continue;
                 }
 
-                if (store instanceof FileStore l) {
-                    return l.getFileName().endsWith("." + ext);
+                if (store instanceof FilenameStore l) {
+                    return l.getFileExtension()
+                            .equalsIgnoreCase(ext);
                 }
             }
         }
@@ -50,6 +56,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
     default String getNameI18nKey() {
         return i18nKey("displayName");
     }
+
     Map<String, List<String>> getSupportedExtensions();
 
     @Override

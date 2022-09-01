@@ -1,7 +1,16 @@
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            artifactId = project.archivesBaseName
+
             from components.java
+
+            pom.withXml {
+                def pomNode = asNode()
+                pomNode.dependencies.'*'.findAll().each() {
+                    it.scope*.value = 'compile'
+                }
+            }
 
             pom {
                 name = 'X-Pipe Java API'

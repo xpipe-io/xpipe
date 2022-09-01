@@ -38,12 +38,12 @@ public abstract class DataSource<DS extends DataStore> {
         return c;
     }
 
-    protected boolean supportsRead() {
-        return false;
+    public  boolean supportsRead() {
+        return true;
     }
 
-    protected boolean supportsWrite() {
-        return false;
+    public  boolean supportsWrite() {
+        return true;
     }
 
     /**

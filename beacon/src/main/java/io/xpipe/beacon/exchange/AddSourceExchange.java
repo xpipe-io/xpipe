@@ -4,31 +4,24 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceInfo;
-import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Map;
-
-/**
- * Queries general information about a data source.
- */
-public class QueryDataSourceExchange implements MessageExchange {
+public class AddSourceExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "queryDataSource";
+        return "addSource";
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        DataSourceReference ref;
+        DataSourceId target;
+        @NonNull DataSource<?> source;
     }
 
     @Jacksonized
@@ -37,17 +30,5 @@ public class QueryDataSourceExchange implements MessageExchange {
     public static class Response implements ResponseMessage {
         @NonNull
         DataSourceId id;
-        boolean disabled;
-        boolean hidden;
-        @NonNull
-        DataSourceInfo info;
-        @NonNull
-        String storeDisplay;
-
-        String provider;
-        @NonNull
-        Map<String, String> config;
-
-        DataSource<?> internalSource;
     }
 }

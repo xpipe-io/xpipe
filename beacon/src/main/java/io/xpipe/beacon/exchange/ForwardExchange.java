@@ -1,6 +1,5 @@
-package io.xpipe.beacon.exchange.api;
+package io.xpipe.beacon.exchange;
 
-import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSourceReference;
@@ -9,11 +8,11 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class QueryTextDataExchange implements MessageExchange {
+public class ForwardExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "queryTextData";
+        return "forward";
     }
 
     @Jacksonized
@@ -21,10 +20,12 @@ public class QueryTextDataExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        DataSourceReference ref;
+        DataSourceReference source;
 
-        @Builder.Default
-        int maxLines = -1;
+        @NonNull
+        DataSourceReference target;
+
+        boolean append;
     }
 
     @Jacksonized

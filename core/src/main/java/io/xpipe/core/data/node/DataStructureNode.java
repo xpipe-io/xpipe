@@ -2,14 +2,24 @@ package io.xpipe.core.data.node;
 
 import io.xpipe.core.data.type.DataType;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public abstract class DataStructureNode implements Iterable<DataStructureNode> {
+
+    public static final String KEY_TABLE_NAME = "tableName";
+    public static final String KEY_ROW_NAME = "rowName";
+
+    private Properties properties = new Properties();
+
+    public String getMetaString(String key) {
+        if (properties == null) {
+            return null;
+        }
+
+        return properties.getProperty(key);
+    }
 
     public abstract DataStructureNode mutableCopy();
 

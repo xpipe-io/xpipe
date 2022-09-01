@@ -3,9 +3,9 @@ package io.xpipe.core.store;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * A store whose contents are stored in memory.
@@ -14,7 +14,12 @@ import java.io.InputStream;
 @JsonTypeName("inMemory")
 public class InMemoryStore implements StreamDataStore {
 
+    @NonFinal
     byte[] value;
+
+    public InMemoryStore() {
+        this.value = new byte[0];
+    }
 
     @JsonCreator
     public InMemoryStore(byte[] value) {
@@ -29,6 +34,17 @@ public class InMemoryStore implements StreamDataStore {
     @Override
     public InputStream openInput() throws Exception {
         return new ByteArrayInputStream(value);
+    }
+
+    @Override
+    public OutputStream openOutput() throws Exception {
+        return new ByteArrayOutputStream(){
+            @Override
+            public void close() throws IOException {
+                super.close();
+                InMemoryStore.this.value = this.toByteArray();
+            }
+        };
     }
 
     @Override

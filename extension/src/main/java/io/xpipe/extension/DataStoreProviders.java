@@ -57,16 +57,17 @@ public class DataStoreProviders {
 
 
     public static <T extends DataStoreProvider> T byStore(DataStore store) {
-        return (T) byStoreClass(store.getClass()).orElseThrow(() -> new IllegalArgumentException("Provider for " + store.getClass().getSimpleName() + " not found"));
+        return (T) byStoreClass(store.getClass());
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends DataStoreProvider> Optional<T> byStoreClass(Class<?> c) {
+    public static <T extends DataStoreProvider> T byStoreClass(Class<?> c) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (Optional<T>) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny();
+
+        return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny().orElseThrow();
     }
 
     public static Set<DataStoreProvider> getAll() {

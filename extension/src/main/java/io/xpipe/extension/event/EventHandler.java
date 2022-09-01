@@ -1,7 +1,5 @@
 package io.xpipe.extension.event;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -19,12 +17,13 @@ public abstract class EventHandler {
             if (cat == null) {
                 cat = "log";
             }
-            LoggerFactory.getLogger(cat).info(te.getMessage());
+            System.out.println("[" + cat + "] " + te.getMessage());
         }
 
         @Override
         public void handle(ErrorEvent ee) {
-            LoggerFactory.getLogger(EventHandler.class).error(ee.getDescription(), ee.getThrowable());
+            if (ee.getDescription() != null) System.err.println(ee.getDescription());
+            if (ee.getThrowable() != null) ee.getThrowable().printStackTrace();
         }
     };
 

@@ -9,8 +9,8 @@ public class DataStructureImpl extends DataSourceImpl implements DataStructure {
 
     private final DataSourceInfo.Structure info;
 
-    public DataStructureImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Structure info) {
-        super(sourceId, sourceConfig);
+    public DataStructureImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Structure info, io.xpipe.core.source.DataSource<?> internalSource) {
+        super(sourceId, sourceConfig, internalSource);
         this.info = info;
     }
 

@@ -18,8 +18,14 @@ public final class XPipeConnection extends BeaconConnection {
     public static void finishDialog(DialogReference reference) {
         try (var con = new XPipeConnection()) {
             con.constructSocket();
+            var element = reference.getStart();
             while (true) {
+                if (element.requiresExplicitUserInput()) {
+                    throw new IllegalStateException();
+                }
+
                 DialogExchange.Response response = con.performSimpleExchange(DialogExchange.Request.builder().dialogKey(reference.getDialogId()).build());
+                element = response.getElement();
                 if (response.getElement() == null) {
                     break;
                 }
@@ -69,7 +75,7 @@ public final class XPipeConnection extends BeaconConnection {
                 throw new BeaconException("Unable to start xpipe daemon", ex);
             }
 
-            var r = waitForStartup();
+            var r = waitForStartup(null);
             if (r.isEmpty()) {
                 throw new BeaconException("Wait for xpipe daemon timed out");
             } else {
@@ -86,13 +92,17 @@ public final class XPipeConnection extends BeaconConnection {
     }
 
     private void start() throws Exception {
-        if (!BeaconServer.tryStart()) {
+        if (BeaconServer.tryStart() == null) {
             throw new UnsupportedOperationException("Unable to determine xpipe daemon launch command");
         };
     }
 
-    public static Optional<BeaconClient> waitForStartup() {
-        for (int i = 0; i < 80; i++) {
+    public static Optional<BeaconClient> waitForStartup(Process process) {
+        for (int i = 0; i < 160; i++) {
+            if (process != null && !process.isAlive()) {
+                return Optional.empty();
+            }
+
             try {
                 Thread.sleep(500);
             } catch (InterruptedException ignored) {

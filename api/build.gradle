@@ -7,11 +7,10 @@ plugins {
 
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/junit.gradle"
-apply from: "$rootDir/deps/jackson.gradle"
 
 version = file('../misc/version').text
 group = 'io.xpipe'
-archivesBaseName = 'api'
+archivesBaseName = 'xpipe-api'
 
 repositories {
     mavenCentral()
@@ -22,8 +21,9 @@ test {
 }
 
 dependencies {
-    implementation project(':core')
+    api project(':core')
     implementation project(':beacon')
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
 }
 
 configurations {

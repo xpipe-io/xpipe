@@ -1,33 +1,35 @@
+import com.fasterxml.jackson.databind.Module;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.SupportedApplicationProvider;
+import io.xpipe.extension.util.ExtensionJacksonModule;
 
-module io.xpipe.extension {
+open module io.xpipe.extension {
     exports io.xpipe.extension;
     exports io.xpipe.extension.comp;
     exports io.xpipe.extension.event;
     exports io.xpipe.extension.prefs;
     exports io.xpipe.extension.util;
+    exports io.xpipe.extension.test;
 
     requires transitive io.xpipe.core;
-    requires transitive javafx.base;
-    requires javafx.graphics;
-    requires transitive javafx.controls;
-    requires io.xpipe.fxcomps;
-    requires static lombok;
-    requires static com.dlsc.preferencesfx;
-    requires static com.dlsc.formsfx;
-    requires static org.slf4j;
-    requires static org.controlsfx.controls;
-    requires java.desktop;
-    requires org.fxmisc.richtext;
-    requires static net.synedra.validatorfx;
-    requires org.fxmisc.flowless;
-    requires org.fxmisc.undofx;
-    requires org.fxmisc.wellbehavedfx;
-    requires org.reactfx;
-    requires org.kordamp.ikonli.javafx;
+    requires io.xpipe.beacon;
+    requires io.xpipe.api;
     requires com.fasterxml.jackson.databind;
     requires static org.junit.jupiter.api;
+    requires transitive javafx.base;
+    requires static javafx.graphics;
+    requires static javafx.controls;
+    requires static io.xpipe.fxcomps;
+    requires static lombok;
+    requires static org.controlsfx.controls;
+    requires static java.desktop;
+    requires static org.fxmisc.richtext;
+    requires static net.synedra.validatorfx;
+    requires static org.fxmisc.flowless;
+    requires static org.fxmisc.undofx;
+    requires static org.fxmisc.wellbehavedfx;
+    requires static org.reactfx;
+    requires static org.kordamp.ikonli.javafx;
     requires static com.jfoenix;
 
     uses DataSourceProvider;
@@ -37,4 +39,6 @@ module io.xpipe.extension {
     uses io.xpipe.extension.prefs.PrefsProvider;
     uses io.xpipe.extension.DataStoreProvider;
     uses io.xpipe.extension.XPipeDaemon;
+
+    provides Module with ExtensionJacksonModule;
 }

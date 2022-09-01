@@ -15,7 +15,7 @@ public interface UniformDataSourceProvider<T extends DataSource<?>> extends Data
 
     @Override
     @SuppressWarnings("unchecked")
-    default T createDefaultSource(DataStore input) {
+    default T createDefaultSource(DataStore input) throws Exception {
         try {
             return (T) getSourceClass().getDeclaredConstructors()[0].newInstance(input);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

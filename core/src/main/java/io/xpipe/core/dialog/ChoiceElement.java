@@ -19,6 +19,11 @@ public class ChoiceElement extends DialogElement {
     private int selected;
 
     @Override
+    public boolean requiresExplicitUserInput() {
+        return required && selected == -1;
+    }
+
+    @Override
     public String toDisplayString() {
         return description;
     }

@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
 import lombok.Value;
 
@@ -98,6 +99,17 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
     }
 
     @Override
+    public void mkdirs(String file) throws Exception {
+        Files.createDirectories(Path.of(file).getParent());
+    }
+
+    @Override
+    public NewLine getNewLine() {
+        return ShellTypes.getDefault().getNewLine();
+    }
+
+
+    @Override
     public String toSummaryString() {
         return "localhost";
     }
@@ -110,6 +122,7 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
 
     @Override
     public OutputStream openOutput(String file) throws Exception {
+        mkdirs(file);
         var p = Path.of(file);
         return Files.newOutputStream(p);
     }

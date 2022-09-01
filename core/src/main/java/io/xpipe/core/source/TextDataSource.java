@@ -16,6 +16,10 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {
+        if (!getStore().canOpen()) {
+            return new DataSourceInfo.Text(-1, -1);
+        }
+
         try (var con = openReadConnection()) {
             AtomicInteger lineCount = new AtomicInteger();
             AtomicInteger charCount = new AtomicInteger();
@@ -42,7 +46,16 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
         return con;
     }
 
+    @Override
+    public final TextWriteConnection openAppendingWriteConnection() throws Exception {
+        var con = newAppendingWriteConnection();
+        con.init();
+        return con;
+    }
+
+
     protected abstract TextWriteConnection newWriteConnection();
+    protected abstract TextWriteConnection newAppendingWriteConnection();
 
     protected abstract TextReadConnection newReadConnection();
 }

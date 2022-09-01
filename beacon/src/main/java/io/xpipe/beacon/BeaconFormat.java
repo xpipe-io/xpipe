@@ -36,7 +36,7 @@ public class BeaconFormat {
             }
 
             private void finishBlock() throws IOException {
-                if (BeaconConfig.debugEnabled()) {
+                if (BeaconConfig.printMessages()) {
                     System.out.println("Sending data block of length " + index);
                 }
 
@@ -76,7 +76,7 @@ public class BeaconFormat {
                 var length = in.readNBytes(4);
                 var lengthInt = ByteBuffer.wrap(length).getInt();
 
-                if (BeaconConfig.debugEnabled()) {
+                if (BeaconConfig.printMessages()) {
                     System.out.println("Receiving data block of length " + lengthInt);
                 }
 

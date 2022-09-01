@@ -1,17 +1,17 @@
-package io.xpipe.api.test;
+package io.xpipe.extension.test;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
-public class DaemonControl {
+public class ExtensionTest {
 
     @BeforeAll
     public static void setup() throws Exception {
-        ConnectionFactory.start();
+        ExtensionTestConnector.start();
     }
 
     @AfterAll
     public static void teardown() throws Exception {
-        ConnectionFactory.stop();
+        ExtensionTestConnector.stop();
     }
 }

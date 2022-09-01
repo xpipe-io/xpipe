@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
 
 import java.io.InputStream;
@@ -26,11 +27,18 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
 
         Charset getCharset();
 
+        NewLine getNewLine();
+
         String getName();
 
         String getDisplayName();
 
         List<String> getOperatingSystemNameCommand();
+    }
+
+
+    public NewLine getNewLine() throws Exception {
+        return determineType().getNewLine();
     }
 
     public abstract ShellType determineType() throws Exception;
@@ -66,5 +74,10 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
         var p = prepareCommand(List.of(), cmd, null);
         p.start();
         return p.waitFor() == 0;
+    }
+
+    @Override
+    public void mkdirs(String file) throws Exception {
+
     }
 }

@@ -25,8 +25,8 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
     private final DataSourceInfo.Table info;
 
-    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, DataSourceInfo.Table info) {
-        super(id, sourceConfig);
+    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, DataSourceInfo.Table info, io.xpipe.core.source.DataSource<?> internalSource) {
+        super(id, sourceConfig, internalSource);
         this.info = info;
     }
 

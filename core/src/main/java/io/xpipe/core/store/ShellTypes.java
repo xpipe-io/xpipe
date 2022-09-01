@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
 
 import java.io.ByteArrayInputStream;
@@ -64,6 +65,11 @@ public class ShellTypes {
         }
 
         @Override
+        public NewLine getNewLine() {
+            return NewLine.CRLF;
+        }
+
+        @Override
         public String getName() {
             return "powershell";
         }
@@ -81,6 +87,11 @@ public class ShellTypes {
 
     @JsonProperty("cmd")
     public static final StandardShellStore.ShellType CMD = new StandardShellStore.ShellType() {
+
+        @Override
+        public NewLine getNewLine() {
+            return NewLine.CRLF;
+        }
 
         @Override
         public List<String> switchTo(List<String> cmd) {
@@ -167,6 +178,11 @@ public class ShellTypes {
         @Override
         public Charset getCharset() {
             return StandardCharsets.UTF_8;
+        }
+
+        @Override
+        public NewLine getNewLine() {
+            return NewLine.LF;
         }
 
         @Override

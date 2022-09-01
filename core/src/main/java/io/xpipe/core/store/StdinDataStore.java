@@ -14,6 +14,11 @@ import java.io.OutputStream;
 public class StdinDataStore implements StreamDataStore {
 
     @Override
+    public boolean isLocalToApplication() {
+        return true;
+    }
+
+    @Override
     public InputStream openInput() throws Exception {
         var in = System.in;
         // Prevent closing the standard in when the returned input stream is closed

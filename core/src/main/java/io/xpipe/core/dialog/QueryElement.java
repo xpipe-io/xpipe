@@ -14,12 +14,11 @@ public class QueryElement extends BaseQueryElement {
 
     @Override
     public boolean apply(String value) {
-        if (value == null && this.value != null) {
+        if (value == null) {
             if (isRequired() && this.value == null) {
                 return false;
             }
 
-            this.value = null;
             return true;
         }
 

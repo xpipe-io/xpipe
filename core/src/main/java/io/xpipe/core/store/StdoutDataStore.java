@@ -13,6 +13,11 @@ import java.io.OutputStream;
 public class StdoutDataStore implements StreamDataStore {
 
     @Override
+    public boolean isLocalToApplication() {
+        return true;
+    }
+
+    @Override
     public OutputStream openOutput() throws Exception {
         // Create an output stream that will write to standard out but will not close it
         return new OutputStream() {

@@ -102,11 +102,11 @@ public class BeaconClient implements AutoCloseable {
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeMessage", json);
 
-        if (BeaconConfig.debugEnabled()) {
+        if (BeaconConfig.printMessages()) {
             System.out.println("Sending request to server of type " + req.getClass().getName());
         }
 
-        if (BeaconConfig.debugEnabled()) {
+        if (BeaconConfig.printMessages()) {
             System.out.println("Sending raw request:");
             System.out.println(msg.toPrettyString());
         }
@@ -131,7 +131,7 @@ public class BeaconClient implements AutoCloseable {
             throw new ConnectorException("Couldn't read from socket", ex);
         }
 
-        if (BeaconConfig.debugEnabled()) {
+        if (BeaconConfig.printMessages()) {
             System.out.println("Received response:");
             System.out.println(read.toPrettyString());
         }

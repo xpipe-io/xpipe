@@ -1,33 +1,39 @@
 package io.xpipe.extension.comp;
 
-import io.xpipe.fxcomps.Comp;
-import io.xpipe.fxcomps.CompStructure;
-import io.xpipe.fxcomps.comp.ReplacementComp;
+import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.extension.I18n;
+import io.xpipe.fxcomps.SimpleComp;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Region;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.List;
+public class CharsetChoiceComp extends SimpleComp {
 
-public class CharsetChoiceComp extends ReplacementComp<CompStructure<ComboBox<Charset>>> {
+    private final Property<StreamCharset> charset;
 
-    private final Property<Charset> charset;
-
-    public CharsetChoiceComp(Property<Charset> charset) {
+    public CharsetChoiceComp(Property<StreamCharset> charset) {
         this.charset = charset;
     }
 
     @Override
-    protected Comp<CompStructure<ComboBox<Charset>>> createComp() {
-        var map = new LinkedHashMap<Charset, ObservableValue<String>>();
-        for (var e : List.of(StandardCharsets.UTF_8, StandardCharsets.UTF_16,
-                StandardCharsets.UTF_16BE, StandardCharsets.ISO_8859_1, Charset.forName("Windows-1251"), Charset.forName("Windows-1252"), StandardCharsets.US_ASCII)) {
-            map.put(e, new SimpleStringProperty(e.displayName()));
+    protected Region createSimple() {
+        var builder = new CustomComboBoxBuilder<>(charset, streamCharset -> {
+            return new Label(streamCharset.getCharset().displayName() + (streamCharset.hasByteOrderMark() ?
+                                                                         " (BOM)" :
+                                                                         ""));
+        }, new Label(I18n.get("extension.none")), null);
+        builder.addHeader(I18n.get("extension.common"));
+        for (var e : StreamCharset.COMMON) {
+            builder.add(e);
         }
-        return new ChoiceComp<>(charset, map);
+
+        builder.addHeader(I18n.get("extension.other"));
+        builder.addFilter((charset, filter) -> {
+            return charset.getCharset().displayName().contains(filter);
+        });
+        for (var e : StreamCharset.RARE) {
+            builder.add(e);
+        }
+        return builder.build();
     }
 }

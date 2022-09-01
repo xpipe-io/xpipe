@@ -1,5 +1,7 @@
 package io.xpipe.core.data.node;
 
+import java.nio.charset.StandardCharsets;
+
 public class SimpleImmutableValueNode extends ImmutableValueNode {
 
     private final byte[] data;
@@ -30,6 +32,6 @@ public class SimpleImmutableValueNode extends ImmutableValueNode {
             return "null";
         }
 
-        return new String(getRawData());
+        return new String(getRawData(), StandardCharsets.UTF_8);
     }
 }

@@ -12,26 +12,33 @@ import java.util.ServiceLoader;
 
 public class JacksonHelper {
 
-    private static final ObjectMapper INSTANCE = new ObjectMapper();
+    private static final ObjectMapper BASE = new ObjectMapper();
+    private static ObjectMapper INSTANCE = new ObjectMapper();
     private static boolean init = false;
+    private static  List<Module> MODULES;
 
     public static synchronized void initClassBased() {
         initModularized(null);
     }
 
     public static synchronized void initModularized(ModuleLayer layer) {
-        ObjectMapper objectMapper = INSTANCE;
+        MODULES = findModules(layer);
+
+        ObjectMapper objectMapper = BASE;
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
-        objectMapper.registerModules(findModules(layer));
+        objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
         objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
+
+        INSTANCE = BASE.copy();
+        INSTANCE.registerModules(MODULES);
+
         init = true;
     }
 
@@ -54,6 +61,16 @@ public class JacksonHelper {
         }
 
         return INSTANCE.copy();
+    }
+
+    public static ObjectMapper newMapper(Class<?> excludedModule) {
+        if (!init) {
+            throw new IllegalStateException("Not initialized");
+        }
+
+        var mapper = BASE.copy();
+        mapper.registerModules(MODULES.stream().filter(module -> !module.getClass().equals(excludedModule)).toList());
+        return mapper;
     }
 
     public static boolean isInit() {

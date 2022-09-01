@@ -16,6 +16,30 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
 
+
+    /**
+     * Checks whether this store can be opened.
+     * This can be not the case for example if the underlying store does not exist.
+     */
+    default boolean canOpen() throws Exception {
+        return true;
+    }
+
+    default boolean canWrite() throws Exception {
+        return true;
+    }
+
+    /**
+     * Indicates whether this data store can only be accessed by the current running application.
+     * One example are standard in and standard out stores.
+     *
+     * @see StdinDataStore
+     * @see StdoutDataStore
+     */
+    default boolean isLocalToApplication() {
+        return false;
+    }
+
     /**
      * Performs a validation of this data store.
      *

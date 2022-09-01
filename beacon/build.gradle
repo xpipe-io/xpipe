@@ -6,23 +6,24 @@ plugins {
 }
 
 apply from: "$rootDir/deps/java.gradle"
-apply from: "$rootDir/deps/jackson.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 
-configurations {
-    compileOnly.extendsFrom(dep)
+dependencies {
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
+    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.13.0"
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.13.0"
 }
 
 version = file('../misc/version').text
 group = 'io.xpipe'
-archivesBaseName = 'beacon'
+archivesBaseName = 'xpipe-beacon'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation project(':core')
+    api project(':core')
 }
 
 apply from: 'publish.gradle'

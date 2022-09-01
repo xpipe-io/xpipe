@@ -4,6 +4,7 @@ import io.xpipe.api.impl.DataSourceImpl;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
+import io.xpipe.core.store.DataStore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +26,10 @@ import java.nio.file.Path;
  * To unlock the data source earlier, you can make use the {@link #unlock()} method.
  */
 public interface DataSource {
+
+    void forwardTo(DataSource target);
+
+    void appendTo(DataSource target);
 
     /**
      * NOT YET IMPLEMENTED!
@@ -140,6 +145,30 @@ public interface DataSource {
     public static DataSource create(DataSourceId id, String type, InputStream in) {
         return DataSourceImpl.create(id, type, in);
     }
+
+    /**
+     * Creates a new data source from an input stream.
+     *
+     * @param id the data source id
+     * @return a {@link DataSource} instances that can be used to access the underlying data
+     */
+    public static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
+        return DataSourceImpl.create(id, source);
+    }
+
+    /**
+     * Creates a new data source from an input stream.
+     *1
+     * @param id the data source id
+     * @param type the data source type
+     * @param in the data store to add
+     * @return a {@link DataSource} instances that can be used to access the underlying data
+     */
+    public static DataSource create(DataSourceId id, String type, DataStore in) {
+        return DataSourceImpl.create(id, type, in);
+    }
+
+    public io.xpipe.core.source.DataSource<?> getInternalSource();
 
     /**
      * Returns the id of this data source.

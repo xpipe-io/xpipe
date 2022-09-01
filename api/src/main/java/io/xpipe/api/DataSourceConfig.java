@@ -26,7 +26,7 @@ public final class DataSourceConfig {
         return provider;
     }
 
-    public Map<String, String> getConfigInstance() {
+    public Map<String, String> getConfig() {
         return configInstance;
     }
 }

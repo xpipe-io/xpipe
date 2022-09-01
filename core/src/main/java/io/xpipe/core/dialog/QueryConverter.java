@@ -1,24 +1,38 @@
 package io.xpipe.core.dialog;
 
+import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.util.Secret;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.AbstractMap;
 import java.util.Map;
 
 public abstract class QueryConverter<T> {
 
-    public static final QueryConverter<Charset> CHARSET = new QueryConverter<Charset>() {
+    public static final QueryConverter<NewLine> NEW_LINE = new QueryConverter<NewLine>() {
         @Override
-        protected Charset fromString(String s) {
-            return Charset.forName(s);
+        protected NewLine fromString(String s) {
+            return NewLine.id(s);
         }
 
         @Override
-        protected String toString(Charset value) {
-            return value.name();
+        protected String toString(NewLine value) {
+            return value.getId();
+        }
+    };
+
+
+    public static final QueryConverter<StreamCharset> CHARSET = new QueryConverter<StreamCharset>() {
+        @Override
+        protected StreamCharset fromString(String s) {
+            return StreamCharset.get(s);
+        }
+
+        @Override
+        protected String toString(StreamCharset value) {
+            return value.toString();
         }
     };
 
@@ -127,7 +141,9 @@ public abstract class QueryConverter<T> {
 
         @Override
         protected String toString(Boolean value) {
-            return value ? "yes" : "no";
+            return value ?
+                   "yes" :
+                   "no";
         }
     };
 

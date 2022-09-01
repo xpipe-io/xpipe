@@ -126,6 +126,11 @@ public abstract class Dialog {
 
         @Override
         protected DialogElement next(String answer) throws Exception {
+            if (element.requiresExplicitUserInput() && (answer == null || answer.trim()
+                    .length() == 0)) {
+                return element;
+            }
+
             if (element.apply(answer)) {
                 return null;
             }

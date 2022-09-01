@@ -1,12 +1,14 @@
 package io.xpipe.core.charsetter;
 
+import io.xpipe.core.store.FileStore;
+import io.xpipe.core.store.StreamDataStore;
 import lombok.Value;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.*;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +29,12 @@ public abstract class Charsetter {
 
     @Value
     public static class Result {
-        Charset charset;
+        StreamCharset charset;
         NewLine newLine;
     }
 
-    protected Charsetter() {}
+    protected Charsetter() {
+    }
 
     public static Charsetter INSTANCE;
 
@@ -50,7 +53,76 @@ public abstract class Charsetter {
         void accept(T var1) throws E;
     }
 
+    public BufferedReader reader(StreamDataStore store, StreamCharset charset) throws Exception {
+        return reader(store.openBufferedInput(), charset);
+    }
+
+    public OutputStreamWriter writer(StreamDataStore store, StreamCharset charset) throws Exception {
+        var out = new OutputStreamWriter(store.openOutput(), charset.getCharset());
+        return out;
+    }
+
+    public BufferedReader reader(InputStream stream, StreamCharset charset) throws Exception {
+        if (charset.hasByteOrderMark()) {
+            var bom = stream.readNBytes(charset.getByteOrderMark().length);
+            if (bom.length != 0 && !Arrays.equals(bom, charset.getByteOrderMark())) {
+                throw new IllegalStateException("Invalid charset: " + toString());
+            }
+        }
+
+        return new BufferedReader(new InputStreamReader(stream, charset.getCharset()));
+    }
+
     public abstract Result read(FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con) throws Exception;
+
+    private static final int MAX_BYTES = 8192;
+
+    public Result detect(StreamDataStore store) throws Exception {
+        Result result = new Result(null, null);
+
+        if (store.canOpen()) {
+
+
+            try (InputStream inputStream = store.openBufferedInput()) {
+                StreamCharset detected = null;
+                for (var charset : StreamCharset.COMMON) {
+                    if (charset.hasByteOrderMark()) {
+                        inputStream.mark(charset.getByteOrderMark().length);
+                        var bom = inputStream.readNBytes(charset.getByteOrderMark().length);
+                        inputStream.reset();
+                        if (Arrays.equals(bom, charset.getByteOrderMark())) {
+                            detected = charset;
+                            break;
+                        }
+                    }
+                }
+
+                var bytes = inputStream.readNBytes(MAX_BYTES);
+                if (detected == null) {
+                    detected = StreamCharset.get(inferCharset(bytes), false);
+                }
+                var nl = inferNewLine(bytes);
+                result = new Result(detected, nl);
+            }
+        }
+
+        if (store instanceof FileStore fileStore) {
+            var newline = fileStore.getMachine().getNewLine();
+            if (result.getNewLine() == null) {
+                result = new Result(result.getCharset(), newline);
+            }
+        }
+
+        if (result.getCharset() == null) {
+            result = new Result(StreamCharset.UTF8, result.getNewLine());
+        }
+
+        if (result.getNewLine() == null) {
+            result = new Result(result.getCharset(), NewLine.platform());
+        }
+
+        return result;
+    }
 
     public NewLine inferNewLine(byte[] content) {
         Map<NewLine, Integer> count = new HashMap<>();
@@ -69,10 +141,10 @@ public abstract class Charsetter {
 
     private static int count(byte[] outerArray, byte[] smallerArray) {
         int count = 0;
-        for(int i = 0; i < outerArray.length - smallerArray.length+1; ++i) {
+        for (int i = 0; i < outerArray.length - smallerArray.length + 1; ++i) {
             boolean found = true;
-            for(int j = 0; j < smallerArray.length; ++j) {
-                if (outerArray[i+j] != smallerArray[j]) {
+            for (int j = 0; j < smallerArray.length; ++j) {
+                if (outerArray[i + j] != smallerArray[j]) {
                     found = false;
                     break;
                 }

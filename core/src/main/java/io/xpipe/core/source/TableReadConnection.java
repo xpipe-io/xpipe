@@ -1,6 +1,7 @@
 package io.xpipe.core.source;
 
 
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.TupleNode;
@@ -8,6 +9,7 @@ import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
 
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -57,7 +59,17 @@ public interface TableReadConnection extends DataSourceReadConnection {
     /**
      * Reads multiple rows in bulk.
      */
-    ArrayNode readRows(int maxLines) throws Exception;
+    default ArrayNode readRows(int maxLines) throws Exception{
+        var list = new ArrayList<DataStructureNode>();
+
+        AtomicInteger rowCounter = new AtomicInteger();
+        withRows(t -> {
+            list.add(t);
+            rowCounter.getAndIncrement();
+            return rowCounter.get() != maxLines;
+        });
+        return ArrayNode.of(list);
+    }
 
     /**
      * Writes the rows to an OutputStream in the X-Pipe binary format.

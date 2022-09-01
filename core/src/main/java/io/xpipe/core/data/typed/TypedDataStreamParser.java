@@ -45,7 +45,7 @@ public class TypedDataStreamParser {
 
     public DataStructureNode parseStructure(InputStream in, TypedAbstractReader cb) throws IOException {
         if (!hasNext(in)) {
-            throw new IllegalStateException("No structure to read");
+            return null;
         }
 
         cb.onNodeBegin();

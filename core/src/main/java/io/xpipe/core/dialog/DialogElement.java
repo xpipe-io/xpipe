@@ -19,6 +19,10 @@ public abstract class DialogElement {
 
     public abstract String toDisplayString();
 
+    public boolean requiresExplicitUserInput() {
+        return false;
+    }
+
     public boolean apply(String value) {
         throw new UnsupportedOperationException();
     }

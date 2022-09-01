@@ -6,6 +6,7 @@ import io.xpipe.core.store.FileStore;
 import io.xpipe.extension.event.ErrorEvent;
 import lombok.SneakyThrows;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -17,15 +18,18 @@ public class DataSourceProviders {
 
     public static void init(ModuleLayer layer) {
         if (ALL == null) {
-            ALL = ServiceLoader.load(layer, DataSourceProvider.class).stream()
-                    .map(p -> (DataSourceProvider<?>) p.get()).collect(Collectors.toSet());
+            ALL = ServiceLoader.load(layer, DataSourceProvider.class)
+                    .stream()
+                    .map(p -> (DataSourceProvider<?>) p.get())
+                    .collect(Collectors.toSet());
             ALL.removeIf(p -> {
                 try {
                     p.init();
                     p.validate();
                     return false;
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEvent.fromThrowable(e)
+                            .handle();
                     return true;
                 }
             });
@@ -51,7 +55,8 @@ public class DataSourceProviders {
     @SneakyThrows
     public static StructureDataSource<FileStore> createLocalStructureDescriptor(DataStore store) {
         return (StructureDataSource<FileStore>)
-                DataSourceProviders.byId("xpbs").getSourceClass()
+                DataSourceProviders.byId("xpbs")
+                        .getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -59,7 +64,8 @@ public class DataSourceProviders {
     @SneakyThrows
     public static RawDataSource<FileStore> createLocalRawDescriptor(DataStore store) {
         return (RawDataSource<FileStore>)
-                DataSourceProviders.byId("binary").getSourceClass()
+                DataSourceProviders.byId("binary")
+                        .getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -67,7 +73,8 @@ public class DataSourceProviders {
     @SneakyThrows
     public static RawDataSource<FileStore> createLocalCollectionDescriptor(DataStore store) {
         return (RawDataSource<FileStore>)
-                DataSourceProviders.byId("br").getSourceClass()
+                DataSourceProviders.byId("br")
+                        .getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -75,7 +82,8 @@ public class DataSourceProviders {
     @SneakyThrows
     public static TextDataSource<FileStore> createLocalTextDescriptor(DataStore store) {
         return (TextDataSource<FileStore>)
-                DataSourceProviders.byId("text").getSourceClass()
+                DataSourceProviders.byId("text")
+                        .getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -83,7 +91,8 @@ public class DataSourceProviders {
     @SneakyThrows
     public static TableDataSource<FileStore> createLocalTableDescriptor(DataStore store) {
         return (TableDataSource<FileStore>)
-                DataSourceProviders.byId("xpbt").getSourceClass()
+                DataSourceProviders.byId("xpbt")
+                        .getSourceClass()
                         .getDeclaredConstructors()[0].newInstance(store);
     }
 
@@ -93,7 +102,10 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (T) ALL.stream().filter(d -> d.getId().equals(name)).findAny()
+        return (T) ALL.stream()
+                .filter(d -> d.getId()
+                        .equals(name))
+                .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Provider " + name + " not found"));
     }
 
@@ -104,7 +116,10 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (T) ALL.stream().filter(d -> d.getSourceClass().equals(c)).findAny()
+        return (T) ALL.stream()
+                .filter(d -> d.getSourceClass()
+                        .equals(c))
+                .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Provider for " + c.getSimpleName() + " not found"));
     }
 
@@ -113,17 +128,37 @@ public class DataSourceProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.getPossibleNames().stream()
-                .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
+        return ALL.stream()
+                .filter(d -> d.getPossibleNames()
+                        .stream()
+                        .anyMatch(s -> nameAlternatives(s).stream().anyMatch(s1 -> s1.equalsIgnoreCase(name))) || d.getId().equalsIgnoreCase(name))
+                .findAny();
     }
 
-    public static Optional<DataSourceProvider<?>> byPreferredStore(DataStore store) {
+    private static List<String> nameAlternatives(String name) {
+        var split = List.of(name.split("_"));
+        return List.of(String.join(" ", split), String.join(
+                "_", split
+        ), String.join(
+                "-", split
+        ), split.stream()
+                               .map(s -> s.equals(split.get(0)) ?
+                                         s :
+                                         s.substring(0, 1)
+                                                 .toUpperCase() + s.substring(1))
+                               .collect(Collectors.joining()));
+    }
+
+    public static Optional<DataSourceProvider<?>> byPreferredStore(DataStore store, DataSourceType type) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.getFileProvider() != null)
-                .filter(d -> d.prefersStore(store)).findAny();
+        return ALL.stream()
+                .filter(d -> type == null  ||  d.getPrimaryType() == type)
+                .filter(d -> d.getFileProvider() != null)
+                .filter(d -> d.prefersStore(store, type))
+                .findAny();
     }
 
     public static Set<DataSourceProvider<?>> getAll() {

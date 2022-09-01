@@ -29,6 +29,11 @@ public class BaseQueryElement extends DialogElement {
         this.value = value;
     }
 
+    @Override
+    public boolean requiresExplicitUserInput() {
+        return required && value == null;
+    }
+
     public boolean isNewLine() {
         return newLine;
     }

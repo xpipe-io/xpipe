@@ -143,7 +143,7 @@ public abstract class BeaconConnection implements AutoCloseable {
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performOutputExchange(
             REQ req,
-            BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter) {
+            BeaconClient.FailableConsumer<OutputStream, Exception> reqWriter) {
         checkClosed();
 
         try {

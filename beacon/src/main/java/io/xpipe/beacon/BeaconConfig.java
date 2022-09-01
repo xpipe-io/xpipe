@@ -8,19 +8,39 @@ import java.nio.charset.StandardCharsets;
 public class BeaconConfig {
 
     public static final byte[] BODY_SEPARATOR = "\n\n".getBytes(StandardCharsets.UTF_8);
-    private static final String DEBUG_PROP = "io.xpipe.beacon.debugOutput";
 
-    public static boolean debugEnabled() {
-        if (System.getProperty(DEBUG_PROP) != null) {
-            return Boolean.parseBoolean(System.getProperty(DEBUG_PROP));
+    private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
+
+    public static boolean printMessages() {
+        if (System.getProperty(PRINT_MESSAGES_PROPERTY) != null) {
+            return Boolean.parseBoolean(System.getProperty(PRINT_MESSAGES_PROPERTY));
+        }
+        return false;
+    }
+
+    private static final String LAUNCH_DAEMON_IN_DEBUG_PROP = "io.xpipe.beacon.launchDebugDaemon";
+
+    public static boolean launchDaemonInDebugMode() {
+        if (System.getProperty(LAUNCH_DAEMON_IN_DEBUG_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(LAUNCH_DAEMON_IN_DEBUG_PROP));
+        }
+        return false;
+    }
+
+    private static final String ATTACH_DEBUGGER_PROP = "io.xpipe.beacon.attachDebuggerToDaemon";
+
+    public static boolean attachDebuggerToDaemon() {
+        if (System.getProperty(ATTACH_DEBUGGER_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(ATTACH_DEBUGGER_PROP));
         }
         return false;
     }
 
 
-    private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.debugExecOutput";
 
-    public static boolean execDebugEnabled() {
+    private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.printDaemonOutput";
+
+    public static boolean printDaemonOutput() {
         if (System.getProperty(EXEC_DEBUG_PROP) != null) {
             return Boolean.parseBoolean(System.getProperty(EXEC_DEBUG_PROP));
         }
@@ -42,13 +62,25 @@ public class BeaconConfig {
 
 
 
-    private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.exec";
+    private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.customDaemonCommand";
 
-    public static String getCustomExecCommand() {
+    public static String getCustomDaemonCommand() {
         if (System.getProperty(EXEC_PROCESS_PROP) != null) {
             return System.getProperty(EXEC_PROCESS_PROP);
         }
 
         return null;
     }
+
+    private static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
+
+    public static String getDaemonArguments() {
+        if (System.getProperty(DAEMON_ARGUMENTS_PROP) != null) {
+            return System.getProperty(DAEMON_ARGUMENTS_PROP);
+        }
+
+        return null;
+    }
 }
+
+

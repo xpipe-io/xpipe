@@ -22,7 +22,9 @@ module io.xpipe.beacon {
 
     uses MessageExchange;
     provides io.xpipe.beacon.exchange.MessageExchange with
+            ForwardExchange,
             EditStoreExchange,
+            AddSourceExchange,
             StoreProviderListExchange,
             ListCollectionsExchange,
             ListEntriesExchange,

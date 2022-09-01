@@ -1,6 +1,7 @@
 package io.xpipe.extension.comp;
 
 import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.util.Secret;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.Validator;
@@ -12,7 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import net.synedra.validatorfx.Check;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,6 +41,11 @@ public class DynamicOptionsBuilder<T> {
     public DynamicOptionsBuilder(ObservableValue<String> title) {
         this.wrap = false;
         this.title = title;
+    }
+
+    public DynamicOptionsBuilder<T> addTitle(ObservableValue<String> title) {
+        entries.add(new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
+        return this;
     }
 
     public DynamicOptionsBuilder<T> makeLazy() {
@@ -108,7 +113,7 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public DynamicOptionsBuilder<T> addCharset(Property<Charset> prop) {
+    public DynamicOptionsBuilder<T> addCharset(Property<StreamCharset> prop) {
         var comp = new CharsetChoiceComp(prop);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable("extension.charset"), comp));
         props.add(prop);
