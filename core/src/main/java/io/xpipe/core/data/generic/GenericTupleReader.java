@@ -7,6 +7,7 @@ import io.xpipe.core.data.node.ValueNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GenericTupleReader implements GenericAbstractReader {
 
@@ -139,9 +140,9 @@ public class GenericTupleReader implements GenericAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] value, boolean textual) {
+    public void onValue(byte[] value, Map<Integer, String> metaAttributes) {
         if (currentReader != null) {
-            currentReader.onValue(value, textual);
+            currentReader.onValue(value, metaAttributes);
             return;
         }
 
@@ -153,7 +154,7 @@ public class GenericTupleReader implements GenericAbstractReader {
             throw new IllegalStateException("Tuple is full but got another value");
         }
 
-        putNode(ValueNode.mutable(value, textual));
+        putNode(ValueNode.of(value).tag(metaAttributes));
     }
 
     @Override

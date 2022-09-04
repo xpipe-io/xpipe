@@ -41,6 +41,7 @@ public class GenericDataStreamWriter {
             writeName(out, tuple.keyNameAt(i));
             write(out, tuple.at(i));
         }
+        DataStructureNodeIO.writeAttributes(out, tuple);
     }
 
     private static void writeArray(OutputStream out, ArrayNode array) throws IOException {
@@ -49,17 +50,13 @@ public class GenericDataStreamWriter {
         for (int i = 0; i < array.size(); i++) {
             write(out, array.at(i));
         }
+        DataStructureNodeIO.writeAttributes(out, array);
     }
 
     private static void writeValue(OutputStream out, ValueNode n) throws IOException {
         out.write(DataStructureNodeIO.GENERIC_VALUE_ID);
-        if (n.isNull()) {
-            out.write(DataStructureNodeIO.VALUE_TYPE_NULL);
-            return;
-        }
-
-        out.write(n.isTextual() ? DataStructureNodeIO.VALUE_TYPE_TEXT : DataStructureNodeIO.VALUE_TYPE_BARE);
         out.write(n.getRawData().length);
         out.write(n.getRawData());
+        DataStructureNodeIO.writeAttributes(out, n);
     }
 }

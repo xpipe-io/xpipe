@@ -5,17 +5,23 @@ import io.xpipe.core.data.type.ValueType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Objects;
 
 public abstract class ValueNode extends DataStructureNode {
+
 
     protected ValueNode() {
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ValueNode that)) return false;
-        return Arrays.equals(getRawData(), that.getRawData());
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ValueNode that)) {
+            return false;
+        }
+        return Arrays.equals(getRawData(), that.getRawData()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
     }
 
     @Override
@@ -23,67 +29,17 @@ public abstract class ValueNode extends DataStructureNode {
         return Arrays.hashCode(getRawData());
     }
 
-    @Override
-    public abstract ValueNode immutableView();
-
-    @Override
-    public abstract ValueNode mutableCopy();
-
-    public static ValueNode immutable(byte[] data, boolean textual) {
-        return new SimpleImmutableValueNode(data, textual);
-    }
-
-    public static ValueNode immutable(Object o, boolean textual) {
-        if (o == null) {
-            return immutableNull();
-        }
-
-        return immutable(o.toString().getBytes(StandardCharsets.UTF_8), textual);
-    }
-
-    public static ValueNode immutableNull() {
-        return MutableValueNode.NULL.immutableView();
-    }
-
-    public static ValueNode mutableNull() {
-        return MutableValueNode.NULL.mutableCopy();
-    }
-
-    public static ValueNode mutable(byte[] data, boolean textual) {
-        return new MutableValueNode(data, textual);
-    }
-
-    public static ValueNode mutable(Object o, boolean textual) {
-        return mutable(o.toString().getBytes(StandardCharsets.UTF_8), textual);
+    public static ValueNode nullValue() {
+        return new SimpleImmutableValueNode(new byte[0]);
     }
 
     public static ValueNode of(byte[] data) {
-        return mutable(data, false);
+        return new SimpleImmutableValueNode(data);
     }
 
     public static ValueNode of(Object o) {
-        return mutable(o, false);
+        return of(o.toString().getBytes(StandardCharsets.UTF_8));
     }
-
-    public static ValueNode ofText(byte[] data) {
-        return mutable(data, true);
-    }
-
-    public static ValueNode ofText(Object o) {
-        return mutable(o, true);
-    }
-
-    @Override
-    public abstract boolean isTextual();
-
-    @Override
-    public abstract DataStructureNode setRaw(byte[] data);
-
-    @Override
-    public abstract DataStructureNode set(Object newValue);
-
-    @Override
-    public abstract DataStructureNode set(Object newValue, boolean textual);
 
     @Override
     public final int asInt() {
@@ -106,10 +62,5 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public abstract byte[] getRawData();
-
-    @Override
-    public boolean isNull() {
-        return getRawData() == null;
-    }
 
 }

@@ -1,25 +1,15 @@
 package io.xpipe.core.data.node;
 
+import lombok.NonNull;
+
 import java.nio.charset.StandardCharsets;
 
-public class SimpleImmutableValueNode extends ImmutableValueNode {
+public class SimpleImmutableValueNode extends ValueNode {
 
-    private final byte[] data;
-    private final boolean textual;
+    private final byte @NonNull [] data;
 
-    SimpleImmutableValueNode(byte[] data, boolean textual) {
+    SimpleImmutableValueNode(byte @NonNull [] data) {
         this.data = data;
-        this.textual = textual;
-    }
-
-    @Override
-    public ValueNode mutableCopy() {
-        return ValueNode.mutable(data, textual);
-    }
-
-    @Override
-    public boolean isTextual() {
-        return textual;
     }
 
     public byte[] getRawData() {
@@ -28,10 +18,20 @@ public class SimpleImmutableValueNode extends ImmutableValueNode {
 
     @Override
     public final String asString() {
-        if (getRawData() == null) {
+        if (getRawData().length == 0 && !hasMetaAttribute(TEXT)) {
             return "null";
         }
 
         return new String(getRawData(), StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public String toString(int indent) {
+        return (hasMetaAttribute(TEXT) ? "\"" : "") + asString() + (hasMetaAttribute(TEXT) ? "\"" : "") + " (I)";
+    }
+
+    @Override
+    public boolean isMutable() {
+        return false;
     }
 }

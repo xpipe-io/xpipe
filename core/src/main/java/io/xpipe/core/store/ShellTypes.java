@@ -124,7 +124,8 @@ public class ShellTypes {
 
         @Override
         public Charset getCharset() {
-            return StandardCharsets.UTF_16LE;
+            // TODO
+            return StandardCharsets.ISO_8859_1;
         }
 
         @Override

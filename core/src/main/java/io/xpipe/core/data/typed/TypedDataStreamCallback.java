@@ -5,7 +5,7 @@ import io.xpipe.core.data.type.TupleType;
 
 public interface TypedDataStreamCallback {
 
-    default void onValue(byte[] data, boolean textual) {
+    default void onValue(byte[] data) {
     }
 
     default void onGenericNode(DataStructureNode node) {

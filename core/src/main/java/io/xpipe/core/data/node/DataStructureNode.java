@@ -8,20 +8,70 @@ import java.util.stream.Stream;
 
 public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
-    public static final String KEY_TABLE_NAME = "tableName";
-    public static final String KEY_ROW_NAME = "rowName";
+    public static final Integer KEY_TABLE_NAME = 1;
+    public static final Integer KEY_ROW_NAME = 2;
+    public static final Integer BOOLEAN_TRUE = 3;
+    public static final Integer BOOLEAN_FALSE = 4;
+    public static final Integer INTEGER_VALUE = 5;
+    public static final Integer TEXT = 5;
 
-    private Properties properties = new Properties();
+    private Map<Integer, String> metaAttributes;
 
-    public String getMetaString(String key) {
-        if (properties == null) {
+    public Map<Integer, String> getMetaAttributes() {
+        return metaAttributes != null ? Collections.unmodifiableMap(metaAttributes) : null;
+    }
+
+    public DataStructureNode tag(Integer key) {
+        if (metaAttributes == null) {
+            metaAttributes = new HashMap<>();
+        }
+
+        metaAttributes.put(key, null);
+        return this;
+    }
+
+    public DataStructureNode tag(Map<Integer, String> metaAttributes) {
+        if (metaAttributes == null) {
+            return this;
+        }
+
+        if (this.metaAttributes == null) {
+            this.metaAttributes = new HashMap<>();
+        }
+
+        this.metaAttributes.putAll(metaAttributes);
+        return this;
+    }
+
+    public DataStructureNode tag(Integer key, String value) {
+        if (metaAttributes == null) {
+            metaAttributes = new HashMap<>();
+        }
+
+        metaAttributes.put(key, value);
+        return this;
+    }
+
+
+    public String getMetaAttribute(Integer key) {
+        if (metaAttributes == null) {
             return null;
         }
 
-        return properties.getProperty(key);
+        return metaAttributes.get(key);
     }
 
-    public abstract DataStructureNode mutableCopy();
+    public boolean hasMetaAttribute(Integer key) {
+        if (metaAttributes == null) {
+            return false;
+        }
+
+        return metaAttributes.containsKey(key);
+    }
+
+    public DataStructureNode mutable() {
+        return this;
+    }
 
     public String keyNameAt(int index) {
         throw unsupported("key name at");
@@ -50,8 +100,6 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
     public abstract boolean isMutable();
 
-    public abstract DataStructureNode immutableView();
-
     @Override
     public String toString() {
         return toString(0);
@@ -59,26 +107,6 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
 
     public DataStructureNode clear() {
         throw unsupported("clear");
-    }
-
-    public boolean isTextual() {
-        throw unsupported("textual check");
-    }
-
-    public DataStructureNode setRaw(byte[] data) {
-        throw unsupported("set raw data");
-    }
-
-    public DataStructureNode set(Object newValue) {
-        throw unsupported("set");
-    }
-
-    public DataStructureNode set(Object newValue, boolean textual) {
-        throw unsupported("set");
-    }
-
-    public DataStructureNode set(int index, DataStructureNode node) {
-        throw unsupported("set at index");
     }
 
     public abstract String toString(int indent);
@@ -98,6 +126,12 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public boolean isNull() {
         return false;
     }
+
+
+    public DataStructureNode set(int index, DataStructureNode node) {
+        throw unsupported("set at index");
+    }
+
 
     public final ValueNode asValue() {
         if (!isValue()) {

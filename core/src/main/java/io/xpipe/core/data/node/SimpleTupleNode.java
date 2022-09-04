@@ -3,41 +3,23 @@ package io.xpipe.core.data.node;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 
 public class SimpleTupleNode extends TupleNode {
 
-    private final boolean mutable;
     private final List<String> names;
     private final List<DataStructureNode> nodes;
 
-    SimpleTupleNode(boolean mutable, List<String> names, List<DataStructureNode> nodes) {
-        this.mutable = mutable;
-        this.names = mutable ? names : Collections.unmodifiableList(names);
-        this.nodes = mutable ? nodes : Collections.unmodifiableList(nodes);
+    public SimpleTupleNode(List<String> names, List<DataStructureNode> nodes) {
+        this.names = names;
+        this.nodes = nodes;
     }
-
-    @Override
-    public TupleNode mutableCopy() {
-        var nodesCopy = nodes.stream()
-                .map(DataStructureNode::mutableCopy)
-                .collect(Collectors.toCollection(ArrayList::new));
-        return new SimpleTupleNode(true, new ArrayList<>(names), nodesCopy);
-    }
-
-    @Override
-    public TupleNode immutableView() {
-        var nodesCopy = nodes.stream()
-                .map(DataStructureNode::immutableView)
-                .collect(Collectors.toCollection(ArrayList::new));
-        return new SimpleTupleNode(false, names, nodesCopy);
-    }
-
     @Override
     public DataStructureNode set(int index, DataStructureNode node) {
-        checkMutable();
-
         nodes.set(index, node);
         return this;
     }
@@ -54,7 +36,7 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public boolean isMutable() {
-        return mutable;
+        return true;
     }
 
     @Override
@@ -83,8 +65,6 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public DataStructureNode clear() {
-        checkMutable();
-
         nodes.clear();
         names.clear();
         return this;
@@ -118,7 +98,7 @@ public class SimpleTupleNode extends TupleNode {
     }
 
     @Override
-    protected String getIdentifier() {
-        return "S";
+    public TupleNode mutable() {
+        return this;
     }
 }

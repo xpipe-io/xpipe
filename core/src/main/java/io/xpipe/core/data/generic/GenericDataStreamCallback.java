@@ -1,5 +1,7 @@
 package io.xpipe.core.data.generic;
 
+import java.util.Map;
+
 public interface GenericDataStreamCallback {
 
     default void onName(String name) {
@@ -17,6 +19,7 @@ public interface GenericDataStreamCallback {
     default void onTupleEnd() {
     }
 
-    default void onValue(byte[] value, boolean textual) {
+
+    default void onValue(byte[] value, Map<Integer, String> metaAttributes) {
     }
 }

@@ -1,16 +1,15 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.generic.GenericDataStreamParser;
 import io.xpipe.core.data.generic.GenericDataStreamWriter;
 import io.xpipe.core.data.generic.GenericDataStructureNodeReader;
 import io.xpipe.core.data.node.ArrayNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
-import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +18,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class DataStructureTest {
@@ -91,74 +89,20 @@ public class DataStructureTest {
 
     @ParameterizedTest
     @EnumSource(DataStructureTests.TypedDataset.class)
-    public void testMutableTypedIo(DataStructureTests.TypedDataset ds) throws IOException {
+    public void testTypedIo(DataStructureTests.TypedDataset ds) throws IOException {
         for (var node : ds.nodes) {
             var dataOut = new ByteArrayOutputStream();
             TypedDataStreamWriter.writeStructure(dataOut, node, ds.type);
             var data = dataOut.toByteArray();
 
-            var reader = TypedDataStructureNodeReader.mutable(ds.type);
+            var reader = TypedDataStructureNodeReader.of(ds.type);
             new TypedDataStreamParser(ds.type).parseStructure(new ByteArrayInputStream(data), reader);
             var readNode = reader.create();
 
             Assertions.assertEquals(node, readNode);
-            Assertions.assertDoesNotThrow(() -> {
-                if (readNode.isTuple()) {
-                    readNode.clear();
-                    Assertions.assertEquals(readNode.size(), 0);
-                }
-
-                if (readNode.isArray()) {
-                    readNode.clear();
-                    Assertions.assertEquals(readNode.size(), 0);
-                }
-            });
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(DataStructureTests.TypedDataset.class)
-    public void testImmutableTypedIo(DataStructureTests.TypedDataset ds) throws IOException {
-        for (var node : ds.nodes) {
-            var dataOut = new ByteArrayOutputStream();
-            TypedDataStreamWriter.writeStructure(dataOut, node, ds.type);
-            var data = dataOut.toByteArray();
-
-            var reader = TypedDataStructureNodeReader.immutable(ds.type);
-            new TypedDataStreamParser(ds.type).parseStructure(new ByteArrayInputStream(data), reader);
-            var readNode = reader.create();
-
-            Assertions.assertEquals(node, readNode);
-            Assertions.assertThrows(UnsupportedOperationException.class, () -> {
-                if (readNode.isTuple() || readNode.isArray()) {
-                    readNode.clear();
-                    Assertions.assertEquals(readNode.size(), 0);
-                } else {
-                    readNode.setRaw("abc".getBytes(StandardCharsets.UTF_8));
-                }
-            });
             if (readNode.isTuple() || readNode.isArray()) {
                 Assertions.assertEquals(readNode.size(), node.size());
             }
-        }
-    }
-
-    @ParameterizedTest
-    @EnumSource(DataStructureTests.TypedDataset.class)
-    public void testReusableTypedIo(DataStructureTests.TypedDataset ds) throws IOException {
-        var dataOut = new ByteArrayOutputStream();
-        for (var node : ds.nodes) {
-            TypedDataStreamWriter.writeStructure(dataOut, node, ds.type);
-        }
-
-        var data = dataOut.toByteArray();
-        var in = new ByteArrayInputStream(data);
-        var reader = TypedReusableDataStructureNodeReader.create(ds.type);
-
-        for (var node : ds.nodes) {
-            new TypedDataStreamParser(ds.type).parseStructure(in, reader);
-            var readNode = reader.create();
-            Assertions.assertEquals(node, readNode);
         }
     }
 }

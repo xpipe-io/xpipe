@@ -32,12 +32,6 @@ public class TypedDataStreamWriter {
 
     private static void writeValue(OutputStream out, ValueNode n) throws IOException {
         out.write(DataStructureNodeIO.TYPED_VALUE_ID);
-        if (n.isNull()) {
-            out.write(DataStructureNodeIO.VALUE_TYPE_NULL);
-            return;
-        }
-
-        out.write(n.isTextual() ? DataStructureNodeIO.VALUE_TYPE_TEXT : DataStructureNodeIO.VALUE_TYPE_BARE);
         out.write(n.getRawData().length);
         out.write(n.getRawData());
     }

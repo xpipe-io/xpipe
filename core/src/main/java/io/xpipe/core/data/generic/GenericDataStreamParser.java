@@ -66,6 +66,7 @@ public class GenericDataStreamParser {
         for (int i = 0; i < size; i++) {
             parse(in, cb);
         }
+        var attributes = DataStructureNodeIO.parseAttributes(in);
         cb.onTupleEnd();
     }
 
@@ -75,19 +76,14 @@ public class GenericDataStreamParser {
         for (int i = 0; i < size; i++) {
             parse(in, cb);
         }
+        var attributes = DataStructureNodeIO.parseAttributes(in);
         cb.onArrayEnd();
     }
 
     private static void parseValue(InputStream in, GenericDataStreamCallback cb) throws IOException {
-        var type = in.read();
-        if (type == DataStructureNodeIO.VALUE_TYPE_NULL) {
-            cb.onValue(null, false);
-            return;
-        }
-
-        var textual = type == DataStructureNodeIO.VALUE_TYPE_TEXT;
         var size = in.read();
         var data = in.readNBytes(size);
-        cb.onValue(data, textual);
+        var attributes = DataStructureNodeIO.parseAttributes(in);
+        cb.onValue(data, attributes);
     }
 }

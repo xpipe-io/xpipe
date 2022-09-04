@@ -169,21 +169,11 @@ public class LinkedTupleNode extends TupleNode {
     }
 
     @Override
-    protected String getIdentifier() {
-        return "linked tuple node";
-    }
-
-    @Override
-    public TupleNode mutableCopy() {
+    public TupleNode mutable() {
         if (isMutable()) {
             return this;
         }
 
-        return new LinkedTupleNode(tupleNodes.stream().map(n -> n.isMutable() ? n : n.mutableCopy()).toList());
-    }
-
-    @Override
-    public TupleNode immutableView() {
-        return this;
+        return new LinkedTupleNode(tupleNodes.stream().map(n -> n.isMutable() ? n : n.mutable()).toList());
     }
 }

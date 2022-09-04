@@ -16,7 +16,7 @@ public abstract class TupleNode extends DataStructureNode {
             throw new IllegalArgumentException("Nodes must be not null");
         }
 
-        return new NoKeyTupleNode(true, nodes);
+        return new SimpleTupleNode(null, nodes);
     }
 
     public static TupleNode of(List<String> names, List<DataStructureNode> nodes) {
@@ -30,41 +30,20 @@ public abstract class TupleNode extends DataStructureNode {
             throw new IllegalArgumentException("Names and nodes must have the same length");
         }
 
-        return new SimpleTupleNode(true, names, nodes);
+        return new SimpleTupleNode(names, nodes);
     }
 
-    public static TupleNode of(boolean mutable, List<String> names, List<DataStructureNode> nodes) {
-        if (names == null) {
-            throw new IllegalArgumentException("Names must be not null");
-        }
-        if (nodes == null) {
-            throw new IllegalArgumentException("Nodes must be not null");
-        }
-        return new SimpleTupleNode(mutable, names, nodes);
-    }
+    @Override
+    public abstract TupleNode mutable();
 
     public final boolean isTuple() {
         return true;
     }
 
-    protected abstract String getIdentifier();
-
-    protected void checkMutable() {
-        if (!isMutable()) {
-            throw new UnsupportedOperationException("Tuple node is immutable");
-        }
-    }
-
-    @Override
-    public abstract TupleNode mutableCopy();
-
-    @Override
-    public abstract TupleNode immutableView();
-
     @Override
     public String toString(int indent) {
         var is = " ".repeat(indent);
-        var start = "(" + getIdentifier() + ") {\n";
+        var start = "{\n";
         var kvs = getKeyValuePairs().stream().map(kv -> {
             if (kv.key() == null) {
                 return is + " " + kv.value().toString(indent + 1) + "\n";

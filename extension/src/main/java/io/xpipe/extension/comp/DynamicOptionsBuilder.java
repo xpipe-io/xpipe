@@ -149,6 +149,10 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
+    public DynamicOptionsBuilder<T> addComp(String nameKey, Comp<?> comp, Property<?> prop) {
+        return addComp(I18n.observable(nameKey), comp, prop);
+    }
+
     public DynamicOptionsBuilder<T> addComp(ObservableValue<String> name, Comp<?> comp, Property<?> prop) {
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);

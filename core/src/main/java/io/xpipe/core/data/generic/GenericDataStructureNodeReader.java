@@ -3,6 +3,8 @@ package io.xpipe.core.data.generic;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ValueNode;
 
+import java.util.Map;
+
 public class GenericDataStructureNodeReader implements GenericDataStreamCallback {
 
     private DataStructureNode node;
@@ -78,12 +80,13 @@ public class GenericDataStructureNodeReader implements GenericDataStreamCallback
     }
 
     @Override
-    public void onValue(byte[] value, boolean textual) {
+    public void onValue(byte[] value, Map<Integer, String> metaAttributes) {
         if (hasReader()) {
-            reader.onValue(value, textual);
+            reader.onValue(value, metaAttributes);
             return;
         }
 
-        node = ValueNode.mutable(value, textual);
+
+        node = ValueNode.of(value).tag(metaAttributes);
     }
 }

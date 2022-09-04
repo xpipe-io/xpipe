@@ -1,5 +1,6 @@
 package io.xpipe.extension;
 
+import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.fxcomps.Comp;
 import javafx.beans.property.Property;
@@ -25,9 +26,15 @@ public interface XPipeDaemon {
 
     Comp<?> namedStoreChooser(ObservableValue<Predicate<DataStore>> filter, Property<? extends DataStore> selected, DataStoreProvider.Category category);
 
+    Comp<?> namedSourceChooser(ObservableValue<Predicate<DataSource<?>>> filter, Property<? extends DataSource<?>> selected, DataSourceProvider.Category category);
+
     Comp<?> sourceProviderChooser(Property<DataSourceProvider<?>> provider, DataSourceProvider.Category category);
 
     Optional<DataStore> getNamedStore(String name);
 
+    Optional<DataSource<?>> getSource(String id);
+
     Optional<String> getStoreName(DataStore store);
+
+    Optional<String> getSourceId(DataSource<?> source);
 }

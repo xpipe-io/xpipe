@@ -6,21 +6,15 @@ import io.xpipe.core.data.type.DataTypeVisitors;
 import io.xpipe.core.data.type.TupleType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
 public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
-    public static TypedDataStructureNodeReader mutable(DataType type) {
-        return new TypedDataStructureNodeReader(type, false);
+    public static TypedDataStructureNodeReader of(DataType type) {
+        return new TypedDataStructureNodeReader(type);
     }
 
-    public static TypedDataStructureNodeReader immutable(DataType type) {
-        return new TypedDataStructureNodeReader(type, true);
-    }
-
-    private final boolean makeImmutable;
     private DataStructureNode readNode;
 
     private final Stack<List<DataStructureNode>> children;
@@ -31,12 +25,11 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     private DataType expectedType;
     private int currentExpectedTypeIndex;
 
-    private TypedDataStructureNodeReader(DataType type, boolean makeImmutable) {
+    private TypedDataStructureNodeReader(DataType type) {
         flattened = new ArrayList<>();
         type.visit(DataTypeVisitors.flatten(flattened::add));
         children = new Stack<>();
         nodes = new Stack<>();
-        this.makeImmutable = makeImmutable;
         expectedType = flattened.get(0);
     }
 
@@ -81,12 +74,12 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] data, boolean textual) {
+    public void onValue(byte[] data) {
         if (!expectedType.isValue()) {
             throw new IllegalStateException("Expected " + expectedType.getName() + " but got value");
         }
 
-        var val = makeImmutable ? ValueNode.immutable(data, textual) : ValueNode.mutable(data, textual);
+        var val = ValueNode.of(data);
         finishNode(val);
         moveExpectedType(false);
     }
@@ -101,7 +94,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
             throw new IllegalStateException("Expected " + expectedType.getName() + " but got generic node");
         }
 
-        finishNode(makeImmutable ? node.immutableView() : node);
+        finishNode(node);
         moveExpectedType(false);
     }
 
@@ -117,10 +110,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
         var l = new ArrayList<DataStructureNode>(tupleType.getSize());
         children.push(l);
 
-        var tupleNames = makeImmutable ?
-                Collections.unmodifiableList(tupleType.getNames()) : new ArrayList<>(tupleType.getNames());
-        var tupleNodes = makeImmutable ? Collections.unmodifiableList(l) : l;
-        var newNode = TupleNode.of(!makeImmutable, tupleNames, tupleNodes);
+        var newNode = new SimpleTupleNode(tupleType.getNames(), l);
         nodes.push(newNode);
     }
 
@@ -159,8 +149,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
         var l = new ArrayList<DataStructureNode>();
         children.push(l);
 
-        var arrayNodes = makeImmutable ? Collections.unmodifiableList(l) : l;
-        var newNode = ArrayNode.of(arrayNodes);
+        var newNode = ArrayNode.of(l);
         nodes.push(newNode);
     }
 

@@ -53,5 +53,9 @@ public interface SupportedApplicationProvider {
     default String getGraphicIcon() {
         return null;
     }
+
+    default boolean isApplicable(DataSource<?> source) {
+        return true;
+    }
 }
 

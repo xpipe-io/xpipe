@@ -21,7 +21,7 @@ public class DataTableAccumulatorTest extends DaemonControl {
         var acc = DataTableAccumulator.create(type);
 
         var val = type.convert(
-                TupleNode.of(List.of(ValueNode.of("val1"), ValueNode.of("val2")))).orElseThrow();
+                TupleNode.of(List.of(ValueNode.ofValue("val1"), ValueNode.ofValue("val2")))).orElseThrow();
         acc.add(val);
         var table = acc.finish(":test");
 

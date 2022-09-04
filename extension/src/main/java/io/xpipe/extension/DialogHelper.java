@@ -4,12 +4,12 @@ import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.LocalStore;
-import io.xpipe.core.store.MachineFileStore;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.source.DataSource;
+import io.xpipe.core.store.*;
 import io.xpipe.core.util.Secret;
 import lombok.Value;
+
+import java.util.function.Predicate;
 
 public class DialogHelper {
 
@@ -48,6 +48,10 @@ public class DialogHelper {
 
                     return stored.get();
                 });
+    }
+
+    public static Dialog dataStoreFlowQuery(DataStoreFlow flow, DataStoreFlow[] available) {
+        return Dialog.choice("flow", o -> o.toString(), true, flow, available);
     }
 
     public static Dialog shellQuery(DataStore store) {
@@ -105,6 +109,22 @@ public class DialogHelper {
                             .getNamedStore(newName)
                             .orElseThrow();
                     if (!filter.isAssignableFrom(found.getClass())) {
+                        throw new IllegalArgumentException("Incompatible store type");
+                    }
+                    return found;
+                });
+    }
+
+    public static Dialog sourceQuery(DataSource<?> source, Predicate<DataSource<?>> filter) {
+        var id = XPipeDaemon.getInstance()
+                .getSourceId(source)
+                .orElse(null);
+        return Dialog.query("Source Id", false, true, false, id, QueryConverter.STRING)
+                .map((String newName) -> {
+                    var found =  XPipeDaemon.getInstance()
+                            .getSource(newName)
+                            .orElseThrow();
+                    if (!filter.test(found)) {
                         throw new IllegalArgumentException("Incompatible store type");
                     }
                     return found;

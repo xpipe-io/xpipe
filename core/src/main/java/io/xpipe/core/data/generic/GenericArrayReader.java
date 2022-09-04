@@ -6,6 +6,7 @@ import io.xpipe.core.data.node.ValueNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GenericArrayReader implements GenericAbstractReader {
 
@@ -127,9 +128,9 @@ public class GenericArrayReader implements GenericAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] value, boolean textual) {
+    public void onValue(byte[] value, Map<Integer, String> metaAttributes) {
         if (currentReader != null) {
-            currentReader.onValue(value, textual);
+            currentReader.onValue(value, metaAttributes);
             return;
         }
 
@@ -141,7 +142,7 @@ public class GenericArrayReader implements GenericAbstractReader {
             throw new IllegalStateException("Array is full but got another value");
         }
 
-        put(ValueNode.mutable(value, textual));
+        put(ValueNode.of(value).tag(metaAttributes));
     }
 
     @Override

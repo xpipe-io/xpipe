@@ -11,8 +11,10 @@ import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.typed.TypedAbstractReader;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
-import io.xpipe.core.data.typed.TypedReusableDataStructureNodeReader;
-import io.xpipe.core.source.*;
+import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataSourceInfo;
+import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.DataSourceType;
 
 import java.io.InputStream;
 import java.util.*;
@@ -63,7 +65,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
                     .ref(DataSourceReference.id(getId())).maxRows(maxRows).build();
             con.performInputExchange(req, (QueryTableDataExchange.Response res, InputStream in) -> {
                     var r = new TypedDataStreamParser(info.getDataType());
-                    r.parseStructures(in, TypedDataStructureNodeReader.immutable(info.getDataType()), nodes::add);
+                    r.parseStructures(in, TypedDataStructureNodeReader.of(info.getDataType()), nodes::add);
             });
         });
         return ArrayNode.of(nodes);
@@ -78,7 +80,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
             private final TypedAbstractReader nodeReader;
 
             {
-                nodeReader = TypedReusableDataStructureNodeReader.create(info.getDataType());
+                nodeReader = TypedDataStructureNodeReader.of(info.getDataType());
                 parser = new TypedDataStreamParser(info.getDataType());
 
                 connection = XPipeConnection.open();

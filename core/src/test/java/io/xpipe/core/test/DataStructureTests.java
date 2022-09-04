@@ -58,7 +58,7 @@ public class DataStructureTests {
     }
 
     private static DataStructureNode createTestData12() {
-        var val = ValueNode.of(null);
+        var val = ValueNode.nullValue();
         var flatArray = ArrayNode.of();
         var flatTuple = TupleNode.builder().add("key1", val).build();
         var nestedArray = ArrayNode.of(List.of(flatArray, flatTuple));
@@ -101,7 +101,7 @@ public class DataStructureTests {
 
     public static DataStructureNode createTestData32() {
         var val = ValueNode.of("value2".getBytes(StandardCharsets.UTF_8));
-        var flatTuple = TupleNode.builder().add("key1", ValueNode.of(null)).add("key2", ValueNode.of(null)).build();
+        var flatTuple = TupleNode.builder().add("key1", ValueNode.nullValue()).add("key2", ValueNode.nullValue()).build();
         var flatArray = ArrayNode.of(List.of(val, flatTuple));
         return flatArray;
     }
@@ -112,13 +112,13 @@ public class DataStructureTests {
     }
 
     public static DataStructureNode createTestData42() {
-        var val = ValueNode.of(null);
+        var val = ValueNode.nullValue();
         return val;
     }
 
     public static DataStructureNode createTestData51() {
         var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
-        var flatArray = ArrayNode.of(List.of(val, ValueNode.of(null)));
+        var flatArray = ArrayNode.of(List.of(val, ValueNode.nullValue()));
         var array1 = ArrayNode.of(List.of(flatArray));
         var array2 = ArrayNode.of(List.of(array1, array1));
         return array2;
@@ -143,7 +143,7 @@ public class DataStructureTests {
 
     public static DataStructureNode createTestData61() {
         var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
-        var array = ArrayNode.of(List.of(val, ValueNode.of(null)));
+        var array = ArrayNode.of(List.of(val, ValueNode.nullValue()));
         var tuple = TupleNode.builder()
                 .add(val).add("key2", array).build();
         return tuple;
@@ -176,7 +176,7 @@ public class DataStructureTests {
 
     public static DataStructureNode createTestData73() {
         var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
-        var array = ArrayNode.of(List.of(val, ValueNode.of(null)));
+        var array = ArrayNode.of(List.of(val, ValueNode.nullValue()));
         return array;
     }
 

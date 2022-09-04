@@ -16,6 +16,9 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
 
+    default DataStoreFlow getFlow() {
+        return DataStoreFlow.INOUT;
+    }
 
     /**
      * Checks whether this store can be opened.

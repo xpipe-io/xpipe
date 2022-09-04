@@ -1,38 +1,29 @@
 package io.xpipe.core.data.node;
 
-import java.util.*;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Value
+@EqualsAndHashCode(callSuper = true)
 public class SimpleArrayNode extends ArrayNode {
 
-    private final boolean mutable;
-    private final List<DataStructureNode> nodes;
-
-    SimpleArrayNode(boolean mutable, List<DataStructureNode> nodes) {
-        this.nodes = nodes;
-        this.mutable = mutable;
-    }
-
-    private void checkMutable() {
-        if (!mutable) {
-            throw new UnsupportedOperationException("Array node is immutable");
-        }
-    }
+    List<DataStructureNode> nodes;
 
     @Override
     public DataStructureNode put(DataStructureNode node) {
-        checkMutable();
-
         nodes.add(node);
         return this;
     }
 
     @Override
     public DataStructureNode set(int index, DataStructureNode node) {
-        checkMutable();
-
         nodes.add(index, node);
         return this;
     }
@@ -48,33 +39,12 @@ public class SimpleArrayNode extends ArrayNode {
     }
 
     @Override
-    public ArrayNode mutableCopy() {
-        return new SimpleArrayNode(true, nodes.stream()
-                .map(DataStructureNode::mutableCopy)
-                .collect(Collectors.toCollection(ArrayList::new)));
-    }
-
-    @Override
-    protected String getIdentifier() {
-        return "S";
-    }
-
-    @Override
     public boolean isMutable() {
-        return mutable;
-    }
-
-    @Override
-    public ArrayNode immutableView() {
-        return new SimpleArrayNode(false, nodes.stream()
-                .map(DataStructureNode::immutableView)
-                .collect(Collectors.toCollection(ArrayList::new)));
+        return true;
     }
 
     @Override
     public DataStructureNode clear() {
-        checkMutable();
-
         nodes.clear();
         return this;
     }
@@ -101,13 +71,11 @@ public class SimpleArrayNode extends ArrayNode {
 
     @Override
     public List<DataStructureNode> getNodes() {
-        return nodes;
+        return Collections.unmodifiableList(nodes);
     }
 
     @Override
     public DataStructureNode remove(int index) {
-        checkMutable();
-
         nodes.remove(index);
         return this;
     }

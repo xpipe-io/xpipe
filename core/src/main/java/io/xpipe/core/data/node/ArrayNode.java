@@ -17,11 +17,7 @@ public abstract class ArrayNode extends DataStructureNode {
     }
 
     public static ArrayNode of(List<DataStructureNode> nodes) {
-        return new SimpleArrayNode(true, nodes);
-    }
-
-    public static ArrayNode of(boolean mutable, List<DataStructureNode> nodes) {
-        return new SimpleArrayNode(mutable, nodes);
+        return new SimpleArrayNode(nodes);
     }
 
     protected ArrayNode() {
@@ -29,8 +25,12 @@ public abstract class ArrayNode extends DataStructureNode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ArrayNode that)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ArrayNode that)) {
+            return false;
+        }
         return getNodes().equals(that.getNodes());
     }
 
@@ -50,17 +50,9 @@ public abstract class ArrayNode extends DataStructureNode {
     }
 
     @Override
-    public abstract ArrayNode immutableView();
-
-    @Override
-    public abstract ArrayNode mutableCopy();
-
-    protected abstract String getIdentifier();
-
-    @Override
     public final String toString(int indent) {
         var content = getNodes().stream().map(n -> n.toString(indent)).collect(Collectors.joining(", "));
-        return "(" + getIdentifier() + ") [" + content + "]";
+        return "[" + content + "]";
     }
 
     @Override
