@@ -86,8 +86,8 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     Dialog configDialog(T source, boolean all);
 
-    default boolean isHidden() {
-        return false;
+    default boolean shouldShow(DataSourceType type) {
+        return type == null || type == getPrimaryType();
     }
 
     DataSourceType getPrimaryType();

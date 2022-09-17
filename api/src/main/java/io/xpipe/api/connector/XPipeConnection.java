@@ -20,7 +20,7 @@ public final class XPipeConnection extends BeaconConnection {
             con.constructSocket();
             var element = reference.getStart();
             while (true) {
-                if (element.requiresExplicitUserInput()) {
+                if (element != null && element.requiresExplicitUserInput()) {
                     throw new IllegalStateException();
                 }
 

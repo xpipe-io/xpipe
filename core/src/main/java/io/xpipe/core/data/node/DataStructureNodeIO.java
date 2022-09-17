@@ -3,6 +3,8 @@ package io.xpipe.core.data.node;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,43 +22,61 @@ public class DataStructureNodeIO {
     public static final int TYPED_ARRAY_ID = 7;
     public static final int TYPED_VALUE_ID = 8;
 
+    public static void writeShort(OutputStream out, int value) throws IOException {
+        var buffer = ByteBuffer.allocate(2);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort((short) value);
+        out.write(buffer.array());
+    }
+
     public static void writeString(OutputStream out, String s) throws IOException {
         if (s != null) {
             var b = s.getBytes(StandardCharsets.UTF_8);
-            out.write(b.length);
+            DataStructureNodeIO.writeShort(out, b.length);
             out.write(b);
         }
     }
 
+    public static short parseShort(InputStream in) throws IOException {
+        var read = in.readNBytes(2);
+        if (read.length < 2) {
+            throw new IllegalStateException("Unable to read short");
+        }
+
+        var buffer = ByteBuffer.wrap(read);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        return buffer.getShort();
+    }
+
     public static String parseString(InputStream in) throws IOException {
-        var nameLength = in.read();
+        var nameLength = parseShort(in);
         var name = new String(in.readNBytes(nameLength), StandardCharsets.UTF_8);
         return name;
     }
 
     public static Map<Integer, String> parseAttributes(InputStream in) throws IOException {
-        var attributesLength = in.read();
+        var attributesLength = parseShort(in);
         if (attributesLength == 0) {
             return null;
         }
 
         var map = new HashMap<Integer, String>();
         for (int i = 0; i < attributesLength; i++) {
-            var key = in.read();
+            var key = parseShort(in);
             var value = parseString(in);
-            map.put(key, value);
+            map.put((int) key, value);
         }
         return map;
     }
 
     public static void writeAttributes(OutputStream out, DataStructureNode s) throws IOException {
         if (s.getMetaAttributes() != null) {
-            out.write(s.getMetaAttributes().size());
+            writeShort(out, s.getMetaAttributes().size());
             for (Map.Entry<Integer, String> entry : s.getMetaAttributes().entrySet()) {
                 Integer integer = entry.getKey();
                 var value = entry.getValue().getBytes(StandardCharsets.UTF_8);
-                out.write(integer);
-                out.write(value.length);
+                writeShort(out, integer);
+                writeShort(out, value.length);
                 out.write(value);
             }
         } else {

@@ -13,7 +13,12 @@ import java.io.OutputStream;
 public class StdoutDataStore implements StreamDataStore {
 
     @Override
-    public boolean isLocalToApplication() {
+    public boolean canOpen() throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean isContentExclusivelyAccessible() {
         return true;
     }
 

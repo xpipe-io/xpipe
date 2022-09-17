@@ -1,11 +1,10 @@
-package io.xpipe.extension.comp;
+package io.xpipe.extension.util;
 
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.util.Secret;
 import io.xpipe.extension.I18n;
-import io.xpipe.extension.Validator;
-import io.xpipe.extension.Validators;
+import io.xpipe.extension.comp.*;
 import io.xpipe.fxcomps.Comp;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
@@ -42,6 +41,9 @@ public class DynamicOptionsBuilder<T> {
         this.wrap = false;
         this.title = title;
     }
+    public DynamicOptionsBuilder<T> addTitle(String titleKey) {
+        return addTitle(I18n.observable(titleKey));
+    }
 
     public DynamicOptionsBuilder<T> addTitle(ObservableValue<String> title) {
         entries.add(new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
@@ -72,7 +74,7 @@ public class DynamicOptionsBuilder<T> {
         for (var e : NewLine.values()) {
             map.put(e, I18n.observable("extension." + e.getId()));
         }
-        var comp = new ChoiceComp<>(prop,map);
+        var comp = new ChoiceComp<>(prop, map);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable("extension.newLine"), comp));
         props.add(prop);
         return this;
@@ -147,6 +149,14 @@ public class DynamicOptionsBuilder<T> {
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
+    }
+
+    public DynamicOptionsBuilder<T> addComp(Comp<?> comp) {
+        return addComp((ObservableValue<String>) null, comp, null);
+    }
+
+    public DynamicOptionsBuilder<T> addComp(Comp<?> comp, Property<?> prop) {
+        return addComp((ObservableValue<String>) null, comp, prop);
     }
 
     public DynamicOptionsBuilder<T> addComp(String nameKey, Comp<?> comp, Property<?> prop) {

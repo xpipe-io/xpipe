@@ -1,5 +1,6 @@
 package io.xpipe.core.source;
 
+import io.xpipe.core.impl.PreservingTableWriteConnection;
 import io.xpipe.core.store.DataStore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,10 +17,14 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {
+        if (!getFlow().hasInput()) {
+            return new DataSourceInfo.Table(null, -1);
+        }
+
         try (var con = openReadConnection()) {
             var dataType = con.getDataType();
             var rowCount = con.getRowCount();
-            return new DataSourceInfo.Table(dataType, rowCount);
+            return new DataSourceInfo.Table(dataType, rowCount.orElse(-1));
         }
     }
 
@@ -41,12 +46,22 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
         return con;
     }
 
+    public final TableWriteConnection openPrependingWriteConnection() throws Exception {
+        var con = newPrependingWriteConnection();
+        con.init();
+        return con;
+    }
+
     protected TableWriteConnection newWriteConnection() {
         throw new UnsupportedOperationException();
     }
 
     protected TableWriteConnection newAppendingWriteConnection() {
-        throw new UnsupportedOperationException();
+        return new PreservingTableWriteConnection(this, newWriteConnection(), true);
+    }
+
+    protected TableWriteConnection newPrependingWriteConnection() {
+        return new PreservingTableWriteConnection(this, newWriteConnection(), false);
     }
 
     protected TableReadConnection newReadConnection() {

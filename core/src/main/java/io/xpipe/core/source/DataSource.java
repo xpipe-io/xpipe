@@ -1,6 +1,9 @@
 package io.xpipe.core.source;
 
 import com.fasterxml.jackson.databind.util.TokenBuffer;
+import io.xpipe.core.impl.TextSource;
+import io.xpipe.core.impl.XpbtSource;
+import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonHelper;
 import lombok.AllArgsConstructor;
@@ -13,7 +16,7 @@ import java.util.Optional;
 /**
  * Represents a formal description on what exactly makes up the
  * actual data source and how to access/locate it for a given data store.
- *
+ * <p>
  * This instance is only valid in combination with its associated data store instance.
  */
 @Data
@@ -21,7 +24,44 @@ import java.util.Optional;
 @AllArgsConstructor
 public abstract class DataSource<DS extends DataStore> {
 
+
+    public static DataSource<?> createInternalDataSource(DataSourceType t, DataStore store) {
+        try {
+            return switch (t) {
+                case TABLE -> new XpbtSource(store.asNeeded());
+                case STRUCTURE -> null;
+                case TEXT -> new TextSource(store.asNeeded());
+                case RAW -> null;
+                //TODO
+                case COLLECTION -> null;
+            };
+        } catch (Exception ex) {
+            throw new AssertionError(ex);
+        }
+    }
+
     protected DS store;
+
+
+    public void test() throws Exception {
+        store.test();
+    }
+
+    public void validate() throws Exception {
+        if (store == null) {
+            throw new IllegalStateException("Store cannot be null");
+        }
+
+        store.validate();
+    }
+
+    public DataFlow getFlow() {
+        if (store == null) {
+            return null;
+        }
+
+        return store.getFlow();
+    }
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
@@ -36,14 +76,6 @@ public abstract class DataSource<DS extends DataStore> {
         var c = copy();
         c.store = store;
         return c;
-    }
-
-    public  boolean supportsRead() {
-        return true;
-    }
-
-    public  boolean supportsWrite() {
-        return true;
     }
 
     /**
@@ -79,6 +111,10 @@ public abstract class DataSource<DS extends DataStore> {
 
     public DataSourceConnection openAppendingWriteConnection() throws Exception {
         throw new UnsupportedOperationException("Appending write is not supported");
+    }
+
+    public DataSourceConnection openPrependingWriteConnection() throws Exception {
+        throw new UnsupportedOperationException("Prepending write is not supported");
     }
 
     public DS getStore() {

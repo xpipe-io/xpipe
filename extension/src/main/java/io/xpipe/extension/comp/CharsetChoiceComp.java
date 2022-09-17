@@ -2,6 +2,7 @@ package io.xpipe.extension.comp;
 
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.extension.I18n;
+import io.xpipe.extension.util.CustomComboBoxBuilder;
 import io.xpipe.fxcomps.SimpleComp;
 import javafx.beans.property.Property;
 import javafx.scene.control.Label;

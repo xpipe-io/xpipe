@@ -8,6 +8,9 @@ plugins {
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/junit.gradle"
 
+System.setProperty('excludeExtensionLibrary', 'true')
+apply from: "$rootDir/scripts/extension_test.gradle"
+
 version = file('../misc/version').text
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-api'
@@ -30,31 +33,6 @@ configurations {
     testImplementation.extendsFrom(dep)
 }
 
-def canTestWithDev = findProject(':app') != null
-def home = System.getenv('XPIPE_HOME')
-String daemonCommand = canTestWithDev ?
-        "cmd.exe /c \\\"$rootDir\\gradlew.bat\\\" :app:run" :
-        "cmd.exe /c \\\"$home\\app\\xpipe.exe\\\""
-
-test {
-    workingDir = rootDir
-
-    // Daemon properties
-    systemProperty "io.xpipe.beacon.exec", daemonCommand +
-            " -Dio.xpipe.app.mode=tray" +
-            " -Dio.xpipe.beacon.port=21722" +
-            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
-            " -Dio.xpipe.storage.persist=false" +
-            " -Dio.xpipe.app.writeSysOut=true" +
-            " -Dio.xpipe.app.writeLogs=true" +
-            // " -Dio.xpipe.beacon.debugOutput=true" +
-            " -Dio.xpipe.app.logLevel=trace"
-
-    // API properties
-    systemProperty 'io.xpipe.beacon.debugOutput', "true"
-    systemProperty 'io.xpipe.beacon.debugExecOutput', "true"
-    systemProperty "io.xpipe.beacon.port", "21722"
-}
 
 apply from: 'publish.gradle'
 apply from: "$rootDir/deps/publish-base.gradle"

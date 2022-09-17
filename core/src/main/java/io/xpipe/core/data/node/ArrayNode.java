@@ -31,12 +31,17 @@ public abstract class ArrayNode extends DataStructureNode {
         if (!(o instanceof ArrayNode that)) {
             return false;
         }
-        return getNodes().equals(that.getNodes());
+
+        var toReturn =  getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        if (toReturn == false) {
+            throw new AssertionError();
+        }
+        return toReturn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getNodes());
+        return Objects.hash(getNodes(), getMetaAttributes());
     }
 
     @Override
@@ -52,7 +57,7 @@ public abstract class ArrayNode extends DataStructureNode {
     @Override
     public final String toString(int indent) {
         var content = getNodes().stream().map(n -> n.toString(indent)).collect(Collectors.joining(", "));
-        return "[" + content + "]";
+        return "[" + content + "] " + metaToString();
     }
 
     @Override

@@ -5,7 +5,7 @@ import io.xpipe.core.source.DataSourceId;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class DataTableTest extends DaemonControl {
+public class DataTableTest extends ApiTest {
 
     @BeforeAll
     public static void setupStorage() throws Exception {

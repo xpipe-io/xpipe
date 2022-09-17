@@ -32,7 +32,7 @@ public class TypedDataStreamWriter {
 
     private static void writeValue(OutputStream out, ValueNode n) throws IOException {
         out.write(DataStructureNodeIO.TYPED_VALUE_ID);
-        out.write(n.getRawData().length);
+        DataStructureNodeIO.writeShort(out, n.getRawData().length);
         out.write(n.getRawData());
     }
 
@@ -49,7 +49,7 @@ public class TypedDataStreamWriter {
 
     private static void writeArray(OutputStream out, ArrayNode array, ArrayType type) throws IOException {
         out.write(DataStructureNodeIO.TYPED_ARRAY_ID);
-        out.write(array.size());
+        DataStructureNodeIO.writeShort(out, array.size());
         for (int i = 0; i < array.size(); i++) {
             write(out, array.at(i), type.getSharedType());
         }

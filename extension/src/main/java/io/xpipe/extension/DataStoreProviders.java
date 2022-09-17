@@ -4,20 +4,19 @@ import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.event.ErrorEvent;
 
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataStoreProviders {
 
-    private static Set<DataStoreProvider> ALL;
+    private static List<DataStoreProvider> ALL;
 
     public static void init(ModuleLayer layer) {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
-                    .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
+                    .map(ServiceLoader.Provider::get)
+                    .sorted(Comparator.comparing(DataStoreProvider::getId))
+                    .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
                     return !p.init();
@@ -70,7 +69,7 @@ public class DataStoreProviders {
         return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny().orElseThrow();
     }
 
-    public static Set<DataStoreProvider> getAll() {
+    public static List<DataStoreProvider> getAll() {
         return ALL;
     }
 }

@@ -43,8 +43,12 @@ public class ExtensionJacksonModule extends SimpleModule {
             var mapper = JacksonHelper.newMapper(ExtensionJacksonModule.class);
             var tree = (ObjectNode) mapper.readTree(p);
             var type = tree.get("type").textValue();
-            var prov = DataSourceProviders.byId(type);
-            return mapper.treeToValue(tree, prov.getSourceClass());
+            var prov = DataSourceProviders.byName(type);
+            if (prov.isEmpty()) {
+                return null;
+            }
+
+            return mapper.treeToValue(tree, prov.get().getSourceClass());
         }
     }
 }

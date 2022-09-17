@@ -5,14 +5,12 @@ import io.xpipe.extension.I18n;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.Shortcuts;
 import io.xpipe.fxcomps.augment.Augment;
-import javafx.beans.property.SimpleObjectProperty;
+import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import javafx.util.Duration;
-
-import java.util.function.Supplier;
 
 public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
@@ -23,8 +21,8 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
 
     private final ObservableValue<String> text;
 
-    public FancyTooltipAugment(Supplier<String> text) {
-        this.text = new SimpleObjectProperty<>(text.get());
+    public FancyTooltipAugment(ObservableValue<String> text) {
+        this.text = PlatformThread.sync(text);
     }
 
     public FancyTooltipAugment(String key) {
@@ -73,8 +71,48 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
         @Override
         protected void show() {
             Window owner = getOwnerWindow();
-            if (owner.isFocused())
+            if (owner == null || owner.isFocused()) {
                 super.show();
+            }
+        }
+
+        @Override
+        public void hide() {
+            Window owner = getOwnerWindow();
+            if (owner == null || owner.isFocused()) {
+                super.hide();
+            }
+        }
+
+        @Override
+        public void show(Node ownerNode, double anchorX, double anchorY) {
+            Window owner = getOwnerWindow();
+            if (owner == null || owner.isFocused()) {
+                super.show(ownerNode, anchorX, anchorY);
+            }
+        }
+
+        @Override
+        public void showOnAnchors(Node ownerNode, double anchorX, double anchorY) {
+            Window owner = getOwnerWindow();
+            if (owner == null || owner.isFocused()) {
+                super.showOnAnchors(ownerNode, anchorX, anchorY);
+            }
+        }
+
+        @Override
+        public void show(Window owner) {
+            if (owner == null || owner.isFocused()) {
+                super.show(owner);
+            }
+        }
+
+        @Override
+        public void show(Window ownerWindow, double anchorX, double anchorY) {
+            Window owner = getOwnerWindow();
+            if (owner == null || owner.isFocused()) {
+                super.show(ownerWindow, anchorX, anchorY);
+            }
         }
     }
 }

@@ -1,7 +1,6 @@
 package io.xpipe.core.data.node;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.AllArgsConstructor;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,8 +9,9 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-@Value
-@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+
+
 public class SimpleArrayNode extends ArrayNode {
 
     List<DataStructureNode> nodes;
@@ -79,4 +79,6 @@ public class SimpleArrayNode extends ArrayNode {
         nodes.remove(index);
         return this;
     }
+
+
 }

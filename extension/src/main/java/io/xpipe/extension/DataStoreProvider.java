@@ -77,10 +77,6 @@ public interface DataStoreProvider {
 
     DataStore defaultStore();
 
-    default String display(DataStore store) {
-        return store.toSummaryString();
-    }
-
     List<String> getPossibleNames();
 
     default String getId() {
@@ -89,7 +85,7 @@ public interface DataStoreProvider {
 
     List<Class<?>> getStoreClasses();
 
-    default DataStoreFlow[] getPossibleFlows() {
-        return new DataStoreFlow[]{DataStoreFlow.INPUT};
+    default DataFlow[] getPossibleFlows() {
+        return new DataFlow[]{DataFlow.INPUT};
     }
 }

@@ -11,11 +11,13 @@ public interface Translatable {
 
     static <T extends Translatable> StringConverter<T> stringConverter() {
         return new StringConverter<>() {
-            @Override public String toString(T t) {
+            @Override
+            public String toString(T t) {
                 return t == null ? null : t.toTranslatedString();
             }
 
-            @Override public T fromString(String string) {
+            @Override
+            public T fromString(String string) {
                 throw new AssertionError();
             }
         };

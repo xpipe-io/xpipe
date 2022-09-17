@@ -35,13 +35,4 @@ public interface StreamDataStore extends DataStore {
     default OutputStream openOutput() throws Exception {
         throw new UnsupportedOperationException("Can't open store output");
     }
-
-
-    /**
-     * Indicates whether this store is persistent, i.e. whether the stored data can be read again or not.
-     * The caller has to adapt accordingly based on the persistence property.
-     */
-    default boolean persistent() {
-        return false;
-    }
 }

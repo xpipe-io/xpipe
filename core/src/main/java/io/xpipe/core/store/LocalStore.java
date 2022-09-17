@@ -3,6 +3,7 @@ package io.xpipe.core.store;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.io.*;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @JsonTypeName("local")
 @Value
+@EqualsAndHashCode(callSuper = false)
 public class LocalStore extends StandardShellStore implements MachineFileStore {
 
     @Override
@@ -49,7 +51,7 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
             var l = type.switchTo(command);
             var builder = new ProcessBuilder(l);
             process = builder.start();
-            charset = type.getCharset();
+            charset = type.determineCharset(LocalStore.this);
 
             var t = new Thread(() -> {
                 try (var inputStream = createInputStream()){
@@ -108,11 +110,6 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
         return ShellTypes.getDefault().getNewLine();
     }
 
-
-    @Override
-    public String toSummaryString() {
-        return "localhost";
-    }
 
     @Override
     public InputStream openInput(String file) throws Exception {

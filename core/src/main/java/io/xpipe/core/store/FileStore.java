@@ -37,9 +37,13 @@ public class FileStore implements StreamDataStore, FilenameStore {
 
     @Override
     public void validate() throws Exception {
-        if (!machine.exists(file)) {
-            throw new IllegalStateException("File " + file + " could not be found on machine " + machine.toSummaryString());
+        if (machine == null) {
+            throw new IllegalStateException("Machine is missing");
         }
+        if (file == null) {
+            throw new IllegalStateException("File is missing");
+        }
+
     }
 
     @Override
@@ -55,16 +59,6 @@ public class FileStore implements StreamDataStore, FilenameStore {
     @Override
     public boolean canOpen() throws Exception {
         return machine.exists(file);
-    }
-
-    @Override
-    public String toSummaryString() {
-        return file + "@" + machine.toSummaryString();
-    }
-
-    @Override
-    public boolean persistent() {
-        return true;
     }
 
     @Override

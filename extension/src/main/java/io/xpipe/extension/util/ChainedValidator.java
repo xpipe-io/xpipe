@@ -1,4 +1,4 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ChainedValidator implements io.xpipe.extension.Validator {
+public class ChainedValidator implements Validator {
 
     private final List<Validator> validators;
     private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>(new ValidationResult());

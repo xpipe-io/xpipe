@@ -1,8 +1,9 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
+import lombok.Value;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
@@ -20,10 +21,11 @@ public class ShellTypes {
             o = store.executeAndCheckOut(List.of(), List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"), null).trim();
             if (o.equals("PowerShell")) {
                 return POWERSHELL;
-            } else
+            } else {
                 return CMD;
             }
         }
+    }
 
     public static StandardShellStore.ShellType[] getAvailable(ShellStore store) throws Exception {
         var o = store.executeAndCheckOut(List.of(), List.of("echo", "$0"), null);
@@ -34,59 +36,36 @@ public class ShellTypes {
         }
     }
 
-    @JsonProperty("powershell")
-    public static final StandardShellStore.ShellType POWERSHELL = new StandardShellStore.ShellType() {
+    public static final StandardShellStore.ShellType POWERSHELL = new PowerShell();
 
-        @Override
-        public List<String> switchTo(List<String> cmd) {
-            var l = new ArrayList<>(cmd);
-            l.add(0, "powershell.exe");
-            return l;
+
+    public static final StandardShellStore.ShellType CMD = new Cmd();
+
+    public static final StandardShellStore.ShellType SH = new Sh();
+
+    public static StandardShellStore.ShellType getDefault() {
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return CMD;
+        } else {
+            return SH;
         }
+    }
 
-        @Override
-        public List<String> createFileReadCommand(String file) {
-            return List.of("Get-Content", file);
-        }
 
-        @Override
-        public List<String> createFileWriteCommand(String file) {
-            return List.of("Out-File", "-FilePath", file);
-        }
+    public static StandardShellStore.ShellType[] getWindowsShells() {
+        return new StandardShellStore.ShellType[]{
+                CMD,
+                POWERSHELL
+        };
+    }
 
-        @Override
-        public List<String> createFileExistsCommand(String file) {
-            return List.of("Test-Path", "-path", file);
-        }
+    public static StandardShellStore.ShellType[] getLinuxShells() {
+        return new StandardShellStore.ShellType[]{SH};
+    }
 
-        @Override
-        public Charset getCharset() {
-            return StandardCharsets.UTF_16LE;
-        }
-
-        @Override
-        public NewLine getNewLine() {
-            return NewLine.CRLF;
-        }
-
-        @Override
-        public String getName() {
-            return "powershell";
-        }
-
-        @Override
-        public String getDisplayName() {
-            return "PowerShell";
-        }
-
-        @Override
-        public List<String> getOperatingSystemNameCommand() {
-            return List.of("systeminfo", "|", "findstr", "/B", "/C:\"OS Name\"");
-        }
-    };
-
-    @JsonProperty("cmd")
-    public static final StandardShellStore.ShellType CMD = new StandardShellStore.ShellType() {
+    @JsonTypeName("cmd")
+    @Value
+    public static class Cmd implements StandardShellStore.ShellType {
 
         @Override
         public NewLine getNewLine() {
@@ -98,6 +77,8 @@ public class ShellTypes {
             var l = new ArrayList<>(cmd);
             l.add(0, "cmd.exe");
             l.add(1, "/c");
+            l.add(2, "@chcp 65001>nul");
+            l.add(3, "&&");
             return l;
         }
 
@@ -123,9 +104,8 @@ public class ShellTypes {
         }
 
         @Override
-        public Charset getCharset() {
-            // TODO
-            return StandardCharsets.ISO_8859_1;
+        public Charset determineCharset(ShellStore store) throws Exception {
+            return StandardCharsets.UTF_8;
         }
 
         @Override
@@ -142,10 +122,63 @@ public class ShellTypes {
         public List<String> getOperatingSystemNameCommand() {
             return List.of("Get-ComputerInfo");
         }
-    };
+    }
 
-    @JsonProperty("sh")
-    public static final StandardShellStore.ShellType SH = new StandardShellStore.ShellType() {
+    @JsonTypeName("powershell")
+    @Value
+    public static class PowerShell implements StandardShellStore.ShellType {
+
+        @Override
+        public List<String> switchTo(List<String> cmd) {
+            var l = new ArrayList<>(cmd);
+            l.add(0, "powershell.exe");
+            return l;
+        }
+
+        @Override
+        public List<String> createFileReadCommand(String file) {
+            return List.of("Get-Content", file);
+        }
+
+        @Override
+        public List<String> createFileWriteCommand(String file) {
+            return List.of("Out-File", "-FilePath", file);
+        }
+
+        @Override
+        public List<String> createFileExistsCommand(String file) {
+            return List.of("Test-Path", "-path", file);
+        }
+
+        @Override
+        public Charset determineCharset(ShellStore store) throws Exception {
+            return StandardCharsets.UTF_16LE;
+        }
+
+        @Override
+        public NewLine getNewLine() {
+            return NewLine.CRLF;
+        }
+
+        @Override
+        public String getName() {
+            return "powershell";
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "PowerShell";
+        }
+
+        @Override
+        public List<String> getOperatingSystemNameCommand() {
+            return List.of("systeminfo", "|", "findstr", "/B", "/C:\"OS Name\"");
+        }
+    }
+
+    @JsonTypeName("sh")
+    @Value
+    public static class Sh implements StandardShellStore.ShellType {
 
         @Override
         public List<String> switchTo(List<String> cmd) {
@@ -157,7 +190,7 @@ public class ShellTypes {
             var l = new ArrayList<>(cmd);
             l.add(0, "sudo");
             l.add(1, "-S");
-            var pws = new ByteArrayInputStream(pw.getBytes(getCharset()));
+            var pws = new ByteArrayInputStream(pw.getBytes(determineCharset(st)));
             return st.prepareCommand(List.of(Secret.createForSecretValue(pw)), l, timeout);
         }
 
@@ -177,7 +210,7 @@ public class ShellTypes {
         }
 
         @Override
-        public Charset getCharset() {
+        public Charset determineCharset(ShellStore st) throws Exception {
             return StandardCharsets.UTF_8;
         }
 
@@ -200,32 +233,5 @@ public class ShellTypes {
         public List<String> getOperatingSystemNameCommand() {
             return List.of("uname", "-o");
         }
-    };
-
-    public static StandardShellStore.ShellType getDefault() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return CMD;
-        } else {
-            return SH;
-        }
-    }
-
-
-    public static StandardShellStore.ShellType[] getWindowsShells() {
-        return new StandardShellStore.ShellType[]{CMD, POWERSHELL};
-    }
-
-    public static StandardShellStore.ShellType[] getLinuxShells() {
-        return new StandardShellStore.ShellType[]{SH};
-    }
-
-    private final String name;
-
-    ShellTypes(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 }

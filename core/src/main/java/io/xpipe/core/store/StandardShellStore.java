@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.Secret;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 public abstract class StandardShellStore extends ShellStore implements MachineFileStore {
 
-
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public static interface ShellType {
 
         List<String> switchTo(List<String> cmd);
@@ -25,7 +26,7 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
 
         List<String> createFileExistsCommand(String file);
 
-        Charset getCharset();
+        Charset determineCharset(ShellStore store) throws Exception;
 
         NewLine getNewLine();
 

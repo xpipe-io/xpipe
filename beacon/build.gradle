@@ -9,9 +9,6 @@ apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 
 dependencies {
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
-    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.13.0"
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.13.0"
 }
 
 version = file('../misc/version').text

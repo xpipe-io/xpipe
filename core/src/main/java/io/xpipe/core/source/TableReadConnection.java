@@ -10,6 +10,7 @@ import io.xpipe.core.data.typed.TypedDataStreamWriter;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -25,8 +26,8 @@ public interface TableReadConnection extends DataSourceReadConnection {
             }
 
             @Override
-            public int getRowCount() throws Exception {
-                return 0;
+            public OptionalInt getRowCount() throws Exception {
+                return OptionalInt.empty();
             }
 
             @Override
@@ -49,7 +50,9 @@ public interface TableReadConnection extends DataSourceReadConnection {
     /**
      * Returns the amount of rows to be read or -1 if the amount is unknown.
      */
-    int getRowCount() throws Exception;
+    default OptionalInt getRowCount() throws Exception {
+        return OptionalInt.empty();
+    }
 
     /**
      * Consumes the table rows until the acceptor returns false.
@@ -59,7 +62,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
     /**
      * Reads multiple rows in bulk.
      */
-    default ArrayNode readRows(int maxLines) throws Exception{
+    default ArrayNode readRows(int maxLines) throws Exception {
         var list = new ArrayList<DataStructureNode>();
 
         AtomicInteger rowCounter = new AtomicInteger();

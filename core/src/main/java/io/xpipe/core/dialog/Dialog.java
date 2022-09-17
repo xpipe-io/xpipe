@@ -335,6 +335,10 @@ public abstract class Dialog {
             @Override
             public DialogElement start() throws Exception {
                 active = check.get() ? null : d;
+                if (active == null) {
+                    complete();
+                }
+
                 return active != null ? active.start() : null;
             }
 
@@ -427,6 +431,9 @@ public abstract class Dialog {
     private Supplier<?> evaluation;
     private final List<Consumer<?>> completion = new ArrayList<>();
 
+    /* TODO: Implement automatic completion mechanism for start as well
+    *   In case start returns null, the completion is not automatically done.
+    * */
     public abstract DialogElement start() throws Exception;
 
     public Dialog evaluateTo(Dialog d) {

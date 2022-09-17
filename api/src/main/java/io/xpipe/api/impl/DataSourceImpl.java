@@ -80,7 +80,7 @@ public abstract class DataSourceImpl implements DataSource {
     }
 
     public static DataSource create(DataSourceId id, String type, DataStore store) {
-        if (store instanceof StreamDataStore s && s.isLocalToApplication()) {
+        if (store instanceof StreamDataStore s && s.isContentExclusivelyAccessible()) {
             var res = XPipeConnection.execute(con -> {
                 var req = StoreStreamExchange.Request.builder().build();
                 StoreStreamExchange.Response r = con.performOutputExchange(req, out -> {

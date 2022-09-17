@@ -6,22 +6,20 @@ import io.xpipe.core.store.FileStore;
 import io.xpipe.extension.event.ErrorEvent;
 import lombok.SneakyThrows;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.ServiceLoader;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataSourceProviders {
 
-    private static Set<DataSourceProvider<?>> ALL;
+    private static List<DataSourceProvider<?>> ALL;
 
     public static void init(ModuleLayer layer) {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataSourceProvider.class)
                     .stream()
                     .map(p -> (DataSourceProvider<?>) p.get())
-                    .collect(Collectors.toSet());
+                    .sorted(Comparator.comparing(DataSourceProvider::getId))
+                    .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
                     p.init();
@@ -36,7 +34,7 @@ public class DataSourceProviders {
         }
     }
 
-    public static DataSourceProvider<?> getNativeDataSourceDescriptorForType(DataSourceType t) {
+    public static DataSourceProvider<?> getInternalProviderForType(DataSourceType t) {
         try {
             return switch (t) {
                 case TABLE -> DataSourceProviders.byId("xpbt");
@@ -161,7 +159,7 @@ public class DataSourceProviders {
                 .findAny();
     }
 
-    public static Set<DataSourceProvider<?>> getAll() {
+    public static List<DataSourceProvider<?>> getAll() {
         return ALL;
     }
 }

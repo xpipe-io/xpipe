@@ -8,6 +8,13 @@ import java.util.stream.Collectors;
 
 public record CodeSnippet(List<CodeSnippet.Line> lines) {
 
+    public static final ColorScheme LIGHT_MODE = new ColorScheme(
+            Color.valueOf("0033B3"),
+            Color.valueOf("000000"),
+            Color.valueOf("000000"),
+            Color.valueOf("067D17")
+    );
+
     public String toString() {
         return getRawString();
     }
@@ -18,7 +25,11 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 
-    public static Builder builder(CodeSnippets.ColorScheme scheme) {
+    public static Builder builder() {
+        return new Builder(LIGHT_MODE);
+    }
+
+    public static Builder builder(ColorScheme scheme) {
         return new Builder(scheme);
     }
 
@@ -31,11 +42,11 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
 
     public static class Builder {
 
-        private CodeSnippets.ColorScheme scheme;
+        private ColorScheme scheme;
         private List<Line> lines;
         private List<Element> currentLine;
 
-        public Builder(CodeSnippets.ColorScheme scheme) {
+        public Builder(ColorScheme scheme) {
             this.scheme = scheme;
             lines = new ArrayList<>();
             currentLine = new ArrayList<>();
@@ -114,5 +125,10 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
     }
 
     public static record Line(List<CodeSnippet.Element> elements) {
+    }
+
+    public static record ColorScheme(
+            Color keyword, Color identifier, Color type, Color string) {
+
     }
 }

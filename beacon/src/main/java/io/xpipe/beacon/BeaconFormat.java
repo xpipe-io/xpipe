@@ -55,19 +55,19 @@ public class BeaconFormat {
 
             private byte[] currentBytes;
             private int index;
-            private boolean finished;
+            private boolean lastBlock;
 
             @Override
             public int read() throws IOException {
-                if ((currentBytes == null || index == currentBytes.length) && !finished) {
+                if ((currentBytes == null || index == currentBytes.length) && !lastBlock) {
                     readBlock();
                 }
 
-                if (currentBytes != null && index == currentBytes.length && finished) {
+                if (currentBytes != null && index == currentBytes.length && lastBlock) {
                     return -1;
                 }
 
-                int out = currentBytes[index];
+                int out = currentBytes[index] & 0xff;
                 index++;
                 return out;
             }
@@ -83,7 +83,7 @@ public class BeaconFormat {
                 currentBytes = in.readNBytes(lengthInt);
                 index = 0;
                 if (lengthInt < SEGMENT_SIZE) {
-                    finished = true;
+                    lastBlock = true;
                 }
             }
         };

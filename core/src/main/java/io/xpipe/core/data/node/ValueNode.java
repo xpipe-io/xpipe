@@ -21,16 +21,20 @@ public abstract class ValueNode extends DataStructureNode {
         if (!(o instanceof ValueNode that)) {
             return false;
         }
-        return Arrays.equals(getRawData(), that.getRawData()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        var toReturn =  Arrays.equals(getRawData(), that.getRawData()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        if (toReturn == false) {
+            throw new AssertionError();
+        }
+        return toReturn;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(getRawData());
+        return Arrays.hashCode(getRawData()) + Objects.hash(getMetaAttributes());
     }
 
     public static ValueNode nullValue() {
-        return new SimpleImmutableValueNode(new byte[0]);
+        return new SimpleImmutableValueNode(new byte[0]).tag(NULL_VALUE).asValue();
     }
 
     public static ValueNode of(byte[] data) {
@@ -38,6 +42,10 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public static ValueNode of(Object o) {
+        if (o == null) {
+            return nullValue();
+        }
+
         return of(o.toString().getBytes(StandardCharsets.UTF_8));
     }
 

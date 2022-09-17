@@ -18,6 +18,7 @@ public class SimpleTupleNode extends TupleNode {
         this.names = names;
         this.nodes = nodes;
     }
+
     @Override
     public DataStructureNode set(int index, DataStructureNode node) {
         nodes.set(index, node);
@@ -26,7 +27,8 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public DataType determineDataType() {
-        return TupleType.of(names, nodes.stream().map(DataStructureNode::determineDataType).toList());
+        var subtypes = nodes.stream().map(DataStructureNode::determineDataType).toList();
+        return names != null ? TupleType.of(names, subtypes) : TupleType.of(subtypes);
     }
 
     @Override
@@ -46,7 +48,7 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public DataStructureNode forKey(String name) {
-        var index = names.indexOf(name);
+        var index = names != null ? names.indexOf(name) : -1;
         if (index == -1) {
             throw new IllegalArgumentException("Key " + name + " not found");
         }
@@ -56,7 +58,7 @@ public class SimpleTupleNode extends TupleNode {
 
     @Override
     public Optional<DataStructureNode> forKeyIfPresent(String name) {
-        if (!names.contains(name)) {
+        if (names == null || !names.contains(name)) {
             return Optional.empty();
         }
 
@@ -77,6 +79,10 @@ public class SimpleTupleNode extends TupleNode {
     }
 
     public String keyNameAt(int index) {
+        if (names == null) {
+            return null;
+        }
+
         return names.get(index);
     }
 
@@ -84,7 +90,7 @@ public class SimpleTupleNode extends TupleNode {
     public List<KeyValue> getKeyValuePairs() {
         var l = new ArrayList<KeyValue>(size());
         for (int i = 0; i < size(); i++) {
-            l.add(new KeyValue(getKeyNames().get(i), getNodes().get(i)));
+            l.add(new KeyValue(names != null ? getKeyNames().get(i) : null, getNodes().get(i)));
         }
         return l;
     }

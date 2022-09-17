@@ -1,16 +1,17 @@
-package io.xpipe.extension.util;
+package io.xpipe.core.impl;
 
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceConnection;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.source.TextWriteConnection;
 
-public class AppendingTextWriteConnection extends AppendingWriteConnection implements TextWriteConnection {
+public class PreservingTextWriteConnection extends PreservingWriteConnection implements TextWriteConnection {
 
-    public AppendingTextWriteConnection(
-            DataSource<?> source, DataSourceConnection connection
+    public PreservingTextWriteConnection(
+            DataSource<?> source, DataSourceConnection connection,
+            boolean append
     ) {
-        super(DataSourceType.TEXT, source, connection);
+        super(DataSourceType.TEXT, source, append, connection);
     }
 
     @Override

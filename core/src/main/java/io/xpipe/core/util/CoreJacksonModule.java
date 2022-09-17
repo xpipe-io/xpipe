@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -19,6 +20,7 @@ import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
+import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.*;
@@ -45,6 +47,10 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
                 new NamedType(WildcardType.class),
+
+                new NamedType(ShellTypes.Cmd.class),
+                new NamedType(ShellTypes.PowerShell.class),
+                new NamedType(ShellTypes.Sh.class),
 
                 new NamedType(DataSourceInfo.Table.class),
                 new NamedType(DataSourceInfo.Structure.class),
@@ -75,7 +81,32 @@ public class CoreJacksonModule extends SimpleModule {
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
+
+        /*
+        TODO: Find better way to supply a default serializer for data sources
+         */
+        try {
+            Class.forName("io.xpipe.extension.ExtensionException");
+        } catch (ClassNotFoundException e) {
+            addSerializer(DataSource.class, new NullSerializer());
+            addDeserializer(DataSource.class, new NullDeserializer());
+        }
     }
+
+    public class NullSerializer extends JsonSerializer<Object> {
+        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            jgen.writeNull();
+        }
+    }
+
+    public static class NullDeserializer extends JsonDeserializer<DataSource> {
+
+        @Override
+        public DataSource deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return null;
+        }
+    }
+
 
     public static class DataSourceReferenceSerializer extends JsonSerializer<DataSourceReference> {
 

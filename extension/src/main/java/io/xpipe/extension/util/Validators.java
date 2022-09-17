@@ -1,6 +1,7 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import io.xpipe.core.store.ShellStore;
+import io.xpipe.extension.I18n;
 import javafx.beans.value.ObservableValue;
 import net.synedra.validatorfx.Check;
 

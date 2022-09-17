@@ -41,6 +41,7 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
 
         for (var entry : getEntries()) {
             var line = new HBox();
+            line.setFillHeight(true);
             if (!wrap) {
                 line.prefWidthProperty().bind(flow.widthProperty());
             }

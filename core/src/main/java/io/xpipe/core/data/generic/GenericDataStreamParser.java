@@ -55,13 +55,13 @@ public class GenericDataStreamParser {
     }
 
     private static void parseName(InputStream in, GenericDataStreamCallback cb) throws IOException {
-        var nameLength = in.read();
+        var nameLength = DataStructureNodeIO.parseShort(in);
         var name = new String(in.readNBytes(nameLength));
         cb.onName(name);
     }
 
     private static void parseTuple(InputStream in, GenericDataStreamCallback cb) throws IOException {
-        var size = in.read();
+        var size = DataStructureNodeIO.parseShort(in);
         cb.onTupleStart(size);
         for (int i = 0; i < size; i++) {
             parse(in, cb);
@@ -71,7 +71,7 @@ public class GenericDataStreamParser {
     }
 
     private static void parseArray(InputStream in, GenericDataStreamCallback cb) throws IOException {
-        var size = in.read();
+        var size = DataStructureNodeIO.parseShort(in);
         cb.onArrayStart(size);
         for (int i = 0; i < size; i++) {
             parse(in, cb);
@@ -81,7 +81,7 @@ public class GenericDataStreamParser {
     }
 
     private static void parseValue(InputStream in, GenericDataStreamCallback cb) throws IOException {
-        var size = in.read();
+        var size = DataStructureNodeIO.parseShort(in);
         var data = in.readNBytes(size);
         var attributes = DataStructureNodeIO.parseAttributes(in);
         cb.onValue(data, attributes);

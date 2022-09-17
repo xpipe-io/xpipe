@@ -1,4 +1,4 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
@@ -50,7 +50,7 @@ public class DialogHelper {
                 });
     }
 
-    public static Dialog dataStoreFlowQuery(DataStoreFlow flow, DataStoreFlow[] available) {
+    public static Dialog dataStoreFlowQuery(DataFlow flow, DataFlow[] available) {
         return Dialog.choice("flow", o -> o.toString(), true, flow, available);
     }
 

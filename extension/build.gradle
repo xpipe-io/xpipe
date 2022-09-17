@@ -22,16 +22,19 @@ dependencies {
     api project(':core')
     api project(':beacon')
     api project(':api')
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
     api group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "2.13.0"
 
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
-    implementation 'net.synedra:validatorfx:0.3.1'
-    implementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
-    implementation 'com.jfoenix:jfoenix:9.0.10'
-    implementation 'io.xpipe:fxcomps:0.2.2'
-    implementation 'org.controlsfx:controlsfx:11.1.1'
+    compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
+    compileOnly 'net.synedra:validatorfx:0.3.1'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    compileOnly 'com.jfoenix:jfoenix:9.0.10'
+    compileOnly 'io.xpipe:fxcomps:0.2.2'
+    compileOnly 'org.controlsfx:controlsfx:11.1.1'
+    compileOnly 'org.apache.commons:commons-lang3:3.12.0'
 }
+
+
 
 apply from: 'publish.gradle'
 apply from: "$rootDir/deps/publish-base.gradle"

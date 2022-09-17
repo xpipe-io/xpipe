@@ -14,7 +14,7 @@ import java.io.OutputStream;
 public class StdinDataStore implements StreamDataStore {
 
     @Override
-    public boolean isLocalToApplication() {
+    public boolean isContentExclusivelyAccessible() {
         return true;
     }
 

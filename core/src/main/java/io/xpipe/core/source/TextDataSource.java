@@ -1,5 +1,6 @@
 package io.xpipe.core.source;
 
+import io.xpipe.core.impl.PreservingTextWriteConnection;
 import io.xpipe.core.store.DataStore;
 import lombok.NoArgsConstructor;
 
@@ -54,8 +55,26 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
     }
 
 
+    @Override
+    public final TextWriteConnection openPrependingWriteConnection() throws Exception {
+        var con = newPrependingWriteConnection();
+        con.init();
+        return con;
+    }
+
     protected abstract TextWriteConnection newWriteConnection();
-    protected abstract TextWriteConnection newAppendingWriteConnection();
+
+    protected TextWriteConnection newAppendingWriteConnection() {
+        return new PreservingTextWriteConnection(this, newWriteConnection(), true);
+    }
+
+
+    protected TextWriteConnection newPrependingWriteConnection() {
+        return new PreservingTextWriteConnection(this, newWriteConnection(), false);
+    }
+
+
+
 
     protected abstract TextReadConnection newReadConnection();
 }

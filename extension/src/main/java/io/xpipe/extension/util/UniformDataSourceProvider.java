@@ -1,8 +1,10 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.extension.DataSourceProvider;
+import io.xpipe.extension.ExtensionException;
 
 import java.lang.reflect.InvocationTargetException;
 

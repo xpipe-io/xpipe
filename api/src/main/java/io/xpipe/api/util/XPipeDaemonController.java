@@ -1,22 +1,14 @@
-package io.xpipe.extension.test;
+package io.xpipe.api.util;
 
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconServer;
-import io.xpipe.core.charsetter.Charsetter;
-import io.xpipe.core.charsetter.CharsetterContext;
-import io.xpipe.core.util.JacksonHelper;
-import io.xpipe.extension.DataSourceProviders;
 
-public class ExtensionTestConnector {
+public class XPipeDaemonController {
 
     private static boolean alreadyStarted;
 
     public static void start() throws Exception {
-        DataSourceProviders.init(ModuleLayer.boot());
-        JacksonHelper.initClassBased();
-        Charsetter.init(CharsetterContext.empty());
-
         if (BeaconServer.isRunning()) {
             alreadyStarted = true;
             return;

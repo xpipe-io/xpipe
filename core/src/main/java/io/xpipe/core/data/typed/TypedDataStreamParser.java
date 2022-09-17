@@ -120,7 +120,7 @@ public class TypedDataStreamParser {
     }
 
     private void parseTypedArray(InputStream in, TypedDataStreamCallback cb, ArrayType type) throws IOException {
-        var size = in.read();
+        var size = DataStructureNodeIO.parseShort(in);
         cb.onArrayBegin(size);
         for (int i = 0; i < size; i++) {
             parse(in, cb, type.getSharedType());
@@ -129,7 +129,7 @@ public class TypedDataStreamParser {
     }
 
     private void parseValue(InputStream in, TypedDataStreamCallback cb) throws IOException {
-        var size = in.read();
+        var size = DataStructureNodeIO.parseShort(in);
         var data = in.readNBytes(size);
         cb.onValue(data);
     }

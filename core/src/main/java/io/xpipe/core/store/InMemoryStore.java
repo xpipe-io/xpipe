@@ -27,7 +27,7 @@ public class InMemoryStore implements StreamDataStore {
     }
 
     @Override
-    public boolean isLocalToApplication() {
+    public boolean isContentExclusivelyAccessible() {
         return true;
     }
 
@@ -47,8 +47,4 @@ public class InMemoryStore implements StreamDataStore {
         };
     }
 
-    @Override
-    public String toSummaryString() {
-        return "inMemory";
-    }
 }

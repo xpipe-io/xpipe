@@ -27,7 +27,8 @@ public class SimpleImmutableValueNode extends ValueNode {
 
     @Override
     public String toString(int indent) {
-        return (hasMetaAttribute(TEXT) ? "\"" : "") + asString() + (hasMetaAttribute(TEXT) ? "\"" : "") + " (I)";
+        var string = getRawData().length == 0 && !hasMetaAttribute(TEXT) ? "<null>" : new String(getRawData(), StandardCharsets.UTF_8);
+        return (hasMetaAttribute(TEXT) ? "\"" : "") + string + (hasMetaAttribute(TEXT) ? "\"" : "") + " " + metaToString();
     }
 
     @Override

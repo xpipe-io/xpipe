@@ -1,4 +1,4 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;

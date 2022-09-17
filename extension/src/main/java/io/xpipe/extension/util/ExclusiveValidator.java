@@ -1,4 +1,4 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -12,7 +12,7 @@ import net.synedra.validatorfx.ValidationResult;
 import java.util.ArrayList;
 import java.util.Map;
 
-public final class ExclusiveValidator<T> implements io.xpipe.extension.Validator {
+public final class ExclusiveValidator<T> implements Validator {
 
     private final Map<T, ? extends Validator> validators;
     private final ObservableValue<T> obs;

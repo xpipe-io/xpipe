@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+
 public abstract class TupleNode extends DataStructureNode {
 
     public static Builder builder() {
@@ -19,7 +20,7 @@ public abstract class TupleNode extends DataStructureNode {
         return new SimpleTupleNode(null, nodes);
     }
 
-    public static TupleNode of(List<String> names, List<DataStructureNode> nodes) {
+    public static TupleNode of(List<String> names, List<? extends DataStructureNode> nodes) {
         if (names == null) {
             throw new IllegalArgumentException("Names must be not null");
         }
@@ -30,7 +31,7 @@ public abstract class TupleNode extends DataStructureNode {
             throw new IllegalArgumentException("Names and nodes must have the same length");
         }
 
-        return new SimpleTupleNode(names, nodes);
+        return new SimpleTupleNode(names, (List<DataStructureNode>) nodes);
     }
 
     @Override
@@ -59,12 +60,16 @@ public abstract class TupleNode extends DataStructureNode {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TupleNode that)) return false;
-        return getKeyNames().equals(that.getKeyNames()) && getNodes().equals(that.getNodes());
+        var toReturn =  getKeyNames().equals(that.getKeyNames()) && getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        if (toReturn == false) {
+            throw new AssertionError();
+        }
+        return toReturn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getKeyNames(), getNodes());
+        return Objects.hash(getKeyNames(), getNodes(), getMetaAttributes());
     }
 
     public static class Builder {

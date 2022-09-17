@@ -1,10 +1,13 @@
-package io.xpipe.extension;
+package io.xpipe.extension.util;
 
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FilenameStore;
 import io.xpipe.core.store.StreamDataStore;
+import io.xpipe.extension.DataSourceProvider;
+import io.xpipe.extension.DataSourceProviders;
+import io.xpipe.extension.I18n;
 
 import java.util.LinkedHashMap;
 import java.util.List;

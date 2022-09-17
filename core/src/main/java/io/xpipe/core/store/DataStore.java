@@ -16,8 +16,8 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
 
-    default DataStoreFlow getFlow() {
-        return DataStoreFlow.INOUT;
+    default DataFlow getFlow() {
+        return DataFlow.INPUT_OUTPUT;
     }
 
     /**
@@ -28,9 +28,6 @@ public interface DataStore {
         return true;
     }
 
-    default boolean canWrite() throws Exception {
-        return true;
-    }
 
     /**
      * Indicates whether this data store can only be accessed by the current running application.
@@ -39,7 +36,7 @@ public interface DataStore {
      * @see StdinDataStore
      * @see StdoutDataStore
      */
-    default boolean isLocalToApplication() {
+    default boolean isContentExclusivelyAccessible() {
         return false;
     }
 
@@ -59,22 +56,14 @@ public interface DataStore {
      *
      * @throws Exception if any part of the validation went wrong
      */
+    default void test() throws Exception {
+    }
+
     default void validate() throws Exception {
     }
 
     default boolean delete() throws Exception {
         return false;
-    }
-
-    /**
-     * Creates a display string of this store.
-     */
-    default String toSummaryString() {
-        return null;
-    }
-
-    default String queryInformationString() throws Exception {
-        return null;
     }
 
 

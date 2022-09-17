@@ -1,6 +1,6 @@
 package io.xpipe.extension.comp;
 
-import io.xpipe.core.store.DataStoreFlow;
+import io.xpipe.core.store.DataFlow;
 import io.xpipe.extension.I18n;
 import io.xpipe.fxcomps.SimpleComp;
 import javafx.beans.property.Property;
@@ -15,15 +15,15 @@ import java.util.LinkedHashMap;
 @EqualsAndHashCode(callSuper = true)
 public class DataStoreFlowChoiceComp extends SimpleComp {
 
-    Property<DataStoreFlow> selected;
-    DataStoreFlow[] available;
+    Property<DataFlow> selected;
+    DataFlow[] available;
 
     @Override
     protected Region createSimple() {
-        var map = new LinkedHashMap<DataStoreFlow, ObservableValue<String>>();
-        map.put(DataStoreFlow.INPUT, I18n.observable("extension.input"));
-        map.put(DataStoreFlow.OUTPUT, I18n.observable("extension.output"));
-        map.put(DataStoreFlow.INOUT, I18n.observable("extension.inout"));
+        var map = new LinkedHashMap<DataFlow, ObservableValue<String>>();
+        map.put(DataFlow.INPUT, I18n.observable("extension.input"));
+        map.put(DataFlow.OUTPUT, I18n.observable("extension.output"));
+        map.put(DataFlow.INPUT_OUTPUT, I18n.observable("extension.inout"));
         return new ToggleGroupComp<>(selected, map).apply(struc -> {
             new FancyTooltipAugment<>("extension.inputDescription").augment(struc.get().getChildren().get(0));
             new FancyTooltipAugment<>("extension.outputDescription").augment(struc.get().getChildren().get(1));

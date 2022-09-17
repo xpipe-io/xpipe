@@ -8,9 +8,18 @@ public class ExceptionConverter {
 
     public static String convertMessage(Throwable ex) {
         var msg = ex.getLocalizedMessage();
+        if (ex instanceof StackOverflowError) {
+            return I18n.get("extension.stackOverflow", msg);
+        }
+
         if (ex instanceof FileNotFoundException) {
             return I18n.get("extension.fileNotFound", msg);
         }
+
+        if (ex instanceof UnsupportedOperationException) {
+            return I18n.get("extension.unsupportedOperation", msg);
+        }
+
 
         if (ex instanceof ClassNotFoundException) {
             return I18n.get("extension.classNotFound", msg);
