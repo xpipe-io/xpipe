@@ -21,7 +21,7 @@ public class TypedDataStreamParser {
         this.dataType = dataType;
     }
 
-    public boolean hasNext(InputStream in) throws IOException {
+    private  boolean hasNext(InputStream in) throws IOException {
         var b = in.read();
         if (b == -1) {
             return false;
@@ -109,7 +109,8 @@ public class TypedDataStreamParser {
         for (int i = 0; i < type.getSize(); i++) {
             parse(in, cb, type.getTypes().get(i));
         }
-        cb.onTupleEnd();
+        var attributes = DataStructureNodeIO.parseAttributes(in);
+        cb.onTupleEnd(attributes);
     }
 
     private GenericDataStructureNodeReader getGenericReader() {
@@ -125,12 +126,14 @@ public class TypedDataStreamParser {
         for (int i = 0; i < size; i++) {
             parse(in, cb, type.getSharedType());
         }
-        cb.onArrayEnd();
+        var attributes = DataStructureNodeIO.parseAttributes(in);
+        cb.onArrayEnd(attributes);
     }
 
     private void parseValue(InputStream in, TypedDataStreamCallback cb) throws IOException {
         var size = DataStructureNodeIO.parseShort(in);
         var data = in.readNBytes(size);
-        cb.onValue(data);
+        var attributes = DataStructureNodeIO.parseAttributes(in);
+        cb.onValue(data, attributes);
     }
 }

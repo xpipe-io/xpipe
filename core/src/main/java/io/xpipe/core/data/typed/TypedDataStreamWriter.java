@@ -32,8 +32,9 @@ public class TypedDataStreamWriter {
 
     private static void writeValue(OutputStream out, ValueNode n) throws IOException {
         out.write(DataStructureNodeIO.TYPED_VALUE_ID);
-        DataStructureNodeIO.writeShort(out, n.getRawData().length);
-        out.write(n.getRawData());
+        var length = DataStructureNodeIO.writeShort(out, n.getRawData().length);
+        out.write(n.getRawData(), 0, length);
+        DataStructureNodeIO.writeAttributes(out, n);
     }
 
     private static void writeTuple(OutputStream out, TupleNode tuple, TupleType type) throws IOException {
@@ -45,6 +46,7 @@ public class TypedDataStreamWriter {
         for (int i = 0; i < tuple.size(); i++) {
             write(out, tuple.at(i), type.getTypes().get(i));
         }
+        DataStructureNodeIO.writeAttributes(out, tuple);
     }
 
     private static void writeArray(OutputStream out, ArrayNode array, ArrayType type) throws IOException {
@@ -53,5 +55,6 @@ public class TypedDataStreamWriter {
         for (int i = 0; i < array.size(); i++) {
             write(out, array.at(i), type.getSharedType());
         }
+        DataStructureNodeIO.writeAttributes(out, array);
     }
 }

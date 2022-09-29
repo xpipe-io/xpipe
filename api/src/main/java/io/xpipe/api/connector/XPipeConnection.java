@@ -3,7 +3,6 @@ package io.xpipe.api.connector;
 import io.xpipe.beacon.*;
 import io.xpipe.beacon.exchange.cli.DialogExchange;
 import io.xpipe.core.dialog.DialogReference;
-import io.xpipe.core.util.JacksonHelper;
 
 import java.util.Optional;
 
@@ -64,10 +63,6 @@ public final class XPipeConnection extends BeaconConnection {
 
     @Override
     protected void constructSocket() {
-        if (!JacksonHelper.isInit()) {
-            JacksonHelper.initModularized(ModuleLayer.boot());
-        }
-
         if (!BeaconServer.isRunning()) {
             try {
                 start();
@@ -79,13 +74,13 @@ public final class XPipeConnection extends BeaconConnection {
             if (r.isEmpty()) {
                 throw new BeaconException("Wait for xpipe daemon timed out");
             } else {
-                socket = r.get();
+                beaconClient = r.get();
                 return;
             }
         }
 
         try {
-            socket = new BeaconClient();
+            beaconClient = new BeaconClient();
         } catch (Exception ex) {
             throw new BeaconException("Unable to connect to running xpipe daemon", ex);
         }

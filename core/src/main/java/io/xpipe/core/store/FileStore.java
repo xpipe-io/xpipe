@@ -1,8 +1,9 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +14,8 @@ import java.nio.file.Path;
  */
 @Value
 @JsonTypeName("file")
+@Builder
+@Jacksonized
 public class FileStore implements StreamDataStore, FilenameStore {
 
     public static FileStore local(Path p) {
@@ -28,12 +31,6 @@ public class FileStore implements StreamDataStore, FilenameStore {
 
     MachineFileStore machine;
     String file;
-
-    @JsonCreator
-    public FileStore(MachineFileStore machine, String file) {
-        this.machine = machine;
-        this.file = file;
-    }
 
     @Override
     public void validate() throws Exception {

@@ -1,7 +1,7 @@
 package io.xpipe.beacon;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,12 +11,11 @@ import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.util.JacksonHelper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -50,21 +49,28 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
-    private final Socket socket;
+    private final Closeable closeable;
     private final InputStream in;
     private final OutputStream out;
 
     public BeaconClient() throws IOException {
-        socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
+        var socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
+        closeable = socket;
         in = socket.getInputStream();
         out = socket.getOutputStream();
     }
 
+    public BeaconClient(Closeable closeable, InputStream in, OutputStream out) {
+        this.closeable = closeable;
+        this.in = in;
+        this.out = out;
+    }
+
     public void close() throws ConnectorException {
         try {
-            socket.close();
+            closeable.close();
         } catch (IOException ex) {
-            throw new ConnectorException("Couldn't close socket", ex);
+            throw new ConnectorException("Couldn't close client", ex);
         }
     }
 
@@ -74,7 +80,7 @@ public class BeaconClient implements AutoCloseable {
             if (sep.length != 0 && !Arrays.equals(BODY_SEPARATOR, sep)) {
                 throw new ConnectorException("Invalid body separator");
             }
-            return BeaconFormat.readBlocks(socket);
+            return BeaconFormat.readBlocks(in);
         } catch (IOException ex) {
             throw new ConnectorException(ex);
         }
@@ -83,13 +89,13 @@ public class BeaconClient implements AutoCloseable {
     public OutputStream sendBody() throws ConnectorException {
         try {
             out.write(BODY_SEPARATOR);
-            return BeaconFormat.writeBlocks(socket);
+            return BeaconFormat.writeBlocks(out);
         } catch (IOException ex) {
             throw new ConnectorException(ex);
         }
     }
 
-    public  <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
+    public <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
         ObjectNode json = JacksonHelper.newMapper().valueToTree(req);
         var prov = MessageExchanges.byRequest(req);
         if (prov.isEmpty()) {
@@ -106,25 +112,31 @@ public class BeaconClient implements AutoCloseable {
             System.out.println("Sending request to server of type " + req.getClass().getName());
         }
 
-        if (BeaconConfig.printMessages()) {
-            System.out.println("Sending raw request:");
-            System.out.println(msg.toPrettyString());
+        var writer = new StringWriter();
+        var mapper = JacksonHelper.newMapper();
+        try (JsonGenerator g = mapper.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
+            g.writeTree(msg);
+        } catch (IOException ex) {
+            throw new ConnectorException("Couldn't serialize request", ex);
         }
 
-        try {
-            var mapper = JacksonHelper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
-            var gen = mapper.createGenerator(socket.getOutputStream());
-            gen.writeTree(msg);
+        var content = writer.toString();
+        if (BeaconConfig.printMessages()) {
+            System.out.println("Sending raw request:");
+            System.out.println(content);
+        }
+
+        try (OutputStream blockOut = BeaconFormat.writeBlocks(out)) {
+            blockOut.write(content.getBytes(StandardCharsets.UTF_8));
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't write to socket", ex);
         }
     }
 
     public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
-        JsonNode read;
-        try {
-            var in = socket.getInputStream();
-            read = JacksonHelper.newMapper().disable(JsonParser.Feature.AUTO_CLOSE_SOURCE).readTree(in);
+        JsonNode node;
+        try (InputStream blockIn = BeaconFormat.readBlocks(in)) {
+            node = JacksonHelper.newMapper().readTree(blockIn);
         } catch (SocketException ex) {
             throw new ConnectorException("Connection to xpipe daemon closed unexpectedly", ex);
         } catch (IOException ex) {
@@ -133,24 +145,24 @@ public class BeaconClient implements AutoCloseable {
 
         if (BeaconConfig.printMessages()) {
             System.out.println("Received response:");
-            System.out.println(read.toPrettyString());
+            System.out.println(node.toPrettyString());
         }
 
-        if (read.isMissingNode()) {
+        if (node.isMissingNode()) {
             throw new ConnectorException("Received unexpected EOF");
         }
 
-        var se = parseServerError(read);
+        var se = parseServerError(node);
         if (se.isPresent()) {
             se.get().throwError();
         }
 
-        var ce = parseClientError(read);
+        var ce = parseClientError(node);
         if (ce.isPresent()) {
             throw ce.get().throwException();
         }
 
-        return parseResponse(read);
+        return parseResponse(node);
     }
 
     private Optional<ClientErrorMessage> parseClientError(JsonNode node) throws ConnectorException {
@@ -205,5 +217,13 @@ public class BeaconClient implements AutoCloseable {
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse response", ex);
         }
+    }
+
+    public InputStream getRawInputStream() {
+        return in;
+    }
+
+    public OutputStream getRawOutputStream() {
+        return out;
     }
 }

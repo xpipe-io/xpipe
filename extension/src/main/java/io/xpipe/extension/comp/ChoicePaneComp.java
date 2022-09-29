@@ -12,12 +12,18 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-import lombok.Value;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 import java.util.function.Function;
 
-@Value
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE
+)
+@AllArgsConstructor
 public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
     List<Entry> entries;

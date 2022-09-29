@@ -6,22 +6,27 @@ import java.io.OutputStream;
 
 public abstract class BeaconConnection implements AutoCloseable {
 
-    protected BeaconClient socket;
+
+    protected BeaconClient beaconClient;
 
     private InputStream bodyInput;
     private OutputStream bodyOutput;
 
     protected abstract void constructSocket();
 
+    public BeaconClient getBeaconClient() {
+        return beaconClient;
+    }
+
     @Override
     public void close() {
         try {
-            if (socket != null) {
-                socket.close();
+            if (beaconClient != null) {
+                beaconClient.close();
             }
-            socket = null;
+            beaconClient = null;
         } catch (Exception e) {
-            socket = null;
+            beaconClient = null;
             throw new BeaconException("Could not close beacon connection", e);
         }
     }
@@ -43,7 +48,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public void checkClosed() {
-        if (socket == null) {
+        if (beaconClient == null) {
             throw new BeaconException("Socket is closed");
         }
     }
@@ -70,7 +75,8 @@ public abstract class BeaconConnection implements AutoCloseable {
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
             REQ req,
-            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
+            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer
+    ) {
         checkClosed();
 
         performInputOutputExchange(req, null, responseConsumer);
@@ -79,33 +85,35 @@ public abstract class BeaconConnection implements AutoCloseable {
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputOutputExchange(
             REQ req,
             BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter,
-            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
+            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer
+    ) {
         checkClosed();
 
         try {
-            socket.sendRequest(req);
+            beaconClient.sendRequest(req);
             if (reqWriter != null) {
-                try (var out = socket.sendBody()) {
+                try (var out = sendBody()) {
                     reqWriter.accept(out);
                 }
             }
-            RES res = socket.receiveResponse();
-            try (var in = socket.receiveBody()) {
+            RES res = beaconClient.receiveResponse();
+            try (var in = receiveBody()) {
                 responseConsumer.accept(res, in);
             }
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
     }
 
     public <REQ extends RequestMessage> void sendRequest(
-            REQ req) {
+            REQ req
+    ) {
         checkClosed();
 
         try {
-            socket.sendRequest(req);
+            beaconClient.sendRequest(req);
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
     }
 
@@ -113,9 +121,9 @@ public abstract class BeaconConnection implements AutoCloseable {
         checkClosed();
 
         try {
-            return socket.receiveResponse();
+            return beaconClient.receiveResponse();
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
     }
 
@@ -123,10 +131,10 @@ public abstract class BeaconConnection implements AutoCloseable {
         checkClosed();
 
         try {
-            bodyOutput = socket.sendBody();
+            bodyOutput = beaconClient.sendBody();
             return bodyOutput;
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
     }
 
@@ -134,38 +142,57 @@ public abstract class BeaconConnection implements AutoCloseable {
         checkClosed();
 
         try {
-            bodyInput = socket.receiveBody();
+            bodyInput = beaconClient.receiveBody();
             return bodyInput;
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performOutputExchange(
             REQ req,
-            BeaconClient.FailableConsumer<OutputStream, Exception> reqWriter) {
+            BeaconClient.FailableConsumer<OutputStream, Exception> reqWriter
+    ) {
         checkClosed();
 
         try {
-            socket.sendRequest(req);
-            try (var out = socket.sendBody()) {
+            beaconClient.sendRequest(req);
+            try (var out = sendBody()) {
                 reqWriter.accept(out);
             }
-            return socket.receiveResponse();
+            return beaconClient.receiveResponse();
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performSimpleExchange(
-            REQ req) {
+            REQ req
+    ) {
         checkClosed();
 
         try {
-            socket.sendRequest(req);
-            return socket.receiveResponse();
+            beaconClient.sendRequest(req);
+            return beaconClient.receiveResponse();
         } catch (Exception e) {
-            throw new BeaconException("Could not communicate with beacon", e);
+            throw unwrapException(e);
         }
+    }
+
+    private BeaconException unwrapException(Exception exception) {
+        if (exception instanceof ServerException s) {
+            return new BeaconException("And internal server error occurred", s.getCause());
+        }
+
+        if (exception instanceof ClientException s) {
+            return new BeaconException("A client error occurred", s.getCause());
+        }
+
+        if (exception instanceof ConnectorException s) {
+            return new BeaconException("A beacon connection error occurred", s.getCause());
+        }
+
+
+        return new BeaconException("An unexpected error occurred", exception);
     }
 }

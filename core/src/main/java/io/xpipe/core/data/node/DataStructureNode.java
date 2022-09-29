@@ -12,17 +12,25 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public static final Integer KEY_TABLE_NAME = 1;
     public static final Integer KEY_ROW_NAME = 2;
     public static final Integer BOOLEAN_TRUE = 3;
-    public static final Integer BOOLEAN_VALUE = 4;
+    public static final Integer IS_BOOLEAN = 4;
     public static final Integer BOOLEAN_FALSE = 5;
     public static final Integer INTEGER_VALUE = 6;
-    public static final Integer NULL_VALUE = 7;
-    public static final Integer IS_NUMBER = 8;
+    public static final Integer IS_NULL = 7;
     public static final Integer IS_INTEGER = 9;
     public static final Integer IS_FLOATING_POINT = 10;
     public static final Integer FLOATING_POINT_VALUE = 11;
-    public static final Integer TEXT = 12;
+    public static final Integer IS_TEXT = 12;
+    public static final Integer IS_INSTANT = 13;
+    public static final Integer IS_BINARY = 14;
 
     private Map<Integer, String> metaAttributes;
+
+    public void clearMetaAttributes() {
+        metaAttributes = null;
+        if (isTuple() || isArray()) {
+            getNodes().forEach(dataStructureNode -> dataStructureNode.clearMetaAttributes());
+        }
+    }
 
     public Map<Integer, String> getMetaAttributes() {
         return metaAttributes != null ? Collections.unmodifiableMap(metaAttributes) : null;
@@ -138,12 +146,6 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public boolean isValue() {
         return false;
     }
-
-    public boolean isNull() {
-        return false;
-    }
-
-
     public DataStructureNode set(int index, DataStructureNode node) {
         throw unsupported("set at index");
     }

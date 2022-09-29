@@ -29,6 +29,7 @@ public interface PrefsChoiceValue extends Translatable {
         }
     }
 
+    @SuppressWarnings("unchecked")
     static <T extends PrefsChoiceValue> List<T> getSupported(Class<T> type) {
         try {
             return (List<T>) type.getDeclaredField("SUPPORTED").get(null);

@@ -2,7 +2,7 @@ package io.xpipe.extension.util;
 
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.comp.*;
 import io.xpipe.fxcomps.Comp;
@@ -46,7 +46,7 @@ public class DynamicOptionsBuilder<T> {
     }
 
     public DynamicOptionsBuilder<T> addTitle(ObservableValue<String> title) {
-        entries.add(new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
+        entries.add(new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         return this;
     }
 
@@ -169,11 +169,11 @@ public class DynamicOptionsBuilder<T> {
         return this;
     }
 
-    public DynamicOptionsBuilder<T> addSecret(String nameKey, Property<Secret> prop) {
+    public DynamicOptionsBuilder<T> addSecret(String nameKey, Property<SecretValue> prop) {
         return addSecret(I18n.observable(nameKey), prop);
     }
 
-    public DynamicOptionsBuilder<T> addSecret(ObservableValue<String> name, Property<Secret> prop) {
+    public DynamicOptionsBuilder<T> addSecret(ObservableValue<String> name, Property<SecretValue> prop) {
         var comp = new SecretFieldComp(prop);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
@@ -233,7 +233,7 @@ public class DynamicOptionsBuilder<T> {
 
     public Comp<?> buildComp() {
         if (title != null) {
-            entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title")));
+            entries.add(0, new DynamicOptionsComp.Entry(null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         }
         return new DynamicOptionsComp(entries, wrap);
     }

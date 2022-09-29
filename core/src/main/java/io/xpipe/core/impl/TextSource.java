@@ -1,35 +1,32 @@
 package io.xpipe.core.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.Charsettable;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.source.TextDataSource;
 import io.xpipe.core.store.StreamDataStore;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-@Value
-@EqualsAndHashCode(callSuper = true)
-public class TextSource extends TextDataSource<StreamDataStore> implements Charsettable {
+@Getter
+@JsonTypeName("text")
+@SuperBuilder
+@Jacksonized
+public final  class TextSource extends TextDataSource<StreamDataStore> implements Charsettable {
 
-    StreamCharset charset;
-    NewLine newLine;
-
-    public TextSource(StreamDataStore store){
-        this(store, StreamCharset.UTF8, NewLine.LF);
-    }
-
-   @JsonCreator
-    public TextSource(StreamDataStore store, StreamCharset charset, NewLine newLine) {
-        super(store);
-        this.charset = charset;
-        this.newLine = newLine;
-    }
+    private final StreamCharset charset;
+    private final NewLine newLine;
 
     @Override
     protected io.xpipe.core.source.TextWriteConnection newWriteConnection() {
         return new TextWriteConnection(this);
+    }
+
+    @Override
+    protected io.xpipe.core.source.TextWriteConnection newPrependingWriteConnection() {
+        return new PreservingTextWriteConnection(this, newWriteConnection(), false);
     }
 
     @Override

@@ -2,18 +2,14 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.impl.PreservingTextWriteConnection;
 import io.xpipe.core.store.DataStore;
-import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@NoArgsConstructor
+@SuperBuilder
 public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS> {
 
     private static final int MAX_LINE_READ = 1000;
-
-    public TextDataSource(DS store) {
-        super(store);
-    }
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {

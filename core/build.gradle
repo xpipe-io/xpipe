@@ -9,6 +9,9 @@ apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 apply from: "$rootDir/deps/junit.gradle"
 
+compileJava {
+    options.compilerArgs << '-parameters'
+}
 
 dependencies{
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"

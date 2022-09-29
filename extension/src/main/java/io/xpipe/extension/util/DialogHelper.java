@@ -6,7 +6,7 @@ import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.*;
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 import lombok.Value;
 
 import java.util.function.Predicate;
@@ -131,7 +131,7 @@ public class DialogHelper {
                 });
     }
 
-    public static Dialog passwordQuery(Secret password) {
+    public static Dialog passwordQuery(SecretValue password) {
         return Dialog.querySecret("Password", false, true, password);
     }
 

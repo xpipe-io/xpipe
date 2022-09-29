@@ -2,7 +2,7 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
@@ -27,14 +27,14 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
 
      class LocalProcessControl extends ProcessControl {
 
-        private final List<Secret> input;
+        private final List<SecretValue> input;
         private final Integer timeout;
         private final List<String> command;
         private Charset charset;
 
         private Process process;
 
-        LocalProcessControl(List<Secret> input, List<String> cmd, Integer timeout) {
+        LocalProcessControl(List<SecretValue> input, List<String> cmd, Integer timeout) {
             this.input = input;
             this.timeout = timeout;
             this.command = cmd;
@@ -80,7 +80,12 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
             return process.getInputStream();
         }
 
-        @Override
+         @Override
+         public OutputStream getStdin() {
+             return process.getOutputStream();
+         }
+
+         @Override
         public InputStream getStderr() {
             return process.getErrorStream();
         }
@@ -125,12 +130,12 @@ public class LocalStore extends StandardShellStore implements MachineFileStore {
     }
 
     @Override
-    public ProcessControl prepareCommand(List<Secret> input, List<String> cmd, Integer timeout) {
+    public ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout) {
         return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeout));
     }
 
     @Override
-    public ProcessControl preparePrivilegedCommand(List<Secret> input, List<String> cmd, Integer timeOut) throws Exception {
+    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeOut) throws Exception {
         return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeOut));
     }
 

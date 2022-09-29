@@ -2,7 +2,7 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 import lombok.Value;
 
 import java.io.ByteArrayInputStream;
@@ -83,7 +83,7 @@ public class ShellTypes {
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(ShellStore st, List<Secret> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+        public ProcessControl prepareElevatedCommand(ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             var l = List.of("net", "session", ";", "if", "%errorLevel%", "!=", "0");
             return st.prepareCommand(List.of(), l, timeout);
         }
@@ -186,12 +186,12 @@ public class ShellTypes {
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(ShellStore st, List<Secret> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+        public ProcessControl prepareElevatedCommand(ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             var l = new ArrayList<>(cmd);
             l.add(0, "sudo");
             l.add(1, "-S");
             var pws = new ByteArrayInputStream(pw.getBytes(determineCharset(st)));
-            return st.prepareCommand(List.of(Secret.createForSecretValue(pw)), l, timeout);
+            return st.prepareCommand(List.of(SecretValue.createForSecretValue(pw)), l, timeout);
         }
 
         @Override

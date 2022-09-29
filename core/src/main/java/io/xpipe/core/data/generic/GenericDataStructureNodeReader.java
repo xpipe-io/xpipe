@@ -44,12 +44,12 @@ public class GenericDataStructureNodeReader implements GenericDataStreamCallback
     }
 
     @Override
-    public void onArrayEnd() {
+    public void onArrayEnd(Map<Integer, String> metaAttributes) {
         if (!hasReader()) {
             throw new IllegalStateException("No array to close");
         }
 
-        reader.onArrayEnd();
+        reader.onArrayEnd(metaAttributes);
         if (reader.isDone()) {
             node = reader.create();
             reader = null;
@@ -67,12 +67,12 @@ public class GenericDataStructureNodeReader implements GenericDataStreamCallback
     }
 
     @Override
-    public void onTupleEnd() {
+    public void onTupleEnd(Map<Integer, String> metaAttributes) {
         if (!hasReader()) {
             throw new IllegalStateException("No tuple to close");
         }
 
-        reader.onTupleEnd();
+        reader.onTupleEnd(metaAttributes);
         if (reader.isDone()) {
             node = reader.create();
             reader = null;

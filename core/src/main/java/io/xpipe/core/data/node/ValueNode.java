@@ -3,6 +3,8 @@ package io.xpipe.core.data.node;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.ValueType;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
@@ -34,11 +36,38 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public static ValueNode nullValue() {
-        return new SimpleImmutableValueNode(new byte[0]).tag(NULL_VALUE).asValue();
+        return new SimpleImmutableValueNode(new byte[0]).tag(IS_NULL).asValue();
     }
 
     public static ValueNode of(byte[] data) {
+        if (data == null) {
+            return nullValue();
+        }
+
         return new SimpleImmutableValueNode(data);
+    }
+
+    public static ValueNode ofBytes(byte[] data) {
+        var created = of(data);
+        created.tag(IS_BINARY);
+        return created;
+    }
+
+    public static ValueNode ofInteger(BigInteger integer) {
+        var created = of(integer);
+        created.tag(IS_INTEGER);
+        return created;
+    }
+
+    public static ValueNode ofDecimal(BigDecimal decimal) {
+        var created = of(decimal);
+        created.tag(IS_FLOATING_POINT);
+        return created;
+    }
+    public static ValueNode ofBoolean(Boolean bool) {
+        var created = of(bool);
+        created.tag(IS_BOOLEAN);
+        return created;
     }
 
     public static ValueNode of(Object o) {

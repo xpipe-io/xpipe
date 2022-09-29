@@ -2,7 +2,7 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,7 +16,7 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
 
         List<String> switchTo(List<String> cmd);
 
-        default ProcessControl prepareElevatedCommand(ShellStore st, List<Secret> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+        default ProcessControl prepareElevatedCommand(ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             return st.prepareCommand(in, cmd, timeout);
         }
 

@@ -1,17 +1,15 @@
 package io.xpipe.core.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.source.TableDataSource;
 import io.xpipe.core.source.TableReadConnection;
 import io.xpipe.core.source.TableWriteConnection;
 import io.xpipe.core.store.StreamDataStore;
+import lombok.experimental.SuperBuilder;
 
+@JsonTypeName("xpbt")
+@SuperBuilder
 public class XpbtSource extends TableDataSource<StreamDataStore> {
-
-    @JsonCreator
-    public XpbtSource(StreamDataStore store) {
-        super(store);
-    }
 
     @Override
     protected TableWriteConnection newWriteConnection() {

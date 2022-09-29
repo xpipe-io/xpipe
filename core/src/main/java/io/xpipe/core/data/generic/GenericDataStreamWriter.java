@@ -52,8 +52,8 @@ public class GenericDataStreamWriter {
 
     private static void writeValue(OutputStream out, ValueNode n) throws IOException {
         out.write(DataStructureNodeIO.GENERIC_VALUE_ID);
-        DataStructureNodeIO.writeShort(out, n.getRawData().length);
-        out.write(n.getRawData());
+        var length = DataStructureNodeIO.writeShort(out, n.getRawData().length);
+        out.write(n.getRawData(), 0, length);
         DataStructureNodeIO.writeAttributes(out, n);
     }
 }

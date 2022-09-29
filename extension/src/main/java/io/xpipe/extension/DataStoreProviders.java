@@ -44,17 +44,17 @@ public class DataStoreProviders {
         }
 
         return ALL.stream().map(d -> {
-                    var store = d.storeForString(s);
-                    if (store != null) {
-                        return d.dialogForStore(store);
-                    } else {
-                        return null;
-                    }
-                }
+                                    var store = d.storeForString(s);
+                                    if (store != null) {
+                                        return d.dialogForStore(store);
+                                    } else {
+                                        return null;
+                                    }
+                                }
         ).filter(Objects::nonNull).findAny();
     }
 
-
+    @SuppressWarnings("unchecked")
     public static <T extends DataStoreProvider> T byStore(DataStore store) {
         return (T) byStoreClass(store.getClass());
     }

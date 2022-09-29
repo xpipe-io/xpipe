@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 
 @UtilityClass
@@ -13,8 +12,7 @@ public class BeaconFormat {
 
     private static final int SEGMENT_SIZE = 65536;
 
-    public static OutputStream writeBlocks(Socket socket) throws IOException {
-        var out = socket.getOutputStream();
+    public static OutputStream writeBlocks(OutputStream out) throws IOException {
         return new OutputStream() {
             private final byte[] currentBytes = new byte[SEGMENT_SIZE];
             private int index;
@@ -23,6 +21,7 @@ public class BeaconFormat {
             public void close() throws IOException {
                 finishBlock();
                 out.flush();
+                index = -1;
             }
 
             @Override
@@ -49,8 +48,7 @@ public class BeaconFormat {
         };
     }
 
-    public static InputStream readBlocks(Socket socket) throws IOException {
-        var in = socket.getInputStream();
+    public static InputStream readBlocks(InputStream in) throws IOException {
         return new InputStream() {
 
             private byte[] currentBytes;
@@ -60,7 +58,9 @@ public class BeaconFormat {
             @Override
             public int read() throws IOException {
                 if ((currentBytes == null || index == currentBytes.length) && !lastBlock) {
-                    readBlock();
+                    if (!readBlock()) {
+                        return -1;
+                    }
                 }
 
                 if (currentBytes != null && index == currentBytes.length && lastBlock) {
@@ -72,8 +72,12 @@ public class BeaconFormat {
                 return out;
             }
 
-            private void readBlock() throws IOException {
+            private boolean readBlock() throws IOException {
                 var length = in.readNBytes(4);
+                if (length.length < 4) {
+                    return false;
+                }
+
                 var lengthInt = ByteBuffer.wrap(length).getInt();
 
                 if (BeaconConfig.printMessages()) {
@@ -85,6 +89,7 @@ public class BeaconFormat {
                 if (lengthInt < SEGMENT_SIZE) {
                     lastBlock = true;
                 }
+                return true;
             }
         };
     }

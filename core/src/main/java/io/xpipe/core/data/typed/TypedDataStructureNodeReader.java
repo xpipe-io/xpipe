@@ -7,6 +7,7 @@ import io.xpipe.core.data.type.TupleType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class TypedDataStructureNodeReader implements TypedAbstractReader {
@@ -74,12 +75,12 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     }
 
     @Override
-    public void onValue(byte[] data) {
+    public void onValue(byte[] data, Map<Integer, String> metaAttributes) {
         if (!expectedType.isValue()) {
             throw new IllegalStateException("Expected " + expectedType.getName() + " but got value");
         }
 
-        var val = ValueNode.of(data);
+        var val = ValueNode.of(data).tag(metaAttributes);
         finishNode(val);
         moveExpectedType(false);
     }
@@ -115,14 +116,14 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     }
 
     @Override
-    public void onTupleEnd() {
+    public void onTupleEnd(Map<Integer, String> metaAttributes) {
         children.pop();
         var popped = nodes.pop();
         if (!popped.isTuple()) {
             throw new IllegalStateException("No tuple to end");
         }
 
-        TupleNode tuple = popped.asTuple();
+        TupleNode tuple = popped.tag(metaAttributes).asTuple();
         if (tuple.getKeyNames().size() != tuple.getNodes().size()) {
             throw new IllegalStateException("Tuple node size mismatch");
         }
@@ -154,7 +155,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     }
 
     @Override
-    public void onArrayEnd() {
+    public void onArrayEnd(Map<Integer, String> metaAttributes) {
         if (!isInArray()) {
             throw new IllegalStateException("No array to end");
         }
@@ -163,7 +164,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
         moveExpectedType(true);
 
         children.pop();
-        var popped = nodes.pop();
+        var popped = nodes.pop().tag(metaAttributes);
         finishNode(popped);
     }
 }

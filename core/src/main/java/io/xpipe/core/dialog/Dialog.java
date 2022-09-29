@@ -1,6 +1,6 @@
 package io.xpipe.core.dialog;
 
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -164,7 +164,7 @@ public abstract class Dialog {
     /**
      * A special wrapper for secret values of {@link #query(String, boolean, boolean, boolean, Object, QueryConverter)}.
      */
-    public static Dialog.Query querySecret(String description, boolean newLine, boolean required, Secret value) {
+    public static Dialog.Query querySecret(String description, boolean newLine, boolean required, SecretValue value) {
         var q = new Dialog.Query(description, newLine, required, false, value, QueryConverter.SECRET, true);
         q.evaluateTo(q::getConvertedValue);
         return q;

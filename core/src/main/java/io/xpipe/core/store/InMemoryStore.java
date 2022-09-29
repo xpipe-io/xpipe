@@ -6,6 +6,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A store whose contents are stored in memory.
@@ -47,4 +48,7 @@ public class InMemoryStore implements StreamDataStore {
         };
     }
 
+    public String toString() {
+        return new String(value, StandardCharsets.UTF_8);
+    }
 }

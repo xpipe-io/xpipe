@@ -20,6 +20,7 @@ public abstract class TupleNode extends DataStructureNode {
         return new SimpleTupleNode(null, nodes);
     }
 
+    @SuppressWarnings("unchecked")
     public static TupleNode of(List<String> names, List<? extends DataStructureNode> nodes) {
         if (names == null) {
             throw new IllegalArgumentException("Names must be not null");

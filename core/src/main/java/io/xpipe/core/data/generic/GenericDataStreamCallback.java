@@ -10,13 +10,13 @@ public interface GenericDataStreamCallback {
     default void onArrayStart(int length) {
     }
 
-    default void onArrayEnd() {
+    default void onArrayEnd(Map<Integer, String> metaAttributes) {
     }
 
     default void onTupleStart(int length) {
     }
 
-    default void onTupleEnd() {
+    default void onTupleEnd(Map<Integer, String> metaAttributes) {
     }
 
 

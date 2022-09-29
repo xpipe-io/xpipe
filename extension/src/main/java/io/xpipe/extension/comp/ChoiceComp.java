@@ -12,11 +12,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
-import lombok.Value;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Map;
 
-@Value
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE
+)
 public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
     Property<T> value;

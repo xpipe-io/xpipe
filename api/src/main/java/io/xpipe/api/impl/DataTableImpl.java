@@ -4,6 +4,7 @@ import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataTable;
 import io.xpipe.api.connector.XPipeConnection;
 import io.xpipe.beacon.BeaconConnection;
+import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.api.QueryTableDataExchange;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
@@ -16,10 +17,9 @@ import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -43,8 +43,9 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
     }
 
     public Stream<TupleNode> stream() {
+        var iterator = new TableIterator();
         return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED), false);
+                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false).onClose(iterator::finish);
     }
 
     @Override
@@ -71,54 +72,54 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         return ArrayNode.of(nodes);
     }
 
+    private class TableIterator implements Iterator<TupleNode> {
+
+        private final BeaconConnection connection;
+        private final TypedDataStreamParser parser;
+        private final TypedAbstractReader nodeReader;
+        private TupleNode node;
+
+        {
+            nodeReader = TypedDataStructureNodeReader.of(info.getDataType());
+            parser = new TypedDataStreamParser(info.getDataType());
+
+            connection = XPipeConnection.open();
+            var req = QueryTableDataExchange.Request.builder()
+                    .ref(DataSourceReference.id(getId())).maxRows(Integer.MAX_VALUE).build();
+            connection.sendRequest(req);
+            connection.receiveResponse();
+            connection.receiveBody();
+        }
+
+        private void finish() {
+            connection.close();
+        }
+
+        @Override
+        public boolean hasNext() {
+            connection.checkClosed();
+
+            try {
+                node = (TupleNode) parser.parseStructure(connection.getInputStream(), nodeReader);
+            } catch (IOException e) {
+                throw new BeaconException(e);
+            }
+            if (node == null) {
+                // finish();
+            }
+            return node != null;
+        }
+
+        @Override
+        public TupleNode next() {
+            connection.checkClosed();
+
+            return node;
+        }
+    };
+
     @Override
     public Iterator<TupleNode> iterator() {
-        return new Iterator<>() {
-
-            private final BeaconConnection connection;
-            private final TypedDataStreamParser parser;
-            private final TypedAbstractReader nodeReader;
-
-            {
-                nodeReader = TypedDataStructureNodeReader.of(info.getDataType());
-                parser = new TypedDataStreamParser(info.getDataType());
-
-                connection = XPipeConnection.open();
-                var req = QueryTableDataExchange.Request.builder()
-                        .ref(DataSourceReference.id(getId())).build();
-                connection.sendRequest(req);
-                connection.receiveResponse();
-                connection.receiveBody();
-            }
-
-            private void finish() {
-                connection.close();
-            }
-
-            @Override
-            public boolean hasNext() {
-                connection.checkClosed();
-
-                AtomicBoolean hasNext = new AtomicBoolean(false);
-                connection.withInputStream(in -> {
-                    hasNext.set(parser.hasNext(in));
-                });
-                if (!hasNext.get()) {
-                    finish();
-                }
-                return hasNext.get();
-            }
-
-            @Override
-            public TupleNode next() {
-                connection.checkClosed();
-
-                AtomicReference<TupleNode> current = new AtomicReference<>();
-                connection.withInputStream(in -> {
-                    current.set((TupleNode) parser.parseStructure(connection.getInputStream(), nodeReader));
-                });
-                return current.get();
-            }
-        };
+        return new TableIterator();
     }
 }

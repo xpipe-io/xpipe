@@ -1,5 +1,6 @@
 package io.xpipe.core.impl;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
@@ -33,10 +34,11 @@ public class XpbtReadConnection implements TableReadConnection {
         }
 
         var headerLength = header.getBytes(StandardCharsets.UTF_8).length;
-        this.inputStream.skip(headerLength);
+        this.inputStream.skip(headerLength + 1);
         List<String> names = JacksonHelper.newMapper()
                 .disable(JsonParser.Feature.AUTO_CLOSE_SOURCE)
-                .readerFor(new TypeReference<List<String>>(){}).readValue(header);
+                .readerFor(new TypeReference<List<String>>() {
+                }).readValue(header);
         TupleType dataType = TupleType.tableType(names);
         this.dataType = dataType;
         this.parser = new TypedDataStreamParser(dataType);
@@ -53,7 +55,7 @@ public class XpbtReadConnection implements TableReadConnection {
     private TypedDataStreamParser parser;
     private boolean empty;
 
-    protected XpbtReadConnection(StreamDataStore store)  {
+    protected XpbtReadConnection(StreamDataStore store) {
         this.store = store;
     }
 
@@ -63,14 +65,15 @@ public class XpbtReadConnection implements TableReadConnection {
     }
 
     @Override
-    public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
+    public int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
         if (empty) {
-            return;
+            return 0;
         }
 
         var reader = TypedDataStructureNodeReader.of(dataType);
         AtomicBoolean quit = new AtomicBoolean(false);
         AtomicReference<Exception> exception = new AtomicReference<>();
+        var counter = 0;
         while (!quit.get()) {
             var node = parser.parseStructure(inputStream, reader);
             if (node == null) {
@@ -82,6 +85,7 @@ public class XpbtReadConnection implements TableReadConnection {
                 if (!lineAcceptor.accept(node.asTuple())) {
                     quit.set(true);
                 }
+                counter++;
             } catch (Exception ex) {
                 quit.set(true);
                 exception.set(ex);
@@ -91,5 +95,6 @@ public class XpbtReadConnection implements TableReadConnection {
         if (exception.get() != null) {
             throw exception.get();
         }
+        return counter;
     }
 }

@@ -20,6 +20,8 @@ import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
+import io.xpipe.core.impl.TextSource;
+import io.xpipe.core.impl.XpbtSource;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
@@ -34,6 +36,9 @@ public class CoreJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
+                new NamedType(TextSource.class),
+                new NamedType(XpbtSource.class),
+
                 new NamedType(FileStore.class),
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
@@ -70,8 +75,8 @@ public class CoreJacksonModule extends SimpleModule {
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
 
-        addSerializer(Secret.class, new SecretSerializer());
-        addDeserializer(Secret.class, new SecretDeserializer());
+        addSerializer(SecretValue.class, new SecretSerializer());
+        addDeserializer(SecretValue.class, new SecretDeserializer());
 
         addSerializer(DataSourceReference.class, new DataSourceReferenceSerializer());
         addDeserializer(DataSourceReference.class, new DataSourceReferenceDeserializer());
@@ -159,20 +164,20 @@ public class CoreJacksonModule extends SimpleModule {
         }
     }
 
-    public static class SecretSerializer extends JsonSerializer<Secret> {
+    public static class SecretSerializer extends JsonSerializer<SecretValue> {
 
         @Override
-        public void serialize(Secret value, JsonGenerator jgen, SerializerProvider provider)
+        public void serialize(SecretValue value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
             jgen.writeString(value.getEncryptedValue());
         }
     }
 
-    public static class SecretDeserializer extends JsonDeserializer<Secret> {
+    public static class SecretDeserializer extends JsonDeserializer<SecretValue> {
 
         @Override
-        public Secret deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return new Secret(p.getValueAsString());
+        public SecretValue deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return new SecretValue(p.getValueAsString());
         }
     }
 

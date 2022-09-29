@@ -6,7 +6,6 @@ import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
-import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Map;
@@ -21,11 +20,6 @@ public interface DataSourceProvider<T extends DataSource<?>> {
     default void validate() throws Exception {
         getCategory();
         getSourceClass();
-    }
-
-    @SneakyThrows
-    default T create(Object... arguments) {
-       return (T) getSourceClass().getDeclaredConstructors()[0].newInstance(arguments);
     }
 
     default Category getCategory() {

@@ -1,15 +1,16 @@
 package io.xpipe.core.source;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
+import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.impl.TextSource;
 import io.xpipe.core.impl.XpbtSource;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonHelper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Optional;
 
@@ -19,18 +20,21 @@ import java.util.Optional;
  * <p>
  * This instance is only valid in combination with its associated data store instance.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type"
+)
 public abstract class DataSource<DS extends DataStore> {
 
 
     public static DataSource<?> createInternalDataSource(DataSourceType t, DataStore store) {
         try {
             return switch (t) {
-                case TABLE -> new XpbtSource(store.asNeeded());
+                case TABLE ->  XpbtSource.builder().store(store.asNeeded()).build();
                 case STRUCTURE -> null;
-                case TEXT -> new TextSource(store.asNeeded());
+                case TEXT -> TextSource.builder().store(store.asNeeded()).newLine(NewLine.LF).charset(
+                        StreamCharset.UTF8).build();
                 case RAW -> null;
                 //TODO
                 case COLLECTION -> null;
@@ -55,6 +59,15 @@ public abstract class DataSource<DS extends DataStore> {
         store.validate();
     }
 
+    public WriteMode[] getAvailableWriteModes() {
+        if (getFlow() != null && !getFlow().hasOutput()) {
+            return new WriteMode[0];
+        }
+
+        return WriteMode.values();
+    }
+
+
     public DataFlow getFlow() {
         if (store == null) {
             return null;
@@ -70,6 +83,32 @@ public abstract class DataSource<DS extends DataStore> {
         TokenBuffer tb = new TokenBuffer(mapper, false);
         mapper.writeValue(tb, this);
         return (T) mapper.readValue(tb.asParser(), getClass());
+    }
+
+    @SneakyThrows
+    public final String toString() {
+        var tree = JacksonHelper.newMapper().valueToTree(this);
+        return tree.toPrettyString();
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (getClass() != o.getClass()) {
+            return false;
+        }
+
+        var tree = JacksonHelper.newMapper().valueToTree(this);
+        var otherTree = JacksonHelper.newMapper().valueToTree(o);
+        return tree.equals(otherTree);
+    }
+
+    @Override
+    public final int hashCode() {
+        var tree = JacksonHelper.newMapper().valueToTree(this);
+        return tree.hashCode();
     }
 
     public DataSource<DS> withStore(DS store) {

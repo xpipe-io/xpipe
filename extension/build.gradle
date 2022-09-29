@@ -7,7 +7,6 @@ plugins {
 
 apply from: "$rootDir/deps/java.gradle"
 apply from: "$rootDir/deps/javafx.gradle"
-apply from: "$rootDir/deps/richtextfx.gradle"
 apply from: "$rootDir/deps/lombok.gradle"
 
 configurations {
@@ -26,6 +25,7 @@ dependencies {
     api group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "2.13.0"
 
     compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
+    compileOnly group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.9'
     compileOnly 'net.synedra:validatorfx:0.3.1'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     compileOnly 'com.jfoenix:jfoenix:9.0.10'

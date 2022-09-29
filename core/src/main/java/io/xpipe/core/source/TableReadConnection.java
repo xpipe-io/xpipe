@@ -7,6 +7,7 @@ import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
+import io.xpipe.core.impl.LimitTableReadConnection;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ public interface TableReadConnection extends DataSourceReadConnection {
             }
 
             @Override
-            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
-
+            public int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
+                return 0;
             }
 
             @Override
@@ -54,10 +55,16 @@ public interface TableReadConnection extends DataSourceReadConnection {
         return OptionalInt.empty();
     }
 
+    default TableReadConnection limit(int limit) {
+        return new LimitTableReadConnection(this, limit);
+    }
+
     /**
      * Consumes the table rows until the acceptor returns false.
+     *
+     * @return
      */
-    void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception;
+    int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception;
 
     /**
      * Reads multiple rows in bulk.
@@ -92,7 +99,11 @@ public interface TableReadConnection extends DataSourceReadConnection {
     }
 
     default void forward(DataSourceConnection con) throws Exception {
+        forwardAndCount(con);
+    }
+
+    default int forwardAndCount(DataSourceConnection con) throws Exception {
         var tCon = (TableWriteConnection) con;
-        withRows(tCon.writeLinesAcceptor());
+        return withRows(tCon.writeLinesAcceptor());
     }
 }

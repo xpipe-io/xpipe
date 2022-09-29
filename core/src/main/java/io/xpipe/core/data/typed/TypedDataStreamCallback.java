@@ -3,9 +3,11 @@ package io.xpipe.core.data.typed;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.type.TupleType;
 
+import java.util.Map;
+
 public interface TypedDataStreamCallback {
 
-    default void onValue(byte[] data) {
+    default void onValue(byte[] data, Map<Integer, String> metaAttributes) {
     }
 
     default void onGenericNode(DataStructureNode node) {
@@ -14,13 +16,13 @@ public interface TypedDataStreamCallback {
     default void onTupleBegin(TupleType type) {
     }
 
-    default void onTupleEnd() {
+    default void onTupleEnd(Map<Integer, String> metaAttributes) {
     }
 
     default void onArrayBegin(int size) {
     }
 
-    default void onArrayEnd() {
+    default void onArrayEnd(Map<Integer, String> metaAttributes) {
     }
 
     default void onNodeBegin() {

@@ -1,18 +1,16 @@
 package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
+import lombok.Singular;
+import lombok.experimental.SuperBuilder;
 
-import java.util.HashMap;
 import java.util.Map;
 
+@SuperBuilder
 public abstract class CollectionDataSource<DS extends DataStore> extends DataSource<DS> {
 
+    @Singular
     private final Map<String, String> preferredProviders;
-
-    public CollectionDataSource(DS store) {
-        super(store);
-        this.preferredProviders = new HashMap<>();
-    }
 
     public CollectionDataSource<DS> annotate(String file, String provider) {
         preferredProviders.put(file, provider);

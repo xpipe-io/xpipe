@@ -1,6 +1,6 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,7 +15,7 @@ public abstract class ShellStore implements DataStore {
         return null;
     }
 
-    public List<Secret> getInput() {
+    public List<SecretValue> getInput() {
         return List.of();
     }
 
@@ -31,7 +31,7 @@ public abstract class ShellStore implements DataStore {
         return string;
     }
 
-    public String executeAndCheckOut(List<Secret> in, List<String> cmd, Integer timeout) throws ProcessOutputException, Exception {
+    public String executeAndCheckOut(List<SecretValue> in, List<String> cmd, Integer timeout) throws ProcessOutputException, Exception {
         var pc = prepareCommand(in, cmd, getEffectiveTimeOut(timeout));
         pc.start();
 
@@ -76,7 +76,7 @@ public abstract class ShellStore implements DataStore {
         }
     }
 
-    public Optional<String> executeAndCheckErr(List<Secret> in, List<String> cmd) throws Exception {
+    public Optional<String> executeAndCheckErr(List<SecretValue> in, List<String> cmd) throws Exception {
         var pc = prepareCommand(in, cmd, getTimeout());
         pc.start();
         var outT = pc.discardOut();
@@ -113,13 +113,13 @@ public abstract class ShellStore implements DataStore {
         return prepareCommand(List.of(), cmd, timeout);
     }
 
-    public abstract ProcessControl prepareCommand(List<Secret> input, List<String> cmd, Integer timeout) throws Exception;
+    public abstract ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout) throws Exception;
 
     public ProcessControl preparePrivilegedCommand(List<String> cmd, Integer timeout) throws Exception {
         return preparePrivilegedCommand(List.of(), cmd, timeout);
     }
 
-    public ProcessControl preparePrivilegedCommand(List<Secret> input, List<String> cmd, Integer timeout) throws Exception {
+    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeout) throws Exception {
         throw new UnsupportedOperationException();
     }
 }

@@ -67,7 +67,7 @@ public class GenericDataStreamParser {
             parse(in, cb);
         }
         var attributes = DataStructureNodeIO.parseAttributes(in);
-        cb.onTupleEnd();
+        cb.onTupleEnd(attributes);
     }
 
     private static void parseArray(InputStream in, GenericDataStreamCallback cb) throws IOException {
@@ -77,7 +77,7 @@ public class GenericDataStreamParser {
             parse(in, cb);
         }
         var attributes = DataStructureNodeIO.parseAttributes(in);
-        cb.onArrayEnd();
+        cb.onArrayEnd(attributes);
     }
 
     private static void parseValue(InputStream in, GenericDataStreamCallback cb) throws IOException {

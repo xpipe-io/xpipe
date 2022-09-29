@@ -2,18 +2,10 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.impl.PreservingTableWriteConnection;
 import io.xpipe.core.store.DataStore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
+@SuperBuilder
 public abstract class TableDataSource<DS extends DataStore> extends DataSource<DS> {
-
-    public TableDataSource(DS store) {
-        super(store);
-    }
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {

@@ -8,9 +8,13 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import lombok.Value;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
-@Value
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE
+)
 public class IntFieldComp extends Comp<CompStructure<TextField>> {
 
     Property<Integer> value;

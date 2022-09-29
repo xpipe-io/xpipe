@@ -22,18 +22,25 @@ public class DataStructureNodeIO {
     public static final int TYPED_ARRAY_ID = 7;
     public static final int TYPED_VALUE_ID = 8;
 
-    public static void writeShort(OutputStream out, int value) throws IOException {
+    public static int writeShort(OutputStream out, int value) throws IOException {
+        if (value > Short.MAX_VALUE) {
+            value = Short.MAX_VALUE;
+        }
+
         var buffer = ByteBuffer.allocate(2);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) value);
         out.write(buffer.array());
+        return value;
     }
 
     public static void writeString(OutputStream out, String s) throws IOException {
         if (s != null) {
             var b = s.getBytes(StandardCharsets.UTF_8);
-            DataStructureNodeIO.writeShort(out, b.length);
-            out.write(b);
+            var length = DataStructureNodeIO.writeShort(out, b.length);
+            out.write(b, 0, length);
+        } else {
+            writeShort(out, -1);
         }
     }
 
@@ -50,6 +57,10 @@ public class DataStructureNodeIO {
 
     public static String parseString(InputStream in) throws IOException {
         var nameLength = parseShort(in);
+        if (nameLength == -1) {
+            return null;
+        }
+
         var name = new String(in.readNBytes(nameLength), StandardCharsets.UTF_8);
         return name;
     }
@@ -74,13 +85,11 @@ public class DataStructureNodeIO {
             writeShort(out, s.getMetaAttributes().size());
             for (Map.Entry<Integer, String> entry : s.getMetaAttributes().entrySet()) {
                 Integer integer = entry.getKey();
-                var value = entry.getValue().getBytes(StandardCharsets.UTF_8);
                 writeShort(out, integer);
-                writeShort(out, value.length);
-                out.write(value);
+                writeString(out, entry.getValue());
             }
         } else {
-            out.write(0);
+            writeShort(out, 0);
         }
     }
 }

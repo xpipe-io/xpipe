@@ -2,7 +2,7 @@ package io.xpipe.core.dialog;
 
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
-import io.xpipe.core.util.Secret;
+import io.xpipe.core.util.SecretValue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -48,14 +48,14 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<Secret> SECRET = new QueryConverter<Secret>() {
+    public static final QueryConverter<SecretValue> SECRET = new QueryConverter<SecretValue>() {
         @Override
-        protected Secret fromString(String s) {
-            return new Secret(s);
+        protected SecretValue fromString(String s) {
+            return new SecretValue(s);
         }
 
         @Override
-        protected String toString(Secret value) {
+        protected String toString(SecretValue value) {
             return value.getEncryptedValue();
         }
     };

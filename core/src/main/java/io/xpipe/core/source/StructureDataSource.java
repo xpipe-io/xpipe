@@ -2,12 +2,10 @@ package io.xpipe.core.source;
 
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.store.DataStore;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 public abstract class StructureDataSource<DS extends DataStore> extends DataSource<DS> {
-
-    public StructureDataSource(DS store) {
-        super(store);
-    }
 
     private int countEntries(DataStructureNode n) {
         if (n.isValue()) {

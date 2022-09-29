@@ -68,6 +68,7 @@ public abstract class ProcessControl {
     public abstract int waitFor() throws Exception;
 
     public abstract InputStream getStdout();
+    public abstract OutputStream getStdin();
 
     public abstract InputStream getStderr();
 

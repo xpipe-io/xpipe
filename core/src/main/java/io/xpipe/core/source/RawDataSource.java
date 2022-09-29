@@ -1,14 +1,12 @@
 package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 public abstract class RawDataSource<DS extends DataStore> extends DataSource<DS> {
 
     private static final int MAX_BYTES_READ = 100000;
-
-    public RawDataSource(DS store) {
-        super(store);
-    }
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {

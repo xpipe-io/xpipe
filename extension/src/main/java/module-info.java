@@ -1,7 +1,5 @@
-import com.fasterxml.jackson.databind.Module;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.SupportedApplicationProvider;
-import io.xpipe.extension.util.ExtensionJacksonModule;
 import io.xpipe.extension.util.XPipeDaemon;
 
 open module io.xpipe.extension {
@@ -27,9 +25,6 @@ open module io.xpipe.extension {
     requires static org.fxmisc.richtext;
     requires static net.synedra.validatorfx;
     requires static org.fxmisc.flowless;
-    requires static org.fxmisc.undofx;
-    requires static org.fxmisc.wellbehavedfx;
-    requires static org.reactfx;
     requires static org.kordamp.ikonli.javafx;
     requires static com.jfoenix;
 
@@ -41,6 +36,4 @@ open module io.xpipe.extension {
     uses io.xpipe.extension.DataStoreProvider;
     uses XPipeDaemon;
     uses io.xpipe.extension.Cache;
-
-    provides Module with ExtensionJacksonModule;
 }

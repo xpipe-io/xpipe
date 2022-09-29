@@ -56,21 +56,10 @@ public class JacksonHelper {
      * Constructs a new ObjectMapper that is able to map all required X-Pipe classes and also possible extensions.
      */
     public static ObjectMapper newMapper() {
-        if (!init) {
-            throw new IllegalStateException("Not initialized");
+        if (!JacksonHelper.isInit()) {
+            JacksonHelper.initModularized(ModuleLayer.boot());
         }
-
         return INSTANCE.copy();
-    }
-
-    public static ObjectMapper newMapper(Class<?> excludedModule) {
-        if (!init) {
-            throw new IllegalStateException("Not initialized");
-        }
-
-        var mapper = BASE.copy();
-        mapper.registerModules(MODULES.stream().filter(module -> !module.getClass().equals(excludedModule)).toList());
-        return mapper;
     }
 
     public static boolean isInit() {

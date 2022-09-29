@@ -10,9 +10,20 @@ import io.xpipe.core.data.node.TupleNode;
  */
 public interface TableWriteConnection extends DataSourceConnection {
 
+    public static TableWriteConnection empty() {
+        return new TableWriteConnection() {
+            @Override
+            public DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor() {
+                return node -> {
+                    return true;
+                };
+            }
+        };
+    }
+
     DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor();
 
-    default void writeLines(ArrayNode lines) throws Exception{
+    default void writeLines(ArrayNode lines) throws Exception {
         var consumer = writeLinesAcceptor();
         for (DataStructureNode dataStructureNode : lines.getNodes()) {
             consumer.accept(dataStructureNode.asTuple());

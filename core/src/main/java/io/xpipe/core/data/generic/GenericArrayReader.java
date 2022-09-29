@@ -74,9 +74,9 @@ public class GenericArrayReader implements GenericAbstractReader {
     }
 
     @Override
-    public void onArrayEnd() {
+    public void onArrayEnd(Map<Integer, String> metaAttributes) {
         if (hasReader()) {
-            currentReader.onArrayEnd();
+            currentReader.onArrayEnd(metaAttributes);
             if (currentReader.isDone()) {
                 put(currentReader.create());
                 currentReader = null;
@@ -114,9 +114,9 @@ public class GenericArrayReader implements GenericAbstractReader {
     }
 
     @Override
-    public void onTupleEnd() {
+    public void onTupleEnd(Map<Integer, String> metaAttributes) {
         if (hasReader()) {
-            currentReader.onTupleEnd();
+            currentReader.onTupleEnd(metaAttributes);
             if (currentReader.isDone()) {
                 put(currentReader.create());
                 currentReader = null;

@@ -60,6 +60,8 @@ public class XpbtWriteConnection implements TableWriteConnection {
                 .setPrettyPrinter(new DefaultPrettyPrinter())) {
             JacksonHelper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
                     .writeValue(g, tupleNode.getKeyNames());
+            writer.append("\n");
         }
+        writer.flush();
     }
 }
