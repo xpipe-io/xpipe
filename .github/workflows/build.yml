@@ -4,16 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [
-          ubuntu-20.04,
-          # macos-10.15,
-          windows-2022
-        ]
-      fail-fast: false
-    name: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     steps:
       - name: Git checkout
         uses: actions/checkout@v2

@@ -25,7 +25,6 @@ jreleaser {
 
     release {
         github {
-            skipRelease = !isFullRelease
             skipTag = !isFullRelease
             owner = 'xpipe-io'
             overwrite = false
@@ -35,13 +34,15 @@ jreleaser {
 
             files = true
             artifacts = true
-            checksums = false
+            checksums = true
             signatures = false
 
-            changelog {
-                enabled = true
-                formatted = 'ALWAYS'
-                contentTemplate = isFullRelease ? file('misc/github_full.tpl') : file('misc/github_pre.tpl')
+            if (isFullRelease) {
+                changelog {
+                    enabled = true
+                    formatted = 'ALWAYS'
+                    contentTemplate = isFullRelease ? file('misc/github_full.tpl') : file('misc/github_pre.tpl')
+                }
             }
         }
     }
@@ -75,11 +76,13 @@ jreleaser {
         }
     }
 
-    announce {
-        discord {
-            active = 'RELEASE'
-            webhook = proj.hasProperty("XPIPE_DISCORD_WEBHOOK") ? proj.property("XPIPE_DISCORD_WEBHOOK") : System.getenv("XPIPE_DISCORD_WEBHOOK")
-            messageTemplate = isFullRelease ? 'misc/discord_full.tpl' : 'misc/discord_pre.tpl'
+    if (isFullRelease) {
+        announce {
+            discord {
+                active = 'RELEASE'
+                webhook = proj.hasProperty("XPIPE_DISCORD_WEBHOOK") ? proj.property("XPIPE_DISCORD_WEBHOOK") : System.getenv("XPIPE_DISCORD_WEBHOOK")
+                messageTemplate = isFullRelease ? 'misc/discord_full.tpl' : 'misc/discord_pre.tpl'
+            }
         }
     }
 }
