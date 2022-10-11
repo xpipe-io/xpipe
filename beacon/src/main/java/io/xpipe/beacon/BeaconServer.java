@@ -37,7 +37,7 @@ public class BeaconServer {
             var command = custom + " " + (BeaconConfig.getDaemonArguments() != null ?
                     BeaconConfig.getDaemonArguments() :
                     "");
-            Process process =  Runtime.getRuntime().exec(command);
+            Process process = Runtime.getRuntime().exec(command);
             printDaemonOutput(process, command);
             return process;
         }
@@ -51,7 +51,7 @@ public class BeaconServer {
                     BeaconConfig.getDaemonArguments() :
                     "");
             // Tell daemon that we launched from an external tool
-            Process process =  Runtime.getRuntime().exec(command);
+            Process process = Runtime.getRuntime().exec(command);
             printDaemonOutput(process, command);
             return process;
         }
@@ -65,17 +65,15 @@ public class BeaconServer {
             System.out.println("Starting daemon: " + command);
         }
 
-        if (!print) {
-            return;
-        }
-
         new Thread(null, () -> {
             try {
                 InputStreamReader isr = new InputStreamReader(proc.getInputStream());
                 BufferedReader br = new BufferedReader(isr);
                 String line;
                 while ((line = br.readLine()) != null) {
-                    System.out.println("[xpiped] " + line);
+                    if (print) {
+                        System.out.println("[xpiped] " + line);
+                    }
                 }
             } catch (Exception ioe) {
                 ioe.printStackTrace();
@@ -88,7 +86,9 @@ public class BeaconServer {
                 BufferedReader br = new BufferedReader(isr);
                 String line;
                 while ((line = br.readLine()) != null) {
-                    System.err.println("[xpiped] " + line);
+                    if (print) {
+                        System.err.println("[xpiped] " + line);
+                    }
                 }
             } catch (Exception ioe) {
                 ioe.printStackTrace();
@@ -132,7 +132,7 @@ public class BeaconServer {
         Path executable = null;
         if (!debug) {
             if (System.getProperty("os.name").startsWith("Windows")) {
-                executable = Path.of("app", "xpiped.exe");
+                executable = Path.of("app", "runtime", "bin", "xpiped.bat");
             } else {
                 executable = Path.of("app/bin/xpiped");
             }

@@ -181,7 +181,7 @@ public abstract class BeaconConnection implements AutoCloseable {
 
     private BeaconException unwrapException(Exception exception) {
         if (exception instanceof ServerException s) {
-            return new BeaconException("And internal server error occurred", s.getCause());
+            return new BeaconException("An internal server error occurred", s.getCause());
         }
 
         if (exception instanceof ClientException s) {

@@ -49,7 +49,6 @@ public interface Validator {
     /** Create a string property that depends on the validation result.
      * @param prefix The string to prefix each validation message with
      * @param separator The string to separate consecutive validation messages with
-     * @param severities The severities to consider; If none is given, only Severity.ERROR will be considered
      * @return
      */
     public StringBinding createStringBinding(String prefix, String separator);
