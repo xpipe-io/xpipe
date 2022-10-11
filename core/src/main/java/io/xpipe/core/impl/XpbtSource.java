@@ -6,10 +6,14 @@ import io.xpipe.core.source.TableReadConnection;
 import io.xpipe.core.source.TableWriteConnection;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeName("xpbt")
 @SuperBuilder
+@Jacksonized
 public class XpbtSource extends TableDataSource<StreamDataStore> {
+
+
 
     @Override
     protected TableWriteConnection newWriteConnection() {

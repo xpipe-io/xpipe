@@ -3,12 +3,14 @@ package io.xpipe.core.store;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.util.JacksonizedValue;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 @JsonTypeName("stdout")
 @SuperBuilder
+@Jacksonized
 public class StdoutDataStore extends JacksonizedValue implements StreamDataStore {
 
     @Override

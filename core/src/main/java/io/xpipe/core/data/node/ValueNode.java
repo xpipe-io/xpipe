@@ -56,6 +56,18 @@ public abstract class ValueNode extends DataStructureNode {
         return created;
     }
 
+    public static ValueNode ofText(String text) {
+        var created = of(text);
+        created.tag(IS_TEXT);
+        return created;
+    }
+
+    public static ValueNode ofInteger(int integer) {
+        var created = of(integer);
+        created.tag(IS_INTEGER);
+        return created;
+    }
+
     public static ValueNode ofInteger(BigInteger integer) {
         var created = of(integer);
         created.tag(IS_INTEGER);

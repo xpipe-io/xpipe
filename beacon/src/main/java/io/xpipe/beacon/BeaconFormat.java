@@ -19,6 +19,10 @@ public class BeaconFormat {
 
             @Override
             public void close() throws IOException {
+                if (isClosed()) {
+                    return;
+                }
+
                 finishBlock();
                 out.flush();
                 index = -1;
@@ -26,6 +30,10 @@ public class BeaconFormat {
 
             @Override
             public void write(int b) throws IOException {
+                if (isClosed()) {
+                    throw new IllegalStateException("Output is closed");
+                }
+
                 if (index == currentBytes.length) {
                     finishBlock();
                 }
@@ -34,7 +42,15 @@ public class BeaconFormat {
                 index++;
             }
 
+            private boolean isClosed() {
+                return index == -1;
+            }
+
             private void finishBlock() throws IOException {
+                if (isClosed()) {
+                    throw new IllegalStateException("Output is closed");
+                }
+
                 if (BeaconConfig.printMessages()) {
                     System.out.println("Sending data block of length " + index);
                 }

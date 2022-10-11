@@ -6,18 +6,20 @@ import io.xpipe.core.source.StructureReadConnection;
 import io.xpipe.core.source.StructureWriteConnection;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeName("xpbs")
 @SuperBuilder
+@Jacksonized
 public class XpbsSource extends StructureDataSource<StreamDataStore> {
 
     @Override
     protected StructureWriteConnection newWriteConnection() {
-        return null;
+        return new XpbsWriteConnection(this);
     }
 
     @Override
     protected StructureReadConnection newReadConnection() {
-        return null;
+        return new XpbsReadConnection(this);
     }
 }

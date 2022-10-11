@@ -1,8 +1,9 @@
 package io.xpipe.core.store;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -12,15 +13,12 @@ import java.util.Optional;
  * The referenced store has to be resolved by the caller manually, as this class does not act as a resolver.
  */
 @JsonTypeName("named")
+@SuperBuilder
+@Jacksonized
 public final class NamedStore implements DataStore {
 
     @Getter
     private final String name;
-
-    @JsonCreator
-    public NamedStore(String name) {
-        this.name = name;
-    }
 
     @Override
     public void validate() throws Exception {

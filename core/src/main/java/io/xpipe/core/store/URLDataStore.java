@@ -1,14 +1,19 @@
 package io.xpipe.core.store;
 
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.InputStream;
 import java.net.URL;
 
-@Value
+
+@JsonTypeName("url")
+@SuperBuilder
+@Jacksonized
 public class URLDataStore implements StreamDataStore {
 
-    URL url;
+    private final URL url;
 
     @Override
     public InputStream openInput() throws Exception {
