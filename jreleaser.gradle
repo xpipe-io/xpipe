@@ -80,14 +80,4 @@ jreleaser {
             }
         }
     }
-
-    if (isFullRelease) {
-        announce {
-            discord {
-                active = 'RELEASE'
-                webhook = proj.hasProperty("XPIPE_DISCORD_WEBHOOK") ? proj.property("XPIPE_DISCORD_WEBHOOK") : System.getenv("XPIPE_DISCORD_WEBHOOK")
-                messageTemplate = isFullRelease ? 'misc/discord_full.tpl' : 'misc/discord_pre.tpl'
-            }
-        }
-    }
 }

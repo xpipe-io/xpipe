@@ -32,7 +32,7 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
 
       - name: JReleaser
-        run: ./gradlew jreleaserRelease jreleaserAnnounce
+        run: ./gradlew jreleaserRelease
         env:
           XPIPE_GITHUB_TOKEN: ${{ secrets.XPIPE_GITHUB_TOKEN }}
           XPIPE_DISCORD_WEBHOOK: ${{ secrets.XPIPE_DISCORD_WEBHOOK }}
