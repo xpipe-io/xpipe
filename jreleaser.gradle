@@ -26,8 +26,8 @@ jreleaser {
     release {
         github {
             skipTag = !isFullRelease
-            owner = 'xpipe-io'
-            overwrite = false
+            repoOwner = 'xpipe-io'
+            overwrite = true
             tagName = '{{projectVersion}}'
             releaseName = '{{tagName}}'
             token = proj.hasProperty("XPIPE_GITHUB_TOKEN") ? proj.property("XPIPE_GITHUB_TOKEN") : System.getenv("XPIPE_GITHUB_TOKEN")
@@ -43,6 +43,10 @@ jreleaser {
                     formatted = 'ALWAYS'
                     contentTemplate = isFullRelease ? file('misc/github_full.tpl') : file('misc/github_pre.tpl')
                 }
+            }
+
+            prerelease {
+                enabled = !isFullRelease
             }
         }
     }
