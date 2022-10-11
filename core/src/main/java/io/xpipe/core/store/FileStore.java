@@ -1,8 +1,9 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Builder;
-import lombok.Value;
+import io.xpipe.core.util.JacksonizedValue;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.InputStream;
@@ -12,11 +13,11 @@ import java.nio.file.Path;
 /**
  * Represents a file located on a certain machine.
  */
-@Value
 @JsonTypeName("file")
-@Builder
+@SuperBuilder
 @Jacksonized
-public class FileStore implements StreamDataStore, FilenameStore {
+@Getter
+public class FileStore extends JacksonizedValue implements FilenameStore, StreamDataStore {
 
     public static FileStore local(Path p) {
         return new FileStore(new LocalStore(), p.toString());
@@ -32,8 +33,13 @@ public class FileStore implements StreamDataStore, FilenameStore {
     MachineFileStore machine;
     String file;
 
+    public FileStore(MachineFileStore machine, String file) {
+        this.machine = machine;
+        this.file = file;
+    }
+
     @Override
-    public void validate() throws Exception {
+    public void checkComplete() throws Exception {
         if (machine == null) {
             throw new IllegalStateException("Machine is missing");
         }

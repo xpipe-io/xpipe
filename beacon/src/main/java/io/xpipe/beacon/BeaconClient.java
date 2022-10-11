@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
-import io.xpipe.core.util.JacksonHelper;
+import io.xpipe.core.util.JacksonMapper;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -96,7 +96,7 @@ public class BeaconClient implements AutoCloseable {
     }
 
     public <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
-        ObjectNode json = JacksonHelper.newMapper().valueToTree(req);
+        ObjectNode json = JacksonMapper.newMapper().valueToTree(req);
         var prov = MessageExchanges.byRequest(req);
         if (prov.isEmpty()) {
             throw new ClientException("Unknown request class " + req.getClass());
@@ -113,7 +113,7 @@ public class BeaconClient implements AutoCloseable {
         }
 
         var writer = new StringWriter();
-        var mapper = JacksonHelper.newMapper();
+        var mapper = JacksonMapper.newMapper();
         try (JsonGenerator g = mapper.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
             g.writeTree(msg);
         } catch (IOException ex) {
@@ -136,7 +136,7 @@ public class BeaconClient implements AutoCloseable {
     public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
         JsonNode node;
         try (InputStream blockIn = BeaconFormat.readBlocks(in)) {
-            node = JacksonHelper.newMapper().readTree(blockIn);
+            node = JacksonMapper.newMapper().readTree(blockIn);
         } catch (SocketException ex) {
             throw new ConnectorException("Connection to xpipe daemon closed unexpectedly", ex);
         } catch (IOException ex) {
@@ -172,7 +172,7 @@ public class BeaconClient implements AutoCloseable {
         }
 
         try {
-            var reader = JacksonHelper.newMapper().readerFor(ClientErrorMessage.class);
+            var reader = JacksonMapper.newMapper().readerFor(ClientErrorMessage.class);
             return Optional.of(reader.readValue(content));
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse client error message", ex);
@@ -186,7 +186,7 @@ public class BeaconClient implements AutoCloseable {
         }
 
         try {
-            var reader = JacksonHelper.newMapper().readerFor(ServerErrorMessage.class);
+            var reader = JacksonMapper.newMapper().readerFor(ServerErrorMessage.class);
             return Optional.of(reader.readValue(content));
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse server error message", ex);
@@ -212,7 +212,7 @@ public class BeaconClient implements AutoCloseable {
         }
 
         try {
-            var reader = JacksonHelper.newMapper().readerFor(prov.get().getResponseClass());
+            var reader = JacksonMapper.newMapper().readerFor(prov.get().getResponseClass());
             return reader.readValue(content);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse response", ex);

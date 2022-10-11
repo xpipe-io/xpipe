@@ -2,28 +2,23 @@ package io.xpipe.core.store;
 
 import io.xpipe.core.util.SecretValue;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class ShellStore implements DataStore {
+public interface ShellStore extends DataStore {
 
-    public Integer getTimeout() {
+    public default Integer getTimeout() {
         return null;
     }
 
-    public List<SecretValue> getInput() {
+    public default List<SecretValue> getInput() {
         return List.of();
     }
 
-    public boolean isLocal() {
-        return false;
-    }
-
-    public String executeAndRead(List<String> cmd, Integer timeout) throws Exception {
+    public default String executeAndRead(List<String> cmd, Integer timeout) throws Exception {
         var pc = prepareCommand(List.of(), cmd, getEffectiveTimeOut(timeout));
         pc.start();
         pc.discardErr();
@@ -31,7 +26,8 @@ public abstract class ShellStore implements DataStore {
         return string;
     }
 
-    public String executeAndCheckOut(List<SecretValue> in, List<String> cmd, Integer timeout) throws ProcessOutputException, Exception {
+    public default String executeAndCheckOut(List<SecretValue> in, List<String> cmd, Integer timeout)
+            throws ProcessOutputException, Exception {
         var pc = prepareCommand(in, cmd, getEffectiveTimeOut(timeout));
         pc.start();
 
@@ -47,15 +43,10 @@ public abstract class ShellStore implements DataStore {
         errorThread.setDaemon(true);
         errorThread.start();
 
-        var read = new ByteArrayOutputStream();
+        AtomicReference<String> read = new AtomicReference<>();
         var t = new Thread(() -> {
             try {
-                final byte[] buf = new byte[1];
-
-                int length;
-                    while ((length = pc.getStdout().read(buf)) > 0) {
-                        read.write(buf, 0, length);
-                    }
+                read.set(new String(pc.getStdout().readAllBytes(), pc.getCharset()));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -64,19 +55,18 @@ public abstract class ShellStore implements DataStore {
         t.start();
 
         var ec = pc.waitFor();
-        var readOut = read.toString(pc.getCharset());
         if (ec == -1) {
             throw new ProcessOutputException("Command timed out");
         }
 
-        if (ec == 0) {
-            return readOut;
+        if (ec == 0 && !(read.get().isEmpty() && !readError.get().isEmpty())) {
+            return read.get().trim();
         } else {
-            throw new ProcessOutputException("Command returned with " + ec + ": " + readError.get());
+            throw new ProcessOutputException("Command returned with " + ec + ": " + readError.get().trim());
         }
     }
 
-    public Optional<String> executeAndCheckErr(List<SecretValue> in, List<String> cmd) throws Exception {
+    public default Optional<String> executeAndCheckErr(List<SecretValue> in, List<String> cmd) throws Exception {
         var pc = prepareCommand(in, cmd, getTimeout());
         pc.start();
         var outT = pc.discardOut();
@@ -99,7 +89,7 @@ public abstract class ShellStore implements DataStore {
         return ec != 0 ? Optional.of(read.get()) : Optional.empty();
     }
 
-    public Integer getEffectiveTimeOut(Integer timeout) {
+    public default Integer getEffectiveTimeOut(Integer timeout) {
         if (this.getTimeout() == null) {
             return timeout;
         }
@@ -109,17 +99,19 @@ public abstract class ShellStore implements DataStore {
         return Math.min(getTimeout(), timeout);
     }
 
-    public ProcessControl prepareCommand(List<String> cmd, Integer timeout) throws Exception {
+    public default ProcessControl prepareCommand(List<String> cmd, Integer timeout) throws Exception {
         return prepareCommand(List.of(), cmd, timeout);
     }
 
-    public abstract ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout) throws Exception;
+    public abstract ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout)
+            throws Exception;
 
-    public ProcessControl preparePrivilegedCommand(List<String> cmd, Integer timeout) throws Exception {
+    public default ProcessControl preparePrivilegedCommand(List<String> cmd, Integer timeout) throws Exception {
         return preparePrivilegedCommand(List.of(), cmd, timeout);
     }
 
-    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeout) throws Exception {
+    public default ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeout)
+            throws Exception {
         throw new UnsupportedOperationException();
     }
 }

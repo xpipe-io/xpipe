@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.synedra.validatorfx.Check;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 @Value
@@ -28,19 +29,41 @@ public class WriteModeChoiceComp extends SimpleComp implements Validatable {
      public WriteModeChoiceComp(Property<WriteMode> selected, WriteMode[] available) {
          this.selected = selected;
          this.available = available;
+         if (available.length == 1) {
+             selected.setValue(available[0]);
+         }
          check = Validators.nonNull(validator, I18n.observable("mode"), selected);
      }
 
     @Override
     protected Region createSimple() {
+         var a = Arrays.asList(available);
         var map = new LinkedHashMap<WriteMode, ObservableValue<String>>();
-        map.put(WriteMode.REPLACE, I18n.observable("replace"));
-        map.put(WriteMode.APPEND, I18n.observable("append"));
-        map.put(WriteMode.PREPEND, I18n.observable("prepend"));
+        var replaceIndex = -1;
+        if (a.contains(WriteMode.REPLACE)) {
+            map.put(WriteMode.REPLACE, I18n.observable("replace"));
+            replaceIndex = 0;
+        }
+
+        var appendIndex = -1;
+        if (a.contains(WriteMode.APPEND)) {
+            map.put(WriteMode.APPEND, I18n.observable("append"));
+            appendIndex = replaceIndex + 1;
+        }
+
+        var prependIndex = -1;
+        if (a.contains(WriteMode.PREPEND)) {
+            map.put(WriteMode.PREPEND, I18n.observable("prepend"));
+            prependIndex = Math.max(replaceIndex, appendIndex) + 1;
+        }
+
+        int finalReplaceIndex = replaceIndex;
+        int finalAppendIndex = appendIndex;
+        int finalPrependIndex = prependIndex;
         return new ToggleGroupComp<>(selected, map).apply(struc -> {
-            new FancyTooltipAugment<>("extension.replaceDescription").augment(struc.get().getChildren().get(0));
-            new FancyTooltipAugment<>("extension.appendDescription").augment(struc.get().getChildren().get(1));
-            new FancyTooltipAugment<>("extension.prependDescription").augment(struc.get().getChildren().get(2));
+            if (finalReplaceIndex != -1) new FancyTooltipAugment<>("extension.replaceDescription").augment(struc.get().getChildren().get(0));
+            if (finalAppendIndex != -1) new FancyTooltipAugment<>("extension.appendDescription").augment(struc.get().getChildren().get(finalAppendIndex));
+            if (finalPrependIndex != -1) new FancyTooltipAugment<>("extension.prependDescription").augment(struc.get().getChildren().get(finalPrependIndex));
         }).apply(struc -> check.decorates(struc.get())).createRegion();
     }
 }

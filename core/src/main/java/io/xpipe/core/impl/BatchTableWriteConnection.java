@@ -11,16 +11,19 @@ import java.util.List;
 
 public abstract class BatchTableWriteConnection implements TableWriteConnection {
 
-    public static final int BATCH_SIZE = 2000;
+    public static final int DEFAULT_BATCH_SIZE = 2000;
 
+    protected final int batchSize = DEFAULT_BATCH_SIZE;
     private final List<DataStructureNode> batch = new ArrayList<>();
 
     @Override
     public final DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor() {
         return node -> {
-            if (batch.size() < BATCH_SIZE) {
+            if (batch.size() < batchSize) {
                 batch.add(node);
-                return true;
+                if (batch.size() < batchSize) {
+                    return true;
+                }
             }
 
             var array = ArrayNode.of(batch);
@@ -32,12 +35,15 @@ public abstract class BatchTableWriteConnection implements TableWriteConnection 
 
     @Override
     public final void close() throws Exception {
-        if (batch.size() > 0) {
-            var array = ArrayNode.of(batch);
-            var returned = writeBatchLinesAcceptor().accept(array);
-            batch.clear();
+        try {
+            if (batch.size() > 0) {
+                var array = ArrayNode.of(batch);
+                var returned = writeBatchLinesAcceptor().accept(array);
+                batch.clear();
+            }
+        } finally {
+            onClose();
         }
-        onClose();
     }
 
     protected abstract void onClose() throws Exception;

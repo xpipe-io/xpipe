@@ -36,7 +36,10 @@ public class SecretValue {
         if (value.length() < 2) {
             return value;
         }
-
-        return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
+        try {
+            return new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
+        } catch (Exception exception) {
+            return "";
+        }
     }
 }

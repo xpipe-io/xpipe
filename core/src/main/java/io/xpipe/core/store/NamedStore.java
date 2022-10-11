@@ -23,7 +23,7 @@ public final class NamedStore implements DataStore {
     }
 
     @Override
-    public void test() throws Exception {
+    public void validate() throws Exception {
         throw new UnsupportedOperationException();
     }
 

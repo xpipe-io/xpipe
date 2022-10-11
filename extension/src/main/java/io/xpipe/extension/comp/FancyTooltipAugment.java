@@ -80,7 +80,10 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
         public void hide() {
             Window owner = getOwnerWindow();
             if (owner == null || owner.isFocused()) {
-                super.hide();
+                try {
+                    super.hide();
+                } catch (Exception e) {
+                }
             }
         }
 

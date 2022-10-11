@@ -8,7 +8,8 @@ import io.xpipe.core.impl.TextSource;
 import io.xpipe.core.impl.XpbtSource;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.JacksonHelper;
+import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.util.JacksonizedValue;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
@@ -25,7 +26,7 @@ import java.util.Optional;
         use = JsonTypeInfo.Id.NAME,
         property = "type"
 )
-public abstract class DataSource<DS extends DataStore> {
+public abstract class DataSource<DS extends DataStore> extends JacksonizedValue {
 
 
     public static DataSource<?> createInternalDataSource(DataSourceType t, DataStore store) {
@@ -48,7 +49,7 @@ public abstract class DataSource<DS extends DataStore> {
 
 
     public void test() throws Exception {
-        store.test();
+        store.validate();
     }
 
     public void validate() throws Exception {
@@ -56,7 +57,7 @@ public abstract class DataSource<DS extends DataStore> {
             throw new IllegalStateException("Store cannot be null");
         }
 
-        store.validate();
+        store.checkComplete();
     }
 
     public WriteMode[] getAvailableWriteModes() {
@@ -79,36 +80,10 @@ public abstract class DataSource<DS extends DataStore> {
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T extends DataSource<DS>> T copy() {
-        var mapper = JacksonHelper.newMapper();
+        var mapper = JacksonMapper.newMapper();
         TokenBuffer tb = new TokenBuffer(mapper, false);
         mapper.writeValue(tb, this);
         return (T) mapper.readValue(tb.asParser(), getClass());
-    }
-
-    @SneakyThrows
-    public final String toString() {
-        var tree = JacksonHelper.newMapper().valueToTree(this);
-        return tree.toPrettyString();
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (getClass() != o.getClass()) {
-            return false;
-        }
-
-        var tree = JacksonHelper.newMapper().valueToTree(this);
-        var otherTree = JacksonHelper.newMapper().valueToTree(o);
-        return tree.equals(otherTree);
-    }
-
-    @Override
-    public final int hashCode() {
-        var tree = JacksonHelper.newMapper().valueToTree(this);
-        return tree.hashCode();
     }
 
     public DataSource<DS> withStore(DS store) {

@@ -56,10 +56,10 @@ public interface DataStore {
      *
      * @throws Exception if any part of the validation went wrong
      */
-    default void test() throws Exception {
+    default void validate() throws Exception {
     }
 
-    default void validate() throws Exception {
+    default void checkComplete() throws Exception {
     }
 
     default boolean delete() throws Exception {

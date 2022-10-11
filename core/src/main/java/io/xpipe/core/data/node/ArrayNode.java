@@ -33,8 +33,10 @@ public abstract class ArrayNode extends DataStructureNode {
         }
 
         var toReturn =  getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+
+        // Useful for debugging
         if (toReturn == false) {
-            throw new AssertionError();
+            return false;
         }
         return toReturn;
     }

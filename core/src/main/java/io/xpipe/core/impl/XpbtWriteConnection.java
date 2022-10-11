@@ -9,7 +9,7 @@ import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
 import io.xpipe.core.source.TableWriteConnection;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.core.util.JacksonHelper;
+import io.xpipe.core.util.JacksonMapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -58,7 +58,7 @@ public class XpbtWriteConnection implements TableWriteConnection {
         try (JsonGenerator g = f.createGenerator(writer)
                 .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
                 .setPrettyPrinter(new DefaultPrettyPrinter())) {
-            JacksonHelper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
+            JacksonMapper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
                     .writeValue(g, tupleNode.getKeyNames());
             writer.append("\n");
         }

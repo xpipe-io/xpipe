@@ -19,9 +19,12 @@ public class DataStoreProviders {
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
-                    return !p.init();
+                    p.init();
+                    p.validate();
+                    return false;
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEvent.fromThrowable(e)
+                            .handle();
                     return true;
                 }
             });
@@ -56,17 +59,17 @@ public class DataStoreProviders {
 
     @SuppressWarnings("unchecked")
     public static <T extends DataStoreProvider> T byStore(DataStore store) {
-        return (T) byStoreClass(store.getClass());
+        return (T) byStoreClass(store.getClass()).orElseThrow();
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends DataStoreProvider> T byStoreClass(Class<?> c) {
+    public static <T extends DataStoreProvider> Optional<T> byStoreClass(Class<?> c) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
 
-        return (T) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny().orElseThrow();
+        return (Optional<T>) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny();
     }
 
     public static List<DataStoreProvider> getAll() {

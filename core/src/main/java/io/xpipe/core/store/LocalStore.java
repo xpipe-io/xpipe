@@ -2,9 +2,8 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.util.JacksonizedValue;
 import io.xpipe.core.util.SecretValue;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -16,9 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @JsonTypeName("local")
-@Value
-@EqualsAndHashCode(callSuper = false)
-public class LocalStore extends StandardShellStore implements MachineFileStore {
+public class LocalStore extends JacksonizedValue implements MachineFileStore, StandardShellStore {
 
     @Override
     public boolean isLocal() {

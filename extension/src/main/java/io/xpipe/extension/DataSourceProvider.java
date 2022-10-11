@@ -61,9 +61,16 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return i18n("displayDescription");
     }
 
-    default String getDisplayIconFileName() {
-        return getId() + ":icon.png";
+    default String getModuleName() {
+        var n = getClass().getPackageName();
+        var i = n.lastIndexOf('.');
+        return i != -1 ? n.substring(i + 1) : n;
     }
+
+    default String getDisplayIconFileName() {
+        return getModuleName() + ":" + getId() + "_icon.png";
+    }
+
 
     default String getSourceDescription(T source) {
         return getDisplayName();

@@ -1,14 +1,84 @@
 package io.xpipe.extension.util;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.ScrollBar;
 
 import java.util.Set;
 
 public class PrettyListView<T> extends ListView<T> {
+
+    public static class NoSelectionModel<T> extends MultipleSelectionModel<T> {
+
+        @Override
+        public ObservableList<Integer> getSelectedIndices() {
+            return FXCollections.emptyObservableList();
+        }
+
+        @Override
+        public ObservableList<T> getSelectedItems() {
+            return FXCollections.emptyObservableList();
+        }
+
+        @Override
+        public void selectIndices(int index, int... indices) {
+        }
+
+        @Override
+        public void selectAll() {
+        }
+
+        @Override
+        public void selectFirst() {
+        }
+
+        @Override
+        public void selectLast() {
+        }
+
+        @Override
+        public void clearAndSelect(int index) {
+        }
+
+        @Override
+        public void select(int index) {
+        }
+
+        @Override
+        public void select(T obj) {
+        }
+
+        @Override
+        public void clearSelection(int index) {
+        }
+
+        @Override
+        public void clearSelection() {
+        }
+
+        @Override
+        public boolean isSelected(int index) {
+            return false;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public void selectPrevious() {
+        }
+
+        @Override
+        public void selectNext() {
+        }
+    }
 
     private final ScrollBar vBar = new ScrollBar();
     private final ScrollBar hBar = new ScrollBar();
@@ -32,6 +102,10 @@ public class PrettyListView<T> extends ListView<T> {
         hBar.setOrientation(Orientation.HORIZONTAL);
         hBar.getStyleClass().add("pretty-scroll-bar");
         hBar.visibleProperty().setValue(false);
+    }
+
+    public void disableSelection() {
+        setSelectionModel(new NoSelectionModel<>());
     }
 
     private void bindScrollBars() {

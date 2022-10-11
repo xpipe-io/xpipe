@@ -24,9 +24,12 @@ public abstract class ValueNode extends DataStructureNode {
             return false;
         }
         var toReturn =  Arrays.equals(getRawData(), that.getRawData()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+
+        // Useful for debugging
         if (toReturn == false) {
-            throw new AssertionError();
+            return false;
         }
+
         return toReturn;
     }
 
@@ -36,7 +39,7 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public static ValueNode nullValue() {
-        return new SimpleImmutableValueNode(new byte[0]).tag(IS_NULL).asValue();
+        return new SimpleValueNode(new byte[0]).tag(IS_NULL).asValue();
     }
 
     public static ValueNode of(byte[] data) {
@@ -44,7 +47,7 @@ public abstract class ValueNode extends DataStructureNode {
             return nullValue();
         }
 
-        return new SimpleImmutableValueNode(data);
+        return new SimpleValueNode(data);
     }
 
     public static ValueNode ofBytes(byte[] data) {

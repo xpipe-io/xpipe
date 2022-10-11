@@ -47,8 +47,6 @@ public class FilterComp extends Comp<FilterComp.Structure> {
 
         var stack = new StackPane(bgLabel, filter);
         stack.getStyleClass().add("filter-comp");
-        bgLabel.prefHeightProperty().bind(stack.heightProperty());
-        filter.prefHeightProperty().bind(stack.heightProperty());
 
         return Structure.builder().inactiveIcon(fi).inactiveText(bgLabel).text(filter).pane(stack).build();
     }

@@ -4,11 +4,11 @@ import lombok.NonNull;
 
 import java.nio.charset.StandardCharsets;
 
-public class SimpleImmutableValueNode extends ValueNode {
+public class SimpleValueNode extends ValueNode {
 
     private final byte @NonNull [] data;
 
-    SimpleImmutableValueNode(byte @NonNull [] data) {
+    SimpleValueNode(byte @NonNull [] data) {
         this.data = data;
     }
 
@@ -18,10 +18,6 @@ public class SimpleImmutableValueNode extends ValueNode {
 
     @Override
     public final String asString() {
-        if (getRawData().length == 0 && !hasMetaAttribute(IS_TEXT)) {
-            return "null";
-        }
-
         return new String(getRawData(), StandardCharsets.UTF_8);
     }
 

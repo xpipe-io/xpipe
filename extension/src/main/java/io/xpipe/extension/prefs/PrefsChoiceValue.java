@@ -47,9 +47,5 @@ public interface PrefsChoiceValue extends Translatable {
         return I18n.get(getId());
     }
 
-    default String toDefaultString() {
-        return I18n.get(getId());
-    }
-
     String getId();
 }

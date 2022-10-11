@@ -1,6 +1,5 @@
 package io.xpipe.core.impl;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
@@ -10,7 +9,7 @@ import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
 import io.xpipe.core.source.TableReadConnection;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.core.util.JacksonHelper;
+import io.xpipe.core.util.JacksonMapper;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -35,7 +34,7 @@ public class XpbtReadConnection implements TableReadConnection {
 
         var headerLength = header.getBytes(StandardCharsets.UTF_8).length;
         this.inputStream.skip(headerLength + 1);
-        List<String> names = JacksonHelper.newMapper()
+        List<String> names = JacksonMapper.newMapper()
                 .disable(JsonParser.Feature.AUTO_CLOSE_SOURCE)
                 .readerFor(new TypeReference<List<String>>() {
                 }).readValue(header);

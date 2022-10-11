@@ -15,7 +15,7 @@ public abstract class ProcessControl {
         var errT = discardErr();
         var string = new String(getStdout().readAllBytes(), getCharset());
         waitFor();
-        return string;
+        return string.trim();
     }
 
     public Optional<String> readErrOnly() throws Exception {
@@ -34,7 +34,7 @@ public abstract class ProcessControl {
         t.start();
 
         var ec = waitFor();
-        return ec != 0 ? Optional.of(read.get()) : Optional.empty();
+        return ec != 0 ? Optional.of(read.get().trim()) : Optional.empty();
     }
 
     public Thread discardOut() {

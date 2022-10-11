@@ -18,6 +18,7 @@ open module io.xpipe.extension {
     requires static javafx.base;
     requires static javafx.graphics;
     requires static javafx.controls;
+    requires static javafx.web;
     requires static io.xpipe.fxcomps;
     requires static lombok;
     requires static org.controlsfx.controls;

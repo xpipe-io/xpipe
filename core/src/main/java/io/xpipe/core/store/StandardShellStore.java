@@ -9,7 +9,11 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
-public abstract class StandardShellStore extends ShellStore implements MachineFileStore {
+public interface StandardShellStore extends MachineFileStore, ShellStore {
+
+    public default boolean isLocal() {
+        return false;
+    }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public static interface ShellType {
@@ -38,19 +42,19 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
     }
 
 
-    public NewLine getNewLine() throws Exception {
+    public default NewLine getNewLine() throws Exception {
         return determineType().getNewLine();
     }
 
     public abstract ShellType determineType() throws Exception;
 
-    public final  String querySystemName() throws Exception {
+    public default String querySystemName() throws Exception {
         var result =  executeAndCheckOut(List.of(), determineType().getOperatingSystemNameCommand(), getTimeout());
         return result.strip();
     }
 
     @Override
-    public  InputStream openInput(String file) throws Exception {
+    public default InputStream openInput(String file) throws Exception {
         var type = determineType();
         var cmd = type.createFileReadCommand(file);
         var p = prepareCommand(List.of(), cmd, null);
@@ -59,7 +63,7 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
     }
 
     @Override
-    public OutputStream openOutput(String file) throws Exception {
+    public default OutputStream openOutput(String file) throws Exception {
         return null;
 //        var type = determineType();
 //        var cmd = type.createFileWriteCommand(file);
@@ -69,7 +73,8 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
     }
 
     @Override
-    public  boolean exists(String file) throws Exception {
+
+    public default boolean exists(String file) throws Exception {
         var type = determineType();
         var cmd = type.createFileExistsCommand(file);
         var p = prepareCommand(List.of(), cmd, null);
@@ -78,7 +83,7 @@ public abstract class StandardShellStore extends ShellStore implements MachineFi
     }
 
     @Override
-    public void mkdirs(String file) throws Exception {
+    public default void mkdirs(String file) throws Exception {
 
     }
 }

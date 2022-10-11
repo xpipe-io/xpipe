@@ -25,7 +25,9 @@ public interface XPipeDaemon {
 
     public Image image(String file);
 
-    <T extends Comp<?> & Validatable> T  streamStoreChooser(Property<DataStore> storeProperty, Property<DataSourceProvider<?>> provider);
+    <T extends Comp<?> & Validatable> T  streamStoreChooser(Property<DataStore> storeProperty, Property<DataSourceProvider<?>> provider,
+                                                            boolean showAnonymous,
+                                                            boolean showSaved);
 
     <T extends Comp<?> & Validatable> T  namedStoreChooser(
             ObservableValue<Predicate<DataStore>> filter, Property<? extends DataStore> selected, DataStoreProvider.Category category

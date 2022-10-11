@@ -1,5 +1,7 @@
 package io.xpipe.extension.util;
 
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.extension.I18n;
 import javafx.beans.value.ObservableValue;
@@ -11,7 +13,7 @@ public class Validators {
 
     public static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
         return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (c.get("val") == null ) {
+            if (c.get("val") == null) {
                 c.error(I18n.get("extension.mustNotBeEmpty", name.getValue()));
             }
         });
@@ -20,6 +22,12 @@ public class Validators {
     public static void nonNull(Object object, String name) {
         if (object == null) {
             throw new IllegalArgumentException(I18n.get("extension.null", name));
+        }
+    }
+
+    public static void namedStoreExists(DataStore store, String name) {
+        if (!XPipeDaemon.getInstance().getNamedStores().contains(store) && !(store instanceof LocalStore)) {
+            throw new IllegalArgumentException(I18n.get("extension.missingStore", name));
         }
     }
 

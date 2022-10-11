@@ -21,6 +21,12 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
     }
 
     public final TableReadConnection openReadConnection() throws Exception {
+        try {
+            validate();
+        } catch (Exception e) {
+            return TableReadConnection.empty();
+        }
+
         var con = newReadConnection();
         con.init();
         return con;

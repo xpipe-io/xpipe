@@ -101,8 +101,6 @@ public class CustomComboBoxBuilder<T> {
         cb.valueProperty().addListener((c, o, n) -> {
             if (nodeMap.containsKey(n)) {
                 if (veto != null && !veto.test(nodeMap.get(n))) {
-                    cb.setValue(o);
-                    ;
                     return;
                 }
                 selected.setValue(nodeMap.get(n));

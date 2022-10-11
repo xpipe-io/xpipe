@@ -2,25 +2,24 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Value;
-import lombok.experimental.NonFinal;
+import io.xpipe.core.util.JacksonizedValue;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 /**
  * A store whose contents are stored in memory.
  */
-@Value
 @JsonTypeName("inMemory")
-public class InMemoryStore implements StreamDataStore {
+@SuperBuilder
+@Jacksonized
+@Getter
+public class InMemoryStore extends JacksonizedValue implements StreamDataStore {
 
-    @NonFinal
-    byte[] value;
+    private byte[] value;
 
-    public InMemoryStore() {
-        this.value = new byte[0];
-    }
 
     @JsonCreator
     public InMemoryStore(byte[] value) {
@@ -46,9 +45,5 @@ public class InMemoryStore implements StreamDataStore {
                 InMemoryStore.this.value = this.toByteArray();
             }
         };
-    }
-
-    public String toString() {
-        return new String(value, StandardCharsets.UTF_8);
     }
 }

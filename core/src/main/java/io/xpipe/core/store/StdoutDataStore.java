@@ -1,16 +1,15 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import io.xpipe.core.util.JacksonizedValue;
+import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-@EqualsAndHashCode
-@Value
 @JsonTypeName("stdout")
-public class StdoutDataStore implements StreamDataStore {
+@SuperBuilder
+public class StdoutDataStore extends JacksonizedValue implements StreamDataStore {
 
     @Override
     public boolean canOpen() throws Exception {

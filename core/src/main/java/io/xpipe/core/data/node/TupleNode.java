@@ -59,11 +59,18 @@ public abstract class TupleNode extends DataStructureNode {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TupleNode that)) return false;
-        var toReturn =  getKeyNames().equals(that.getKeyNames()) && getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof TupleNode that)) {
+            return false;
+        }
+        var toReturn = getKeyNames().equals(that.getKeyNames()) && getNodes().equals(that.getNodes()) &&
+                Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+
+        // Useful for debugging
         if (toReturn == false) {
-            throw new AssertionError();
+            return false;
         }
         return toReturn;
     }
@@ -93,7 +100,8 @@ public abstract class TupleNode extends DataStructureNode {
             boolean hasKeys = entries.stream().anyMatch(kv -> kv.key() != null);
             return hasKeys ? TupleNode.of(
                     entries.stream().map(KeyValue::key).toList(),
-                    entries.stream().map(KeyValue::value).toList()) :
+                    entries.stream().map(KeyValue::value).toList()
+            ) :
                     TupleNode.of(entries.stream().map(KeyValue::value).toList());
         }
     }

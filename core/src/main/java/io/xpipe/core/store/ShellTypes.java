@@ -77,8 +77,10 @@ public class ShellTypes {
             var l = new ArrayList<>(cmd);
             l.add(0, "cmd.exe");
             l.add(1, "/c");
-            l.add(2, "@chcp 65001>nul");
-            l.add(3, "&&");
+            l.add(2, "@chcp 65001");
+            l.add(3, ">");
+            l.add(4, "nul");
+            l.add(5, "&&");
             return l;
         }
 

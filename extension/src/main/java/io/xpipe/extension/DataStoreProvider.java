@@ -2,6 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.*;
+import io.xpipe.core.util.JacksonizedValue;
 import javafx.beans.property.Property;
 
 import java.util.List;
@@ -13,6 +14,16 @@ public interface DataStoreProvider {
         MACHINE,
         DATABASE;
     }
+
+    default void validate() throws Exception {
+        getCategory();
+        for (Class<?> storeClass : getStoreClasses()) {
+            if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
+                throw new ExtensionException(String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
+            }
+        }
+    }
+
 
     default Category getCategory() {
         var c = getStoreClasses().get(0);
