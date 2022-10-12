@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-
 public class SimpleTupleNode extends TupleNode {
 
     private final List<String> names;
@@ -68,10 +67,9 @@ public class SimpleTupleNode extends TupleNode {
     @Override
     public DataStructureNode clear() {
         nodes.clear();
-        names.clear();
+        if (names != null) names.clear();
         return this;
     }
-
 
     @Override
     public int size() {
@@ -90,13 +88,14 @@ public class SimpleTupleNode extends TupleNode {
     public List<KeyValue> getKeyValuePairs() {
         var l = new ArrayList<KeyValue>(size());
         for (int i = 0; i < size(); i++) {
-            l.add(new KeyValue(names != null ? getKeyNames().get(i) : null, getNodes().get(i)));
+            l.add(new KeyValue(
+                    names != null ? getKeyNames().get(i) : null, getNodes().get(i)));
         }
         return l;
     }
 
     public List<String> getKeyNames() {
-        return Collections.unmodifiableList(names);
+        return names != null ? Collections.unmodifiableList(names) : Collections.nCopies(size(), null);
     }
 
     public List<DataStructureNode> getNodes() {

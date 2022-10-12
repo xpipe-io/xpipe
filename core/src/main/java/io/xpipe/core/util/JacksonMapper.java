@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.function.Consumer;
 
 public class JacksonMapper {
 
@@ -35,6 +36,10 @@ public class JacksonMapper {
 
         INSTANCE = BASE.copy();
         DEFAULT = BASE.copy();
+    }
+
+    public static synchronized void configure(Consumer<ObjectMapper> mapper) {
+        mapper.accept(INSTANCE);
     }
 
     public static synchronized void initClassBased() {
