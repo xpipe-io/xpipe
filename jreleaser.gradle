@@ -25,13 +25,11 @@ jreleaser {
 
     release {
         github {
-            skipTag = !isFullRelease
-            repoOwner = 'xpipe-io'
+            // skipTag = !isFullRelease
             overwrite = true
             tagName = proj.version
             releaseName = proj.version
             token = proj.hasProperty("XPIPE_GITHUB_TOKEN") ? proj.property("XPIPE_GITHUB_TOKEN") : System.getenv("XPIPE_GITHUB_TOKEN")
-            draft = false
 
             files = true
             artifacts = true
