@@ -5,9 +5,9 @@ plugins {
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-apply from: "$rootDir/deps/java.gradle"
-apply from: "$rootDir/deps/javafx.gradle"
-apply from: "$rootDir/deps/lombok.gradle"
+apply from: "$projectDir/../deps/java.gradle"
+apply from: "$projectDir/../deps/javafx.gradle"
+apply from: "$projectDir/../deps/lombok.gradle"
 
 configurations {
     compileOnly.extendsFrom(dep)
@@ -32,7 +32,7 @@ dependencies {
     compileOnly 'org.controlsfx:controlsfx:11.1.1'
     compileOnly 'org.apache.commons:commons-lang3:3.12.0'
 
-    if (project(':fxcomps') != null) {
+    if (findProject(':fxcomps') != null) {
         compileOnly project(':fxcomps')
     } else {
         compileOnly 'io.xpipe:fxcomps:0.3.2'
@@ -41,4 +41,4 @@ dependencies {
 
 
 apply from: 'publish.gradle'
-apply from: "$rootDir/deps/publish-base.gradle"
+apply from: "$projectDir/../deps/publish-base.gradle"
