@@ -17,14 +17,14 @@ import java.util.Optional;
 @Value
 public class WildcardType extends DataType {
 
+    private WildcardType() {}
+
     /**
      * Creates a new instance.
      */
     public static WildcardType of() {
         return new WildcardType();
     }
-
-    private WildcardType() {}
 
     @Override
     public String getName() {

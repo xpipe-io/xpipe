@@ -12,7 +12,6 @@ import java.nio.file.Path;
 
 public class ExtensionTest {
 
-
     public static DataStore getResource(String name) {
         var url = ExtensionTest.class.getClassLoader().getResource(name);
         if (url == null) {

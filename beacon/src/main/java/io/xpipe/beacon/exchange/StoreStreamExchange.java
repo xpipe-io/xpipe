@@ -20,8 +20,7 @@ public class StoreStreamExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Request implements RequestMessage {
-    }
+    public static class Request implements RequestMessage {}
 
     @Jacksonized
     @Builder

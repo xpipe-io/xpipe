@@ -9,21 +9,15 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
-    enum Category {
-        STREAM,
-        MACHINE,
-        DATABASE;
-    }
-
     default void validate() throws Exception {
         getCategory();
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
-                throw new ExtensionException(String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
+                throw new ExtensionException(
+                        String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
         }
     }
-
 
     default Category getCategory() {
         var c = getStoreClasses().get(0);
@@ -97,6 +91,12 @@ public interface DataStoreProvider {
     List<Class<?>> getStoreClasses();
 
     default DataFlow[] getPossibleFlows() {
-        return new DataFlow[]{DataFlow.INPUT};
+        return new DataFlow[] {DataFlow.INPUT};
+    }
+
+    enum Category {
+        STREAM,
+        MACHINE,
+        DATABASE;
     }
 }

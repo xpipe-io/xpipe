@@ -4,9 +4,9 @@ import java.io.OutputStream;
 
 public interface RawReadConnection extends DataSourceReadConnection {
 
-    byte[] readBytes(int max) throws Exception;
-
     int BUFFER_SIZE = 8192;
+
+    byte[] readBytes(int max) throws Exception;
 
     default void forwardBytes(OutputStream out, int maxBytes) throws Exception {
         if (maxBytes == 0) {

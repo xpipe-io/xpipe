@@ -5,6 +5,7 @@
 
 The X-Pipe extension API allows you to create extensions of any kind for X-Pipe.
 This includes:
+
 - Custom data stores, including configuration GUI and CLI
 - Custom data sources, including configuration GUI and CLI
 - Custom preferences entries

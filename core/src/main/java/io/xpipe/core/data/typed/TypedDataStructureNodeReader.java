@@ -12,26 +12,23 @@ import java.util.Stack;
 
 public class TypedDataStructureNodeReader implements TypedAbstractReader {
 
-    public static TypedDataStructureNodeReader of(DataType type) {
-        return new TypedDataStructureNodeReader(type);
-    }
-
-    private DataStructureNode readNode;
-
     private final Stack<List<DataStructureNode>> children;
     private final Stack<DataStructureNode> nodes;
-    private int arrayDepth;
-
     private final List<DataType> flattened;
+    private DataStructureNode readNode;
+    private int arrayDepth;
     private DataType expectedType;
     private int currentExpectedTypeIndex;
-
     private TypedDataStructureNodeReader(DataType type) {
         flattened = new ArrayList<>();
         type.visit(DataTypeVisitors.flatten(flattened::add));
         children = new Stack<>();
         nodes = new Stack<>();
         expectedType = flattened.get(0);
+    }
+
+    public static TypedDataStructureNodeReader of(DataType type) {
+        return new TypedDataStructureNodeReader(type);
     }
 
     @Override
@@ -134,7 +131,8 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     private void moveExpectedType(boolean force) {
         if (!isInArray() || force) {
             currentExpectedTypeIndex++;
-            expectedType = currentExpectedTypeIndex == flattened.size() ? null : flattened.get(currentExpectedTypeIndex);
+            expectedType =
+                    currentExpectedTypeIndex == flattened.size() ? null : flattened.get(currentExpectedTypeIndex);
         }
     }
 

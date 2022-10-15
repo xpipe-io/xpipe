@@ -4,22 +4,15 @@ import java.util.Map;
 
 public interface GenericDataStreamCallback {
 
-    default void onName(String name) {
-    }
+    default void onName(String name) {}
 
-    default void onArrayStart(int length) {
-    }
+    default void onArrayStart(int length) {}
 
-    default void onArrayEnd(Map<Integer, String> metaAttributes) {
-    }
+    default void onArrayEnd(Map<Integer, String> metaAttributes) {}
 
-    default void onTupleStart(int length) {
-    }
+    default void onTupleStart(int length) {}
 
-    default void onTupleEnd(Map<Integer, String> metaAttributes) {
-    }
+    default void onTupleEnd(Map<Integer, String> metaAttributes) {}
 
-
-    default void onValue(byte[] value, Map<Integer, String> metaAttributes) {
-    }
+    default void onValue(byte[] value, Map<Integer, String> metaAttributes) {}
 }

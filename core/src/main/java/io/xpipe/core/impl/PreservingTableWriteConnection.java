@@ -9,14 +9,12 @@ import io.xpipe.core.source.TableWriteConnection;
 
 public class PreservingTableWriteConnection extends PreservingWriteConnection implements TableWriteConnection {
 
-    public PreservingTableWriteConnection(DataSource<?> source, DataSourceConnection connection,
-                                          boolean append
-    ) {
+    public PreservingTableWriteConnection(DataSource<?> source, DataSourceConnection connection, boolean append) {
         super(DataSourceType.TABLE, source, append, connection);
     }
 
     @Override
     public DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor() {
-        return ((TableWriteConnection)connection).writeLinesAcceptor();
+        return ((TableWriteConnection) connection).writeLinesAcceptor();
     }
 }

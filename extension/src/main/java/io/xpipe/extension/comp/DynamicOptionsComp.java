@@ -68,25 +68,35 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
         }
 
         if (wrap) {
-            var compWidthBinding = Bindings.createDoubleBinding(() -> {
-                if (compRegions.stream().anyMatch(r -> r.getWidth() == 0)) {
-                    return Region.USE_COMPUTED_SIZE;
-                }
+            var compWidthBinding = Bindings.createDoubleBinding(
+                    () -> {
+                        if (compRegions.stream().anyMatch(r -> r.getWidth() == 0)) {
+                            return Region.USE_COMPUTED_SIZE;
+                        }
 
-                var m = compRegions.stream().map(Region::getWidth).max(Double::compareTo).orElse(0.0);
-                return m;
-            }, compRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
+                        var m = compRegions.stream()
+                                .map(Region::getWidth)
+                                .max(Double::compareTo)
+                                .orElse(0.0);
+                        return m;
+                    },
+                    compRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
             compRegions.forEach(r -> r.prefWidthProperty().bind(compWidthBinding));
         }
 
-        var nameWidthBinding = Bindings.createDoubleBinding(() -> {
-            if (nameRegions.stream().anyMatch(r -> r.getWidth() == 0)) {
-                return Region.USE_COMPUTED_SIZE;
-            }
+        var nameWidthBinding = Bindings.createDoubleBinding(
+                () -> {
+                    if (nameRegions.stream().anyMatch(r -> r.getWidth() == 0)) {
+                        return Region.USE_COMPUTED_SIZE;
+                    }
 
-            var m = nameRegions.stream().map(Region::getWidth).max(Double::compareTo).orElse(0.0);
-            return m;
-        }, nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
+                    var m = nameRegions.stream()
+                            .map(Region::getWidth)
+                            .max(Double::compareTo)
+                            .orElse(0.0);
+                    return m;
+                },
+                nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
         nameRegions.forEach(r -> r.prefWidthProperty().bind(nameWidthBinding));
 
         return new SimpleCompStructure<>(flow);
@@ -96,7 +106,5 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
         return entries;
     }
 
-    public static record Entry(ObservableValue<String> name, Comp<?> comp) {
-
-    }
+    public static record Entry(ObservableValue<String> name, Comp<?> comp) {}
 }

@@ -23,32 +23,6 @@ import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
 public class BeaconClient implements AutoCloseable {
 
-    @FunctionalInterface
-    public interface FailableBiConsumer<T, U, E extends Throwable> {
-
-        void accept(T var1, U var2) throws E;
-    }
-
-    @FunctionalInterface
-    public interface FailableConsumer<T, E extends Throwable> {
-
-        void accept(T var1) throws E;
-    }
-
-    @FunctionalInterface
-    public interface FailableRunnable<E extends Throwable> {
-
-        void run() throws E;
-    }
-
-    public static Optional<BeaconClient> tryConnect() {
-        try {
-            return Optional.of(new BeaconClient());
-        } catch (IOException ex) {
-            return Optional.empty();
-        }
-    }
-
     private final Closeable closeable;
     private final InputStream in;
     private final OutputStream out;
@@ -64,6 +38,14 @@ public class BeaconClient implements AutoCloseable {
         this.closeable = closeable;
         this.in = in;
         this.out = out;
+    }
+
+    public static Optional<BeaconClient> tryConnect() {
+        try {
+            return Optional.of(new BeaconClient());
+        } catch (IOException ex) {
+            return Optional.empty();
+        }
     }
 
     public void close() throws ConnectorException {
@@ -104,12 +86,13 @@ public class BeaconClient implements AutoCloseable {
 
         json.set("messageType", new TextNode(prov.get().getId()));
         json.set("messagePhase", new TextNode("request"));
-        //json.set("id", new TextNode(UUID.randomUUID().toString()));
+        // json.set("id", new TextNode(UUID.randomUUID().toString()));
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeMessage", json);
 
         if (BeaconConfig.printMessages()) {
-            System.out.println("Sending request to server of type " + req.getClass().getName());
+            System.out.println(
+                    "Sending request to server of type " + req.getClass().getName());
         }
 
         var writer = new StringWriter();
@@ -198,13 +181,13 @@ public class BeaconClient implements AutoCloseable {
 
         var type = content.required("messageType").textValue();
         var phase = content.required("messagePhase").textValue();
-        //var requestId = UUID.fromString(content.required("id").textValue());
+        // var requestId = UUID.fromString(content.required("id").textValue());
         if (!phase.equals("response")) {
             throw new IllegalArgumentException();
         }
         content.remove("messageType");
         content.remove("messagePhase");
-        //content.remove("id");
+        // content.remove("id");
 
         var prov = MessageExchanges.byId(type);
         if (prov.isEmpty()) {
@@ -225,5 +208,23 @@ public class BeaconClient implements AutoCloseable {
 
     public OutputStream getRawOutputStream() {
         return out;
+    }
+
+    @FunctionalInterface
+    public interface FailableBiConsumer<T, U, E extends Throwable> {
+
+        void accept(T var1, U var2) throws E;
+    }
+
+    @FunctionalInterface
+    public interface FailableConsumer<T, E extends Throwable> {
+
+        void accept(T var1) throws E;
+    }
+
+    @FunctionalInterface
+    public interface FailableRunnable<E extends Throwable> {
+
+        void run() throws E;
     }
 }

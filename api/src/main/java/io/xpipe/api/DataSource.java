@@ -27,10 +27,6 @@ import java.nio.file.Path;
  */
 public interface DataSource {
 
-    void forwardTo(DataSource target);
-
-    void appendTo(DataSource target);
-
     /**
      * NOT YET IMPLEMENTED!
      *
@@ -126,7 +122,6 @@ public interface DataSource {
         }
     }
 
-
     /**
      * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
@@ -168,6 +163,10 @@ public interface DataSource {
         return DataSourceImpl.create(id, type, in);
     }
 
+    void forwardTo(DataSource target);
+
+    void appendTo(DataSource target);
+
     public io.xpipe.core.source.DataSource<?> getInternalSource();
 
     /**
@@ -179,7 +178,6 @@ public interface DataSource {
      * Returns the type of this data source.
      */
     DataSourceType getType();
-
 
     DataSourceConfig getConfig();
 

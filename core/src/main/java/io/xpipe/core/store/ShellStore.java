@@ -62,7 +62,8 @@ public interface ShellStore extends DataStore {
         if (ec == 0 && !(read.get().isEmpty() && !readError.get().isEmpty())) {
             return read.get().trim();
         } else {
-            throw new ProcessOutputException("Command returned with " + ec + ": " + readError.get().trim());
+            throw new ProcessOutputException(
+                    "Command returned with " + ec + ": " + readError.get().trim());
         }
     }
 

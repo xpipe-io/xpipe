@@ -48,8 +48,7 @@ public class LimitTableReadConnection implements TableReadConnection {
             }
             count++;
 
-            var returned =  lineAcceptor
-                    .accept(node);
+            var returned = lineAcceptor.accept(node);
             localCounter.getAndIncrement();
 
             return returned;

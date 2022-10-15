@@ -22,31 +22,29 @@ import java.util.Optional;
  * This instance is only valid in combination with its associated data store instance.
  */
 @SuperBuilder
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public abstract class DataSource<DS extends DataStore> extends JacksonizedValue {
 
+    protected DS store;
 
     public static DataSource<?> createInternalDataSource(DataSourceType t, DataStore store) {
         try {
             return switch (t) {
-                case TABLE ->  XpbtSource.builder().store(store.asNeeded()).build();
+                case TABLE -> XpbtSource.builder().store(store.asNeeded()).build();
                 case STRUCTURE -> null;
-                case TEXT -> TextSource.builder().store(store.asNeeded()).newLine(NewLine.LF).charset(
-                        StreamCharset.UTF8).build();
+                case TEXT -> TextSource.builder()
+                        .store(store.asNeeded())
+                        .newLine(NewLine.LF)
+                        .charset(StreamCharset.UTF8)
+                        .build();
                 case RAW -> null;
-                //TODO
+                    // TODO
                 case COLLECTION -> null;
             };
         } catch (Exception ex) {
             throw new AssertionError(ex);
         }
     }
-
-    protected DS store;
-
 
     public void test() throws Exception {
         store.validate();
@@ -67,7 +65,6 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
 
         return WriteMode.values();
     }
-
 
     public DataFlow getFlow() {
         if (store == null) {

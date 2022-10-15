@@ -50,7 +50,6 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
         return con;
     }
 
-
     @Override
     public final TextWriteConnection openPrependingWriteConnection() throws Exception {
         var con = newPrependingWriteConnection();
@@ -64,13 +63,9 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
         return new PreservingTextWriteConnection(this, newWriteConnection(), true);
     }
 
-
     protected TextWriteConnection newPrependingWriteConnection() {
         return new PreservingTextWriteConnection(this, newWriteConnection(), false);
     }
-
-
-
 
     protected abstract TextReadConnection newReadConnection();
 }

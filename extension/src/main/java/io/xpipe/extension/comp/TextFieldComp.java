@@ -18,7 +18,6 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
     public TextFieldComp(Property<String> value) {
         this.value = value;
         this.lazyValue = value;
-
     }
 
     public TextFieldComp(Property<String> value, Property<String> lazyValue) {

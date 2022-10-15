@@ -34,9 +34,8 @@ public class BeaconServer {
     public static Process tryStartCustom() throws Exception {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
-            var command = custom + " " + (BeaconConfig.getDaemonArguments() != null ?
-                    BeaconConfig.getDaemonArguments() :
-                    "");
+            var command =
+                    custom + " " + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
             Process process = Runtime.getRuntime().exec(command);
             printDaemonOutput(process, command);
             return process;
@@ -47,9 +46,8 @@ public class BeaconServer {
     public static Process tryStart() throws Exception {
         var daemonExecutable = getDaemonExecutable();
         if (daemonExecutable.isPresent()) {
-            var command = "\"" + daemonExecutable.get() + "\" --external " + (BeaconConfig.getDaemonArguments() != null ?
-                    BeaconConfig.getDaemonArguments() :
-                    "");
+            var command = "\"" + daemonExecutable.get() + "\" --external "
+                    + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
             // Tell daemon that we launched from an external tool
             Process process = Runtime.getRuntime().exec(command);
             printDaemonOutput(process, command);
@@ -65,35 +63,43 @@ public class BeaconServer {
             System.out.println("Starting daemon: " + command);
         }
 
-        new Thread(null, () -> {
-            try {
-                InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                BufferedReader br = new BufferedReader(isr);
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (print) {
-                        System.out.println("[xpiped] " + line);
-                    }
-                }
-            } catch (Exception ioe) {
-                ioe.printStackTrace();
-            }
-        }, "daemon sysout").start();
+        new Thread(
+                        null,
+                        () -> {
+                            try {
+                                InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                                BufferedReader br = new BufferedReader(isr);
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    if (print) {
+                                        System.out.println("[xpiped] " + line);
+                                    }
+                                }
+                            } catch (Exception ioe) {
+                                ioe.printStackTrace();
+                            }
+                        },
+                        "daemon sysout")
+                .start();
 
-        new Thread(null, () -> {
-            try {
-                InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                BufferedReader br = new BufferedReader(isr);
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (print) {
-                        System.err.println("[xpiped] " + line);
-                    }
-                }
-            } catch (Exception ioe) {
-                ioe.printStackTrace();
-            }
-        }, "daemon syserr").start();
+        new Thread(
+                        null,
+                        () -> {
+                            try {
+                                InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                                BufferedReader br = new BufferedReader(isr);
+                                String line;
+                                while ((line = br.readLine()) != null) {
+                                    if (print) {
+                                        System.err.println("[xpiped] " + line);
+                                    }
+                                }
+                            } catch (Exception ioe) {
+                                ioe.printStackTrace();
+                            }
+                        },
+                        "daemon syserr")
+                .start();
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {
@@ -110,7 +116,6 @@ public class BeaconServer {
             base = environmentVariable != null ? Path.of(environmentVariable) : null;
         } catch (Exception ex) {
         }
-
 
         if (base == null) {
             if (System.getProperty("os.name").startsWith("Windows")) {

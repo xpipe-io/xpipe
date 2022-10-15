@@ -37,14 +37,18 @@ public class QueryDataSourceExchange implements MessageExchange {
     public static class Response implements ResponseMessage {
         @NonNull
         DataSourceId id;
+
         boolean disabled;
         boolean hidden;
+
         @NonNull
         DataSourceInfo info;
+
         @NonNull
         String storeDisplay;
 
         String provider;
+
         @NonNull
         Map<String, String> config;
 

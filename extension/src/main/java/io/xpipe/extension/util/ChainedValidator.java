@@ -18,17 +18,18 @@ import java.util.stream.Collectors;
 public class ChainedValidator implements Validator {
 
     private final List<Validator> validators;
-    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>(new ValidationResult());
+    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty =
+            new ReadOnlyObjectWrapper<>(new ValidationResult());
     private final ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
 
     public ChainedValidator(List<Validator> validators) {
         this.validators = validators;
         validators.forEach(v -> {
-            v.containsErrorsProperty().addListener((c,o,n) -> {
+            v.containsErrorsProperty().addListener((c, o, n) -> {
                 containsErrorsProperty.set(containsErrors());
             });
 
-            v.validationResultProperty().addListener((c,o,n) -> {
+            v.validationResultProperty().addListener((c, o, n) -> {
                 validationResultProperty.set(getValidationResult());
             });
         });
@@ -94,10 +95,15 @@ public class ChainedValidator implements Validator {
 
     @Override
     public StringBinding createStringBinding(String prefix, String separator) {
-        var list = new ArrayList<Observable>(validators.stream().map(Validator::createStringBinding).toList());
+        var list = new ArrayList<Observable>(
+                validators.stream().map(Validator::createStringBinding).toList());
         Observable[] observables = list.toArray(Observable[]::new);
-        return Bindings.createStringBinding(() -> {
-            return validators.stream().map(v -> v.createStringBinding(prefix, separator).get()).collect(Collectors.joining("\n"));
-        }, observables);
+        return Bindings.createStringBinding(
+                () -> {
+                    return validators.stream()
+                            .map(v -> v.createStringBinding(prefix, separator).get())
+                            .collect(Collectors.joining("\n"));
+                },
+                observables);
     }
 }

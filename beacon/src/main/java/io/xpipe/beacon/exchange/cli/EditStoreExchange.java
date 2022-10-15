@@ -28,6 +28,7 @@ public class EditStoreExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull DialogReference dialog;
+        @NonNull
+        DialogReference dialog;
     }
 }

@@ -38,7 +38,6 @@ public class CoreJacksonModule extends SimpleModule {
         context.registerSubtypes(
                 new NamedType(TextSource.class),
                 new NamedType(XpbtSource.class),
-
                 new NamedType(FileStore.class),
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
@@ -47,27 +46,22 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(InMemoryStore.class),
                 new NamedType(LocalStore.class),
                 new NamedType(NamedStore.class),
-
                 new NamedType(ValueType.class),
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
                 new NamedType(WildcardType.class),
-
                 new NamedType(ShellTypes.Cmd.class),
                 new NamedType(ShellTypes.PowerShell.class),
                 new NamedType(ShellTypes.Sh.class),
-
                 new NamedType(DataSourceInfo.Table.class),
                 new NamedType(DataSourceInfo.Structure.class),
                 new NamedType(DataSourceInfo.Text.class),
                 new NamedType(DataSourceInfo.Collection.class),
                 new NamedType(DataSourceInfo.Raw.class),
-
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),
-                new NamedType(HeaderElement.class)
-        );
+                new NamedType(HeaderElement.class));
 
         addSerializer(Charset.class, new CharsetSerializer());
         addDeserializer(Charset.class, new CharsetDeserializer());
@@ -98,12 +92,6 @@ public class CoreJacksonModule extends SimpleModule {
         }
     }
 
-    public class NullSerializer extends JsonSerializer<Object> {
-        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeNull();
-        }
-    }
-
     public static class NullDeserializer extends JsonDeserializer<DataSource> {
 
         @Override
@@ -111,7 +99,6 @@ public class CoreJacksonModule extends SimpleModule {
             return null;
         }
     }
-
 
     public static class DataSourceReferenceSerializer extends JsonSerializer<DataSourceReference> {
 
@@ -133,8 +120,7 @@ public class CoreJacksonModule extends SimpleModule {
     public static class CharsetSerializer extends JsonSerializer<Charset> {
 
         @Override
-        public void serialize(Charset value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(Charset value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeString(value.name());
         }
     }
@@ -150,8 +136,7 @@ public class CoreJacksonModule extends SimpleModule {
     public static class LocalPathSerializer extends JsonSerializer<Path> {
 
         @Override
-        public void serialize(Path value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(Path value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeString(value.toString());
         }
     }
@@ -167,8 +152,7 @@ public class CoreJacksonModule extends SimpleModule {
     public static class SecretSerializer extends JsonSerializer<SecretValue> {
 
         @Override
-        public void serialize(SecretValue value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(SecretValue value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeString(value.getEncryptedValue());
         }
     }
@@ -184,11 +168,17 @@ public class CoreJacksonModule extends SimpleModule {
     @JsonSerialize(as = Throwable.class)
     public abstract static class ThrowableTypeMixIn {
 
-        @JsonIdentityInfo(generator= ObjectIdGenerators.StringIdGenerator.class, property="$id")
+        @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
         private Throwable cause;
     }
 
     @JsonSerialize(as = DataSourceReference.class)
-    public abstract static class DataSourceReferenceTypeMixIn {
+    public abstract static class DataSourceReferenceTypeMixIn {}
+
+    public class NullSerializer extends JsonSerializer<Object> {
+        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException, JsonProcessingException {
+            jgen.writeNull();
+        }
     }
 }

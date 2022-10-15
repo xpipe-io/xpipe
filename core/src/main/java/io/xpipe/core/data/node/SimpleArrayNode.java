@@ -10,8 +10,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-
-
 public class SimpleArrayNode extends ArrayNode {
 
     List<DataStructureNode> nodes;
@@ -79,6 +77,4 @@ public class SimpleArrayNode extends ArrayNode {
         nodes.remove(index);
         return this;
     }
-
-
 }

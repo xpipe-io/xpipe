@@ -67,7 +67,6 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         return this;
     }
 
-
     public String getMetaAttribute(Integer key) {
         if (metaAttributes == null) {
             return null;
@@ -104,9 +103,6 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         throw unsupported("get nodes");
     }
 
-    public record KeyValue(String key, DataStructureNode value) {
-    }
-
     protected abstract String getName();
 
     protected UnsupportedOperationException unsupported(String s) {
@@ -125,12 +121,15 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     }
 
     public String metaToString() {
-        return "(" + (metaAttributes != null ?
-                metaAttributes.entrySet()
-                        .stream()
-                        .map(e -> e.getValue() != null ? e.getKey() + ":" + e.getValue() : e.getKey().toString())
-                        .collect(Collectors.joining("|")) :
-                "") + ")";
+        return "("
+                + (metaAttributes != null
+                        ? metaAttributes.entrySet().stream()
+                                .map(e -> e.getValue() != null
+                                        ? e.getKey() + ":" + e.getValue()
+                                        : e.getKey().toString())
+                                .collect(Collectors.joining("|"))
+                        : "")
+                + ")";
     }
 
     public abstract String toString(int indent);
@@ -146,10 +145,10 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public boolean isValue() {
         return false;
     }
+
     public DataStructureNode set(int index, DataStructureNode node) {
         throw unsupported("set at index");
     }
-
 
     public final ValueNode asValue() {
         if (!isValue()) {
@@ -235,4 +234,6 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public Iterator<DataStructureNode> iterator() {
         throw unsupported("iterator creation");
     }
+
+    public record KeyValue(String key, DataStructureNode value) {}
 }

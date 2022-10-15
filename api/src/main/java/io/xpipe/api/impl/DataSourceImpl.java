@@ -13,28 +13,15 @@ import java.io.InputStream;
 
 public abstract class DataSourceImpl implements DataSource {
 
-    @Override
-    public void forwardTo(DataSource target) {
-        XPipeConnection.execute(con -> {
-            var req = ForwardExchange.Request.builder()
-                    .source(DataSourceReference.id(sourceId))
-                    .target(DataSourceReference.id(target.getId()))
-                    .build();
-            ForwardExchange.Response res = con.performSimpleExchange(req);
-        });
-    }
+    private final DataSourceId sourceId;
+    private final DataSourceConfig config;
+    private final io.xpipe.core.source.DataSource<?> internalSource;
 
-    @Override
-    public void appendTo(DataSource target) {
-        XPipeConnection.execute(con -> {
-            var req = ForwardExchange.Request.builder()
-                    .source(DataSourceReference.id(sourceId))
-                    .target(DataSourceReference.id(target.getId()))
-                    .append(true)
-                    .build();
-            ForwardExchange.Response res = con.performSimpleExchange(req);
-        });
-
+    public DataSourceImpl(
+            DataSourceId sourceId, DataSourceConfig config, io.xpipe.core.source.DataSource<?> internalSource) {
+        this.sourceId = sourceId;
+        this.config = config;
+        this.internalSource = internalSource;
     }
 
     public static DataSource get(DataSourceReference ds) {
@@ -59,17 +46,17 @@ public abstract class DataSourceImpl implements DataSource {
                     var info = res.getInfo().asRaw();
                     yield new DataRawImpl(res.getId(), config, info, res.getInternalSource());
                 }
-                case COLLECTION -> throw new UnsupportedOperationException("Unimplemented case: " + res.getInfo().getType());
-                default -> throw new IllegalArgumentException("Unexpected value: " + res.getInfo().getType());
+                case COLLECTION -> throw new UnsupportedOperationException(
+                        "Unimplemented case: " + res.getInfo().getType());
+                default -> throw new IllegalArgumentException(
+                        "Unexpected value: " + res.getInfo().getType());
             };
         });
     }
 
     public static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
-        var startReq = AddSourceExchange.Request.builder()
-                .source(source)
-                .target(id)
-                .build();
+        var startReq =
+                AddSourceExchange.Request.builder().source(source).target(id).build();
         var returnedId = XPipeConnection.execute(con -> {
             AddSourceExchange.Response r = con.performSimpleExchange(startReq);
             return r.getId();
@@ -108,9 +95,7 @@ public abstract class DataSourceImpl implements DataSource {
         var configInstance = startRes.getConfig();
         XPipeConnection.finishDialog(configInstance);
 
-        var ref = id != null ?
-                DataSourceReference.id(id) :
-                DataSourceReference.latest();
+        var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
         return get(ref);
     }
 
@@ -137,20 +122,31 @@ public abstract class DataSourceImpl implements DataSource {
         var configInstance = startRes.getConfig();
         XPipeConnection.finishDialog(configInstance);
 
-        var ref = id != null ?
-                DataSourceReference.id(id) :
-                DataSourceReference.latest();
+        var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
         return get(ref);
     }
 
-    private final DataSourceId sourceId;
-    private final DataSourceConfig config;
-    private final io.xpipe.core.source.DataSource<?> internalSource;
+    @Override
+    public void forwardTo(DataSource target) {
+        XPipeConnection.execute(con -> {
+            var req = ForwardExchange.Request.builder()
+                    .source(DataSourceReference.id(sourceId))
+                    .target(DataSourceReference.id(target.getId()))
+                    .build();
+            ForwardExchange.Response res = con.performSimpleExchange(req);
+        });
+    }
 
-    public DataSourceImpl(DataSourceId sourceId, DataSourceConfig config, io.xpipe.core.source.DataSource<?> internalSource) {
-        this.sourceId = sourceId;
-        this.config = config;
-        this.internalSource = internalSource;
+    @Override
+    public void appendTo(DataSource target) {
+        XPipeConnection.execute(con -> {
+            var req = ForwardExchange.Request.builder()
+                    .source(DataSourceReference.id(sourceId))
+                    .target(DataSourceReference.id(target.getId()))
+                    .append(true)
+                    .build();
+            ForwardExchange.Response res = con.performSimpleExchange(req);
+        });
     }
 
     public io.xpipe.core.source.DataSource<?> getInternalSource() {

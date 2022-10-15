@@ -1,6 +1,6 @@
 package io.xpipe.core.store;
 
-public class ProcessOutputException extends Exception{
+public class ProcessOutputException extends Exception {
     public ProcessOutputException() {
         super();
     }
@@ -17,7 +17,8 @@ public class ProcessOutputException extends Exception{
         super(cause);
     }
 
-    protected ProcessOutputException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected ProcessOutputException(
+            String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -19,7 +19,6 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
-
 public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
 
     private final ObservableValue<Boolean> showLineNumbers;
@@ -36,10 +35,9 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
     }
 
     private static String toRGBCode(Color color) {
-        return String.format("#%02X%02X%02X",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255));
+        return String.format(
+                "#%02X%02X%02X",
+                (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
     }
 
     private void fillArea(VBox lineNumbers, InlineCssTextArea s) {
@@ -94,7 +92,7 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
         var lineNumbers = new VBox();
         lineNumbers.getStyleClass().add("line-numbers");
         fillArea(lineNumbers, s);
-        value.addListener((c,o,n) -> {
+        value.addListener((c, o, n) -> {
             fillArea(lineNumbers, s);
         });
 
@@ -107,7 +105,7 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
             content.getChildren().add(0, lineNumbers);
             content.getChildren().add(1, spacer);
         }
-        showLineNumbers.addListener((c,o,n) -> {
+        showLineNumbers.addListener((c, o, n) -> {
             if (n) {
                 content.getChildren().add(0, lineNumbers);
                 content.getChildren().add(1, spacer);

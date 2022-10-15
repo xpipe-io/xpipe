@@ -50,5 +50,3 @@ public abstract class BatchTableWriteConnection implements TableWriteConnection 
 
     protected abstract DataStructureNodeAcceptor<ArrayNode> writeBatchLinesAcceptor();
 }
-
-

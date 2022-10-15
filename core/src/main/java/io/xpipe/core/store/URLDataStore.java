@@ -7,7 +7,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.InputStream;
 import java.net.URL;
 
-
 @JsonTypeName("url")
 @SuperBuilder
 @Jacksonized

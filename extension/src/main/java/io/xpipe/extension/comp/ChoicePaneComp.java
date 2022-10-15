@@ -20,10 +20,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.function.Function;
 
-@FieldDefaults(
-        makeFinal = true,
-        level = AccessLevel.PRIVATE
-)
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
@@ -54,7 +51,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         var vbox = new VBox(transformer.apply(cb));
         vbox.setFillWidth(true);
         cb.prefWidthProperty().bind(vbox.widthProperty());
-        cb.valueProperty().addListener((c,o,n) -> {
+        cb.valueProperty().addListener((c, o, n) -> {
             if (n == null) {
                 vbox.getChildren().remove(1);
             } else {
@@ -78,7 +75,5 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    public static record Entry(ObservableValue<String> name, Comp<?> comp) {
-
-    }
+    public static record Entry(ObservableValue<String> name, Comp<?> comp) {}
 }

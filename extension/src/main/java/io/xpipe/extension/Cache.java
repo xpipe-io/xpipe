@@ -8,8 +8,6 @@ public interface Cache {
 
     Cache INSTANCE = ServiceLoader.load(Cache.class).findFirst().orElseThrow();
 
-    public <T> T getValue(String key, Class<?> type, Supplier<T> notPresent);
-
     public static <T> T get(String key, Class<T> type, Supplier<T> notPresent) {
         return INSTANCE.getValue(key, type, notPresent);
     }
@@ -18,9 +16,11 @@ public interface Cache {
         return Optional.ofNullable(get(key, type, () -> null));
     }
 
-    public <T> void updateValue(String key, T val);
-
     public static <T> void update(String key, T val) {
         INSTANCE.updateValue(key, key);
     }
+
+    public <T> T getValue(String key, Class<?> type, Supplier<T> notPresent);
+
+    public <T> void updateValue(String key, T val);
 }

@@ -12,12 +12,14 @@ import net.synedra.validatorfx.Severity;
 import net.synedra.validatorfx.ValidationMessage;
 import net.synedra.validatorfx.ValidationResult;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SimpleValidator implements Validator {
 
     private final Map<Check, ChangeListener<ValidationResult>> checks = new LinkedHashMap<>();
-    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>(new ValidationResult());
+    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty =
+            new ReadOnlyObjectWrapper<>(new ValidationResult());
     private final ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
 
     /** Create a check that lives within this checker's domain.
@@ -79,7 +81,7 @@ public class SimpleValidator implements Validator {
         for (Check check : checks.keySet()) {
             check.recheck();
         }
-        return ! containsErrors();
+        return !containsErrors();
     }
 
     private void refreshProperties() {
@@ -104,15 +106,17 @@ public class SimpleValidator implements Validator {
 
     @Override
     public StringBinding createStringBinding(String prefix, String separator) {
-        return Bindings.createStringBinding( () -> {
-            StringBuilder str = new StringBuilder();
-            for (ValidationMessage msg : validationResultProperty.get().getMessages()) {
-                if (str.length() > 0) {
-                    str.append(separator);
-                }
-                str.append(prefix).append(msg.getText());
-            }
-            return str.toString();
-        }, validationResultProperty);
+        return Bindings.createStringBinding(
+                () -> {
+                    StringBuilder str = new StringBuilder();
+                    for (ValidationMessage msg : validationResultProperty.get().getMessages()) {
+                        if (str.length() > 0) {
+                            str.append(separator);
+                        }
+                        str.append(prefix).append(msg.getText());
+                    }
+                    return str.toString();
+                },
+                validationResultProperty);
     }
 }

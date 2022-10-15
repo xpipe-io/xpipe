@@ -48,8 +48,7 @@ public class StdoutDataStore extends JacksonizedValue implements StreamDataStore
             }
 
             @Override
-            public void close() throws IOException {
-            }
+            public void close() throws IOException {}
         };
     }
 }

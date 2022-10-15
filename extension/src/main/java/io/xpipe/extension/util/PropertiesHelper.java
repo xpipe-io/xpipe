@@ -6,8 +6,9 @@ import java.util.Map;
 
 public class PropertiesHelper {
 
-    public static <T, V> void bindExclusive(Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind) {
-        selected.addListener((c,o,n) -> {
+    public static <T, V> void bindExclusive(
+            Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind) {
+        selected.addListener((c, o, n) -> {
             toBind.unbind();
             toBind.bind(map.get(n));
         });

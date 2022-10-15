@@ -20,7 +20,6 @@ public class ExceptionConverter {
             return I18n.get("extension.unsupportedOperation", msg);
         }
 
-
         if (ex instanceof ClassNotFoundException) {
             return I18n.get("extension.classNotFound", msg);
         }

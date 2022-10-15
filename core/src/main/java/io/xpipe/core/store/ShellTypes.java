@@ -13,12 +13,17 @@ import java.util.List;
 
 public class ShellTypes {
 
+    public static final StandardShellStore.ShellType POWERSHELL = new PowerShell();
+    public static final StandardShellStore.ShellType CMD = new Cmd();
+    public static final StandardShellStore.ShellType SH = new Sh();
+
     public static StandardShellStore.ShellType determine(ShellStore store) throws Exception {
         var o = store.executeAndCheckOut(List.of(), List.of("echo", "$0"), null).strip();
         if (!o.equals("$0")) {
             return SH;
         } else {
-            o = store.executeAndCheckOut(List.of(), List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"), null).trim();
+            o = store.executeAndCheckOut(List.of(), List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"), null)
+                    .trim();
             if (o.equals("PowerShell")) {
                 return POWERSHELL;
             } else {
@@ -36,13 +41,6 @@ public class ShellTypes {
         }
     }
 
-    public static final StandardShellStore.ShellType POWERSHELL = new PowerShell();
-
-
-    public static final StandardShellStore.ShellType CMD = new Cmd();
-
-    public static final StandardShellStore.ShellType SH = new Sh();
-
     public static StandardShellStore.ShellType getDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
             return CMD;
@@ -51,16 +49,12 @@ public class ShellTypes {
         }
     }
 
-
     public static StandardShellStore.ShellType[] getWindowsShells() {
-        return new StandardShellStore.ShellType[]{
-                CMD,
-                POWERSHELL
-        };
+        return new StandardShellStore.ShellType[] {CMD, POWERSHELL};
     }
 
     public static StandardShellStore.ShellType[] getLinuxShells() {
-        return new StandardShellStore.ShellType[]{SH};
+        return new StandardShellStore.ShellType[] {SH};
     }
 
     @JsonTypeName("cmd")
@@ -85,7 +79,8 @@ public class ShellTypes {
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+        public ProcessControl prepareElevatedCommand(
+                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             var l = List.of("net", "session", ";", "if", "%errorLevel%", "!=", "0");
             return st.prepareCommand(List.of(), l, timeout);
         }
@@ -188,7 +183,8 @@ public class ShellTypes {
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+        public ProcessControl prepareElevatedCommand(
+                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
             var l = new ArrayList<>(cmd);
             l.add(0, "sudo");
             l.add(1, "-S");

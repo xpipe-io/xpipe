@@ -1,4 +1,3 @@
-
 publishing {
     publications {
         mavenJava(MavenPublication) {

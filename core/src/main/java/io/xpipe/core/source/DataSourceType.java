@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * This distinction is necessary as the general workflow differs for each type.
  */
 public enum DataSourceType {
-
     @JsonProperty("table")
     TABLE,
 

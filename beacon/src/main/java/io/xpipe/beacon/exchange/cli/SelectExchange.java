@@ -1,8 +1,8 @@
 package io.xpipe.beacon.exchange.cli;
 
-import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
@@ -27,6 +27,5 @@ public class SelectExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {
-    }
+    public static class Response implements ResponseMessage {}
 }

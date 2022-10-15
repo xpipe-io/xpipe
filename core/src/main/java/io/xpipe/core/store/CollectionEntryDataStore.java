@@ -6,7 +6,6 @@ public abstract class CollectionEntryDataStore implements FilenameStore, StreamD
     private final String name;
     private final DataStore collectionStore;
 
-
     public CollectionEntryDataStore(boolean directory, String name, DataStore collectionStore) {
         this.directory = directory;
         this.name = name;

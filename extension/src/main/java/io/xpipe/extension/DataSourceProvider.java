@@ -12,11 +12,6 @@ import java.util.Map;
 
 public interface DataSourceProvider<T extends DataSource<?>> {
 
-    static enum Category {
-        FILE,
-        DATABASE;
-    }
-
     default void validate() throws Exception {
         getCategory();
         getSourceClass();
@@ -38,8 +33,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         throw new ExtensionException();
     }
 
-    default void init() throws Exception {
-    }
+    default void init() throws Exception {}
 
     default String i18n(String key) {
         return I18n.get(i18nKey(key));
@@ -71,19 +65,9 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getModuleName() + ":" + getId() + "_icon.png";
     }
 
-
     default String getSourceDescription(T source) {
         return getDisplayName();
     }
-
-    interface FileProvider {
-
-        String getFileName();
-
-        Map<String, List<String>> getFileExtensions();
-    }
-
-
 
     Dialog configDialog(T source, boolean all);
 
@@ -125,7 +109,6 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getPossibleNames().get(0);
     }
 
-
     /**
      * Attempt to create a useful data source descriptor from a data store.
      * The result does not need to be always right, it should only reflect the best effort.
@@ -134,6 +117,17 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     Class<T> getSourceClass();
 
-
     List<String> getPossibleNames();
+
+    static enum Category {
+        FILE,
+        DATABASE;
+    }
+
+    interface FileProvider {
+
+        String getFileName();
+
+        Map<String, List<String>> getFileExtensions();
+    }
 }

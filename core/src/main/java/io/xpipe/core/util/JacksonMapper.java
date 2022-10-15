@@ -14,8 +14,8 @@ import java.util.function.Consumer;
 public class JacksonMapper {
 
     private static final ObjectMapper BASE = new ObjectMapper();
-    private static ObjectMapper INSTANCE = new ObjectMapper();
     private static final ObjectMapper DEFAULT;
+    private static ObjectMapper INSTANCE = new ObjectMapper();
     private static boolean init = false;
 
     static {
@@ -24,12 +24,14 @@ public class JacksonMapper {
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
-        objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker()
-                                           .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                                           .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                                           .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                                           .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
-                                           .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
+        objectMapper.setVisibility(objectMapper
+                .getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
+                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
 
         var modules = findModules(ModuleLayer.boot());
         objectMapper.registerModules(modules);
@@ -54,8 +56,8 @@ public class JacksonMapper {
 
     private static List<Module> findModules(ModuleLayer layer) {
         ArrayList<Module> modules = new ArrayList<Module>();
-        ServiceLoader<Module> loader = layer != null ?
-                ServiceLoader.load(layer, Module.class) : ServiceLoader.load(Module.class);
+        ServiceLoader<Module> loader =
+                layer != null ? ServiceLoader.load(layer, Module.class) : ServiceLoader.load(Module.class);
         for (Module module : loader) {
             modules.add(module);
         }

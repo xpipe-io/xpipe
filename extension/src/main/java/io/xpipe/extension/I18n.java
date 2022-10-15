@@ -9,7 +9,6 @@ public interface I18n {
 
     I18n INSTANCE = ServiceLoader.load(I18n.class).findFirst().orElseThrow();
 
-
     public static ObservableValue<String> observable(String s, Object... vars) {
         if (s == null) {
             return null;

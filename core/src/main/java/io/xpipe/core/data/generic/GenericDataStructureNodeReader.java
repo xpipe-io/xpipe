@@ -86,7 +86,6 @@ public class GenericDataStructureNodeReader implements GenericDataStreamCallback
             return;
         }
 
-
         node = ValueNode.of(value).tag(metaAttributes);
     }
 }

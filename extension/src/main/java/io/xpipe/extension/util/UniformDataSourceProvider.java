@@ -10,5 +10,4 @@ public interface UniformDataSourceProvider<T extends DataSource<?>> extends Data
     default Dialog configDialog(T source, boolean all) {
         return Dialog.empty().evaluateTo(() -> source);
     }
-
 }

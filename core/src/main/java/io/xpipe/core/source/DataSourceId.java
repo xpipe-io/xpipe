@@ -49,7 +49,8 @@ public class DataSourceId {
             throw new IllegalArgumentException("Trimmed collection name is empty");
         }
         if (collectionName != null && collectionName.contains("" + SEPARATOR)) {
-            throw new IllegalArgumentException("Separator character " + SEPARATOR + " is not allowed in the collection name");
+            throw new IllegalArgumentException(
+                    "Separator character " + SEPARATOR + " is not allowed in the collection name");
         }
 
         if (entryName == null) {
@@ -59,7 +60,8 @@ public class DataSourceId {
             throw new IllegalArgumentException("Trimmed entry name is empty");
         }
         if (entryName.contains("" + SEPARATOR)) {
-            throw new IllegalArgumentException("Separator character " + SEPARATOR + " is not allowed in the entry name");
+            throw new IllegalArgumentException(
+                    "Separator character " + SEPARATOR + " is not allowed in the entry name");
         }
 
         return new DataSourceId(collectionName, entryName);

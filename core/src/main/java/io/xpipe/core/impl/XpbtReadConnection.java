@@ -21,6 +21,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class XpbtReadConnection implements TableReadConnection {
 
+    private final StreamDataStore store;
+    private TupleType dataType;
+    private InputStream inputStream;
+    private TypedDataStreamParser parser;
+    private boolean empty;
+    protected XpbtReadConnection(StreamDataStore store) {
+        this.store = store;
+    }
+
     @Override
     public void init() throws Exception {
         this.inputStream = store.openBufferedInput();
@@ -36,8 +45,8 @@ public class XpbtReadConnection implements TableReadConnection {
         this.inputStream.skip(headerLength + 1);
         List<String> names = JacksonMapper.newMapper()
                 .disable(JsonParser.Feature.AUTO_CLOSE_SOURCE)
-                .readerFor(new TypeReference<List<String>>() {
-                }).readValue(header);
+                .readerFor(new TypeReference<List<String>>() {})
+                .readValue(header);
         TupleType dataType = TupleType.tableType(names);
         this.dataType = dataType;
         this.parser = new TypedDataStreamParser(dataType);
@@ -46,16 +55,6 @@ public class XpbtReadConnection implements TableReadConnection {
     @Override
     public void close() throws Exception {
         inputStream.close();
-    }
-
-    private TupleType dataType;
-    private final StreamDataStore store;
-    private InputStream inputStream;
-    private TypedDataStreamParser parser;
-    private boolean empty;
-
-    protected XpbtReadConnection(StreamDataStore store) {
-        this.store = store;
     }
 
     @Override

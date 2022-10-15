@@ -10,7 +10,6 @@ public class DataStoreFormatter {
         return input;
     }
 
-
     public static String specialFormatHostName(String input) {
         if (input.contains(":")) {
             input = input.split(":")[0];

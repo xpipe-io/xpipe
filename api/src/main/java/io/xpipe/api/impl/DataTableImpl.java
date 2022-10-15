@@ -27,7 +27,11 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
     private final DataSourceInfo.Table info;
 
-    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, DataSourceInfo.Table info, io.xpipe.core.source.DataSource<?> internalSource) {
+    DataTableImpl(
+            DataSourceId id,
+            DataSourceConfig sourceConfig,
+            DataSourceInfo.Table info,
+            io.xpipe.core.source.DataSource<?> internalSource) {
         super(id, sourceConfig, internalSource);
         this.info = info;
     }
@@ -44,8 +48,8 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
     public Stream<TupleNode> stream() {
         var iterator = new TableIterator();
-        return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false).onClose(iterator::finish);
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+                .onClose(iterator::finish);
     }
 
     @Override
@@ -63,14 +67,22 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         List<DataStructureNode> nodes = new ArrayList<>();
         XPipeConnection.execute(con -> {
             var req = QueryTableDataExchange.Request.builder()
-                    .ref(DataSourceReference.id(getId())).maxRows(maxRows).build();
+                    .ref(DataSourceReference.id(getId()))
+                    .maxRows(maxRows)
+                    .build();
             con.performInputExchange(req, (QueryTableDataExchange.Response res, InputStream in) -> {
-                    var r = new TypedDataStreamParser(info.getDataType());
-                    r.parseStructures(in, TypedDataStructureNodeReader.of(info.getDataType()), nodes::add);
+                var r = new TypedDataStreamParser(info.getDataType());
+                r.parseStructures(in, TypedDataStructureNodeReader.of(info.getDataType()), nodes::add);
             });
         });
         return ArrayNode.of(nodes);
     }
+
+    @Override
+    public Iterator<TupleNode> iterator() {
+        return new TableIterator();
+    }
+    ;
 
     private class TableIterator implements Iterator<TupleNode> {
 
@@ -85,7 +97,9 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
             connection = XPipeConnection.open();
             var req = QueryTableDataExchange.Request.builder()
-                    .ref(DataSourceReference.id(getId())).maxRows(Integer.MAX_VALUE).build();
+                    .ref(DataSourceReference.id(getId()))
+                    .maxRows(Integer.MAX_VALUE)
+                    .build();
             connection.sendRequest(req);
             connection.receiveResponse();
             connection.receiveBody();
@@ -116,10 +130,5 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
             return node;
         }
-    };
-
-    @Override
-    public Iterator<TupleNode> iterator() {
-        return new TableIterator();
     }
 }

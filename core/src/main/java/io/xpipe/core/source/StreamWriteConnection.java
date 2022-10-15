@@ -9,8 +9,8 @@ import java.io.OutputStreamWriter;
 public class StreamWriteConnection implements DataSourceConnection {
 
     protected final StreamDataStore store;
-    protected OutputStream outputStream;
     private final StreamCharset charset;
+    protected OutputStream outputStream;
     protected OutputStreamWriter writer;
 
     public StreamWriteConnection(StreamDataStore store, StreamCharset charset) {
@@ -27,8 +27,7 @@ public class StreamWriteConnection implements DataSourceConnection {
         outputStream = store.openOutput();
         if (charset != null) {
             if (charset.hasByteOrderMark()) {
-                outputStream
-                        .write(charset.getByteOrderMark());
+                outputStream.write(charset.getByteOrderMark());
             }
             writer = new OutputStreamWriter(outputStream, charset.getCharset());
         }

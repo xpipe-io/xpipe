@@ -6,8 +6,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class JacksonizedValue {
 
-    public JacksonizedValue() {
-    }
+    public JacksonizedValue() {}
 
     @SneakyThrows
     public final String toString() {
@@ -34,5 +33,4 @@ public class JacksonizedValue {
         var tree = JacksonMapper.newMapper().valueToTree(this);
         return tree.hashCode();
     }
-
 }

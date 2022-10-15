@@ -152,9 +152,7 @@ public class DataStructureNodePointer {
 
         @Override
         public DataStructureNode tryMatch(DataStructureNode n) {
-            var res = n.stream()
-                    .filter(selector)
-                    .findAny();
+            var res = n.stream().filter(selector).findAny();
             return res.orElse(null);
         }
 
@@ -183,7 +181,6 @@ public class DataStructureNodePointer {
         public Builder copy() {
             return new Builder(new ArrayList<>(path));
         }
-
 
         public Builder name(String name) {
             path.add(new NameElement(name));
@@ -219,7 +216,8 @@ public class DataStructureNodePointer {
             });
         }
 
-        public Builder pointerEvaluation(DataStructureNodePointer pointer, Function<DataStructureNode, String> converter) {
+        public Builder pointerEvaluation(
+                DataStructureNodePointer pointer, Function<DataStructureNode, String> converter) {
             path.add(new FunctionElement((current) -> {
                 var res = pointer.get(current);
                 if (res != null) {

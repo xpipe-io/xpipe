@@ -19,6 +19,14 @@ import java.nio.file.Path;
 @Getter
 public class FileStore extends JacksonizedValue implements FilenameStore, StreamDataStore {
 
+    MachineFileStore machine;
+    String file;
+
+    public FileStore(MachineFileStore machine, String file) {
+        this.machine = machine;
+        this.file = file;
+    }
+
     public static FileStore local(Path p) {
         return new FileStore(new LocalStore(), p.toString());
     }
@@ -30,14 +38,6 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         return new FileStore(new LocalStore(), p);
     }
 
-    MachineFileStore machine;
-    String file;
-
-    public FileStore(MachineFileStore machine, String file) {
-        this.machine = machine;
-        this.file = file;
-    }
-
     @Override
     public void checkComplete() throws Exception {
         if (machine == null) {
@@ -46,7 +46,6 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         if (file == null) {
             throw new IllegalStateException("File is missing");
         }
-
     }
 
     @Override
@@ -72,5 +71,4 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         }
         return split[split.length - 1];
     }
-
 }

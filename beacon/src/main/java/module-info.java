@@ -1,5 +1,7 @@
 import io.xpipe.beacon.exchange.*;
-import io.xpipe.beacon.exchange.api.*;
+import io.xpipe.beacon.exchange.api.QueryRawDataExchange;
+import io.xpipe.beacon.exchange.api.QueryTableDataExchange;
+import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
 import io.xpipe.beacon.exchange.cli.*;
 
 module io.xpipe.beacon {
@@ -21,6 +23,7 @@ module io.xpipe.beacon {
     requires static lombok;
 
     uses MessageExchange;
+
     provides io.xpipe.beacon.exchange.MessageExchange with
             ForwardExchange,
             InstanceExchange,

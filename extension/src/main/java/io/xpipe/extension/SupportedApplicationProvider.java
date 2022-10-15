@@ -9,32 +9,6 @@ import lombok.Value;
 
 public interface SupportedApplicationProvider {
 
-    enum Category {
-        PROGRAMMING_LANGUAGE,
-        APPLICATION,
-        OTHER
-    }
-
-    enum AccessType {
-        ACTIVE,
-        PASSIVE
-    }
-
-    @Value
-    @AllArgsConstructor
-    public static class InstructionsDisplay {
-        Region region;
-        Runnable onFinish;
-        Validator validator;
-
-        public InstructionsDisplay(Region region) {
-            this.region = region;
-            onFinish = null;
-            validator = null;
-        }
-    }
-
-
     default InstructionsDisplay createRetrievalInstructions(DataSource<?> source, ObservableValue<String> id) {
         return null;
     }
@@ -60,5 +34,29 @@ public interface SupportedApplicationProvider {
     default boolean isApplicable(DataSource<?> source) {
         return true;
     }
-}
 
+    enum Category {
+        PROGRAMMING_LANGUAGE,
+        APPLICATION,
+        OTHER
+    }
+
+    enum AccessType {
+        ACTIVE,
+        PASSIVE
+    }
+
+    @Value
+    @AllArgsConstructor
+    public static class InstructionsDisplay {
+        Region region;
+        Runnable onFinish;
+        Validator validator;
+
+        public InstructionsDisplay(Region region) {
+            this.region = region;
+            onFinish = null;
+            validator = null;
+        }
+    }
+}

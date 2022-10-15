@@ -9,10 +9,10 @@ import java.io.Reader;
 
 public abstract class StreamReadConnection implements DataSourceReadConnection {
 
+    protected final StreamDataStore store;
+    private final StreamCharset charset;
     protected InputStream inputStream;
     protected Reader reader;
-    private final StreamCharset charset;
-    protected final StreamDataStore store;
 
     public StreamReadConnection(StreamDataStore store, StreamCharset charset) {
         this.store = store;

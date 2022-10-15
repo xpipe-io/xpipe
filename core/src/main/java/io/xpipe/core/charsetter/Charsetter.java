@@ -4,7 +4,10 @@ import io.xpipe.core.store.FileStore;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.Value;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.*;
@@ -15,7 +18,11 @@ import java.util.Map;
 
 public abstract class Charsetter {
 
+    private static final int MAX_BYTES = 8192;
+    public static Charsetter INSTANCE;
     private static CharsetterUniverse universe;
+
+    protected Charsetter() {}
 
     protected static void checkInit() {
         if (universe == null) {
@@ -27,30 +34,25 @@ public abstract class Charsetter {
         universe = CharsetterUniverse.create(ctx);
     }
 
-    @Value
-    public static class Result {
-        StreamCharset charset;
-        NewLine newLine;
-    }
-
-    protected Charsetter() {
-    }
-
-    public static Charsetter INSTANCE;
-
     public static Charsetter get() {
         return INSTANCE;
     }
 
-    @FunctionalInterface
-    public interface FailableSupplier<R, E extends Throwable> {
-        R get() throws E;
-    }
-
-    @FunctionalInterface
-    public interface FailableConsumer<T, E extends Throwable> {
-
-        void accept(T var1) throws E;
+    private static int count(byte[] outerArray, byte[] smallerArray) {
+        int count = 0;
+        for (int i = 0; i < outerArray.length - smallerArray.length + 1; ++i) {
+            boolean found = true;
+            for (int j = 0; j < smallerArray.length; ++j) {
+                if (outerArray[i + j] != smallerArray[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public BufferedReader reader(StreamDataStore store, StreamCharset charset) throws Exception {
@@ -73,15 +75,14 @@ public abstract class Charsetter {
         return new BufferedReader(new InputStreamReader(stream, charset.getCharset()));
     }
 
-    public abstract Result read(FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con) throws Exception;
-
-    private static final int MAX_BYTES = 8192;
+    public abstract Result read(
+            FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con)
+            throws Exception;
 
     public Result detect(StreamDataStore store) throws Exception {
         Result result = new Result(null, null);
 
         if (store.canOpen()) {
-
 
             try (InputStream inputStream = store.openBufferedInput()) {
                 StreamCharset detected = null;
@@ -135,25 +136,10 @@ public abstract class Charsetter {
             return null;
         }
 
-        return count.entrySet().stream().min(Comparator.comparingInt(Map.Entry::getValue))
-                .orElseThrow().getKey();
-    }
-
-    private static int count(byte[] outerArray, byte[] smallerArray) {
-        int count = 0;
-        for (int i = 0; i < outerArray.length - smallerArray.length + 1; ++i) {
-            boolean found = true;
-            for (int j = 0; j < smallerArray.length; ++j) {
-                if (outerArray[i + j] != smallerArray[j]) {
-                    found = false;
-                    break;
-                }
-            }
-            if (found) {
-                count++;
-            }
-        }
-        return count;
+        return count.entrySet().stream()
+                .min(Comparator.comparingInt(Map.Entry::getValue))
+                .orElseThrow()
+                .getKey();
     }
 
     public Charset inferCharset(byte[] content) {
@@ -178,5 +164,22 @@ public abstract class Charsetter {
         }
 
         return StandardCharsets.UTF_8;
+    }
+
+    @FunctionalInterface
+    public interface FailableSupplier<R, E extends Throwable> {
+        R get() throws E;
+    }
+
+    @FunctionalInterface
+    public interface FailableConsumer<T, E extends Throwable> {
+
+        void accept(T var1) throws E;
+    }
+
+    @Value
+    public static class Result {
+        StreamCharset charset;
+        NewLine newLine;
     }
 }

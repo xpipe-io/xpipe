@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
 public abstract class TupleNode extends DataStructureNode {
 
     public static Builder builder() {
@@ -46,13 +45,15 @@ public abstract class TupleNode extends DataStructureNode {
     public String toString(int indent) {
         var is = " ".repeat(indent);
         var start = "{\n";
-        var kvs = getKeyValuePairs().stream().map(kv -> {
-            if (kv.key() == null) {
-                return is + " " + kv.value().toString(indent + 1) + "\n";
-            } else {
-                return is + " " + kv.key() + "=" + kv.value().toString(indent + 1) + "\n";
-            }
-        }).collect(Collectors.joining());
+        var kvs = getKeyValuePairs().stream()
+                .map(kv -> {
+                    if (kv.key() == null) {
+                        return is + " " + kv.value().toString(indent + 1) + "\n";
+                    } else {
+                        return is + " " + kv.key() + "=" + kv.value().toString(indent + 1) + "\n";
+                    }
+                })
+                .collect(Collectors.joining());
         var end = is + "}";
         return start + kvs + end;
     }
@@ -65,8 +66,9 @@ public abstract class TupleNode extends DataStructureNode {
         if (!(o instanceof TupleNode that)) {
             return false;
         }
-        var toReturn = getKeyNames().equals(that.getKeyNames()) && getNodes().equals(that.getNodes()) &&
-                Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        var toReturn = getKeyNames().equals(that.getKeyNames())
+                && getNodes().equals(that.getNodes())
+                && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
 
         // Useful for debugging
         if (toReturn == false) {
@@ -98,11 +100,11 @@ public abstract class TupleNode extends DataStructureNode {
 
         public TupleNode build() {
             boolean hasKeys = entries.stream().anyMatch(kv -> kv.key() != null);
-            return hasKeys ? TupleNode.of(
-                    entries.stream().map(KeyValue::key).toList(),
-                    entries.stream().map(KeyValue::value).toList()
-            ) :
-                    TupleNode.of(entries.stream().map(KeyValue::value).toList());
+            return hasKeys
+                    ? TupleNode.of(
+                            entries.stream().map(KeyValue::key).toList(),
+                            entries.stream().map(KeyValue::value).toList())
+                    : TupleNode.of(entries.stream().map(KeyValue::value).toList());
         }
     }
 }

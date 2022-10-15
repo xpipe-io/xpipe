@@ -20,7 +20,6 @@ public class DataSourceIdTest {
             DataSourceId.create("", "abc");
         });
 
-
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             DataSourceId.create("abc", null);
         });

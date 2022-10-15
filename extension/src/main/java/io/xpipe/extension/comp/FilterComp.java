@@ -16,25 +16,11 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class FilterComp extends Comp<FilterComp.Structure> {
 
+    private final Property<String> filterText;
+
     public FilterComp(Property<String> filterText) {
         this.filterText = filterText;
     }
-
-    @Value
-    @Builder
-    public static class Structure implements CompStructure<StackPane> {
-        StackPane pane;
-        Node inactiveIcon;
-        Label inactiveText;
-        TextField text;
-
-        @Override
-        public StackPane get() {
-            return pane;
-        }
-    }
-
-    private final Property<String> filterText;
 
     @Override
     public Structure createBase() {
@@ -50,12 +36,34 @@ public class FilterComp extends Comp<FilterComp.Structure> {
             filterText.setValue(newValue);
         });
 
-        bgLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (filter.getText() == null || filter.getText().isEmpty()),
-                filter.textProperty(), filter.focusedProperty()));
+        bgLabel.visibleProperty()
+                .bind(Bindings.createBooleanBinding(
+                        () -> (filter.getText() == null || filter.getText().isEmpty()),
+                        filter.textProperty(),
+                        filter.focusedProperty()));
 
         var stack = new StackPane(bgLabel, filter);
         stack.getStyleClass().add("filter-comp");
 
-        return Structure.builder().inactiveIcon(fi).inactiveText(bgLabel).text(filter).pane(stack).build();
+        return Structure.builder()
+                .inactiveIcon(fi)
+                .inactiveText(bgLabel)
+                .text(filter)
+                .pane(stack)
+                .build();
+    }
+
+    @Value
+    @Builder
+    public static class Structure implements CompStructure<StackPane> {
+        StackPane pane;
+        Node inactiveIcon;
+        Label inactiveText;
+        TextField text;
+
+        @Override
+        public StackPane get() {
+            return pane;
+        }
     }
 }

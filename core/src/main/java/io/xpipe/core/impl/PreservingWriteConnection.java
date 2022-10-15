@@ -9,12 +9,13 @@ import java.nio.file.Files;
 
 public class PreservingWriteConnection implements DataSourceConnection {
 
+    protected final DataSourceConnection connection;
     private final DataSourceType type;
     private final DataSource<?> source;
-    private final boolean append  ;
-    protected final DataSourceConnection connection;
+    private final boolean append;
 
-    public PreservingWriteConnection(DataSourceType type, DataSource<?> source, boolean append, DataSourceConnection connection) {
+    public PreservingWriteConnection(
+            DataSourceType type, DataSource<?> source, boolean append, DataSourceConnection connection) {
         this.type = type;
         this.source = source;
         this.append = append;
@@ -26,12 +27,12 @@ public class PreservingWriteConnection implements DataSourceConnection {
         var nativeStore = FileStore.local(temp);
         var nativeSource = DataSource.createInternalDataSource(type, nativeStore);
         if (source.getStore().canOpen()) {
-            try (var in = source.openReadConnection(); var out = nativeSource.openWriteConnection()) {
+            try (var in = source.openReadConnection();
+                    var out = nativeSource.openWriteConnection()) {
                 in.forward(out);
             }
             ;
         }
-
 
         connection.init();
         if (source.getStore().canOpen()) {
@@ -45,5 +46,4 @@ public class PreservingWriteConnection implements DataSourceConnection {
     public void close() throws Exception {
         connection.close();
     }
-
 }

@@ -31,10 +31,18 @@ public class CustomComboBoxBuilder<T> {
     private final Set<Node> disabledNodes = new HashSet<>();
     private final Node emptyNode;
     private final Predicate<T> veto;
-    private BiPredicate<T, String> filterPredicate;
     private final Property<String> filterString = new SimpleStringProperty();
     private final List<T> filterable = new ArrayList<>();
+    private BiPredicate<T, String> filterPredicate;
     private Node filterNode;
+
+    public CustomComboBoxBuilder(
+            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
+        this.selected = selected;
+        this.nodeFunction = nodeFunction;
+        this.emptyNode = emptyNode;
+        this.veto = veto;
+    }
 
     public void addAction(Node node, Runnable run) {
         nodes.add(node);
@@ -80,13 +88,6 @@ public class CustomComboBoxBuilder<T> {
         filterNode = header.getText();
     }
 
-    public CustomComboBoxBuilder(Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
-        this.selected = selected;
-        this.nodeFunction = nodeFunction;
-        this.emptyNode = emptyNode;
-        this.veto = veto;
-    }
-
     public ComboBox<Node> build() {
         var cb = new ComboBox<Node>();
         cb.getItems().addAll(nodes);
@@ -95,7 +96,11 @@ public class CustomComboBoxBuilder<T> {
         });
         cb.setButtonCell(new SelectedCell());
         SimpleChangeListener.apply(selected, c -> {
-            var item = nodeMap.entrySet().stream().filter(e -> e.getValue() != null && e.getValue().equals(c)).map(e -> e.getKey()).findAny().orElse(null);
+            var item = nodeMap.entrySet().stream()
+                    .filter(e -> e.getValue() != null && e.getValue().equals(c))
+                    .map(e -> e.getKey())
+                    .findAny()
+                    .orElse(null);
             cb.setValue(Optional.ofNullable(item).orElse(emptyNode));
         });
         cb.valueProperty().addListener((c, o, n) -> {
@@ -115,8 +120,13 @@ public class CustomComboBoxBuilder<T> {
         if (filterPredicate != null) {
 
             SimpleChangeListener.apply(filterString, c -> {
-                var filteredNodes = nodes.stream().filter(e -> e.equals(cb.getValue()) || !(nodeMap.get(e) != null && (
-                        filterable.contains(nodeMap.get(e)) && filterString.getValue() != null && !filterPredicate.test(nodeMap.get(e), c)))).toList();
+                var filteredNodes = nodes.stream()
+                        .filter(e -> e.equals(cb.getValue())
+                                || !(nodeMap.get(e) != null
+                                        && (filterable.contains(nodeMap.get(e))
+                                                && filterString.getValue() != null
+                                                && !filterPredicate.test(nodeMap.get(e), c))))
+                        .toList();
                 cb.setItems(FXCollections.observableList(filteredNodes));
             });
 
@@ -125,17 +135,13 @@ public class CustomComboBoxBuilder<T> {
                     n.getWindow().focusedProperty().addListener((c2, o2, n2) -> {
                         Platform.runLater(() -> {
                             filterNode.requestFocus();
-
                         });
                     });
-
                 }
                 Platform.runLater(() -> {
                     filterNode.requestFocus();
-
                 });
             });
-
         }
 
         return cb;
@@ -182,8 +188,8 @@ public class CustomComboBoxBuilder<T> {
             setGraphic(item);
             if (disabledNodes.contains(item)) {
                 this.setDisable(true);
-//                 this.setPadding(Insets.EMPTY);
-            }else {
+                //                 this.setPadding(Insets.EMPTY);
+            } else {
                 this.setDisable(false);
             }
         }

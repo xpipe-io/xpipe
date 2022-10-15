@@ -70,8 +70,7 @@ public class StdinDataStore extends JacksonizedValue implements StreamDataStore 
             }
 
             @Override
-            public void close() throws IOException {
-            }
+            public void close() throws IOException {}
 
             @Override
             public synchronized void mark(int readlimit) {

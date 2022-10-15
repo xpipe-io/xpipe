@@ -9,7 +9,6 @@ import java.io.OutputStream;
  */
 public interface StreamDataStore extends DataStore {
 
-
     /**
      * Opens an input stream that can be used to read its data.
      */

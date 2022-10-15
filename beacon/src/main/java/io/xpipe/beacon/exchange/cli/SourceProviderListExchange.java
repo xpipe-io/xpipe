@@ -1,9 +1,9 @@
 package io.xpipe.beacon.exchange.cli;
 
-import io.xpipe.beacon.exchange.MessageExchange;
-import io.xpipe.beacon.exchange.data.ProviderEntry;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
+import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.beacon.exchange.data.ProviderEntry;
 import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
 import lombok.NonNull;
@@ -23,13 +23,13 @@ public class SourceProviderListExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Request implements RequestMessage {
-    }
+    public static class Request implements RequestMessage {}
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull Map<DataSourceType, List<ProviderEntry>> entries;
+        @NonNull
+        Map<DataSourceType, List<ProviderEntry>> entries;
     }
 }

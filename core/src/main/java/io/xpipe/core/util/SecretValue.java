@@ -10,6 +10,8 @@ import java.util.Base64;
 @EqualsAndHashCode
 public class SecretValue {
 
+    String value;
+
     public static SecretValue createForSecretValue(String s) {
         if (s == null) {
             return null;
@@ -21,8 +23,6 @@ public class SecretValue {
 
         return new SecretValue(Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8)));
     }
-
-    String value;
 
     public String getDisplay() {
         return "*".repeat(value.length());

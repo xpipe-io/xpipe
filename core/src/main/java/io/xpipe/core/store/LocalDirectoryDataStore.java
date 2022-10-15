@@ -39,5 +39,4 @@ public class LocalDirectoryDataStore implements DataStore {
     public Path getPath() {
         return file;
     }
-
 }

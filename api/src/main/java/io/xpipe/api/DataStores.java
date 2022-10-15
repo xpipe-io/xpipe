@@ -12,7 +12,9 @@ public class DataStores {
     public static void addNamedStore(DataStore store, String name) {
         XPipeConnection.execute(con -> {
             var req = StoreAddExchange.Request.builder()
-                    .storeInput(store).name(name).build();
+                    .storeInput(store)
+                    .name(name)
+                    .build();
             StoreAddExchange.Response res = con.performSimpleExchange(req);
 
             new QuietDialogHandler(res.getConfig(), con, Map.of()).handle();

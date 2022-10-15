@@ -20,5 +20,7 @@ open module io.xpipe.core {
     requires static lombok;
 
     uses com.fasterxml.jackson.databind.Module;
-    provides com.fasterxml.jackson.databind.Module with CoreJacksonModule;
+
+    provides com.fasterxml.jackson.databind.Module with
+            CoreJacksonModule;
 }

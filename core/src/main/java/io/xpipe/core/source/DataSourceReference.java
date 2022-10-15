@@ -65,14 +65,10 @@ public interface DataSourceReference {
         return new Name(s.trim());
     }
 
-    enum Type {
-        ID,
-        NAME,
-        LATEST
-    }
-
     Type getType();
+
     DataSourceId getId();
+
     String getName();
 
     /**
@@ -81,6 +77,12 @@ public interface DataSourceReference {
     String toRefString();
 
     String toString();
+
+    enum Type {
+        ID,
+        NAME,
+        LATEST
+    }
 
     /**
      * A wrapper class for {@link DataSourceId} instances.

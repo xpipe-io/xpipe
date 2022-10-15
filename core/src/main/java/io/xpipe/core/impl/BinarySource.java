@@ -37,7 +37,6 @@ public class BinarySource extends RawDataSource<StreamDataStore> {
         };
     }
 
-
     @Override
     protected RawReadConnection newReadConnection() {
         return new RawReadConnection() {

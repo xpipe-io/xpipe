@@ -1,9 +1,9 @@
 package io.xpipe.core.data.typed;
 
-import io.xpipe.core.data.node.DataStructureNode;
-import io.xpipe.core.data.node.DataStructureNodeIO;
 import io.xpipe.core.data.generic.GenericDataStreamParser;
 import io.xpipe.core.data.generic.GenericDataStructureNodeReader;
+import io.xpipe.core.data.node.DataStructureNode;
+import io.xpipe.core.data.node.DataStructureNodeIO;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.DataType;
 import io.xpipe.core.data.type.TupleType;
@@ -21,7 +21,7 @@ public class TypedDataStreamParser {
         this.dataType = dataType;
     }
 
-    private  boolean hasNext(InputStream in) throws IOException {
+    private boolean hasNext(InputStream in) throws IOException {
         var b = in.read();
         if (b == -1) {
             return false;
@@ -34,7 +34,8 @@ public class TypedDataStreamParser {
         return true;
     }
 
-    public void parseStructures(InputStream in, TypedAbstractReader cb, Consumer<DataStructureNode> consumer) throws IOException {
+    public void parseStructures(InputStream in, TypedAbstractReader cb, Consumer<DataStructureNode> consumer)
+            throws IOException {
         while (hasNext(in)) {
             cb.onNodeBegin();
             parse(in, cb, dataType);

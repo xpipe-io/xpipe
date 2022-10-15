@@ -11,7 +11,8 @@ public class PrefsProviders {
     public static void init(ModuleLayer layer) {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, PrefsProvider.class).stream()
-                    .map(ServiceLoader.Provider::get).collect(Collectors.toSet());
+                    .map(ServiceLoader.Provider::get)
+                    .collect(Collectors.toSet());
         }
     }
 

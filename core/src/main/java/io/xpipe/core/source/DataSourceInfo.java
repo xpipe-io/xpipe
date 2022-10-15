@@ -23,6 +23,61 @@ public abstract class DataSourceInfo {
 
     public abstract DataSourceType getType();
 
+    /**
+     * Casts this instance to a table info.
+     */
+    public Table asTable() {
+        if (!getType().equals(DataSourceType.TABLE)) {
+            throw new IllegalStateException("Not a table");
+        }
+
+        return (Table) this;
+    }
+
+    /**
+     * Casts this instance to a structure info.
+     */
+    public Structure asStructure() {
+        if (!getType().equals(DataSourceType.STRUCTURE)) {
+            throw new IllegalStateException("Not a structure");
+        }
+
+        return (Structure) this;
+    }
+
+    /**
+     * Casts this instance to a text info.
+     */
+    public Text asText() {
+        if (!getType().equals(DataSourceType.TEXT)) {
+            throw new IllegalStateException("Not a text");
+        }
+
+        return (Text) this;
+    }
+
+    /**
+     * Casts this instance to a raw info.
+     */
+    public Raw asRaw() {
+        if (!getType().equals(DataSourceType.RAW)) {
+            throw new IllegalStateException("Not raw");
+        }
+
+        return (Raw) this;
+    }
+
+    /**
+     * Casts this instance to a collection info.
+     */
+    public Collection asCollection() {
+        if (!getType().equals(DataSourceType.COLLECTION)) {
+            throw new IllegalStateException("Not a collection");
+        }
+
+        return (Collection) this;
+    }
+
     @EqualsAndHashCode(callSuper = false)
     @Value
     @JsonTypeName("table")
@@ -101,7 +156,6 @@ public abstract class DataSourceInfo {
         }
     }
 
-
     @EqualsAndHashCode(callSuper = false)
     @Value
     @JsonTypeName("raw")
@@ -117,60 +171,5 @@ public abstract class DataSourceInfo {
         public DataSourceType getType() {
             return DataSourceType.RAW;
         }
-    }
-
-    /**
-     * Casts this instance to a table info.
-     */
-    public Table asTable() {
-        if (!getType().equals(DataSourceType.TABLE)) {
-            throw new IllegalStateException("Not a table");
-        }
-
-        return (Table) this;
-    }
-
-    /**
-     * Casts this instance to a structure info.
-     */
-    public Structure asStructure() {
-        if (!getType().equals(DataSourceType.STRUCTURE)) {
-            throw new IllegalStateException("Not a structure");
-        }
-
-        return (Structure) this;
-    }
-
-    /**
-     * Casts this instance to a text info.
-     */
-    public Text asText() {
-        if (!getType().equals(DataSourceType.TEXT)) {
-            throw new IllegalStateException("Not a text");
-        }
-
-        return (Text) this;
-    }
-
-    /**
-     * Casts this instance to a raw info.
-     */
-    public Raw asRaw() {
-        if (!getType().equals(DataSourceType.RAW)) {
-            throw new IllegalStateException("Not raw");
-        }
-
-        return (Raw) this;
-    }
-
-    /**
-     * Casts this instance to a collection info.
-     */
-    public Collection asCollection() {
-        if (!getType().equals(DataSourceType.COLLECTION)) {
-            throw new IllegalStateException("Not a collection");
-        }
-
-        return (Collection) this;
     }
 }

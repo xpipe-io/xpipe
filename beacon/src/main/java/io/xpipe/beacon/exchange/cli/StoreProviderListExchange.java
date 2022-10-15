@@ -21,13 +21,13 @@ public class StoreProviderListExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Request implements RequestMessage {
-    }
+    public static class Request implements RequestMessage {}
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull List<ProviderEntry> entries;
+        @NonNull
+        List<ProviderEntry> entries;
     }
 }

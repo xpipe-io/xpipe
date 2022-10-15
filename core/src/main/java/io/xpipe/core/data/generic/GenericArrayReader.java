@@ -1,7 +1,7 @@
 package io.xpipe.core.data.generic;
 
-import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ValueNode;
 
 import java.util.ArrayList;
@@ -16,8 +16,8 @@ public class GenericArrayReader implements GenericAbstractReader {
     private int currentIndex = 0;
     private GenericAbstractReader currentReader;
     private DataStructureNode created;
-    public GenericArrayReader() {
-    }
+
+    public GenericArrayReader() {}
 
     public static GenericArrayReader newReader(int length) {
         var ar = new GenericArrayReader();

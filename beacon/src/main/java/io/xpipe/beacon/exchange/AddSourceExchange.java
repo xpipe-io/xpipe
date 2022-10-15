@@ -21,7 +21,9 @@ public class AddSourceExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         DataSourceId target;
-        @NonNull DataSource<?> source;
+
+        @NonNull
+        DataSource<?> source;
     }
 
     @Jacksonized

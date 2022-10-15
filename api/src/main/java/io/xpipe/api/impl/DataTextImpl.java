@@ -27,7 +27,11 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
 
     private final DataSourceInfo.Text info;
 
-    public DataTextImpl(DataSourceId sourceId, DataSourceConfig sourceConfig, DataSourceInfo.Text info, io.xpipe.core.source.DataSource<?> internalSource) {
+    public DataTextImpl(
+            DataSourceId sourceId,
+            DataSourceConfig sourceConfig,
+            DataSourceInfo.Text info,
+            io.xpipe.core.source.DataSource<?> internalSource) {
         super(sourceId, sourceConfig, internalSource);
         this.info = info;
     }
@@ -70,7 +74,9 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
             {
                 connection = XPipeConnection.open();
                 var req = QueryTextDataExchange.Request.builder()
-                        .ref(DataSourceReference.id(getId())).maxLines(-1).build();
+                        .ref(DataSourceReference.id(getId()))
+                        .maxLines(-1)
+                        .build();
                 connection.sendRequest(req);
                 connection.receiveResponse();
                 reader = new BufferedReader(new InputStreamReader(connection.receiveBody(), StandardCharsets.UTF_8));
@@ -98,8 +104,7 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
             }
         };
 
-        return StreamSupport
-                .stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
+        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
                 .onClose(iterator::close);
     }
 
@@ -123,6 +128,4 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
         });
         return builder.toString();
     }
-
-
 }

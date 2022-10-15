@@ -3,7 +3,6 @@ package io.xpipe.core.store;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum DataFlow {
-
     @JsonProperty("input")
     INPUT,
     @JsonProperty("output")

@@ -1,8 +1,8 @@
 package io.xpipe.beacon.exchange.cli;
 
-import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.dialog.DialogElement;
 import lombok.Builder;
 import lombok.NonNull;
@@ -34,6 +34,7 @@ public class DialogExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         UUID dialogKey;
+
         String value;
         boolean cancel;
     }

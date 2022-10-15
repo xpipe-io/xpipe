@@ -22,7 +22,51 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
         return true;
     }
 
-     class LocalProcessControl extends ProcessControl {
+    @Override
+    public boolean exists(String file) {
+        return Files.exists(Path.of(file));
+    }
+
+    @Override
+    public void mkdirs(String file) throws Exception {
+        Files.createDirectories(Path.of(file).getParent());
+    }
+
+    @Override
+    public NewLine getNewLine() {
+        return ShellTypes.getDefault().getNewLine();
+    }
+
+    @Override
+    public InputStream openInput(String file) throws Exception {
+        var p = Path.of(file);
+        return Files.newInputStream(p);
+    }
+
+    @Override
+    public OutputStream openOutput(String file) throws Exception {
+        mkdirs(file);
+        var p = Path.of(file);
+        return Files.newOutputStream(p);
+    }
+
+    @Override
+    public ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout) {
+        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeout));
+    }
+
+    @Override
+    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeOut)
+            throws Exception {
+        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeOut));
+    }
+
+    @Override
+    public ShellType determineType() throws Exception {
+        return ShellTypes.getDefault();
+    }
+
+    class LocalProcessControl extends ProcessControl {
 
         private final List<SecretValue> input;
         private final Integer timeout;
@@ -38,7 +82,8 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
         }
 
         private InputStream createInputStream() {
-            var string = input.stream().map(secret -> secret.getSecretValue()).collect(Collectors.joining("\n")) + "\r\n";
+            var string =
+                    input.stream().map(secret -> secret.getSecretValue()).collect(Collectors.joining("\n")) + "\r\n";
             return new ByteArrayInputStream(string.getBytes(StandardCharsets.US_ASCII));
         }
 
@@ -51,7 +96,7 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
             charset = type.determineCharset(LocalStore.this);
 
             var t = new Thread(() -> {
-                try (var inputStream = createInputStream()){
+                try (var inputStream = createInputStream()) {
                     process.getOutputStream().flush();
                     inputStream.transferTo(process.getOutputStream());
                     process.getOutputStream().close();
@@ -77,12 +122,12 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
             return process.getInputStream();
         }
 
-         @Override
-         public OutputStream getStdin() {
-             return process.getOutputStream();
-         }
+        @Override
+        public OutputStream getStdin() {
+            return process.getOutputStream();
+        }
 
-         @Override
+        @Override
         public InputStream getStderr() {
             return process.getErrorStream();
         }
@@ -95,49 +140,5 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
         public Integer getTimeout() {
             return timeout;
         }
-    }
-
-    @Override
-    public boolean exists(String file) {
-        return Files.exists(Path.of(file));
-    }
-
-    @Override
-    public void mkdirs(String file) throws Exception {
-        Files.createDirectories(Path.of(file).getParent());
-    }
-
-    @Override
-    public NewLine getNewLine() {
-        return ShellTypes.getDefault().getNewLine();
-    }
-
-
-    @Override
-    public InputStream openInput(String file) throws Exception {
-        var p = Path.of(file);
-        return Files.newInputStream(p);
-    }
-
-    @Override
-    public OutputStream openOutput(String file) throws Exception {
-        mkdirs(file);
-        var p = Path.of(file);
-        return Files.newOutputStream(p);
-    }
-
-    @Override
-    public ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout) {
-        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeout));
-    }
-
-    @Override
-    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeOut) throws Exception {
-        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeOut));
-    }
-
-    @Override
-    public ShellType determineType() throws Exception {
-        return ShellTypes.getDefault();
     }
 }

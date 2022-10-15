@@ -13,27 +13,15 @@ import java.util.Map;
 @Getter
 public class TrackEvent {
 
-    public static class TrackEventBuilder {
-
-        public TrackEventBuilder windowCategory() {
-            this.category("window");
-            return this;
-        }
-
-        public TrackEventBuilder copy() {
-            var copy = builder();
-            copy.category = category;
-            copy.message = message;
-            copy.tags$key = new ArrayList<>(tags$key);
-            copy.tags$value = new ArrayList<>(tags$value);
-            copy.type = type;
-            return copy;
-        }
-
-        public void handle() {
-            build().handle();
-        }
-    }
+    private final Thread thread = Thread.currentThread();
+    private final Instant instant = Instant.now();
+    private String type;
+    private String message;
+    private String category;
+    @Singular
+    private Map<String, Object> tags;
+    @Singular
+    private List<String> elements;
 
     public static TrackEventBuilder fromMessage(String type, String message) {
         return builder().type(type).message(message);
@@ -99,28 +87,13 @@ public class TrackEvent {
         builder().type("error").message(message).build().handle();
     }
 
-    private final Thread thread = Thread.currentThread();
-    private final Instant instant = Instant.now();
-
-    private String type;
-
-    private String message;
-
-    private String category;
-
-    @Singular
-    private Map<String, Object> tags;
-
-    @Singular
-    private List<String> elements;
-
     public void handle() {
         EventHandler.get().handle(this);
     }
 
     @Override
     public String toString() {
-        var s =  message;
+        var s = message;
         if (tags.size() > 0) {
             s += " {\n";
             for (var e : tags.entrySet()) {
@@ -129,5 +102,27 @@ public class TrackEvent {
             s += "}";
         }
         return s;
+    }
+
+    public static class TrackEventBuilder {
+
+        public TrackEventBuilder windowCategory() {
+            this.category("window");
+            return this;
+        }
+
+        public TrackEventBuilder copy() {
+            var copy = builder();
+            copy.category = category;
+            copy.message = message;
+            copy.tags$key = new ArrayList<>(tags$key);
+            copy.tags$value = new ArrayList<>(tags$value);
+            copy.type = type;
+            return copy;
+        }
+
+        public void handle() {
+            build().handle();
+        }
     }
 }

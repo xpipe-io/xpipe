@@ -10,11 +10,6 @@ public enum WriteMode {
     @JsonProperty("prepend")
     PREPEND(DataSource::openPrependingWriteConnection);
 
-    public static interface FailableFunction<T, R, E extends Throwable> {
-        R apply(T input) throws E;
-
-    }
-
     private final FailableFunction<DataSource<?>, DataSourceConnection, Exception> connectionOpener;
 
     WriteMode(FailableFunction<DataSource<?>, DataSourceConnection, Exception> connectionOpener) {
@@ -23,5 +18,9 @@ public enum WriteMode {
 
     public DataSourceConnection open(DataSource<?> source) throws Exception {
         return connectionOpener.apply(source);
+    }
+
+    public static interface FailableFunction<T, R, E extends Throwable> {
+        R apply(T input) throws E;
     }
 }

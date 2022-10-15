@@ -23,8 +23,7 @@ public class DataStoreProviders {
                     p.validate();
                     return false;
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e)
-                            .handle();
+                    ErrorEvent.fromThrowable(e).handle();
                     return true;
                 }
             });
@@ -36,25 +35,27 @@ public class DataStoreProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().filter(d -> d.getPossibleNames().stream()
-                .anyMatch(s -> s.equalsIgnoreCase(name))).findAny();
+        return ALL.stream()
+                .filter(d -> d.getPossibleNames().stream().anyMatch(s -> s.equalsIgnoreCase(name)))
+                .findAny();
     }
-
 
     public static Optional<Dialog> byString(String s) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return ALL.stream().map(d -> {
-                                    var store = d.storeForString(s);
-                                    if (store != null) {
-                                        return d.dialogForStore(store);
-                                    } else {
-                                        return null;
-                                    }
-                                }
-        ).filter(Objects::nonNull).findAny();
+        return ALL.stream()
+                .map(d -> {
+                    var store = d.storeForString(s);
+                    if (store != null) {
+                        return d.dialogForStore(store);
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .findAny();
     }
 
     @SuppressWarnings("unchecked")
@@ -68,8 +69,8 @@ public class DataStoreProviders {
             throw new IllegalStateException("Not initialized");
         }
 
-
-        return (Optional<T>) ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny();
+        return (Optional<T>)
+                ALL.stream().filter(d -> d.getStoreClasses().contains(c)).findAny();
     }
 
     public static List<DataStoreProvider> getAll() {

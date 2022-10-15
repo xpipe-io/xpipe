@@ -18,11 +18,14 @@ public class CharsetChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var builder = new CustomComboBoxBuilder<>(charset, streamCharset -> {
-            return new Label(streamCharset.getCharset().displayName() + (streamCharset.hasByteOrderMark() ?
-                                                                         " (BOM)" :
-                                                                         ""));
-        }, new Label(I18n.get("extension.none")), null);
+        var builder = new CustomComboBoxBuilder<>(
+                charset,
+                streamCharset -> {
+                    return new Label(streamCharset.getCharset().displayName()
+                            + (streamCharset.hasByteOrderMark() ? " (BOM)" : ""));
+                },
+                new Label(I18n.get("extension.none")),
+                null);
         builder.addHeader(I18n.get("extension.common"));
         for (var e : StreamCharset.COMMON) {
             builder.add(e);

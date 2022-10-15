@@ -14,9 +14,9 @@ import java.util.UUID;
 public class QuietDialogHandler {
 
     private final UUID dialogKey;
-    private DialogElement element;
     private final BeaconConnection connection;
     private final Map<String, String> overrides;
+    private DialogElement element;
 
     public QuietDialogHandler(DialogReference ref, BeaconConnection connection, Map<String, String> overrides) {
         this.dialogKey = ref.getDialogId();
@@ -36,10 +36,13 @@ public class QuietDialogHandler {
             response = handleQuery(q);
         }
 
-        DialogExchange.Response res = connection.performSimpleExchange(
-                DialogExchange.Request.builder().dialogKey(dialogKey).value(response).build());
+        DialogExchange.Response res = connection.performSimpleExchange(DialogExchange.Request.builder()
+                .dialogKey(dialogKey)
+                .value(response)
+                .build());
         if (res.getElement() != null && element.equals(res.getElement())) {
-            throw new ClientException("Invalid value for key " + res.getElement().toDisplayString());
+            throw new ClientException(
+                    "Invalid value for key " + res.getElement().toDisplayString());
         }
 
         element = res.getElement();

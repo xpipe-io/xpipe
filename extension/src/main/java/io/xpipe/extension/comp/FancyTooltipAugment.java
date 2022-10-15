@@ -44,12 +44,12 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
         tt.getStyleClass().add("fancy-tooltip");
     }
 
-
     public void augment(Node region) {
         var tt = new FocusTooltip();
         var toDisplay = text.getValue();
         if (Shortcuts.getShortcut((Region) region) != null) {
-            toDisplay = toDisplay + " (" + Shortcuts.getShortcut((Region) region).getDisplayText() + ")";
+            toDisplay =
+                    toDisplay + " (" + Shortcuts.getShortcut((Region) region).getDisplayText() + ")";
         }
         tt.textProperty().setValue(toDisplay);
         tt.setStyle("-fx-font-size: 11pt;");
@@ -61,8 +61,7 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
 
     private static class FocusTooltip extends JFXTooltip {
 
-        public FocusTooltip() {
-        }
+        public FocusTooltip() {}
 
         public FocusTooltip(String string) {
             super(string);

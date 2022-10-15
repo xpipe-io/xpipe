@@ -18,6 +18,18 @@ public class ChoiceElement extends DialogElement {
 
     private int selected;
 
+    @JsonCreator
+    public ChoiceElement(String description, List<Choice> elements, boolean required, int selected) {
+        if (elements.stream().allMatch(Choice::isDisabled)) {
+            throw new IllegalArgumentException("All choices are disabled");
+        }
+
+        this.description = description;
+        this.elements = elements;
+        this.required = required;
+        this.selected = selected;
+    }
+
     @Override
     public boolean requiresExplicitUserInput() {
         return required && selected == -1;
@@ -42,7 +54,8 @@ public class ChoiceElement extends DialogElement {
             }
 
             for (int i = 0; i < elements.size(); i++) {
-                if (elements.get(i).getCharacter() != null && elements.get(i).getCharacter().equals(c)) {
+                if (elements.get(i).getCharacter() != null
+                        && elements.get(i).getCharacter().equals(c)) {
                     selected = i;
                     return true;
                 }
@@ -57,18 +70,6 @@ public class ChoiceElement extends DialogElement {
         }
 
         return false;
-    }
-
-    @JsonCreator
-    public ChoiceElement(String description, List<Choice> elements, boolean required, int selected) {
-        if (elements.stream().allMatch(Choice::isDisabled)) {
-            throw new IllegalArgumentException("All choices are disabled");
-        }
-
-        this.description = description;
-        this.elements = elements;
-        this.required = required;
-        this.selected = selected;
     }
 
     public List<Choice> getElements() {

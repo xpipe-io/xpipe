@@ -26,8 +26,10 @@ public class WritePreparationExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         String type;
+
         @NonNull
         DataStore output;
+
         @NonNull
         DataSourceReference source;
     }

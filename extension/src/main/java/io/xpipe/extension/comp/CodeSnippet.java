@@ -9,21 +9,7 @@ import java.util.stream.Collectors;
 public record CodeSnippet(List<CodeSnippet.Line> lines) {
 
     public static final ColorScheme LIGHT_MODE = new ColorScheme(
-            Color.valueOf("0033B3"),
-            Color.valueOf("000000"),
-            Color.valueOf("000000"),
-            Color.valueOf("067D17")
-    );
-
-    public String toString() {
-        return getRawString();
-    }
-
-    public String getRawString() {
-        return lines.stream().map(line -> line.elements().stream()
-                .map(Element::text).collect(Collectors.joining()))
-                .collect(Collectors.joining(System.lineSeparator()));
-    }
+            Color.valueOf("0033B3"), Color.valueOf("000000"), Color.valueOf("000000"), Color.valueOf("067D17"));
 
     public static Builder builder() {
         return new Builder(LIGHT_MODE);
@@ -31,6 +17,16 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
 
     public static Builder builder(ColorScheme scheme) {
         return new Builder(scheme);
+    }
+
+    public String toString() {
+        return getRawString();
+    }
+
+    public String getRawString() {
+        return lines.stream()
+                .map(line -> line.elements().stream().map(Element::text).collect(Collectors.joining()))
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
     public static interface Element {
@@ -124,11 +120,7 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
         }
     }
 
-    public static record Line(List<CodeSnippet.Element> elements) {
-    }
+    public static record Line(List<CodeSnippet.Element> elements) {}
 
-    public static record ColorScheme(
-            Color keyword, Color identifier, Color type, Color string) {
-
-    }
+    public static record ColorScheme(Color keyword, Color identifier, Color type, Color string) {}
 }

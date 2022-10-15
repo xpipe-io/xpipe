@@ -13,8 +13,6 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class XpbtSource extends TableDataSource<StreamDataStore> {
 
-
-
     @Override
     protected TableWriteConnection newWriteConnection() {
         return new XpbtWriteConnection(store);

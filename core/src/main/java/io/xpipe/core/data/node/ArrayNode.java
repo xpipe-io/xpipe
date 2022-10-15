@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 public abstract class ArrayNode extends DataStructureNode {
 
+    protected ArrayNode() {}
+
     public static ArrayNode empty() {
         return of(List.of());
     }
@@ -20,9 +22,6 @@ public abstract class ArrayNode extends DataStructureNode {
         return new SimpleArrayNode(nodes);
     }
 
-    protected ArrayNode() {
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -32,7 +31,8 @@ public abstract class ArrayNode extends DataStructureNode {
             return false;
         }
 
-        var toReturn =  getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+        var toReturn =
+                getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
 
         // Useful for debugging
         if (toReturn == false) {
@@ -64,6 +64,7 @@ public abstract class ArrayNode extends DataStructureNode {
 
     @Override
     public final ArrayType determineDataType() {
-        return ArrayType.ofSharedType(getNodes().stream().map(DataStructureNode::determineDataType).toList());
+        return ArrayType.ofSharedType(
+                getNodes().stream().map(DataStructureNode::determineDataType).toList());
     }
 }

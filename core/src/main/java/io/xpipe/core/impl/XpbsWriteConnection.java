@@ -13,6 +13,6 @@ public class XpbsWriteConnection extends StreamWriteConnection implements Struct
 
     @Override
     public void write(DataStructureNode node) throws Exception {
-        GenericDataStreamWriter.writeStructure(outputStream,node);
+        GenericDataStreamWriter.writeStructure(outputStream, node);
     }
 }

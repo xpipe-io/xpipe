@@ -22,8 +22,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
 
     @Override
     default DataSource<?> convert(T in, DataSourceType t) throws Exception {
-        return DataSourceProviders.byId("binary")
-                .createDefaultSource(in.getStore());
+        return DataSourceProviders.byId("binary").createDefaultSource(in.getStore());
     }
 
     @Override
@@ -43,8 +42,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
                 }
 
                 if (store instanceof FilenameStore l) {
-                    return l.getFileExtension()
-                            .equalsIgnoreCase(ext);
+                    return l.getFileExtension().equalsIgnoreCase(ext);
                 }
             }
         }

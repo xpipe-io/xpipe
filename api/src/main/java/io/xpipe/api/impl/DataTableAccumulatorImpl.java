@@ -47,7 +47,11 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
         connection.close();
 
         var req = ReadExchange.Request.builder()
-                .target(id).store(res.getStore()).provider("xpbt").configureAll(false).build();
+                .target(id)
+                .store(res.getStore())
+                .provider("xpbt")
+                .configureAll(false)
+                .build();
         ReadExchange.Response response = XPipeConnection.execute(con -> {
             return con.performSimpleExchange(req);
         });
@@ -71,7 +75,9 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
 
     @Override
     public synchronized void add(DataStructureNode row) {
-        TupleNode toUse = type.matches(row) ? row.asTuple() : type.convert(row).orElseThrow().asTuple();
+        TupleNode toUse = type.matches(row)
+                ? row.asTuple()
+                : type.convert(row).orElseThrow().asTuple();
         connection.withOutputStream(out -> {
             writeDescriptor();
             TypedDataStreamWriter.writeStructure(out, toUse, writtenDescriptor);

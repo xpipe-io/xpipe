@@ -15,8 +15,7 @@ public interface FilenameStore extends DataStore {
         return Optional.of(i != -1 ? n.substring(0, i) : n);
     }
 
-
-    default  String getFileExtension() {
+    default String getFileExtension() {
         var split = getFileName().split("[\\\\.]");
         if (split.length == 0) {
             return "";

@@ -14,9 +14,9 @@ public interface CollectionReadConnection extends DataSourceReadConnection {
         try (var tCon = (CollectionWriteConnection) con) {
             tCon.init();
             listEntries().forEach(s -> {
-//                try (var subCon = open(s)) {
-//                    ((CollectionWriteConnection) con).write(s, subCon);
-//                }
+                //                try (var subCon = open(s)) {
+                //                    ((CollectionWriteConnection) con).write(s, subCon);
+                //                }
             });
         }
     }

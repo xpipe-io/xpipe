@@ -2,7 +2,9 @@ package io.xpipe.core.dialog;
 
 import io.xpipe.core.util.SecretValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,6 +26,10 @@ import java.util.function.Supplier;
  */
 public abstract class Dialog {
 
+    private final List<Consumer<?>> completion = new ArrayList<>();
+    protected Object eval;
+    private Supplier<?> evaluation;
+
     /**
      * Creates an empty dialogue. This dialogue completes immediately and does not handle any questions or answers.
      */
@@ -43,33 +49,6 @@ public abstract class Dialog {
         };
     }
 
-    public static class Choice extends Dialog {
-
-        private final ChoiceElement element;
-
-        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
-            this.element = new ChoiceElement(description, elements, required, selected);
-        }
-
-        @Override
-        public DialogElement start() throws Exception {
-            return element;
-        }
-
-        @Override
-        protected DialogElement next(String answer) throws Exception {
-            if (element.apply(answer)) {
-                return null;
-            }
-
-            return element;
-        }
-
-        private int getSelected() {
-            return element.getSelected();
-        }
-    }
-
     /**
      * Creates a choice dialogue.
      *
@@ -78,7 +57,8 @@ public abstract class Dialog {
      * @param required    signals whether a choice is required or can be left empty
      * @param selected    the selected element index
      */
-    public static Dialog.Choice choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
+    public static Dialog.Choice choice(
+            String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
         Dialog.Choice c = new Dialog.Choice(description, elements, required, selected);
         c.evaluateTo(c::getSelected);
         return c;
@@ -94,8 +74,11 @@ public abstract class Dialog {
      * @param vals        the range of possible elements
      */
     @SafeVarargs
-    public static <T> Dialog.Choice choice(String description, Function<T, String> toString, boolean required, T def, T... vals) {
-        var elements = Arrays.stream(vals).map(v -> new io.xpipe.core.dialog.Choice(null, toString.apply(v))).toList();
+    public static <T> Dialog.Choice choice(
+            String description, Function<T, String> toString, boolean required, T def, T... vals) {
+        var elements = Arrays.stream(vals)
+                .map(v -> new io.xpipe.core.dialog.Choice(null, toString.apply(v)))
+                .toList();
         var index = Arrays.asList(vals).indexOf(def);
         if (def != null && index == -1) {
             throw new IllegalArgumentException("Default value " + def.toString() + " is not in possible values");
@@ -111,38 +94,6 @@ public abstract class Dialog {
         return c;
     }
 
-    public static class Query extends Dialog {
-
-        private final QueryElement element;
-
-        private <T> Query(String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter, boolean hidden) {
-            this.element = new QueryElement(description, newLine, required, quiet, value, converter, hidden);
-        }
-
-        @Override
-        public DialogElement start() throws Exception {
-            return element;
-        }
-
-        @Override
-        protected DialogElement next(String answer) throws Exception {
-            if (element.requiresExplicitUserInput() && (answer == null || answer.trim()
-                    .length() == 0)) {
-                return element;
-            }
-
-            if (element.apply(answer)) {
-                return null;
-            }
-
-            return element;
-        }
-
-        private <T> T getConvertedValue() {
-            return element.getConvertedValue();
-        }
-    }
-
     /**
      * Creates a simple query dialogue.
      *
@@ -155,7 +106,13 @@ public abstract class Dialog {
      * @param value       the default value
      * @param converter   the converter
      */
-    public static <T> Dialog.Query query(String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter) {
+    public static <T> Dialog.Query query(
+            String description,
+            boolean newLine,
+            boolean required,
+            boolean quiet,
+            T value,
+            QueryConverter<T> converter) {
         var q = new <T>Dialog.Query(description, newLine, required, quiet, value, converter, false);
         q.evaluateTo(q::getConvertedValue);
         return q;
@@ -201,8 +158,7 @@ public abstract class Dialog {
                 DialogElement currentElement = ds[current].receive(answer);
                 if (currentElement == null) {
                     DialogElement next = null;
-                    while (current < ds.length - 1 && (next = ds[++current].start()) == null) {
-                    }
+                    while (current < ds.length - 1 && (next = ds[++current].start()) == null) {}
                     ;
                     return next;
                 }
@@ -217,7 +173,6 @@ public abstract class Dialog {
      */
     public static <T> Dialog repeatIf(Dialog d, Predicate<T> shouldRepeat) {
         return new Dialog() {
-
 
             @Override
             public DialogElement start() throws Exception {
@@ -272,11 +227,6 @@ public abstract class Dialog {
         return of(new BusyElement());
     }
 
-    public static interface FailableSupplier<T> {
-
-        T get() throws Exception;
-    }
-
     /**
      * Creates a dialogue that will only evaluate when needed.
      * This allows a dialogue to incorporate completion information about a previous dialogue.
@@ -305,7 +255,6 @@ public abstract class Dialog {
     private static Dialog of(DialogElement e) {
         return new Dialog() {
 
-
             @Override
             public DialogElement start() throws Exception {
                 eval = null;
@@ -322,7 +271,6 @@ public abstract class Dialog {
             }
         };
     }
-
 
     /**
      * Creates a dialogue that will not be executed if the condition is true.
@@ -393,7 +341,12 @@ public abstract class Dialog {
      * @param selected    the index of the element that is selected by default
      * @param c           the dialogue index mapping function
      */
-    public static Dialog fork(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected, Function<Integer, Dialog> c) {
+    public static Dialog fork(
+            String description,
+            List<io.xpipe.core.dialog.Choice> elements,
+            boolean required,
+            int selected,
+            Function<Integer, Dialog> c) {
         var choice = new ChoiceElement(description, elements, required, selected);
         return new Dialog() {
 
@@ -427,13 +380,9 @@ public abstract class Dialog {
         };
     }
 
-    protected Object eval;
-    private Supplier<?> evaluation;
-    private final List<Consumer<?>> completion = new ArrayList<>();
-
     /* TODO: Implement automatic completion mechanism for start as well
-    *   In case start returns null, the completion is not automatically done.
-    * */
+     *   In case start returns null, the completion is not automatically done.
+     * */
     public abstract DialogElement start() throws Exception;
 
     public Dialog evaluateTo(Dialog d) {
@@ -493,4 +442,75 @@ public abstract class Dialog {
     }
 
     protected abstract DialogElement next(String answer) throws Exception;
+
+    public static interface FailableSupplier<T> {
+
+        T get() throws Exception;
+    }
+
+    public static class Choice extends Dialog {
+
+        private final ChoiceElement element;
+
+        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
+            this.element = new ChoiceElement(description, elements, required, selected);
+        }
+
+        @Override
+        public DialogElement start() throws Exception {
+            return element;
+        }
+
+        @Override
+        protected DialogElement next(String answer) throws Exception {
+            if (element.apply(answer)) {
+                return null;
+            }
+
+            return element;
+        }
+
+        private int getSelected() {
+            return element.getSelected();
+        }
+    }
+
+    public static class Query extends Dialog {
+
+        private final QueryElement element;
+
+        private <T> Query(
+                String description,
+                boolean newLine,
+                boolean required,
+                boolean quiet,
+                T value,
+                QueryConverter<T> converter,
+                boolean hidden) {
+            this.element = new QueryElement(description, newLine, required, quiet, value, converter, hidden);
+        }
+
+        @Override
+        public DialogElement start() throws Exception {
+            return element;
+        }
+
+        @Override
+        protected DialogElement next(String answer) throws Exception {
+            if (element.requiresExplicitUserInput()
+                    && (answer == null || answer.trim().length() == 0)) {
+                return element;
+            }
+
+            if (element.apply(answer)) {
+                return null;
+            }
+
+            return element;
+        }
+
+        private <T> T getConvertedValue() {
+            return element.getConvertedValue();
+        }
+    }
 }

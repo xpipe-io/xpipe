@@ -23,7 +23,6 @@ public abstract class QueryConverter<T> {
         }
     };
 
-
     public static final QueryConverter<StreamCharset> CHARSET = new QueryConverter<StreamCharset>() {
         @Override
         protected StreamCharset fromString(String s) {
@@ -60,26 +59,27 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<Map.Entry<String, String>> HTTP_HEADER = new QueryConverter<Map.Entry<String, String>>() {
-        @Override
-        protected Map.Entry<String, String> fromString(String s) {
-            if (!s.contains(":")) {
-                throw new IllegalArgumentException("Missing colon");
-            }
+    public static final QueryConverter<Map.Entry<String, String>> HTTP_HEADER =
+            new QueryConverter<Map.Entry<String, String>>() {
+                @Override
+                protected Map.Entry<String, String> fromString(String s) {
+                    if (!s.contains(":")) {
+                        throw new IllegalArgumentException("Missing colon");
+                    }
 
-            var split = s.split(":");
-            if (split.length != 2) {
-                throw new IllegalArgumentException("Too many colons");
-            }
+                    var split = s.split(":");
+                    if (split.length != 2) {
+                        throw new IllegalArgumentException("Too many colons");
+                    }
 
-            return new AbstractMap.SimpleEntry<>(split[0].trim(), split[1].trim());
-        }
+                    return new AbstractMap.SimpleEntry<>(split[0].trim(), split[1].trim());
+                }
 
-        @Override
-        protected String toString(Map.Entry<String, String> value) {
-            return value.getKey() + ": " + value.getValue();
-        }
-    };
+                @Override
+                protected String toString(Map.Entry<String, String> value) {
+                    return value.getKey() + ": " + value.getValue();
+                }
+            };
 
     public static final QueryConverter<URI> URI = new QueryConverter<URI>() {
         @Override
@@ -141,9 +141,7 @@ public abstract class QueryConverter<T> {
 
         @Override
         protected String toString(Boolean value) {
-            return value ?
-                   "yes" :
-                   "no";
+            return value ? "yes" : "no";
         }
     };
 

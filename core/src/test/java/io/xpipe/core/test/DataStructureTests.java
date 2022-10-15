@@ -1,7 +1,7 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ArrayNode;
+import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.*;
@@ -12,37 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataStructureTests {
-
-    @AllArgsConstructor
-
-    public static enum TypedDataset {
-
-        // Variety
-        DATA_1(createTestDataType1(), List.of(createTestData11(), createTestData12())),
-
-        // Multiple nested arrays
-        DATA_2(createTestDataType2(), List.of(createTestData21(), createTestData22())),
-
-        // Array with wildcard type
-        DATA_3(createTestData31().determineDataType(), List.of(createTestData31(), createTestData32())),
-
-        // Simple values
-        DATA_4(ValueType.of(), List.of(createTestData41(), createTestData42())),
-
-        // Array with wildcard type
-        DATA_5(createTestDataType5(), List.of(createTestData51(), createTestData52(), createTestData53())),
-
-        // Tuple with wildcard type
-        DATA_6(createTestDataType6(), List.of(createTestData61(), createTestData62())),
-
-        // Wildcard type
-        DATA_7(createTestDataType7(), List.of(createTestData71(), createTestData72(), createTestData73()));
-
-
-        public DataType type;
-        public List<DataStructureNode> nodes;
-
-    }
 
     private static DataStructureNode createTestData11() {
         var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
@@ -101,7 +70,10 @@ public class DataStructureTests {
 
     public static DataStructureNode createTestData32() {
         var val = ValueNode.of("value2".getBytes(StandardCharsets.UTF_8));
-        var flatTuple = TupleNode.builder().add("key1", ValueNode.nullValue()).add("key2", ValueNode.nullValue()).build();
+        var flatTuple = TupleNode.builder()
+                .add("key1", ValueNode.nullValue())
+                .add("key2", ValueNode.nullValue())
+                .build();
         var flatArray = ArrayNode.of(List.of(val, flatTuple));
         return flatArray;
     }
@@ -144,8 +116,7 @@ public class DataStructureTests {
     public static DataStructureNode createTestData61() {
         var val = ValueNode.of("value".getBytes(StandardCharsets.UTF_8));
         var array = ArrayNode.of(List.of(val, ValueNode.nullValue()));
-        var tuple = TupleNode.builder()
-                .add(val).add("key2", array).build();
+        var tuple = TupleNode.builder().add(val).add("key2", array).build();
         return tuple;
     }
 
@@ -153,8 +124,7 @@ public class DataStructureTests {
         var val = ValueNode.of("value2".getBytes(StandardCharsets.UTF_8));
         var flatTuple = TupleNode.builder().add("key1", val).build();
 
-        var tuple = TupleNode.builder()
-                .add(flatTuple).add("key2", val).build();
+        var tuple = TupleNode.builder().add(flatTuple).add("key2", val).build();
         return tuple;
     }
 
@@ -182,5 +152,33 @@ public class DataStructureTests {
 
     public static DataType createTestDataType7() {
         return WildcardType.of();
+    }
+
+    @AllArgsConstructor
+    public static enum TypedDataset {
+
+        // Variety
+        DATA_1(createTestDataType1(), List.of(createTestData11(), createTestData12())),
+
+        // Multiple nested arrays
+        DATA_2(createTestDataType2(), List.of(createTestData21(), createTestData22())),
+
+        // Array with wildcard type
+        DATA_3(createTestData31().determineDataType(), List.of(createTestData31(), createTestData32())),
+
+        // Simple values
+        DATA_4(ValueType.of(), List.of(createTestData41(), createTestData42())),
+
+        // Array with wildcard type
+        DATA_5(createTestDataType5(), List.of(createTestData51(), createTestData52(), createTestData53())),
+
+        // Tuple with wildcard type
+        DATA_6(createTestDataType6(), List.of(createTestData61(), createTestData62())),
+
+        // Wildcard type
+        DATA_7(createTestDataType7(), List.of(createTestData71(), createTestData72(), createTestData73()));
+
+        public DataType type;
+        public List<DataStructureNode> nodes;
     }
 }

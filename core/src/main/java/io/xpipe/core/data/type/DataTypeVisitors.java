@@ -41,9 +41,7 @@ public class DataTypeVisitors {
      * Creates a visitor that allows for visiting possible recursive columns of table.
      */
     public static DataTypeVisitor table(
-            Consumer<String> newTuple,
-            Runnable endTuple,
-            BiConsumer<String, DataStructureNodePointer> newValue) {
+            Consumer<String> newTuple, Runnable endTuple, BiConsumer<String, DataStructureNodePointer> newValue) {
         return new DataTypeVisitor() {
             private final Stack<TupleType> tuples = new Stack<>();
             private final Stack<Integer> keyIndices = new Stack<>();

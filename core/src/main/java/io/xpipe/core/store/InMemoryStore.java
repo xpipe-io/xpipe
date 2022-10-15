@@ -20,7 +20,6 @@ public class InMemoryStore extends JacksonizedValue implements StreamDataStore {
 
     private byte[] value;
 
-
     @JsonCreator
     public InMemoryStore(byte[] value) {
         this.value = value;
@@ -38,7 +37,7 @@ public class InMemoryStore extends JacksonizedValue implements StreamDataStore {
 
     @Override
     public OutputStream openOutput() throws Exception {
-        return new ByteArrayOutputStream(){
+        return new ByteArrayOutputStream() {
             @Override
             public void close() throws IOException {
                 super.close();

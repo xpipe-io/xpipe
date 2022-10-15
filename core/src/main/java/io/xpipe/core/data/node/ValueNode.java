@@ -11,32 +11,7 @@ import java.util.Objects;
 
 public abstract class ValueNode extends DataStructureNode {
 
-
-    protected ValueNode() {
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ValueNode that)) {
-            return false;
-        }
-        var toReturn =  Arrays.equals(getRawData(), that.getRawData()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
-
-        // Useful for debugging
-        if (toReturn == false) {
-            return false;
-        }
-
-        return toReturn;
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(getRawData()) + Objects.hash(getMetaAttributes());
-    }
+    protected ValueNode() {}
 
     public static ValueNode nullValue() {
         return new SimpleValueNode(new byte[0]).tag(IS_NULL).asValue();
@@ -79,6 +54,7 @@ public abstract class ValueNode extends DataStructureNode {
         created.tag(IS_FLOATING_POINT);
         return created;
     }
+
     public static ValueNode ofBoolean(Boolean bool) {
         var created = of(bool);
         created.tag(IS_BOOLEAN);
@@ -91,6 +67,30 @@ public abstract class ValueNode extends DataStructureNode {
         }
 
         return of(o.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ValueNode that)) {
+            return false;
+        }
+        var toReturn = Arrays.equals(getRawData(), that.getRawData())
+                && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
+
+        // Useful for debugging
+        if (toReturn == false) {
+            return false;
+        }
+
+        return toReturn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getRawData()) + Objects.hash(getMetaAttributes());
     }
 
     @Override
@@ -114,5 +114,4 @@ public abstract class ValueNode extends DataStructureNode {
     }
 
     public abstract byte[] getRawData();
-
 }

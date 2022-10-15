@@ -14,7 +14,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonTypeName("text")
 @SuperBuilder
 @Jacksonized
-public final  class TextSource extends TextDataSource<StreamDataStore> implements Charsettable {
+public final class TextSource extends TextDataSource<StreamDataStore> implements Charsettable {
 
     private final StreamCharset charset;
     private final NewLine newLine;

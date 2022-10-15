@@ -7,10 +7,7 @@ import io.xpipe.core.source.TextWriteConnection;
 
 public class PreservingTextWriteConnection extends PreservingWriteConnection implements TextWriteConnection {
 
-    public PreservingTextWriteConnection(
-            DataSource<?> source, DataSourceConnection connection,
-            boolean append
-    ) {
+    public PreservingTextWriteConnection(DataSource<?> source, DataSourceConnection connection, boolean append) {
         super(DataSourceType.TEXT, source, append, connection);
     }
 

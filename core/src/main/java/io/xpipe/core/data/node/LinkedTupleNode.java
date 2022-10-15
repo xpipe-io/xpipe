@@ -84,7 +84,9 @@ public class LinkedTupleNode extends TupleNode {
 
     @Override
     public DataType determineDataType() {
-        return TupleType.of(getKeyNames(), getNodes().stream().map(DataStructureNode::determineDataType).toList());
+        return TupleType.of(
+                getKeyNames(),
+                getNodes().stream().map(DataStructureNode::determineDataType).toList());
     }
 
     @Override
@@ -142,7 +144,6 @@ public class LinkedTupleNode extends TupleNode {
         return "LinkedTupleNode(" + size() + ")";
     }
 
-
     @Override
     public int size() {
         return tupleNodes.stream().mapToInt(TupleNode::size).sum();
@@ -174,6 +175,7 @@ public class LinkedTupleNode extends TupleNode {
             return this;
         }
 
-        return new LinkedTupleNode(tupleNodes.stream().map(n -> n.isMutable() ? n : n.mutable()).toList());
+        return new LinkedTupleNode(
+                tupleNodes.stream().map(n -> n.isMutable() ? n : n.mutable()).toList());
     }
 }

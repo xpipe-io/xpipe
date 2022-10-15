@@ -18,6 +18,13 @@ import java.util.List;
 @Getter
 public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
 
+    private final Property<Entry> selected;
+    private final List<Entry> entries;
+    public TabPaneComp(Property<Entry> selected, List<Entry> entries) {
+        this.selected = selected;
+        this.entries = entries;
+    }
+
     @Override
     public CompStructure<JFXTabPane> createBase() {
         JFXTabPane tabPane = new JFXTabPane();
@@ -40,10 +47,10 @@ public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
         }
 
         tabPane.getSelectionModel().select(entries.indexOf(selected.getValue()));
-        tabPane.getSelectionModel().selectedIndexProperty().addListener((c,o,n) -> {
+        tabPane.getSelectionModel().selectedIndexProperty().addListener((c, o, n) -> {
             selected.setValue(entries.get(n.intValue()));
         });
-        selected.addListener((c,o,n) -> {
+        selected.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 tabPane.getSelectionModel().select(entries.indexOf(n));
             });
@@ -52,15 +59,5 @@ public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
         return new SimpleCompStructure<>(tabPane);
     }
 
-    private final Property<Entry> selected;
-    private final List<Entry> entries;
-
-    public TabPaneComp(Property<Entry> selected, List<Entry> entries) {
-        this.selected = selected;
-        this.entries = entries;
-    }
-
-    public static record Entry(ObservableValue<String> name, String graphic, Comp<?> comp) {
-
-    }
+    public static record Entry(ObservableValue<String> name, String graphic, Comp<?> comp) {}
 }

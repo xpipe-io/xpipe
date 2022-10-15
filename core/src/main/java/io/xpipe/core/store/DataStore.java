@@ -28,7 +28,6 @@ public interface DataStore {
         return true;
     }
 
-
     /**
      * Indicates whether this data store can only be accessed by the current running application.
      * One example are standard in and standard out stores.
@@ -56,16 +55,13 @@ public interface DataStore {
      *
      * @throws Exception if any part of the validation went wrong
      */
-    default void validate() throws Exception {
-    }
+    default void validate() throws Exception {}
 
-    default void checkComplete() throws Exception {
-    }
+    default void checkComplete() throws Exception {}
 
     default boolean delete() throws Exception {
         return false;
     }
-
 
     /**
      * Casts this instance to the required type without checking whether a cast is possible.

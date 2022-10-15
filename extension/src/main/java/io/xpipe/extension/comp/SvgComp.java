@@ -22,7 +22,17 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 @Getter
-public class SvgComp  {
+public class SvgComp {
+
+    private final ObservableValue<Number> width;
+    private final ObservableValue<Number> height;
+    private final ObservableValue<String> svgContent;
+
+    public SvgComp(ObservableValue<Number> width, ObservableValue<Number> height, ObservableValue<String> svgContent) {
+        this.width = PlatformThread.sync(width);
+        this.height = PlatformThread.sync(height);
+        this.svgContent = PlatformThread.sync(svgContent);
+    }
 
     private static Size parseSize(String string) {
         for (SizeUnits unit : SizeUnits.values()) {
@@ -55,28 +65,6 @@ public class SvgComp  {
             heightProperty.set((int) Math.ceil(heightInteger));
         });
         return new SvgComp(widthProperty, heightProperty, content);
-    }
-
-    @Value
-    @Builder
-    public static class Structure implements CompStructure<StackPane> {
-        StackPane pane;
-        WebView webView;
-
-        @Override
-        public StackPane get() {
-            return pane;
-        }
-    }
-
-    private final ObservableValue<Number> width;
-    private final ObservableValue<Number> height;
-    private final ObservableValue<String> svgContent;
-
-    public SvgComp(ObservableValue<Number> width, ObservableValue<Number> height, ObservableValue<String> svgContent) {
-        this.width = PlatformThread.sync(width);
-        this.height = PlatformThread.sync(height);
-        this.svgContent = PlatformThread.sync(svgContent);
     }
 
     private String getHtml(String content) {
@@ -115,10 +103,21 @@ public class SvgComp  {
         return wv;
     }
 
-
     public WebView createWebview() {
         var wv = createWebView();
-wv.getStyleClass().add("svg-comp");
+        wv.getStyleClass().add("svg-comp");
         return wv;
+    }
+
+    @Value
+    @Builder
+    public static class Structure implements CompStructure<StackPane> {
+        StackPane pane;
+        WebView webView;
+
+        @Override
+        public StackPane get() {
+            return pane;
+        }
     }
 }

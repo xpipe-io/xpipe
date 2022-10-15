@@ -1,8 +1,8 @@
 package io.xpipe.beacon.exchange.cli;
 
-import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
+import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
@@ -32,6 +32,7 @@ public class RenameEntryExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull DataSourceId newId;
+        @NonNull
+        DataSourceId newId;
     }
 }

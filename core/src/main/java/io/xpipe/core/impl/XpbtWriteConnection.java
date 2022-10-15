@@ -58,7 +58,8 @@ public class XpbtWriteConnection implements TableWriteConnection {
         try (JsonGenerator g = f.createGenerator(writer)
                 .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
                 .setPrettyPrinter(new DefaultPrettyPrinter())) {
-            JacksonMapper.newMapper().disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
+            JacksonMapper.newMapper()
+                    .disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET)
                     .writeValue(g, tupleNode.getKeyNames());
             writer.append("\n");
         }
