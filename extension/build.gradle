@@ -29,11 +29,15 @@ dependencies {
     compileOnly 'net.synedra:validatorfx:0.3.1'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     compileOnly 'com.jfoenix:jfoenix:9.0.10'
-    compileOnly 'io.xpipe:fxcomps:0.2.2'
     compileOnly 'org.controlsfx:controlsfx:11.1.1'
     compileOnly 'org.apache.commons:commons-lang3:3.12.0'
-}
 
+    if (project(':fxcomps') != null) {
+        compileOnly project(':fxcomps')
+    } else {
+        compileOnly 'io.xpipe:fxcomps:0.3.2'
+    }
+}
 
 
 apply from: 'publish.gradle'

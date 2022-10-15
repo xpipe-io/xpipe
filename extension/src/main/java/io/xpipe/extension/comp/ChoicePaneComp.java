@@ -5,6 +5,7 @@ import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.SimpleCompStructure;
 import io.xpipe.fxcomps.util.PlatformThread;
+import io.xpipe.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -65,7 +66,13 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
             }
         });
 
-        PlatformThread.connect(selected, cb.valueProperty());
+        cb.valueProperty().addListener((observable, oldValue, newValue) -> {
+            selected.setValue(newValue);
+        });
+        SimpleChangeListener.apply(selected, val -> {
+            PlatformThread.runLaterIfNeeded(() -> cb.valueProperty().set(val));
+        });
+
         vbox.getStyleClass().add("choice-pane-comp");
 
         return new SimpleCompStructure<>(vbox);

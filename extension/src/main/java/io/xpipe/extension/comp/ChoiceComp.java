@@ -33,7 +33,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
     public ChoiceComp(Property<T> value, ObservableValue<Map<T, ObservableValue<String>>> range) {
         this.value = value;
-        this.range = range;
+        this.range = PlatformThread.sync(range);
     }
 
     @Override
@@ -60,15 +60,21 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
                 throw new UnsupportedOperationException();
             }
         });
-        SimpleChangeListener.apply(PlatformThread.sync(range), c -> {
-
+        SimpleChangeListener.apply(range, c -> {
             var list = FXCollections.observableArrayList(c.keySet());
             if (!list.contains(null)) {
                 list.add(null);
             }
             cb.setItems(list);
         });
-        PlatformThread.connect(value, cb.valueProperty());
+
+        cb.valueProperty().addListener((observable, oldValue, newValue) -> {
+            value.setValue(newValue);
+        });
+        SimpleChangeListener.apply(value, val -> {
+            PlatformThread.runLaterIfNeeded(() -> cb.valueProperty().set(val));
+        });
+
         cb.getStyleClass().add("choice-comp");
         return new SimpleCompStructure<>(cb);
     }

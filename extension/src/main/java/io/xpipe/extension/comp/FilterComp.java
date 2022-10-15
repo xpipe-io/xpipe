@@ -3,6 +3,7 @@ package io.xpipe.extension.comp;
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.util.PlatformThread;
+import io.xpipe.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
@@ -41,7 +42,14 @@ public class FilterComp extends Comp<FilterComp.Structure> {
         var bgLabel = new Label("Search ...", fi);
         bgLabel.getStyleClass().add("background");
         var filter = new TextField();
-        PlatformThread.connect(filterText, filter.textProperty());
+
+        SimpleChangeListener.apply(filterText, val -> {
+            PlatformThread.runLaterIfNeeded(() -> filter.setText(val));
+        });
+        filter.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterText.setValue(newValue);
+        });
+
         bgLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (filter.getText() == null || filter.getText().isEmpty()),
                 filter.textProperty(), filter.focusedProperty()));
 
