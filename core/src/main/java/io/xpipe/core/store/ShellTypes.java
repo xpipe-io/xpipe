@@ -18,11 +18,18 @@ public class ShellTypes {
     public static final StandardShellStore.ShellType SH = new Sh();
 
     public static StandardShellStore.ShellType determine(ShellStore store) throws Exception {
-        var o = store.executeAndCheckOut(List.of(), List.of("echo", "$0"), null).strip();
+        var o = store.prepareCommand(List.of(), List.of("echo", "$0"), null, StandardCharsets.US_ASCII)
+                .executeAndReadStdoutOrThrow()
+                .strip();
         if (!o.equals("$0")) {
             return SH;
         } else {
-            o = store.executeAndCheckOut(List.of(), List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"), null)
+            o = store.prepareCommand(
+                            List.of(),
+                            List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"),
+                            null,
+                            StandardCharsets.UTF_16LE)
+                    .executeAndReadStdoutOrThrow()
                     .trim();
             if (o.equals("PowerShell")) {
                 return POWERSHELL;
@@ -33,7 +40,8 @@ public class ShellTypes {
     }
 
     public static StandardShellStore.ShellType[] getAvailable(ShellStore store) throws Exception {
-        var o = store.executeAndCheckOut(List.of(), List.of("echo", "$0"), null);
+        var o = store.prepareCommand(List.of(), List.of("echo", "$0"), null, StandardCharsets.US_ASCII)
+                .executeAndReadStdoutOrThrow();
         if (!o.trim().equals("$0")) {
             return getLinuxShells();
         } else {
@@ -43,7 +51,7 @@ public class ShellTypes {
 
     public static StandardShellStore.ShellType getDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
-            return CMD;
+            return POWERSHELL;
         } else {
             return SH;
         }
@@ -71,18 +79,20 @@ public class ShellTypes {
             var l = new ArrayList<>(cmd);
             l.add(0, "cmd.exe");
             l.add(1, "/c");
-            l.add(2, "@chcp 65001");
-            l.add(3, ">");
-            l.add(4, "nul");
-            l.add(5, "&&");
+            l.add(2, "@chcp");
+            l.add(3, "65001");
+            l.add(4, ">");
+            l.add(5, "nul");
+            l.add(6, "&&");
             return l;
         }
 
         @Override
         public ProcessControl prepareElevatedCommand(
-                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw, Charset charset)
+                throws Exception {
             var l = List.of("net", "session", ";", "if", "%errorLevel%", "!=", "0");
-            return st.prepareCommand(List.of(), l, timeout);
+            return st.prepareCommand(List.of(), l, timeout, charset);
         }
 
         @Override
@@ -184,12 +194,13 @@ public class ShellTypes {
 
         @Override
         public ProcessControl prepareElevatedCommand(
-                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
+                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw, Charset charset)
+                throws Exception {
             var l = new ArrayList<>(cmd);
             l.add(0, "sudo");
             l.add(1, "-S");
             var pws = new ByteArrayInputStream(pw.getBytes(determineCharset(st)));
-            return st.prepareCommand(List.of(SecretValue.createForSecretValue(pw)), l, timeout);
+            return st.prepareCommand(List.of(SecretValue.createForSecretValue(pw)), l, timeout, charset);
         }
 
         @Override

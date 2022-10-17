@@ -22,7 +22,12 @@ public interface StandardShellStore extends MachineFileStore, ShellStore {
     public abstract ShellType determineType() throws Exception;
 
     public default String querySystemName() throws Exception {
-        var result = executeAndCheckOut(List.of(), determineType().getOperatingSystemNameCommand(), getTimeout());
+        var result = prepareCommand(
+                        List.of(),
+                        determineType().getOperatingSystemNameCommand(),
+                        getTimeout(),
+                        determineType().determineCharset(this))
+                .executeAndReadStdoutOrThrow();
         return result.strip();
     }
 
@@ -30,7 +35,7 @@ public interface StandardShellStore extends MachineFileStore, ShellStore {
     public default InputStream openInput(String file) throws Exception {
         var type = determineType();
         var cmd = type.createFileReadCommand(file);
-        var p = prepareCommand(List.of(), cmd, null);
+        var p = prepareCommand(List.of(), cmd, null, type.determineCharset(this));
         p.start();
         return p.getStdout();
     }
@@ -49,7 +54,7 @@ public interface StandardShellStore extends MachineFileStore, ShellStore {
     public default boolean exists(String file) throws Exception {
         var type = determineType();
         var cmd = type.createFileExistsCommand(file);
-        var p = prepareCommand(List.of(), cmd, null);
+        var p = prepareCommand(List.of(), cmd, null, type.determineCharset(this));
         p.start();
         return p.waitFor() == 0;
     }
@@ -63,8 +68,9 @@ public interface StandardShellStore extends MachineFileStore, ShellStore {
         List<String> switchTo(List<String> cmd);
 
         default ProcessControl prepareElevatedCommand(
-                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw) throws Exception {
-            return st.prepareCommand(in, cmd, timeout);
+                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw, Charset charset)
+                throws Exception {
+            return st.prepareCommand(in, cmd, timeout, charset);
         }
 
         List<String> createFileReadCommand(String file);

@@ -19,7 +19,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     default Category getCategory() {
         if (getFileProvider() != null) {
-            return Category.FILE;
+            return Category.STREAM;
         }
 
         throw new ExtensionException("Provider has no set general type");
@@ -43,7 +43,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getId() + "." + key;
     }
 
-    default Region configGui(Property<T> source, Property<T> appliedSource, boolean all) {
+    default Region configGui(Property<T> source, boolean all) {
         return null;
     }
 
@@ -120,7 +120,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
     List<String> getPossibleNames();
 
     static enum Category {
-        FILE,
+        STREAM,
         DATABASE;
     }
 

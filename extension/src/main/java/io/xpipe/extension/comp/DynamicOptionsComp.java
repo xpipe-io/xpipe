@@ -6,7 +6,6 @@ import io.xpipe.fxcomps.SimpleCompStructure;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -34,7 +33,6 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
         flow.setAlignment(Pos.CENTER);
         flow.setHgap(7);
         flow.setVgap(7);
-        flow.setPadding(new Insets(8, 0, 0, 0));
 
         var nameRegions = new ArrayList<Region>();
         var compRegions = new ArrayList<Region>();

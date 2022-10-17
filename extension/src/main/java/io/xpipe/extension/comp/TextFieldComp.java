@@ -5,6 +5,7 @@ import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.SimpleCompStructure;
 import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -12,39 +13,57 @@ import javafx.scene.input.KeyEvent;
 
 public class TextFieldComp extends Comp<CompStructure<TextField>> {
 
-    private final Property<String> value;
-    private final Property<String> lazyValue;
+    private final Property<String> lastAppliedValue;
+    private final Property<String> currentValue;
+    private final boolean lazy;
 
     public TextFieldComp(Property<String> value) {
-        this.value = value;
-        this.lazyValue = value;
+        this(value, false);
     }
 
-    public TextFieldComp(Property<String> value, Property<String> lazyValue) {
-        this.value = value;
-        this.lazyValue = lazyValue;
+    public TextFieldComp(Property<String> value, boolean lazy) {
+        this.lastAppliedValue = value;
+        this.currentValue = new SimpleStringProperty(value.getValue());
+        this.lazy = lazy;
+        if (!lazy) {
+            value.bind(currentValue);
+        }
     }
 
     @Override
     public CompStructure<TextField> createBase() {
-        var text = new TextField(value.getValue() != null ? value.getValue().toString() : null);
+        var text = new TextField(
+                currentValue.getValue() != null ? currentValue.getValue().toString() : null);
         text.textProperty().addListener((c, o, n) -> {
-            value.setValue(n != null && n.length() > 0 ? n : null);
+            currentValue.setValue(n != null && n.length() > 0 ? n : null);
         });
-        value.addListener((c, o, n) -> {
+        lastAppliedValue.addListener((c, o, n) -> {
+            currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
                 text.setText(n);
             });
         });
+
         text.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent ke) {
                 if (ke.getCode().equals(KeyCode.ENTER)) {
-                    lazyValue.setValue(value.getValue());
+                    text.getScene().getRoot().requestFocus();
+                }
+
+                if (lazy && ke.getCode().equals(KeyCode.ENTER)) {
+                    lastAppliedValue.setValue(currentValue.getValue());
                 }
                 ke.consume();
             }
         });
+
+        text.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                lastAppliedValue.setValue(currentValue.getValue());
+            }
+        });
+
         return new SimpleCompStructure<>(text);
     }
 }

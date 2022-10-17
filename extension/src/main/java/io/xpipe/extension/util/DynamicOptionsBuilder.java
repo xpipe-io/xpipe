@@ -23,8 +23,6 @@ public class DynamicOptionsBuilder {
 
     private final List<DynamicOptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
-    private final List<Property<?>> lazyProperties = new ArrayList<>();
-
     private final ObservableValue<String> title;
     private final boolean wrap;
 
@@ -50,13 +48,6 @@ public class DynamicOptionsBuilder {
     public DynamicOptionsBuilder addTitle(ObservableValue<String> title) {
         entries.add(new DynamicOptionsComp.Entry(
                 null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
-        return this;
-    }
-
-    public DynamicOptionsBuilder makeLazy() {
-        var p = props.get(props.size() - 1);
-        props.remove(p);
-        lazyProperties.add(p);
         return this;
     }
 
@@ -133,8 +124,8 @@ public class DynamicOptionsBuilder {
         return this;
     }
 
-    public DynamicOptionsBuilder addStringArea(String nameKey, Property<String> prop) {
-        var comp = new TextAreaComp(prop);
+    public DynamicOptionsBuilder addStringArea(String nameKey, Property<String> prop, boolean lazy) {
+        var comp = new TextAreaComp(prop, lazy);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
@@ -147,16 +138,22 @@ public class DynamicOptionsBuilder {
         return this;
     }
 
-    public DynamicOptionsBuilder addLazyString(String nameKey, Property<String> prop, Property<String> lazy) {
+    public DynamicOptionsBuilder addString(String nameKey, Property<String> prop, boolean lazy) {
         var comp = new TextFieldComp(prop, lazy);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
         props.add(prop);
-        lazyProperties.add(lazy);
         return this;
     }
 
     public DynamicOptionsBuilder addString(ObservableValue<String> name, Property<String> prop) {
         var comp = new TextFieldComp(prop);
+        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        props.add(prop);
+        return this;
+    }
+
+    public DynamicOptionsBuilder addString(ObservableValue<String> name, Property<String> prop, boolean lazy) {
+        var comp = new TextFieldComp(prop, lazy);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
@@ -217,17 +214,6 @@ public class DynamicOptionsBuilder {
         for (Property<T> p : toSet) {
             p.setValue(creator.get());
         }
-        return this;
-    }
-
-    public <T, V extends T> DynamicOptionsBuilder bindLazy(Supplier<V> creator, Property<T> toLazySet) {
-        lazyProperties.forEach(prop -> {
-            prop.addListener((c, o, n) -> {
-                toLazySet.setValue(creator.get());
-            });
-        });
-        toLazySet.setValue(creator.get());
-
         return this;
     }
 

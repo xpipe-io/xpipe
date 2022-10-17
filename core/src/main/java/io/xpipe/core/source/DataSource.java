@@ -45,7 +45,6 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
             throw new AssertionError(ex);
         }
     }
-
     public void test() throws Exception {
         store.validate();
     }

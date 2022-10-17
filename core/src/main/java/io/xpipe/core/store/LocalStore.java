@@ -51,14 +51,14 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
     }
 
     @Override
-    public ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout) {
-        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeout));
+    public ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout, Charset charset) {
+        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeout), charset);
     }
 
     @Override
-    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeOut)
+    public ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeOut, Charset charset)
             throws Exception {
-        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeOut));
+        return new LocalProcessControl(input, cmd, getEffectiveTimeOut(timeOut), charset);
     }
 
     @Override
@@ -71,14 +71,15 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
         private final List<SecretValue> input;
         private final Integer timeout;
         private final List<String> command;
-        private Charset charset;
+        private final Charset charset;
 
         private Process process;
 
-        LocalProcessControl(List<SecretValue> input, List<String> cmd, Integer timeout) {
+        LocalProcessControl(List<SecretValue> input, List<String> cmd, Integer timeout, Charset charset) {
             this.input = input;
             this.timeout = timeout;
             this.command = cmd;
+            this.charset = charset;
         }
 
         private InputStream createInputStream() {
@@ -93,7 +94,6 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
             var l = type.switchTo(command);
             var builder = new ProcessBuilder(l);
             process = builder.start();
-            charset = type.determineCharset(LocalStore.this);
 
             var t = new Thread(() -> {
                 try (var inputStream = createInputStream()) {

@@ -10,22 +10,54 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class ProcessControl {
 
-    public String readOutOnly() throws Exception {
-        start();
-        var errT = discardErr();
-        var string = new String(getStdout().readAllBytes(), getCharset());
-        waitFor();
-        return string.trim();
+    public String executeAndReadStdout() throws Exception {
+        var pc = this;
+        pc.start();
+        pc.discardErr();
+        var bytes = pc.getStdout().readAllBytes();
+        var string = new String(bytes, pc.getCharset());
+        return string;
     }
 
-    public Optional<String> readErrOnly() throws Exception {
-        start();
-        var outT = discardOut();
+    public void executeOrThrow() throws Exception {
+        var pc = this;
+        pc.start();
+        pc.discardOut();
+        pc.discardErr();
+        pc.waitFor();
+    }
+
+    public Optional<String> executeAndReadStderrIfPresent() throws Exception {
+        var pc = this;
+        pc.start();
+        pc.discardOut();
+        var bytes = pc.getStderr().readAllBytes();
+        var string = new String(bytes, pc.getCharset());
+        var ec = pc.waitFor();
+        return ec != 0 ? Optional.of(string) : Optional.empty();
+    }
+
+    public String executeAndReadStdoutOrThrow()
+            throws Exception {
+        var pc = this;
+        pc.start();
+
+        AtomicReference<String> readError = new AtomicReference<>();
+        var errorThread = new Thread(() -> {
+            try {
+
+                readError.set(new String(pc.getStderr().readAllBytes(), pc.getCharset()));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        });
+        errorThread.setDaemon(true);
+        errorThread.start();
 
         AtomicReference<String> read = new AtomicReference<>();
         var t = new Thread(() -> {
             try {
-                read.set(new String(getStderr().readAllBytes(), getCharset()));
+                read.set(new String(pc.getStdout().readAllBytes(), pc.getCharset()));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -33,8 +65,17 @@ public abstract class ProcessControl {
         t.setDaemon(true);
         t.start();
 
-        var ec = waitFor();
-        return ec != 0 ? Optional.of(read.get().trim()) : Optional.empty();
+        var ec = pc.waitFor();
+        if (ec == -1) {
+            throw new ProcessOutputException("Command timed out");
+        }
+
+        if (ec == 0 && !(read.get().isEmpty() && !readError.get().isEmpty())) {
+            return read.get().trim();
+        } else {
+            throw new ProcessOutputException(
+                    "Command returned with " + ec + ": " + readError.get().trim());
+        }
     }
 
     public Thread discardOut() {

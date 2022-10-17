@@ -1,12 +1,12 @@
 [![Build Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/build.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/build.yml)
-[![Publish Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/publishb.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/publish.yml)
+[![Publish Status](https://github.com/xpipe-io/xpipe_java/actions/workflows/publish.yml/badge.svg)](https://github.com/xpipe-io/xpipe_java/actions/workflows/publish.yml)
 
 ## X-Pipe Java
 
 The fundamental components of the [X-Pipe project](https://docs.xpipe.io).
 This repository contains the following four modules:
 
-- Core - Shared core classes of the Java API and the X-Pipe daemon implementation
+- Core - Shared core classes of the Java API, extensions, and the X-Pipe daemon implementation
 - API - The API that can be used to interact with X-Pipe from any JVM-based languages
 - Beacon - The X-Pipe beacon component is responsible for handling all communications between the X-Pipe daemon
   and the client applications, for example the various programming language APIs and the CLI

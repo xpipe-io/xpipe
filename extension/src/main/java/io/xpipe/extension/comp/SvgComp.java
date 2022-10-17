@@ -100,6 +100,10 @@ public class SvgComp {
 
         wv.maxWidthProperty().bind(wv.prefWidthProperty());
         wv.maxHeightProperty().bind(wv.prefHeightProperty());
+
+        wv.minWidthProperty().bind(wv.prefWidthProperty());
+        wv.minHeightProperty().bind(wv.prefHeightProperty());
+
         return wv;
     }
 

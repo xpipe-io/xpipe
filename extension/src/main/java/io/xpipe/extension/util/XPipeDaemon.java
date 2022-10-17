@@ -23,7 +23,9 @@ public interface XPipeDaemon {
 
     List<DataStore> getNamedStores();
 
-    public Image image(String file);
+    Image image(String file);
+
+    String svgImage(String file);
 
     <T extends Comp<?> & Validatable> T streamStoreChooser(
             Property<DataStore> storeProperty,
@@ -36,7 +38,7 @@ public interface XPipeDaemon {
             Property<? extends DataStore> selected,
             DataStoreProvider.Category category);
 
-    Comp<?> namedSourceChooser(
+    <T extends Comp<?> & Validatable> T namedSourceChooser(
             ObservableValue<Predicate<DataSource<?>>> filter,
             Property<? extends DataSource<?>> selected,
             DataSourceProvider.Category category);

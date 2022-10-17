@@ -8,7 +8,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -19,7 +18,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
-public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
+public class CodeSnippetComp extends Comp<CompStructure<?>> {
 
     private final ObservableValue<Boolean> showLineNumbers;
     private final ObservableValue<CodeSnippet> value;
@@ -79,7 +78,7 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
     }
 
     @Override
-    public CompStructure<StackPane> createBase() {
+    public CompStructure<?> createBase() {
         var s = new InlineCssTextArea();
         s.setEditable(false);
         s.setBackground(null);
@@ -88,6 +87,7 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
             s.getParent().fireEvent(e);
             e.consume();
         });
+        s.prefHeightProperty().setValue(20* this.value.getValue().lines().stream().count());
 
         var lineNumbers = new VBox();
         lineNumbers.getStyleClass().add("line-numbers");
@@ -115,13 +115,10 @@ public class CodeSnippetComp extends Comp<CompStructure<StackPane>> {
             }
         });
         HBox.setHgrow(s, Priority.ALWAYS);
-        var container = new ScrollPane(content);
-        container.setFitToWidth(true);
-        container.setFitToHeight(true);
 
-        var c = new StackPane(container);
-        container.prefHeightProperty().bind(c.heightProperty());
+        var c = new StackPane(content);
         c.getStyleClass().add("code-snippet-container");
+        c.prefHeightProperty().bind(content.prefHeightProperty());
 
         var copyButton = createCopyButton(c);
         var pane = new AnchorPane(copyButton);

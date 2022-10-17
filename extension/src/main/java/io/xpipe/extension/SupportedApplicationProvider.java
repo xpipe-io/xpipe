@@ -46,6 +46,11 @@ public interface SupportedApplicationProvider {
         PASSIVE
     }
 
+    enum Direction {
+        RETRIEVE,
+        UPDATE
+    }
+
     @Value
     @AllArgsConstructor
     public static class InstructionsDisplay {

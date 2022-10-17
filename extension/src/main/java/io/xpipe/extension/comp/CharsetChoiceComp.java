@@ -26,18 +26,20 @@ public class CharsetChoiceComp extends SimpleComp {
                 },
                 new Label(I18n.get("extension.none")),
                 null);
+        builder.addFilter((charset, filter) -> {
+            return charset.getCharset().displayName().contains(filter);
+        });
         builder.addHeader(I18n.get("extension.common"));
         for (var e : StreamCharset.COMMON) {
             builder.add(e);
         }
 
         builder.addHeader(I18n.get("extension.other"));
-        builder.addFilter((charset, filter) -> {
-            return charset.getCharset().displayName().contains(filter);
-        });
         for (var e : StreamCharset.RARE) {
             builder.add(e);
         }
-        return builder.build();
+        var comboBox =  builder.build();
+        comboBox.setVisibleRowCount(16);
+        return comboBox;
     }
 }
