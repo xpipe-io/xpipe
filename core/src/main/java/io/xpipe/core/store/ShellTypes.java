@@ -42,7 +42,7 @@ public class ShellTypes {
     public static StandardShellStore.ShellType[] getAvailable(ShellStore store) throws Exception {
         var o = store.prepareCommand(List.of(), List.of("echo", "$0"), null, StandardCharsets.US_ASCII)
                 .executeAndReadStdoutOrThrow();
-        if (!o.trim().equals("$0")) {
+        if (o.trim().length() > 0 && !o.trim().equals("$0")) {
             return getLinuxShells();
         } else {
             return getWindowsShells();

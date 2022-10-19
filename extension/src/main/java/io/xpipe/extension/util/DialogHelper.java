@@ -21,10 +21,10 @@ public class DialogHelper {
     }
 
     public static Dialog machineQuery(DataStore store) {
-        var storeName = XPipeDaemon.getInstance().getStoreName(store).orElse("local");
+        var storeName = XPipeDaemon.getInstance().getStoreName(store).orElse("localhost");
         return Dialog.query("Machine", false, true, false, storeName, QueryConverter.STRING)
                 .map((String name) -> {
-                    if (name.equals("local")) {
+                    if (name.equals("local") || name.equals("localhost")) {
                         return new LocalStore();
                     }
 
@@ -42,14 +42,14 @@ public class DialogHelper {
     }
 
     public static Dialog dataStoreFlowQuery(DataFlow flow, DataFlow[] available) {
-        return Dialog.choice("flow", o -> o.toString(), true, flow, available);
+        return Dialog.choice("Flow", (DataFlow o) -> o.getDisplayName(), true, flow, available);
     }
 
-    public static Dialog shellQuery(DataStore store) {
-        var storeName = XPipeDaemon.getInstance().getStoreName(store).orElse("local");
-        return Dialog.query("Shell", false, true, false, storeName, QueryConverter.STRING)
+    public static Dialog shellQuery(String displayName, DataStore store) {
+        var storeName = XPipeDaemon.getInstance().getStoreName(store).orElse("localhost");
+        return Dialog.query(displayName, false, true, false, storeName, QueryConverter.STRING)
                 .map((String name) -> {
-                    if (name.equals("local")) {
+                    if (name.equals("local") || name.equals("localhost")) {
                         return new LocalStore();
                     }
 

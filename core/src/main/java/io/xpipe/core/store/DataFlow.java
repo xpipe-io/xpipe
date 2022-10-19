@@ -4,13 +4,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public enum DataFlow {
     @JsonProperty("input")
-    INPUT,
+    INPUT("Input"),
     @JsonProperty("output")
-    OUTPUT,
+    OUTPUT("Output"),
     @JsonProperty("inputOutput")
-    INPUT_OUTPUT,
+    INPUT_OUTPUT("Input/Output"),
     @JsonProperty("transformer")
-    TRANSFORMER;
+    TRANSFORMER("Transformer");
+
+    private final String displayName;
+
+    DataFlow(String displayName) {
+        this.displayName = displayName;
+    }
 
     public boolean hasInput() {
         return this == INPUT || this == INPUT_OUTPUT;
@@ -18,5 +24,9 @@ public enum DataFlow {
 
     public boolean hasOutput() {
         return this == OUTPUT || this == INPUT_OUTPUT;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 }

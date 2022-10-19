@@ -36,8 +36,21 @@ public class DataStoreProviders {
         }
 
         return ALL.stream()
-                .filter(d -> d.getPossibleNames().stream().anyMatch(s -> s.equalsIgnoreCase(name)))
+                .filter(d -> d.getPossibleNames().stream()
+                        .anyMatch(s -> nameAlternatives(s).stream().anyMatch(s1 -> s1.equalsIgnoreCase(name)))
+                        || d.getId().equalsIgnoreCase(name))
                 .findAny();
+    }
+
+    private static List<String> nameAlternatives(String name) {
+        var split = List.of(name.split("_"));
+        return List.of(
+                String.join(" ", split),
+                String.join("_", split),
+                String.join("-", split),
+                split.stream()
+                        .map(s -> s.equals(split.get(0)) ? s : s.substring(0, 1).toUpperCase() + s.substring(1))
+                        .collect(Collectors.joining()));
     }
 
     public static Optional<Dialog> byString(String s) {

@@ -1,7 +1,10 @@
 package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.MachineFileStore;
+import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
 import javafx.beans.property.Property;
 
@@ -90,8 +93,8 @@ public interface DataStoreProvider {
 
     List<Class<?>> getStoreClasses();
 
-    default DataFlow[] getPossibleFlows() {
-        return new DataFlow[] {DataFlow.INPUT};
+    default boolean shouldShow() {
+        return true;
     }
 
     enum Category {
