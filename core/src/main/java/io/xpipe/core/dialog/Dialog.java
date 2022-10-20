@@ -31,6 +31,13 @@ public abstract class Dialog {
     private Supplier<?> evaluation;
 
     /**
+     * Removes all completion listeners. Intended for internal use only.
+     */
+    public void clearCompletion() {
+        completion.clear();
+    }
+
+    /**
      * Creates an empty dialogue. This dialogue completes immediately and does not handle any questions or answers.
      */
     public static Dialog empty() {

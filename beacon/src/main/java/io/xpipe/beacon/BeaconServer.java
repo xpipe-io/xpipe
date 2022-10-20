@@ -63,7 +63,7 @@ public class BeaconServer {
             System.out.println("Starting daemon: " + command);
         }
 
-        new Thread(
+        var out = new Thread(
                         null,
                         () -> {
                             try {
@@ -79,10 +79,11 @@ public class BeaconServer {
                                 ioe.printStackTrace();
                             }
                         },
-                        "daemon sysout")
-                .start();
+                        "daemon sysout");
+        out.setDaemon(true);
+        out.start();
 
-        new Thread(
+        var err = new Thread(
                         null,
                         () -> {
                             try {
@@ -98,8 +99,9 @@ public class BeaconServer {
                                 ioe.printStackTrace();
                             }
                         },
-                        "daemon syserr")
-                .start();
+                        "daemon syserr");
+        err.setDaemon(true);
+        err.start();
     }
 
     public static boolean tryStop(BeaconClient client) throws Exception {

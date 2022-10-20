@@ -11,6 +11,11 @@ import java.util.List;
 
 public interface StandardShellStore extends MachineFileStore, ShellStore {
 
+    public default ProcessControl prepareLocalCommand(List<SecretValue> input, List<String> cmd, Integer timeout)
+            throws Exception {
+        return prepareCommand(input, cmd, timeout, determineType().determineCharset(this));
+    }
+
     public default boolean isLocal() {
         return false;
     }
@@ -19,7 +24,7 @@ public interface StandardShellStore extends MachineFileStore, ShellStore {
         return determineType().getNewLine();
     }
 
-    public abstract ShellType determineType() throws Exception;
+    ShellType determineType() throws Exception;
 
     public default String querySystemName() throws Exception {
         var result = prepareCommand(

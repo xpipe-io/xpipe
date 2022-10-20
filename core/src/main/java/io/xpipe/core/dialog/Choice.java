@@ -1,14 +1,11 @@
 package io.xpipe.core.dialog;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 
 @Value
-@Builder
-@Jacksonized
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor_ = @JsonCreator)
 public class Choice {
 
     /**

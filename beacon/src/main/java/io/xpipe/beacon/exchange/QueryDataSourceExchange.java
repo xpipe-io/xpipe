@@ -11,7 +11,7 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Queries general information about a data source.
@@ -50,7 +50,7 @@ public class QueryDataSourceExchange implements MessageExchange {
         String provider;
 
         @NonNull
-        Map<String, String> config;
+        LinkedHashMap<String, String> config;
 
         DataSource<?> internalSource;
     }

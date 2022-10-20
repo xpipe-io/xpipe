@@ -20,8 +20,6 @@ import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
-import io.xpipe.core.impl.TextSource;
-import io.xpipe.core.impl.XpbtSource;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
@@ -36,14 +34,10 @@ public class CoreJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
-                new NamedType(TextSource.class),
-                new NamedType(XpbtSource.class),
-                new NamedType(FileStore.class),
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
                 new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(CollectionEntryDataStore.class),
-                new NamedType(InMemoryStore.class),
                 new NamedType(LocalStore.class),
                 new NamedType(NamedStore.class),
                 new NamedType(ValueType.class),
