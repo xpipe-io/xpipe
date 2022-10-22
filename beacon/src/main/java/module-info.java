@@ -1,3 +1,5 @@
+import com.fasterxml.jackson.databind.Module;
+import io.xpipe.beacon.BeaconJacksonModule;
 import io.xpipe.beacon.exchange.*;
 import io.xpipe.beacon.exchange.api.QueryRawDataExchange;
 import io.xpipe.beacon.exchange.api.QueryTableDataExchange;
@@ -24,6 +26,7 @@ module io.xpipe.beacon {
 
     uses MessageExchange;
 
+    provides Module with BeaconJacksonModule;
     provides io.xpipe.beacon.exchange.MessageExchange with
             ForwardExchange,
             InstanceExchange,

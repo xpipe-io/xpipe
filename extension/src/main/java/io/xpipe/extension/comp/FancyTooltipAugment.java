@@ -6,17 +6,204 @@ import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.augment.Augment;
 import io.xpipe.fxcomps.util.PlatformThread;
 import io.xpipe.fxcomps.util.Shortcuts;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
+import javafx.event.WeakEventHandler;
+import javafx.geometry.NodeOrientation;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
 public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
-    static {
-        JFXTooltip.setHoverDelay(Duration.millis(400));
-        JFXTooltip.setVisibleDuration(Duration.INDEFINITE);
+    private static final TooltipBehavior BEHAVIOR = new TooltipBehavior(Duration.millis(400), Duration.INDEFINITE, Duration.millis(100));
+
+    private static class TooltipBehavior {
+
+        private static String TOOLTIP_PROP = "jfoenix-tooltip";
+        private Timeline hoverTimer = new Timeline();
+        private Timeline visibleTimer = new Timeline();
+        private Timeline leftTimer = new Timeline();
+        /**
+         * the currently hovered node
+         */
+        private Node hoveredNode;
+        /**
+         * the next tooltip to be shown
+         */
+        private JFXTooltip nextTooltip;
+        /**
+         * the current showing tooltip
+         */
+        private JFXTooltip currentTooltip;
+
+        private TooltipBehavior(Duration hoverDelay, Duration visibleDuration, Duration leftDelay) {
+            setHoverDelay(hoverDelay);
+            hoverTimer.setOnFinished(event -> {
+                ensureHoveredNodeIsVisible(() -> {
+                    // set tooltip orientation
+                    NodeOrientation nodeOrientation = hoveredNode.getEffectiveNodeOrientation();
+                    nextTooltip.getScene().setNodeOrientation(nodeOrientation);
+                    //show tooltip
+                    showTooltip(nextTooltip);
+                    currentTooltip = nextTooltip;
+                    hoveredNode = null;
+                    // start visible timer
+                    visibleTimer.playFromStart();
+                });
+                // clear next tooltip
+                nextTooltip = null;
+            });
+            setVisibleDuration(visibleDuration);
+            visibleTimer.setOnFinished(event -> hideCurrentTooltip());
+            setLeftDelay(leftDelay);
+            leftTimer.setOnFinished(event -> hideCurrentTooltip());
+        }
+
+        private void setHoverDelay(Duration duration) {
+            hoverTimer.getKeyFrames().setAll(new KeyFrame(duration));
+        }
+
+        private void setVisibleDuration(Duration duration) {
+            visibleTimer.getKeyFrames().setAll(new KeyFrame(duration));
+        }
+
+        private void setLeftDelay(Duration duration) {
+            leftTimer.getKeyFrames().setAll(new KeyFrame(duration));
+        }
+
+        private void hideCurrentTooltip() {
+            currentTooltip.hide();
+            currentTooltip = null;
+            hoveredNode = null;
+        }
+
+        private void showTooltip(JFXTooltip tooltip) {
+            // anchors are computed differently for each tooltip
+            tooltip.show(hoveredNode, -1, -1);
+        }
+
+        private EventHandler<MouseEvent> moveHandler = (MouseEvent event) -> {
+            // if tool tip is already showing, do nothing
+            if (visibleTimer.getStatus() == Timeline.Status.RUNNING) {
+                return;
+            }
+            hoveredNode = (Node) event.getSource();
+            Object property = hoveredNode.getProperties().get(TOOLTIP_PROP);
+            if (property instanceof JFXTooltip) {
+                JFXTooltip tooltip = (JFXTooltip) property;
+                ensureHoveredNodeIsVisible(() -> {
+                    // if a tooltip is already showing then show this tooltip immediately
+                    if (leftTimer.getStatus() == Timeline.Status.RUNNING) {
+                        if (currentTooltip != null) {
+                            currentTooltip.hide();
+                        }
+                        currentTooltip = tooltip;
+                        // show the tooltip
+                        showTooltip(tooltip);
+                        // stop left timer and start the visible timer to hide the tooltip
+                        // once finished
+                        leftTimer.stop();
+                        visibleTimer.playFromStart();
+                    } else {
+                        // else mark the tooltip as the next tooltip to be shown once the hover
+                        // timer is finished (restart the timer)
+                        //                        t.setActivated(true);
+                        nextTooltip = tooltip;
+                        hoverTimer.stop();
+                        hoverTimer.playFromStart();
+                    }
+                });
+            } else {
+                uninstall(hoveredNode);
+            }
+        };
+        private WeakEventHandler<MouseEvent> weakMoveHandler = new WeakEventHandler<>(moveHandler);
+
+        private EventHandler<MouseEvent> exitHandler = (MouseEvent event) -> {
+            // stop running hover timer as the mouse exited the node
+            if (hoverTimer.getStatus() == Timeline.Status.RUNNING) {
+                hoverTimer.stop();
+            } else if (visibleTimer.getStatus() == Timeline.Status.RUNNING) {
+                // if tool tip was already showing, stop the visible timer
+                // and start the left timer to hide the current tooltip
+                visibleTimer.stop();
+                leftTimer.playFromStart();
+            }
+            hoveredNode = null;
+            nextTooltip = null;
+        };
+        private WeakEventHandler<MouseEvent> weakExitHandler = new WeakEventHandler<>(exitHandler);
+
+        // if mouse is pressed then stop all timers / clear all fields
+        private EventHandler<MouseEvent> pressedHandler = (MouseEvent event) -> {
+            // stop timers
+            hoverTimer.stop();
+            visibleTimer.stop();
+            leftTimer.stop();
+            // hide current tooltip
+            if (currentTooltip != null) {
+                currentTooltip.hide();
+            }
+            // clear fields
+            hoveredNode = null;
+            currentTooltip = null;
+            nextTooltip = null;
+        };
+        private WeakEventHandler<MouseEvent> weakPressedHandler = new WeakEventHandler<>(pressedHandler);
+
+        private void install(Node node, JFXTooltip tooltip) {
+            if (node == null) {
+                return;
+            }
+            if (tooltip == null) {
+                uninstall(node);
+                return;
+            }
+            node.removeEventHandler(MouseEvent.MOUSE_MOVED, weakMoveHandler);
+            node.removeEventHandler(MouseEvent.MOUSE_EXITED, weakExitHandler);
+            node.removeEventHandler(MouseEvent.MOUSE_PRESSED, weakPressedHandler);
+            node.addEventHandler(MouseEvent.MOUSE_MOVED, weakMoveHandler);
+            node.addEventHandler(MouseEvent.MOUSE_EXITED, weakExitHandler);
+            node.addEventHandler(MouseEvent.MOUSE_PRESSED, weakPressedHandler);
+            node.getProperties().put(TOOLTIP_PROP, tooltip);
+        }
+
+        private void uninstall(Node node) {
+            if (node == null) {
+                return;
+            }
+            node.removeEventHandler(MouseEvent.MOUSE_MOVED, weakMoveHandler);
+            node.removeEventHandler(MouseEvent.MOUSE_EXITED, weakExitHandler);
+            node.removeEventHandler(MouseEvent.MOUSE_PRESSED, weakPressedHandler);
+            Object tooltip = node.getProperties().get(TOOLTIP_PROP);
+            if (tooltip != null) {
+                node.getProperties().remove(TOOLTIP_PROP);
+                if (tooltip.equals(currentTooltip) || tooltip.equals(nextTooltip)) {
+                    weakPressedHandler.handle(null);
+                }
+            }
+        }
+
+        private void ensureHoveredNodeIsVisible(Runnable visibleRunnable) {
+            final Window owner = getWindow(hoveredNode);
+            if (owner != null && owner.isShowing()) {
+                final boolean treeVisible = true; // NodeHelper.isTreeVisible(hoveredNode);
+                if (treeVisible && owner.isFocused()) {
+                    visibleRunnable.run();
+                }
+            }
+        }
+
+        private Window getWindow(final Node node) {
+            final Scene scene = node == null ? null : node.getScene();
+            return scene == null ? null : scene.getWindow();
+        }
     }
 
     private final ObservableValue<String> text;
@@ -31,21 +218,11 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
 
     @Override
     public void augment(S struc) {
-        var tt = new FocusTooltip();
-        var toDisplay = text.getValue();
-        if (Shortcuts.getShortcut(struc.get()) != null) {
-            toDisplay = toDisplay + " (" + Shortcuts.getShortcut(struc.get()).getDisplayText() + ")";
-        }
-        tt.textProperty().setValue(toDisplay);
-        tt.setStyle("-fx-font-size: 11pt;");
-        JFXTooltip.install(struc.get(), tt);
-        tt.setWrapText(true);
-        tt.setMaxWidth(400);
-        tt.getStyleClass().add("fancy-tooltip");
+        augment(struc.get());
     }
 
     public void augment(Node region) {
-        var tt = new FocusTooltip();
+        var tt = new JFXTooltip();
         var toDisplay = text.getValue();
         if (Shortcuts.getShortcut((Region) region) != null) {
             toDisplay =
@@ -53,57 +230,10 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
         }
         tt.textProperty().setValue(toDisplay);
         tt.setStyle("-fx-font-size: 11pt;");
-        JFXTooltip.install(region, tt);
         tt.setWrapText(true);
         tt.setMaxWidth(400);
         tt.getStyleClass().add("fancy-tooltip");
-    }
 
-    private static class FocusTooltip extends JFXTooltip {
-
-        public FocusTooltip() {}
-
-        public FocusTooltip(String string) {
-            super(string);
-        }
-
-        @Override
-        protected void show() {
-            Window owner = getOwnerWindow();
-            if (owner == null || owner.isFocused()) {
-                super.show();
-            }
-        }
-
-        @Override
-        public void show(Node ownerNode, double anchorX, double anchorY) {
-            Window owner = getOwnerWindow();
-            if (owner == null || owner.isFocused()) {
-                super.show(ownerNode, anchorX, anchorY);
-            }
-        }
-
-        @Override
-        public void showOnAnchors(Node ownerNode, double anchorX, double anchorY) {
-            Window owner = getOwnerWindow();
-            if (owner == null || owner.isFocused()) {
-                super.showOnAnchors(ownerNode, anchorX, anchorY);
-            }
-        }
-
-        @Override
-        public void show(Window owner) {
-            if (owner == null || owner.isFocused()) {
-                super.show(owner);
-            }
-        }
-
-        @Override
-        public void show(Window ownerWindow, double anchorX, double anchorY) {
-            Window owner = getOwnerWindow();
-            if (owner == null || owner.isFocused()) {
-                super.show(ownerWindow, anchorX, anchorY);
-            }
-        }
+        BEHAVIOR.install(region, tt);
     }
 }

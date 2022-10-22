@@ -24,7 +24,7 @@ public class BeaconServer {
     }
 
     public static boolean isRunning() {
-        try (var socket = new BeaconClient()) {
+        try (var socket = BeaconClient.connect(null)) {
             return true;
         } catch (Exception e) {
             return false;

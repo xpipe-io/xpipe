@@ -73,7 +73,7 @@ public final class XPipeConnection extends BeaconConnection {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryConnect();
+            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder().version("?").language("Java").build());
             if (s.isPresent()) {
                 return s;
             }
@@ -114,7 +114,7 @@ public final class XPipeConnection extends BeaconConnection {
         }
 
         try {
-            beaconClient = new BeaconClient();
+            beaconClient = BeaconClient.connect(BeaconClient.ApiClientInformation.builder().version("?").language("Java").build());
         } catch (Exception ex) {
             throw new BeaconException("Unable to connect to running xpipe daemon", ex);
         }

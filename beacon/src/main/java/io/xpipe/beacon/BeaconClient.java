@@ -1,5 +1,7 @@
 package io.xpipe.beacon;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,7 +11,12 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
+import io.xpipe.core.store.ProcessControl;
 import io.xpipe.core.util.JacksonMapper;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -23,27 +30,90 @@ import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
 public class BeaconClient implements AutoCloseable {
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+    public static abstract class ClientInformation {
+
+        public final CliClientInformation cli() {
+            return (CliClientInformation) this;
+        }
+
+        public abstract String toDisplayString();
+    }
+
+    @JsonTypeName("cli")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class CliClientInformation extends ClientInformation {
+
+        String version;
+        int consoleWidth;
+
+        @Override
+        public String toDisplayString() {
+            return "X-Pipe CLI " + version;
+        }
+    }
+
+    @JsonTypeName("gateway")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class GatewayClientInformation extends ClientInformation {
+
+        String version;
+
+        @Override
+        public String toDisplayString() {
+            return "X-Pipe Gateway " + version;
+        }
+    }
+
+    @JsonTypeName("api")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class ApiClientInformation extends ClientInformation {
+
+        String version;
+        String language;
+
+        @Override
+        public String toDisplayString() {
+            return String.format("X-Pipe %s API v%s", language, version);
+        }
+    }
+
     private final Closeable closeable;
     private final InputStream in;
     private final OutputStream out;
 
-    public BeaconClient() throws IOException {
-        var socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
-        closeable = socket;
-        in = socket.getInputStream();
-        out = socket.getOutputStream();
-    }
-
-    public BeaconClient(Closeable closeable, InputStream in, OutputStream out) {
+    private BeaconClient(Closeable closeable, InputStream in, OutputStream out) {
         this.closeable = closeable;
         this.in = in;
         this.out = out;
     }
 
-    public static Optional<BeaconClient> tryConnect() {
+    public static BeaconClient connect(ClientInformation information) throws Exception {
+        var socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
+        var client = new BeaconClient(socket, socket.getInputStream(), socket.getOutputStream());
+        client.sendObject(JacksonMapper.newMapper().valueToTree(information));
+        return client;
+    }
+
+    public static BeaconClient connectGateway(ProcessControl control, GatewayClientInformation information) throws Exception {
+        var client = new BeaconClient(() -> {}, control.getStdout(), control.getStdin());
+        client.sendObject(JacksonMapper.newMapper().valueToTree(information));
+        return client;
+    }
+
+    public static Optional<BeaconClient> tryConnect(ClientInformation information) {
         try {
-            return Optional.of(new BeaconClient());
-        } catch (IOException ex) {
+            return Optional.of(connect(information));
+        } catch (Exception ex) {
             return Optional.empty();
         }
     }
@@ -95,10 +165,14 @@ public class BeaconClient implements AutoCloseable {
                     "Sending request to server of type " + req.getClass().getName());
         }
 
+        sendObject(msg);
+    }
+
+    public void sendObject(JsonNode node) throws ConnectorException {
         var writer = new StringWriter();
         var mapper = JacksonMapper.newMapper();
         try (JsonGenerator g = mapper.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
-            g.writeTree(msg);
+            g.writeTree(node);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't serialize request", ex);
         }

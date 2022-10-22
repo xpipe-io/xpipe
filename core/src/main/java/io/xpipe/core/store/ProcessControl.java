@@ -16,6 +16,7 @@ public abstract class ProcessControl {
         pc.discardErr();
         var bytes = pc.getStdout().readAllBytes();
         var string = new String(bytes, pc.getCharset());
+        pc.waitFor();
         return string;
     }
 
@@ -25,6 +26,15 @@ public abstract class ProcessControl {
         pc.discardOut();
         pc.discardErr();
         pc.waitFor();
+    }
+
+    public boolean executeAndCheckStatus() {
+        try {
+            executeOrThrow();
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
     }
 
     public Optional<String> executeAndReadStderrIfPresent() throws Exception {

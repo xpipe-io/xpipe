@@ -37,7 +37,7 @@ public class XPipeDaemonController {
             return;
         }
 
-        var client = new BeaconClient();
+        var client = BeaconClient.connect(BeaconClient.ApiClientInformation.builder().version("?").language("Java API Test").build());
         if (!BeaconServer.tryStop(client)) {
             throw new AssertionError();
         }
