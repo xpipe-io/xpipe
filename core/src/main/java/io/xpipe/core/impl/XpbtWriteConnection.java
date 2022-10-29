@@ -7,39 +7,28 @@ import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
-import io.xpipe.core.source.TableWriteConnection;
-import io.xpipe.core.store.StreamDataStore;
+import io.xpipe.core.source.StreamWriteConnection;
+import io.xpipe.core.source.TableMapping;
 import io.xpipe.core.util.JacksonMapper;
+import lombok.Getter;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
-public class XpbtWriteConnection implements TableWriteConnection {
+public class XpbtWriteConnection extends StreamWriteConnection implements SimpleTableWriteConnection<XpbtSource> {
 
-    private final StreamDataStore store;
-    private OutputStream outputStream;
+    @Getter
+    private final XpbtSource source;
     private TupleType writtenDescriptor;
 
-    public XpbtWriteConnection(StreamDataStore store) {
-        this.store = store;
+    public XpbtWriteConnection(XpbtSource source) {
+        super(source.getStore(), null);
+        this.source = source;
     }
 
     @Override
-    public void init() throws Exception {
-        outputStream = store.openOutput();
-    }
-
-    @Override
-    public void close() throws Exception {
-        if (outputStream != null) {
-            outputStream.close();
-        }
-    }
-
-    @Override
-    public DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor() {
+    public DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor(TableMapping mapping) {
         return t -> {
             writeDescriptor(t);
             TypedDataStreamWriter.writeStructure(outputStream, t, writtenDescriptor);
@@ -65,4 +54,5 @@ public class XpbtWriteConnection implements TableWriteConnection {
         }
         writer.flush();
     }
+
 }

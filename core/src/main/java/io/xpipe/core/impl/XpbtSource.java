@@ -15,11 +15,11 @@ public class XpbtSource extends TableDataSource<StreamDataStore> {
 
     @Override
     protected TableWriteConnection newWriteConnection() {
-        return new XpbtWriteConnection(store);
+        return new XpbtWriteConnection(this);
     }
 
     @Override
     protected TableReadConnection newReadConnection() {
-        return new XpbtReadConnection(store);
+        return new XpbtReadConnection(this);
     }
 }

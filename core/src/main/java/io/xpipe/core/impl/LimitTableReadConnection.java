@@ -55,4 +55,9 @@ public class LimitTableReadConnection implements TableReadConnection {
         });
         return localCounter.get();
     }
+
+    @Override
+    public boolean canRead() throws Exception {
+        return connection.canRead();
+    }
 }

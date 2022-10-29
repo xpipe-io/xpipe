@@ -7,36 +7,38 @@ import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
+import io.xpipe.core.source.StreamReadConnection;
 import io.xpipe.core.source.TableReadConnection;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonMapper;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class XpbtReadConnection implements TableReadConnection {
+public class XpbtReadConnection extends StreamReadConnection implements TableReadConnection {
 
     private final StreamDataStore store;
     private TupleType dataType;
-    private InputStream inputStream;
     private TypedDataStreamParser parser;
     private boolean empty;
-    protected XpbtReadConnection(StreamDataStore store) {
-        this.store = store;
+    protected XpbtReadConnection(XpbtSource source) {
+        super(source.getStore(), null);
+        this.store = source.getStore();
     }
 
     @Override
     public void init() throws Exception {
-        this.inputStream = store.openBufferedInput();
+        super.init();
+
         this.inputStream.mark(8192);
         var header = new BufferedReader(new InputStreamReader(inputStream)).readLine();
         this.inputStream.reset();
         if (header == null || header.trim().length() == 0) {
+            this.dataType = TupleType.empty();
             empty = true;
             return;
         }
@@ -51,12 +53,7 @@ public class XpbtReadConnection implements TableReadConnection {
         this.dataType = dataType;
         this.parser = new TypedDataStreamParser(dataType);
     }
-
-    @Override
-    public void close() throws Exception {
-        inputStream.close();
-    }
-
+    
     @Override
     public TupleType getDataType() {
         return dataType;
@@ -94,5 +91,10 @@ public class XpbtReadConnection implements TableReadConnection {
             throw exception.get();
         }
         return counter;
+    }
+
+    @Override
+    public boolean canRead() throws Exception {
+        return store.canOpen();
     }
 }

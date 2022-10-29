@@ -7,7 +7,6 @@ import io.xpipe.core.util.SecretValue;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,7 +33,7 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
 
     @Override
     public NewLine getNewLine() {
-        return ShellTypes.getDefault().getNewLine();
+        return ShellTypes.getPlatformDefault().getNewLine();
     }
 
     @Override
@@ -63,7 +62,7 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
 
     @Override
     public ShellType determineType() throws Exception {
-        return ShellTypes.getDefault();
+        return ShellTypes.getPlatformDefault();
     }
 
     class LocalProcessControl extends ProcessControl {
@@ -85,7 +84,7 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
         private InputStream createInputStream() {
             var string =
                     input.stream().map(secret -> secret.getSecretValue()).collect(Collectors.joining("\n")) + "\r\n";
-            return new ByteArrayInputStream(string.getBytes(StandardCharsets.US_ASCII));
+            return new ByteArrayInputStream(string.getBytes(charset));
         }
 
         @Override
@@ -105,7 +104,7 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
                 }
             });
             t.setDaemon(true);
-            t.start();
+            //t.start();
         }
 
         @Override

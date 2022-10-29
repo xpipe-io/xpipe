@@ -41,6 +41,11 @@ public class BinarySource extends RawDataSource<StreamDataStore> {
     protected RawReadConnection newReadConnection() {
         return new RawReadConnection() {
 
+            @Override
+            public boolean canRead() throws Exception {
+                return getStore().canOpen();
+            }
+
             private InputStream inputStream;
 
             @Override

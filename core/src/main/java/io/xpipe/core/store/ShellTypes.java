@@ -49,9 +49,17 @@ public class ShellTypes {
         }
     }
 
-    public static StandardShellStore.ShellType getDefault() {
+    public static StandardShellStore.ShellType getRecommendedDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
             return POWERSHELL;
+        } else {
+            return SH;
+        }
+    }
+
+    public static StandardShellStore.ShellType getPlatformDefault() {
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return CMD;
         } else {
             return SH;
         }

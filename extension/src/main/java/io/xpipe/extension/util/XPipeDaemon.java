@@ -1,5 +1,6 @@
 package io.xpipe.extension.util;
 
+import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
@@ -10,6 +11,8 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -21,6 +24,7 @@ public interface XPipeDaemon {
         return ServiceLoader.load(XPipeDaemon.class).findFirst().orElseThrow();
     }
 
+    void withResource(String module, String file, Charsetter.FailableConsumer<Path, IOException> con);
     List<DataStore> getNamedStores();
 
     Image image(String file);

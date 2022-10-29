@@ -1,9 +1,10 @@
 package io.xpipe.core.source;
 
-import io.xpipe.core.data.node.ArrayNode;
-import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
+import io.xpipe.core.data.type.TupleType;
+
+import java.util.Optional;
 
 /**
  * A connection for sequentially writing data to a table data source.
@@ -13,7 +14,12 @@ public interface TableWriteConnection extends DataSourceConnection {
     public static TableWriteConnection empty() {
         return new TableWriteConnection() {
             @Override
-            public DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor() {
+            public Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
+                return Optional.of(TableMapping.empty(inputType));
+            }
+
+            @Override
+            public DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor(TableMapping mapping) {
                 return node -> {
                     return true;
                 };
@@ -21,12 +27,7 @@ public interface TableWriteConnection extends DataSourceConnection {
         };
     }
 
-    DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor();
+    Optional<TableMapping> createMapping(TupleType inputType) throws Exception;
 
-    default void writeLines(ArrayNode lines) throws Exception {
-        var consumer = writeLinesAcceptor();
-        for (DataStructureNode dataStructureNode : lines.getNodes()) {
-            consumer.accept(dataStructureNode.asTuple());
-        }
-    }
+    DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor(TableMapping mapping);
 }

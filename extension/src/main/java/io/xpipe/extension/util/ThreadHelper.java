@@ -1,9 +1,18 @@
 package io.xpipe.extension.util;
 
+import org.apache.commons.lang3.function.FailableRunnable;
+
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class ThreadHelper {
+
+    public static void await(FailableRunnable<InterruptedException> r) {
+        try {
+            r.run();
+        } catch (InterruptedException e) {
+        }
+    }
 
     public static Thread run(Runnable r) {
         var t = new Thread(r);

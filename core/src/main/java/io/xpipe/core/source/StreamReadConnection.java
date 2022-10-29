@@ -20,12 +20,17 @@ public abstract class StreamReadConnection implements DataSourceReadConnection {
     }
 
     @Override
+    public boolean canRead() throws Exception {
+        return store.canOpen();
+    }
+
+    @Override
     public void init() throws Exception {
         if (inputStream != null) {
             throw new IllegalStateException("Already initialized");
         }
 
-        inputStream = store.openInput();
+        inputStream = store.openBufferedInput();
         if (charset != null) {
             reader = Charsetter.get().reader(inputStream, charset);
         }

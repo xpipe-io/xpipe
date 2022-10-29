@@ -3,6 +3,10 @@ package io.xpipe.core.store;
 public class DataStoreFormatter {
 
     public static String ellipsis(String input, int length) {
+        if (input == null) {
+            return "";
+        }
+
         var end = Math.min(input.length(), length);
         if (end < input.length()) {
             return input.substring(0, end) + "...";

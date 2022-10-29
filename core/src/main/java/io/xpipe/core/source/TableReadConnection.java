@@ -21,6 +21,11 @@ public interface TableReadConnection extends DataSourceReadConnection {
     public static TableReadConnection empty() {
         return new TableReadConnection() {
             @Override
+            public boolean canRead() throws Exception {
+                return true;
+            }
+
+            @Override
             public TupleType getDataType() {
                 return TupleType.empty();
             }
@@ -102,7 +107,9 @@ public interface TableReadConnection extends DataSourceReadConnection {
     }
 
     default int forwardAndCount(DataSourceConnection con) throws Exception {
+        var inputType = getDataType();
         var tCon = (TableWriteConnection) con;
-        return withRows(tCon.writeLinesAcceptor());
+        var mapping = tCon.createMapping(inputType);
+        return withRows(tCon.writeLinesAcceptor(mapping.orElseThrow()));
     }
 }

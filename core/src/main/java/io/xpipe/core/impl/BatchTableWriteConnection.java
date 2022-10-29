@@ -4,6 +4,7 @@ import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
+import io.xpipe.core.source.TableMapping;
 import io.xpipe.core.source.TableWriteConnection;
 
 import java.util.ArrayList;
@@ -15,9 +16,11 @@ public abstract class BatchTableWriteConnection implements TableWriteConnection 
 
     protected final int batchSize = DEFAULT_BATCH_SIZE;
     private final List<DataStructureNode> batch = new ArrayList<>();
+    private TableMapping mapping;
 
     @Override
-    public final DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor() {
+    public final DataStructureNodeAcceptor<TupleNode> writeLinesAcceptor(TableMapping mapping) {
+        this.mapping = mapping;
         return node -> {
             if (batch.size() < batchSize) {
                 batch.add(node);
@@ -27,7 +30,7 @@ public abstract class BatchTableWriteConnection implements TableWriteConnection 
             }
 
             var array = ArrayNode.of(batch);
-            var returned = writeBatchLinesAcceptor().accept(array);
+            var returned = writeBatchLinesAcceptor(mapping).accept(array);
             batch.clear();
             return returned;
         };
@@ -38,15 +41,15 @@ public abstract class BatchTableWriteConnection implements TableWriteConnection 
         try {
             if (batch.size() > 0) {
                 var array = ArrayNode.of(batch);
-                var returned = writeBatchLinesAcceptor().accept(array);
+                var returned = writeBatchLinesAcceptor(mapping).accept(array);
                 batch.clear();
             }
         } finally {
-            onClose();
+            onClose(mapping);
         }
     }
 
-    protected abstract void onClose() throws Exception;
+    protected abstract void onClose(TableMapping mapping) throws Exception;
 
-    protected abstract DataStructureNodeAcceptor<ArrayNode> writeBatchLinesAcceptor();
+    protected abstract DataStructureNodeAcceptor<ArrayNode> writeBatchLinesAcceptor(TableMapping mapping);
 }

@@ -1,11 +1,26 @@
 package io.xpipe.core.source;
 
+import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.impl.PreservingTableWriteConnection;
 import io.xpipe.core.store.DataStore;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Optional;
+
 @SuperBuilder
 public abstract class TableDataSource<DS extends DataStore> extends DataSource<DS> {
+
+    public Optional<TupleType> determineDataType() throws Exception {
+        try (var readConnection = newReadConnection()) {
+            var canRead = readConnection != null && readConnection.canRead();
+            if (canRead) {
+                readConnection.init();
+                return Optional.ofNullable(readConnection.getDataType());
+            } else {
+                return Optional.empty();
+            }
+        }
+    }
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {
@@ -22,7 +37,7 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
 
     public final TableReadConnection openReadConnection() throws Exception {
         try {
-            validate();
+            checkComplete();
         } catch (Exception e) {
             return TableReadConnection.empty();
         }

@@ -49,7 +49,7 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
         store.validate();
     }
 
-    public void validate() throws Exception {
+    public void checkComplete() throws Exception {
         if (store == null) {
             throw new IllegalStateException("Store cannot be null");
         }

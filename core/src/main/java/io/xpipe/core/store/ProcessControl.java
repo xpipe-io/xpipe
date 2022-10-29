@@ -52,7 +52,7 @@ public abstract class ProcessControl {
         var pc = this;
         pc.start();
 
-        AtomicReference<String> readError = new AtomicReference<>();
+        AtomicReference<String> readError = new AtomicReference<>("");
         var errorThread = new Thread(() -> {
             try {
 
@@ -64,7 +64,7 @@ public abstract class ProcessControl {
         errorThread.setDaemon(true);
         errorThread.start();
 
-        AtomicReference<String> read = new AtomicReference<>();
+        AtomicReference<String> read = new AtomicReference<>("");
         var t = new Thread(() -> {
             try {
                 read.set(new String(pc.getStdout().readAllBytes(), pc.getCharset()));
