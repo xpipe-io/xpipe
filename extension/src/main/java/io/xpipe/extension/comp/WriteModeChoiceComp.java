@@ -14,63 +14,41 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.synedra.validatorfx.Check;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class WriteModeChoiceComp extends SimpleComp implements Validatable {
 
     Property<WriteMode> selected;
-    WriteMode[] available;
+    List<WriteMode> available;
     Validator validator = new SimpleValidator();
     Check check;
 
-    public WriteModeChoiceComp(Property<WriteMode> selected, WriteMode[] available) {
+    public WriteModeChoiceComp(Property<WriteMode> selected, List<WriteMode> available) {
         this.selected = selected;
         this.available = available;
-        if (available.length == 1) {
-            selected.setValue(available[0]);
+        if (available.size() == 1) {
+            selected.setValue(available.get(0));
         }
         check = Validators.nonNull(validator, I18n.observable("mode"), selected);
     }
 
     @Override
     protected Region createSimple() {
-        var a = Arrays.asList(available);
+        var a = available;
         var map = new LinkedHashMap<WriteMode, ObservableValue<String>>();
-        var replaceIndex = -1;
-        if (a.contains(WriteMode.REPLACE)) {
-            map.put(WriteMode.REPLACE, I18n.observable("replace"));
-            replaceIndex = 0;
+        for (WriteMode writeMode : a) {
+            map.put(writeMode,I18n.observable(writeMode.getId()));
         }
 
-        var appendIndex = -1;
-        if (a.contains(WriteMode.APPEND)) {
-            map.put(WriteMode.APPEND, I18n.observable("append"));
-            appendIndex = replaceIndex + 1;
-        }
-
-        var prependIndex = -1;
-        if (a.contains(WriteMode.PREPEND)) {
-            map.put(WriteMode.PREPEND, I18n.observable("prepend"));
-            prependIndex = Math.max(replaceIndex, appendIndex) + 1;
-        }
-
-        int finalReplaceIndex = replaceIndex;
-        int finalAppendIndex = appendIndex;
-        int finalPrependIndex = prependIndex;
         return new ToggleGroupComp<>(selected, map)
                 .apply(struc -> {
-                    if (finalReplaceIndex != -1)
-                        new FancyTooltipAugment<>("extension.replaceDescription")
-                                .augment(struc.get().getChildren().get(0));
-                    if (finalAppendIndex != -1)
-                        new FancyTooltipAugment<>("extension.appendDescription")
-                                .augment(struc.get().getChildren().get(finalAppendIndex));
-                    if (finalPrependIndex != -1)
-                        new FancyTooltipAugment<>("extension.prependDescription")
-                                .augment(struc.get().getChildren().get(finalPrependIndex));
+                    for (int i = 0; i < a.size(); i++) {
+                        new FancyTooltipAugment<>(a.get(i).getId() + "Description")
+                                .augment(struc.get().getChildren().get(i));
+                    }
                 })
                 .apply(struc -> check.decorates(struc.get()))
                 .createRegion();

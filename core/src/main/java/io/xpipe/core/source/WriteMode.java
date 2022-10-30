@@ -1,26 +1,41 @@
 package io.xpipe.core.source;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.JacksonizedValue;
 
-public enum WriteMode {
-    @JsonProperty("replace")
-    REPLACE(DataSource::openWriteConnection),
-    @JsonProperty("append")
-    APPEND(DataSource::openAppendingWriteConnection),
-    @JsonProperty("prepend")
-    PREPEND(DataSource::openPrependingWriteConnection);
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ServiceLoader;
 
-    private final FailableFunction<DataSource<?>, DataSourceConnection, Exception> connectionOpener;
+public class WriteMode extends JacksonizedValue {
 
-    WriteMode(FailableFunction<DataSource<?>, DataSourceConnection, Exception> connectionOpener) {
-        this.connectionOpener = connectionOpener;
+    private static final List<WriteMode> ALL = new ArrayList<>();
+
+    public static void init(ModuleLayer layer) {
+        if (ALL.size() == 0) {
+            ALL.addAll(ServiceLoader.load(layer, WriteMode.class).stream()
+                               .map(p -> p.get())
+                               .toList());
+        }
     }
 
-    public DataSourceConnection open(DataSource<?> source) throws Exception {
-        return connectionOpener.apply(source);
+    @JsonTypeName("replace")
+    public static final class Replace extends WriteMode {
     }
 
-    public static interface FailableFunction<T, R, E extends Throwable> {
-        R apply(T input) throws E;
+    @JsonTypeName("append")
+    public static final class Append extends WriteMode {
+    }
+
+    @JsonTypeName("prepend")
+    public static final class Prepend extends WriteMode {
+    }
+
+    public static final Replace REPLACE = new Replace();
+    public static final Append APPEND = new Append();
+    public static final Prepend PREPEND = new Prepend();
+
+    public final  String getId() {
+        return getClass().getAnnotation(JsonTypeName.class).value();
     }
 }

@@ -36,13 +36,17 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
         return con;
     }
 
-    public final CollectionWriteConnection openWriteConnection() throws Exception {
-        var con = newWriteConnection();
+    public final CollectionWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+        var con = newWriteConnection(mode);
+        if (con == null) {
+            throw new UnsupportedOperationException(mode.getId());
+        }
+
         con.init();
         return con;
     }
 
-    protected abstract CollectionWriteConnection newWriteConnection();
+    protected abstract CollectionWriteConnection newWriteConnection(WriteMode mode);
 
     protected abstract CollectionReadConnection newReadConnection();
 }

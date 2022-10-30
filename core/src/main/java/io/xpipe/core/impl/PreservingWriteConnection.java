@@ -3,6 +3,7 @@ package io.xpipe.core.impl;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceConnection;
 import io.xpipe.core.source.DataSourceType;
+import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.store.FileStore;
 
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public class PreservingWriteConnection implements DataSourceConnection {
         var nativeSource = DataSource.createInternalDataSource(type, nativeStore);
         if (source.getStore().canOpen()) {
             try (var in = source.openReadConnection();
-                    var out = nativeSource.openWriteConnection()) {
+                    var out = nativeSource.openWriteConnection(WriteMode.REPLACE)) {
                 in.forward(out);
             }
             ;

@@ -4,7 +4,8 @@ import io.xpipe.api.DataSource;
 import io.xpipe.api.util.XPipeDaemonController;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileStore;
-import io.xpipe.extension.DataSourceProviders;
+import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.extension.XPipeServiceProviders;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -35,7 +36,8 @@ public class ExtensionTest {
 
     @BeforeAll
     public static void setup() throws Exception {
-        DataSourceProviders.init(ModuleLayer.boot());
+        JacksonMapper.initModularized(ModuleLayer.boot());
+        XPipeServiceProviders.load(ModuleLayer.boot());
         XPipeDaemonController.start();
     }
 

@@ -1,3 +1,4 @@
+import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.util.CoreJacksonModule;
 
 open module io.xpipe.core {
@@ -20,7 +21,9 @@ open module io.xpipe.core {
     requires static lombok;
 
     uses com.fasterxml.jackson.databind.Module;
+    uses io.xpipe.core.source.WriteMode;
 
+    provides WriteMode with WriteMode.Replace, WriteMode.Append, WriteMode.Prepend;
     provides com.fasterxml.jackson.databind.Module with
             CoreJacksonModule;
 }

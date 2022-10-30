@@ -37,34 +37,22 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
     }
 
     @Override
-    public final TextWriteConnection openWriteConnection() throws Exception {
-        var con = newWriteConnection();
+    public final TextWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+        var con = newWriteConnection(mode);
         con.init();
         return con;
     }
 
-    @Override
-    public final TextWriteConnection openAppendingWriteConnection() throws Exception {
-        var con = newAppendingWriteConnection();
-        con.init();
-        return con;
-    }
+    protected  TextWriteConnection newWriteConnection(WriteMode mode) {
+        if (mode.equals(WriteMode.PREPEND)) {
+            return new PreservingTextWriteConnection(this, newWriteConnection(WriteMode.REPLACE), false);
+        }
 
-    @Override
-    public final TextWriteConnection openPrependingWriteConnection() throws Exception {
-        var con = newPrependingWriteConnection();
-        con.init();
-        return con;
-    }
+        if (mode.equals(WriteMode.APPEND)) {
+            return new PreservingTextWriteConnection(this, newWriteConnection(WriteMode.REPLACE), true);
+        }
 
-    protected abstract TextWriteConnection newWriteConnection();
-
-    protected TextWriteConnection newAppendingWriteConnection() {
-        return new PreservingTextWriteConnection(this, newWriteConnection(), true);
-    }
-
-    protected TextWriteConnection newPrependingWriteConnection() {
-        return new PreservingTextWriteConnection(this, newWriteConnection(), false);
+        return null;
     }
 
     protected abstract TextReadConnection newReadConnection();

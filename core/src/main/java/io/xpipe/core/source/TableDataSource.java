@@ -47,34 +47,26 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
         return con;
     }
 
-    public final TableWriteConnection openWriteConnection() throws Exception {
-        var con = newWriteConnection();
+    public final TableWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+        var con = newWriteConnection(mode);
+        if (con == null) {
+            throw new UnsupportedOperationException(mode.getId());
+        }
+
         con.init();
         return con;
     }
 
-    public final TableWriteConnection openAppendingWriteConnection() throws Exception {
-        var con = newAppendingWriteConnection();
-        con.init();
-        return con;
-    }
+    protected TableWriteConnection newWriteConnection(WriteMode mode) {
+        if (mode.equals(WriteMode.PREPEND)) {
+            return new PreservingTableWriteConnection(this, newWriteConnection(WriteMode.REPLACE), false);
+        }
 
-    public final TableWriteConnection openPrependingWriteConnection() throws Exception {
-        var con = newPrependingWriteConnection();
-        con.init();
-        return con;
-    }
+        if (mode.equals(WriteMode.APPEND)) {
+            return new PreservingTableWriteConnection(this, newWriteConnection(WriteMode.REPLACE), true);
+        }
 
-    protected TableWriteConnection newWriteConnection() {
-        throw new UnsupportedOperationException();
-    }
-
-    protected TableWriteConnection newAppendingWriteConnection() {
-        return new PreservingTableWriteConnection(this, newWriteConnection(), true);
-    }
-
-    protected TableWriteConnection newPrependingWriteConnection() {
-        return new PreservingTableWriteConnection(this, newWriteConnection(), false);
+        return null;
     }
 
     protected TableReadConnection newReadConnection() {

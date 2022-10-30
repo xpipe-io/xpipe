@@ -13,6 +13,7 @@ import io.xpipe.core.util.JacksonizedValue;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -57,12 +58,12 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
         store.checkComplete();
     }
 
-    public WriteMode[] getAvailableWriteModes() {
+    public List<WriteMode> getAvailableWriteModes() {
         if (getFlow() != null && !getFlow().hasOutput()) {
-            return new WriteMode[0];
+            return List.of();
         }
 
-        return WriteMode.values();
+        return List.of(WriteMode.REPLACE, WriteMode.APPEND, WriteMode.PREPEND);
     }
 
     public DataFlow getFlow() {
@@ -115,16 +116,8 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
         throw new UnsupportedOperationException();
     }
 
-    public DataSourceConnection openWriteConnection() throws Exception {
+    public DataSourceConnection openWriteConnection(WriteMode mode) throws Exception {
         throw new UnsupportedOperationException();
-    }
-
-    public DataSourceConnection openAppendingWriteConnection() throws Exception {
-        throw new UnsupportedOperationException("Appending write is not supported");
-    }
-
-    public DataSourceConnection openPrependingWriteConnection() throws Exception {
-        throw new UnsupportedOperationException("Prepending write is not supported");
     }
 
     public DS getStore() {

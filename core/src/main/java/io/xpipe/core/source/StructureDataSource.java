@@ -34,13 +34,17 @@ public abstract class StructureDataSource<DS extends DataStore> extends DataSour
         return con;
     }
 
-    public final StructureWriteConnection openWriteConnection() throws Exception {
-        var con = newWriteConnection();
+    public final StructureWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+        var con = newWriteConnection(mode);
+        if (con == null) {
+            throw new UnsupportedOperationException(mode.getId());
+        }
+
         con.init();
         return con;
     }
 
-    protected abstract StructureWriteConnection newWriteConnection();
+    protected abstract StructureWriteConnection newWriteConnection(WriteMode mode);
 
     protected abstract StructureReadConnection newReadConnection();
 }

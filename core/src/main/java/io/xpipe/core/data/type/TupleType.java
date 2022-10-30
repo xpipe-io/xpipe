@@ -60,6 +60,14 @@ public class TupleType extends DataType {
         return names.stream().allMatch(Objects::nonNull);
     }
 
+    public TupleType sub(List<String> subNames) {
+        if (!hasAllNames()) {
+            throw new UnsupportedOperationException();
+        }
+
+        return new TupleType(subNames, subNames.stream().map(s -> types.get(getNames().indexOf(s))).toList());
+    }
+
     @Override
     public String getName() {
         return "tuple";

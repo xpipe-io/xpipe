@@ -1,9 +1,11 @@
 package io.xpipe.core.util;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public class JacksonizedValue {
 
     public JacksonizedValue() {}

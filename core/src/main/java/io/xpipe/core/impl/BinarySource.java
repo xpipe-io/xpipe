@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.source.RawDataSource;
 import io.xpipe.core.source.RawReadConnection;
 import io.xpipe.core.source.RawWriteConnection;
+import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.experimental.SuperBuilder;
 
@@ -15,7 +16,7 @@ import java.io.OutputStream;
 public class BinarySource extends RawDataSource<StreamDataStore> {
 
     @Override
-    protected RawWriteConnection newWriteConnection() {
+    protected RawWriteConnection newWriteConnection(WriteMode mode) {
         return new RawWriteConnection() {
 
             private OutputStream out;

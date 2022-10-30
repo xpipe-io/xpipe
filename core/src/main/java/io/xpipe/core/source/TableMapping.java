@@ -70,7 +70,8 @@ public class TableMapping {
     }
 
     public boolean isIdentity() {
-        return inputType.equals(outputType) && Arrays.equals(columMap, range(getInputType().getSize()));
+        return inputType.equals(outputType)
+                && Arrays.equals(columMap, range(getInputType().getSize()));
     }
 
     public boolean isComplete() {
@@ -78,14 +79,19 @@ public class TableMapping {
                 .allMatch(value -> inverseMap(value).isPresent());
     }
 
+    public boolean isComplete(List<String> outputNames) {
+        return IntStream.range(0, outputType.getSize())
+                .filter(i -> outputNames.contains(outputType.getNames().get(i)))
+                .allMatch(value -> inverseMap(value).isPresent());
+    }
+
     public TableMapping sub(List<String> outputNames) {
-        var array = new Integer[inputType.getSize()];
-        for (int i = 0; i < outputNames.size(); i++) {
-            var index = inverseMap(outputType.getNames().indexOf(outputNames.get(i)));
-            if (index.isPresent()) {
-                array[index.getAsInt()] = i;
-            } else {
-                throw new IllegalStateException();
+        var array = Arrays.copyOf(columMap, columMap.length);
+        for (int i = 0; i < inputType.getSize(); i++) {
+            var mapped = map(i);
+            if (mapped.isPresent()
+                    && !outputNames.contains(outputType.getNames().get(mapped.getAsInt()))) {
+                array[i] = null;
             }
         }
         return new TableMapping(inputType, outputType, array);

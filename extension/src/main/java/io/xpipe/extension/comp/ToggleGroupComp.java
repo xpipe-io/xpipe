@@ -42,11 +42,14 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                 b.setSelected(true);
             }
         }
-        box.getChildren().get(0).getStyleClass().add("first");
-        for (int i = 1; i < box.getChildren().size() - 1; i++) {
-            box.getChildren().get(i).getStyleClass().add("center");
+
+        if (box.getChildren().size() > 0) {
+            box.getChildren().get(0).getStyleClass().add("first");
+            for (int i = 1; i < box.getChildren().size() - 1; i++) {
+                box.getChildren().get(i).getStyleClass().add("center");
+            }
+            box.getChildren().get(box.getChildren().size() - 1).getStyleClass().add("last");
         }
-        box.getChildren().get(box.getChildren().size() - 1).getStyleClass().add("last");
 
         group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
             if (newVal == null) oldVal.setSelected(true);

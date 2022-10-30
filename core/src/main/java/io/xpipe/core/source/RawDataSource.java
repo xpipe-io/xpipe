@@ -25,13 +25,17 @@ public abstract class RawDataSource<DS extends DataStore> extends DataSource<DS>
     }
 
     @Override
-    public final RawWriteConnection openWriteConnection() throws Exception {
-        var con = newWriteConnection();
+    public final RawWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+        var con = newWriteConnection(mode);
+        if (con == null) {
+            throw new UnsupportedOperationException(mode.getId());
+        }
+
         con.init();
         return con;
     }
 
-    protected abstract RawWriteConnection newWriteConnection();
+    protected abstract RawWriteConnection newWriteConnection(WriteMode mode);
 
     protected abstract RawReadConnection newReadConnection();
 }

@@ -5,6 +5,7 @@ import io.xpipe.core.charsetter.Charsettable;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.source.TextDataSource;
+import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -20,18 +21,8 @@ public final class TextSource extends TextDataSource<StreamDataStore> implements
     private final NewLine newLine;
 
     @Override
-    protected io.xpipe.core.source.TextWriteConnection newWriteConnection() {
+    protected io.xpipe.core.source.TextWriteConnection newWriteConnection(WriteMode mode) {
         return new TextWriteConnection(this);
-    }
-
-    @Override
-    protected io.xpipe.core.source.TextWriteConnection newPrependingWriteConnection() {
-        return new PreservingTextWriteConnection(this, newWriteConnection(), false);
-    }
-
-    @Override
-    protected io.xpipe.core.source.TextWriteConnection newAppendingWriteConnection() {
-        return new PreservingTextWriteConnection(this, newWriteConnection(), true);
     }
 
     @Override
