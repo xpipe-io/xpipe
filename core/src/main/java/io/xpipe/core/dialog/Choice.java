@@ -1,11 +1,9 @@
 package io.xpipe.core.dialog;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor(onConstructor=@__({@JsonCreator}))
 public class Choice {
 
     /**
@@ -40,5 +38,12 @@ public class Choice {
         this.character = character;
         this.description = description;
         this.disabled = false;
+    }
+
+    @JsonCreator
+    public Choice(Character character, String description, boolean disabled) {
+        this.character = character;
+        this.description = description;
+        this.disabled = disabled;
     }
 }
