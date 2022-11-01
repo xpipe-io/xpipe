@@ -41,6 +41,7 @@ module io.xpipe.beacon {
             RenameStoreExchange,
             RemoveStoreExchange,
             StoreAddExchange,
+            ReadDrainExchange,
             WritePreparationExchange,
             WriteExecuteExchange,
             SelectExchange,

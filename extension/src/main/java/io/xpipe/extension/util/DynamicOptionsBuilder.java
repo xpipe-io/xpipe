@@ -8,6 +8,7 @@ import io.xpipe.extension.comp.*;
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -95,7 +96,7 @@ public class DynamicOptionsBuilder {
 
     public <V> DynamicOptionsBuilder addToggle(
             Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
-        var comp = new ToggleGroupComp<>(prop, names);
+        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(names));
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;

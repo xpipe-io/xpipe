@@ -11,14 +11,15 @@ import java.util.Optional;
 public abstract class TableDataSource<DS extends DataStore> extends DataSource<DS> {
 
     public Optional<TupleType> determineDataType() throws Exception {
-        try (var readConnection = newReadConnection()) {
-            var canRead = readConnection != null && readConnection.canRead();
-            if (canRead) {
+        var readConnection = newReadConnection();
+        var canRead = readConnection != null && readConnection.canRead();
+        if (canRead) {
+            try (var in = readConnection) {
                 readConnection.init();
                 return Optional.ofNullable(readConnection.getDataType());
-            } else {
-                return Optional.empty();
             }
+        } else {
+            return Optional.empty();
         }
     }
 

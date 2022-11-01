@@ -7,26 +7,30 @@ import io.xpipe.extension.util.Validatable;
 import io.xpipe.extension.util.Validator;
 import io.xpipe.extension.util.Validators;
 import io.xpipe.fxcomps.SimpleComp;
+import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.synedra.validatorfx.Check;
 
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class WriteModeChoiceComp extends SimpleComp implements Validatable {
 
     Property<WriteMode> selected;
-    List<WriteMode> available;
+    ObservableList<WriteMode> available;
     Validator validator = new SimpleValidator();
     Check check;
 
-    public WriteModeChoiceComp(Property<WriteMode> selected, List<WriteMode> available) {
+    public WriteModeChoiceComp(Property<WriteMode> selected, ObservableList<WriteMode> available) {
         this.selected = selected;
         this.available = available;
         if (available.size() == 1) {
@@ -38,10 +42,18 @@ public class WriteModeChoiceComp extends SimpleComp implements Validatable {
     @Override
     protected Region createSimple() {
         var a = available;
-        var map = new LinkedHashMap<WriteMode, ObservableValue<String>>();
+        Property<Map<WriteMode, ObservableValue<String>>> map = new SimpleObjectProperty<>(new LinkedHashMap<WriteMode, ObservableValue<String>>());
         for (WriteMode writeMode : a) {
-            map.put(writeMode,I18n.observable(writeMode.getId()));
+            map.getValue().put(writeMode,I18n.observable(writeMode.getId()));
         }
+
+        PlatformThread.sync(available).addListener((ListChangeListener<? super WriteMode>) c -> {
+            var newMap = new LinkedHashMap<WriteMode, ObservableValue<String>>();
+            for (WriteMode writeMode : a) {
+                newMap.put(writeMode,I18n.observable(writeMode.getId()));
+            }
+            map.setValue(newMap);
+        });
 
         return new ToggleGroupComp<>(selected, map)
                 .apply(struc -> {

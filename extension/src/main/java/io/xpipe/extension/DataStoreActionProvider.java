@@ -2,6 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.event.ErrorEvent;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public interface DataStoreActionProvider<T extends DataStore> {
 
     default void applyToRegion(T store, Region region) {}
 
-    String getName(T store);
+    ObservableValue<String> getName(T store);
 
     String getIcon(T store);
 

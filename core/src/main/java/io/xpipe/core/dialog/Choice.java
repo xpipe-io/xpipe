@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 
 @Value
-@AllArgsConstructor(onConstructor_ = @JsonCreator)
+@AllArgsConstructor(onConstructor=@__({@JsonCreator}))
 public class Choice {
 
     /**

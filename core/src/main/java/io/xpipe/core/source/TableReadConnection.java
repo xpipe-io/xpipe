@@ -6,6 +6,7 @@ import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
+import io.xpipe.core.impl.BufferedTableReadConnection;
 import io.xpipe.core.impl.LimitTableReadConnection;
 
 import java.io.OutputStream;
@@ -61,6 +62,14 @@ public interface TableReadConnection extends DataSourceReadConnection {
 
     default TableReadConnection limit(int limit) {
         return new LimitTableReadConnection(this, limit);
+    }
+
+    default TableReadConnection buffered() throws Exception {
+        return buffered(Integer.MAX_VALUE);
+    }
+
+    default TableReadConnection buffered(int limit) throws Exception {
+        return new BufferedTableReadConnection(this, limit);
     }
 
     /**

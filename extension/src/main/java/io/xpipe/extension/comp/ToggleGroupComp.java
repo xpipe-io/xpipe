@@ -4,6 +4,7 @@ import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.SimpleCompStructure;
 import io.xpipe.fxcomps.util.PlatformThread;
+import io.xpipe.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleButton;
@@ -15,9 +16,9 @@ import java.util.Map;
 public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
 
     private final Property<T> value;
-    private final Map<T, ObservableValue<String>> range;
+    private final ObservableValue<Map<T, ObservableValue<String>>> range;
 
-    public ToggleGroupComp(Property<T> value, Map<T, ObservableValue<String>> range) {
+    public ToggleGroupComp(Property<T> value, ObservableValue<Map<T, ObservableValue<String>>> range) {
         this.value = value;
         this.range = range;
     }
@@ -27,29 +28,36 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
         var box = new HBox();
         box.getStyleClass().add("toggle-group-comp");
         ToggleGroup group = new ToggleGroup();
-        for (var entry : range.entrySet()) {
-            var b = new ToggleButton(entry.getValue().getValue());
-            b.setOnAction(e -> {
-                value.setValue(entry.getKey());
-                e.consume();
-            });
-            box.getChildren().add(b);
-            b.setToggleGroup(group);
-            value.addListener((c, o, n) -> {
-                PlatformThread.runLaterIfNeeded(() -> b.setSelected(entry.equals(n)));
-            });
-            if (entry.getKey().equals(value.getValue())) {
-                b.setSelected(true);
+        SimpleChangeListener.apply(PlatformThread.sync(range), val -> {
+            if (!val.containsKey(value.getValue())) {
+                this.value.setValue(null);
             }
-        }
 
-        if (box.getChildren().size() > 0) {
-            box.getChildren().get(0).getStyleClass().add("first");
-            for (int i = 1; i < box.getChildren().size() - 1; i++) {
-                box.getChildren().get(i).getStyleClass().add("center");
+            box.getChildren().clear();
+            for (var entry : val.entrySet()) {
+                var b = new ToggleButton(entry.getValue().getValue());
+                b.setOnAction(e -> {
+                    value.setValue(entry.getKey());
+                    e.consume();
+                });
+                box.getChildren().add(b);
+                b.setToggleGroup(group);
+                value.addListener((c, o, n) -> {
+                    PlatformThread.runLaterIfNeeded(() -> b.setSelected(entry.equals(n)));
+                });
+                if (entry.getKey().equals(value.getValue())) {
+                    b.setSelected(true);
+                }
             }
-            box.getChildren().get(box.getChildren().size() - 1).getStyleClass().add("last");
-        }
+
+            if (box.getChildren().size() > 0) {
+                box.getChildren().get(0).getStyleClass().add("first");
+                for (int i = 1; i < box.getChildren().size() - 1; i++) {
+                    box.getChildren().get(i).getStyleClass().add("center");
+                }
+                box.getChildren().get(box.getChildren().size() - 1).getStyleClass().add("last");
+            }
+        });
 
         group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
             if (newVal == null) oldVal.setSelected(true);

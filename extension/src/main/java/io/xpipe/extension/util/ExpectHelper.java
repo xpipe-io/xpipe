@@ -32,6 +32,7 @@ public class ExpectHelper {
         return String.format("""
                         echo(false)
                         if spawn(%s) then
+                            expect(":")
                             sendln("%s")
                         	echo(true)
                         end

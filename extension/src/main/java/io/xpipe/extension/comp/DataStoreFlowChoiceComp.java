@@ -4,6 +4,7 @@ import io.xpipe.core.store.DataFlow;
 import io.xpipe.extension.I18n;
 import io.xpipe.fxcomps.SimpleComp;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
@@ -24,7 +25,7 @@ public class DataStoreFlowChoiceComp extends SimpleComp {
         map.put(DataFlow.INPUT, I18n.observable("extension.input"));
         map.put(DataFlow.OUTPUT, I18n.observable("extension.output"));
         map.put(DataFlow.INPUT_OUTPUT, I18n.observable("extension.inout"));
-        return new ToggleGroupComp<>(selected, map)
+        return new ToggleGroupComp<>(selected, new SimpleObjectProperty<>(map))
                 .apply(struc -> {
                     new FancyTooltipAugment<>("extension.inputDescription")
                             .augment(struc.get().getChildren().get(0));
