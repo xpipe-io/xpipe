@@ -3,6 +3,7 @@ package io.xpipe.core.dialog;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.util.List;
@@ -10,16 +11,18 @@ import java.util.List;
 @JsonTypeName("choice")
 @EqualsAndHashCode(callSuper = true)
 @ToString
+@Getter
 public class ChoiceElement extends DialogElement {
 
     private final String description;
     private final List<Choice> elements;
     private final boolean required;
+    private final boolean quiet;
 
     private int selected;
 
     @JsonCreator
-    public ChoiceElement(String description, List<Choice> elements, boolean required, int selected) {
+    public ChoiceElement(String description, List<Choice> elements, boolean required, boolean quiet, int selected) {
         if (elements.stream().allMatch(Choice::isDisabled)) {
             throw new IllegalArgumentException("All choices are disabled");
         }
@@ -28,6 +31,7 @@ public class ChoiceElement extends DialogElement {
         this.elements = elements;
         this.required = required;
         this.selected = selected;
+        this.quiet = quiet;
     }
 
     @Override

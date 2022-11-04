@@ -71,8 +71,9 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
                     .maxRows(maxRows)
                     .build();
             con.performInputExchange(req, (QueryTableDataExchange.Response res, InputStream in) -> {
-                var r = new TypedDataStreamParser(info.getDataType());
-                r.parseStructures(in, TypedDataStructureNodeReader.of(info.getDataType()), nodes::add);
+                var r = new TypedDataStreamParser(res.getDataType());
+
+                r.parseStructures(in, TypedDataStructureNodeReader.of(res.getDataType()), nodes::add);
             });
         });
         return ArrayNode.of(nodes);

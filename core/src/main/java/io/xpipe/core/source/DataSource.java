@@ -58,6 +58,10 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
         store.checkComplete();
     }
 
+    public void validate() throws Exception {
+        store.validate();
+    }
+
     public List<WriteMode> getAvailableWriteModes() {
         if (getFlow() != null && !getFlow().hasOutput()) {
             return List.of();

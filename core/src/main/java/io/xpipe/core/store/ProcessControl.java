@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -125,4 +126,6 @@ public abstract class ProcessControl {
     public abstract InputStream getStderr();
 
     public abstract Charset getCharset();
+
+    public abstract List<String> getCommand();
 }

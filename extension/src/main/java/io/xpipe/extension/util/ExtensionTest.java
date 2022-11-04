@@ -6,6 +6,7 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.XPipeServiceProviders;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -13,12 +14,13 @@ import java.nio.file.Path;
 
 public class ExtensionTest {
 
+    @SneakyThrows
     public static DataStore getResource(String name) {
         var url = ExtensionTest.class.getClassLoader().getResource(name);
         if (url == null) {
             throw new IllegalArgumentException(String.format("File %s does not exist", name));
         }
-        var file = url.getFile().substring(1);
+        var file = Path.of(url.toURI()).toString();
         return FileStore.local(Path.of(file));
     }
 

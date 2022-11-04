@@ -42,7 +42,7 @@ public class DialogHelper {
     }
 
     public static Dialog dataStoreFlowQuery(DataFlow flow, DataFlow[] available) {
-        return Dialog.choice("Flow", (DataFlow o) -> o.getDisplayName(), true, flow, available);
+        return Dialog.choice("Flow", (DataFlow o) -> o.getDisplayName(), true, false, flow, available);
     }
 
     public static Dialog shellQuery(String displayName, DataStore store) {
@@ -66,16 +66,20 @@ public class DialogHelper {
                 });
     }
 
-    public static Dialog charsetQuery(StreamCharset c, boolean all) {
-        return Dialog.query("Charset", false, true, c != null && !all, c, QueryConverter.CHARSET);
+    public static Dialog charsetQuery(StreamCharset c, boolean preferQuiet) {
+        return Dialog.query("Charset", false, true, c != null && preferQuiet, c, QueryConverter.CHARSET);
     }
 
-    public static Dialog newLineQuery(NewLine n, boolean all) {
-        return Dialog.query("Newline", false, true, n != null && !all, n, QueryConverter.NEW_LINE);
+    public static Dialog newLineQuery(NewLine n, boolean preferQuiet) {
+        return Dialog.query("Newline", false, true, n != null && preferQuiet, n, QueryConverter.NEW_LINE);
     }
 
-    public static <T> Dialog query(String desc, T value, boolean required, QueryConverter<T> c, boolean all) {
-        return Dialog.query(desc, false, required, value != null && !all, value, c);
+    public static <T> Dialog query(String desc, T value, boolean required, QueryConverter<T> c, boolean preferQuiet) {
+        return Dialog.query(desc, false, required, value != null && preferQuiet, value, c);
+    }
+
+    public static Dialog booleanChoice(String desc, boolean value, boolean preferQuiet) {
+        return Dialog.choice(desc, val -> val.toString(), true, preferQuiet, value, Boolean.TRUE, Boolean.FALSE);
     }
 
     public static Dialog fileQuery(String name) {

@@ -37,8 +37,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
             }
 
             @Override
-            public int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
-                return 0;
+            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
             }
 
             @Override
@@ -77,7 +76,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
      *
      * @return
      */
-    int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception;
+    void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception;
 
     /**
      * Reads multiple rows in bulk.
@@ -119,6 +118,17 @@ public interface TableReadConnection extends DataSourceReadConnection {
         var inputType = getDataType();
         var tCon = (TableWriteConnection) con;
         var mapping = tCon.createMapping(inputType);
-        return withRows(tCon.writeLinesAcceptor(mapping.orElseThrow()));
+        var acceptor = tCon.writeLinesAcceptor(mapping.orElseThrow());
+
+        AtomicInteger counter = new AtomicInteger();
+        withRows(acc -> {
+            if (!acceptor.accept(acc)) {
+                return false;
+            }
+
+            counter.getAndIncrement();
+            return true;
+        });
+        return counter.get();
     }
 }

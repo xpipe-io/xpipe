@@ -17,11 +17,17 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public static final Integer INTEGER_VALUE = 6;
     public static final Integer IS_NULL = 7;
     public static final Integer IS_INTEGER = 9;
-    public static final Integer IS_FLOATING_POINT = 10;
-    public static final Integer FLOATING_POINT_VALUE = 11;
+    public static final Integer IS_DECIMAL = 10;
+    public static final Integer DECIMAL_VALUE = 11;
     public static final Integer IS_TEXT = 12;
     public static final Integer IS_INSTANT = 13;
     public static final Integer IS_BINARY = 14;
+
+    public static final Integer IS_DATE = 15;
+    public static final Integer DATE_VALUE = 16;
+
+    public static final Integer IS_CURRENCY = 17;
+    public static final Integer CURRENCY_CODE = 18;
 
     private Map<Integer, String> metaAttributes;
 
@@ -58,12 +64,12 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         return this;
     }
 
-    public DataStructureNode tag(Integer key, String value) {
+    public DataStructureNode tag(Integer key, Object value) {
         if (metaAttributes == null) {
             metaAttributes = new HashMap<>();
         }
 
-        metaAttributes.put(key, value);
+        metaAttributes.put(key, value.toString());
         return this;
     }
 
@@ -124,6 +130,7 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         return "("
                 + (metaAttributes != null
                         ? metaAttributes.entrySet().stream()
+                                .sorted(Comparator.comparingInt(entry -> entry.getKey()))
                                 .map(e -> e.getValue() != null
                                         ? e.getKey() + ":" + e.getValue()
                                         : e.getKey().toString())

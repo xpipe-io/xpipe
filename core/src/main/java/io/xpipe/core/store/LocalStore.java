@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.util.JacksonizedValue;
 import io.xpipe.core.util.SecretValue;
+import lombok.Getter;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -69,6 +70,8 @@ public class LocalStore extends JacksonizedValue implements MachineFileStore, St
 
         private final List<SecretValue> input;
         private final Integer timeout;
+
+        @Getter
         private final List<String> command;
         private final Charset charset;
 

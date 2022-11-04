@@ -6,7 +6,9 @@ import io.xpipe.core.data.type.ValueType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.Objects;
 
 public abstract class ValueNode extends DataStructureNode {
@@ -23,6 +25,42 @@ public abstract class ValueNode extends DataStructureNode {
         }
 
         return new SimpleValueNode(data);
+    }
+
+    public static ValueNode ofDate(String raw, Instant instant) {
+        var created = of(raw);
+        created.tag(IS_DATE);
+        created.tag(DATE_VALUE, instant.toString());
+        return created;
+    }
+
+    public static ValueNode ofDecimal(String raw, double decimal) {
+        return ofDecimal(raw, String.valueOf(decimal));
+    }
+
+    public static ValueNode ofDecimal(String raw, String decimal) {
+        var created = of(raw);
+        created.tag(IS_DECIMAL);
+        created.tag(DECIMAL_VALUE, decimal);
+        return created;
+    }
+
+    public static ValueNode ofInteger(String raw, long integer) {
+        return ofInteger(raw, String.valueOf(integer));
+    }
+
+    public static ValueNode ofInteger(String raw, String integer) {
+        var created = of(raw);
+        created.tag(IS_INTEGER);
+        created.tag(INTEGER_VALUE, integer);
+        return created;
+    }
+
+    public static ValueNode ofCurrency(String raw, String decimal, Currency currency) {
+        var created = ofDecimal(raw, decimal);
+        created.tag(IS_CURRENCY);
+        created.tag(CURRENCY_CODE, currency.getCurrencyCode());
+        return created;
     }
 
     public static ValueNode ofBytes(byte[] data) {
@@ -49,9 +87,15 @@ public abstract class ValueNode extends DataStructureNode {
         return created;
     }
 
+    public static ValueNode ofDecimal(double decimal) {
+        var created = of(decimal);
+        created.tag(IS_DECIMAL);
+        return created;
+    }
+
     public static ValueNode ofDecimal(BigDecimal decimal) {
         var created = of(decimal);
-        created.tag(IS_FLOATING_POINT);
+        created.tag(IS_DECIMAL);
         return created;
     }
 

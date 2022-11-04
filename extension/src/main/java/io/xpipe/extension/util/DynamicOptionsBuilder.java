@@ -69,7 +69,7 @@ public class DynamicOptionsBuilder {
         for (var e : NewLine.values()) {
             map.put(e, I18n.observable("extension." + e.getId()));
         }
-        var comp = new ChoiceComp<>(prop, map);
+        var comp = new ChoiceComp<>(prop, map, false);
         entries.add(new DynamicOptionsComp.Entry(I18n.observable("extension.newLine"), comp));
         props.add(prop);
         return this;
@@ -94,6 +94,14 @@ public class DynamicOptionsBuilder {
         return this;
     }
 
+    public DynamicOptionsBuilder addToggle(String nameKey,
+            Property<Boolean> prop) {
+        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(Map.of(Boolean.TRUE, I18n.observable("extension.yes"), Boolean.FALSE, I18n.observable("extension.no"))));
+        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        props.add(prop);
+        return this;
+    }
+
     public <V> DynamicOptionsBuilder addToggle(
             Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
         var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(names));
@@ -103,16 +111,18 @@ public class DynamicOptionsBuilder {
     }
 
     public <V> DynamicOptionsBuilder addChoice(
-            Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
-        var comp = new ChoiceComp<>(prop, names);
+            Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names, boolean includeNone
+    ) {
+        var comp = new ChoiceComp<>(prop, names, includeNone);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;
     }
 
     public <V> DynamicOptionsBuilder addChoice(
-            Property<V> prop, ObservableValue<String> name, ObservableValue<Map<V, ObservableValue<String>>> names) {
-        var comp = new ChoiceComp<>(prop, names);
+            Property<V> prop, ObservableValue<String> name, ObservableValue<Map<V, ObservableValue<String>>> names, boolean includeNone
+    ) {
+        var comp = new ChoiceComp<>(prop, names, includeNone);
         entries.add(new DynamicOptionsComp.Entry(name, comp));
         props.add(prop);
         return this;

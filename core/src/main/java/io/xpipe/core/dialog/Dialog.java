@@ -1,11 +1,11 @@
 package io.xpipe.core.dialog;
 
+import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.util.SecretValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -22,11 +22,11 @@ import java.util.function.Supplier;
  * The evaluation function can be set with {@link #evaluateTo(Supplier)}.
  * Alternatively, a dialogue can also copy the evaluation function of another dialogue with {@link #evaluateTo(Dialog)}.
  * An evaluation result can also be mapped to another type with {@link #map(Function)}.
- * It is also possible to listen for the completion of this dialogue with {@link #onCompletion(Consumer)}.
+ * It is also possible to listen for the completion of this dialogue with {@link #onCompletion(Charsetter.FailableConsumer)} )}.
  */
 public abstract class Dialog {
 
-    private final List<Consumer<?>> completion = new ArrayList<>();
+    private final List<Charsetter.FailableConsumer<?, Exception>> completion = new ArrayList<>();
     protected Object eval;
     private Supplier<?> evaluation;
 
@@ -65,8 +65,8 @@ public abstract class Dialog {
      * @param selected    the selected element index
      */
     public static Dialog.Choice choice(
-            String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
-        Dialog.Choice c = new Dialog.Choice(description, elements, required, selected);
+            String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, boolean quiet, int selected) {
+        Dialog.Choice c = new Dialog.Choice(description, elements, required, quiet, selected);
         c.evaluateTo(c::getSelected);
         return c;
     }
@@ -77,12 +77,13 @@ public abstract class Dialog {
      * @param description the shown question description
      * @param toString    a function that maps the objects to a string
      * @param required    signals whether choices required or can be left empty
+     * @param quiet
      * @param def         the element which is selected by default
      * @param vals        the range of possible elements
      */
     @SafeVarargs
     public static <T> Dialog.Choice choice(
-            String description, Function<T, String> toString, boolean required, T def, T... vals) {
+            String description, Function<T, String> toString, boolean required, boolean quiet, T def, T... vals) {
         var elements = Arrays.stream(vals)
                 .map(v -> new io.xpipe.core.dialog.Choice(null, toString.apply(v)))
                 .toList();
@@ -91,7 +92,7 @@ public abstract class Dialog {
             throw new IllegalArgumentException("Default value " + def.toString() + " is not in possible values");
         }
 
-        var c = choice(description, elements, required, index);
+        var c = choice(description, elements, required, quiet, index);
         c.evaluateTo(() -> {
             if (c.getSelected() == -1) {
                 return null;
@@ -249,6 +250,9 @@ public abstract class Dialog {
                 dialog = d.get();
                 var start = dialog.start();
                 evaluateTo(dialog);
+                if (start == null) {
+                    complete();
+                }
                 return start;
             }
 
@@ -354,7 +358,7 @@ public abstract class Dialog {
             boolean required,
             int selected,
             Function<Integer, Dialog> c) {
-        var choice = new ChoiceElement(description, elements, required, selected);
+        var choice = new ChoiceElement(description, elements, required, false, selected);
         return new Dialog() {
 
             private Dialog choiceMade;
@@ -409,7 +413,7 @@ public abstract class Dialog {
         return this;
     }
 
-    public Dialog onCompletion(Consumer<?> s) {
+    public Dialog onCompletion(Charsetter.FailableConsumer<?, Exception> s) {
         completion.add(s);
         return this;
     }
@@ -419,7 +423,7 @@ public abstract class Dialog {
         return this;
     }
 
-    public Dialog onCompletion(List<Consumer<?>> s) {
+    public Dialog onCompletion(List<Charsetter.FailableConsumer<?, Exception>> s) {
         completion.addAll(s);
         return this;
     }
@@ -430,13 +434,13 @@ public abstract class Dialog {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> void complete() {
+    public <T> void complete() throws Exception {
         if (evaluation != null) {
             eval = evaluation.get();
-            completion.forEach(c -> {
-                Consumer<T> ct = (Consumer<T>) c;
+            for (Charsetter.FailableConsumer<?, Exception> c : completion) {
+                Charsetter.FailableConsumer<T, Exception> ct = (Charsetter.FailableConsumer<T, Exception>) c;
                 ct.accept((T) eval);
-            });
+            }
         }
     }
 
@@ -459,8 +463,8 @@ public abstract class Dialog {
 
         private final ChoiceElement element;
 
-        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, int selected) {
-            this.element = new ChoiceElement(description, elements, required, selected);
+        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, boolean quiet, int selected) {
+            this.element = new ChoiceElement(description, elements, required, quiet, selected);
         }
 
         @Override

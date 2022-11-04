@@ -25,7 +25,13 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
 
     @Override
     public final DataSourceInfo determineInfo() throws Exception {
-        if (!getFlow().hasInput()) {
+        if (!getFlow().hasInput() || !getStore().canOpen()) {
+            return new DataSourceInfo.Table(null, -1);
+        }
+
+        try {
+            checkComplete();
+        } catch (Exception e) {
             return new DataSourceInfo.Table(null, -1);
         }
 

@@ -33,7 +33,7 @@ public class CharChoiceComp extends Comp<CompStructure<HBox>> {
         if (customName != null) {
             rangeCopy.put(null, customName);
         }
-        var choice = new ChoiceComp<Character>(value, rangeCopy);
+        var choice = new ChoiceComp<Character>(value, rangeCopy, false);
         var charChoiceR = charChoice.createRegion();
         var choiceR = choice.createRegion();
         var box = new HBox(charChoiceR, choiceR);

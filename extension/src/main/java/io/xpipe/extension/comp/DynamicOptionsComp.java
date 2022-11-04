@@ -31,7 +31,7 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
     public CompStructure<FlowPane> createBase() {
         var flow = new FlowPane(Orientation.HORIZONTAL);
         flow.setAlignment(Pos.CENTER);
-        flow.setHgap(7);
+        flow.setHgap(14);
         flow.setVgap(7);
 
         var nameRegions = new ArrayList<Region>();

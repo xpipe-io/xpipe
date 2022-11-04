@@ -22,15 +22,18 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
     Property<T> value;
     ObservableValue<Map<T, ObservableValue<String>>> range;
+    boolean includeNone;
 
-    public ChoiceComp(Property<T> value, Map<T, ObservableValue<String>> range) {
+    public ChoiceComp(Property<T> value, Map<T, ObservableValue<String>> range, boolean includeNone) {
         this.value = value;
         this.range = new SimpleObjectProperty<>(range);
+        this.includeNone = includeNone;
     }
 
-    public ChoiceComp(Property<T> value, ObservableValue<Map<T, ObservableValue<String>>> range) {
+    public ChoiceComp(Property<T> value, ObservableValue<Map<T, ObservableValue<String>>> range, boolean includeNone) {
         this.value = value;
         this.range = PlatformThread.sync(range);
+        this.includeNone = includeNone;
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         });
         SimpleChangeListener.apply(range, c -> {
             var list = FXCollections.observableArrayList(c.keySet());
-            if (!list.contains(null)) {
+            if (!list.contains(null) && includeNone) {
                 list.add(null);
             }
             cb.setItems(list);

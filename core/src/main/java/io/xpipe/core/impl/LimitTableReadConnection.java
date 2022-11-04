@@ -6,7 +6,6 @@ import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.source.TableReadConnection;
 
 import java.util.OptionalInt;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class LimitTableReadConnection implements TableReadConnection {
 
@@ -40,20 +39,15 @@ public class LimitTableReadConnection implements TableReadConnection {
     }
 
     @Override
-    public int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
-        AtomicInteger localCounter = new AtomicInteger();
+    public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
         connection.withRows(node -> {
             if (count == maxCount) {
                 return false;
             }
             count++;
 
-            var returned = lineAcceptor.accept(node);
-            localCounter.getAndIncrement();
-
-            return returned;
+            return lineAcceptor.accept(node);
         });
-        return localCounter.get();
     }
 
     @Override

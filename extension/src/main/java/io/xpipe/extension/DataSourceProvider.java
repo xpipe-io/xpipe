@@ -43,7 +43,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return getId() + "." + key;
     }
 
-    default Region configGui(Property<T> source, boolean all) {
+    default Region configGui(Property<T> source, boolean preferQuiet) throws Exception {
         return null;
     }
 
@@ -56,7 +56,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
     }
 
     default String getModuleName() {
-        var n = getClass().getPackageName();
+        var n = getClass().getModule().getName();
         var i = n.lastIndexOf('.');
         return i != -1 ? n.substring(i + 1) : n;
     }

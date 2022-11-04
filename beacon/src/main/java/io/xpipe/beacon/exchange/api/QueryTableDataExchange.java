@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange.api;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
@@ -32,5 +33,7 @@ public class QueryTableDataExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {}
+    public static class Response implements ResponseMessage {
+        @NonNull TupleType dataType;
+    }
 }

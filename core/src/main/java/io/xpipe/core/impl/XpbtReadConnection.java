@@ -60,15 +60,14 @@ public class XpbtReadConnection extends StreamReadConnection implements TableRea
     }
 
     @Override
-    public int withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
+    public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
         if (empty) {
-            return 0;
+            return;
         }
 
         var reader = TypedDataStructureNodeReader.of(dataType);
         AtomicBoolean quit = new AtomicBoolean(false);
         AtomicReference<Exception> exception = new AtomicReference<>();
-        var counter = 0;
         while (!quit.get()) {
             var node = parser.parseStructure(inputStream, reader);
             if (node == null) {
@@ -80,7 +79,6 @@ public class XpbtReadConnection extends StreamReadConnection implements TableRea
                 if (!lineAcceptor.accept(node.asTuple())) {
                     quit.set(true);
                 }
-                counter++;
             } catch (Exception ex) {
                 quit.set(true);
                 exception.set(ex);
@@ -90,7 +88,6 @@ public class XpbtReadConnection extends StreamReadConnection implements TableRea
         if (exception.get() != null) {
             throw exception.get();
         }
-        return counter;
     }
 
     @Override

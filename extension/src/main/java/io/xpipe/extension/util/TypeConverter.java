@@ -33,7 +33,7 @@ public class TypeConverter {
         if (NumberUtils.isCreatable(string)) {
             var number = NumberUtils.createNumber(string);
             if (number instanceof Float || number instanceof Double) {
-                node.tag(DataStructureNode.IS_FLOATING_POINT);
+                node.tag(DataStructureNode.IS_DECIMAL);
             } else {
                 node.tag(DataStructureNode.IS_INTEGER);
             }
@@ -45,8 +45,8 @@ public class TypeConverter {
             return BigDecimal.ZERO;
         }
 
-        if (node.hasMetaAttribute(DataStructureNode.FLOATING_POINT_VALUE)) {
-            return new BigDecimal(node.getMetaAttribute(DataStructureNode.FLOATING_POINT_VALUE));
+        if (node.hasMetaAttribute(DataStructureNode.DECIMAL_VALUE)) {
+            return new BigDecimal(node.getMetaAttribute(DataStructureNode.DECIMAL_VALUE));
         }
 
         var parsedDecimal = parseDecimal(node.asString());
@@ -101,8 +101,8 @@ public class TypeConverter {
             return parsedInteger;
         }
 
-        if (node.hasMetaAttribute(DataStructureNode.FLOATING_POINT_VALUE)) {
-            return new BigDecimal(node.getMetaAttribute(DataStructureNode.FLOATING_POINT_VALUE)).toBigInteger();
+        if (node.hasMetaAttribute(DataStructureNode.DECIMAL_VALUE)) {
+            return new BigDecimal(node.getMetaAttribute(DataStructureNode.DECIMAL_VALUE)).toBigInteger();
         }
 
         var parsedDecimal = parseDecimal(node.asString());
