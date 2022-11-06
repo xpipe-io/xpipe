@@ -59,7 +59,7 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         });
 
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
+            if (!newValue && lazy) {
                 lastAppliedValue.setValue(currentValue.getValue());
             }
         });

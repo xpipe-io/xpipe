@@ -7,6 +7,8 @@ public enum DataFlow {
     INPUT("Input"),
     @JsonProperty("output")
     OUTPUT("Output"),
+    @JsonProperty("inputOrOutput")
+    INPUT_OR_OUTPUT("Input or Output"),
     @JsonProperty("inputOutput")
     INPUT_OUTPUT("Input/Output"),
     @JsonProperty("transformer")

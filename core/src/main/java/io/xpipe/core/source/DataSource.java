@@ -63,8 +63,16 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
     }
 
     public List<WriteMode> getAvailableWriteModes() {
-        if (getFlow() != null && !getFlow().hasOutput()) {
+        if (getFlow() == null) {
             return List.of();
+        }
+
+        if (getFlow() != null && (getFlow() == DataFlow.TRANSFORMER || getFlow() == DataFlow.INPUT)) {
+            return List.of();
+        }
+
+        if (getFlow() != null && (getFlow() == DataFlow.OUTPUT || getFlow() == DataFlow.INPUT_OR_OUTPUT)) {
+            return List.of(WriteMode.REPLACE);
         }
 
         return List.of(WriteMode.REPLACE, WriteMode.APPEND, WriteMode.PREPEND);
