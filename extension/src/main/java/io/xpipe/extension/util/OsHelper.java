@@ -21,7 +21,7 @@ public class OsHelper {
         }
     }
 
-    public static void browseFile(Path file) {
+    public static void browsePath(Path file) {
         if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             return;
         }

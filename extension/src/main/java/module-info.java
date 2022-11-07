@@ -39,4 +39,5 @@ open module io.xpipe.extension {
     uses io.xpipe.extension.DataStoreProvider;
     uses XPipeDaemon;
     uses io.xpipe.extension.Cache;
+    uses io.xpipe.extension.DataSourceActionProvider;
 }

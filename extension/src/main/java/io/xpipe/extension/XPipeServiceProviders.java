@@ -28,6 +28,7 @@ public class XPipeServiceProviders {
         }
 
         DataStoreActionProvider.init(layer);
+        DataSourceActionProvider.init(layer);
 
         SupportedApplicationProviders.loadAll(layer);
         PrefsProviders.init(layer);

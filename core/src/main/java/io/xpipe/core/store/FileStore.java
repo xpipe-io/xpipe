@@ -27,6 +27,10 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         this.file = file;
     }
 
+    public final boolean isLocal() {
+        return machine instanceof LocalStore;
+    }
+
     public static FileStore local(Path p) {
         return new FileStore(new LocalStore(), p.toString());
     }

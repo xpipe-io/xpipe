@@ -49,10 +49,14 @@ public class WriteModeChoiceComp extends SimpleComp implements Validatable {
 
         PlatformThread.sync(available).addListener((ListChangeListener<? super WriteMode>) c -> {
             var newMap = new LinkedHashMap<WriteMode, ObservableValue<String>>();
-            for (WriteMode writeMode : a) {
+            for (WriteMode writeMode : c.getList()) {
                 newMap.put(writeMode,I18n.observable(writeMode.getId()));
             }
             map.setValue(newMap);
+
+            if (c.getList().size() == 1) {
+                selected.setValue(c.getList().get(0));
+            }
         });
 
         return new ToggleGroupComp<>(selected, map)
