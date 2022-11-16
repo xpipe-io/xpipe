@@ -13,7 +13,6 @@ import io.xpipe.core.data.typed.TypedAbstractReader;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 
@@ -25,25 +24,16 @@ import java.util.stream.StreamSupport;
 
 public class DataTableImpl extends DataSourceImpl implements DataTable {
 
-    private final DataSourceInfo.Table info;
-
     DataTableImpl(
             DataSourceId id,
             DataSourceConfig sourceConfig,
-            DataSourceInfo.Table info,
             io.xpipe.core.source.DataSource<?> internalSource) {
         super(id, sourceConfig, internalSource);
-        this.info = info;
     }
 
     @Override
     public DataTable asTable() {
         return this;
-    }
-
-    @Override
-    public DataSourceInfo.Table getInfo() {
-        return info;
     }
 
     public Stream<TupleNode> stream() {
@@ -93,16 +83,17 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         private TupleNode node;
 
         {
-            nodeReader = TypedDataStructureNodeReader.of(info.getDataType());
-            parser = new TypedDataStreamParser(info.getDataType());
-
             connection = XPipeConnection.open();
             var req = QueryTableDataExchange.Request.builder()
                     .ref(DataSourceReference.id(getId()))
                     .maxRows(Integer.MAX_VALUE)
                     .build();
             connection.sendRequest(req);
-            connection.receiveResponse();
+            QueryTableDataExchange.Response response = connection.receiveResponse();
+
+            nodeReader = TypedDataStructureNodeReader.of(response.getDataType());
+            parser = new TypedDataStreamParser(response.getDataType());
+
             connection.receiveBody();
         }
 

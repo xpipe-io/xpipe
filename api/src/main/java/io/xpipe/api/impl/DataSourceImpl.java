@@ -29,27 +29,23 @@ public abstract class DataSourceImpl implements DataSource {
             var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
             QueryDataSourceExchange.Response res = con.performSimpleExchange(req);
             var config = new DataSourceConfig(res.getProvider(), res.getConfig());
-            return switch (res.getInfo().getType()) {
+            return switch (res.getType()) {
                 case TABLE -> {
-                    var data = res.getInfo().asTable();
-                    yield new DataTableImpl(res.getId(), config, data, res.getInternalSource());
+                    yield new DataTableImpl(res.getId(), config, res.getInternalSource());
                 }
                 case STRUCTURE -> {
-                    var info = res.getInfo().asStructure();
-                    yield new DataStructureImpl(res.getId(), config, info, res.getInternalSource());
+                    yield new DataStructureImpl(res.getId(), config, res.getInternalSource());
                 }
                 case TEXT -> {
-                    var info = res.getInfo().asText();
-                    yield new DataTextImpl(res.getId(), config, info, res.getInternalSource());
+                    yield new DataTextImpl(res.getId(), config, res.getInternalSource());
                 }
                 case RAW -> {
-                    var info = res.getInfo().asRaw();
-                    yield new DataRawImpl(res.getId(), config, info, res.getInternalSource());
+                    yield new DataRawImpl(res.getId(), config, res.getInternalSource());
                 }
                 case COLLECTION -> throw new UnsupportedOperationException(
-                        "Unimplemented case: " + res.getInfo().getType());
+                        "Unimplemented case: " + res.getType());
                 default -> throw new IllegalArgumentException(
-                        "Unexpected value: " + res.getInfo().getType());
+                        "Unexpected value: " + res.getType());
             };
         });
     }

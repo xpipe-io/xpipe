@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 
 /**
- * Represents a file located on a certain machine.
+ * Represents a file located on a file system.
  */
 @JsonTypeName("file")
 @SuperBuilder
@@ -19,16 +19,16 @@ import java.nio.file.Path;
 @Getter
 public class FileStore extends JacksonizedValue implements FilenameStore, StreamDataStore {
 
-    MachineFileStore machine;
+    FileSystemStore fileSystem;
     String file;
 
-    public FileStore(MachineFileStore machine, String file) {
-        this.machine = machine;
+    public FileStore(FileSystemStore fileSystem, String file) {
+        this.fileSystem = fileSystem;
         this.file = file;
     }
 
     public final boolean isLocal() {
-        return machine instanceof LocalStore;
+        return fileSystem instanceof LocalStore;
     }
 
     public static FileStore local(Path p) {
@@ -44,7 +44,7 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     @Override
     public void checkComplete() throws Exception {
-        if (machine == null) {
+        if (fileSystem == null) {
             throw new IllegalStateException("Machine is missing");
         }
         if (file == null) {
@@ -54,17 +54,17 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     @Override
     public InputStream openInput() throws Exception {
-        return machine.openInput(file);
+        return fileSystem.openInput(file);
     }
 
     @Override
     public OutputStream openOutput() throws Exception {
-        return machine.openOutput(file);
+        return fileSystem.openOutput(file);
     }
 
     @Override
     public boolean canOpen() throws Exception {
-        return machine.exists(file);
+        return fileSystem.exists(file);
     }
 
     @Override

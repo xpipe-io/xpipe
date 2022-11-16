@@ -3,129 +3,60 @@ package io.xpipe.core.store;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.UUID;
 
-public abstract class ProcessControl {
+public interface ProcessControl extends AutoCloseable {
 
-    public String executeAndReadStdout() throws Exception {
-        var pc = this;
-        pc.start();
-        pc.discardErr();
-        var bytes = pc.getStdout().readAllBytes();
-        var string = new String(bytes, pc.getCharset());
-        pc.waitFor();
-        return string;
-    }
+    boolean isRunning();
 
-    public void executeOrThrow() throws Exception {
-        var pc = this;
-        pc.start();
-        pc.discardOut();
-        pc.discardErr();
-        pc.waitFor();
-    }
+    ShellType getShellType();
 
-    public boolean executeAndCheckStatus() {
-        try {
-            executeOrThrow();
-            return true;
-        } catch (Exception ex) {
-            return false;
+    String readResultLine(String input, boolean captureOutput) throws IOException;
+
+    void writeLine(String line) throws IOException;
+
+    void writeLine(String line, boolean captureOutput) throws IOException;
+
+    void typeLine(String line);
+
+    public default String readOutput() throws IOException {
+        var id = UUID.randomUUID();
+        writeLine("echo " + id, false);
+        String lines = "";
+        while (true) {
+            var newLine = readLine();
+            if (newLine.contains(id.toString())) {
+                if (getShellType().echoesInput()) {
+                    readLine();
+                }
+
+                break;
+            }
+
+            lines = lines + newLine + "\n";
         }
+        return lines;
     }
 
-    public Optional<String> executeAndReadStderrIfPresent() throws Exception {
-        var pc = this;
-        pc.start();
-        pc.discardOut();
-        var bytes = pc.getStderr().readAllBytes();
-        var string = new String(bytes, pc.getCharset());
-        var ec = pc.waitFor();
-        return ec != 0 ? Optional.of(string) : Optional.empty();
-    }
+    @Override
+    void close() throws IOException;
 
-    public String executeAndReadStdoutOrThrow()
-            throws Exception {
-        var pc = this;
-        pc.start();
+    String readLine() throws IOException;
 
-        AtomicReference<String> readError = new AtomicReference<>("");
-        var errorThread = new Thread(() -> {
-            try {
+    void kill() throws IOException;
 
-                readError.set(new String(pc.getStderr().readAllBytes(), pc.getCharset()));
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-        errorThread.setDaemon(true);
-        errorThread.start();
+    ProcessControl exitTimeout(int timeout);
 
-        AtomicReference<String> read = new AtomicReference<>("");
-        var t = new Thread(() -> {
-            try {
-                read.set(new String(pc.getStdout().readAllBytes(), pc.getCharset()));
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-        t.setDaemon(true);
-        t.start();
+    ProcessControl start() throws Exception;
 
-        var ec = pc.waitFor();
-        if (ec == -1) {
-            throw new ProcessOutputException("Command timed out");
-        }
+    boolean waitFor() throws Exception;
 
-        if (ec == 0 && !(read.get().isEmpty() && !readError.get().isEmpty())) {
-            return read.get().trim();
-        } else {
-            throw new ProcessOutputException(
-                    "Command returned with " + ec + ": " + readError.get().trim());
-        }
-    }
+    InputStream getStdout();
 
-    public Thread discardOut() {
-        var t = new Thread(() -> {
-            try {
-                getStdout().transferTo(OutputStream.nullOutputStream());
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-        t.setDaemon(true);
-        t.start();
-        return t;
-    }
+    OutputStream getStdin();
 
-    public Thread discardErr() {
-        var t = new Thread(() -> {
-            try {
-                getStderr().transferTo(OutputStream.nullOutputStream());
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-        t.setDaemon(true);
-        t.start();
-        return t;
-    }
+    InputStream getStderr();
 
-    public abstract void start() throws Exception;
-
-    public abstract int waitFor() throws Exception;
-
-    public abstract InputStream getStdout();
-
-    public abstract OutputStream getStdin();
-
-    public abstract InputStream getStderr();
-
-    public abstract Charset getCharset();
-
-    public abstract List<String> getCommand();
+    Charset getCharset();
 }

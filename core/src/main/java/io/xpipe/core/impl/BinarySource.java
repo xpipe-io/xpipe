@@ -7,12 +7,14 @@ import io.xpipe.core.source.RawWriteConnection;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
 @JsonTypeName("binary")
 @SuperBuilder
+@Jacksonized
 public class BinarySource extends RawDataSource<StreamDataStore> {
 
     @Override

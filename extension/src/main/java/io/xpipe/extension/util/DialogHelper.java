@@ -33,7 +33,7 @@ public class DialogHelper {
                         throw new IllegalArgumentException(String.format("Store not found: %s", name));
                     }
 
-                    if (!(stored.get() instanceof MachineFileStore)) {
+                    if (!(stored.get() instanceof FileSystemStore)) {
                         throw new IllegalArgumentException(String.format("Store not a machine store: %s", name));
                     }
 

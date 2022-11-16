@@ -61,12 +61,11 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return i != -1 ? n.substring(i + 1) : n;
     }
 
+    default String queryInformationString(DataStore store, int length) throws Exception {
+        return getDisplayName();
+    }
     default String getDisplayIconFileName() {
         return getModuleName() + ":" + getId() + "_icon.png";
-    }
-
-    default String getSourceDescription(T source) {
-        return getDisplayName();
     }
 
     Dialog configDialog(T source, boolean all);

@@ -53,7 +53,6 @@ public class DynamicOptionsBuilder {
     }
 
     public DynamicOptionsBuilder decorate(Check c) {
-
         entries.get(entries.size() - 1).comp().apply(s -> c.decorates(s.get()));
         return this;
     }

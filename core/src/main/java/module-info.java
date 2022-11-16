@@ -22,6 +22,7 @@ open module io.xpipe.core {
 
     uses com.fasterxml.jackson.databind.Module;
     uses io.xpipe.core.source.WriteMode;
+    uses io.xpipe.core.store.LocalStore.LocalProcessControlProvider;
 
     provides WriteMode with WriteMode.Replace, WriteMode.Append, WriteMode.Prepend;
     provides com.fasterxml.jackson.databind.Module with

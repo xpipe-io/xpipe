@@ -1,22 +1,21 @@
 package io.xpipe.extension.util;
 
 import io.xpipe.api.DataSource;
-import io.xpipe.api.util.XPipeDaemonController;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.XPipeServiceProviders;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.nio.file.Path;
 
 public class ExtensionTest {
 
+
     @SneakyThrows
     public static DataStore getResource(String name) {
-        var url = ExtensionTest.class.getClassLoader().getResource(name);
+        var url = DaemonExtensionTest.class.getClassLoader().getResource(name);
         if (url == null) {
             throw new IllegalArgumentException(String.format("File %s does not exist", name));
         }
@@ -40,11 +39,5 @@ public class ExtensionTest {
     public static void setup() throws Exception {
         JacksonMapper.initModularized(ModuleLayer.boot());
         XPipeServiceProviders.load(ModuleLayer.boot());
-        XPipeDaemonController.start();
-    }
-
-    @AfterAll
-    public static void teardown() throws Exception {
-        XPipeDaemonController.stop();
     }
 }

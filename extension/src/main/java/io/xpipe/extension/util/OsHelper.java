@@ -26,7 +26,7 @@ public class OsHelper {
             return;
         }
 
-        ThreadHelper.run(() -> {
+        ThreadHelper.runAsync(() -> {
             try {
                 Desktop.getDesktop().open(file.toFile());
             } catch (Exception e) {
@@ -41,7 +41,7 @@ public class OsHelper {
                 return;
             }
 
-            ThreadHelper.run(() -> {
+            ThreadHelper.runAsync(() -> {
                 try {
                     Desktop.getDesktop().open(file.getParent().toFile());
                 } catch (Exception e) {
@@ -51,7 +51,7 @@ public class OsHelper {
             return;
         }
 
-        ThreadHelper.run(() -> {
+        ThreadHelper.runAsync(() -> {
             try {
                 Desktop.getDesktop().browseFileDirectory(file.toFile());
             } catch (Exception e) {

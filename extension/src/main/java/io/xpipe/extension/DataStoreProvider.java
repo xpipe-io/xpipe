@@ -2,7 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.MachineFileStore;
+import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
@@ -28,7 +28,7 @@ public interface DataStoreProvider {
             return Category.STREAM;
         }
 
-        if (MachineFileStore.class.isAssignableFrom(c) || ShellStore.class.isAssignableFrom(c)) {
+        if (FileSystemStore.class.isAssignableFrom(c) || ShellStore.class.isAssignableFrom(c)) {
             return Category.MACHINE;
         }
 

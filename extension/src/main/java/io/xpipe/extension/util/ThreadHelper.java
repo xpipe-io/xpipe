@@ -2,9 +2,6 @@ package io.xpipe.extension.util;
 
 import org.apache.commons.lang3.function.FailableRunnable;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-
 public class ThreadHelper {
 
     public static void await(FailableRunnable<InterruptedException> r) {
@@ -14,24 +11,11 @@ public class ThreadHelper {
         }
     }
 
-    public static Thread run(Runnable r) {
+    public static Thread runAsync(Runnable r) {
         var t = new Thread(r);
         t.setDaemon(true);
         t.start();
         return t;
-    }
-
-    public static <T> T run(Supplier<T> r) {
-        AtomicReference<T> ret = new AtomicReference<>();
-        var t = new Thread(() -> ret.set(r.get()));
-        t.setDaemon(true);
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            return null;
-        }
-        return ret.get();
     }
 
     public static Thread create(String name, boolean daemon, Runnable r) {

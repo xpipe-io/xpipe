@@ -7,7 +7,6 @@ import io.xpipe.beacon.BeaconConnection;
 import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 
@@ -25,15 +24,11 @@ import java.util.stream.StreamSupport;
 
 public class DataTextImpl extends DataSourceImpl implements DataText {
 
-    private final DataSourceInfo.Text info;
-
-    public DataTextImpl(
+     DataTextImpl(
             DataSourceId sourceId,
             DataSourceConfig sourceConfig,
-            DataSourceInfo.Text info,
             io.xpipe.core.source.DataSource<?> internalSource) {
         super(sourceId, sourceConfig, internalSource);
-        this.info = info;
     }
 
     @Override
@@ -44,11 +39,6 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
     @Override
     public DataText asText() {
         return this;
-    }
-
-    @Override
-    public DataSourceInfo.Text getInfo() {
-        return info;
     }
 
     @Override

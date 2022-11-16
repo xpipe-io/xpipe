@@ -2,54 +2,57 @@ package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.util.SecretValue;
 import lombok.Value;
 
-import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ShellTypes {
 
-    public static final StandardShellStore.ShellType POWERSHELL = new PowerShell();
-    public static final StandardShellStore.ShellType CMD = new Cmd();
-    public static final StandardShellStore.ShellType SH = new Sh();
+    public static final ShellType POWERSHELL = new PowerShell();
+    public static final ShellType CMD = new Cmd();
+    public static final ShellType SH = new Sh();
 
-    public static StandardShellStore.ShellType determine(ShellStore store) throws Exception {
-        var o = store.prepareCommand(List.of(), List.of("echo", "$0"), null, StandardCharsets.US_ASCII)
-                .executeAndReadStdoutOrThrow()
-                .strip();
-        if (!o.equals("$0")) {
-            return SH;
+    public static ShellType determine(ProcessControl proc) throws Exception {
+        proc.writeLine("echo -NoEnumerate \"a\"", false);
+        String line;
+        while (true) {
+            line = proc.readLine();
+            if (line.equals("-NoEnumerate a")) {
+                return SH;
+            }
+
+            if (line.contains("echo -NoEnumerate \"a\"")) {
+                break;
+            }
+        }
+
+        var o = proc.readLine();
+
+        if (o.equals("a")) {
+            return POWERSHELL;
+        } else if (o.equals("-NoEnumerate \"a\"")) {
+            return CMD;
         } else {
-            o = store.prepareCommand(
-                            List.of(),
-                            List.of("(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell"),
-                            null,
-                            StandardCharsets.UTF_16LE)
-                    .executeAndReadStdoutOrThrow()
-                    .trim();
-            if (o.equals("PowerShell")) {
-                return POWERSHELL;
+            return SH;
+        }
+    }
+
+    public static ShellType[] getAvailable(ShellStore store) throws Exception {
+        try (ProcessControl proc = store.create().start()) {
+            var type = determine(proc);
+            if (type == SH) {
+                return getLinuxShells();
             } else {
-                return CMD;
+                return getWindowsShells();
             }
         }
     }
 
-    public static StandardShellStore.ShellType[] getAvailable(ShellStore store) throws Exception {
-        var o = store.prepareCommand(List.of(), List.of("echo", "$0"), null, StandardCharsets.US_ASCII)
-                .executeAndReadStdoutOrThrow();
-        if (o.trim().length() > 0 && !o.trim().equals("$0")) {
-            return getLinuxShells();
-        } else {
-            return getWindowsShells();
-        }
-    }
-
-    public static StandardShellStore.ShellType getRecommendedDefault() {
+    public static ShellType getRecommendedDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
             return POWERSHELL;
         } else {
@@ -57,7 +60,7 @@ public class ShellTypes {
         }
     }
 
-    public static StandardShellStore.ShellType getPlatformDefault() {
+    public static ShellType getPlatformDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
             return CMD;
         } else {
@@ -65,17 +68,51 @@ public class ShellTypes {
         }
     }
 
-    public static StandardShellStore.ShellType[] getWindowsShells() {
-        return new StandardShellStore.ShellType[] {CMD, POWERSHELL};
+    public static ShellType[] getWindowsShells() {
+        return new ShellType[] {CMD, POWERSHELL};
     }
 
-    public static StandardShellStore.ShellType[] getLinuxShells() {
-        return new StandardShellStore.ShellType[] {SH};
+    public static ShellType[] getLinuxShells() {
+        return new ShellType[] {SH};
     }
 
     @JsonTypeName("cmd")
     @Value
-    public static class Cmd implements StandardShellStore.ShellType {
+    public static class Cmd implements ShellType {
+
+        @Override
+        public String getEchoCommand(String s, boolean newLine) {
+            return newLine ? "echo " + s : "echo | set /p dummyName=" + s;
+        }
+
+        @Override
+        public String getConcatenationOperator() {
+            return "&";
+        }
+
+        @Override
+        public void elevate(ShellProcessControl control, String command, String displayCommand) throws IOException {
+            control.executeCommand("net session >NUL 2>NUL");
+            control.executeCommand("echo %errorLevel%");
+            var exitCode = Integer.parseInt(control.readLine());
+            if (exitCode != 0) {
+                throw new IllegalStateException("The command \"" + displayCommand + "\" requires elevation.");
+            }
+
+            control.executeCommand(command);
+        }
+
+        @Override
+        public void init(ProcessControl proc) throws IOException {
+            proc.readLine();
+            proc.readLine();
+            proc.readLine();
+        }
+
+        @Override
+        public String getExitCodeVariable() {
+            return "%errorlevel%";
+        }
 
         @Override
         public NewLine getNewLine() {
@@ -83,24 +120,18 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> switchTo(List<String> cmd) {
-            var l = new ArrayList<>(cmd);
-            l.add(0, "cmd.exe");
-            l.add(1, "/c");
-            l.add(2, "@chcp");
-            l.add(3, "65001");
-            l.add(4, ">");
-            l.add(5, "nul");
-            l.add(6, "&&");
-            return l;
+        public List<String> openCommand() {
+            return List.of("cmd");
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(
-                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw, Charset charset)
-                throws Exception {
-            var l = List.of("net", "session", ";", "if", "%errorLevel%", "!=", "0");
-            return st.prepareCommand(List.of(), l, timeout, charset);
+        public String switchTo(String cmd) {
+            return "cmd.exe /c " + cmd;
+        }
+
+        @Override
+        public List<String> createMkdirsCommand(String dirs) {
+            return List.of("lmkdir", dirs);
         }
 
         @Override
@@ -119,8 +150,11 @@ public class ShellTypes {
         }
 
         @Override
-        public Charset determineCharset(ShellStore store) throws Exception {
-            return StandardCharsets.UTF_8;
+        public Charset determineCharset(ProcessControl control) throws Exception {
+            var output = control.readResultLine("chcp", true);
+            var matcher = Pattern.compile("\\d+").matcher(output);
+            matcher.find();
+            return Charset.forName("ibm" + matcher.group());
         }
 
         @Override
@@ -130,24 +164,63 @@ public class ShellTypes {
 
         @Override
         public String getDisplayName() {
-            return "cmd.exe";
+            return "cmd";
         }
 
         @Override
         public List<String> getOperatingSystemNameCommand() {
             return List.of("Get-ComputerInfo");
         }
+
+        @Override
+        public boolean echoesInput() {
+            return true;
+        }
     }
 
     @JsonTypeName("powershell")
     @Value
-    public static class PowerShell implements StandardShellStore.ShellType {
+    public static class PowerShell implements ShellType {
 
         @Override
-        public List<String> switchTo(List<String> cmd) {
-            var l = new ArrayList<>(cmd);
-            l.add(0, "powershell.exe");
-            return l;
+        public boolean echoesInput() {
+            return true;
+        }
+
+        @Override
+        public void elevate(ShellProcessControl control, String command, String displayCommand) throws IOException {
+            control.executeCommand("([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)");
+            var exitCode = Integer.parseInt(control.readLine());
+            if (exitCode != 0) {
+                throw new IllegalStateException("The command \"" + displayCommand + "\" requires elevation.");
+            }
+
+            control.executeCommand(command);
+        }
+
+        @Override
+        public String getExitCodeVariable() {
+            return "$LASTEXITCODE";
+        }
+
+        @Override
+        public String getEchoCommand(String s, boolean newLine) {
+            return newLine ? "echo " + s : String.format("Write-Host \"%s\" -NoNewLine", s);
+        }
+
+        @Override
+        public List<String> openCommand() {
+            return List.of("powershell", "/nologo");
+        }
+
+        @Override
+        public String switchTo(String cmd) {
+            return "powershell.exe -Command " + cmd;
+        }
+
+        @Override
+        public List<String> createMkdirsCommand(String dirs) {
+            return List.of("New-Item", "-Path", "D:\\temp\\Test Folder", "-ItemType", "Directory");
         }
 
         @Override
@@ -166,8 +239,11 @@ public class ShellTypes {
         }
 
         @Override
-        public Charset determineCharset(ShellStore store) throws Exception {
-            return StandardCharsets.UTF_16LE;
+        public Charset determineCharset(ProcessControl control) throws Exception {
+            var output = control.readResultLine("chcp", true);
+            var matcher = Pattern.compile("\\d+").matcher(output);
+            matcher.find();
+            return Charset.forName("ibm" + matcher.group());
         }
 
         @Override
@@ -193,22 +269,41 @@ public class ShellTypes {
 
     @JsonTypeName("sh")
     @Value
-    public static class Sh implements StandardShellStore.ShellType {
+    public static class Sh implements ShellType {
 
         @Override
-        public List<String> switchTo(List<String> cmd) {
-            return cmd;
+        public void elevate(ShellProcessControl control, String command, String displayCommand) throws IOException {
+            if (control.getElevationPassword().getSecretValue() == null) {
+                throw new IllegalStateException("No password for sudo has been set");
+            }
+
+            control.executeCommand("sudo -S " + switchTo(command));
+            control.writeLine(control.getElevationPassword().getSecretValue());
         }
 
         @Override
-        public ProcessControl prepareElevatedCommand(
-                ShellStore st, List<SecretValue> in, List<String> cmd, Integer timeout, String pw, Charset charset)
-                throws Exception {
-            var l = new ArrayList<>(cmd);
-            l.add(0, "sudo");
-            l.add(1, "-S");
-            var pws = new ByteArrayInputStream(pw.getBytes(determineCharset(st)));
-            return st.prepareCommand(List.of(SecretValue.createForSecretValue(pw)), l, timeout, charset);
+        public String getExitCodeVariable() {
+            return "$?";
+        }
+
+        @Override
+        public String getEchoCommand(String s, boolean newLine) {
+            return newLine ? "echo " + s : "echo -n " + s;
+        }
+
+        @Override
+        public List<String> openCommand() {
+            return List.of("sh");
+        }
+
+        @Override
+        public String switchTo(String cmd) {
+            return "sh -c \"" + cmd + "\"";
+        }
+
+        @Override
+        public List<String> createMkdirsCommand(String dirs) {
+            return List.of("mkdir", "-p", dirs);
         }
 
         @Override
@@ -227,7 +322,7 @@ public class ShellTypes {
         }
 
         @Override
-        public Charset determineCharset(ShellStore st) throws Exception {
+        public Charset determineCharset(ProcessControl st) throws Exception {
             return StandardCharsets.UTF_8;
         }
 
@@ -249,6 +344,11 @@ public class ShellTypes {
         @Override
         public List<String> getOperatingSystemNameCommand() {
             return List.of("uname", "-o");
+        }
+
+        @Override
+        public boolean echoesInput() {
+            return false;
         }
     }
 }

@@ -4,8 +4,8 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -38,16 +38,13 @@ public class QueryDataSourceExchange implements MessageExchange {
         @NonNull
         DataSourceId id;
 
-        boolean disabled;
-        boolean hidden;
+        @NonNull
+        String information;
 
         @NonNull
-        DataSourceInfo info;
-
-        @NonNull
-        String storeDisplay;
-
         String provider;
+
+        @NonNull DataSourceType type;
 
         @NonNull
         LinkedHashMap<String, String> config;

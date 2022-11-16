@@ -1,43 +1,20 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.util.SecretValue;
-
-import java.nio.charset.Charset;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public interface ShellStore extends DataStore {
 
-    public default Integer getTimeout() {
-        return null;
+    public static MachineStore local() {
+        return new LocalStore();
     }
 
-    public default List<SecretValue> getInput() {
-        return List.of();
-    }
+    ShellProcessControl create();
 
-    public default Integer getEffectiveTimeOut(Integer timeout) {
-        if (this.getTimeout() == null) {
-            return timeout;
+    public default ShellType determineType() throws Exception {
+        AtomicReference<ShellType> type = new AtomicReference<>();
+        try (var pc = create().start()) {
+            type.set(pc.getShellType());
         }
-        if (timeout == null) {
-            return getTimeout();
-        }
-        return Math.min(getTimeout(), timeout);
-    }
-
-    public default ProcessControl prepareCommand(List<String> cmd, Integer timeout, Charset charset) throws Exception {
-        return prepareCommand(List.of(), cmd, timeout, charset);
-    }
-
-    public abstract ProcessControl prepareCommand(List<SecretValue> input, List<String> cmd, Integer timeout, Charset charset)
-            throws Exception;
-
-    public default ProcessControl preparePrivilegedCommand(List<String> cmd, Integer timeout, Charset charset) throws Exception {
-        return preparePrivilegedCommand(List.of(), cmd, timeout, charset);
-    }
-
-    public default ProcessControl preparePrivilegedCommand(List<SecretValue> input, List<String> cmd, Integer timeout, Charset charset)
-            throws Exception {
-        throw new UnsupportedOperationException();
+        return type.get();
     }
 }

@@ -4,6 +4,7 @@ import io.xpipe.extension.I18n;
 import io.xpipe.fxcomps.Comp;
 import io.xpipe.fxcomps.CompStructure;
 import io.xpipe.fxcomps.SimpleCompStructure;
+import io.xpipe.fxcomps.util.BindingsHelper;
 import io.xpipe.fxcomps.util.PlatformThread;
 import io.xpipe.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
@@ -64,7 +65,8 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
             if (!list.contains(null) && includeNone) {
                 list.add(null);
             }
-            cb.setItems(list);
+
+            BindingsHelper.setContent(cb.getItems(), list);
         });
 
         cb.valueProperty().addListener((observable, oldValue, newValue) -> {
