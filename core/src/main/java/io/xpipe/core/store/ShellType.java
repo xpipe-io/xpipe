@@ -3,20 +3,13 @@ package io.xpipe.core.store;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
 
-    void elevate(ShellProcessControl control, String command, String displayCommand) throws IOException;
-
-    default void init(ProcessControl proc) throws IOException {
-    }
+    void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception;
 
     default String getExitCommand() {
         return "exit";
@@ -28,9 +21,14 @@ public interface ShellType {
         return ";";
     }
 
-    String getEchoCommand(String s, boolean newLine);
+    default String getAndConcatenationOperator() {
+        return "&&";
+    }
+
+    String getEchoCommand(String s, boolean toErrorStream);
 
     List<String> openCommand();
+
     String switchTo(String cmd);
 
     List<String> createMkdirsCommand(String dirs);
@@ -41,15 +39,13 @@ public interface ShellType {
 
     List<String> createFileExistsCommand(String file);
 
-    Charset determineCharset(ProcessControl control) throws Exception;
+    Charset determineCharset(ShellProcessControl control) throws Exception;
 
     NewLine getNewLine();
 
     String getName();
 
     String getDisplayName();
-
-    List<String> getOperatingSystemNameCommand();
 
     boolean echoesInput();
 }

@@ -6,15 +6,20 @@ import lombok.NonNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public interface ShellProcessControl extends ProcessControl {
 
-     ShellProcessControl elevation(SecretValue value);
+    ShellProcessControl elevated(Predicate<ShellProcessControl> elevationFunction);
+
+    ShellProcessControl elevation(SecretValue value);
+
+    ShellProcessControl startTimeout(Integer timeout);
 
     SecretValue getElevationPassword();
 
-    default ShellProcessControl shell(@NonNull ShellType type){
+    default ShellProcessControl shell(@NonNull ShellType type) {
         return shell(type.openCommand());
     }
 
@@ -23,15 +28,15 @@ public interface ShellProcessControl extends ProcessControl {
                 command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
     }
 
-    default ShellProcessControl shell(@NonNull String command){
+    default ShellProcessControl shell(@NonNull String command) {
         return shell(processControl -> command);
     }
 
-    ShellProcessControl shell(@NonNull Function<ProcessControl, String> command);
+    ShellProcessControl shell(@NonNull Function<ShellProcessControl, String> command);
 
-    void executeCommand(String command) throws IOException;
+    void executeCommand(String command) throws Exception;
 
-    default void executeCommand(List<String> command) throws IOException {
+    default void executeCommand(List<String> command) throws Exception {
         executeCommand(
                 command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
     }
@@ -40,8 +45,9 @@ public interface ShellProcessControl extends ProcessControl {
     ShellProcessControl start() throws Exception;
 
     default CommandProcessControl commandListFunction(Function<ShellProcessControl, List<String>> command) {
-        return commandFunction(shellProcessControl ->
-                command.apply(shellProcessControl).stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
+        return commandFunction(shellProcessControl -> command.apply(shellProcessControl).stream()
+                .map(s -> s.contains(" ") ? "\"" + s + "\"" : s)
+                .collect(Collectors.joining(" ")));
     }
 
     CommandProcessControl commandFunction(Function<ShellProcessControl, String> command);
@@ -54,5 +60,4 @@ public interface ShellProcessControl extends ProcessControl {
     }
 
     void exit() throws IOException;
-
 }

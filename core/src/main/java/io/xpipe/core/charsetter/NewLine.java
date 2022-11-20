@@ -20,7 +20,7 @@ public enum NewLine {
 
     public static NewLine platform() {
         return Arrays.stream(values())
-                .filter(n -> n.getNewLine().equals(System.getProperty("line.separator")))
+                .filter(n -> n.getNewLineString().equals(System.getProperty("line.separator")))
                 .findFirst()
                 .orElseThrow();
     }
@@ -32,7 +32,7 @@ public enum NewLine {
                 .orElseThrow();
     }
 
-    public String getNewLine() {
+    public String getNewLineString() {
         return newLine;
     }
 

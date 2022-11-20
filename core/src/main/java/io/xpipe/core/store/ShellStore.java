@@ -8,6 +8,10 @@ public interface ShellStore extends DataStore {
         return new LocalStore();
     }
 
+    static boolean isLocal(ShellStore s) {
+        return s instanceof LocalStore;
+    }
+
     ShellProcessControl create();
 
     public default ShellType determineType() throws Exception {

@@ -130,7 +130,7 @@ public abstract class Charsetter {
     public NewLine inferNewLine(byte[] content) {
         Map<NewLine, Integer> count = new HashMap<>();
         for (var nl : NewLine.values()) {
-            var nlBytes = nl.getNewLine().getBytes(StandardCharsets.UTF_8);
+            var nlBytes = nl.getNewLineString().getBytes(StandardCharsets.UTF_8);
             count.put(nl, count(content, nlBytes));
         }
 

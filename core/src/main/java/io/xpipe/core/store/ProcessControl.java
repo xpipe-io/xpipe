@@ -1,10 +1,10 @@
 package io.xpipe.core.store;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.UUID;
 
 public interface ProcessControl extends AutoCloseable {
 
@@ -12,41 +12,15 @@ public interface ProcessControl extends AutoCloseable {
 
     ShellType getShellType();
 
-    String readResultLine(String input, boolean captureOutput) throws IOException;
-
     void writeLine(String line) throws IOException;
-
-    void writeLine(String line, boolean captureOutput) throws IOException;
 
     void typeLine(String line);
 
-    public default String readOutput() throws IOException {
-        var id = UUID.randomUUID();
-        writeLine("echo " + id, false);
-        String lines = "";
-        while (true) {
-            var newLine = readLine();
-            if (newLine.contains(id.toString())) {
-                if (getShellType().echoesInput()) {
-                    readLine();
-                }
-
-                break;
-            }
-
-            lines = lines + newLine + "\n";
-        }
-        return lines;
-    }
-
     @Override
     void close() throws IOException;
+    void kill() throws Exception;
 
-    String readLine() throws IOException;
-
-    void kill() throws IOException;
-
-    ProcessControl exitTimeout(int timeout);
+    ProcessControl exitTimeout(Integer timeout);
 
     ProcessControl start() throws Exception;
 
@@ -59,4 +33,7 @@ public interface ProcessControl extends AutoCloseable {
     InputStream getStderr();
 
     Charset getCharset();
+
+    BufferedReader getStdoutReader();
+    BufferedReader getStderrReader();
 }

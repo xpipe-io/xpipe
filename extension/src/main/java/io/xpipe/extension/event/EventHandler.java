@@ -5,7 +5,7 @@ import java.util.ServiceLoader;
 
 public abstract class EventHandler {
 
-    private static final EventHandler DEFAULT = new EventHandler() {
+    public static final EventHandler DEFAULT = new EventHandler() {
         @Override
         public List<TrackEvent> snapshotEvents() {
             return List.of();

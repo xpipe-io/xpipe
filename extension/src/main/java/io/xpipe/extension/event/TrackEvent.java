@@ -35,6 +35,10 @@ public class TrackEvent {
         return builder().type("info").message(message);
     }
 
+    public static TrackEventBuilder withWarn(String category, String message) {
+        return builder().category(category).type("warn").message(message);
+    }
+
     public static TrackEventBuilder withWarn(String message) {
         return builder().type("warn").message(message);
     }

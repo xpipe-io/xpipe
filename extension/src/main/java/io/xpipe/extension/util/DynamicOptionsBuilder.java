@@ -183,7 +183,7 @@ public class DynamicOptionsBuilder {
 
     public DynamicOptionsBuilder addComp(ObservableValue<String> name, Comp<?> comp, Property<?> prop) {
         entries.add(new DynamicOptionsComp.Entry(name, comp));
-        props.add(prop);
+        if (prop != null) props.add(prop);
         return this;
     }
 

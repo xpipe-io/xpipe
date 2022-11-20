@@ -14,6 +14,6 @@ public class TextWriteConnection extends StreamWriteConnection implements io.xpi
     @Override
     public void writeLine(String line) throws Exception {
         writer.write(line);
-        writer.write(source.getNewLine().getNewLine());
+        writer.write(source.getNewLine().getNewLineString());
     }
 }
