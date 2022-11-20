@@ -18,8 +18,10 @@ public class TrackEvent {
     private String type;
     private String message;
     private String category;
+
     @Singular
     private Map<String, Object> tags;
+
     @Singular
     private List<String> elements;
 
@@ -97,15 +99,19 @@ public class TrackEvent {
 
     @Override
     public String toString() {
-        var s = message;
+        var s = new StringBuilder(message);
         if (tags.size() > 0) {
-            s += " {\n";
+            s.append(" {\n");
             for (var e : tags.entrySet()) {
-                s += "    " + e.getKey() + "=" + e.getValue() + "\n";
+                s.append("    ")
+                        .append(e.getKey())
+                        .append("=")
+                        .append(e.getValue())
+                        .append("\n");
             }
-            s += "}";
+            s.append("}");
         }
-        return s;
+        return s.toString();
     }
 
     public static class TrackEventBuilder {

@@ -1,6 +1,5 @@
 package io.xpipe.core.store;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,7 +32,4 @@ public interface ProcessControl extends AutoCloseable {
     InputStream getStderr();
 
     Charset getCharset();
-
-    BufferedReader getStdoutReader();
-    BufferedReader getStderrReader();
 }
