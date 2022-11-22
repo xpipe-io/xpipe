@@ -27,6 +27,8 @@ public interface ShellType {
 
     String getEchoCommand(String s, boolean toErrorStream);
 
+    String queryShellProcessId(ShellProcessControl control) throws Exception;
+
     List<String> openCommand();
 
     String switchTo(String cmd);

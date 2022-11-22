@@ -18,6 +18,7 @@ public abstract class EventHandler {
                 cat = "log";
             }
             System.out.println("[" + cat + "] " + te.toString());
+            System.out.flush();
         }
 
         @Override

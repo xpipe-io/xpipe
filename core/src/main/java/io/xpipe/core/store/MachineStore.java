@@ -1,7 +1,5 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.util.SupportedOs;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -19,7 +17,7 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     public default String queryMachineName() throws Exception {
         try (var pc = create().start()) {
-            var operatingSystem = SupportedOs.determine(pc);
+            var operatingSystem = pc.getOsType();
             return operatingSystem.determineOperatingSystemName(pc);
         }
     }

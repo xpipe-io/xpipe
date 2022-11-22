@@ -5,6 +5,7 @@ import io.xpipe.core.charsetter.NewLine;
 import lombok.Value;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +49,19 @@ public class ShellTypes {
         @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
             return toErrorStream ? "(echo " + s + ")1>&2" : "echo " + s;
+        }
+
+        @Override
+        public String queryShellProcessId(ShellProcessControl control) throws IOException {
+            control.writeLine("powershell (Get-WmiObject Win32_Process -Filter ProcessId=$PID).ParentProcessId");
+
+            var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
+            // Read echo of command
+            r.readLine();
+            // Read actual output
+            var line = r.readLine();
+            r.readLine();
+            return line;
         }
 
         @Override
@@ -145,6 +159,23 @@ public class ShellTypes {
     public static class PowerShell implements ShellType {
 
         @Override
+        public String queryShellProcessId(ShellProcessControl control) throws IOException {
+            control.writeLine("powershell (Get-WmiObject Win32_Process -Filter ProcessId=$PID).ParentProcessId");
+
+            var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
+            // Read echo of command
+            r.readLine();
+            // Read actual output
+            var line = r.readLine();
+            return line;
+        }
+
+        @Override
+        public String getConcatenationOperator() {
+            return ";";
+        }
+
+        @Override
         public boolean echoesInput() {
             return true;
         }
@@ -169,7 +200,11 @@ public class ShellTypes {
 
         @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
-            return String.format("%s \"%s\"", toErrorStream ? "Write-Error" : "Write-Output", s);
+            if (toErrorStream) {
+                return String.format("$host.ui.WriteErrorLine('%s')", s);
+            }
+
+            return String.format("%s \"%s\"", "Write-Output", s);
         }
 
         @Override
@@ -204,12 +239,17 @@ public class ShellTypes {
 
         @Override
         public Charset determineCharset(ShellProcessControl control) throws Exception {
-            try (CommandProcessControl c = control.command("chcp").start()) {
-                var output = c.readOrThrow().strip();
-                var matcher = Pattern.compile("\\d+").matcher(output);
-                matcher.find();
-                return Charset.forName("ibm" + matcher.group());
-            }
+            control.writeLine("chcp");
+
+            var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
+            // Read echo of command
+            r.readLine();
+            // Read actual output
+            var line = r.readLine();
+
+            var matcher = Pattern.compile("\\d+").matcher(line);
+            matcher.find();
+            return Charset.forName("ibm" + matcher.group());
         }
 
         @Override
@@ -264,6 +304,16 @@ public class ShellTypes {
             return "echo " + s + (toErrorStream ? " 1>&2" : "");
         }
 
+
+        @Override
+        public String queryShellProcessId(ShellProcessControl control) throws Exception {
+            try (CommandProcessControl c = control.command("echo $$").start()) {
+                var out = c.readOnlyStdout();
+                var matcher = Pattern.compile("\\d+$").matcher(out);
+                matcher.find();
+                return matcher.group(0);
+            }
+        }
         @Override
         public List<String> openCommand() {
             return List.of("sh", "-i", "-l");
@@ -291,7 +341,7 @@ public class ShellTypes {
 
         @Override
         public List<String> createFileExistsCommand(String file) {
-            return List.of("test", "-f", file, "||", "test", "-d", file);
+            return List.of("(", "test", "-f", file, "||", "test", "-d", file, ")");
         }
 
         @Override

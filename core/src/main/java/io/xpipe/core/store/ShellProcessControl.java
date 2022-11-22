@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.util.OsType;
 import io.xpipe.core.util.SecretValue;
 import lombok.NonNull;
 
@@ -11,6 +12,10 @@ import java.util.stream.Collectors;
 
 public interface ShellProcessControl extends ProcessControl {
 
+    int getProcessId();
+
+    OsType getOsType();
+
     ShellProcessControl elevated(Predicate<ShellProcessControl> elevationFunction);
 
     ShellProcessControl elevation(SecretValue value);
@@ -21,6 +26,10 @@ public interface ShellProcessControl extends ProcessControl {
 
     default ShellProcessControl shell(@NonNull ShellType type) {
         return shell(type.openCommand());
+    }
+
+    default CommandProcessControl command(@NonNull ShellType type, String command) {
+        return command(type.switchTo(command));
     }
 
     default ShellProcessControl shell(@NonNull List<String> command) {
@@ -35,11 +44,6 @@ public interface ShellProcessControl extends ProcessControl {
     ShellProcessControl shell(@NonNull Function<ShellProcessControl, String> command);
 
     void executeCommand(String command) throws Exception;
-
-    default void executeCommand(List<String> command) throws Exception {
-        executeCommand(
-                command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
-    }
 
     @Override
     ShellProcessControl start() throws Exception;
@@ -59,5 +63,5 @@ public interface ShellProcessControl extends ProcessControl {
                 command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
     }
 
-    void exit() throws IOException;
+    void exitAndWait() throws IOException;
 }

@@ -33,6 +33,8 @@ public interface CommandProcessControl extends ProcessControl {
         }
     }
 
+    public boolean waitFor();
+
     CommandProcessControl customCharset(Charset charset);
 
     int getExitCode();
@@ -70,7 +72,7 @@ public interface CommandProcessControl extends ProcessControl {
         }
     }
 
-    Thread discardOut();
+    void discardOut();
 
-    Thread discardErr();
+    void discardErr();
 }

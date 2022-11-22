@@ -1,36 +1,37 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.store.*;
-import lombok.SneakyThrows;
+import io.xpipe.core.store.CommandProcessControl;
+import io.xpipe.core.store.PropertiesFormatsParser;
+import io.xpipe.core.store.ShellProcessControl;
+import io.xpipe.core.store.ShellTypes;
 
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-public interface SupportedOs {
+public interface OsType {
 
     Windows WINDOWS = new Windows();
     Linux LINUX = new Linux();
     Mac MAC = new Mac();
 
-    static SupportedOs determine(ShellProcessControl pc) throws Exception {
-        try (CommandProcessControl c = pc.command(pc.getShellType().createFileExistsCommand("C:\\pagefile.sys")).start()) {
-            if (c.discardAndCheckExit()) {
-                return WINDOWS;
-            }
-        }
-
-        return LINUX;
-    }
+    String getName();
 
     Map<String, String> getProperties(ShellProcessControl pc) throws Exception;
 
     String determineOperatingSystemName(ShellProcessControl pc) throws Exception;
 
-    @SneakyThrows
-    public static SupportedOs getLocal() {
-        try (ShellProcessControl pc = ShellStore.local().create().start()) {
-            return determine(pc);
+    public static OsType getLocal() {
+        String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+        if ((osName.contains("mac")) || (osName.contains("darwin"))) {
+            return MAC;
+        } else if (osName.contains("win")) {
+            return WINDOWS;
+        } else if (osName.contains("nux")) {
+            return LINUX;
+        } else {
+            throw new UnsupportedOperationException("Unknown operating system");
         }
     }
 
@@ -38,7 +39,12 @@ public interface SupportedOs {
 
     UUID getSystemUUID(ShellProcessControl pc) throws Exception;
 
-    static class Windows implements SupportedOs {
+    static class Windows implements OsType {
+
+        @Override
+        public String getName() {
+            return "Windows";
+        }
 
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
@@ -71,7 +77,12 @@ public interface SupportedOs {
         }
     }
 
-    static class Linux implements SupportedOs {
+    static class Linux implements OsType {
+
+        @Override
+        public String getName() {
+            return "Linux";
+        }
 
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
@@ -81,7 +92,7 @@ public interface SupportedOs {
         @Override
         public String determineOperatingSystemName(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                    pc.shell(ShellTypes.SH).command("lsb_release -a").start()) {
+                    pc.command(ShellTypes.SH, "lsb_release -a").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", null);
@@ -89,7 +100,7 @@ public interface SupportedOs {
             }
 
             try (CommandProcessControl c =
-                         pc.shell(ShellTypes.SH).command("cat /etc/*release").start()) {
+                    pc.command(ShellTypes.SH, "cat /etc/*release").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", null);
@@ -97,8 +108,7 @@ public interface SupportedOs {
             }
 
             String type = "Unknown";
-            try (CommandProcessControl c =
-                         pc.shell(ShellTypes.SH).command("uname -o").start()) {
+            try (CommandProcessControl c = pc.command(ShellTypes.SH, "uname -o").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     type = text.strip();
@@ -106,8 +116,7 @@ public interface SupportedOs {
             }
 
             String version = "?";
-            try (CommandProcessControl c =
-                         pc.shell(ShellTypes.SH).command("uname -r").start()) {
+            try (CommandProcessControl c = pc.command(ShellTypes.SH, "uname -r").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     version = text.strip();
@@ -128,7 +137,12 @@ public interface SupportedOs {
         }
     }
 
-    static class Mac implements SupportedOs {
+    static class Mac implements OsType {
+
+        @Override
+        public String getName() {
+            return "Mac";
+        }
 
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {

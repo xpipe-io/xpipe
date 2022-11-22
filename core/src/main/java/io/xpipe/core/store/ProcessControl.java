@@ -13,8 +13,6 @@ public interface ProcessControl extends AutoCloseable {
 
     void writeLine(String line) throws IOException;
 
-    void typeLine(String line);
-
     @Override
     void close() throws IOException;
     void kill() throws Exception;
@@ -22,8 +20,6 @@ public interface ProcessControl extends AutoCloseable {
     ProcessControl exitTimeout(Integer timeout);
 
     ProcessControl start() throws Exception;
-
-    boolean waitFor() throws Exception;
 
     InputStream getStdout();
 
