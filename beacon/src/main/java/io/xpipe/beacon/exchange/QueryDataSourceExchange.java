@@ -38,7 +38,6 @@ public class QueryDataSourceExchange implements MessageExchange {
         @NonNull
         DataSourceId id;
 
-        @NonNull
         String information;
 
         @NonNull

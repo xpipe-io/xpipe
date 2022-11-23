@@ -9,6 +9,10 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
 
+    default String joinCommands(String... s) {
+        return String.join(getConcatenationOperator(), s);
+    }
+
     void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception;
 
     default String getExitCommand() {
@@ -28,6 +32,8 @@ public interface ShellType {
     String getEchoCommand(String s, boolean toErrorStream);
 
     String queryShellProcessId(ShellProcessControl control) throws Exception;
+
+    String getSetVariableCommand(String variableName, String value);
 
     List<String> openCommand();
 

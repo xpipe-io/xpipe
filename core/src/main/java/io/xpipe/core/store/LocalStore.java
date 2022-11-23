@@ -25,7 +25,7 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
     @Override
     public boolean mkdirs(String file) throws Exception {
         try {
-            Files.createDirectories(Path.of(file).getParent());
+            Files.createDirectories(Path.of(file));
             return true;
         } catch (Exception ex) {
             return false;
@@ -40,7 +40,6 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
 
     @Override
     public OutputStream openOutput(String file) throws Exception {
-        mkdirs(file);
         var p = Path.of(file);
         return Files.newOutputStream(p);
     }

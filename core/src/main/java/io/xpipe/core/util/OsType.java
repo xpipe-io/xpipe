@@ -18,6 +18,8 @@ public interface OsType {
 
     String getName();
 
+    String normalizeFileName(String file);
+
     Map<String, String> getProperties(ShellProcessControl pc) throws Exception;
 
     String determineOperatingSystemName(ShellProcessControl pc) throws Exception;
@@ -44,6 +46,11 @@ public interface OsType {
         @Override
         public String getName() {
             return "Windows";
+        }
+
+        @Override
+        public String normalizeFileName(String file) {
+            return String.join("\\", file.split("[\\\\/]+"));
         }
 
         @Override
@@ -78,6 +85,11 @@ public interface OsType {
     }
 
     static class Linux implements OsType {
+
+        @Override
+        public String normalizeFileName(String file) {
+            return String.join("/", file.split("[\\\\/]+"));
+        }
 
         @Override
         public String getName() {
@@ -138,6 +150,11 @@ public interface OsType {
     }
 
     static class Mac implements OsType {
+
+        @Override
+        public String normalizeFileName(String file) {
+            return String.join("/", file.split("[\\\\/]+"));
+        }
 
         @Override
         public String getName() {

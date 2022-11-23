@@ -47,6 +47,11 @@ public class ShellTypes {
     public static class Cmd implements ShellType {
 
         @Override
+        public String getSetVariableCommand(String variableName, String value) {
+            return "set \"" + variableName + "=" + value + "\"";
+        }
+
+        @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
             return toErrorStream ? "(echo " + s + ")1>&2" : "echo " + s;
         }
@@ -103,7 +108,7 @@ public class ShellTypes {
 
         @Override
         public List<String> createMkdirsCommand(String dirs) {
-            return List.of("lmkdir", dirs);
+            return List.of("mkdir", dirs);
         }
 
         @Override
@@ -113,12 +118,12 @@ public class ShellTypes {
 
         @Override
         public List<String> createFileWriteCommand(String file) {
-            return List.of("Out-File", "-FilePath", file);
+            return List.of("findstr", "\"^\"", ">", file);
         }
 
         @Override
         public List<String> createFileExistsCommand(String file) {
-            return List.of("if", "exist", file, "echo", "hi");
+            return List.of("dir", "/a", file);
         }
 
         @Override
@@ -157,6 +162,11 @@ public class ShellTypes {
     @JsonTypeName("powershell")
     @Value
     public static class PowerShell implements ShellType {
+
+        @Override
+        public String getSetVariableCommand(String variableName, String value) {
+            return "set " + variableName + "=" + value;
+        }
 
         @Override
         public String queryShellProcessId(ShellProcessControl control) throws IOException {
@@ -218,23 +228,23 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createMkdirsCommand(String dirs) {
-            return List.of("New-Item", "-Path", dirs, "-ItemType", "Directory");
-        }
-
-        @Override
         public List<String> createFileReadCommand(String file) {
-            return List.of("Get-Content", file);
+            return List.of("cmd", "/c", "type", file);
         }
 
         @Override
         public List<String> createFileWriteCommand(String file) {
-            return List.of("Out-File", "-FilePath", file);
+            return List.of("cmd", "/c", "findstr", "\"^\"", ">", file);
+        }
+
+        @Override
+        public List<String> createMkdirsCommand(String dirs) {
+            return List.of("cmd", "/c", "mkdir", dirs);
         }
 
         @Override
         public List<String> createFileExistsCommand(String file) {
-            return List.of("Test-Path", "-path", file);
+            return List.of("cmd", "/c", "dir", "/a", file);
         }
 
         @Override
@@ -285,12 +295,12 @@ public class ShellTypes {
         @Override
         public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
             if (control.getElevationPassword() == null) {
-                control.executeCommand("SUDO_ASKPASS=/bin/false; sudo -p \"\" -S  " + command);
+                control.executeCommand("SUDO_ASKPASS=/bin/false sudo -p \"\" -S  " + command);
                 return;
             }
 
-            control.executeCommand("sudo -p \"\" -S " + command);
-            // Thread.sleep(200);
+            // For sudo to always query for a password by using the -k switch
+            control.executeCommand("sudo -p \"\" -k -S " + command);
             control.writeLine(control.getElevationPassword().getSecretValue());
         }
 
@@ -314,6 +324,12 @@ public class ShellTypes {
                 return matcher.group(0);
             }
         }
+
+        @Override
+        public String getSetVariableCommand(String variableName, String value) {
+            return variableName + "=" + value;
+        }
+
         @Override
         public List<String> openCommand() {
             return List.of("sh", "-i", "-l");
@@ -336,7 +352,7 @@ public class ShellTypes {
 
         @Override
         public List<String> createFileWriteCommand(String file) {
-            return List.of(file);
+            return List.of("cat", ">", file);
         }
 
         @Override

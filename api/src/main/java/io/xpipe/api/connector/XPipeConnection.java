@@ -64,7 +64,7 @@ public final class XPipeConnection extends BeaconConnection {
 
     public static Optional<BeaconClient> waitForStartup(Process process) {
         for (int i = 0; i < 160; i++) {
-            if (process != null && !process.isAlive()) {
+            if (process != null && !process.isAlive() && process.exitValue() != 0) {
                 return Optional.empty();
             }
 

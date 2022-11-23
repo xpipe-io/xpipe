@@ -6,9 +6,11 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 /**
  * Represents a file located on a file system.
@@ -25,6 +27,15 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
     public FileStore(FileSystemStore fileSystem, String file) {
         this.fileSystem = fileSystem;
         this.file = file;
+    }
+
+    public  String getParent() {
+        var matcher = Pattern.compile("^(.+?)[^\\\\/]+$").matcher(file);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Unable to determine parent of " + file);
+        }
+
+        return matcher.group(1);
     }
 
     public final boolean isLocal() {
@@ -59,6 +70,10 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     @Override
     public OutputStream openOutput() throws Exception {
+        if (!fileSystem.mkdirs(getParent())) {
+            throw new IOException("Unable to create directory: " + getParent());
+        }
+
         return fileSystem.openOutput(file);
     }
 

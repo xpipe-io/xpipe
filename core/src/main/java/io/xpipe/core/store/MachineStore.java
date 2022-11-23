@@ -7,8 +7,7 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     default void validate() throws Exception {
-        try (ShellProcessControl pc = create().start()) {
-        }
+        try (ShellProcessControl pc = create().start()) {}
     }
 
     public default boolean isLocal() {
@@ -24,29 +23,29 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     public default InputStream openInput(String file) throws Exception {
-        return create().commandListFunction(proc -> proc.getShellType().createFileReadCommand(file))
+        return create().commandListFunction(proc -> proc.getShellType().createFileReadCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdout();
     }
 
     @Override
     public default OutputStream openOutput(String file) throws Exception {
-        return create().commandListFunction(proc -> proc.getShellType().createFileWriteCommand(file))
+        return create().commandListFunction(proc -> proc.getShellType().createFileWriteCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdin();
     }
 
     @Override
     public default boolean exists(String file) throws Exception {
-        var r = create().commandListFunction(proc -> proc.getShellType().createFileExistsCommand(file))
-                .start()
-                .discardAndCheckExit();
-        return r;
+        try (var pc = create().commandListFunction(proc -> proc.getShellType().createFileExistsCommand(proc.getOsType().normalizeFileName(file)))
+                .start()) {
+            return pc.discardAndCheckExit();
+        }
     }
 
     @Override
     public default boolean mkdirs(String file) throws Exception {
-        var r = create().commandListFunction(proc -> proc.getShellType().createMkdirsCommand(file))
-                .start()
-                .discardAndCheckExit();
-        return r;
+        try (var pc = create().commandListFunction(proc -> proc.getShellType().createMkdirsCommand(proc.getOsType().normalizeFileName(file)))
+                .start()) {
+            return pc.discardAndCheckExit();
+        }
     }
 }

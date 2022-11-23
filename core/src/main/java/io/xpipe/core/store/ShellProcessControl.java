@@ -12,6 +12,16 @@ import java.util.stream.Collectors;
 
 public interface ShellProcessControl extends ProcessControl {
 
+    default String executeSimpleCommand(String command) throws Exception {
+        try (CommandProcessControl c = command(command).start()) {
+            return c.readOrThrow();
+        }
+    }
+
+    default String executeSimpleCommand(ShellType type,  String command) throws Exception {
+        return executeSimpleCommand(type.switchTo(command));
+    }
+
     int getProcessId();
 
     OsType getOsType();
