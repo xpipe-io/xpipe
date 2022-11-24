@@ -1,4 +1,6 @@
-package io.xpipe.core.store;
+package io.xpipe.core.impl;
+
+import io.xpipe.core.store.StreamDataStore;
 
 import java.io.InputStream;
 import java.io.OutputStream;

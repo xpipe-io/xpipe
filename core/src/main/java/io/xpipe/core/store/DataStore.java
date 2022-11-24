@@ -1,6 +1,8 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.core.impl.StdinDataStore;
+import io.xpipe.core.impl.StdoutDataStore;
 import io.xpipe.core.source.DataSource;
 
 import java.time.Instant;

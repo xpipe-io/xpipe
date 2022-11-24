@@ -1,3 +1,4 @@
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.util.CoreJacksonModule;
 
@@ -12,6 +13,7 @@ open module io.xpipe.core {
     exports io.xpipe.core.dialog;
     exports io.xpipe.core.impl;
     exports io.xpipe.core.charsetter;
+    exports io.xpipe.core.process;
 
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.module.paramnames;
@@ -22,7 +24,7 @@ open module io.xpipe.core {
 
     uses com.fasterxml.jackson.databind.Module;
     uses io.xpipe.core.source.WriteMode;
-    uses io.xpipe.core.store.LocalStore.LocalProcessControlProvider;
+    uses LocalStore.LocalProcessControlProvider;
 
     provides WriteMode with WriteMode.Replace, WriteMode.Append, WriteMode.Prepend;
     provides com.fasterxml.jackson.databind.Module with

@@ -1,6 +1,5 @@
-package io.xpipe.core.store;
+package io.xpipe.core.process;
 
-import io.xpipe.core.util.OsType;
 import io.xpipe.core.util.SecretValue;
 import lombok.NonNull;
 
@@ -18,7 +17,7 @@ public interface ShellProcessControl extends ProcessControl {
         }
     }
 
-    default String executeSimpleCommand(ShellType type,  String command) throws Exception {
+    default String executeSimpleCommand(ShellType type, String command) throws Exception {
         return executeSimpleCommand(type.switchTo(command));
     }
 

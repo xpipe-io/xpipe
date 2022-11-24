@@ -1,9 +1,4 @@
-package io.xpipe.core.util;
-
-import io.xpipe.core.store.CommandProcessControl;
-import io.xpipe.core.store.PropertiesFormatsParser;
-import io.xpipe.core.store.ShellProcessControl;
-import io.xpipe.core.store.ShellTypes;
+package io.xpipe.core.process;
 
 import java.nio.file.Path;
 import java.util.Locale;

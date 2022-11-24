@@ -1,6 +1,6 @@
 package io.xpipe.core.source;
 
-import io.xpipe.core.store.CollectionEntryDataStore;
+import io.xpipe.core.impl.CollectionEntryDataStore;
 import lombok.SneakyThrows;
 
 import java.util.stream.Stream;

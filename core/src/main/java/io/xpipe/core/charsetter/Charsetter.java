@@ -1,6 +1,6 @@
 package io.xpipe.core.charsetter;
 
-import io.xpipe.core.store.FileStore;
+import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.MachineStore;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.Value;

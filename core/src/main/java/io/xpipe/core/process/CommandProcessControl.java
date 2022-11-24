@@ -1,4 +1,4 @@
-package io.xpipe.core.store;
+package io.xpipe.core.process;
 
 import java.io.*;
 import java.nio.charset.Charset;

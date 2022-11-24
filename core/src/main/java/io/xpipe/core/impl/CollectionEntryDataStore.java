@@ -1,4 +1,8 @@
-package io.xpipe.core.store;
+package io.xpipe.core.impl;
+
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FilenameStore;
+import io.xpipe.core.store.StreamDataStore;
 
 public abstract class CollectionEntryDataStore implements FilenameStore, StreamDataStore {
 

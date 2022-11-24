@@ -1,6 +1,9 @@
-package io.xpipe.core.store;
+package io.xpipe.core.impl;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.store.FileSystemStore;
+import io.xpipe.core.store.MachineStore;
 import io.xpipe.core.util.JacksonizedValue;
 
 import java.io.InputStream;

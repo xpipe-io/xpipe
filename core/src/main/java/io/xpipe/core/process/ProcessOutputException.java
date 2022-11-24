@@ -1,4 +1,4 @@
-package io.xpipe.core.store;
+package io.xpipe.core.process;
 
 public class ProcessOutputException extends Exception {
     public ProcessOutputException() {

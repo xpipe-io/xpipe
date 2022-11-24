@@ -20,10 +20,11 @@ import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
+import io.xpipe.core.impl.*;
+import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
-import io.xpipe.core.store.*;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

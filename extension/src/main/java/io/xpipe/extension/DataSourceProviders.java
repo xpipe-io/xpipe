@@ -2,7 +2,7 @@ package io.xpipe.extension;
 
 import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileStore;
+import io.xpipe.core.impl.FileStore;
 import io.xpipe.extension.event.ErrorEvent;
 import lombok.SneakyThrows;
 

@@ -4,7 +4,6 @@ import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceConnection;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.source.WriteMode;
-import io.xpipe.core.store.FileStore;
 
 import java.nio.file.Files;
 
