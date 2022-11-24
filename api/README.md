@@ -1,5 +1,5 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/api)
-[![javadoc](https://javadoc.io/badge2/io.xpipe/api/javadoc.svg)](https://javadoc.io/doc/io.xpipe/api)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-api)
+[![javadoc](https://javadoc.io/badge2/io.xpipe/xpipe-api/javadoc.svg)](https://javadoc.io/doc/io.xpipe/xpipe-api)
 
 ## X-Pipe Java API
 
@@ -7,11 +7,14 @@ The X-Pipe API for Java allows you to use most of the X-Pipe functionality from 
 
 - Create data stores and data sources
 - Query and work with the contents of data sources
-- Write and append to data sources
+- Write data to data sources
 
 ## Setup
 
-Either install the [dependency](https://maven-badges.herokuapp.com/maven-central/io.xpipe/api) from Maven Central
-using your favourite build tool or alternatively download the `api.jar`, `core.jar`, and `beacon.jar`
+Either install the [maven dependency](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-api) from Maven Central
+using your favourite build tool or alternatively download the `xpipe-api.jar`, `xpipe-core.jar`, and `xpipe-beacon.jar`
 from the [releases page](https://github.com/xpipe-io/xpipe_java/releases/latest) and add them to the classpath.
 
+## Usage
+
+See [the API documentation](https://xpipe-io.readthedocs.io/en/latest/dev/api/java/index.html).
