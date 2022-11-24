@@ -43,7 +43,7 @@ public interface ShellType {
 
     List<String> createFileReadCommand(String file);
 
-    List<String> createFileWriteCommand(String file);
+    String createFileWriteCommand(String file);
 
     List<String> createFileExistsCommand(String file);
 

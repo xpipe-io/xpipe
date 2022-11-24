@@ -29,7 +29,7 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     public default OutputStream openOutput(String file) throws Exception {
-        return create().commandListFunction(proc -> proc.getShellType().createFileWriteCommand(proc.getOsType().normalizeFileName(file)))
+        return create().commandFunction(proc -> proc.getShellType().createFileWriteCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdin();
     }
 

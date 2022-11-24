@@ -117,8 +117,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileWriteCommand(String file) {
-            return List.of("findstr", "\"^\"", ">", file);
+        public String createFileWriteCommand(String file) {
+            return "findstr \"^\" > \"" + file + "\"";
         }
 
         @Override
@@ -233,8 +233,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileWriteCommand(String file) {
-            return List.of("cmd", "/c", "findstr", "\"^\"", ">", file);
+        public String createFileWriteCommand(String file) {
+            return "cmd /c 'findstr \"^\" > \"" + file + "\"'";
         }
 
         @Override
@@ -351,8 +351,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileWriteCommand(String file) {
-            return List.of("cat", ">", file);
+        public String createFileWriteCommand(String file) {
+            return "cat > \"" + file + "\"";
         }
 
         @Override
