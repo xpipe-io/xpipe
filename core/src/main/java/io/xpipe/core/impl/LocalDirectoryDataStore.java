@@ -1,7 +1,8 @@
-package io.xpipe.core.store;
+package io.xpipe.core.impl;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.store.DataStore;
 import lombok.EqualsAndHashCode;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package io.xpipe.core.store;
+package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;

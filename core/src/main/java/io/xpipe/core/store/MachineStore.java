@@ -1,5 +1,7 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.process.ShellProcessControl;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 

@@ -1,7 +1,7 @@
 package io.xpipe.extension;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.prefs.PrefsProviders;

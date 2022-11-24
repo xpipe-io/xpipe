@@ -1,6 +1,8 @@
 package io.xpipe.core.store;
 
-import java.util.concurrent.atomic.AtomicReference;
+import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellType;
 
 public interface ShellStore extends DataStore {
 
@@ -15,10 +17,8 @@ public interface ShellStore extends DataStore {
     ShellProcessControl create();
 
     public default ShellType determineType() throws Exception {
-        AtomicReference<ShellType> type = new AtomicReference<>();
         try (var pc = create().start()) {
-            type.set(pc.getShellType());
+            return pc.getShellType();
         }
-        return type.get();
     }
 }

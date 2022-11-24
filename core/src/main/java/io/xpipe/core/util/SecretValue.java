@@ -1,18 +1,22 @@
 package io.xpipe.core.util;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.function.Consumer;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @EqualsAndHashCode
 public class SecretValue {
 
     String value;
 
-    public static SecretValue createForSecretValue(String s) {
+    public static SecretValue create(String s) {
         if (s == null) {
             return null;
         }
@@ -24,8 +28,17 @@ public class SecretValue {
         return new SecretValue(Base64.getEncoder().encodeToString(s.getBytes(StandardCharsets.UTF_8)));
     }
 
-    public String getDisplay() {
-        return "*".repeat(value.length());
+    public void withSecretValue(Consumer<char[]> chars) {
+        var bytes = Base64.getDecoder().decode(value);
+        var buffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes));
+        var array = buffer.array();
+        chars.accept(array);
+        Arrays.fill(array, (char) 0);
+    }
+
+    @Override
+    public String toString() {
+        return "<secret>";
     }
 
     public String getEncryptedValue() {

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
-import io.xpipe.core.store.ProcessControl;
+import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

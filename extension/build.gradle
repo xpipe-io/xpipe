@@ -35,7 +35,7 @@ dependencies {
     if (findProject(':fxcomps') != null) {
         compileOnly project(':fxcomps')
     } else {
-        compileOnly 'io.xpipe:fxcomps:0.3.2'
+        compileOnly 'io.xpipe:fxcomps:0.3.3'
     }
 }
 

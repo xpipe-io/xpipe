@@ -14,6 +14,10 @@ public class DialogMapper {
 
     public LinkedHashMap<String, String> handle() throws Exception {
         var element = dialog.start();
+        if (element == null) {
+            return map;
+        }
+
         handle(element);
         return map;
     }
