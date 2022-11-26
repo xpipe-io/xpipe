@@ -1,6 +1,6 @@
 package io.xpipe.extension;
 
-import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.beacon.exchange.NamedFunctionExchange;
 import io.xpipe.extension.event.ErrorEvent;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -35,17 +35,21 @@ public class NamedFunction {
         return get(id).callLocal(args);
     }
 
+    @SneakyThrows
     public static <T> T callRemote(String id, Object... args) {
-        XPipeConnection.execute(con -> {
-            con.sendRequest(null);
-        });
-        return get(id).callLocal(args);
+        var proxy = XPipeProxy.getProxy(args[0]);
+        var client = XPipeProxy.connect(proxy);
+        client.sendRequest(
+                NamedFunctionExchange.Request.builder().id(id).arguments(args).build());
+        NamedFunctionExchange.Response response = client.receiveResponse();
+        return (T) response.getReturnValue();
     }
 
     @SneakyThrows
     public static <T> T call(Class<? extends NamedFunction> clazz, Object... args) {
         var base = args[0];
-        if (base instanceof Proxyable) {
+        var proxy = XPipeProxy.getProxy(base);
+        if (proxy != null) {
             return callRemote(clazz.getDeclaredConstructor().newInstance().getId(), args);
         } else {
             return callLocal(clazz.getDeclaredConstructor().newInstance().getId(), args);

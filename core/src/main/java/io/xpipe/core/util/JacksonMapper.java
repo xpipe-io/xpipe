@@ -74,6 +74,13 @@ public class JacksonMapper {
         return INSTANCE.copy();
     }
 
+    public static ObjectMapper getDefault() {
+        if (!JacksonMapper.isInit()) {
+            return DEFAULT;
+        }
+        return INSTANCE;
+    }
+
     public static boolean isInit() {
         return init;
     }
