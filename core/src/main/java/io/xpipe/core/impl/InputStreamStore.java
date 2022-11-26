@@ -1,0 +1,28 @@
+package io.xpipe.core.impl;
+
+import io.xpipe.core.store.StreamDataStore;
+
+import java.io.InputStream;
+
+/**
+ * A data store that is only represented by an InputStream.
+ * This can be useful for development.
+ */
+public class InputStreamStore implements StreamDataStore {
+
+    private final InputStream in;
+
+    public InputStreamStore(InputStream in) {
+        this.in = in;
+    }
+
+    @Override
+    public InputStream openInput() throws Exception {
+        return in;
+    }
+
+    @Override
+    public boolean canOpen() {
+        return true;
+    }
+}

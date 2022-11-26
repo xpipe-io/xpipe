@@ -4,20 +4,10 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.extension.I18n;
-import javafx.beans.value.ObservableValue;
-import net.synedra.validatorfx.Check;
 
 import java.util.function.Predicate;
 
 public class Validators {
-
-    public static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {
-            if (c.get("val") == null) {
-                c.error(I18n.get("extension.mustNotBeEmpty", name.getValue()));
-            }
-        });
-    }
 
     public static void nonNull(Object object, String name) {
         if (object == null) {

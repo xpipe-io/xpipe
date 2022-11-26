@@ -13,6 +13,8 @@ public interface OsType {
 
     String getName();
 
+    String getTempDirectory(ShellProcessControl pc) throws Exception;
+
     String normalizeFileName(String file);
 
     Map<String, String> getProperties(ShellProcessControl pc) throws Exception;
@@ -41,6 +43,11 @@ public interface OsType {
         @Override
         public String getName() {
             return "Windows";
+        }
+
+        @Override
+        public String getTempDirectory(ShellProcessControl pc) throws Exception {
+            return pc.executeSimpleCommand(pc.getShellType().getPrintVariableCommand("TEMP"));
         }
 
         @Override
@@ -80,6 +87,11 @@ public interface OsType {
     }
 
     static class Linux implements OsType {
+
+        @Override
+        public String getTempDirectory(ShellProcessControl pc) throws Exception {
+            return "/tmp/";
+        }
 
         @Override
         public String normalizeFileName(String file) {
@@ -145,6 +157,11 @@ public interface OsType {
     }
 
     static class Mac implements OsType {
+
+        @Override
+        public String getTempDirectory(ShellProcessControl pc) throws Exception {
+            return pc.executeSimpleCommand(pc.getShellType().getPrintVariableCommand("TEMP"));
+        }
 
         @Override
         public String normalizeFileName(String file) {

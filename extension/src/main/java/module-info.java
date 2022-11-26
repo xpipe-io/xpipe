@@ -40,4 +40,5 @@ open module io.xpipe.extension {
     uses XPipeDaemon;
     uses io.xpipe.extension.Cache;
     uses io.xpipe.extension.DataSourceActionProvider;
+    uses io.xpipe.extension.NamedFunction;
 }

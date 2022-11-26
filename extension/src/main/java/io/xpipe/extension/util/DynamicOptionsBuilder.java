@@ -60,7 +60,7 @@ public class DynamicOptionsBuilder {
     public DynamicOptionsBuilder nonNull(Validator v) {
         var e = entries.get(entries.size() - 1);
         var p = props.get(props.size() - 1);
-        return decorate(Validators.nonNull(v, e.name(), p));
+        return decorate(Validator.nonNull(v, e.name(), p));
     }
 
     public DynamicOptionsBuilder addNewLine(Property<NewLine> prop) {
