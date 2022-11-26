@@ -33,7 +33,7 @@ public class XPipeInstallation {
 
     public static Optional<String> getInstallationExecutable(ShellProcessControl p) throws Exception {
         var installation = getDefaultInstallationBasePath(p);
-        var executable = FileNames.join(installation, getDaemonExecutableInInstallationDirectory(p.getOsType()));
+        var executable = getDaemonExecutableInInstallationDirectory(p.getOsType());
         var file = FileNames.join(installation, executable);
         try (CommandProcessControl c =
                 p.command(p.getShellType().createFileExistsCommand(file)).start()) {

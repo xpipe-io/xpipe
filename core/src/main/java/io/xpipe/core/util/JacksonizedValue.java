@@ -12,7 +12,7 @@ public class JacksonizedValue {
 
     @SneakyThrows
     public final String toString() {
-        var tree = JacksonMapper.newMapper().valueToTree(this);
+        var tree = JacksonMapper.getDefault().valueToTree(this);
         return tree.toPrettyString();
     }
 
@@ -25,14 +25,14 @@ public class JacksonizedValue {
             return false;
         }
 
-        var tree = JacksonMapper.newMapper().valueToTree(this);
-        var otherTree = JacksonMapper.newMapper().valueToTree(o);
+        var tree = JacksonMapper.getDefault().valueToTree(this);
+        var otherTree = JacksonMapper.getDefault().valueToTree(o);
         return tree.equals(otherTree);
     }
 
     @Override
     public final int hashCode() {
-        var tree = JacksonMapper.newMapper().valueToTree(this);
+        var tree = JacksonMapper.getDefault().valueToTree(this);
         return tree.hashCode();
     }
 }

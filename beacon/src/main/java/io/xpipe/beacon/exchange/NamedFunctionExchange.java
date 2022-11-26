@@ -1,13 +1,12 @@
 package io.xpipe.beacon.exchange;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.List;
 
 public class NamedFunctionExchange implements MessageExchange {
 
@@ -23,7 +22,8 @@ public class NamedFunctionExchange implements MessageExchange {
         @NonNull
         String id;
 
-        @NonNull List<Object> arguments;
+        @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, property="type")
+        @NonNull Object[] arguments;
     }
 
     @Jacksonized

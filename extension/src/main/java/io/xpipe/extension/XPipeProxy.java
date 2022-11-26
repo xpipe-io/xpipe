@@ -3,6 +3,7 @@ package io.xpipe.extension;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.exchange.ProxyReadConnectionExchange;
 import io.xpipe.core.impl.InputStreamStore;
 import io.xpipe.core.process.ShellProcessControl;
@@ -19,6 +20,16 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class XPipeProxy {
+
+    public static BeaconClient connect(ShellStore proxy) throws Exception {
+        var control = proxy.create().start();
+        var command = control.command("xpipe beacon").start();
+        return BeaconClient.connectGateway(
+                command,
+                BeaconClient.GatewayClientInformation.builder()
+                        .version(XPipeDaemon.getInstance().getVersion())
+                        .build());
+    }
 
     @SneakyThrows
     private  static DataSource<?> downstreamTransform(DataSource<?> input, ShellStore proxy) {
