@@ -21,6 +21,13 @@ public interface ShellProcessControl extends ProcessControl {
         return executeSimpleCommand(type.switchTo(command));
     }
 
+    default void restart() throws Exception {
+        exitAndWait();
+        start();
+    }
+
+    boolean isLocal();
+
     int getProcessId();
 
     OsType getOsType();
@@ -34,7 +41,7 @@ public interface ShellProcessControl extends ProcessControl {
     SecretValue getElevationPassword();
 
     default ShellProcessControl shell(@NonNull ShellType type) {
-        return shell(type.openCommand());
+        return shell(type.openCommand()).elevation(getElevationPassword());
     }
 
     default CommandProcessControl command(@NonNull ShellType type, String command) {

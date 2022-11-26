@@ -27,6 +27,8 @@ public interface XPipeDaemon {
     void withResource(String module, String file, Charsetter.FailableConsumer<Path, IOException> con);
     List<DataStore> getNamedStores();
 
+    String getVersion();
+
     Image image(String file);
 
     String svgImage(String file);

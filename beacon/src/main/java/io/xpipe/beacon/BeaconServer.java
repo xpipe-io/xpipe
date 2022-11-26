@@ -1,6 +1,7 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.StopExchange;
+import io.xpipe.core.process.OsType;
 import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
@@ -64,42 +65,42 @@ public class BeaconServer {
         }
 
         var out = new Thread(
-                        null,
-                        () -> {
-                            try {
-                                InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                                BufferedReader br = new BufferedReader(isr);
-                                String line;
-                                while ((line = br.readLine()) != null) {
-                                    if (print) {
-                                        System.out.println("[xpiped] " + line);
-                                    }
-                                }
-                            } catch (Exception ioe) {
-                                ioe.printStackTrace();
+                null,
+                () -> {
+                    try {
+                        InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                        BufferedReader br = new BufferedReader(isr);
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            if (print) {
+                                System.out.println("[xpiped] " + line);
                             }
-                        },
-                        "daemon sysout");
+                        }
+                    } catch (Exception ioe) {
+                        ioe.printStackTrace();
+                    }
+                },
+                "daemon sysout");
         out.setDaemon(true);
         out.start();
 
         var err = new Thread(
-                        null,
-                        () -> {
-                            try {
-                                InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                                BufferedReader br = new BufferedReader(isr);
-                                String line;
-                                while ((line = br.readLine()) != null) {
-                                    if (print) {
-                                        System.err.println("[xpiped] " + line);
-                                    }
-                                }
-                            } catch (Exception ioe) {
-                                ioe.printStackTrace();
+                null,
+                () -> {
+                    try {
+                        InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                        BufferedReader br = new BufferedReader(isr);
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            if (print) {
+                                System.err.println("[xpiped] " + line);
                             }
-                        },
-                        "daemon syserr");
+                        }
+                    } catch (Exception ioe) {
+                        ioe.printStackTrace();
+                    }
+                },
+                "daemon syserr");
         err.setDaemon(true);
         err.start();
     }
@@ -110,7 +111,7 @@ public class BeaconServer {
         return res.isSuccess();
     }
 
-    private static Optional<Path> getDaemonBasePath() {
+    private static Optional<Path> getDaemonBasePath(OsType type) {
         Path base = null;
         // Prepare for invalid XPIPE_HOME path value
         try {
@@ -120,7 +121,7 @@ public class BeaconServer {
         }
 
         if (base == null) {
-            if (System.getProperty("os.name").startsWith("Windows")) {
+            if (type.equals(OsType.WINDOWS)) {
                 base = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe");
             } else {
                 base = Path.of("/opt/xpipe/");
@@ -133,17 +134,20 @@ public class BeaconServer {
         return Optional.ofNullable(base);
     }
 
-    public static Optional<Path> getDaemonExecutable() {
-        var base = getDaemonBasePath().orElseThrow();
-        var debug = BeaconConfig.launchDaemonInDebugMode();
-        Path executable = null;
-        if (!debug) {
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                executable = Path.of("app", "runtime", "bin", "xpiped.bat");
-            } else {
-                executable = Path.of("app/bin/xpiped");
-            }
+    public static Path getDaemonExecutableInBaseDirectory(OsType type) {
+        if (type.equals(OsType.WINDOWS)) {
+            return Path.of("app", "runtime", "bin", "xpiped.bat");
+        } else {
+            return Path.of("app/bin/xpiped");
+        }
+    }
 
+    public static Optional<Path> getDaemonExecutable() {
+        var base = getDaemonBasePath(OsType.getLocal()).orElseThrow();
+        var debug = BeaconConfig.launchDaemonInDebugMode();
+        Path executable;
+        if (!debug) {
+            executable = getDaemonExecutableInBaseDirectory(OsType.getLocal());
         } else {
             String scriptName = null;
             if (BeaconConfig.attachDebuggerToDaemon()) {

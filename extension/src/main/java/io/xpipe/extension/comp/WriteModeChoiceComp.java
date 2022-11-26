@@ -5,7 +5,6 @@ import io.xpipe.extension.I18n;
 import io.xpipe.extension.util.SimpleValidator;
 import io.xpipe.extension.util.Validatable;
 import io.xpipe.extension.util.Validator;
-import io.xpipe.extension.util.Validators;
 import io.xpipe.fxcomps.SimpleComp;
 import io.xpipe.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
@@ -36,7 +35,7 @@ public class WriteModeChoiceComp extends SimpleComp implements Validatable {
         if (available.size() == 1) {
             selected.setValue(available.get(0));
         }
-        check = Validators.nonNull(validator, I18n.observable("mode"), selected);
+        check = Validator.nonNull(validator, I18n.observable("mode"), selected);
     }
 
     @Override

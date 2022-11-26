@@ -1,12 +1,35 @@
 package io.xpipe.extension.util;
 
+import io.xpipe.extension.I18n;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.value.ObservableValue;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
+import org.apache.commons.lang3.function.FailableRunnable;
 
 public interface Validator {
+
+    static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") == null) {
+                c.error(I18n.get("extension.mustNotBeEmpty", name.getValue()));
+            }
+        });
+    }
+
+    static Check exceptionWrapper(Validator v, ObservableValue<?> s, FailableRunnable<Exception> ex) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") == null) {
+                try {
+                    ex.run();
+                } catch (Exception e) {
+                    c.error(e.getMessage());
+                }
+            }
+        });
+    }
 
     public Check createCheck();
 

@@ -52,6 +52,11 @@ public class ShellTypes {
         }
 
         @Override
+        public String getPrintVariableCommand(String name) {
+            return "echo %" + name + "%";
+        }
+
+        @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
             return toErrorStream ? "(echo " + s + ")1>&2" : "echo " + s;
         }
@@ -72,6 +77,11 @@ public class ShellTypes {
         @Override
         public String getConcatenationOperator() {
             return "&";
+        }
+
+        @Override
+        public String escape(String input) {
+            return input;
         }
 
         @Override
@@ -164,6 +174,11 @@ public class ShellTypes {
     public static class PowerShell implements ShellType {
 
         @Override
+        public String getPrintVariableCommand(String name) {
+            return "echo %" + name + "%";
+        }
+
+        @Override
         public String getSetVariableCommand(String variableName, String value) {
             return "set " + variableName + "=" + value;
         }
@@ -188,6 +203,11 @@ public class ShellTypes {
         @Override
         public boolean echoesInput() {
             return true;
+        }
+
+        @Override
+        public String escape(String input) {
+            return input;
         }
 
         @Override
@@ -283,6 +303,11 @@ public class ShellTypes {
     public static class Sh implements ShellType {
 
         @Override
+        public String getPrintVariableCommand(String name) {
+            return "echo $" + name;
+        }
+
+        @Override
         public String getExitCommand() {
             return "exit 0";
         }
@@ -293,6 +318,11 @@ public class ShellTypes {
         }
 
         @Override
+        public String escape(String input) {
+            return input.replace("$","\\$");
+        }
+
+        @Override
         public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
             if (control.getElevationPassword() == null) {
                 control.executeCommand("SUDO_ASKPASS=/bin/false sudo -p \"\" -S  " + command);
@@ -300,7 +330,7 @@ public class ShellTypes {
             }
 
             // For sudo to always query for a password by using the -k switch
-            control.executeCommand("sudo -p \"\" -k -S " + command);
+            control.executeCommand("sudo -p \"\" -k -S " + escape(command));
             control.writeLine(control.getElevationPassword().getSecretValue());
         }
 

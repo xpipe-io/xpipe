@@ -13,6 +13,8 @@ public interface ShellType {
         return String.join(getConcatenationOperator(), s);
     }
 
+    String escape(String input);
+
     void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception;
 
     default String getExitCommand() {
@@ -34,6 +36,8 @@ public interface ShellType {
     String queryShellProcessId(ShellProcessControl control) throws Exception;
 
     String getSetVariableCommand(String variableName, String value);
+
+    String getPrintVariableCommand(String name);
 
     List<String> openCommand();
 
