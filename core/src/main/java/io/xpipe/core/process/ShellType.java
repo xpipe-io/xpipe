@@ -49,7 +49,7 @@ public interface ShellType {
 
     String createFileWriteCommand(String file);
 
-    List<String> createFileExistsCommand(String file);
+    String createFileExistsCommand(String file);
 
     Charset determineCharset(ShellProcessControl control) throws Exception;
 

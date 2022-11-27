@@ -25,6 +25,7 @@ module io.xpipe.beacon {
     requires static lombok;
 
     uses MessageExchange;
+    uses io.xpipe.beacon.NamedFunction;
 
     provides Module with BeaconJacksonModule;
     provides io.xpipe.beacon.exchange.MessageExchange with

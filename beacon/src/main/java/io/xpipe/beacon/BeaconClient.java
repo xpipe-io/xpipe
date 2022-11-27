@@ -12,6 +12,7 @@ import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.process.CommandProcessControl;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -47,12 +48,11 @@ public class BeaconClient implements AutoCloseable {
     @EqualsAndHashCode(callSuper = false)
     public static class CliClientInformation extends ClientInformation {
 
-        String version;
         int consoleWidth;
 
         @Override
         public String toDisplayString() {
-            return "X-Pipe CLI " + version;
+            return "X-Pipe CLI";
         }
     }
 
@@ -104,7 +104,16 @@ public class BeaconClient implements AutoCloseable {
         return client;
     }
 
-    public static BeaconClient connectGateway(CommandProcessControl control, GatewayClientInformation information) throws Exception {
+    public static BeaconClient connectProxy(ShellStore proxy) throws Exception {
+        var control = proxy.create().start();
+        var command = control.command("xpipe beacon").start();
+        return BeaconClient.connectGateway(
+                command,
+                BeaconClient.GatewayClientInformation.builder()
+                        .build());
+    }
+
+    private  static BeaconClient connectGateway(CommandProcessControl control, GatewayClientInformation information) throws Exception {
         var client = new BeaconClient(() -> {}, control.getStdout(), control.getStdin());
         client.sendObject(JacksonMapper.newMapper().valueToTree(information));
         return client;

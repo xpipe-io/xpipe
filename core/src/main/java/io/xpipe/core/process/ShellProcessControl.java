@@ -17,6 +17,12 @@ public interface ShellProcessControl extends ProcessControl {
         }
     }
 
+    default boolean executeBooleanSimpleCommand(String command) throws Exception {
+        try (CommandProcessControl c = command(command).start()) {
+            return c.discardAndCheckExit();
+        }
+    }
+
     default String executeSimpleCommand(ShellType type, String command) throws Exception {
         return executeSimpleCommand(type.switchTo(command));
     }

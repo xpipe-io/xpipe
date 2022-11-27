@@ -35,7 +35,6 @@ public class XPipeServiceProviders {
 
         SupportedApplicationProviders.loadAll(layer);
         PrefsProviders.init(layer);
-        NamedFunction.init(layer);
         TrackEvent.info("Finished loading extension providers");
     }
 }

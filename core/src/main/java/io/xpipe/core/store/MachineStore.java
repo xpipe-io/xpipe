@@ -37,7 +37,7 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     public default boolean exists(String file) throws Exception {
-        try (var pc = create().commandListFunction(proc -> proc.getShellType().createFileExistsCommand(proc.getOsType().normalizeFileName(file)))
+        try (var pc = create().commandFunction(proc -> proc.getShellType().createFileExistsCommand(proc.getOsType().normalizeFileName(file)))
                 .start()) {
             return pc.discardAndCheckExit();
         }
