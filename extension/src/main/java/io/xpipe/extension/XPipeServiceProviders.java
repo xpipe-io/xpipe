@@ -1,7 +1,8 @@
 package io.xpipe.extension;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.beacon.NamedFunction;
+import io.xpipe.core.impl.LocalProcessControlProvider;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.prefs.PrefsProviders;
@@ -9,7 +10,7 @@ import io.xpipe.extension.prefs.PrefsProviders;
 public class XPipeServiceProviders {
 
     public static void load(ModuleLayer layer) {
-        LocalStore.LocalProcessControlProvider.init(layer);
+        LocalProcessControlProvider.init(layer);
 
         TrackEvent.info("Loading extension providers ...");
         DataSourceProviders.init(layer);
@@ -35,6 +36,7 @@ public class XPipeServiceProviders {
 
         SupportedApplicationProviders.loadAll(layer);
         PrefsProviders.init(layer);
+        NamedFunction.init(layer);
         TrackEvent.info("Finished loading extension providers");
     }
 }

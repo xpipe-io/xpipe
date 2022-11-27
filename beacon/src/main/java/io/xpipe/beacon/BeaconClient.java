@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
-import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Builder;
@@ -107,16 +106,10 @@ public class BeaconClient implements AutoCloseable {
     public static BeaconClient connectProxy(ShellStore proxy) throws Exception {
         var control = proxy.create().start();
         var command = control.command("xpipe beacon").start();
-        return BeaconClient.connectGateway(
-                command,
-                BeaconClient.GatewayClientInformation.builder()
-                        .build());
-    }
-
-    private  static BeaconClient connectGateway(CommandProcessControl control, GatewayClientInformation information) throws Exception {
-        var client = new BeaconClient(() -> {}, control.getStdout(), control.getStdin());
-        client.sendObject(JacksonMapper.newMapper().valueToTree(information));
-        return client;
+        command.discardErr();
+        return new BeaconClient(() -> {
+            command.close();
+        }, command.getStdout(), command.getStdin());
     }
 
     public static Optional<BeaconClient> tryConnect(ClientInformation information) {
