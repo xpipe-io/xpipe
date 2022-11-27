@@ -16,6 +16,14 @@ public class BeaconConfig {
     private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.printDaemonOutput";
     private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.customDaemonCommand";
     private static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
+    private static final String LOCAL_PROXY_PROP = "io.xpipe.beacon.localProxy";
+
+    public static boolean localProxy() {
+        if (System.getProperty(LOCAL_PROXY_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(LOCAL_PROXY_PROP));
+        }
+        return false;
+    }
 
     public static boolean printMessages() {
         if (System.getProperty(PRINT_MESSAGES_PROPERTY) != null) {

@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ServiceLoader;
 
 @JsonTypeName("local")
 public class LocalStore extends JacksonizedValue implements FileSystemStore, MachineStore {
@@ -51,18 +50,4 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
         return LocalProcessControlProvider.create();
     }
 
-    public static abstract class LocalProcessControlProvider {
-
-        private  static  LocalProcessControlProvider INSTANCE;
-
-        public static void init(ModuleLayer layer) {
-            INSTANCE = ServiceLoader.load(layer, LocalProcessControlProvider.class).findFirst().orElseThrow();
-        }
-
-        public static ShellProcessControl create() {
-            return INSTANCE.createProcessControl();
-        }
-
-        public abstract ShellProcessControl createProcessControl();
-    }
 }

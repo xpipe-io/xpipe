@@ -1,4 +1,4 @@
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.impl.LocalProcessControlProvider;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.util.CoreJacksonModule;
 
@@ -24,7 +24,7 @@ open module io.xpipe.core {
 
     uses com.fasterxml.jackson.databind.Module;
     uses io.xpipe.core.source.WriteMode;
-    uses LocalStore.LocalProcessControlProvider;
+    uses LocalProcessControlProvider;
 
     provides WriteMode with WriteMode.Replace, WriteMode.Append, WriteMode.Prepend;
     provides com.fasterxml.jackson.databind.Module with

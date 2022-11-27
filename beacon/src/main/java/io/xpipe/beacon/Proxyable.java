@@ -1,4 +1,4 @@
-package io.xpipe.core.util;
+package io.xpipe.beacon;
 
 import io.xpipe.core.store.ShellStore;
 
@@ -6,7 +6,7 @@ public interface Proxyable {
 
     public static ShellStore getProxy(Object base) {
         var proxy = base instanceof Proxyable p ? p.getProxy() : null;
-        return ShellStore.isLocal(proxy) ? null : proxy;
+        return ShellStore.isLocal(proxy) ? (BeaconConfig.localProxy() ? proxy : null) : proxy;
     }
 
     public static boolean isRemote(Object base) {
