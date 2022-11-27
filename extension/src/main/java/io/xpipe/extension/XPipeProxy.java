@@ -2,9 +2,9 @@ package io.xpipe.extension;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import io.xpipe.api.connector.XPipeConnection;
-import io.xpipe.beacon.BeaconClient;
+import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.beacon.exchange.ProxyReadConnectionExchange;
+import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.InputStreamStore;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.source.DataSource;
@@ -21,18 +21,8 @@ import java.util.function.Function;
 
 public class XPipeProxy {
 
-    public static BeaconClient connect(ShellStore proxy) throws Exception {
-        var control = proxy.create().start();
-        var command = control.command("xpipe beacon").start();
-        return BeaconClient.connectGateway(
-                command,
-                BeaconClient.GatewayClientInformation.builder()
-                        .version(XPipeDaemon.getInstance().getVersion())
-                        .build());
-    }
-
     @SneakyThrows
-    private  static DataSource<?> downstreamTransform(DataSource<?> input, ShellStore proxy) {
+    private static DataSource<?> downstreamTransform(DataSource<?> input, ShellStore proxy) {
         var proxyNode = JacksonMapper.newMapper().valueToTree(proxy);
         var inputNode = JacksonMapper.newMapper().valueToTree(input);
         var localNode = JacksonMapper.newMapper().valueToTree(ShellStore.local());
@@ -40,8 +30,7 @@ public class XPipeProxy {
         return JacksonMapper.newMapper().treeToValue(inputNode, DataSource.class);
     }
 
-    private   static JsonNode replace(
-            JsonNode node, Function<JsonNode, Optional<JsonNode>> function) {
+    private static JsonNode replace(JsonNode node, Function<JsonNode, Optional<JsonNode>> function) {
         var value = function.apply(node);
         if (value.isPresent()) {
             return value.get();
@@ -63,8 +52,10 @@ public class XPipeProxy {
 
     public static <T extends DataSourceReadConnection> T remoteReadConnection(DataSource<?> source, ShellStore proxy) {
         var downstream = downstreamTransform(source, proxy);
-        return (T) XPipeConnection.execute(con -> {
-            con.sendRequest(ProxyReadConnectionExchange.Request.builder().source(downstream).build());
+        return (T) XPipeApiConnection.execute(con -> {
+            con.sendRequest(ProxyReadConnectionExchange.Request.builder()
+                    .source(downstream)
+                    .build());
             con.receiveResponse();
             var inputSource = DataSource.createInternalDataSource(
                     source.determineInfo().getType(), new InputStreamStore(con.receiveBody()));
@@ -72,23 +63,18 @@ public class XPipeProxy {
         });
     }
 
-    public static ShellStore getProxy(Object base) {
-        return base instanceof Proxyable p ? p.getProxy() : null;
-    }
-
-    public static boolean isRemote(Object base) {
-        return base instanceof Proxyable p && !ShellStore.isLocal(p.getProxy());
-    }
-
     public static void checkSupport(ShellStore store) throws Exception {
         var version = XPipeDaemon.getInstance().getVersion();
         try (ShellProcessControl s = store.create().start()) {
-            var installationVersion = XPipeInstallation.queryInstallationVersion(s);
-            if (installationVersion.isEmpty()) {
+            var defaultInstallationExecutable = FileNames.join(
+                    XPipeInstallation.getDefaultInstallationBasePath(s),
+                    XPipeInstallation.getDaemonExecutablePath(s.getOsType()));
+            if (!s.executeBooleanSimpleCommand(s.getShellType().createFileExistsCommand(defaultInstallationExecutable))) {
                 throw new IOException(I18n.get("noInstallationFound"));
             }
 
-            if (!version.equals(installationVersion.get())) {
+            var installationVersion = XPipeInstallation.queryInstallationVersion(s, defaultInstallationExecutable);
+            if (!version.equals(installationVersion)) {
                 throw new IOException(I18n.get("versionMismatch", version, installationVersion));
             }
         }

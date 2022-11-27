@@ -2,7 +2,7 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataText;
-import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.beacon.BeaconConnection;
 import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
@@ -62,7 +62,7 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
             private String nextValue;
 
             {
-                connection = XPipeConnection.open();
+                connection = XPipeApiConnection.open();
                 var req = QueryTextDataExchange.Request.builder()
                         .ref(DataSourceReference.id(getId()))
                         .maxLines(-1)

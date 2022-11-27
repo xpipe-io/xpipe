@@ -1,43 +1,56 @@
 package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 
-import java.util.Optional;
+import java.io.IOException;
 
 public class XPipeInstallation {
 
-    public static Optional<String> queryInstallationVersion(ShellProcessControl p) throws Exception {
-        var executable = getInstallationExecutable(p);
-        if (executable.isEmpty()) {
-            return Optional.empty();
+    public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
+        var defaultInstallation =  getDefaultInstallationBasePath(p);
+        if (p.getOsType().equals(OsType.LINUX) && cliExecutable.equals("/usr/bin/xpipe")) {
+            return defaultInstallation;
         }
 
-        try (CommandProcessControl c = p.command(executable.get() + " version").start()) {
-            return Optional.ofNullable(c.readOrThrow());
+        if (FileNames.startsWith(cliExecutable, defaultInstallation)) {
+            return defaultInstallation;
+        }
+
+        return FileNames.getParent(FileNames.getParent(cliExecutable));
+    }
+
+    public static String queryInstallationVersion(ShellProcessControl p, String exec) throws Exception {
+        try (CommandProcessControl c = p.command(exec + " version").start()) {
+            return c.readOrThrow();
         }
     }
 
-    public static boolean containsCompatibleInstallation(ShellProcessControl p, String version) throws Exception {
-        var executable = getInstallationExecutable(p);
+    public static boolean containsCompatibleDefaultInstallation(ShellProcessControl p, String version) throws Exception {
+        var defaultBase = getDefaultInstallationBasePath(p);
+        var executable = getInstallationExecutable(p, defaultBase);
         if (executable.isEmpty()) {
             return false;
         }
 
-        try (CommandProcessControl c = p.command(executable.get() + " version").start()) {
+        try (CommandProcessControl c = p.command(executable + " version").start()) {
             return c.readOrThrow().equals(version);
         }
     }
 
-    public static Optional<String> getInstallationExecutable(ShellProcessControl p) throws Exception {
-        var installation = getDefaultInstallationBasePath(p);
-        var executable = getDaemonExecutableInInstallationDirectory(p.getOsType());
+    public static String getInstallationExecutable(ShellProcessControl p, String installation) throws Exception {
+        var executable = getDaemonExecutablePath(p.getOsType());
         var file = FileNames.join(installation, executable);
         try (CommandProcessControl c =
                 p.command(p.getShellType().createFileExistsCommand(file)).start()) {
-            return c.startAndCheckExit() ? Optional.of(file) : Optional.empty();
+            if (!c.startAndCheckExit()) {
+                throw new IOException("File not found: " + file);
+            }
+
+            return file;
         }
     }
 
@@ -50,20 +63,57 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getDefaultInstallationBasePath(ShellProcessControl p) throws Exception {
-        if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("LOCALAPPDATA"));
-            return FileNames.join(base, "X-Pipe");
-        } else {
-            return "/opt/xpipe";
+    public static String getDefaultInstallationBasePath() throws Exception {
+        try (ShellProcessControl pc = new LocalStore().create().start()) {
+            return getDefaultInstallationBasePath(pc);
         }
     }
 
-    public static String getDaemonExecutableInInstallationDirectory(OsType type) {
-        if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("app", "runtime", "bin", "xpiped.bat");
+    public static String getDefaultInstallationBasePath(ShellProcessControl p) throws Exception {
+        var customHome = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
+        if (!customHome.isEmpty()) {
+            return customHome;
+        }
+
+        String path = null;
+        if (p.getOsType().equals(OsType.WINDOWS)) {
+            var base = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("LOCALAPPDATA"));
+            path = FileNames.join(base, "X-Pipe");
         } else {
-            return FileNames.join("app/bin/xpiped");
+            path = "/opt/xpipe";
+        }
+
+        try (CommandProcessControl c =
+           p.command(p.getShellType().createFileExistsCommand(path)).start()) {
+            if (!c.discardAndCheckExit()) {
+                throw new IOException("Installation not found in " + path);
+            }
+        }
+
+        return path;
+    }
+
+    public static String getDaemonDebugScriptPath(OsType type) {
+        if (type.equals(OsType.WINDOWS)) {
+            return FileNames.join("app", "scripts", "xpiped_debug.bat");
+        } else {
+            return FileNames.join("app", "scripts", "xpiped_debug.sh");
+        }
+    }
+
+    public static String getDaemonDebugAttachScriptPath(OsType type) {
+        if (type.equals(OsType.WINDOWS)) {
+            return FileNames.join("app", "scripts", "xpiped_debug_attach.bat");
+        } else {
+            return FileNames.join("app", "scripts", "xpiped_debug_attach.sh");
+        }
+    }
+
+    public static String getDaemonExecutablePath(OsType type) {
+        if (type.equals(OsType.WINDOWS)) {
+            return FileNames.join("app", "xpiped.exe");
+        } else {
+            return FileNames.join("app", "bin", "xpiped");
         }
     }
 }

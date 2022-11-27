@@ -1,3 +1,4 @@
+import io.xpipe.beacon.NamedFunction;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.SupportedApplicationProvider;
@@ -40,5 +41,5 @@ open module io.xpipe.extension {
     uses XPipeDaemon;
     uses io.xpipe.extension.Cache;
     uses io.xpipe.extension.DataSourceActionProvider;
-    uses io.xpipe.extension.NamedFunction;
+    uses NamedFunction;
 }

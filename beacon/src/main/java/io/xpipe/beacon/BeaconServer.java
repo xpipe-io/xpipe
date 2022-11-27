@@ -1,14 +1,15 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.StopExchange;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.util.XPipeInstallation;
 import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  * Contains basic functionality to start, communicate, and stop a remote beacon server.
@@ -16,16 +17,8 @@ import java.util.Optional;
 @UtilityClass
 public class BeaconServer {
 
-    public static void main(String[] args) throws Exception {
-        if (tryStartCustom() == null) {
-            if (tryStart() == null) {
-                System.exit(1);
-            }
-        }
-    }
-
     public static boolean isRunning() {
-        try (var socket = BeaconClient.connect(null)) {
+        try (var ignored = BeaconClient.connect(null)) {
             return true;
         } catch (Exception e) {
             return false;
@@ -44,18 +37,14 @@ public class BeaconServer {
         return null;
     }
 
-    public static Process tryStart() throws Exception {
-        var daemonExecutable = getDaemonExecutable();
-        if (daemonExecutable.isPresent()) {
-            var command = "\"" + daemonExecutable.get() + "\" --external "
-                    + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
-            // Tell daemon that we launched from an external tool
-            Process process = Runtime.getRuntime().exec(command);
-            printDaemonOutput(process, command);
-            return process;
-        }
-
-        return null;
+    public static Process start(String installationBase) throws Exception {
+        var daemonExecutable = getDaemonExecutable(installationBase);
+        // Tell daemon that we launched from an external tool
+        var command = "\"" + daemonExecutable + "\" --external "
+                + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
+        Process process = Runtime.getRuntime().exec(command);
+        printDaemonOutput(process, command);
+        return process;
     }
 
     private static void printDaemonOutput(Process proc, String command) {
@@ -111,65 +100,21 @@ public class BeaconServer {
         return res.isSuccess();
     }
 
-    private static Optional<Path> getDaemonBasePath(OsType type) {
-        Path base = null;
-        // Prepare for invalid XPIPE_HOME path value
-        try {
-            var environmentVariable = System.getenv("XPIPE_HOME");
-            base = environmentVariable != null ? Path.of(environmentVariable) : null;
-        } catch (Exception ex) {
-        }
-
-        if (base == null) {
-            if (type.equals(OsType.WINDOWS)) {
-                base = Path.of(System.getenv("LOCALAPPDATA"), "X-Pipe");
+    public static Path getDaemonExecutable(String installationBase) throws Exception {
+        try (ShellProcessControl pc = new LocalStore().create().start()) {
+            var debug = BeaconConfig.launchDaemonInDebugMode();
+            if (!debug) {
+                return Path.of(
+                        FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(pc.getOsType())));
             } else {
-                base = Path.of("/opt/xpipe/");
+                if (BeaconConfig.attachDebuggerToDaemon()) {
+                    return Path.of(FileNames.join(
+                            installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(pc.getOsType())));
+                } else {
+                    return Path.of(FileNames.join(
+                            installationBase, XPipeInstallation.getDaemonDebugScriptPath(pc.getOsType())));
+                }
             }
-            if (!Files.exists(base)) {
-                base = null;
-            }
-        }
-
-        return Optional.ofNullable(base);
-    }
-
-    public static Path getDaemonExecutableInBaseDirectory(OsType type) {
-        if (type.equals(OsType.WINDOWS)) {
-            return Path.of("app", "runtime", "bin", "xpiped.bat");
-        } else {
-            return Path.of("app/bin/xpiped");
-        }
-    }
-
-    public static Optional<Path> getDaemonExecutable() {
-        var base = getDaemonBasePath(OsType.getLocal()).orElseThrow();
-        var debug = BeaconConfig.launchDaemonInDebugMode();
-        Path executable;
-        if (!debug) {
-            executable = getDaemonExecutableInBaseDirectory(OsType.getLocal());
-        } else {
-            String scriptName = null;
-            if (BeaconConfig.attachDebuggerToDaemon()) {
-                scriptName = "xpiped_debug_attach";
-            } else {
-                scriptName = "xpiped_debug";
-            }
-
-            if (System.getProperty("os.name").startsWith("Windows")) {
-                scriptName = scriptName + ".bat";
-            } else {
-                scriptName = scriptName + ".sh";
-            }
-
-            executable = Path.of("app", "scripts", scriptName);
-        }
-
-        Path file = base.resolve(executable);
-        if (Files.exists(file)) {
-            return Optional.of(file);
-        } else {
-            return Optional.empty();
         }
     }
 }

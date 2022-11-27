@@ -3,7 +3,7 @@ package io.xpipe.api.impl;
 import io.xpipe.api.DataSource;
 import io.xpipe.api.DataTable;
 import io.xpipe.api.DataTableAccumulator;
-import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.api.util.TypeDescriptor;
 import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.ReadExchange;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 public class DataTableAccumulatorImpl implements DataTableAccumulator {
 
-    private final XPipeConnection connection;
+    private final XPipeApiConnection connection;
     private final TupleType type;
     private int rows;
     private TupleType writtenDescriptor;
@@ -30,7 +30,7 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
 
     public DataTableAccumulatorImpl(TupleType type) {
         this.type = type;
-        connection = XPipeConnection.open();
+        connection = XPipeApiConnection.open();
         connection.sendRequest(StoreStreamExchange.Request.builder().build());
         bodyOutput = connection.sendBody();
     }
@@ -52,12 +52,12 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
                 .provider("xpbt")
                 .configureAll(false)
                 .build();
-        ReadExchange.Response response = XPipeConnection.execute(con -> {
+        ReadExchange.Response response = XPipeApiConnection.execute(con -> {
             return con.performSimpleExchange(req);
         });
 
         var configInstance = response.getConfig();
-        XPipeConnection.finishDialog(configInstance);
+        XPipeApiConnection.finishDialog(configInstance);
 
         return DataSource.get(DataSourceReference.id(id)).asTable();
     }

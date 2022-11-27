@@ -1,7 +1,7 @@
 package io.xpipe.extension.util;
 
 import io.xpipe.api.DataSource;
-import io.xpipe.api.util.XPipeDaemonController;
+import io.xpipe.beacon.BeaconDaemonController;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.XPipeServiceProviders;
@@ -26,11 +26,11 @@ public class DaemonExtensionTest extends ExtensionTest {
     public static void setup() throws Exception {
         JacksonMapper.initModularized(ModuleLayer.boot());
         XPipeServiceProviders.load(ModuleLayer.boot());
-        XPipeDaemonController.start();
+        BeaconDaemonController.start();
     }
 
     @AfterAll
     public static void teardown() throws Exception {
-        XPipeDaemonController.stop();
+        BeaconDaemonController.stop();
     }
 }

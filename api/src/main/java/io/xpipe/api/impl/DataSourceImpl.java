@@ -2,7 +2,7 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSource;
 import io.xpipe.api.DataSourceConfig;
-import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.beacon.exchange.*;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
@@ -25,7 +25,7 @@ public abstract class DataSourceImpl implements DataSource {
     }
 
     public static DataSource get(DataSourceReference ds) {
-        return XPipeConnection.execute(con -> {
+        return XPipeApiConnection.execute(con -> {
             var req = QueryDataSourceExchange.Request.builder().ref(ds).build();
             QueryDataSourceExchange.Response res = con.performSimpleExchange(req);
             var config = new DataSourceConfig(res.getProvider(), res.getConfig());
@@ -53,7 +53,7 @@ public abstract class DataSourceImpl implements DataSource {
     public static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
         var startReq =
                 AddSourceExchange.Request.builder().source(source).target(id).build();
-        var returnedId = XPipeConnection.execute(con -> {
+        var returnedId = XPipeApiConnection.execute(con -> {
             AddSourceExchange.Response r = con.performSimpleExchange(startReq);
             return r.getId();
         });
@@ -64,7 +64,7 @@ public abstract class DataSourceImpl implements DataSource {
 
     public static DataSource create(DataSourceId id, String type, DataStore store) {
         if (store instanceof StreamDataStore s && s.isContentExclusivelyAccessible()) {
-            var res = XPipeConnection.execute(con -> {
+            var res = XPipeApiConnection.execute(con -> {
                 var req = StoreStreamExchange.Request.builder().build();
                 StoreStreamExchange.Response r = con.performOutputExchange(req, out -> {
                     try (InputStream inputStream = s.openInput()) {
@@ -83,20 +83,20 @@ public abstract class DataSourceImpl implements DataSource {
                 .target(id)
                 .configureAll(false)
                 .build();
-        var startRes = XPipeConnection.execute(con -> {
+        var startRes = XPipeApiConnection.execute(con -> {
             ReadExchange.Response r = con.performSimpleExchange(startReq);
             return r;
         });
 
         var configInstance = startRes.getConfig();
-        XPipeConnection.finishDialog(configInstance);
+        XPipeApiConnection.finishDialog(configInstance);
 
         var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
         return get(ref);
     }
 
     public static DataSource create(DataSourceId id, String type, InputStream in) {
-        var res = XPipeConnection.execute(con -> {
+        var res = XPipeApiConnection.execute(con -> {
             var req = StoreStreamExchange.Request.builder().build();
             StoreStreamExchange.Response r = con.performOutputExchange(req, out -> in.transferTo(out));
             return r;
@@ -110,13 +110,13 @@ public abstract class DataSourceImpl implements DataSource {
                 .target(id)
                 .configureAll(false)
                 .build();
-        var startRes = XPipeConnection.execute(con -> {
+        var startRes = XPipeApiConnection.execute(con -> {
             ReadExchange.Response r = con.performSimpleExchange(startReq);
             return r;
         });
 
         var configInstance = startRes.getConfig();
-        XPipeConnection.finishDialog(configInstance);
+        XPipeApiConnection.finishDialog(configInstance);
 
         var ref = id != null ? DataSourceReference.id(id) : DataSourceReference.latest();
         return get(ref);
@@ -124,7 +124,7 @@ public abstract class DataSourceImpl implements DataSource {
 
     @Override
     public void forwardTo(DataSource target) {
-        XPipeConnection.execute(con -> {
+        XPipeApiConnection.execute(con -> {
             var req = ForwardExchange.Request.builder()
                     .source(DataSourceReference.id(sourceId))
                     .target(DataSourceReference.id(target.getId()))
@@ -135,7 +135,7 @@ public abstract class DataSourceImpl implements DataSource {
 
     @Override
     public void appendTo(DataSource target) {
-        XPipeConnection.execute(con -> {
+        XPipeApiConnection.execute(con -> {
             var req = ForwardExchange.Request.builder()
                     .source(DataSourceReference.id(sourceId))
                     .target(DataSourceReference.id(target.getId()))

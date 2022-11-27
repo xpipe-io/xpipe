@@ -18,6 +18,14 @@ public class FileNames {
         return normalize(joined);
     }
 
+    public static String getParent(String file) {
+        return file.substring(0, file.length() - getFileName(file).length() - 1);
+    }
+
+    public static boolean startsWith(String file, String start) {
+        return normalize(file).startsWith(normalize(start));
+    }
+
     public static String normalize(String file) {
         var backslash = file.contains("\\");
         return backslash ? toWindows(file) : toUnix(file);

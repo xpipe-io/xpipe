@@ -132,8 +132,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileExistsCommand(String file) {
-            return List.of("dir", "/a", file);
+        public String createFileExistsCommand(String file) {
+            return String.format("dir /a \"%s\"", file);
         }
 
         @Override
@@ -263,8 +263,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileExistsCommand(String file) {
-            return List.of("cmd", "/c", "dir", "/a", file);
+        public String createFileExistsCommand(String file) {
+            return String.format("cmd /c dir /a \"%s\"", file);
         }
 
         @Override
@@ -386,8 +386,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileExistsCommand(String file) {
-            return List.of("(", "test", "-f", file, "||", "test", "-d", file, ")");
+        public String createFileExistsCommand(String file) {
+            return String.format("test -f \"%s\" || test -d \"%s\"", file, file);
         }
 
         @Override

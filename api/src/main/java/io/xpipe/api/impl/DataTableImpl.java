@@ -2,7 +2,7 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataTable;
-import io.xpipe.api.connector.XPipeConnection;
+import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.beacon.BeaconConnection;
 import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.api.QueryTableDataExchange;
@@ -55,7 +55,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
     @Override
     public ArrayNode read(int maxRows) {
         List<DataStructureNode> nodes = new ArrayList<>();
-        XPipeConnection.execute(con -> {
+        XPipeApiConnection.execute(con -> {
             var req = QueryTableDataExchange.Request.builder()
                     .ref(DataSourceReference.id(getId()))
                     .maxRows(maxRows)
@@ -83,7 +83,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
         private TupleNode node;
 
         {
-            connection = XPipeConnection.open();
+            connection = XPipeApiConnection.open();
             var req = QueryTableDataExchange.Request.builder()
                     .ref(DataSourceReference.id(getId()))
                     .maxRows(Integer.MAX_VALUE)
