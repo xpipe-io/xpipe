@@ -123,13 +123,6 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
         return Optional.empty();
     }
 
-    /**
-     * Determines the data source info.
-     * This is usually called only once on data source
-     * creation as this process might be expensive.
-     */
-    public abstract DataSourceInfo determineInfo() throws Exception;
-
     public DataSourceReadConnection openReadConnection() throws Exception {
         throw new UnsupportedOperationException();
     }
@@ -141,4 +134,6 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
     public DS getStore() {
         return store;
     }
+
+    public abstract DataSourceType getType();
 }

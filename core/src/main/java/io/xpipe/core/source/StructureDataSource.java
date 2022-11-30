@@ -7,6 +7,11 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public abstract class StructureDataSource<DS extends DataStore> extends DataSource<DS> {
 
+    @Override
+    public DataSourceType getType() {
+        return DataSourceType.STRUCTURE;
+    }
+
     private int countEntries(DataStructureNode n) {
         if (n.isValue()) {
             return 1;
@@ -19,19 +24,12 @@ public abstract class StructureDataSource<DS extends DataStore> extends DataSour
         return c;
     }
 
-    @Override
-    public final DataSourceInfo determineInfo() throws Exception {
-        try (var con = openReadConnection()) {
-            var n = con.read();
-            var c = countEntries(n);
-            return new DataSourceInfo.Structure(c);
-        }
-    }
-
     public final StructureReadConnection openReadConnection() throws Exception {
-        var con = newReadConnection();
-        con.init();
-        return con;
+        if (!isComplete()) {
+            throw new UnsupportedOperationException();
+        }
+
+        return newReadConnection();
     }
 
     public final StructureWriteConnection openWriteConnection(WriteMode mode) throws Exception {
@@ -40,7 +38,6 @@ public abstract class StructureDataSource<DS extends DataStore> extends DataSour
             throw new UnsupportedOperationException(mode.getId());
         }
 
-        con.init();
         return con;
     }
 

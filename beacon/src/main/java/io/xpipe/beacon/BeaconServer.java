@@ -18,7 +18,8 @@ import java.nio.file.Path;
 public class BeaconServer {
 
     public static boolean isRunning() {
-        try (var ignored = BeaconClient.connect(null)) {
+        try (var ignored = BeaconClient.connect(
+                BeaconClient.ReachableCheckInformation.builder().build())) {
             return true;
         } catch (Exception e) {
             return false;

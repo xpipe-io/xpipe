@@ -1,10 +1,13 @@
 import com.fasterxml.jackson.databind.Module;
 import io.xpipe.beacon.BeaconJacksonModule;
+import io.xpipe.beacon.BeaconProxyImpl;
+import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.beacon.exchange.*;
 import io.xpipe.beacon.exchange.api.QueryRawDataExchange;
 import io.xpipe.beacon.exchange.api.QueryTableDataExchange;
 import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
 import io.xpipe.beacon.exchange.cli.*;
+import io.xpipe.core.util.ProxyProvider;
 
 module io.xpipe.beacon {
     exports io.xpipe.beacon;
@@ -25,8 +28,9 @@ module io.xpipe.beacon {
     requires static lombok;
 
     uses MessageExchange;
-    uses io.xpipe.beacon.NamedFunction;
+    uses ProxyFunction;
 
+    provides ProxyProvider with BeaconProxyImpl;
     provides Module with BeaconJacksonModule;
     provides io.xpipe.beacon.exchange.MessageExchange with
             ForwardExchange,
@@ -37,7 +41,8 @@ module io.xpipe.beacon {
             ListCollectionsExchange,
             ListEntriesExchange,
             ModeExchange,
-            NamedFunctionExchange,
+            ProxyWriteConnectionExchange,
+            ProxyFunctionExchange,
             StatusExchange,
             StopExchange,
             RenameStoreExchange,

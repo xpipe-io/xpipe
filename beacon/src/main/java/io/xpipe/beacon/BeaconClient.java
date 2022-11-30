@@ -15,6 +15,7 @@ import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
@@ -31,7 +32,7 @@ import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 public class BeaconClient implements AutoCloseable {
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-    public static abstract class ClientInformation {
+    public abstract static class ClientInformation {
 
         public final CliClientInformation cli() {
             return (CliClientInformation) this;
@@ -52,6 +53,19 @@ public class BeaconClient implements AutoCloseable {
         @Override
         public String toDisplayString() {
             return "X-Pipe CLI";
+        }
+    }
+
+    @JsonTypeName("reachableCheck")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class ReachableCheckInformation extends ClientInformation {
+
+        @Override
+        public String toDisplayString() {
+            return "Reachable check";
         }
     }
 
@@ -86,12 +100,14 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
-    private final Closeable closeable;
+    @Getter
+    private final Closeable base;
+
     private final InputStream in;
     private final OutputStream out;
 
-    private BeaconClient(Closeable closeable, InputStream in, OutputStream out) {
-        this.closeable = closeable;
+    private BeaconClient(Closeable base, InputStream in, OutputStream out) {
+        this.base = base;
         this.in = in;
         this.out = out;
     }
@@ -105,11 +121,33 @@ public class BeaconClient implements AutoCloseable {
 
     public static BeaconClient connectProxy(ShellStore proxy) throws Exception {
         var control = proxy.create().start();
-        var command = control.command("xpipe beacon").start();
+        var command = control.command("xpipe beacon --raw").start();
         command.discardErr();
-        return new BeaconClient(() -> {
-            command.close();
-        }, command.getStdout(), command.getStdin());
+        return new BeaconClient(command, command.getStdout(), command.getStdin()) {
+            @Override
+            public <T extends ResponseMessage> T receiveResponse()
+                    throws ConnectorException, ClientException, ServerException {
+                try {
+                    sendEOF();
+                    getRawOutputStream().close();
+                } catch (IOException ex) {
+                    throw new ConnectorException(ex);
+                }
+
+                return super.receiveResponse();
+            }
+
+            @Override
+            public void close() throws ConnectorException {
+                try {
+                    getRawInputStream().readAllBytes();
+                } catch (IOException ex) {
+                    throw new ConnectorException(ex);
+                }
+
+                super.close();
+            }
+        };
     }
 
     public static Optional<BeaconClient> tryConnect(ClientInformation information) {
@@ -122,7 +160,7 @@ public class BeaconClient implements AutoCloseable {
 
     public void close() throws ConnectorException {
         try {
-            closeable.close();
+            base.close();
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't close client", ex);
         }
@@ -168,6 +206,13 @@ public class BeaconClient implements AutoCloseable {
         }
 
         sendObject(msg);
+    }
+
+    public void sendEOF() throws ConnectorException {
+        try (OutputStream ignored = BeaconFormat.writeBlocks(out)) {
+        } catch (IOException ex) {
+            throw new ConnectorException("Couldn't write to socket", ex);
+        }
     }
 
     public void sendObject(JsonNode node) throws ConnectorException {
