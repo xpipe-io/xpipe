@@ -1,7 +1,7 @@
 package io.xpipe.extension.util;
 
-import io.xpipe.core.store.DataStore;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.extension.I18n;
 

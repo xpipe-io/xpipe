@@ -6,7 +6,7 @@ import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.fxcomps.Comp;
+import io.xpipe.extension.fxcomps.Comp;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;

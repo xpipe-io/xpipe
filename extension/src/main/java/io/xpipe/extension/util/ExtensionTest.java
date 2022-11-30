@@ -1,7 +1,7 @@
 package io.xpipe.extension.util;
 
-import io.xpipe.core.store.DataStore;
 import io.xpipe.core.impl.FileStore;
+import io.xpipe.core.store.DataStore;
 import lombok.SneakyThrows;
 
 import java.nio.file.Path;

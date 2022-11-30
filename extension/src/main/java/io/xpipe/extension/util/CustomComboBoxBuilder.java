@@ -1,7 +1,7 @@
 package io.xpipe.extension.util;
 
-import io.xpipe.extension.comp.FilterComp;
-import io.xpipe.fxcomps.util.SimpleChangeListener;
+import io.xpipe.extension.fxcomps.impl.FilterComp;
+import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;

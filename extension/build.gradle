@@ -31,12 +31,6 @@ dependencies {
     compileOnly 'com.jfoenix:jfoenix:9.0.10'
     compileOnly 'org.controlsfx:controlsfx:11.1.2'
     compileOnly 'org.apache.commons:commons-lang3:3.12.0'
-
-    if (findProject(':fxcomps') != null) {
-        compileOnly project(':fxcomps')
-    } else {
-        compileOnly 'io.xpipe:fxcomps:0.3.3'
-    }
 }
 
 
