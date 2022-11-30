@@ -1,0 +1,33 @@
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = project.archivesBaseName
+
+            from components.java
+
+            pom {
+                name = 'FxComps'
+                description = 'The FxComps library provides a new approach to creating JavaFX interfaces and offers a quicker and more robust user interface development workflow.'
+                url = 'https://github.com/xpipe-io/xpipe_java/fxcomps'
+                licenses {
+                    license {
+                        name = 'The MIT License (MIT)'
+                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE.md'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'crschnick'
+                        name = 'Christopher Schnick'
+                        email = 'crschnick@xpipe.io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/xpipe-io/xpipe_java.git'
+                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe_java.git'
+                    url = 'https://github.com/xpipe-io/xpipe_java'
+                }
+            }
+        }
+    }
+}
