@@ -12,6 +12,11 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
     @Singular
     private final Map<String, String> preferredProviders;
 
+    @Override
+    public DataSourceType getType() {
+        return DataSourceType.COLLECTION;
+    }
+
     public CollectionDataSource<DS> annotate(String file, String provider) {
         preferredProviders.put(file, provider);
         return this;
@@ -22,18 +27,12 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
         return this;
     }
 
-    @Override
-    public final DataSourceInfo determineInfo() throws Exception {
-        try (var con = openReadConnection()) {
-            var c = (int) con.listEntries().count();
-            return new DataSourceInfo.Collection(c);
-        }
-    }
-
     public final CollectionReadConnection openReadConnection() throws Exception {
-        var con = newReadConnection();
-        con.init();
-        return con;
+        if (!isComplete()) {
+            throw new UnsupportedOperationException();
+        }
+
+        return newReadConnection();
     }
 
     public final CollectionWriteConnection openWriteConnection(WriteMode mode) throws Exception {
@@ -42,7 +41,6 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
             throw new UnsupportedOperationException(mode.getId());
         }
 
-        con.init();
         return con;
     }
 

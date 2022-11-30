@@ -1,5 +1,6 @@
 package io.xpipe.core.source;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import io.xpipe.core.data.type.TupleType;
 import lombok.Getter;
 
@@ -63,6 +64,7 @@ public class TableMapping {
 
     protected final Integer[] columMap;
 
+    @JsonCreator
     public TableMapping(TupleType inputType, TupleType outputType, Integer[] columMap) {
         this.inputType = inputType;
         this.outputType = outputType;

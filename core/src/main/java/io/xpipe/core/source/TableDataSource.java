@@ -3,6 +3,10 @@ package io.xpipe.core.source;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.impl.PreservingTableWriteConnection;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.ProxyProvider;
+import io.xpipe.core.util.SimpleProxyFunction;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Optional;
@@ -24,34 +28,47 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
     }
 
     @Override
-    public final DataSourceInfo determineInfo() throws Exception {
-        if (!getFlow().hasInput() || !getStore().canOpen()) {
-            return new DataSourceInfo.Table(null, -1);
-        }
-
-        try {
-            checkComplete();
-        } catch (Exception e) {
-            return new DataSourceInfo.Table(null, -1);
-        }
-
-        try (var con = openReadConnection()) {
-            var dataType = con.getDataType();
-            var rowCount = con.getRowCount();
-            return new DataSourceInfo.Table(dataType, rowCount.orElse(-1));
-        }
+    public DataSourceType getType() {
+        return DataSourceType.TABLE;
     }
 
     public final TableReadConnection openReadConnection() throws Exception {
-        try {
-            checkComplete();
-        } catch (Exception e) {
+        if (!isComplete()) {
             return TableReadConnection.empty();
         }
 
-        var con = newReadConnection();
-        con.init();
-        return con;
+        var proxy = ProxyProvider.get().getProxy(this);
+        if (proxy != null) {
+            return ProxyProvider.get().createRemoteReadConnection(this, proxy);
+        }
+
+        return newReadConnection();
+    }
+
+    @NoArgsConstructor
+    private static class CreateMappingFunction extends SimpleProxyFunction<TableMapping> {
+
+        private TableDataSource<?> source;
+        private TupleType type;
+
+        public CreateMappingFunction(TableDataSource<?> source, TupleType type) {
+            this.source = source;
+            this.type = type;
+        }
+
+        private TableMapping mapping;
+
+        @SneakyThrows
+        public void callLocal() {
+            try (TableWriteConnection w = source.openWriteConnection(WriteMode.REPLACE)) {
+                w.init();
+                mapping = w.createMapping(type).orElse(null);
+            }
+        }
+    }
+
+    public final Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
+        return Optional.ofNullable(new CreateMappingFunction(this, inputType).callAndGet());
     }
 
     public final TableWriteConnection openWriteConnection(WriteMode mode) throws Exception {
@@ -60,7 +77,11 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
             throw new UnsupportedOperationException(mode.getId());
         }
 
-        con.init();
+        var proxy = ProxyProvider.get().getProxy(this);
+        if (proxy != null) {
+            return ProxyProvider.get().createRemoteWriteConnection(this, mode, proxy);
+        }
+
         return con;
     }
 

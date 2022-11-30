@@ -29,15 +29,17 @@ public class PreservingWriteConnection implements DataSourceConnection {
         if (source.getStore().canOpen()) {
             try (var in = source.openReadConnection();
                     var out = nativeSource.openWriteConnection(WriteMode.REPLACE)) {
+                in.init();
+                out.init();
                 in.forward(out);
             }
-            ;
         }
 
         connection.init();
         if (source.getStore().canOpen()) {
 
             try (var in = nativeSource.openReadConnection()) {
+                in.init();
                 in.forward(connection);
             }
         }

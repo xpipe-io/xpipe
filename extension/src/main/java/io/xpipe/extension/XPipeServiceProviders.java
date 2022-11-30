@@ -1,7 +1,7 @@
 package io.xpipe.extension;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-import io.xpipe.beacon.NamedFunction;
+import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.impl.LocalProcessControlProvider;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.event.TrackEvent;
@@ -36,7 +36,7 @@ public class XPipeServiceProviders {
 
         SupportedApplicationProviders.loadAll(layer);
         PrefsProviders.init(layer);
-        NamedFunction.init(layer);
+        ProxyFunction.init(layer);
         TrackEvent.info("Finished loading extension providers");
     }
 }

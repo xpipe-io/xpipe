@@ -1,5 +1,6 @@
 package io.xpipe.core.impl;
 
+import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.StreamDataStore;
 
 import java.io.InputStream;
@@ -11,6 +12,11 @@ public class OutputStreamStore implements StreamDataStore {
 
     public OutputStreamStore(OutputStream out) {
         this.out = out;
+    }
+
+    @Override
+    public DataFlow getFlow() {
+        return DataFlow.OUTPUT;
     }
 
     @Override
