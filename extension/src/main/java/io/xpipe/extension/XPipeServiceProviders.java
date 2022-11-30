@@ -1,9 +1,9 @@
 package io.xpipe.extension;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.impl.LocalProcessControlProvider;
 import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.prefs.PrefsProviders;
 

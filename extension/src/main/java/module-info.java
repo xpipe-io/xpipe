@@ -6,10 +6,13 @@ import io.xpipe.extension.util.XPipeDaemon;
 
 open module io.xpipe.extension {
     exports io.xpipe.extension;
-    exports io.xpipe.extension.comp;
     exports io.xpipe.extension.event;
     exports io.xpipe.extension.prefs;
     exports io.xpipe.extension.util;
+    exports io.xpipe.extension.fxcomps;
+    exports io.xpipe.extension.fxcomps.impl;
+    exports io.xpipe.extension.fxcomps.util;
+    exports io.xpipe.extension.fxcomps.augment;
 
     requires transitive io.xpipe.core;
     requires io.xpipe.beacon;
@@ -21,7 +24,6 @@ open module io.xpipe.extension {
     requires static javafx.graphics;
     requires static javafx.controls;
     requires static javafx.web;
-    requires static io.xpipe.fxcomps;
     requires static lombok;
     requires static org.controlsfx.controls;
     requires static java.desktop;

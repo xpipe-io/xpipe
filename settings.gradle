@@ -4,7 +4,6 @@ include 'api'
 include 'core'
 include 'beacon'
 include 'extension'
-include 'fxcomps'
 
 buildscript {
     repositories {
