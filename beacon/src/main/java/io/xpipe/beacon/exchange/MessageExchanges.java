@@ -15,7 +15,10 @@ public class MessageExchanges {
     private static void loadAll() {
         if (ALL == null) {
             ALL = ServiceLoader.load(MessageExchange.class).stream()
-                    .map(ServiceLoader.Provider::get)
+                    .map(s -> {
+                        var ex = (MessageExchange) s.get();
+                        return ex;
+                    })
                     .collect(Collectors.toSet());
         }
     }
