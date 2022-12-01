@@ -6,8 +6,6 @@ import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 
-import java.io.IOException;
-
 public class XPipeInstallation {
 
     public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
@@ -32,7 +30,7 @@ public class XPipeInstallation {
     public static boolean containsCompatibleDefaultInstallation(ShellProcessControl p, String version) throws Exception {
         var defaultBase = getDefaultInstallationBasePath(p);
         var executable = getInstallationExecutable(p, defaultBase);
-        if (executable.isEmpty()) {
+        if (!p.executeBooleanSimpleCommand(p.getShellType().createFileExistsCommand(executable))) {
             return false;
         }
 
@@ -44,14 +42,7 @@ public class XPipeInstallation {
     public static String getInstallationExecutable(ShellProcessControl p, String installation) throws Exception {
         var executable = getDaemonExecutablePath(p.getOsType());
         var file = FileNames.join(installation, executable);
-        try (CommandProcessControl c =
-                p.command(p.getShellType().createFileExistsCommand(file)).start()) {
-            if (!c.startAndCheckExit()) {
-                throw new IOException("File not found: " + file);
-            }
-
-            return file;
-        }
+        return file;
     }
 
     public static String getDataBasePath(ShellProcessControl p) throws Exception {
@@ -81,13 +72,6 @@ public class XPipeInstallation {
             path = FileNames.join(base, "X-Pipe");
         } else {
             path = "/opt/xpipe";
-        }
-
-        try (CommandProcessControl c =
-           p.command(p.getShellType().createFileExistsCommand(path)).start()) {
-            if (!c.discardAndCheckExit()) {
-                throw new IOException("Installation not found in " + path);
-            }
         }
 
         return path;
