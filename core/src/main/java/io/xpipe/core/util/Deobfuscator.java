@@ -2,10 +2,12 @@ package io.xpipe.core.util;
 
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.ShellStore;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,9 +21,6 @@ public class Deobfuscator {
         }
 
         String deobf = deobfuscateToString(throwable);
-        if (deobf == null) {
-            return;
-        }
 
         try {
             // "at package.class.method(source.java:123)"
@@ -58,11 +57,11 @@ public class Deobfuscator {
         String stackTrace = sw.toString();
         stackTrace = stackTrace.replaceAll("at .+/(.+)", "at $1");
 
-        if (!System.getenv().containsKey("XPIPE_MAPPING")) {
-            return stackTrace;
-        }
-
         try {
+            if (!canDeobfuscate()) {
+                return stackTrace;
+            }
+
             var file = Files.createTempFile("xpipe_stracktrace", null);
             Files.writeString(file, stackTrace);
             var proc = new ProcessBuilder(
@@ -81,7 +80,7 @@ public class Deobfuscator {
         } catch (Exception ex) {
             System.err.println("Deobfuscation failed");
             ex.printStackTrace();
-            return null;
+            return stackTrace;
         }
 
         return stackTrace;
@@ -90,5 +89,22 @@ public class Deobfuscator {
     public static void printStackTrace(Throwable t) {
         var s = deobfuscateToString(t);
         System.err.println(s);
+    }
+
+    private static  boolean canDeobfuscate() throws Exception {
+        if (!System.getenv().containsKey("XPIPE_MAPPING")) {
+            return false;
+        }
+
+        var file = Path.of(System.getenv("XPIPE_MAPPING"));
+        if (!Files.exists(file)) {
+            return false;
+        }
+
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            return ShellStore.local().create().executeBooleanSimpleCommand("which retrace.sh");
+        }
+
+        return true;
     }
 }
