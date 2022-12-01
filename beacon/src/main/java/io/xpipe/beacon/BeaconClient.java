@@ -12,6 +12,7 @@ import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.util.Deobfuscator;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -276,8 +277,8 @@ public class BeaconClient implements AutoCloseable {
         }
 
         try {
-            var reader = JacksonMapper.newMapper().readerFor(ClientErrorMessage.class);
-            return Optional.of(reader.readValue(content));
+            var message = JacksonMapper.getDefault().treeToValue(content, ClientErrorMessage.class);
+            return Optional.of(message);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse client error message", ex);
         }
@@ -290,8 +291,9 @@ public class BeaconClient implements AutoCloseable {
         }
 
         try {
-            var reader = JacksonMapper.newMapper().readerFor(ServerErrorMessage.class);
-            return Optional.of(reader.readValue(content));
+            var message = JacksonMapper.getDefault().treeToValue(content, ServerErrorMessage.class);
+            Deobfuscator.deobfuscate(message.getError());
+            return Optional.of(message);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse server error message", ex);
         }
