@@ -55,7 +55,6 @@ module io.xpipe.beacon {
             SelectExchange,
             ReadExchange,
             QueryTextDataExchange,
-            ReadExecuteExchange,
             ListStoresExchange,
             DialogExchange,
             QueryDataSourceExchange,
