@@ -12,7 +12,7 @@ public class MessageExchanges {
 
     private static Set<MessageExchange> ALL;
 
-    private static void loadAll() {
+    public static void loadAll() {
         if (ALL == null) {
             ALL = ServiceLoader.load(MessageExchange.class).stream()
                     .map(s -> {
