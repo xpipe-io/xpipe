@@ -48,9 +48,9 @@ public class XPipeInstallation {
     public static String getDataBasePath(ShellProcessControl p) throws Exception {
         if (p.getOsType().equals(OsType.WINDOWS)) {
             var base = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("userprofile"));
-            return FileNames.join(base, "X-Pipe");
+            return FileNames.join(base, ".xpipe");
         } else {
-            return FileNames.join("~", "xpipe");
+            return FileNames.join("~", ".xpipe");
         }
     }
 
