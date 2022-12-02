@@ -23,7 +23,6 @@ import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.impl.*;
 import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.core.source.DataSourceInfo;
 import io.xpipe.core.source.DataSourceReference;
 
 import java.io.IOException;
@@ -48,11 +47,6 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(ShellTypes.Cmd.class),
                 new NamedType(ShellTypes.PowerShell.class),
                 new NamedType(ShellTypes.Sh.class),
-                new NamedType(DataSourceInfo.Table.class),
-                new NamedType(DataSourceInfo.Structure.class),
-                new NamedType(DataSourceInfo.Text.class),
-                new NamedType(DataSourceInfo.Collection.class),
-                new NamedType(DataSourceInfo.Raw.class),
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),

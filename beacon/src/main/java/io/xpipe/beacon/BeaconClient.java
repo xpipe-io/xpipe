@@ -189,7 +189,7 @@ public class BeaconClient implements AutoCloseable {
     }
 
     public <T extends RequestMessage> void sendRequest(T req) throws ClientException, ConnectorException {
-        ObjectNode json = JacksonMapper.newMapper().valueToTree(req);
+        ObjectNode json = JacksonMapper.getDefault().valueToTree(req);
         var prov = MessageExchanges.byRequest(req);
         if (prov.isEmpty()) {
             throw new ClientException("Unknown request class " + req.getClass());
