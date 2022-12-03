@@ -28,6 +28,25 @@ public abstract class EventHandler {
         }
     };
 
+    public static final EventHandler OMIT = new EventHandler() {
+        @Override
+        public List<TrackEvent> snapshotEvents() {
+            return List.of();
+        }
+
+        @Override
+        public void handle(TrackEvent te) {
+        }
+
+        @Override
+        public void handle(ErrorEvent ee) {
+        }
+    };
+
+    public static void set(EventHandler handler) {
+        INSTANCE = handler;
+    }
+
     private static EventHandler INSTANCE;
 
     private static void init() {

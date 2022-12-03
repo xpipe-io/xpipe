@@ -5,9 +5,15 @@ import io.xpipe.core.charsetter.NewLine;
 
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
+
+    default String flatten(List<String> command) {
+        return command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" "));
+    }
+
 
     default String joinCommands(String... s) {
         return String.join(getConcatenationOperator(), s);

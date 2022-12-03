@@ -4,7 +4,10 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellProcessControl;
+
+import java.util.List;
 
 public class XPipeInstallation {
 
@@ -22,8 +25,10 @@ public class XPipeInstallation {
     }
 
     public static String queryInstallationVersion(ShellProcessControl p, String exec) throws Exception {
-        try (CommandProcessControl c = p.command(exec + " version").start()) {
+        try (CommandProcessControl c = p.command(List.of(exec, "version")).start()) {
             return c.readOrThrow();
+        } catch (ProcessOutputException ex) {
+            return "?";
         }
     }
 
@@ -34,7 +39,7 @@ public class XPipeInstallation {
             return false;
         }
 
-        try (CommandProcessControl c = p.command(executable + " version").start()) {
+        try (CommandProcessControl c = p.command(List.of(executable, "version")).start()) {
             return c.readOrThrow().equals(version);
         }
     }

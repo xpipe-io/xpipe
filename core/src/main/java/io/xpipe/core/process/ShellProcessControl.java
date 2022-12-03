@@ -71,18 +71,17 @@ public interface ShellProcessControl extends ProcessControl {
     ShellProcessControl start() throws Exception;
 
     default CommandProcessControl commandListFunction(Function<ShellProcessControl, List<String>> command) {
-        return commandFunction(shellProcessControl -> command.apply(shellProcessControl).stream()
-                .map(s -> s.contains(" ") ? "\"" + s + "\"" : s)
-                .collect(Collectors.joining(" ")));
+        return commandFunction(shellProcessControl -> shellProcessControl.getShellType().flatten(command.apply(shellProcessControl)));
     }
 
     CommandProcessControl commandFunction(Function<ShellProcessControl, String> command);
 
-    CommandProcessControl command(String command);
+    default CommandProcessControl command(String command){
+        return commandFunction(shellProcessControl -> command);
+    }
 
     default CommandProcessControl command(List<String> command) {
-        return command(
-                command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
+        return commandFunction(shellProcessControl -> shellProcessControl.getShellType().flatten(command));
     }
 
     void exitAndWait() throws IOException;
