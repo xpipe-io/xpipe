@@ -15,7 +15,7 @@ public class DaemonExtensionTest extends ExtensionTest {
     }
 
     public static DataSource getSource(String type, String file) {
-        return DataSource.create(null, type, getResource(file));
+        return DataSource.create(null, type, getResourceStore(file));
     }
 
     public static DataSource getSource(io.xpipe.core.source.DataSource<?> source) {

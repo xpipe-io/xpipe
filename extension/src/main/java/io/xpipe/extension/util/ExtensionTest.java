@@ -9,8 +9,18 @@ import java.nio.file.Path;
 public class ExtensionTest {
 
     @SneakyThrows
-    public static DataStore getResource(String name) {
-        var url = DaemonExtensionTest.class.getClassLoader().getResource(name);
+    public static Path getResourcePath(Class<?> c, String name) {
+        var url = c.getResource(name);
+        if (url == null) {
+            throw new IllegalArgumentException(String.format("File %s does not exist", name));
+        }
+        var file = Path.of(url.toURI());
+        return file;
+    }
+
+    @SneakyThrows
+    public static DataStore getResourceStore(String name) {
+        var url = ExtensionTest.class.getClassLoader().getResource(name);
         if (url == null) {
             throw new IllegalArgumentException(String.format("File %s does not exist", name));
         }

@@ -125,6 +125,17 @@ public class BeaconClient implements AutoCloseable {
         var command = control.command("xpipe beacon --raw").start();
         command.discardErr();
         return new BeaconClient(command, command.getStdout(), command.getStdin()) {
+
+//            {
+//                new Thread(() -> {
+//                    while (true) {
+//                        if (!control.isRunning()) {
+//                            close();
+//                        }
+//                    }
+//                })
+//            }
+
             @Override
             public <T extends ResponseMessage> T receiveResponse()
                     throws ConnectorException, ClientException, ServerException {

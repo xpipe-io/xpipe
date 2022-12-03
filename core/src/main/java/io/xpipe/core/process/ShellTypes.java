@@ -325,12 +325,12 @@ public class ShellTypes {
         @Override
         public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
             if (control.getElevationPassword() == null) {
-                control.executeCommand("SUDO_ASKPASS=/bin/false sudo -p \"\" -S  " + command);
+                control.executeCommand("SUDO_ASKPASS=/bin/false sudo -n -p \"\" -S -- " + command);
                 return;
             }
 
             // For sudo to always query for a password by using the -k switch
-            control.executeCommand("sudo -p \"\" -k -S " + escape(command));
+            control.executeCommand("sudo -p \"\" -k -S -- " + escape(command));
             control.writeLine(control.getElevationPassword().getSecretValue());
         }
 
