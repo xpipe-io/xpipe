@@ -11,6 +11,8 @@ public interface OsType {
     Linux LINUX = new Linux();
     Mac MAC = new Mac();
 
+    String getScriptFileEnding();
+
     String getName();
 
     String getTempDirectory(ShellProcessControl pc) throws Exception;
@@ -39,6 +41,11 @@ public interface OsType {
     UUID getSystemUUID(ShellProcessControl pc) throws Exception;
 
     static class Windows implements OsType {
+
+        @Override
+        public String getScriptFileEnding() {
+            return "bat";
+        }
 
         @Override
         public String getName() {
@@ -96,6 +103,11 @@ public interface OsType {
         @Override
         public String normalizeFileName(String file) {
             return String.join("/", file.split("[\\\\/]+"));
+        }
+
+        @Override
+        public String getScriptFileEnding() {
+            return "sh";
         }
 
         @Override
@@ -166,6 +178,11 @@ public interface OsType {
         @Override
         public String normalizeFileName(String file) {
             return String.join("/", file.split("[\\\\/]+"));
+        }
+
+        @Override
+        public String getScriptFileEnding() {
+            return "sh";
         }
 
         @Override

@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
 
+    String createInitFileContent(String command);
+
+    List<String> getOpenWithInitFileCommand(String file);
+
     default String flatten(List<String> command) {
         return command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" "));
     }
@@ -64,6 +68,8 @@ public interface ShellType {
     String getName();
 
     String getDisplayName();
+
+    String getExecutable();
 
     boolean echoesInput();
 }

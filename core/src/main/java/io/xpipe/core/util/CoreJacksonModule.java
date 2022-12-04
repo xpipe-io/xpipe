@@ -46,7 +46,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(WildcardType.class),
                 new NamedType(ShellTypes.Cmd.class),
                 new NamedType(ShellTypes.PowerShell.class),
-                new NamedType(ShellTypes.Sh.class),
+                new NamedType(ShellTypes.PosixBase.class),
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),
