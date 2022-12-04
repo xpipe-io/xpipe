@@ -31,6 +31,10 @@ public interface DataStoreActionProvider<T extends DataStore> {
 
     Class<T> getApplicableClass();
 
+    default boolean isMajor() {
+        return false;
+    }
+
     default boolean isActive() throws Exception {
         return true;
     }

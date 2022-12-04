@@ -2,6 +2,7 @@ package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.charsetter.NewLine;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.io.BufferedReader;
@@ -17,6 +18,7 @@ public class ShellTypes {
     public static final ShellType POWERSHELL = new PowerShell();
     public static final ShellType CMD = new Cmd();
     public static final ShellType SH = new Sh();
+    public static final ShellType BASH = new Bash();
 
     public static ShellType getRecommendedDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
@@ -39,7 +41,7 @@ public class ShellTypes {
     }
 
     public static ShellType[] getLinuxShells() {
-        return new ShellType[] {SH};
+        return new ShellType[] {BASH, SH};
     }
 
     @JsonTypeName("cmd")
@@ -80,8 +82,18 @@ public class ShellTypes {
         }
 
         @Override
+        public List<String> getOpenWithInitFileCommand(String file) {
+            return List.of(getExecutable(), "/V:on", "/K", file);
+        }
+
+        @Override
         public String escape(String input) {
             return input;
+        }
+
+        @Override
+        public String createInitFileContent(String command) {
+            return "@echo off\n" + command;
         }
 
         @Override
@@ -164,6 +176,11 @@ public class ShellTypes {
         }
 
         @Override
+        public String getExecutable() {
+            return "C:\\Windows\\System32\\cmd.exe";
+        }
+
+        @Override
         public boolean echoesInput() {
             return true;
         }
@@ -172,6 +189,11 @@ public class ShellTypes {
     @JsonTypeName("powershell")
     @Value
     public static class PowerShell implements ShellType {
+
+        @Override
+        public String getExecutable() {
+            return "C:\\Windows\\System32\\powershell.exe";
+        }
 
         @Override
         public String getPrintVariableCommand(String name) {
@@ -203,6 +225,16 @@ public class ShellTypes {
         @Override
         public boolean echoesInput() {
             return true;
+        }
+
+        @Override
+        public String createInitFileContent(String command) {
+            return "@echo off\n" + command;
+        }
+
+        @Override
+        public List<String> getOpenWithInitFileCommand(String file) {
+            return List.of("powershell.exe", "-NoExit", "-ExecutionPolicy", "Bypass", "-File", file);
         }
 
         @Override
@@ -298,9 +330,14 @@ public class ShellTypes {
         }
     }
 
-    @JsonTypeName("sh")
-    @Value
-    public static class Sh implements ShellType {
+    public abstract static class PosixBase implements ShellType {
+
+        public abstract String getName();
+
+        @Override
+        public String createInitFileContent(String command) {
+            return "echo a\n" + command + "\necho b";
+        }
 
         @Override
         public String getPrintVariableCommand(String name) {
@@ -318,8 +355,13 @@ public class ShellTypes {
         }
 
         @Override
+        public List<String> getOpenWithInitFileCommand(String file) {
+            return List.of(getExecutable(), "--init-file", file, "-i", "-l");
+        }
+
+        @Override
         public String escape(String input) {
-            return input.replace("$","\\$");
+            return input.replace("$", "\\$");
         }
 
         @Override
@@ -344,7 +386,6 @@ public class ShellTypes {
             return "echo " + s + (toErrorStream ? " 1>&2" : "");
         }
 
-
         @Override
         public String queryShellProcessId(ShellProcessControl control) throws Exception {
             try (CommandProcessControl c = control.command("echo $$").start()) {
@@ -362,12 +403,12 @@ public class ShellTypes {
 
         @Override
         public List<String> openCommand() {
-            return List.of("sh", "-i", "-l");
+            return List.of(getName(), "-i", "-l");
         }
 
         @Override
         public String switchTo(String cmd) {
-            return "sh -c \"" + cmd + "\"";
+            return getName() + " -c \"" + cmd + "\"";
         }
 
         @Override
@@ -401,8 +442,19 @@ public class ShellTypes {
         }
 
         @Override
-        public String getName() {
-            return "sh";
+        public boolean echoesInput() {
+            return false;
+        }
+    }
+
+    @JsonTypeName("sh")
+    @Value
+    @EqualsAndHashCode(callSuper = false)
+    public static class Sh extends PosixBase {
+
+        @Override
+        public String getExecutable() {
+            return "/bin/sh";
         }
 
         @Override
@@ -411,8 +463,29 @@ public class ShellTypes {
         }
 
         @Override
-        public boolean echoesInput() {
-            return false;
+        public String getName() {
+            return "sh";
+        }
+    }
+
+    @JsonTypeName("bash")
+    @Value
+    @EqualsAndHashCode(callSuper = false)
+    public static class Bash extends PosixBase {
+
+        @Override
+        public String getExecutable() {
+            return "/bin/bash";
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "/bin/bash";
+        }
+
+        @Override
+        public String getName() {
+            return "bash";
         }
     }
 }

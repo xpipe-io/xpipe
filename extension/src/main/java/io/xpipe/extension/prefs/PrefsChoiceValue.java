@@ -30,11 +30,16 @@ public interface PrefsChoiceValue extends Translatable {
     }
 
     @SuppressWarnings("unchecked")
-    static <T extends PrefsChoiceValue> List<T> getSupported(Class<T> type) {
+    static <T> List<T> getSupported(Class<T> type) {
         try {
             return (List<T>) type.getDeclaredField("SUPPORTED").get(null);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            return getAll(type).stream().filter(t -> t.isSupported()).toList();
+            var all = getAll(type);
+            if (all == null) {
+                throw new AssertionError();
+            }
+
+            return all.stream().filter(t -> ((PrefsChoiceValue)t).isSupported()).toList();
         }
     }
 

@@ -11,6 +11,12 @@ import java.util.stream.Collectors;
 
 public interface ShellProcessControl extends ProcessControl {
 
+    default String prepareOpen() throws Exception {
+        return prepareOpen(null);
+    }
+
+    String prepareOpen(String content) throws Exception;
+
     default String executeSimpleCommand(String command) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
             return c.readOrThrow();
