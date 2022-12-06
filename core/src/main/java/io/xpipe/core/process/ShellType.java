@@ -10,12 +10,20 @@ import java.util.stream.Collectors;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
 
+    String getScriptFileEnding();
+
+    default String commandWithVariable(String key, String value, String command) {
+        return joinCommands(getSetVariableCommand(key, value), command);
+    }
+
+    String getPauseCommand();
+
     String createInitFileContent(String command);
 
-    List<String> getOpenWithInitFileCommand(String file);
+    String getOpenWithInitFileCommand(String file);
 
     default String flatten(List<String> command) {
-        return command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" "));
+        return command.stream().map(s -> s.contains(" ") && !(s.startsWith("\"") && s.endsWith("\"")) ? "\"" + s + "\"" : s).collect(Collectors.joining(" "));
     }
 
 
@@ -40,6 +48,14 @@ public interface ShellType {
     default String getAndConcatenationOperator() {
         return "&&";
     }
+
+    default String getOrConcatenationOperator() {
+        return "||";
+    }
+
+    String getMakeExecutableCommand(String file);
+
+    String elevateConsoleCommand(ShellProcessControl control, String command);
 
     String getEchoCommand(String s, boolean toErrorStream);
 

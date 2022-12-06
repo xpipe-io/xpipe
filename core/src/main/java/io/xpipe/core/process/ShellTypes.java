@@ -50,7 +50,7 @@ public class ShellTypes {
 
         @Override
         public String getSetVariableCommand(String variableName, String value) {
-            return "set \"" + variableName + "=" + value + "\"";
+            return ("set \"" + variableName + "=" + value + "\"").replaceAll("!", "^!");
         }
 
         @Override
@@ -82,8 +82,18 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> getOpenWithInitFileCommand(String file) {
-            return List.of(getExecutable(), "/V:on", "/K", file);
+        public String getMakeExecutableCommand(String file) {
+            return "echo.";
+        }
+
+        @Override
+        public String elevateConsoleCommand(ShellProcessControl control, String command) {
+            return "net session >NUL 2>NUL && " + command;
+        }
+
+        @Override
+        public String getOpenWithInitFileCommand(String file) {
+            return String.format("%s /V:on %s \"%s\"", getExecutable(), "/C", file);
         }
 
         @Override
@@ -92,8 +102,18 @@ public class ShellTypes {
         }
 
         @Override
+        public String getScriptFileEnding() {
+            return "bat";
+        }
+
+        @Override
+        public String getPauseCommand() {
+            return "pause";
+        }
+
+        @Override
         public String createInitFileContent(String command) {
-            return "@echo off\n" + command;
+            return "@echo off\n" + command + "\n@echo on";
         }
 
         @Override
@@ -191,8 +211,20 @@ public class ShellTypes {
     public static class PowerShell implements ShellType {
 
         @Override
+        public String getOrConcatenationOperator() {
+            return ";";
+        }
+
+        @Override
+        public String elevateConsoleCommand(ShellProcessControl control, String command) {
+            return "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent())" +
+                    ".IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator) && "
+                    + command;
+        }
+
+        @Override
         public String getExecutable() {
-            return "C:\\Windows\\System32\\powershell.exe";
+            return "powershell.exe";
         }
 
         @Override
@@ -202,7 +234,7 @@ public class ShellTypes {
 
         @Override
         public String getSetVariableCommand(String variableName, String value) {
-            return "set " + variableName + "=" + value;
+            return "$env:" + variableName + " = \"" + value + "\"";
         }
 
         @Override
@@ -223,18 +255,33 @@ public class ShellTypes {
         }
 
         @Override
+        public String getMakeExecutableCommand(String file) {
+            return "echo \"\"";
+        }
+
+        @Override
         public boolean echoesInput() {
             return true;
         }
 
         @Override
-        public String createInitFileContent(String command) {
-            return "@echo off\n" + command;
+        public String getScriptFileEnding() {
+            return "ps1";
         }
 
         @Override
-        public List<String> getOpenWithInitFileCommand(String file) {
-            return List.of("powershell.exe", "-NoExit", "-ExecutionPolicy", "Bypass", "-File", file);
+        public String getPauseCommand() {
+            return "pause";
+        }
+
+        @Override
+        public String createInitFileContent(String command) {
+            return command;
+        }
+
+        @Override
+        public String getOpenWithInitFileCommand(String file) {
+            return String.format("%s -ExecutionPolicy Bypass -File \"%s\"", getExecutable(), file);
         }
 
         @Override
@@ -332,11 +379,42 @@ public class ShellTypes {
 
     public abstract static class PosixBase implements ShellType {
 
+        @Override
+        public String getScriptFileEnding() {
+            return "sh";
+        }
+
+        @Override
+        public String getMakeExecutableCommand(String file) {
+            return "chmod +x \"" + file + "\"";
+        }
+
+        @Override
+        public String commandWithVariable(String key, String value, String command) {
+            return getSetVariableCommand(key, value) + " " + command;
+        }
+
+        @Override
+        public String elevateConsoleCommand(ShellProcessControl control, String command) {
+            if (control.getElevationPassword() == null) {
+                return "SUDO_ASKPASS=/bin/false sudo -n -p \"\" -S -- " + command;
+            }
+
+            // Force sudo to always query for a password by using the -k switch
+            return "sudo -k -p \"\" -S < <(echo \"" + control.getElevationPassword() + "\") -- "
+                    + escape(command);
+        }
+
+        @Override
+        public String getPauseCommand() {
+            return "read -n1 -r -p \"Press any key to continue ...\" key";
+        }
+
         public abstract String getName();
 
         @Override
         public String createInitFileContent(String command) {
-            return "echo a\n" + command + "\necho b";
+            return command;
         }
 
         @Override
@@ -355,8 +433,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> getOpenWithInitFileCommand(String file) {
-            return List.of(getExecutable(), "--init-file", file, "-i", "-l");
+        public String getOpenWithInitFileCommand(String file) {
+            return String.format("%s -i -l \"%s\"", getExecutable(), file);
         }
 
         @Override
@@ -383,7 +461,7 @@ public class ShellTypes {
 
         @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
-            return "echo " + s + (toErrorStream ? " 1>&2" : "");
+            return "echo \"" + s + "\"" + (toErrorStream ? " 1>&2" : "");
         }
 
         @Override
@@ -398,7 +476,7 @@ public class ShellTypes {
 
         @Override
         public String getSetVariableCommand(String variableName, String value) {
-            return variableName + "=" + value;
+            return variableName + "=\"" + value + "\"";
         }
 
         @Override

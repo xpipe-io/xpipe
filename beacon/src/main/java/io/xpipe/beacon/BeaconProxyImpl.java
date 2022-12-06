@@ -71,6 +71,7 @@ public class BeaconProxyImpl extends ProxyProvider {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends DataSourceReadConnection> T createRemoteReadConnection(DataSource<?> source, ShellStore proxy) throws Exception {
         var downstream = downstreamTransform(source, proxy);
 
@@ -99,6 +100,7 @@ public class BeaconProxyImpl extends ProxyProvider {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends DataSourceConnection> T createRemoteWriteConnection(DataSource<?> source, WriteMode mode,  ShellStore proxy) throws Exception {
         var downstream = downstreamTransform(source, proxy);
 
