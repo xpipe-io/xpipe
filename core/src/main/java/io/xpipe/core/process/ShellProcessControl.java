@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 public interface ShellProcessControl extends ProcessControl {
 
-    default String prepareOpen() throws Exception {
-        return prepareOpen(null);
+    default String prepareConsoleOpen(boolean keepOpen) throws Exception {
+        return prepareConsoleOpen(null, keepOpen);
     }
 
-    String prepareOpen(String content) throws Exception;
+    String prepareConsoleOpen(String content, boolean keepOpen) throws Exception;
 
     default String executeSimpleCommand(String command) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
@@ -33,10 +33,7 @@ public interface ShellProcessControl extends ProcessControl {
         return executeSimpleCommand(type.switchTo(command));
     }
 
-    default void restart() throws Exception {
-        exitAndWait();
-        start();
-    }
+    void restart() throws Exception;
 
     boolean isLocal();
 
@@ -52,24 +49,30 @@ public interface ShellProcessControl extends ProcessControl {
 
     SecretValue getElevationPassword();
 
-    default ShellProcessControl shell(@NonNull ShellType type) {
-        return shell(type.openCommand()).elevation(getElevationPassword());
+    default ShellProcessControl subShell(@NonNull ShellType type) {
+        return subShell(type.openCommand()).elevation(getElevationPassword());
     }
 
     default CommandProcessControl command(@NonNull ShellType type, String command) {
         return command(type.switchTo(command));
     }
 
-    default ShellProcessControl shell(@NonNull List<String> command) {
-        return shell(
+    default ShellProcessControl subShell(@NonNull List<String> command) {
+        return subShell(
                 command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
     }
 
-    default ShellProcessControl shell(@NonNull String command) {
-        return shell(processControl -> command);
+    default ShellProcessControl subShell(@NonNull String command) {
+        return subShell(processControl -> command);
     }
 
-    ShellProcessControl shell(@NonNull Function<ShellProcessControl, String> command);
+    ShellProcessControl subShell(@NonNull Function<ShellProcessControl, String> command);
+
+    default ShellProcessControl consoleCommand(@NonNull String command) {
+        return consoleCommand(shellProcessControl -> command);
+    }
+
+    ShellProcessControl consoleCommand(@NonNull Function<ShellProcessControl, String> command);
 
     void executeCommand(String command) throws Exception;
 

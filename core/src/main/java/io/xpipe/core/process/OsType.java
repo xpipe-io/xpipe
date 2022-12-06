@@ -11,8 +11,6 @@ public interface OsType {
     Linux LINUX = new Linux();
     Mac MAC = new Mac();
 
-    String getScriptFileEnding();
-
     String getName();
 
     String getTempDirectory(ShellProcessControl pc) throws Exception;
@@ -43,18 +41,13 @@ public interface OsType {
     static class Windows implements OsType {
 
         @Override
-        public String getScriptFileEnding() {
-            return "bat";
-        }
-
-        @Override
         public String getName() {
             return "Windows";
         }
 
         @Override
         public String getTempDirectory(ShellProcessControl pc) throws Exception {
-            return pc.executeSimpleCommand(pc.getShellType().getPrintVariableCommand("TEMP"));
+            return pc.executeSimpleCommand(ShellTypes.CMD, pc.getShellType().getPrintVariableCommand("TEMP"));
         }
 
         @Override
@@ -65,7 +58,7 @@ public interface OsType {
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                    pc.shell(ShellTypes.CMD).command("systeminfo").start()) {
+                    pc.subShell(ShellTypes.CMD).command("systeminfo").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
@@ -103,11 +96,6 @@ public interface OsType {
         @Override
         public String normalizeFileName(String file) {
             return String.join("/", file.split("[\\\\/]+"));
-        }
-
-        @Override
-        public String getScriptFileEnding() {
-            return "sh";
         }
 
         @Override
@@ -178,11 +166,6 @@ public interface OsType {
         @Override
         public String normalizeFileName(String file) {
             return String.join("/", file.split("[\\\\/]+"));
-        }
-
-        @Override
-        public String getScriptFileEnding() {
-            return "sh";
         }
 
         @Override
