@@ -47,7 +47,7 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellProcessControl pc) throws Exception {
-            return pc.executeSimpleCommand(ShellTypes.CMD, pc.getShellType().getPrintVariableCommand("TEMP"));
+            return pc.executeSimpleCommand(ShellTypes.CMD, ShellTypes.CMD.getPrintVariableCommand("TEMP"));
         }
 
         @Override
@@ -111,7 +111,7 @@ public interface OsType {
         @Override
         public String determineOperatingSystemName(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                    pc.command(ShellTypes.SH, "lsb_release -a").start()) {
+                    pc.command("lsb_release -a").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", null);
@@ -119,7 +119,7 @@ public interface OsType {
             }
 
             try (CommandProcessControl c =
-                    pc.command(ShellTypes.SH, "cat /etc/*release").start()) {
+                    pc.command("cat /etc/*release").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", null);
@@ -127,7 +127,7 @@ public interface OsType {
             }
 
             String type = "Unknown";
-            try (CommandProcessControl c = pc.command(ShellTypes.SH, "uname -o").start()) {
+            try (CommandProcessControl c = pc.command("uname -o").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     type = text.strip();
@@ -135,7 +135,7 @@ public interface OsType {
             }
 
             String version = "?";
-            try (CommandProcessControl c = pc.command(ShellTypes.SH, "uname -r").start()) {
+            try (CommandProcessControl c = pc.command("uname -r").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     version = text.strip();

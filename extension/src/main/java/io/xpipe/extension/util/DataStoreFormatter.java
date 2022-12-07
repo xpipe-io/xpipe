@@ -8,9 +8,21 @@ import java.util.function.IntFunction;
 
 public class DataStoreFormatter {
 
+    public static String formatSubHost(IntFunction<String> func, DataStore at, int length) {
+        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
+                ? XPipeDaemon.getInstance().getStoreName(at).orElse(null)
+                : null;
+        if (atString == null) {
+            return func.apply(length);
+        }
+
+        var fileString = func.apply(length - atString.length() - 1);
+        return String.format("%s/%s", atString, fileString);
+    }
+
     public static String formatAtHost(IntFunction<String> func, DataStore at, int length) {
         var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? DataStoreProviders.byStore(at).toSummaryString(at, length)
+                ? XPipeDaemon.getInstance().getStoreName(at).orElse(null)
                 : null;
         if (atString == null) {
             return func.apply(length);
@@ -20,13 +32,33 @@ public class DataStoreFormatter {
         return String.format("%s @ %s", fileString, atString);
     }
 
-    public static String format(DataStore input, int length) {
+    public static String formatViaProxy(IntFunction<String> func, DataStore at, int length) {
+        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
+                ? XPipeDaemon.getInstance().getStoreName(at).orElse(null)
+                : null;
+        if (atString == null) {
+            return func.apply(length);
+        }
+
+        var fileString = func.apply(length - atString.length() - 4);
+        return String.format("%s -> %s", atString, fileString);
+    }
+
+    public static String toName(DataStore input) {
+        return toName(input, Integer.MAX_VALUE);
+    }
+    public static String toName(DataStore input, int length) {
         var named = XPipeDaemon.getInstance().getStoreName(input);
         if (named.isPresent()) {
             return cut(named.get(), length);
         }
 
         return DataStoreProviders.byStore(input).toSummaryString(input, length);
+    }
+
+    public static String split(String left, String separator, String right, int length) {
+        var half = (length / 2) - separator.length();
+        return cut(left, half) + separator + cut(right, length - half);
     }
 
     public static String cut(String input, int length) {
@@ -54,7 +86,7 @@ public class DataStoreFormatter {
             var region = split[2];
             var lengthShare = (length - 3) / 2;
             return String.format(
-                    "%s @ %s",
+                    "%s.%s",
                     DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
         }
 

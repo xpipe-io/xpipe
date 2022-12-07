@@ -25,10 +25,10 @@ TODO: Integrate store validation more into this comp.
 @AllArgsConstructor
 public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
 
+    private final T self;
     private final Property<T> selected;
     private final Class<T> storeClass;
     private final Predicate<T> applicableCheck;
-    private final Predicate<T> supportCheck;
 
     private Region createGraphic(T s) {
         var provider = DataStoreProviders.byStore(s);
@@ -80,6 +80,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
         var available = Stream.concat(
                         Stream.of(new LocalStore()),
                         XPipeDaemon.getInstance().getNamedStores().stream()
+                                .filter(s -> s != self)
                                 .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
                                 .map(s -> (ShellStore) s))
                 .toList();

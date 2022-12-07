@@ -1,26 +1,12 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.process.ShellProcessControl;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface MachineStore extends FileSystemStore, ShellStore {
 
-    @Override
-    default void validate() throws Exception {
-        try (ShellProcessControl pc = create().start()) {}
-    }
-
     public default boolean isLocal() {
         return false;
-    }
-
-    public default String queryMachineName() throws Exception {
-        try (var pc = create().start()) {
-            var operatingSystem = pc.getOsType();
-            return operatingSystem.determineOperatingSystemName(pc);
-        }
     }
 
     @Override

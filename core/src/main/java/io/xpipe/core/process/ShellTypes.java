@@ -50,17 +50,22 @@ public class ShellTypes {
 
         @Override
         public String getSetVariableCommand(String variableName, String value) {
-            return ("set \"" + variableName + "=" + value + "\"").replaceAll("!", "^!");
+            return ("set \"" + variableName + "=" + value.replaceAll("\"", "^$0") + "\"");
         }
 
         @Override
-        public String getPrintVariableCommand(String name) {
-            return "echo %" + name + "%";
+        public String getPrintVariableCommand(String prefix, String name) {
+            return "call echo " + prefix + "^%" + name + "^%";
         }
 
         @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
-            return toErrorStream ? "(echo " + s + ")1>&2" : "echo " + s;
+            return "(echo " + s + (toErrorStream ? ")1>&2" : ")");
+        }
+
+        @Override
+        public String getScriptEchoCommand(String s) {
+            return ("@echo off\r\nset \"echov=" + escapeStringValue(s) + "\"\r\necho %echov%");
         }
 
         @Override
@@ -93,12 +98,11 @@ public class ShellTypes {
 
         @Override
         public String getOpenWithInitFileCommand(String file) {
-            return String.format("%s /V:on %s \"%s\"", getExecutable(), "/C", file);
+            return String.format("%s %s \"%s\"", getExecutable(), "/C", file);
         }
 
-        @Override
-        public String escape(String input) {
-            return input;
+        public String escapeStringValue(String input) {
+            return input.replaceAll("[&^|<>\"]", "^$0");
         }
 
         @Override
@@ -130,7 +134,7 @@ public class ShellTypes {
 
         @Override
         public String getExitCodeVariable() {
-            return "!errorlevel!";
+            return "errorlevel";
         }
 
         @Override
@@ -140,12 +144,12 @@ public class ShellTypes {
 
         @Override
         public List<String> openCommand() {
-            return List.of("cmd", "/V:on");
+            return List.of("cmd");
         }
 
         @Override
         public String switchTo(String cmd) {
-            return "cmd.exe /V:on /c " + cmd;
+            return "cmd.exe /V:on /c '" + cmd + "'";
         }
 
         @Override
@@ -192,7 +196,7 @@ public class ShellTypes {
 
         @Override
         public String getDisplayName() {
-            return "cmd";
+            return "cmd.exe";
         }
 
         @Override
@@ -228,13 +232,13 @@ public class ShellTypes {
         }
 
         @Override
-        public String getPrintVariableCommand(String name) {
-            return "echo %" + name + "%";
+        public String getPrintVariableCommand(String prefix, String name) {
+            return "echo \"" + escapeStringValue(prefix) + "$" + escapeStringValue(name) + "\"";
         }
 
         @Override
         public String getSetVariableCommand(String variableName, String value) {
-            return "$env:" + variableName + " = \"" + value + "\"";
+            return "$env:" + variableName + " = \"" + escapeStringValue(value) + "\"";
         }
 
         @Override
@@ -284,9 +288,8 @@ public class ShellTypes {
             return String.format("%s -ExecutionPolicy Bypass -File \"%s\"", getExecutable(), file);
         }
 
-        @Override
-        public String escape(String input) {
-            return input;
+        public String escapeStringValue(String input) {
+            return input.replaceAll("[\"]", "`$0");
         }
 
         @Override
@@ -304,7 +307,7 @@ public class ShellTypes {
 
         @Override
         public String getExitCodeVariable() {
-            return "$LASTEXITCODE";
+            return "LASTEXITCODE";
         }
 
         @Override
@@ -323,7 +326,7 @@ public class ShellTypes {
 
         @Override
         public String switchTo(String cmd) {
-            return "powershell.exe -Command " + cmd;
+            return "powershell.exe -Command '" + cmd + "'";
         }
 
         @Override
@@ -402,7 +405,7 @@ public class ShellTypes {
 
             // Force sudo to always query for a password by using the -k switch
             return "sudo -k -p \"\" -S < <(echo \"" + control.getElevationPassword() + "\") -- "
-                    + escape(command);
+                    + command;
         }
 
         @Override
@@ -418,8 +421,8 @@ public class ShellTypes {
         }
 
         @Override
-        public String getPrintVariableCommand(String name) {
-            return "echo $" + name;
+        public String getPrintVariableCommand(String prefix, String name) {
+            return "echo " + prefix + "$" + name;
         }
 
         @Override
@@ -438,11 +441,6 @@ public class ShellTypes {
         }
 
         @Override
-        public String escape(String input) {
-            return input.replace("$", "\\$");
-        }
-
-        @Override
         public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
             if (control.getElevationPassword() == null) {
                 control.executeCommand("SUDO_ASKPASS=/bin/false sudo -n -p \"\" -S -- " + command);
@@ -450,13 +448,13 @@ public class ShellTypes {
             }
 
             // For sudo to always query for a password by using the -k switch
-            control.executeCommand("sudo -p \"\" -k -S -- " + escape(command));
+            control.executeCommand("sudo -p \"\" -k -S -- " + command);
             control.writeLine(control.getElevationPassword().getSecretValue());
         }
 
         @Override
         public String getExitCodeVariable() {
-            return "$?";
+            return "?";
         }
 
         @Override
@@ -486,7 +484,7 @@ public class ShellTypes {
 
         @Override
         public String switchTo(String cmd) {
-            return getName() + " -c \"" + cmd + "\"";
+            return getName() + " -c '" + cmd + "'";
         }
 
         @Override
