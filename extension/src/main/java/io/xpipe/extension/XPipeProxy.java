@@ -11,6 +11,10 @@ import java.io.IOException;
 public class XPipeProxy {
 
     public static void checkSupport(ShellStore store) throws Exception {
+        if (store == null || ShellStore.isLocal(store)) {
+            return;
+        }
+
         var version = XPipeDaemon.getInstance().getVersion();
         try (ShellProcessControl s = store.create().start()) {
             var defaultInstallationExecutable = FileNames.join(

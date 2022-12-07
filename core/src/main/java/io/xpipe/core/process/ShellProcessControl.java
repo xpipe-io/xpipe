@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public interface ShellProcessControl extends ProcessControl {
 
@@ -30,7 +29,9 @@ public interface ShellProcessControl extends ProcessControl {
     }
 
     default String executeSimpleCommand(ShellType type, String command) throws Exception {
-        return executeSimpleCommand(type.switchTo(command));
+        try (var sub = subShell(type).start()) {
+            return sub.executeSimpleCommand(command);
+        }
     }
 
     void restart() throws Exception;
@@ -53,13 +54,8 @@ public interface ShellProcessControl extends ProcessControl {
         return subShell(type.openCommand()).elevation(getElevationPassword());
     }
 
-    default CommandProcessControl command(@NonNull ShellType type, String command) {
-        return command(type.switchTo(command));
-    }
-
     default ShellProcessControl subShell(@NonNull List<String> command) {
-        return subShell(
-                command.stream().map(s -> s.contains(" ") ? "\"" + s + "\"" : s).collect(Collectors.joining(" ")));
+        return subShell(shellProcessControl -> shellProcessControl.getShellType().flatten(command));
     }
 
     default ShellProcessControl subShell(@NonNull String command) {

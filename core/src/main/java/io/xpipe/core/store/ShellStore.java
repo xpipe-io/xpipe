@@ -21,4 +21,15 @@ public interface ShellStore extends DataStore {
             return pc.getShellType();
         }
     }
+    @Override
+    default void validate() throws Exception {
+        try (ShellProcessControl pc = create().start()) {}
+    }
+
+    public default String queryMachineName() throws Exception {
+        try (var pc = create().start()) {
+            var operatingSystem = pc.getOsType();
+            return operatingSystem.determineOperatingSystemName(pc);
+        }
+    }
 }

@@ -23,15 +23,14 @@ public interface ShellType {
     String getOpenWithInitFileCommand(String file);
 
     default String flatten(List<String> command) {
-        return command.stream().map(s -> s.contains(" ") && !(s.startsWith("\"") && s.endsWith("\"")) ? "\"" + s + "\"" : s).collect(Collectors.joining(" "));
+        return command.stream()
+                .map(s -> s.contains(" ") && !(s.startsWith("\"") && s.endsWith("\"")) ? "\"" + s + "\"" : s)
+                .collect(Collectors.joining(" "));
     }
-
 
     default String joinCommands(String... s) {
         return String.join(getConcatenationOperator(), s);
     }
-
-    String escape(String input);
 
     void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception;
 
@@ -57,13 +56,21 @@ public interface ShellType {
 
     String elevateConsoleCommand(ShellProcessControl control, String command);
 
+    default String getScriptEchoCommand(String s) {
+        return getEchoCommand(s, false);
+    }
+
     String getEchoCommand(String s, boolean toErrorStream);
 
     String queryShellProcessId(ShellProcessControl control) throws Exception;
 
     String getSetVariableCommand(String variableName, String value);
 
-    String getPrintVariableCommand(String name);
+    default String getPrintVariableCommand(String name) {
+        return getPrintVariableCommand("", name);
+    }
+
+    String getPrintVariableCommand(String prefix, String name);
 
     List<String> openCommand();
 
