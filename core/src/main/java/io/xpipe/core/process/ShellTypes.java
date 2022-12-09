@@ -65,7 +65,8 @@ public class ShellTypes {
 
         @Override
         public String getScriptEchoCommand(String s) {
-            return ("@echo off\r\nset \"echov=" + escapeStringValue(s) + "\"\r\necho %echov%");
+            return ("@echo off\r\nset \"echov=" + escapeStringValue(s)
+                    + "\"\r\necho %echov%\r\n@echo on\n(goto) 2>nul & del \"%~f0\"");
         }
 
         @Override
@@ -92,11 +93,6 @@ public class ShellTypes {
         }
 
         @Override
-        public String elevateConsoleCommand(ShellProcessControl control, String command) {
-            return "net session >NUL 2>NUL && " + command;
-        }
-
-        @Override
         public String getOpenWithInitFileCommand(String file) {
             return String.format("%s %s \"%s\"", getExecutable(), "/C", file);
         }
@@ -117,7 +113,7 @@ public class ShellTypes {
 
         @Override
         public String createInitFileContent(String command) {
-            return "@echo off\n" + command + "\n@echo on";
+            return "@echo off\n" + command;
         }
 
         @Override
@@ -154,7 +150,7 @@ public class ShellTypes {
 
         @Override
         public List<String> createMkdirsCommand(String dirs) {
-            return List.of("mkdir", dirs);
+            return List.of("(", "if", "not", "exist", dirs, "mkdir", dirs, ")");
         }
 
         @Override
@@ -168,8 +164,18 @@ public class ShellTypes {
         }
 
         @Override
+        public String createFileDeleteCommand(String file) {
+            return "rd /s /q \"" + file + "\"";
+        }
+
+        @Override
         public String createFileExistsCommand(String file) {
             return String.format("dir /a \"%s\"", file);
+        }
+
+        @Override
+        public String createWhichCommand(String executable) {
+            return "where \"" + executable + "\"";
         }
 
         @Override
@@ -217,13 +223,6 @@ public class ShellTypes {
         @Override
         public String getOrConcatenationOperator() {
             return ";";
-        }
-
-        @Override
-        public String elevateConsoleCommand(ShellProcessControl control, String command) {
-            return "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent())" +
-                    ".IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator) && "
-                    + command;
         }
 
         @Override
@@ -345,8 +344,18 @@ public class ShellTypes {
         }
 
         @Override
+        public String createFileDeleteCommand(String file) {
+            return "rm /path \"" + file + "\" -force";
+        }
+
+        @Override
         public String createFileExistsCommand(String file) {
             return String.format("cmd /c dir /a \"%s\"", file);
+        }
+
+        @Override
+        public String createWhichCommand(String executable) {
+            return "cmd /C where \"" + executable + "\"";
         }
 
         @Override
@@ -382,6 +391,20 @@ public class ShellTypes {
 
     public abstract static class PosixBase implements ShellType {
 
+        public String getScriptEchoCommand(String s) {
+            return getEchoCommand(s, false) + "\nrm -- \"$0\"";
+        }
+
+        @Override
+        public String createFileDeleteCommand(String file) {
+            return "rm -rf \"" + file + "\"";
+        }
+
+        @Override
+        public String createWhichCommand(String executable) {
+            return "which \"" + executable + "\"";
+        }
+
         @Override
         public String getScriptFileEnding() {
             return "sh";
@@ -395,17 +418,6 @@ public class ShellTypes {
         @Override
         public String commandWithVariable(String key, String value, String command) {
             return getSetVariableCommand(key, value) + " " + command;
-        }
-
-        @Override
-        public String elevateConsoleCommand(ShellProcessControl control, String command) {
-            if (control.getElevationPassword() == null) {
-                return "SUDO_ASKPASS=/bin/false sudo -n -p \"\" -S -- " + command;
-            }
-
-            // Force sudo to always query for a password by using the -k switch
-            return "sudo -k -p \"\" -S < <(echo \"" + control.getElevationPassword() + "\") -- "
-                    + command;
         }
 
         @Override

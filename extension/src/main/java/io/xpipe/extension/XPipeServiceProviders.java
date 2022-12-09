@@ -5,7 +5,8 @@ import io.xpipe.core.impl.LocalProcessControlProvider;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.prefs.PrefsProviders;
+import io.xpipe.extension.prefs.PrefsProvider;
+import io.xpipe.extension.util.XPipeDaemon;
 
 public class XPipeServiceProviders {
 
@@ -35,8 +36,12 @@ public class XPipeServiceProviders {
         DataSourceActionProvider.init(layer);
 
         SupportedApplicationProviders.loadAll(layer);
-        PrefsProviders.init(layer);
         ProxyFunction.init(layer);
+
+        if (XPipeDaemon.getInstanceIfPresent().isPresent()) {
+            PrefsProvider.init(layer);
+        }
+
         TrackEvent.info("Finished loading extension providers");
     }
 }

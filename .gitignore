@@ -1,6 +1,9 @@
 .gradle/
 build/
 .idea
+local/
+local_test/
+local_stage/
 dev.properties
 extensions.txt
 local/

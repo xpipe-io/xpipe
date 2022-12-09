@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 
 public interface ProcessControl extends Closeable, AutoCloseable {
 
-     String prepareConsoleOpen(boolean keepOpen) throws Exception;
+     String prepareTerminalOpen() throws Exception;
 
     void closeStdin() throws IOException;
 

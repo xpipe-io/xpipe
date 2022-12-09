@@ -5,18 +5,19 @@ import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface ShellProcessControl extends ProcessControl {
 
-    default String prepareConsoleOpen(boolean keepOpen) throws Exception {
-        return prepareConsoleOpen(null, keepOpen);
+    default String prepareTerminalOpen() throws Exception {
+        return prepareTerminalOpen(null);
     }
 
-    String prepareConsoleOpen(String content, boolean keepOpen) throws Exception;
+    String prepareTerminalOpen(String content) throws Exception;
 
-    default String executeSimpleCommand(String command) throws Exception {
+    default String executeStringSimpleCommand(String command) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
             return c.readOrThrow();
         }
@@ -28,9 +29,21 @@ public interface ShellProcessControl extends ProcessControl {
         }
     }
 
-    default String executeSimpleCommand(ShellType type, String command) throws Exception {
+    default void executeSimpleCommand(String command) throws Exception {
+        try (CommandProcessControl c = command(command).start()) {
+            c.discardOrThrow();
+        }
+    }
+
+    default void executeSimpleCommand(List<String> command) throws Exception {
+        try (CommandProcessControl c = command(command).start()) {
+            c.discardOrThrow();
+        }
+    }
+
+    default String executeStringSimpleCommand(ShellType type, String command) throws Exception {
         try (var sub = subShell(type).start()) {
-            return sub.executeSimpleCommand(command);
+            return sub.executeStringSimpleCommand(command);
         }
     }
 
@@ -65,10 +78,10 @@ public interface ShellProcessControl extends ProcessControl {
     ShellProcessControl subShell(@NonNull Function<ShellProcessControl, String> command);
 
     default ShellProcessControl consoleCommand(@NonNull String command) {
-        return consoleCommand(shellProcessControl -> command);
+        return consoleCommand((shellProcessControl, c) -> command);
     }
 
-    ShellProcessControl consoleCommand(@NonNull Function<ShellProcessControl, String> command);
+    ShellProcessControl consoleCommand(@NonNull BiFunction<ShellProcessControl, String, String> command);
 
     void executeCommand(String command) throws Exception;
 

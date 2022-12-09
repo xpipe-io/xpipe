@@ -32,6 +32,8 @@ open module io.xpipe.extension {
     requires static org.fxmisc.flowless;
     requires static org.kordamp.ikonli.javafx;
     requires static com.jfoenix;
+    requires static com.dlsc.preferencesfx;
+    requires static com.dlsc.formsfx;
 
     uses DataSourceProvider;
     uses SupportedApplicationProvider;
