@@ -449,7 +449,7 @@ public class ShellTypes {
 
         @Override
         public String getOpenWithInitFileCommand(String file) {
-            return String.format("%s -i -l \"%s\"", getExecutable(), file);
+            return String.format("%s -i -l -c \"%s\"", getExecutable(), file);
         }
 
         @Override
