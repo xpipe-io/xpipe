@@ -22,9 +22,9 @@ public class ShellTypes {
 
     public static ShellType getRecommendedDefault() {
         if (System.getProperty("os.name").startsWith("Windows")) {
-            return POWERSHELL;
+            return CMD;
         } else {
-            return SH;
+            return BASH;
         }
     }
 
@@ -139,13 +139,13 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> openCommand() {
-            return List.of("cmd");
+        public String openCommand() {
+            return "cmd";
         }
 
         @Override
         public String switchTo(String cmd) {
-            return "cmd.exe /V:on /c '" + cmd + "'";
+            return "cmd.exe /C " + cmd + "";
         }
 
         @Override
@@ -319,8 +319,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> openCommand() {
-            return List.of("powershell", "/nologo");
+        public String openCommand() {
+            return "powershell /nologo";
         }
 
         @Override
@@ -490,13 +490,13 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> openCommand() {
-            return List.of(getName(), "-i", "-l");
+        public String openCommand() {
+            return getName() + " -i -l";
         }
 
         @Override
         public String switchTo(String cmd) {
-            return getName() + " -c '" + cmd + "'";
+            return getName() + " -i -l -c '" + cmd + "'";
         }
 
         @Override
