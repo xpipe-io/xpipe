@@ -64,42 +64,41 @@ public interface ShellProcessControl extends ProcessControl {
     SecretValue getElevationPassword();
 
     default ShellProcessControl subShell(@NonNull ShellType type) {
-        return subShell(type.openCommand()).elevation(getElevationPassword());
+        return subShell(p -> type.openCommand(), (shellProcessControl, s) -> {
+                    return s == null ? type.openCommand() : type.switchTo(s);
+                })
+                .elevation(getElevationPassword());
     }
 
     default ShellProcessControl subShell(@NonNull List<String> command) {
-        return subShell(shellProcessControl -> shellProcessControl.getShellType().flatten(command));
+        return subShell(
+                shellProcessControl -> shellProcessControl.getShellType().flatten(command), null);
     }
 
     default ShellProcessControl subShell(@NonNull String command) {
-        return subShell(processControl -> command);
+        return subShell(processControl -> command, null);
     }
 
-    ShellProcessControl subShell(@NonNull Function<ShellProcessControl, String> command);
-
-    default ShellProcessControl consoleCommand(@NonNull String command) {
-        return consoleCommand((shellProcessControl, c) -> command);
-    }
-
-    ShellProcessControl consoleCommand(@NonNull BiFunction<ShellProcessControl, String, String> command);
+    ShellProcessControl subShell(
+            @NonNull Function<ShellProcessControl, String> command,
+            BiFunction<ShellProcessControl, String, String> terminalCommand);
 
     void executeCommand(String command) throws Exception;
 
     @Override
     ShellProcessControl start() throws Exception;
 
-    default CommandProcessControl commandListFunction(Function<ShellProcessControl, List<String>> command) {
-        return commandFunction(shellProcessControl -> shellProcessControl.getShellType().flatten(command.apply(shellProcessControl)));
-    }
+    CommandProcessControl command(Function<ShellProcessControl, String> command);
 
-    CommandProcessControl commandFunction(Function<ShellProcessControl, String> command);
+    CommandProcessControl command(
+            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand);
 
-    default CommandProcessControl command(String command){
-        return commandFunction(shellProcessControl -> command);
+    default CommandProcessControl command(String command) {
+        return command(shellProcessControl -> command);
     }
 
     default CommandProcessControl command(List<String> command) {
-        return commandFunction(shellProcessControl -> shellProcessControl.getShellType().flatten(command));
+        return command(shellProcessControl -> shellProcessControl.getShellType().flatten(command));
     }
 
     void exitAndWait() throws IOException;

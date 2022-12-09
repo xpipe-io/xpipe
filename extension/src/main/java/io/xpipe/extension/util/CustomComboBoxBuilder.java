@@ -97,7 +97,7 @@ public class CustomComboBoxBuilder<T> {
         cb.setButtonCell(new SelectedCell());
         SimpleChangeListener.apply(selected, c -> {
             var item = nodeMap.entrySet().stream()
-                    .filter(e -> e.getValue() != null && e.getValue().equals(c))
+                    .filter(e -> Objects.equals(c, e.getValue()))
                     .map(e -> e.getKey())
                     .findAny()
                     .orElse(null);
@@ -118,7 +118,6 @@ public class CustomComboBoxBuilder<T> {
         });
 
         if (filterPredicate != null) {
-
             SimpleChangeListener.apply(filterString, c -> {
                 var filteredNodes = nodes.stream()
                         .filter(e -> e.equals(cb.getValue())

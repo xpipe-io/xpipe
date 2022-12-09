@@ -24,7 +24,11 @@ public interface ShellType {
 
     default String flatten(List<String> command) {
         return command.stream()
-                .map(s -> s.contains(" ") && !(s.startsWith("\"") && s.endsWith("\"")) ? "\"" + s + "\"" : s)
+                .map(s -> s.contains(" ")
+                                && !(s.startsWith("\"") && s.endsWith("\""))
+                                && !(s.startsWith("'") && s.endsWith("'"))
+                        ? "\"" + s + "\""
+                        : s)
                 .collect(Collectors.joining(" "));
     }
 
@@ -70,7 +74,7 @@ public interface ShellType {
 
     String getPrintVariableCommand(String prefix, String name);
 
-    List<String> openCommand();
+    String openCommand();
 
     String switchTo(String cmd);
 
