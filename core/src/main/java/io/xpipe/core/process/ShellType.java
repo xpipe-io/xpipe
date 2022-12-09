@@ -54,8 +54,6 @@ public interface ShellType {
 
     String getMakeExecutableCommand(String file);
 
-    String elevateConsoleCommand(ShellProcessControl control, String command);
-
     default String getScriptEchoCommand(String s) {
         return getEchoCommand(s, false);
     }
@@ -82,7 +80,11 @@ public interface ShellType {
 
     String createFileWriteCommand(String file);
 
+    String createFileDeleteCommand(String file);
+
     String createFileExistsCommand(String file);
+
+    String createWhichCommand(String executable);
 
     Charset determineCharset(ShellProcessControl control) throws Exception;
 

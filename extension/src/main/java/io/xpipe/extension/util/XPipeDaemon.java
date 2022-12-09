@@ -24,6 +24,10 @@ public interface XPipeDaemon {
         return ServiceLoader.load(XPipeDaemon.class).findFirst().orElseThrow();
     }
 
+    static Optional<XPipeDaemon> getInstanceIfPresent() {
+        return ServiceLoader.load(XPipeDaemon.class).findFirst();
+    }
+
     void withResource(String module, String file, Charsetter.FailableConsumer<Path, IOException> con);
     List<DataStore> getNamedStores();
 

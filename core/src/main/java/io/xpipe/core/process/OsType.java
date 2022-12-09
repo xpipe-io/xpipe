@@ -47,7 +47,7 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellProcessControl pc) throws Exception {
-            return pc.executeSimpleCommand(ShellTypes.CMD, ShellTypes.CMD.getPrintVariableCommand("TEMP"));
+            return pc.executeStringSimpleCommand(ShellTypes.CMD, ShellTypes.CMD.getPrintVariableCommand("TEMP"));
         }
 
         @Override
@@ -160,7 +160,7 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellProcessControl pc) throws Exception {
-            return pc.executeSimpleCommand(pc.getShellType().getPrintVariableCommand("TEMP"));
+            return pc.executeStringSimpleCommand(pc.getShellType().getPrintVariableCommand("TEMP"));
         }
 
         @Override

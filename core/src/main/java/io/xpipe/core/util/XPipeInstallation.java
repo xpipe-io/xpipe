@@ -52,7 +52,7 @@ public class XPipeInstallation {
 
     public static String getDataBasePath(ShellProcessControl p) throws Exception {
         if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("userprofile"));
+            var base = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("userprofile"));
             return FileNames.join(base, ".xpipe");
         } else {
             return FileNames.join("~", ".xpipe");
@@ -66,14 +66,14 @@ public class XPipeInstallation {
     }
 
     public static String getDefaultInstallationBasePath(ShellProcessControl p) throws Exception {
-        var customHome = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
+        var customHome = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
         if (!customHome.isEmpty()) {
             return customHome;
         }
 
         String path = null;
         if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeSimpleCommand(p.getShellType().getPrintVariableCommand("LOCALAPPDATA"));
+            var base = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("LOCALAPPDATA"));
             path = FileNames.join(base, "X-Pipe");
         } else {
             path = "/opt/xpipe";
