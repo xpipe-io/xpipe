@@ -93,7 +93,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getOpenWithInitFileCommand(String file) {
+        public String getFileOpenCommand(String file) {
             return String.format("%s %s \"%s\"", getExecutable(), "/C", file);
         }
 
@@ -139,12 +139,12 @@ public class ShellTypes {
         }
 
         @Override
-        public String openCommand() {
+        public String getNormalOpenCommand() {
             return "cmd";
         }
 
         @Override
-        public String switchTo(String cmd) {
+        public String executeCommandWithShell(String cmd) {
             return "cmd.exe /C " + cmd + "";
         }
 
@@ -283,7 +283,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getOpenWithInitFileCommand(String file) {
+        public String getFileOpenCommand(String file) {
             return String.format("%s -ExecutionPolicy Bypass -File \"%s\"", getExecutable(), file);
         }
 
@@ -319,12 +319,12 @@ public class ShellTypes {
         }
 
         @Override
-        public String openCommand() {
+        public String getNormalOpenCommand() {
             return "powershell /nologo";
         }
 
         @Override
-        public String switchTo(String cmd) {
+        public String executeCommandWithShell(String cmd) {
             return "powershell.exe -Command '" + cmd + "'";
         }
 
@@ -422,7 +422,7 @@ public class ShellTypes {
 
         @Override
         public String getPauseCommand() {
-            return "read -n1 -r -p \"Press any key to continue ...\" key";
+            return "read -rsp \"Press any key to continue...\\n\" -n 1 key";
         }
 
         public abstract String getName();
@@ -448,8 +448,8 @@ public class ShellTypes {
         }
 
         @Override
-        public String getOpenWithInitFileCommand(String file) {
-            return String.format("%s -i -l -c \"%s\"", getExecutable(), file);
+        public String getFileOpenCommand(String file) {
+            return String.format("%s -i -c \"%s\"", getExecutable(), file);
         }
 
         @Override
@@ -490,13 +490,13 @@ public class ShellTypes {
         }
 
         @Override
-        public String openCommand() {
-            return getName() + " -i -l";
+        public String getNormalOpenCommand() {
+            return getName() + " -i";
         }
 
         @Override
-        public String switchTo(String cmd) {
-            return getName() + " -i -l -c '" + cmd + "'";
+        public String executeCommandWithShell(String cmd) {
+            return getName() + " -i -c '" + cmd + "'";
         }
 
         @Override

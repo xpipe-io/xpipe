@@ -20,7 +20,7 @@ public interface ShellType {
 
     String createInitFileContent(String command);
 
-    String getOpenWithInitFileCommand(String file);
+    String getFileOpenCommand(String file);
 
     default String flatten(List<String> command) {
         return command.stream()
@@ -48,10 +48,6 @@ public interface ShellType {
         return ";";
     }
 
-    default String getAndConcatenationOperator() {
-        return "&&";
-    }
-
     default String getOrConcatenationOperator() {
         return "||";
     }
@@ -74,9 +70,9 @@ public interface ShellType {
 
     String getPrintVariableCommand(String prefix, String name);
 
-    String openCommand();
+    String getNormalOpenCommand();
 
-    String switchTo(String cmd);
+    String executeCommandWithShell(String cmd);
 
     List<String> createMkdirsCommand(String dirs);
 

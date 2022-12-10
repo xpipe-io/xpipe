@@ -64,8 +64,8 @@ public interface ShellProcessControl extends ProcessControl {
     SecretValue getElevationPassword();
 
     default ShellProcessControl subShell(@NonNull ShellType type) {
-        return subShell(p -> type.openCommand(), (shellProcessControl, s) -> {
-                    return s == null ? type.openCommand() : type.switchTo(s);
+        return subShell(p -> type.getNormalOpenCommand(), (shellProcessControl, s) -> {
+                    return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
                 })
                 .elevation(getElevationPassword());
     }
