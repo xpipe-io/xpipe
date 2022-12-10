@@ -20,7 +20,7 @@ public interface ShellType {
 
     String createInitFileContent(String command);
 
-    String getFileOpenCommand(String file);
+    String getTerminalFileOpenCommand(String file);
 
     default String flatten(List<String> command) {
         return command.stream()

@@ -93,7 +93,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getFileOpenCommand(String file) {
+        public String getTerminalFileOpenCommand(String file) {
             return String.format("%s %s \"%s\"", getExecutable(), "/C", file);
         }
 
@@ -283,7 +283,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getFileOpenCommand(String file) {
+        public String getTerminalFileOpenCommand(String file) {
             return String.format("%s -ExecutionPolicy Bypass -File \"%s\"", getExecutable(), file);
         }
 
@@ -422,7 +422,7 @@ public class ShellTypes {
 
         @Override
         public String getPauseCommand() {
-            return "read -rsp \"Press any key to continue...\\n\" -n 1 key";
+            return "bash -c read -rsp \"Press any key to continue...\\n\" -n 1 key";
         }
 
         public abstract String getName();
@@ -448,7 +448,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getFileOpenCommand(String file) {
+        public String getTerminalFileOpenCommand(String file) {
             return String.format("%s -i -c \"%s\"", getExecutable(), file);
         }
 
@@ -491,12 +491,12 @@ public class ShellTypes {
 
         @Override
         public String getNormalOpenCommand() {
-            return getName() + " -i";
+            return getName();
         }
 
         @Override
         public String executeCommandWithShell(String cmd) {
-            return getName() + " -i -c '" + cmd + "'";
+            return getName() + " -c '" + cmd + "'";
         }
 
         @Override
