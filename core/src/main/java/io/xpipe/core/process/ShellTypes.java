@@ -392,7 +392,7 @@ public class ShellTypes {
     public abstract static class PosixBase implements ShellType {
 
         public String getScriptEchoCommand(String s) {
-            return getEchoCommand(s, false) + "\nrm -- \"$0\"";
+            return "#!" + getExecutable() + "\n" + getEchoCommand(s, false) + "\nrm -- \"$0\"";
         }
 
         @Override
@@ -422,7 +422,7 @@ public class ShellTypes {
 
         @Override
         public String getPauseCommand() {
-            return "bash -c read -rsp \"Press any key to continue...\\n\" -n 1 key";
+            return "bash -c read -rsp \"Press any key to continue...\n\" -n 1 key";
         }
 
         public abstract String getName();
