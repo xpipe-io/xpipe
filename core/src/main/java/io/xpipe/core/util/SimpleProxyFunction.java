@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 public abstract class SimpleProxyFunction<T> extends ProxyFunction {
 
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public T getResult() {
         var fields = getClass().getDeclaredFields();
         var last = fields[fields.length - 1];
@@ -13,6 +14,7 @@ public abstract class SimpleProxyFunction<T> extends ProxyFunction {
     }
 
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public T callAndGet() {
         var result = callAndCopy();
         return ((SimpleProxyFunction<T>) result).getResult();

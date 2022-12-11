@@ -58,7 +58,6 @@ public interface CommandProcessControl extends ProcessControl {
     @Override
     CommandProcessControl start() throws Exception;
 
-    @Override
     CommandProcessControl exitTimeout(Integer timeout);
 
     String readOnlyStdout() throws Exception;

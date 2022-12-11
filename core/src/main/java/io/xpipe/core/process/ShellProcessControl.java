@@ -35,12 +35,6 @@ public interface ShellProcessControl extends ProcessControl {
         }
     }
 
-    default void executeSimpleCommand(List<String> command) throws Exception {
-        try (CommandProcessControl c = command(command).start()) {
-            c.discardOrThrow();
-        }
-    }
-
     default String executeStringSimpleCommand(ShellType type, String command) throws Exception {
         try (var sub = subShell(type).start()) {
             return sub.executeStringSimpleCommand(command);

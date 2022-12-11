@@ -24,8 +24,6 @@ public interface ProcessControl extends Closeable, AutoCloseable {
     void close() throws IOException;
     void kill() throws Exception;
 
-    ProcessControl exitTimeout(Integer timeout);
-
     ProcessControl start() throws Exception;
 
     InputStream getStdout();
