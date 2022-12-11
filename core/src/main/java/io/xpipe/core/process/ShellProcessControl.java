@@ -53,8 +53,6 @@ public interface ShellProcessControl extends ProcessControl {
 
     ShellProcessControl elevation(SecretValue value);
 
-    ShellProcessControl startTimeout(Integer timeout);
-
     SecretValue getElevationPassword();
 
     default ShellProcessControl subShell(@NonNull ShellType type) {

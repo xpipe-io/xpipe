@@ -76,7 +76,7 @@ public interface ShellType {
 
     List<String> createMkdirsCommand(String dirs);
 
-    List<String> createFileReadCommand(String file);
+    String createFileReadCommand(String file);
 
     String createFileWriteCommand(String file);
 

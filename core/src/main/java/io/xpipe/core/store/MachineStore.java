@@ -11,19 +11,22 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     public default InputStream openInput(String file) throws Exception {
-        return create().command(proc -> proc.getShellType().flatten(proc.getShellType().createFileReadCommand(proc.getOsType().normalizeFileName(file))))
+        return create().command(proc -> proc.getShellType()
+                        .createFileReadCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdout();
     }
 
     @Override
     public default OutputStream openOutput(String file) throws Exception {
-        return create().command(proc -> proc.getShellType().createFileWriteCommand(proc.getOsType().normalizeFileName(file)))
+        return create().command(proc -> proc.getShellType()
+                        .createFileWriteCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdin();
     }
 
     @Override
     public default boolean exists(String file) throws Exception {
-        try (var pc = create().command(proc -> proc.getShellType().createFileExistsCommand(proc.getOsType().normalizeFileName(file)))
+        try (var pc = create().command(proc -> proc.getShellType()
+                        .createFileExistsCommand(proc.getOsType().normalizeFileName(file)))
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -31,7 +34,9 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     public default boolean mkdirs(String file) throws Exception {
-        try (var pc = create().command(proc ->  proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(proc.getOsType().normalizeFileName(file))))
+        try (var pc = create().command(proc -> proc.getShellType()
+                        .flatten(proc.getShellType()
+                                .createMkdirsCommand(proc.getOsType().normalizeFileName(file))))
                 .start()) {
             return pc.discardAndCheckExit();
         }

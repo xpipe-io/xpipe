@@ -20,6 +20,8 @@ public interface ProcessControl extends Closeable, AutoCloseable {
 
     void writeLine(String line) throws IOException;
 
+    void write(byte[] b) throws IOException;
+
     @Override
     void close() throws IOException;
     void kill() throws Exception;
