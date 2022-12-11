@@ -1,6 +1,7 @@
 package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.ShellStore;
 
@@ -20,6 +21,11 @@ public class XPipeTempDirectory {
         var dir = FileNames.join(base, "xpipe");
         if (!proc.executeBooleanSimpleCommand(proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(dir))) ){
             throw new IOException("Unable to access or create temporary directory " + dir);
+        }
+
+        if (proc.getOsType().equals(OsType.LINUX)) {
+            proc.executeSimpleCommand("(chmod -f 777 \"" + dir + "\" || true)");
+
         }
 
         return dir;

@@ -154,8 +154,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileReadCommand(String file) {
-            return List.of("type", file);
+        public String createFileReadCommand(String file) {
+            return "type \"" + file + "\"";
         }
 
         @Override
@@ -227,7 +227,7 @@ public class ShellTypes {
 
         @Override
         public String getExecutable() {
-            return "powershell.exe";
+            return "powershell";
         }
 
         @Override
@@ -242,7 +242,7 @@ public class ShellTypes {
 
         @Override
         public String queryShellProcessId(ShellProcessControl control) throws IOException {
-            control.writeLine("powershell (Get-WmiObject Win32_Process -Filter ProcessId=$PID).ParentProcessId");
+            control.writeLine("echo $PID");
 
             var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
             // Read echo of command
@@ -329,8 +329,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileReadCommand(String file) {
-            return List.of("cmd", "/c", "type", file);
+        public String createFileReadCommand(String file) {
+            return "cmd /c type \""+ file + "\"";
         }
 
         @Override
@@ -368,7 +368,7 @@ public class ShellTypes {
             // Read actual output
             var line = r.readLine();
 
-            if (line.equals("Not Windows")) {
+            if (line.contains("Not Windows")) {
                 return StandardCharsets.UTF_8;
             }
 
@@ -509,8 +509,8 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createFileReadCommand(String file) {
-            return List.of("cat", file);
+        public String createFileReadCommand(String file) {
+            return "cat \"" + file + "\"";
         }
 
         @Override
