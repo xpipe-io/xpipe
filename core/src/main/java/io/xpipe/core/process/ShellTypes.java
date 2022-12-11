@@ -355,18 +355,22 @@ public class ShellTypes {
 
         @Override
         public String createWhichCommand(String executable) {
-            return "cmd /C where \"" + executable + "\"";
+            return "$LASTEXITCODE=(1 - (Get-Command -erroraction \"silentlycontinue\" \"" + executable + "\").Length)";
         }
 
         @Override
         public Charset determineCharset(ShellProcessControl control) throws Exception {
-            control.writeLine("chcp");
-
             var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
+            control.writeLine("If (Get-Command -erroraction 'silentlycontinue' chcp) {chcp} Else {echo \"Not Windows\"}");
+
             // Read echo of command
             r.readLine();
             // Read actual output
             var line = r.readLine();
+
+            if (line.equals("Not Windows")) {
+                return StandardCharsets.UTF_8;
+            }
 
             var matcher = Pattern.compile("\\d+").matcher(line);
             matcher.find();
