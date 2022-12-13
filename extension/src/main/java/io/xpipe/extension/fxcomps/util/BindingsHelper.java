@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class BindingsHelper {
 
@@ -30,6 +31,16 @@ public class BindingsHelper {
         setContent(l1, l2);
         l2.addListener((ListChangeListener<? super T>) c -> {
             setContent(l1, l2);
+        });
+    }
+
+    public static <T, V> void bindMappedContent(ObservableList<T> l1, ObservableList<V> l2, Function<V, T> map) {
+        Runnable runnable = () -> {
+            setContent(l1, l2.stream().map(map).toList());
+        };
+        runnable.run();
+        l2.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
         });
     }
 
