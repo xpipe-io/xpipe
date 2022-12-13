@@ -45,7 +45,7 @@ public interface ShellProcessControl extends ProcessControl {
 
     boolean isLocal();
 
-    int getProcessId();
+    int getConnectionHash();
 
     OsType getOsType();
 
