@@ -45,8 +45,6 @@ public interface ShellProcessControl extends ProcessControl {
 
     boolean isLocal();
 
-    int getConnectionHash();
-
     OsType getOsType();
 
     ShellProcessControl elevated(Predicate<ShellProcessControl> elevationFunction);
