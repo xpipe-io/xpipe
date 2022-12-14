@@ -20,19 +20,11 @@ public class ShellTypes {
     public static final ShellType SH = new Sh();
     public static final ShellType BASH = new Bash();
 
-    public static ShellType getRecommendedDefault() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
+    public static ShellType getPlatformDefault() {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return CMD;
         } else {
             return BASH;
-        }
-    }
-
-    public static ShellType getPlatformDefault() {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return CMD;
-        } else {
-            return SH;
         }
     }
 
