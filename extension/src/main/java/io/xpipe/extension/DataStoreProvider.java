@@ -29,7 +29,7 @@ public interface DataStoreProvider {
         }
 
         if (FileSystemStore.class.isAssignableFrom(c) || ShellStore.class.isAssignableFrom(c)) {
-            return Category.MACHINE;
+            return Category.SHELL;
         }
 
         throw new ExtensionException("Provider " + getId() + " has no set category");
@@ -99,7 +99,7 @@ public interface DataStoreProvider {
 
     enum Category {
         STREAM,
-        MACHINE,
+        SHELL,
         DATABASE;
     }
 }
