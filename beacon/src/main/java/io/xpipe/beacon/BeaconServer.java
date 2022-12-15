@@ -4,6 +4,7 @@ import io.xpipe.beacon.exchange.StopExchange;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.experimental.UtilityClass;
 
@@ -43,7 +44,7 @@ public class BeaconServer {
         // Tell daemon that we launched from an external tool
         var command = "\"" + daemonExecutable + "\" --external "
                 + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
-        Process process = Runtime.getRuntime().exec(command);
+        Process process = Runtime.getRuntime().exec(ShellTypes.getPlatformDefault().executeCommandWithShell(command));
         printDaemonOutput(process, command);
         return process;
     }
