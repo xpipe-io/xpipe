@@ -26,6 +26,7 @@ open module io.xpipe.core {
     uses io.xpipe.core.source.WriteMode;
     uses LocalProcessControlProvider;
     uses io.xpipe.core.util.ProxyProvider;
+    uses io.xpipe.core.util.ProxyManagerProvider;
 
     provides WriteMode with WriteMode.Replace, WriteMode.Append, WriteMode.Prepend;
     provides com.fasterxml.jackson.databind.Module with

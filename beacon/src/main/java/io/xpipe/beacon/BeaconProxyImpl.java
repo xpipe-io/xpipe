@@ -26,15 +26,6 @@ import java.util.function.Function;
 
 public class BeaconProxyImpl extends ProxyProvider {
 
-    @SneakyThrows
-    private static DataSource<?> downstreamTransform(DataSource<?> input, ShellStore proxy) {
-        var proxyNode = JacksonMapper.newMapper().valueToTree(proxy);
-        var inputNode = JacksonMapper.newMapper().valueToTree(input);
-        var localNode = JacksonMapper.newMapper().valueToTree(ShellStore.local());
-        replace(inputNode, node -> node.equals(proxyNode) ? Optional.of(localNode) : Optional.empty());
-        return JacksonMapper.newMapper().treeToValue(inputNode, DataSource.class);
-    }
-
     private static JsonNode replace(JsonNode node, Function<JsonNode, Optional<JsonNode>> function) {
         var value = function.apply(node);
         if (value.isPresent()) {
@@ -53,6 +44,17 @@ public class BeaconProxyImpl extends ProxyProvider {
             replacement.set(stringJsonNodeEntry.getKey(), resolved);
         }
         return replacement;
+    }
+
+    @Override
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public <T> T downstreamTransform(T object, ShellStore proxy) {
+        var proxyNode = JacksonMapper.getDefault().valueToTree(proxy);
+        var inputNode = JacksonMapper.getDefault().valueToTree(object);
+        var localNode = JacksonMapper.getDefault().valueToTree(ShellStore.local());
+        replace(inputNode, node -> node.equals(proxyNode) ? Optional.of(localNode) : Optional.empty());
+        return (T) JacksonMapper.getDefault().treeToValue(inputNode, object.getClass());
     }
 
     @Override
