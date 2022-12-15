@@ -12,7 +12,7 @@ import java.util.List;
 public class XPipeInstallation {
 
     public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
-        var defaultInstallation =  getDefaultInstallationBasePath(p);
+        var defaultInstallation =  getDefaultInstallationBasePath(p, true);
         if (p.getOsType().equals(OsType.LINUX) && cliExecutable.equals("/usr/bin/xpipe")) {
             return defaultInstallation;
         }
@@ -29,18 +29,6 @@ public class XPipeInstallation {
             return c.readOrThrow();
         } catch (ProcessOutputException ex) {
             return "?";
-        }
-    }
-
-    public static boolean containsCompatibleDefaultInstallation(ShellProcessControl p, String version) throws Exception {
-        var defaultBase = getDefaultInstallationBasePath(p);
-        var executable = getInstallationExecutable(p, defaultBase);
-        if (!p.executeBooleanSimpleCommand(p.getShellType().createFileExistsCommand(executable))) {
-            return false;
-        }
-
-        try (CommandProcessControl c = p.command(List.of(executable, "version")).start()) {
-            return c.readOrThrow().equals(version);
         }
     }
 
@@ -61,14 +49,16 @@ public class XPipeInstallation {
 
     public static String getDefaultInstallationBasePath() throws Exception {
         try (ShellProcessControl pc = new LocalStore().create().start()) {
-            return getDefaultInstallationBasePath(pc);
+            return getDefaultInstallationBasePath(pc, true);
         }
     }
 
-    public static String getDefaultInstallationBasePath(ShellProcessControl p) throws Exception {
-        var customHome = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
-        if (!customHome.isEmpty()) {
-            return customHome;
+    public static String getDefaultInstallationBasePath(ShellProcessControl p, boolean acceptPortable) throws Exception {
+        if (acceptPortable) {
+            var customHome = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
+            if (!customHome.isEmpty()) {
+                return customHome;
+            }
         }
 
         String path = null;

@@ -22,6 +22,8 @@ public abstract class ProxyProvider {
         return INSTANCE;
     }
 
+    public abstract <T> T downstreamTransform(T object, ShellStore proxy);
+
     public abstract ShellStore getProxy(Object base);
 
     public abstract  boolean isRemote(Object base);

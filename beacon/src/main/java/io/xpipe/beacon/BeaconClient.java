@@ -14,6 +14,7 @@ import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.Deobfuscator;
 import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.util.ProxyManagerProvider;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -122,6 +123,9 @@ public class BeaconClient implements AutoCloseable {
 
     public static BeaconClient connectProxy(ShellStore proxy) throws Exception {
         var control = proxy.create().start();
+        if (!ProxyManagerProvider.get().setup(control)) {
+            throw new IOException("X-Pipe connector required to perform operation");
+        }
         var command = control.command("xpipe beacon --raw").start();
         command.discardErr();
         return new BeaconClient(command, command.getStdout(), command.getStdin()) {
