@@ -13,6 +13,10 @@ public class XPipeInstallation {
 
     public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
         var defaultInstallation =  getDefaultInstallationBasePath(p, true);
+        if (cliExecutable == null) {
+            return defaultInstallation;
+        }
+
         if (p.getOsType().equals(OsType.LINUX) && cliExecutable.equals("/usr/bin/xpipe")) {
             return defaultInstallation;
         }
