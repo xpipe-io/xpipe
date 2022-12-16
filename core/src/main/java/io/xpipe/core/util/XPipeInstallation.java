@@ -11,6 +11,20 @@ import java.util.List;
 
 public class XPipeInstallation {
 
+    public static String createExternalAsyncLaunchCommand(String installationBase, String arguments) {
+        var suffix = (arguments != null ? arguments : "");
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            return "nohup \"" + installationBase + "/app/bin/xpiped\" --external & disown" + suffix;
+        }
+
+        return FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + suffix;
+    }
+
+    public static String createExternalLaunchCommand(String command, String arguments) {
+        var suffix = (arguments != null ? arguments : "");
+        return "\"" + command + "\" --external" + suffix;
+    }
+
     public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
         var defaultInstallation =  getDefaultInstallationBasePath(p, true);
         if (cliExecutable == null) {

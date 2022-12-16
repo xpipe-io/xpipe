@@ -10,7 +10,6 @@ import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
 
 /**
  * Contains basic functionality to start, communicate, and stop a remote beacon server.
@@ -43,10 +42,12 @@ public class BeaconServer {
     }
 
     public static Process start(String installationBase) throws Exception {
-        var daemonExecutable = getDaemonExecutable(installationBase);
+        var daemonExecutable = getDaemonDebugExecutable(installationBase);
         // Tell daemon that we launched from an external tool
-        var command = "\"" + daemonExecutable + "\" --external "
-                + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
+        var command = BeaconConfig.launchDaemonInDebugMode()
+                ? XPipeInstallation.createExternalAsyncLaunchCommand(
+                        installationBase, BeaconConfig.getDaemonArguments())
+                : XPipeInstallation.createExternalLaunchCommand(getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments());
         Process process =
                 Runtime.getRuntime().exec(ShellTypes.getPlatformDefault().executeCommandWithShell(command));
         printDaemonOutput(process, command);
@@ -106,19 +107,18 @@ public class BeaconServer {
         return res.isSuccess();
     }
 
-    public static Path getDaemonExecutable(String installationBase) throws Exception {
+    public static String getDaemonDebugExecutable(String installationBase) throws Exception {
         try (ShellProcessControl pc = new LocalStore().create().start()) {
             var debug = BeaconConfig.launchDaemonInDebugMode();
             if (!debug) {
-                return Path.of(
-                        FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(pc.getOsType())));
+                throw new IllegalStateException();
             } else {
                 if (BeaconConfig.attachDebuggerToDaemon()) {
-                    return Path.of(FileNames.join(
-                            installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(pc.getOsType())));
+                    return FileNames.join(
+                            installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(pc.getOsType()));
                 } else {
-                    return Path.of(FileNames.join(
-                            installationBase, XPipeInstallation.getDaemonDebugScriptPath(pc.getOsType())));
+                    return FileNames.join(
+                            installationBase, XPipeInstallation.getDaemonDebugScriptPath(pc.getOsType()));
                 }
             }
         }
