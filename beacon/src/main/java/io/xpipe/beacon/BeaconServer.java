@@ -42,12 +42,14 @@ public class BeaconServer {
     }
 
     public static Process start(String installationBase) throws Exception {
-        var daemonExecutable = getDaemonDebugExecutable(installationBase);
-        // Tell daemon that we launched from an external tool
-        var command = BeaconConfig.launchDaemonInDebugMode()
-                ? XPipeInstallation.createExternalAsyncLaunchCommand(
-                        installationBase, BeaconConfig.getDaemonArguments())
-                : XPipeInstallation.createExternalLaunchCommand(getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments());
+        String command;
+        if (!BeaconConfig.launchDaemonInDebugMode()) {
+            command = XPipeInstallation.createExternalAsyncLaunchCommand(installationBase, BeaconConfig.getDaemonArguments());
+        } else {
+            command = XPipeInstallation.createExternalLaunchCommand(
+                    getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments());
+        }
+
         Process process =
                 Runtime.getRuntime().exec(ShellTypes.getPlatformDefault().executeCommandWithShell(command));
         printDaemonOutput(process, command);
@@ -117,8 +119,7 @@ public class BeaconServer {
                     return FileNames.join(
                             installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(pc.getOsType()));
                 } else {
-                    return FileNames.join(
-                            installationBase, XPipeInstallation.getDaemonDebugScriptPath(pc.getOsType()));
+                    return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugScriptPath(pc.getOsType()));
                 }
             }
         }
