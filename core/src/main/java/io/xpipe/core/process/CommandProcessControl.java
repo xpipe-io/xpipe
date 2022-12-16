@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 public interface CommandProcessControl extends ProcessControl {
 
+    CommandProcessControl complex();
+
     default InputStream startExternalStdout() throws Exception {
         try {
             start();

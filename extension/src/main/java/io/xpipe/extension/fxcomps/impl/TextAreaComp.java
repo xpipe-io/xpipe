@@ -2,6 +2,7 @@ package io.xpipe.extension.fxcomps.impl;
 
 import io.xpipe.extension.fxcomps.SimpleComp;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
+import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,7 +15,7 @@ import java.util.Objects;
 public class TextAreaComp extends SimpleComp {
 
     private final Property<String> value;
-    private final Property<String> lazyValue = new SimpleStringProperty();
+    private final Property<String> lazyValue;
     private final boolean lazy;
 
     public TextAreaComp(Property<String> value) {
@@ -22,16 +23,20 @@ public class TextAreaComp extends SimpleComp {
     }
 
     public TextAreaComp(Property<String> value, boolean lazy) {
-        this.value = value;
+        this.lazyValue = value;
+        this.value = new SimpleStringProperty(value.getValue());
         this.lazy = lazy;
         if (!lazy) {
-            value.bind(lazyValue);
+            SimpleChangeListener.apply(value, val -> {
+                value.setValue(val);
+            });
         }
     }
 
     @Override
     protected Region createSimple() {
         var text = new TextArea(value.getValue() != null ? value.getValue() : null);
+        text.setPrefRowCount(5);
         text.textProperty().addListener((c, o, n) -> {
             lazyValue.setValue(n != null && n.length() > 0 ? n : null);
         });

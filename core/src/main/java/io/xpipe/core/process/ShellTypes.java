@@ -28,12 +28,8 @@ public class ShellTypes {
         }
     }
 
-    public static ShellType[] getWindowsShells() {
-        return new ShellType[] {CMD, POWERSHELL};
-    }
-
-    public static ShellType[] getLinuxShells() {
-        return new ShellType[] {BASH, SH};
+    public static ShellType[] getAllShellTypes() {
+        return new ShellType[] {CMD, POWERSHELL, BASH, SH};
     }
 
     @JsonTypeName("cmd")
