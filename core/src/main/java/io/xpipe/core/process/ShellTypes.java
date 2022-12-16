@@ -141,6 +141,11 @@ public class ShellTypes {
         }
 
         @Override
+        public List<String> executeCommandListWithShell(String cmd) {
+            return List.of("cmd", "/C", cmd);
+        }
+
+        @Override
         public List<String> createMkdirsCommand(String dirs) {
             return List.of("(", "if", "not", "exist", dirs, "mkdir", dirs, ")");
         }
@@ -230,6 +235,11 @@ public class ShellTypes {
         @Override
         public String getSetVariableCommand(String variableName, String value) {
             return "$env:" + variableName + " = \"" + escapeStringValue(value) + "\"";
+        }
+
+        @Override
+        public List<String> executeCommandListWithShell(String cmd) {
+            return List.of("powershell", "-Command", cmd);
         }
 
         @Override
@@ -386,6 +396,11 @@ public class ShellTypes {
     }
 
     public abstract static class PosixBase implements ShellType {
+
+        @Override
+        public List<String> executeCommandListWithShell(String cmd) {
+            return List.of(getExecutable(), "-c", cmd);
+        }
 
         public String getScriptEchoCommand(String s) {
             return "#!" + getExecutable() + "\n" + getEchoCommand(s, false) + "\nrm -- \"$0\"";

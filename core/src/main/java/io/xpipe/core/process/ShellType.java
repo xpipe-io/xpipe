@@ -74,6 +74,8 @@ public interface ShellType {
 
     String executeCommandWithShell(String cmd);
 
+    List<String> executeCommandListWithShell(String cmd);
+
     List<String> createMkdirsCommand(String dirs);
 
     String createFileReadCommand(String file);

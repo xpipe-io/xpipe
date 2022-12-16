@@ -30,11 +30,13 @@ public class BeaconServer {
     public static Process tryStartCustom() throws Exception {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
-            var command =
-                    ShellTypes.getPlatformDefault().executeCommandWithShell(
-                            custom + (BeaconConfig.getDaemonArguments() != null ? " " + BeaconConfig.getDaemonArguments() : ""));
-            Process process = Runtime.getRuntime().exec(command);
-            printDaemonOutput(process, command);
+            var command = ShellTypes.getPlatformDefault()
+                    .executeCommandListWithShell(custom
+                            + (BeaconConfig.getDaemonArguments() != null
+                                    ? " " + BeaconConfig.getDaemonArguments()
+                                    : ""));
+            Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
+            printDaemonOutput(process, ShellTypes.getPlatformDefault().flatten(command));
             return process;
         }
         return null;
@@ -45,7 +47,8 @@ public class BeaconServer {
         // Tell daemon that we launched from an external tool
         var command = "\"" + daemonExecutable + "\" --external "
                 + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
-        Process process = Runtime.getRuntime().exec(ShellTypes.getPlatformDefault().executeCommandWithShell(command));
+        Process process =
+                Runtime.getRuntime().exec(ShellTypes.getPlatformDefault().executeCommandWithShell(command));
         printDaemonOutput(process, command);
         return process;
     }
