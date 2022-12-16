@@ -19,7 +19,7 @@ jobs:
         with:
           version: '21.3.0'
           java-version: '17'
-          github-token: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
+          github-token: ${{ secrets.XPIPE_GITHUB_TOKEN }}
 
       - name: Verify Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
