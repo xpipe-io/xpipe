@@ -31,7 +31,8 @@ public class BeaconServer {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
             var command =
-                    custom + " " + (BeaconConfig.getDaemonArguments() != null ? BeaconConfig.getDaemonArguments() : "");
+                    ShellTypes.getPlatformDefault().executeCommandWithShell(
+                            custom + (BeaconConfig.getDaemonArguments() != null ? " " + BeaconConfig.getDaemonArguments() : ""));
             Process process = Runtime.getRuntime().exec(command);
             printDaemonOutput(process, command);
             return process;
