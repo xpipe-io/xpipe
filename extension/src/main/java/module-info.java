@@ -18,6 +18,8 @@ open module io.xpipe.extension {
     requires io.xpipe.beacon;
     requires io.xpipe.api;
     requires com.fasterxml.jackson.databind;
+    requires static com.sun.jna;
+    requires static com.sun.jna.platform;
     requires static org.junit.jupiter.api;
     requires static org.apache.commons.lang3;
     requires static javafx.base;

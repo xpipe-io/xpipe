@@ -18,7 +18,7 @@ jreleaser {
 
         java {
             groupId = 'io.xpipe'
-            version = '17'
+            version = '19'
             multiProject = true
         }
     }
