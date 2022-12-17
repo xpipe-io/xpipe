@@ -17,8 +17,8 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '21.3.0'
-          java-version: '17'
+          version: '22.3.0'
+          java-version: '19'
           github-token: ${{ secrets.XPIPE_GITHUB_TOKEN }}
 
       - name: Verify Gradle Wrapper
