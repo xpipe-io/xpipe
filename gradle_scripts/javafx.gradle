@@ -1,0 +1,23 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
+def currentOS = DefaultNativePlatform.currentOperatingSystem;
+def platform
+if (currentOS.isWindows()) {
+    platform = 'win'
+} else if (currentOS.isLinux()) {
+    platform = 'linux'
+} else if (currentOS.isMacOsX()) {
+    platform = 'mac'
+}
+
+configurations {
+    dep
+}
+
+dependencies {
+    dep "org.openjfx:javafx-base:19:${platform}"
+    dep "org.openjfx:javafx-controls:19:${platform}"
+    dep "org.openjfx:javafx-graphics:19:${platform}"
+    dep "org.openjfx:javafx-media:19:${platform}"
+    dep "org.openjfx:javafx-web:19:${platform}"
+}

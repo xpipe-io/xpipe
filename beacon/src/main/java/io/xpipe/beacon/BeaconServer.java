@@ -6,7 +6,6 @@ import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.util.XPipeInstallation;
-import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -14,7 +13,6 @@ import java.io.InputStreamReader;
 /**
  * Contains basic functionality to start, communicate, and stop a remote beacon server.
  */
-@UtilityClass
 public class BeaconServer {
 
     public static boolean isRunning() {
@@ -50,8 +48,7 @@ public class BeaconServer {
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments());
         }
 
-        Process process =
-                Runtime.getRuntime().exec(ShellTypes.getPlatformDefault().executeCommandWithShell(command));
+        Process process = new ProcessBuilder(ShellTypes.getPlatformDefault().executeCommandListWithShell(command)).start();
         printDaemonOutput(process, command);
         return process;
     }

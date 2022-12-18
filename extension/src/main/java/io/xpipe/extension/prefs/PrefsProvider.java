@@ -1,10 +1,18 @@
 package io.xpipe.extension.prefs;
 
+import com.dlsc.formsfx.model.structure.Field;
+import javafx.beans.value.ObservableBooleanValue;
+
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class PrefsProvider {
+
+    protected <T extends Field<?>> T editable(T o, ObservableBooleanValue v) {
+        o.editableProperty().bind(v);
+        return o;
+    }
 
     private static Set<PrefsProvider> ALL;
 

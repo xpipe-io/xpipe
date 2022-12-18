@@ -1,0 +1,47 @@
+apply from: "$buildscript.sourceFile/../junit.gradle"
+
+def useExtension = System.getProperty('excludeExtensionLibrary') == null
+
+dependencies {
+    testImplementation project(':api')
+    testImplementation project(':core')
+    if (useExtension) {
+        testImplementation project(':extension')
+    }
+
+    testImplementation "org.openjfx:javafx-base:18:win"
+    testImplementation "org.openjfx:javafx-controls:18:win"
+    testImplementation "org.openjfx:javafx-graphics:18:win"
+}
+
+def attachDebugger = System.getProperty('idea.debugger.dispatch.addr') != null
+def daemonCommand = attachDebugger ? ':app:runAttachedDebugger' : ':app:run'
+
+test {
+    workingDir = rootDir
+
+    jvmArgs += ["--enable-preview", "-Xmx2g"]
+
+
+    // Daemon properties
+    systemProperty "io.xpipe.beacon.daemonArgs", "-Dio.xpipe.app.mode=tray" +
+            " -Dio.xpipe.beacon.port=21723" +
+            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+            " -Dio.xpipe.storage.persist=false" +
+            " -Dio.xpipe.app.writeSysOut=true" +
+            " -Dio.xpipe.app.writeLogs=false" +
+            " -Dio.xpipe.beacon.printMessages=false" +
+            " -Dio.xpipe.app.logLevel=trace"
+
+    if (findProject(':app') != null) {
+        systemProperty "io.xpipe.beacon.customDaemonCommand", "cmd.exe /c start \"\"X-Pipe Debug\"\" /i \"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
+    }
+
+
+    // Client properties
+    // systemProperty 'io.xpipe.beacon.printMessages', "true"
+    systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
+    systemProperty "io.xpipe.beacon.port", "21723"
+    systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
+    systemProperty "io.xpipe.beacon.attachDebuggerToDaemon", "$daemonCommand"
+}

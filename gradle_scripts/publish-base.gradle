@@ -1,0 +1,47 @@
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+def isSnapshot = project.getVersion().endsWith('SNAPSHOT')
+def repoUrl = isSnapshot ? 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+        : 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+def user = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
+def pass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
+
+if (!isSnapshot) {
+    publish.finalizedBy(rootProject.getTasks().getByName('closeAndReleaseRepository'))
+}
+
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+
+publishing {
+    repositories {
+        maven {
+            setUrl repoUrl
+            credentials {
+                setUsername user
+                setPassword pass
+            }
+        }
+    }
+}
+
+def signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : System.getenv('GPG_KEY_ID')
+def signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : System.getenv('GPG_KEY')
+def signingPassword = project.hasProperty('signingPassword') ? project.property("signingPassword") : System.getenv('GPG_KEY_PASSWORD')
+
+signing {
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword != null ? signingPassword : '')
+
+    sign publishing.publications.mavenJava
+}
+
+nexusStaging {
+    serverUrl = "https://s01.oss.sonatype.org/service/local/"
+    packageGroup = "io.xpipe"
+    username = user
+    password = pass
+}

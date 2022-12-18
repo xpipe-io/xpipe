@@ -71,7 +71,7 @@ public abstract class Comp<S extends CompStructure<?>> {
     }
 
     public Comp<S> grow(boolean width, boolean height) {
-        return apply(GrowAugment.create(false, false));
+        return apply(GrowAugment.create(width, height));
     }
 
     public Comp<S> shortcut(KeyCombination shortcut, Consumer<S> con) {
