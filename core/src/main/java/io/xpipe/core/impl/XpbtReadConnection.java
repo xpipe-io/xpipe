@@ -7,7 +7,6 @@ import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamParser;
 import io.xpipe.core.data.typed.TypedDataStructureNodeReader;
-import io.xpipe.core.source.StreamReadConnection;
 import io.xpipe.core.source.TableReadConnection;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonMapper;

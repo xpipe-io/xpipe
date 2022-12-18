@@ -1,10 +1,12 @@
 package io.xpipe.extension;
 
-import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.event.ErrorEvent;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 
 public class DataStoreProviders {
@@ -51,24 +53,6 @@ public class DataStoreProviders {
                 split.stream()
                         .map(s -> s.equals(split.get(0)) ? s : s.substring(0, 1).toUpperCase() + s.substring(1))
                         .collect(Collectors.joining()));
-    }
-
-    public static Optional<Dialog> byString(String s) {
-        if (ALL == null) {
-            throw new IllegalStateException("Not initialized");
-        }
-
-        return ALL.stream()
-                .map(d -> {
-                    var store = d.storeForString(s);
-                    if (store != null) {
-                        return d.dialogForStore(store);
-                    } else {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .findAny();
     }
 
     @SuppressWarnings("unchecked")

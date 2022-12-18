@@ -1,7 +1,5 @@
 package io.xpipe.core.impl;
 
-import io.xpipe.core.source.StreamReadConnection;
-
 import java.io.BufferedReader;
 import java.util.stream.Stream;
 

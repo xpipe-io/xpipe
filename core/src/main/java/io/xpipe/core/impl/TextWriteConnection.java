@@ -1,7 +1,5 @@
 package io.xpipe.core.impl;
 
-import io.xpipe.core.source.StreamWriteConnection;
-
 public class TextWriteConnection extends StreamWriteConnection implements io.xpipe.core.source.TextWriteConnection {
 
     private final TextSource source;

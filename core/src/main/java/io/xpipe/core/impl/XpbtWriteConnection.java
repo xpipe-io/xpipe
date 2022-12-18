@@ -7,7 +7,6 @@ import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
-import io.xpipe.core.source.StreamWriteConnection;
 import io.xpipe.core.source.TableMapping;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Getter;
