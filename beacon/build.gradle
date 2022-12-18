@@ -5,8 +5,8 @@ plugins {
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-apply from: "$projectDir/../deps/java.gradle"
-apply from: "$projectDir/../deps/lombok.gradle"
+apply from: "$projectDir/../gradle_scripts/java.gradle"
+apply from: "$projectDir/../gradle_scripts/lombok.gradle"
 
 dependencies {
 }
@@ -24,4 +24,4 @@ dependencies {
 }
 
 apply from: 'publish.gradle'
-apply from: "$projectDir/../deps/publish-base.gradle"
+apply from: "$projectDir/../gradle_scripts/publish-base.gradle"

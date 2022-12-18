@@ -43,13 +43,12 @@ public interface DataStoreProvider {
         return true;
     }
 
+    default void storageInit() throws Exception {
+    }
+
     String queryInformationString(DataStore store, int length) throws Exception;
 
     public String toSummaryString(DataStore store, int length);
-
-    default boolean isHidden() {
-        return false;
-    }
 
     default String i18n(String key) {
         return I18n.get(getId() + "." + key);

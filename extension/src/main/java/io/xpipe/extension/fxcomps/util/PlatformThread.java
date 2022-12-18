@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 @SuppressWarnings("unchecked")
 public class PlatformThread {
@@ -269,6 +270,22 @@ public class PlatformThread {
             r.run();
         } else {
             Platform.runLater(r);
+        }
+    }
+
+    public static void runLaterBlocking(Runnable r) {
+        if (!Platform.isFxApplicationThread()) {
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.runLater(() -> {
+                r.run();
+                latch.countDown();
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException ignored) {
+            }
+        } else {
+            r.run();
         }
     }
 }
