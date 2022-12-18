@@ -1,6 +1,5 @@
 package io.xpipe.extension.fxcomps.impl;
 
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.extension.DataStoreProviders;
 import io.xpipe.extension.I18n;
@@ -17,7 +16,6 @@ import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
 
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /*
 TODO: Integrate store validation more into this comp.
@@ -39,7 +37,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                 .filter(e -> e.equals(s))
                 .findAny()
                 .flatMap(store -> XPipeDaemon.getInstance().getStoreName(store))
-                .orElse(I18n.get("localMachine"));
+                .orElse("?");
 
         return new Label(name, imgView);
     }
@@ -57,7 +55,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                             .filter(e -> e.equals(n))
                             .findAny()
                             .flatMap(store -> XPipeDaemon.getInstance().getStoreName(store))
-                            .orElse(I18n.get("localMachine"));
+                            .orElse("?");
                     ErrorEvent.fromMessage(I18n.get("extension.namedHostNotActive", name))
                             .reportable(false)
                             .handle();
@@ -77,12 +75,10 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
             return true;
         });
 
-        var available = Stream.concat(
-                        Stream.of(new LocalStore()),
-                        XPipeDaemon.getInstance().getNamedStores().stream()
+        var available = XPipeDaemon.getInstance().getNamedStores().stream()
                                 .filter(s -> s != self)
                                 .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
-                                .map(s -> (ShellStore) s))
+                                .map(s -> (ShellStore) s)
                 .toList();
         available.forEach(s -> comboBox.add((T) s));
         ComboBox<Node> cb = comboBox.build();

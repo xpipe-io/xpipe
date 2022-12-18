@@ -76,8 +76,6 @@ public interface DataStoreProvider {
         return getModuleName() + ":" + getId() + "_icon.png";
     }
 
-    DataStore storeForString(String s);
-
     default Dialog dialogForStore(DataStore store) {
         return null;
     }

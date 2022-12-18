@@ -59,7 +59,7 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
     @Override
     public void checkComplete() throws Exception {
         if (fileSystem == null) {
-            throw new IllegalStateException("Machine is missing");
+            throw new IllegalStateException("File system is missing");
         }
         if (file == null) {
             throw new IllegalStateException("File is missing");

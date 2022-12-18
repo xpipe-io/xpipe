@@ -20,7 +20,6 @@ public class StoreAddExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        String input;
         DataStore storeInput;
 
         String type;

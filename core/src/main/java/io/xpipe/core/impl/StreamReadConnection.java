@@ -1,7 +1,8 @@
-package io.xpipe.core.source;
+package io.xpipe.core.impl;
 
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.source.DataSourceReadConnection;
 import io.xpipe.core.store.StreamDataStore;
 
 import java.io.InputStream;
