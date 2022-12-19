@@ -1,7 +1,6 @@
 package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
@@ -65,10 +64,21 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getDefaultInstallationBasePath() throws Exception {
-        try (ShellProcessControl pc = new LocalStore().create().start()) {
-            return getDefaultInstallationBasePath(pc, true);
+    public static String getLocalDefaultInstallationBasePath() {
+        var customHome = System.getenv("XPIPE_HOME");
+        if (!customHome.isEmpty()) {
+            return customHome;
         }
+
+        String path = null;
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            var base = System.getenv("LOCALAPPDATA");
+            path = FileNames.join(base, "X-Pipe");
+        } else {
+            path = "/opt/xpipe";
+        }
+
+        return path;
     }
 
     public static String getDefaultInstallationBasePath(ShellProcessControl p, boolean acceptPortable) throws Exception {
