@@ -9,6 +9,7 @@ import io.xpipe.core.util.XPipeInstallation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Contains basic functionality to start, communicate, and stop a remote beacon server.
@@ -33,7 +34,7 @@ public class BeaconServer {
                                     ? " " + BeaconConfig.getDaemonArguments()
                                     : ""));
             Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
-            printDaemonOutput(process, ShellTypes.getPlatformDefault().flatten(command));
+            printDaemonOutput(process, command);
             return process;
         }
         return null;
@@ -48,12 +49,13 @@ public class BeaconServer {
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments());
         }
 
-        Process process = new ProcessBuilder(ShellTypes.getPlatformDefault().executeCommandListWithShell(command)).start();
-        printDaemonOutput(process, command);
+        var fullCommand = ShellTypes.getPlatformDefault().executeCommandListWithShell(command);
+        Process process = new ProcessBuilder(fullCommand).start();
+        printDaemonOutput(process, fullCommand);
         return process;
     }
 
-    private static void printDaemonOutput(Process proc, String command) {
+    private static void printDaemonOutput(Process proc, List<String> command) {
         boolean print = BeaconConfig.printDaemonOutput();
         if (print) {
             System.out.println("Starting daemon: " + command);
