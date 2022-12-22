@@ -1,5 +1,6 @@
 package io.xpipe.extension.util;
 
+import io.xpipe.extension.event.ErrorEvent;
 import org.apache.commons.lang3.function.FailableRunnable;
 
 public class ThreadHelper {
@@ -13,6 +14,19 @@ public class ThreadHelper {
 
     public static Thread runAsync(Runnable r) {
         var t = new Thread(r);
+        t.setDaemon(true);
+        t.start();
+        return t;
+    }
+
+    public static Thread runFailableAsync(FailableRunnable<Throwable> r) {
+        var t = new Thread(() -> {
+            try {
+                r.run();
+            } catch (Throwable e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        });
         t.setDaemon(true);
         t.start();
         return t;

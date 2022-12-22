@@ -2,6 +2,7 @@ package io.xpipe.extension.util;
 
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeTempDirectory;
 import lombok.SneakyThrows;
 
@@ -10,9 +11,15 @@ import java.util.Objects;
 public class ExecScriptHelper {
 
     public static int getConnectionHash(String command) {
-        return Objects.hash(command);
+        return Math.abs(Objects.hash(command));
     }
 
+    @SneakyThrows
+    public static String createLocalExecScript(String content) {
+        try (var l = ShellStore.local().create().start()) {
+            return createExecScript(l, content);
+        }
+    }
     @SneakyThrows
     public static String createExecScript(ShellProcessControl processControl, String content) {
         var fileName = "exec-" + getConnectionHash(content);
@@ -35,6 +42,9 @@ public class ExecScriptHelper {
             c.getStdin().write(content.getBytes(processControl.getCharset()));
             c.closeStdin();
         }
+
+        processControl.restart();
+
         return file;
     }
 }

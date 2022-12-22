@@ -47,7 +47,12 @@ public class DataStoreFormatter {
     public static String toName(DataStore input) {
         return toName(input, Integer.MAX_VALUE);
     }
+
     public static String toName(DataStore input, int length) {
+        if (input == null) {
+            return "?";
+        }
+
         var named = XPipeDaemon.getInstance().getStoreName(input);
         if (named.isPresent()) {
             return cut(named.get(), length);

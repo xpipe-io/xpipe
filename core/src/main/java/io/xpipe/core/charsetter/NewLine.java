@@ -25,7 +25,7 @@ public enum NewLine {
                 .orElseThrow();
     }
 
-    public static NewLine id(String id) {
+    public static NewLine byId(String id) {
         return Arrays.stream(values())
                 .filter(n -> n.getId().equalsIgnoreCase(id))
                 .findFirst()
