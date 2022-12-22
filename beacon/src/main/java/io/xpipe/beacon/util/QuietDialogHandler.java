@@ -1,4 +1,4 @@
-package io.xpipe.api.util;
+package io.xpipe.beacon.util;
 
 import io.xpipe.beacon.BeaconConnection;
 import io.xpipe.beacon.ClientException;
@@ -12,6 +12,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class QuietDialogHandler {
+
+    public static void handle(DialogReference ref, BeaconConnection connection) throws ClientException {
+        new QuietDialogHandler(ref, connection, Map.of()).handle();
+    }
 
     private final UUID dialogKey;
     private final BeaconConnection connection;

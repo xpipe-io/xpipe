@@ -18,6 +18,14 @@ import java.util.Optional;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
 
+    default boolean shouldPersist() {
+        return true;
+    }
+
+    default boolean shouldSave() {
+        return true;
+    }
+
     default boolean isComplete() {
         try {
             checkComplete();

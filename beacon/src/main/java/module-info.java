@@ -1,12 +1,12 @@
 import com.fasterxml.jackson.databind.Module;
 import io.xpipe.beacon.BeaconJacksonModule;
 import io.xpipe.beacon.BeaconProxyImpl;
-import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.beacon.exchange.*;
 import io.xpipe.beacon.exchange.api.QueryRawDataExchange;
 import io.xpipe.beacon.exchange.api.QueryTableDataExchange;
 import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
 import io.xpipe.beacon.exchange.cli.*;
+import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.util.ProxyProvider;
 
 module io.xpipe.beacon {
@@ -21,6 +21,8 @@ module io.xpipe.beacon {
     opens io.xpipe.beacon.exchange.api;
     opens io.xpipe.beacon.exchange.data;
     opens io.xpipe.beacon.exchange.cli;
+    exports io.xpipe.beacon.util;
+    opens io.xpipe.beacon.util;
 
     requires static com.fasterxml.jackson.core;
     requires static com.fasterxml.jackson.databind;
@@ -37,6 +39,8 @@ module io.xpipe.beacon {
             InstanceExchange,
             EditStoreExchange,
             AddSourceExchange,
+            WriteStreamExchange,
+            ReadStreamExchange,
             StoreProviderListExchange,
             ListCollectionsExchange,
             ListEntriesExchange,

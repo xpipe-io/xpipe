@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.data.type.ArrayType;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
@@ -54,6 +56,12 @@ public class CoreJacksonModule extends SimpleModule {
 
         addSerializer(Charset.class, new CharsetSerializer());
         addDeserializer(Charset.class, new CharsetDeserializer());
+
+        addSerializer(StreamCharset.class, new StreamCharsetSerializer());
+        addDeserializer(StreamCharset.class, new StreamCharsetDeserializer());
+
+        addSerializer(NewLine.class, new NewLineSerializer());
+        addDeserializer(NewLine.class, new NewLineDeserializer());
 
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
@@ -119,6 +127,38 @@ public class CoreJacksonModule extends SimpleModule {
         @Override
         public Charset deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return Charset.forName(p.getValueAsString());
+        }
+    }
+
+    public static class NewLineSerializer extends JsonSerializer<NewLine> {
+
+        @Override
+        public void serialize(NewLine value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.getId());
+        }
+    }
+
+    public static class NewLineDeserializer extends JsonDeserializer<NewLine> {
+
+        @Override
+        public NewLine deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return NewLine.byId(p.getValueAsString());
+        }
+    }
+
+    public static class StreamCharsetSerializer extends JsonSerializer<StreamCharset> {
+
+        @Override
+        public void serialize(StreamCharset value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    public static class StreamCharsetDeserializer extends JsonDeserializer<StreamCharset> {
+
+        @Override
+        public StreamCharset deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return StreamCharset.get(p.getValueAsString());
         }
     }
 

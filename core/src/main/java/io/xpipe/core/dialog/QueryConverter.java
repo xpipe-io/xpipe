@@ -14,7 +14,7 @@ public abstract class QueryConverter<T> {
     public static final QueryConverter<NewLine> NEW_LINE = new QueryConverter<NewLine>() {
         @Override
         protected NewLine fromString(String s) {
-            return NewLine.id(s);
+            return NewLine.byId(s);
         }
 
         @Override
