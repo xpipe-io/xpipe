@@ -8,10 +8,15 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
 public class TrackEvent {
+
+    public static TrackEventBuilder storage() {
+        return TrackEvent.builder().category("storage");
+    }
 
     private final Thread thread = Thread.currentThread();
     private final Instant instant = Instant.now();
@@ -107,10 +112,17 @@ public class TrackEvent {
         if (tags.size() > 0) {
             s.append(" {\n");
             for (var e : tags.entrySet()) {
+                var value = e.toString().contains("\n")
+                        ? "\n"
+                                + (e.toString()
+                                        .lines()
+                                        .map(line -> "    | " + line)
+                                        .collect(Collectors.joining("\n")))
+                        : e.toString();
                 s.append("    ")
                         .append(e.getKey())
                         .append("=")
-                        .append(e.getValue())
+                        .append(value)
                         .append("\n");
             }
             s.append("}");
@@ -119,6 +131,11 @@ public class TrackEvent {
     }
 
     public static class TrackEventBuilder {
+
+        public TrackEventBuilder trace() {
+            this.type("trace");
+            return this;
+        }
 
         public TrackEventBuilder windowCategory() {
             this.category("window");

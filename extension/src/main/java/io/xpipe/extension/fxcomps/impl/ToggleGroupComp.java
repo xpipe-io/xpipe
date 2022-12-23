@@ -43,10 +43,14 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                 box.getChildren().add(b);
                 b.setToggleGroup(group);
                 value.addListener((c, o, n) -> {
-                    PlatformThread.runLaterIfNeeded(() -> b.setSelected(entry.equals(n)));
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        if (entry.getKey().equals(n)) {
+                            group.selectToggle(b);
+                        }
+                    });
                 });
                 if (entry.getKey().equals(value.getValue())) {
-                    b.setSelected(true);
+                    group.selectToggle(b);
                 }
             }
 

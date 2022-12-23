@@ -62,7 +62,6 @@ module io.xpipe.beacon {
             ListStoresExchange,
             DialogExchange,
             QueryDataSourceExchange,
-            StoreStreamExchange,
             EditExchange,
             RemoveEntryExchange,
             RemoveCollectionExchange,

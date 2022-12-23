@@ -1,7 +1,7 @@
 package io.xpipe.beacon.util;
 
 import io.xpipe.beacon.BeaconConnection;
-import io.xpipe.beacon.ClientException;
+import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.cli.DialogExchange;
 import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.ChoiceElement;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class QuietDialogHandler {
 
-    public static void handle(DialogReference ref, BeaconConnection connection) throws ClientException {
+    public static void handle(DialogReference ref, BeaconConnection connection) {
         new QuietDialogHandler(ref, connection, Map.of()).handle();
     }
 
@@ -29,7 +29,7 @@ public class QuietDialogHandler {
         this.overrides = overrides;
     }
 
-    public void handle() throws ClientException {
+    public void handle() {
         String response = null;
 
         if (element instanceof ChoiceElement c) {
@@ -45,7 +45,7 @@ public class QuietDialogHandler {
                 .value(response)
                 .build());
         if (res.getElement() != null && element.equals(res.getElement())) {
-            throw new ClientException(
+            throw new BeaconException(
                     "Invalid value for key " + res.getElement().toDisplayString());
         }
 

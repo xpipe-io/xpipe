@@ -42,10 +42,8 @@ public abstract class DataSourceImpl implements DataSource {
                 case RAW -> {
                     yield new DataRawImpl(res.getId(), config, res.getInternalSource());
                 }
-                case COLLECTION -> throw new UnsupportedOperationException(
-                        "Unimplemented case: " + res.getType());
-                default -> throw new IllegalArgumentException(
-                        "Unexpected value: " + res.getType());
+                case COLLECTION -> throw new UnsupportedOperationException("Unimplemented case: " + res.getType());
+                default -> throw new IllegalArgumentException("Unexpected value: " + res.getType());
             };
         });
     }
@@ -64,17 +62,18 @@ public abstract class DataSourceImpl implements DataSource {
 
     public static DataSource create(DataSourceId id, String type, DataStore store) {
         if (store instanceof StreamDataStore s && s.isContentExclusivelyAccessible()) {
-            var res = XPipeApiConnection.execute(con -> {
-                var req = StoreStreamExchange.Request.builder().build();
-                StoreStreamExchange.Response r = con.performOutputExchange(req, out -> {
+            store = XPipeApiConnection.execute(con -> {
+                var internal = con.createInternalStreamStore();
+                var req = WriteStreamExchange.Request.builder()
+                        .name(internal.getUuid().toString())
+                        .build();
+                con.performOutputExchange(req, out -> {
                     try (InputStream inputStream = s.openInput()) {
                         inputStream.transferTo(out);
                     }
                 });
-                return r;
+                return internal;
             });
-
-            store = res.getStore();
         }
 
         var startReq = ReadExchange.Request.builder()
@@ -96,13 +95,16 @@ public abstract class DataSourceImpl implements DataSource {
     }
 
     public static DataSource create(DataSourceId id, String type, InputStream in) {
-        var res = XPipeApiConnection.execute(con -> {
-            var req = StoreStreamExchange.Request.builder().build();
-            StoreStreamExchange.Response r = con.performOutputExchange(req, out -> in.transferTo(out));
-            return r;
+        var store = XPipeApiConnection.execute(con -> {
+            var internal = con.createInternalStreamStore();
+            var req = WriteStreamExchange.Request.builder()
+                    .name(internal.getUuid().toString())
+                    .build();
+            con.performOutputExchange(req, out -> {
+                in.transferTo(out);
+            });
+            return internal;
         });
-
-        var store = res.getStore();
 
         var startReq = ReadExchange.Request.builder()
                 .provider(type)
