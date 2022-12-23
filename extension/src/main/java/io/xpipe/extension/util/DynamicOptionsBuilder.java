@@ -5,7 +5,6 @@ import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.impl.*;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -43,12 +42,14 @@ public class DynamicOptionsBuilder {
     }
 
     public DynamicOptionsBuilder addTitle(String titleKey) {
-        return addTitle(I18n.observable(titleKey));
+        entries.add(new DynamicOptionsComp.Entry(
+                titleKey, null, new LabelComp(I18n.observable(titleKey)).styleClass("title-header")));
+        return this;
     }
 
     public DynamicOptionsBuilder addTitle(ObservableValue<String> title) {
         entries.add(new DynamicOptionsComp.Entry(
-                null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+                null, null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         return this;
     }
 
@@ -69,7 +70,7 @@ public class DynamicOptionsBuilder {
             map.put(e, I18n.observable("extension." + e.getId()));
         }
         var comp = new ChoiceComp<>(prop, map, false);
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable("extension.newLine"), comp));
+        entries.add(new DynamicOptionsComp.Entry("newLine", I18n.observable("extension.newLine"), comp));
         props.add(prop);
         return this;
     }
@@ -77,7 +78,7 @@ public class DynamicOptionsBuilder {
     public DynamicOptionsBuilder addCharacter(
             Property<Character> prop, ObservableValue<String> name, Map<Character, ObservableValue<String>> names) {
         var comp = new CharChoiceComp(prop, names, null);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
@@ -88,7 +89,7 @@ public class DynamicOptionsBuilder {
             Map<Character, ObservableValue<String>> names,
             ObservableValue<String> customName) {
         var comp = new CharChoiceComp(prop, names, customName);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
@@ -96,7 +97,7 @@ public class DynamicOptionsBuilder {
     public DynamicOptionsBuilder addToggle(String nameKey,
             Property<Boolean> prop) {
         var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(Map.of(Boolean.TRUE, I18n.observable("extension.yes"), Boolean.FALSE, I18n.observable("extension.no"))));
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
     }
@@ -104,7 +105,7 @@ public class DynamicOptionsBuilder {
     public <V> DynamicOptionsBuilder addToggle(
             Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
         var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(names));
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
@@ -113,7 +114,7 @@ public class DynamicOptionsBuilder {
             Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names, boolean includeNone
     ) {
         var comp = new ChoiceComp<>(prop, names, includeNone);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
@@ -122,49 +123,49 @@ public class DynamicOptionsBuilder {
             Property<V> prop, ObservableValue<String> name, ObservableValue<Map<V, ObservableValue<String>>> names, boolean includeNone
     ) {
         var comp = new ChoiceComp<>(prop, names, includeNone);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addCharset(Property<StreamCharset> prop) {
         var comp = new CharsetChoiceComp(prop);
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable("extension.charset"), comp));
+        entries.add(new DynamicOptionsComp.Entry("charset", I18n.observable("extension.charset"), comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addStringArea(String nameKey, Property<String> prop, boolean lazy) {
         var comp = new TextAreaComp(prop, lazy);
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addString(String nameKey, Property<String> prop) {
         var comp = new TextFieldComp(prop);
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addString(String nameKey, Property<String> prop, boolean lazy) {
         var comp = new TextFieldComp(prop, lazy);
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addString(ObservableValue<String> name, Property<String> prop) {
         var comp = new TextFieldComp(prop);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addString(ObservableValue<String> name, Property<String> prop, boolean lazy) {
         var comp = new TextFieldComp(prop, lazy);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
@@ -178,11 +179,13 @@ public class DynamicOptionsBuilder {
     }
 
     public DynamicOptionsBuilder addComp(String nameKey, Comp<?> comp, Property<?> prop) {
-        return addComp(I18n.observable(nameKey), comp, prop);
+        entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
+        if (prop != null) props.add(prop);
+        return this;
     }
 
     public DynamicOptionsBuilder addComp(ObservableValue<String> name, Comp<?> comp, Property<?> prop) {
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         if (prop != null) props.add(prop);
         return this;
     }
@@ -193,21 +196,21 @@ public class DynamicOptionsBuilder {
 
     public DynamicOptionsBuilder addSecret(ObservableValue<String> name, Property<SecretValue> prop) {
         var comp = new SecretFieldComp(prop);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addInteger(ObservableValue<String> name, Property<Integer> prop) {
         var comp = new IntFieldComp(prop);
-        entries.add(new DynamicOptionsComp.Entry(name, comp));
+        entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
 
     public DynamicOptionsBuilder addInteger(String nameKey, Property<Integer> prop) {
         var comp = new IntFieldComp(prop);
-        entries.add(new DynamicOptionsComp.Entry(I18n.observable(nameKey), comp));
+        entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
     }
@@ -239,12 +242,12 @@ public class DynamicOptionsBuilder {
         return this;
     }
 
-    public Comp<? extends CompStructure<?>> buildComp() {
+    public DynamicOptionsComp buildComp() {
         if (title != null) {
             entries.add(
                     0,
                     new DynamicOptionsComp.Entry(
-                            null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+                            null, null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         }
         return new DynamicOptionsComp(entries, wrap);
     }

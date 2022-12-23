@@ -5,6 +5,7 @@ import io.xpipe.core.impl.StdinDataStore;
 import io.xpipe.core.impl.StdoutDataStore;
 import io.xpipe.core.source.DataSource;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -101,7 +102,7 @@ public interface DataStore {
     /**
      * Determines the last modified of this data store if this data store supports it.
      */
-    default Optional<Instant> determineLastModified() {
+    default Optional<Instant> determineLastModified() throws IOException {
         return Optional.empty();
     }
 }

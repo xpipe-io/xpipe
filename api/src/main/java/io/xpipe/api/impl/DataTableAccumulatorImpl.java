@@ -7,12 +7,15 @@ import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.api.util.TypeDescriptor;
 import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.exchange.ReadExchange;
-import io.xpipe.beacon.exchange.StoreStreamExchange;
+import io.xpipe.beacon.exchange.WriteStreamExchange;
+import io.xpipe.beacon.exchange.cli.StoreAddExchange;
+import io.xpipe.beacon.util.QuietDialogHandler;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
+import io.xpipe.core.impl.InternalStreamStore;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 
@@ -25,13 +28,20 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
     private final XPipeApiConnection connection;
     private final TupleType type;
     private int rows;
+    private InternalStreamStore store;
     private TupleType writtenDescriptor;
     private OutputStream bodyOutput;
 
     public DataTableAccumulatorImpl(TupleType type) {
         this.type = type;
         connection = XPipeApiConnection.open();
-        connection.sendRequest(StoreStreamExchange.Request.builder().build());
+
+        store = new InternalStreamStore();
+        var addReq = StoreAddExchange.Request.builder().storeInput(store).name(store.getUuid().toString()).build();
+        StoreAddExchange.Response addRes = connection.performSimpleExchange(addReq);
+        QuietDialogHandler.handle(addRes.getConfig(), connection);
+
+        connection.sendRequest(WriteStreamExchange.Request.builder().name(store.getUuid().toString()).build());
         bodyOutput = connection.sendBody();
     }
 
@@ -43,12 +53,12 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
             throw new BeaconException(e);
         }
 
-        StoreStreamExchange.Response res = connection.receiveResponse();
+        WriteStreamExchange.Response res = connection.receiveResponse();
         connection.close();
 
         var req = ReadExchange.Request.builder()
                 .target(id)
-                .store(res.getStore())
+                .store(store)
                 .provider("xpbt")
                 .configureAll(false)
                 .build();

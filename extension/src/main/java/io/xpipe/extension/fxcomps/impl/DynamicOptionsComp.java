@@ -3,21 +3,19 @@ package io.xpipe.extension.fxcomps.impl;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.SimpleCompStructure;
+import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
+public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
 
     private final List<Entry> entries;
     private final boolean wrap;
@@ -27,12 +25,28 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
         this.wrap = wrap;
     }
 
+    public Entry queryEntry(String key) {
+        return entries.stream()
+                .filter(entry -> entry.key != null && entry.key.equals(key))
+                .findAny()
+                .orElseThrow();
+    }
+
     @Override
-    public CompStructure<FlowPane> createBase() {
-        var flow = new FlowPane(Orientation.HORIZONTAL);
-        flow.setAlignment(Pos.CENTER);
-        flow.setHgap(14);
-        flow.setVgap(7);
+    public CompStructure<Pane> createBase() {
+        Pane pane;
+        if (wrap) {
+            var content = new FlowPane(Orientation.HORIZONTAL);
+            content.setAlignment(Pos.CENTER);
+            content.setHgap(14);
+            content.setVgap(7);
+            pane = content;
+        } else {
+            var content = new VBox();
+            content.setAlignment(Pos.CENTER);
+            content.setSpacing(7);
+            pane = content;
+        }
 
         var nameRegions = new ArrayList<Region>();
         var compRegions = new ArrayList<Region>();
@@ -41,9 +55,14 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
             var line = new HBox();
             line.setFillHeight(true);
             if (!wrap) {
-                line.prefWidthProperty().bind(flow.widthProperty());
+                line.prefWidthProperty().bind(pane.widthProperty());
             }
             line.setSpacing(8);
+
+            Region compRegion = null;
+            if (entry.comp() != null) {
+                compRegion = entry.comp().createRegion();
+            }
 
             if (entry.name() != null) {
                 var name = new Label();
@@ -51,20 +70,23 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
                 name.prefHeightProperty().bind(line.heightProperty());
                 name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
+                if (compRegion != null) {
+                    name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                    name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                }
                 nameRegions.add(name);
                 line.getChildren().add(name);
             }
 
             if (entry.comp() != null) {
-                var r = entry.comp().createRegion();
-                compRegions.add(r);
-                line.getChildren().add(r);
+                compRegions.add(compRegion);
+                line.getChildren().add(compRegion);
                 if (!wrap) {
-                    HBox.setHgrow(r, Priority.ALWAYS);
+                    HBox.setHgrow(compRegion, Priority.ALWAYS);
                 }
             }
 
-            flow.getChildren().add(line);
+            pane.getChildren().add(line);
         }
 
         if (wrap) {
@@ -101,12 +123,12 @@ public class DynamicOptionsComp extends Comp<CompStructure<FlowPane>> {
             nameRegions.forEach(r -> r.prefWidthProperty().bind(nameWidthBinding));
         }
 
-        return new SimpleCompStructure<>(flow);
+        return new SimpleCompStructure<>(pane);
     }
 
     public List<Entry> getEntries() {
         return entries;
     }
 
-    public record Entry(ObservableValue<String> name, Comp<?> comp) {}
+    public record Entry(String key, ObservableValue<String> name, Comp<?> comp) {}
 }
