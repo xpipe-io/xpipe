@@ -64,6 +64,9 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         if (file == null) {
             throw new IllegalStateException("File is missing");
         }
+        if (!FileNames.isAbsolute(file)) {
+            throw new IllegalStateException("File path is not absolute");
+        }
     }
 
     @Override

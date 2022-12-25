@@ -30,10 +30,14 @@ public class WriteExecuteExchange implements MessageExchange {
 
         @NonNull
         UUID id;
+
+        String mode;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {}
+    public static class Response implements ResponseMessage {
+        boolean hasBody;
+    }
 }

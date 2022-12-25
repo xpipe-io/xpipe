@@ -10,6 +10,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
+import java.util.Map;
 
 public class StoreProviderListExchange implements MessageExchange {
 
@@ -28,6 +29,6 @@ public class StoreProviderListExchange implements MessageExchange {
     @Value
     public static class Response implements ResponseMessage {
         @NonNull
-        List<ProviderEntry> entries;
+        Map<String, List<ProviderEntry>> entries;
     }
 }
