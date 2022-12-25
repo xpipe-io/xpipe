@@ -112,13 +112,14 @@ public class TrackEvent {
         if (tags.size() > 0) {
             s.append(" {\n");
             for (var e : tags.entrySet()) {
-                var value = e.toString().contains("\n")
+                var valueString = e.getValue() != null ? e.getValue().toString() : "null";
+                var value = valueString.contains("\n")
                         ? "\n"
-                                + (e.toString()
+                                + (valueString.toString()
                                         .lines()
                                         .map(line -> "    | " + line)
                                         .collect(Collectors.joining("\n")))
-                        : e.toString();
+                        : valueString;
                 s.append("    ")
                         .append(e.getKey())
                         .append("=")

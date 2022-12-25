@@ -18,6 +18,18 @@ public class FileNames {
         return normalize(joined);
     }
 
+    public static boolean isAbsolute(String file) {
+        if (!file.contains("/") && !file.contains("\\")) {
+            return false;
+        }
+
+        if (!file.startsWith("/") && !file.startsWith("~") && !file.matches("^\\w:.*")) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static String getParent(String file) {
         return file.substring(0, file.length() - getFileName(file).length() - 1);
     }

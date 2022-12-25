@@ -21,8 +21,6 @@ public class RemoveStoreExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         String storeName;
-
-        boolean removeUnderlying;
     }
 
     @Jacksonized

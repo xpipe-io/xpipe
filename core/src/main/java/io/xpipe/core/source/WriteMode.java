@@ -14,28 +14,32 @@ public class WriteMode extends JacksonizedValue {
     public static void init(ModuleLayer layer) {
         if (ALL.size() == 0) {
             ALL.addAll(ServiceLoader.load(layer, WriteMode.class).stream()
-                               .map(p -> p.get())
-                               .toList());
+                    .map(p -> p.get())
+                    .toList());
         }
     }
 
     @JsonTypeName("replace")
-    public static final class Replace extends WriteMode {
-    }
+    public static final class Replace extends WriteMode {}
 
     @JsonTypeName("append")
-    public static final class Append extends WriteMode {
-    }
+    public static final class Append extends WriteMode {}
 
     @JsonTypeName("prepend")
-    public static final class Prepend extends WriteMode {
-    }
+    public static final class Prepend extends WriteMode {}
 
     public static final Replace REPLACE = new Replace();
     public static final Append APPEND = new Append();
     public static final Prepend PREPEND = new Prepend();
 
-    public final  String getId() {
+    public final String getId() {
         return getClass().getAnnotation(JsonTypeName.class).value();
+    }
+
+    public static WriteMode byId(String id) {
+        return ALL.stream()
+                .filter(writeMode -> writeMode.getId().equalsIgnoreCase(id))
+                .findFirst()
+                .orElseThrow();
     }
 }

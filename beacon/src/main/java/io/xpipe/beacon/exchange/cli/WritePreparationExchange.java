@@ -27,8 +27,9 @@ public class WritePreparationExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         String type;
 
-        @NonNull
-        DataStore output;
+        DataStore outputStore;
+
+        DataSourceReference outputSource;
 
         @NonNull
         DataSourceReference source;
@@ -38,8 +39,6 @@ public class WritePreparationExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        boolean hasBody;
-
         @NonNull
         DialogReference config;
     }
