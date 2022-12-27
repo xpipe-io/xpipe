@@ -66,7 +66,7 @@ public class XPipeInstallation {
 
     public static String getLocalDefaultInstallationBasePath(boolean acceptCustomHome) {
         var customHome = System.getenv("XPIPE_HOME");
-        if (!customHome.isEmpty() && acceptCustomHome) {
+        if (customHome != null && !customHome.isEmpty() && acceptCustomHome) {
             return customHome;
         }
 
