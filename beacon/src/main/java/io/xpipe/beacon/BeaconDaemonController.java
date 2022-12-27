@@ -19,7 +19,7 @@ public class BeaconDaemonController {
         if ((process = BeaconServer.tryStartCustom()) != null) {
             custom = true;
         } else {
-            var defaultBase = XPipeInstallation.getLocalDefaultInstallationBasePath();
+            var defaultBase = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
             process = BeaconServer.start(defaultBase);
         }
 

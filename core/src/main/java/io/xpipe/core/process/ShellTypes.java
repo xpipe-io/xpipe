@@ -19,17 +19,20 @@ public class ShellTypes {
     public static final ShellType CMD = new Cmd();
     public static final ShellType SH = new Sh();
     public static final ShellType BASH = new Bash();
+    public static final ShellType ZSH = new Zsh();
 
     public static ShellType getPlatformDefault() {
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return CMD;
-        } else {
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return BASH;
+        } else {
+            return ZSH;
         }
     }
 
     public static ShellType[] getAllShellTypes() {
-        return new ShellType[] {CMD, POWERSHELL, BASH, SH};
+        return new ShellType[] {CMD, POWERSHELL, ZSH, BASH, SH};
     }
 
     @JsonTypeName("cmd")
@@ -328,7 +331,7 @@ public class ShellTypes {
 
         @Override
         public String createFileReadCommand(String file) {
-            return "cmd /c type \""+ file + "\"";
+            return "cmd /c type \"" + file + "\"";
         }
 
         @Override
@@ -359,7 +362,8 @@ public class ShellTypes {
         @Override
         public Charset determineCharset(ShellProcessControl control) throws Exception {
             var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
-            control.writeLine("If (Get-Command -erroraction 'silentlycontinue' chcp) {chcp} Else {echo \"Not Windows\"}");
+            control.writeLine(
+                    "If (Get-Command -erroraction 'silentlycontinue' chcp) {chcp} Else {echo \"Not Windows\"}");
 
             // Read echo of command
             r.readLine();
@@ -581,6 +585,27 @@ public class ShellTypes {
         @Override
         public String getName() {
             return "bash";
+        }
+    }
+
+    @JsonTypeName("zsh")
+    @Value
+    @EqualsAndHashCode(callSuper = false)
+    public static class Zsh extends PosixBase {
+
+        @Override
+        public String getExecutable() {
+            return "/bin/zsh";
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "/bin/zsh";
+        }
+
+        @Override
+        public String getName() {
+            return "zsh";
         }
     }
 }

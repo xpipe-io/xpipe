@@ -23,7 +23,7 @@ public class XPipeTempDirectory {
             throw new IOException("Unable to access or create temporary directory " + dir);
         }
 
-        if (proc.getOsType().equals(OsType.LINUX)) {
+        if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MAC)) {
             proc.executeSimpleCommand("(chmod -f 777 \"" + dir + "\" || true)");
 
         }

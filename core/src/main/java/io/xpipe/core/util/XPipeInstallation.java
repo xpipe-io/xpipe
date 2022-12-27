@@ -64,9 +64,9 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getLocalDefaultInstallationBasePath() {
+    public static String getLocalDefaultInstallationBasePath(boolean acceptCustomHome) {
         var customHome = System.getenv("XPIPE_HOME");
-        if (!customHome.isEmpty()) {
+        if (!customHome.isEmpty() && acceptCustomHome) {
             return customHome;
         }
 
@@ -74,8 +74,10 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             var base = System.getenv("LOCALAPPDATA");
             path = FileNames.join(base, "X-Pipe");
-        } else {
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
             path = "/opt/xpipe";
+        } else {
+            path = "~/Applications/X-Pipe.app";
         }
 
         return path;
@@ -93,8 +95,10 @@ public class XPipeInstallation {
         if (p.getOsType().equals(OsType.WINDOWS)) {
             var base = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("LOCALAPPDATA"));
             path = FileNames.join(base, "X-Pipe");
-        } else {
+        } else if (p.getOsType().equals(OsType.LINUX)) {
             path = "/opt/xpipe";
+        } else {
+            path = "~/Applications/X-Pipe.app";
         }
 
         return path;
@@ -103,24 +107,30 @@ public class XPipeInstallation {
     public static String getDaemonDebugScriptPath(OsType type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "scripts", "xpiped_debug.bat");
-        } else {
+        } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "scripts", "xpiped_debug.sh");
+        } else {
+            return FileNames.join("Content", "scripts", "xpiped_debug.sh");
         }
     }
 
     public static String getDaemonDebugAttachScriptPath(OsType type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "scripts", "xpiped_debug_attach.bat");
-        } else {
+        } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "scripts", "xpiped_debug_attach.sh");
+        } else {
+            return FileNames.join("Content", "scripts", "xpiped_debug_attach.sh");
         }
     }
 
     public static String getDaemonExecutablePath(OsType type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "xpiped.exe");
-        } else {
+        } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "bin", "xpiped");
+        } else {
+            return FileNames.join("Content", "MacOS", "xpiped");
         }
     }
 }
