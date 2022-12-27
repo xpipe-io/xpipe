@@ -14,6 +14,8 @@ public class XPipeInstallation {
         var suffix = (arguments != null ? " " + arguments : "");
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + installationBase + "/app/bin/xpiped\" --external" + suffix + " & disown";
+        } else if (OsType.getLocal().equals(OsType.MAC)) {
+            return "nohup \"" + installationBase + "/Contents/MacOS/xpiped\" --external" + suffix + " & disown";
         }
 
         return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\" --external" + suffix;
@@ -38,7 +40,11 @@ public class XPipeInstallation {
             return defaultInstallation;
         }
 
-        return FileNames.getParent(FileNames.getParent(cliExecutable));
+        if (p.getOsType().equals(OsType.MAC)) {
+            return FileNames.getParent(FileNames.getParent(FileNames.getParent(FileNames.getParent(cliExecutable))));
+        } else {
+            return FileNames.getParent(FileNames.getParent(cliExecutable));
+        }
     }
 
     public static String queryInstallationVersion(ShellProcessControl p, String exec) throws Exception {
