@@ -16,7 +16,7 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + installationBase + "/app/bin/xpiped\" --external" + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MAC)) {
-            return "nohup \"" + installationBase + "/Contents/MacOS/xpiped\" --external" + suffix + " & disown";
+            return "open \"" + installationBase + "\" --args --external" + suffix;
         }
 
         return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\" --external" + suffix;
