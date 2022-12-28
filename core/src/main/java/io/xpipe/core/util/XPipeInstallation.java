@@ -6,6 +6,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellProcessControl;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class XPipeInstallation {
@@ -24,6 +25,32 @@ public class XPipeInstallation {
     public static String createExternalLaunchCommand(String command, String arguments) {
         var suffix = (arguments != null ? " " + arguments : "");
         return "\"" + command + "\" --external" + suffix;
+    }
+
+    public static Path getLocalInstallationBasePath(){
+        Path path = Path.of(System.getProperty("java.home"));
+        return getLocalInstallationBasePathForExecutable(path);
+    }
+
+    public static Path getLocalDynamicLibraryDirectory() {
+        Path path = getLocalInstallationBasePath();
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            return path.resolve("runtime").resolve("bin");
+        } else if (OsType.getLocal().equals(OsType.LINUX)){
+            return path.resolve("lib").resolve("runtime").resolve("lib");
+        } else {
+            return path.resolve("Contents").resolve("runtime").resolve("Contents").resolve("Home").resolve("lib");
+        }
+    }
+
+    public static Path getLocalInstallationBasePathForExecutable(Path executable) {
+        if (OsType.getLocal().equals(OsType.MAC)) {
+            return executable.getParent().getParent().getParent();
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return executable.getParent().getParent();
+        } else {
+            return executable.getParent();
+        }
     }
 
     public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
