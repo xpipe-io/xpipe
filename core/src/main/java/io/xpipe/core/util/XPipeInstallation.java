@@ -28,7 +28,12 @@ public class XPipeInstallation {
     }
 
     public static Path getLocalInstallationBasePath(){
-        Path path = Path.of(System.getProperty("java.home"));
+        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow());
+        var name = path.getFileName().toString();
+        if (name.endsWith("java") || name.endsWith("java.exe")) {
+            return Path.of(System.getProperty("user.dir"));
+        }
+
         return getLocalInstallationBasePathForExecutable(path);
     }
 
@@ -43,7 +48,14 @@ public class XPipeInstallation {
         }
     }
 
-    public static Path getLocalInstallationBasePathForExecutable(Path executable) {
+    public static Path getLocalExtensionsDirectory() {
+        Path path = getLocalInstallationBasePath();
+        return OsType.getLocal().equals(OsType.MAC)
+                ? path.resolve("Contents").resolve("extensions")
+                : path.resolve("extensions");
+    }
+
+    private static Path getLocalInstallationBasePathForExecutable(Path executable) {
         if (OsType.getLocal().equals(OsType.MAC)) {
             return executable.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
