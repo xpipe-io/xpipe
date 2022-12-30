@@ -47,6 +47,7 @@ module io.xpipe.beacon {
             ModeExchange,
             ProxyWriteConnectionExchange,
             ProxyFunctionExchange,
+            QueryStoreExchange,
             StatusExchange,
             StopExchange,
             RenameStoreExchange,

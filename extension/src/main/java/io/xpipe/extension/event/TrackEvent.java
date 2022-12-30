@@ -28,7 +28,7 @@ public class TrackEvent {
     private Map<String, Object> tags;
 
     @Singular
-    private List<String> elements;
+    private List<Object> elements;
 
     public static TrackEventBuilder fromMessage(String type, String message) {
         return builder().type(type).message(message);
@@ -128,6 +128,17 @@ public class TrackEvent {
             }
             s.append("}");
         }
+
+        if (elements.size() > 0) {
+            s.append(" [\n");
+            for (var e : elements) {
+                s.append("    ")
+                        .append(e != null ? e.toString() : "null")
+                        .append("\n");
+            }
+            s.append("]");
+        }
+
         return s.toString();
     }
 

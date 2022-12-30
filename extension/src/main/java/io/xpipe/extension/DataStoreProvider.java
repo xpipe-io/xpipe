@@ -12,6 +12,10 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default ModuleInstall getRequiredAdditionalInstallation() {
+        return null;
+    }
+
     default void validate() throws Exception {
         getCategory();
         for (Class<?> storeClass : getStoreClasses()) {

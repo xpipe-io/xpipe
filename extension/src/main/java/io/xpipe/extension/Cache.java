@@ -8,8 +8,9 @@ public interface Cache {
 
     Cache INSTANCE = ServiceLoader.load(Cache.class).findFirst().orElseThrow();
 
-    public static <T> T get(String key, Class<T> type, Supplier<T> notPresent) {
-        return INSTANCE.getValue(key, type, notPresent);
+    @SuppressWarnings("unchecked")
+    public static <T, V extends T> V get(String key, Class<T> type, Supplier<T> notPresent) {
+        return (V) INSTANCE.getValue(key, type, notPresent);
     }
 
     public static <T> Optional<T> getIfPresent(String key, Class<T> type) {
@@ -17,7 +18,7 @@ public interface Cache {
     }
 
     public static <T> void update(String key, T val) {
-        INSTANCE.updateValue(key, key);
+        INSTANCE.updateValue(key, val);
     }
 
     public <T> T getValue(String key, Class<?> type, Supplier<T> notPresent);

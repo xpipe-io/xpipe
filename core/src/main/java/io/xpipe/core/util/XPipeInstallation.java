@@ -122,7 +122,7 @@ public class XPipeInstallation {
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             path = "/opt/xpipe";
         } else {
-            path = "~/Applications/X-Pipe.app";
+            path = "/Applications/X-Pipe.app";
         }
 
         return path;
@@ -143,7 +143,7 @@ public class XPipeInstallation {
         } else if (p.getOsType().equals(OsType.LINUX)) {
             path = "/opt/xpipe";
         } else {
-            path = "~/Applications/X-Pipe.app";
+            path = "/Applications/X-Pipe.app";
         }
 
         return path;
