@@ -17,7 +17,8 @@ public class GenericArrayReader implements GenericAbstractReader {
     private GenericAbstractReader currentReader;
     private DataStructureNode created;
 
-    public GenericArrayReader() {}
+    public GenericArrayReader() {
+    }
 
     public static GenericArrayReader newReader(int length) {
         var ar = new GenericArrayReader();

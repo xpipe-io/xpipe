@@ -11,7 +11,8 @@ public class DataStructureImpl extends DataSourceImpl implements DataStructure {
     DataStructureImpl(
             DataSourceId sourceId,
             DataSourceConfig sourceConfig,
-            io.xpipe.core.source.DataSource<?> internalSource) {
+            io.xpipe.core.source.DataSource<?> internalSource
+    ) {
         super(sourceId, sourceConfig, internalSource);
     }
 

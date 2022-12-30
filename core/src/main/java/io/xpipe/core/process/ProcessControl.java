@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 
 public interface ProcessControl extends Closeable, AutoCloseable {
 
-     String prepareTerminalOpen() throws Exception;
+    String prepareTerminalOpen() throws Exception;
 
     void closeStdin() throws IOException;
 
@@ -24,6 +24,7 @@ public interface ProcessControl extends Closeable, AutoCloseable {
 
     @Override
     void close() throws IOException;
+
     void kill() throws Exception;
 
     ProcessControl start() throws Exception;

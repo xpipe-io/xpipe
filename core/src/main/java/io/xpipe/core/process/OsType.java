@@ -9,16 +9,6 @@ public interface OsType {
     Linux LINUX = new Linux();
     Mac MAC = new Mac();
 
-    String getName();
-
-    String getTempDirectory(ShellProcessControl pc) throws Exception;
-
-    String normalizeFileName(String file);
-
-    Map<String, String> getProperties(ShellProcessControl pc) throws Exception;
-
-    String determineOperatingSystemName(ShellProcessControl pc) throws Exception;
-
     public static OsType getLocal() {
         String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((osName.contains("mac")) || (osName.contains("darwin"))) {
@@ -31,6 +21,16 @@ public interface OsType {
             throw new UnsupportedOperationException("Unknown operating system");
         }
     }
+
+    String getName();
+
+    String getTempDirectory(ShellProcessControl pc) throws Exception;
+
+    String normalizeFileName(String file);
+
+    Map<String, String> getProperties(ShellProcessControl pc) throws Exception;
+
+    String determineOperatingSystemName(ShellProcessControl pc) throws Exception;
 
     static class Windows implements OsType {
 
@@ -52,7 +52,7 @@ public interface OsType {
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                    pc.subShell(ShellTypes.CMD).command("systeminfo").start()) {
+                         pc.subShell(ShellTypes.CMD).command("systeminfo").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
@@ -144,7 +144,7 @@ public interface OsType {
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                    pc.subShell(ShellTypes.BASH).command("sw_vers").start()) {
+                         pc.subShell(ShellTypes.BASH).command("sw_vers").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }

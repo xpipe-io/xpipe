@@ -10,7 +10,10 @@ import java.util.Optional;
  * To check whether a {@link DataStructureNode} instance conforms to the specified type,
  * the method {@link #matches(DataStructureNode)} can be used.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type"
+)
 public abstract class DataType {
 
     /**

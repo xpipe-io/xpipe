@@ -27,7 +27,7 @@ public class XPipeInstallation {
         return "\"" + command + "\" --external" + suffix;
     }
 
-    public static Path getLocalInstallationBasePath(){
+    public static Path getLocalInstallationBasePath() {
         Path path = Path.of(ProcessHandle.current().info().command().orElseThrow());
         var name = path.getFileName().toString();
         if (name.endsWith("java") || name.endsWith("java.exe")) {
@@ -41,7 +41,7 @@ public class XPipeInstallation {
         Path path = getLocalInstallationBasePath();
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return path.resolve("runtime").resolve("bin");
-        } else if (OsType.getLocal().equals(OsType.LINUX)){
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return path.resolve("lib").resolve("runtime").resolve("lib");
         } else {
             return path.resolve("Contents").resolve("runtime").resolve("Contents").resolve("Home").resolve("lib");
@@ -66,7 +66,7 @@ public class XPipeInstallation {
     }
 
     public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
-        var defaultInstallation =  getDefaultInstallationBasePath(p, true);
+        var defaultInstallation = getDefaultInstallationBasePath(p, true);
         if (cliExecutable == null) {
             return defaultInstallation;
         }

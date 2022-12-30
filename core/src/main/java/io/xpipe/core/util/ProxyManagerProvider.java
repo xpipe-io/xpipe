@@ -12,8 +12,8 @@ public abstract class ProxyManagerProvider {
     public static ProxyManagerProvider get() {
         if (INSTANCE == null) {
             INSTANCE = ServiceLoader.load(ModuleLayer.boot(), ProxyManagerProvider.class)
-                            .findFirst()
-                            .orElseThrow();
+                    .findFirst()
+                    .orElseThrow();
         }
 
         return INSTANCE;

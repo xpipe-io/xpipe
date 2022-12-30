@@ -14,6 +14,7 @@ public class Validators {
             throw new IllegalArgumentException(I18n.get("extension.null", name));
         }
     }
+
     public static void notEmpty(String string, String name) {
         if (string.trim().length() == 0) {
             throw new IllegalArgumentException(I18n.get("extension.empty", name));

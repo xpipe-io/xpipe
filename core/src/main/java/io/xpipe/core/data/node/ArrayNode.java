@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 
 public abstract class ArrayNode extends DataStructureNode {
 
-    protected ArrayNode() {}
+    protected ArrayNode() {
+    }
 
     public static ArrayNode empty() {
         return of(List.of());

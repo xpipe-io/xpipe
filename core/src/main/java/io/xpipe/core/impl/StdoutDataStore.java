@@ -30,7 +30,8 @@ public class StdoutDataStore extends JacksonizedValue implements StreamDataStore
         // Create an output stream that will write to standard out but will not close it
         return new FilterOutputStream(System.out) {
             @Override
-            public void close() throws IOException {}
+            public void close() throws IOException {
+            }
         };
     }
 }

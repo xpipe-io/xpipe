@@ -32,7 +32,13 @@ public class ShellTypes {
     }
 
     public static ShellType[] getAllShellTypes() {
-        return new ShellType[] {CMD, POWERSHELL, ZSH, BASH, SH};
+        return new ShellType[]{
+                CMD,
+                POWERSHELL,
+                ZSH,
+                BASH,
+                SH
+        };
     }
 
     @JsonTypeName("cmd")
@@ -295,7 +301,8 @@ public class ShellTypes {
         @Override
         public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
             try (CommandProcessControl c = control.command(
-                            "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)")
+                            "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security" +
+                                    ".Principal.WindowsBuiltinRole]::Administrator)")
                     .start()) {
                 if (c.startAndCheckExit()) {
                     throw new IllegalStateException("The command \"" + displayCommand + "\" requires elevation.");

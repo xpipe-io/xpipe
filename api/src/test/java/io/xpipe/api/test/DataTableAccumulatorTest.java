@@ -5,11 +5,9 @@ import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.type.ValueType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.OptionalInt;
 
 public class DataTableAccumulatorTest extends ApiTest {
 

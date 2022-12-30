@@ -11,7 +11,7 @@ import lombok.Getter;
  * To allow for a simple usage of data source ids, the collection and entry names are trimmed and
  * converted to lower case names when creating them.
  * The two names are separated by a colon and are therefore not allowed to contain colons themselves.
- *
+ * <p>
  * A missing collection name indicates that the data source exists only temporarily.
  *
  * @see #create(String, String)

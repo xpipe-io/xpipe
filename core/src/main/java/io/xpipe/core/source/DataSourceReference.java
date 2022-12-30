@@ -10,7 +10,7 @@ import java.util.Objects;
  * Represents a reference to an X-Pipe data source.
  * Using {@link DataSourceReference} instances instead of {@link DataSourceId}
  * instances is mainly done for user convenience purposes.
- *
+ * <p>
  * While a {@link DataSourceId} represents a unique and canonical identifier for an X-Pipe data source,
  * there also exist easier and shorter ways to address a data source.
  * This convenience comes at the price of ambiguity and instability for other types of references.
@@ -105,8 +105,12 @@ public interface DataSourceReference {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Id id = (Id) o;
             return value.equals(id.value);
         }
@@ -155,8 +159,12 @@ public interface DataSourceReference {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Name n = (Name) o;
             return value.equals(n.value);
         }
@@ -201,7 +209,9 @@ public interface DataSourceReference {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
+            if (this == o) {
+                return true;
+            }
             return o != null && getClass() == o.getClass();
         }
 

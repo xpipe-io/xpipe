@@ -72,7 +72,7 @@ public class BeaconDaemonController {
         throw new IOException("Wait for daemon start up timed out");
     }
 
-    private  static void waitForShutdown() {
+    private static void waitForShutdown() {
         for (int i = 0; i < 40; i++) {
             try {
                 Thread.sleep(500);

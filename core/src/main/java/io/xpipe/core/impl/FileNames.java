@@ -43,7 +43,7 @@ public class FileNames {
         return backslash ? toWindows(file) : toUnix(file);
     }
 
-    private  static List<String> split(String file) {
+    private static List<String> split(String file) {
         var split = file.split("[\\\\/]");
         return Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
     }

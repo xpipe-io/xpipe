@@ -53,14 +53,14 @@ public class FileStoreChoiceComp extends SimpleComp {
 
         var fileNameComp = new TextFieldComp(fileProperty).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var fileBrowseButton = new IconButtonComp("mdi2f-folder-open-outline", () -> {
-                    if (fileSystemProperty.get() != null && fileSystemProperty.get() instanceof LocalStore) {
-                        var fileChooser = createChooser();
-                        File file = fileChooser.showOpenDialog(null);
-                        if (file != null && file.exists()) {
-                            fileProperty.setValue(file.toString());
-                        }
-                    }
-                })
+            if (fileSystemProperty.get() != null && fileSystemProperty.get() instanceof LocalStore) {
+                var fileChooser = createChooser();
+                File file = fileChooser.showOpenDialog(null);
+                if (file != null && file.exists()) {
+                    fileProperty.setValue(file.toString());
+                }
+            }
+        })
                 .hide(fileSystemProperty.isNotEqualTo(new LocalStore()));
 
         var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton));

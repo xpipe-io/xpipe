@@ -217,7 +217,8 @@ public class DataStructureNodePointer {
         }
 
         public Builder pointerEvaluation(
-                DataStructureNodePointer pointer, Function<DataStructureNode, String> converter) {
+                DataStructureNodePointer pointer, Function<DataStructureNode, String> converter
+        ) {
             path.add(new FunctionElement((current) -> {
                 var res = pointer.get(current);
                 if (res != null) {

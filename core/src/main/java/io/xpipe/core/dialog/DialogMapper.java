@@ -22,7 +22,7 @@ public class DialogMapper {
         return map;
     }
 
-    private  void handle(DialogElement element) throws Exception {
+    private void handle(DialogElement element) throws Exception {
         String response = null;
         if (element instanceof ChoiceElement c) {
             response = handleChoice(c);
@@ -45,8 +45,8 @@ public class DialogMapper {
     }
 
     private String handleQuery(BaseQueryElement q) {
-         map.put(q.getDescription(), q.getValue());
-         return q.getValue();
+        map.put(q.getDescription(), q.getValue());
+        return q.getValue();
     }
 
     private String handleChoice(ChoiceElement c) {

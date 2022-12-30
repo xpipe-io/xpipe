@@ -20,6 +20,7 @@ public class Identifiers {
                 String.join("", split),
                 String.join(" ", split),
                 String.join("_", split),
-                String.join("-", split));
+                String.join("-", split)
+        );
     }
 }

@@ -45,28 +45,6 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
         return newReadConnection();
     }
 
-    @NoArgsConstructor
-    private static class CreateMappingFunction extends SimpleProxyFunction<TableMapping> {
-
-        private TableDataSource<?> source;
-        private TupleType type;
-
-        public CreateMappingFunction(TableDataSource<?> source, TupleType type) {
-            this.source = source;
-            this.type = type;
-        }
-
-        private TableMapping mapping;
-
-        @SneakyThrows
-        public void callLocal() {
-            try (TableWriteConnection w = source.openWriteConnection(WriteMode.REPLACE)) {
-                w.init();
-                mapping = w.createMapping(type).orElse(null);
-            }
-        }
-    }
-
     public final Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
         return Optional.ofNullable(new CreateMappingFunction(this, inputType).callAndGet());
     }
@@ -99,5 +77,26 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
 
     protected TableReadConnection newReadConnection() {
         throw new UnsupportedOperationException();
+    }
+
+    @NoArgsConstructor
+    private static class CreateMappingFunction extends SimpleProxyFunction<TableMapping> {
+
+        private TableDataSource<?> source;
+        private TupleType type;
+        private TableMapping mapping;
+
+        public CreateMappingFunction(TableDataSource<?> source, TupleType type) {
+            this.source = source;
+            this.type = type;
+        }
+
+        @SneakyThrows
+        public void callLocal() {
+            try (TableWriteConnection w = source.openWriteConnection(WriteMode.REPLACE)) {
+                w.init();
+                mapping = w.createMapping(type).orElse(null);
+            }
+        }
     }
 }

@@ -33,78 +33,8 @@ import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 
 public class BeaconClient implements AutoCloseable {
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-    public abstract static class ClientInformation {
-
-        public final CliClientInformation cli() {
-            return (CliClientInformation) this;
-        }
-
-        public abstract String toDisplayString();
-    }
-
-    @JsonTypeName("cli")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class CliClientInformation extends ClientInformation {
-
-        int consoleWidth;
-
-        @Override
-        public String toDisplayString() {
-            return "X-Pipe CLI";
-        }
-    }
-
-    @JsonTypeName("reachableCheck")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class ReachableCheckInformation extends ClientInformation {
-
-        @Override
-        public String toDisplayString() {
-            return "Reachable check";
-        }
-    }
-
-    @JsonTypeName("gateway")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class GatewayClientInformation extends ClientInformation {
-
-        String version;
-
-        @Override
-        public String toDisplayString() {
-            return "X-Pipe Gateway " + version;
-        }
-    }
-
-    @JsonTypeName("api")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class ApiClientInformation extends ClientInformation {
-
-        String version;
-        String language;
-
-        @Override
-        public String toDisplayString() {
-            return String.format("X-Pipe %s API v%s", language, version);
-        }
-    }
-
     @Getter
     private final Closeable base;
-
     private final InputStream in;
     private final OutputStream out;
 
@@ -130,15 +60,15 @@ public class BeaconClient implements AutoCloseable {
         command.discardErr();
         return new BeaconClient(command, command.getStdout(), command.getStdin()) {
 
-//            {
-//                new Thread(() -> {
-//                    while (true) {
-//                        if (!control.isRunning()) {
-//                            close();
-//                        }
-//                    }
-//                })
-//            }
+            //            {
+            //                new Thread(() -> {
+            //                    while (true) {
+            //                        if (!control.isRunning()) {
+            //                            close();
+            //                        }
+            //                    }
+            //                })
+            //            }
 
             @Override
             public <T extends ResponseMessage> T receiveResponse()
@@ -364,5 +294,77 @@ public class BeaconClient implements AutoCloseable {
     public interface FailableRunnable<E extends Throwable> {
 
         void run() throws E;
+    }
+
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            property = "type"
+    )
+    public abstract static class ClientInformation {
+
+        public final CliClientInformation cli() {
+            return (CliClientInformation) this;
+        }
+
+        public abstract String toDisplayString();
+    }
+
+    @JsonTypeName("cli")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class CliClientInformation extends ClientInformation {
+
+        int consoleWidth;
+
+        @Override
+        public String toDisplayString() {
+            return "X-Pipe CLI";
+        }
+    }
+
+    @JsonTypeName("reachableCheck")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class ReachableCheckInformation extends ClientInformation {
+
+        @Override
+        public String toDisplayString() {
+            return "Reachable check";
+        }
+    }
+
+    @JsonTypeName("gateway")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class GatewayClientInformation extends ClientInformation {
+
+        String version;
+
+        @Override
+        public String toDisplayString() {
+            return "X-Pipe Gateway " + version;
+        }
+    }
+
+    @JsonTypeName("api")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class ApiClientInformation extends ClientInformation {
+
+        String version;
+        String language;
+
+        @Override
+        public String toDisplayString() {
+            return String.format("X-Pipe %s API v%s", language, version);
+        }
     }
 }

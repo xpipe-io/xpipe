@@ -6,20 +6,20 @@ import java.util.ServiceLoader;
 
 public abstract class LocalProcessControlProvider {
 
+    private static LocalProcessControlProvider INSTANCE;
+
     public static LocalProcessControlProvider get() {
         return INSTANCE;
     }
 
-    private static LocalProcessControlProvider INSTANCE;
-
     public static void init(ModuleLayer layer) {
         INSTANCE = layer != null
                 ? ServiceLoader.load(layer, LocalProcessControlProvider.class)
-                        .findFirst()
-                        .orElse(null)
+                .findFirst()
+                .orElse(null)
                 : ServiceLoader.load(LocalProcessControlProvider.class)
-                        .findFirst()
-                        .orElse(null);
+                .findFirst()
+                .orElse(null);
     }
 
     public static ShellProcessControl create() {

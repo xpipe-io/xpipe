@@ -12,7 +12,8 @@ public class DataRawImpl extends DataSourceImpl implements DataRaw {
     public DataRawImpl(
             DataSourceId sourceId,
             DataSourceConfig sourceConfig,
-            io.xpipe.core.source.DataSource<?> internalSource) {
+            io.xpipe.core.source.DataSource<?> internalSource
+    ) {
         super(sourceId, sourceConfig, internalSource);
     }
 

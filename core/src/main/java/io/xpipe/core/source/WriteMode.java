@@ -9,31 +9,17 @@ import java.util.ServiceLoader;
 
 public class WriteMode extends JacksonizedValue {
 
+    public static final Replace REPLACE = new Replace();
+    public static final Append APPEND = new Append();
+    public static final Prepend PREPEND = new Prepend();
     private static final List<WriteMode> ALL = new ArrayList<>();
 
     public static void init(ModuleLayer layer) {
         if (ALL.size() == 0) {
             ALL.addAll(ServiceLoader.load(layer, WriteMode.class).stream()
-                    .map(p -> p.get())
-                    .toList());
+                               .map(p -> p.get())
+                               .toList());
         }
-    }
-
-    @JsonTypeName("replace")
-    public static final class Replace extends WriteMode {}
-
-    @JsonTypeName("append")
-    public static final class Append extends WriteMode {}
-
-    @JsonTypeName("prepend")
-    public static final class Prepend extends WriteMode {}
-
-    public static final Replace REPLACE = new Replace();
-    public static final Append APPEND = new Append();
-    public static final Prepend PREPEND = new Prepend();
-
-    public final String getId() {
-        return getClass().getAnnotation(JsonTypeName.class).value();
     }
 
     public static WriteMode byId(String id) {
@@ -41,5 +27,21 @@ public class WriteMode extends JacksonizedValue {
                 .filter(writeMode -> writeMode.getId().equalsIgnoreCase(id))
                 .findFirst()
                 .orElseThrow();
+    }
+
+    public final String getId() {
+        return getClass().getAnnotation(JsonTypeName.class).value();
+    }
+
+    @JsonTypeName("replace")
+    public static final class Replace extends WriteMode {
+    }
+
+    @JsonTypeName("append")
+    public static final class Append extends WriteMode {
+    }
+
+    @JsonTypeName("prepend")
+    public static final class Prepend extends WriteMode {
     }
 }

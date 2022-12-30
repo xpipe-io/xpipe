@@ -8,7 +8,7 @@ import io.xpipe.core.source.DataSourceId;
 
 /**
  * An accumulator for table data.
- *
+ * <p>
  * This class can be used to construct new table data sources by
  * accumulating the rows using {@link #add(DataStructureNode)} or {@link #acceptor()} and then calling
  * {@link #finish(DataSourceId)} to complete the construction process and create a new data source.

@@ -13,20 +13,19 @@ import java.util.UUID;
 
 public class QuietDialogHandler {
 
-    public static void handle(DialogReference ref, BeaconConnection connection) {
-        new QuietDialogHandler(ref, connection, Map.of()).handle();
-    }
-
     private final UUID dialogKey;
     private final BeaconConnection connection;
     private final Map<String, String> overrides;
     private DialogElement element;
-
     public QuietDialogHandler(DialogReference ref, BeaconConnection connection, Map<String, String> overrides) {
         this.dialogKey = ref.getDialogId();
         this.element = ref.getStart();
         this.connection = connection;
         this.overrides = overrides;
+    }
+
+    public static void handle(DialogReference ref, BeaconConnection connection) {
+        new QuietDialogHandler(ref, connection, Map.of()).handle();
     }
 
     public void handle() {
@@ -41,9 +40,9 @@ public class QuietDialogHandler {
         }
 
         DialogExchange.Response res = connection.performSimpleExchange(DialogExchange.Request.builder()
-                .dialogKey(dialogKey)
-                .value(response)
-                .build());
+                                                                               .dialogKey(dialogKey)
+                                                                               .value(response)
+                                                                               .build());
         if (res.getElement() != null && element.equals(res.getElement())) {
             throw new BeaconException(
                     "Invalid value for key " + res.getElement().toDisplayString());

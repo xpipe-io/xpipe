@@ -12,6 +12,7 @@ public class PreservingTableWriteConnection extends PreservingWriteConnection im
     public PreservingTableWriteConnection(DataSource<?> source, DataSourceConnection connection, boolean append) {
         super(DataSourceType.TABLE, source, append, connection);
     }
+
     @Override
     public Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
         return ((TableWriteConnection) connection).createMapping(inputType);

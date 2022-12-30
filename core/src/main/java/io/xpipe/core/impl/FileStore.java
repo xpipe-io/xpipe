@@ -32,7 +32,18 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         this.file = file;
     }
 
-    public  String getParent() {
+    public static FileStore local(Path p) {
+        return new FileStore(new LocalStore(), p.toString());
+    }
+
+    /**
+     * Creates a file store for a file that is local to the callers machine.
+     */
+    public static FileStore local(String p) {
+        return new FileStore(new LocalStore(), p);
+    }
+
+    public String getParent() {
         var matcher = Pattern.compile("^(.+?)[^\\\\/]+$").matcher(file);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Unable to determine parent of " + file);
@@ -43,17 +54,6 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     public final boolean isLocal() {
         return fileSystem instanceof LocalStore;
-    }
-
-    public static FileStore local(Path p) {
-        return new FileStore(new LocalStore(), p.toString());
-    }
-
-    /**
-     * Creates a file store for a file that is local to the callers machine.
-     */
-    public static FileStore local(String p) {
-        return new FileStore(new LocalStore(), p);
     }
 
     @Override
