@@ -23,7 +23,8 @@ public class SourceProviderListExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Request implements RequestMessage {}
+    public static class Request implements RequestMessage {
+    }
 
     @Jacksonized
     @Builder

@@ -30,9 +30,9 @@ public class BeaconServer {
         if (custom != null) {
             var command = ShellTypes.getPlatformDefault()
                     .executeCommandListWithShell(custom
-                            + (BeaconConfig.getDaemonArguments() != null
-                                    ? " " + BeaconConfig.getDaemonArguments()
-                                    : ""));
+                                                         + (BeaconConfig.getDaemonArguments() != null
+                            ? " " + BeaconConfig.getDaemonArguments()
+                            : ""));
             Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
             printDaemonOutput(process, command);
             return process;
@@ -77,7 +77,8 @@ public class BeaconServer {
                         ioe.printStackTrace();
                     }
                 },
-                "daemon sysout");
+                "daemon sysout"
+        );
         out.setDaemon(true);
         out.start();
 
@@ -97,7 +98,8 @@ public class BeaconServer {
                         ioe.printStackTrace();
                     }
                 },
-                "daemon syserr");
+                "daemon syserr"
+        );
         err.setDaemon(true);
         err.start();
     }

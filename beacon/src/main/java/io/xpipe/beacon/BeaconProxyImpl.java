@@ -81,8 +81,8 @@ public class BeaconProxyImpl extends ProxyProvider {
         try {
             client = BeaconClient.connectProxy(proxy);
             client.sendRequest(ProxyReadConnectionExchange.Request.builder()
-                    .source(downstream)
-                    .build());
+                                       .source(downstream)
+                                       .build());
             client.receiveResponse();
             BeaconClient finalClient = client;
             var inputStream = new FilterInputStream(finalClient.receiveBody()) {
@@ -96,22 +96,24 @@ public class BeaconProxyImpl extends ProxyProvider {
             var inputSource = DataSource.createInternalDataSource(source.getType(), new InputStreamStore(inputStream));
             return (T) inputSource.openReadConnection();
         } catch (Exception ex) {
-            if (client != null) client.close();
+            if (client != null) {
+                client.close();
+            }
             throw ex;
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends DataSourceConnection> T createRemoteWriteConnection(DataSource<?> source, WriteMode mode,  ShellStore proxy) throws Exception {
+    public <T extends DataSourceConnection> T createRemoteWriteConnection(DataSource<?> source, WriteMode mode, ShellStore proxy) throws Exception {
         var downstream = downstreamTransform(source, proxy);
 
         BeaconClient client = null;
         try {
             client = BeaconClient.connectProxy(proxy);
             client.sendRequest(ProxyWriteConnectionExchange.Request.builder()
-                    .source(downstream)
-                    .build());
+                                       .source(downstream)
+                                       .build());
             BeaconClient finalClient = client;
             var outputStream = new FilterOutputStream(client.sendBody()) {
                 @Override
@@ -125,7 +127,9 @@ public class BeaconProxyImpl extends ProxyProvider {
             var outputSource = DataSource.createInternalDataSource(source.getType(), new OutputStreamStore(outputStream));
             return (T) outputSource.openWriteConnection(mode);
         } catch (Exception ex) {
-            if (client != null) client.close();
+            if (client != null) {
+                client.close();
+            }
             throw ex;
         }
     }

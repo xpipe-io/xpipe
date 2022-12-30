@@ -19,6 +19,7 @@ public class TypedDataStructureNodeReader implements TypedAbstractReader {
     private int arrayDepth;
     private DataType expectedType;
     private int currentExpectedTypeIndex;
+
     private TypedDataStructureNodeReader(DataType type) {
         flattened = new ArrayList<>();
         type.visit(DataTypeVisitors.flatten(flattened::add));

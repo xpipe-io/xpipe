@@ -36,7 +36,7 @@ public interface MachineStore extends FileSystemStore, ShellStore {
     public default boolean mkdirs(String file) throws Exception {
         try (var pc = create().command(proc -> proc.getShellType()
                         .flatten(proc.getShellType()
-                                .createMkdirsCommand(proc.getOsType().normalizeFileName(file))))
+                                         .createMkdirsCommand(proc.getOsType().normalizeFileName(file))))
                 .start()) {
             return pc.discardAndCheckExit();
         }

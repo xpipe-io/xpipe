@@ -7,7 +7,7 @@ import io.xpipe.core.source.TableWriteConnection;
 
 import java.util.Optional;
 
-public interface SimpleTableWriteConnection<T extends TableDataSource<?>>  extends TableWriteConnection {
+public interface SimpleTableWriteConnection<T extends TableDataSource<?>> extends TableWriteConnection {
 
 
     public T getSource();
@@ -18,7 +18,7 @@ public interface SimpleTableWriteConnection<T extends TableDataSource<?>>  exten
 
     public default Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
         var outputType = getType();
-        if (outputType.isEmpty() || outputType.get().getSize() == 0){
+        if (outputType.isEmpty() || outputType.get().getSize() == 0) {
             return Optional.of(TableMapping.createIdentity(inputType));
         }
 

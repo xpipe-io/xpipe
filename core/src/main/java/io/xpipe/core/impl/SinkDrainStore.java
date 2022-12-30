@@ -21,14 +21,6 @@ import java.nio.channels.Pipe;
 @Getter
 public class SinkDrainStore extends JacksonizedValue implements KnownFormatStreamDataStore, StatefulDataStore {
 
-    public static enum State {
-        NONE_CONNECTED,
-        PRODUCER_CONNECTED,
-        CONSUMER_CONNECTED,
-        OPEN,
-        CLOSED
-    }
-
     private final StreamCharset charset;
     private final NewLine newLine;
 
@@ -162,5 +154,13 @@ public class SinkDrainStore extends JacksonizedValue implements KnownFormatStrea
         if (getState() == State.CONSUMER_CONNECTED && !isProducer) {
             throw new IllegalStateException("Consumer is already connected");
         }
+    }
+
+    public static enum State {
+        NONE_CONNECTED,
+        PRODUCER_CONNECTED,
+        CONSUMER_CONNECTED,
+        OPEN,
+        CLOSED
     }
 }

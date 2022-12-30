@@ -19,7 +19,7 @@ public class XPipeTempDirectory {
     public static String get(ShellProcessControl proc) throws Exception {
         var base = proc.getOsType().getTempDirectory(proc);
         var dir = FileNames.join(base, "xpipe");
-        if (!proc.executeBooleanSimpleCommand(proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(dir))) ){
+        if (!proc.executeBooleanSimpleCommand(proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(dir)))) {
             throw new IOException("Unable to access or create temporary directory " + dir);
         }
 
@@ -33,7 +33,7 @@ public class XPipeTempDirectory {
 
     public static void clear(ShellProcessControl proc) throws Exception {
         var dir = get(proc);
-        if (!proc.executeBooleanSimpleCommand(proc.getShellType().createFileDeleteCommand(dir)) ){
+        if (!proc.executeBooleanSimpleCommand(proc.getShellType().createFileDeleteCommand(dir))) {
             throw new IOException("Unable to delete temporary directory " + dir);
         }
     }

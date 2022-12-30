@@ -102,8 +102,9 @@ public abstract class TupleNode extends DataStructureNode {
             boolean hasKeys = entries.stream().anyMatch(kv -> kv.key() != null);
             return hasKeys
                     ? TupleNode.of(
-                            entries.stream().map(KeyValue::key).toList(),
-                            entries.stream().map(KeyValue::value).toList())
+                    entries.stream().map(KeyValue::key).toList(),
+                    entries.stream().map(KeyValue::value).toList()
+            )
                     : TupleNode.of(entries.stream().map(KeyValue::value).toList());
         }
     }

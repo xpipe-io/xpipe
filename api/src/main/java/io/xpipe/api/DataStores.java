@@ -1,8 +1,8 @@
 package io.xpipe.api;
 
 import io.xpipe.api.connector.XPipeApiConnection;
-import io.xpipe.beacon.util.QuietDialogHandler;
 import io.xpipe.beacon.exchange.cli.StoreAddExchange;
+import io.xpipe.beacon.util.QuietDialogHandler;
 import io.xpipe.core.store.DataStore;
 
 import java.util.Map;

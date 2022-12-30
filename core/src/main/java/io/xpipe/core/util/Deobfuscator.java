@@ -42,7 +42,9 @@ public class Deobfuscator {
                 deobfuscate(throwable.getCause());
             }
             for (Throwable suppressed : throwable.getSuppressed()) {
-                if (suppressed != throwable) deobfuscate(suppressed);
+                if (suppressed != throwable) {
+                    deobfuscate(suppressed);
+                }
             }
         } catch (Throwable ex) {
             System.err.println("Deobfuscation failed");
@@ -65,9 +67,10 @@ public class Deobfuscator {
             var file = Files.createTempFile("xpipe_stracktrace", null);
             Files.writeString(file, stackTrace);
             var proc = new ProcessBuilder(
-                            "retrace." + (OsType.getLocal().equals(OsType.WINDOWS) ? "bat" : "sh"),
-                            System.getenv("XPIPE_MAPPING"),
-                            file.toString())
+                    "retrace." + (OsType.getLocal().equals(OsType.WINDOWS) ? "bat" : "sh"),
+                    System.getenv("XPIPE_MAPPING"),
+                    file.toString()
+            )
                     .redirectErrorStream(true);
             var active = proc.start();
             var out = new String(active.getInputStream().readAllBytes()).replaceAll("\r\n", NewLine.LF.getNewLineString());
@@ -91,7 +94,7 @@ public class Deobfuscator {
         System.err.println(s);
     }
 
-    private static  boolean canDeobfuscate() throws Exception {
+    private static boolean canDeobfuscate() throws Exception {
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;
         }

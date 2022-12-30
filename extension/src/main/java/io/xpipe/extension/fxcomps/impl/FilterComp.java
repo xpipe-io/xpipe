@@ -40,7 +40,8 @@ public class FilterComp extends Comp<FilterComp.Structure> {
                 .bind(Bindings.createBooleanBinding(
                         () -> (filter.getText() == null || filter.getText().isEmpty()),
                         filter.textProperty(),
-                        filter.focusedProperty()));
+                        filter.focusedProperty()
+                ));
 
         var stack = new StackPane(bgLabel, filter);
         stack.getStyleClass().add("filter-comp");

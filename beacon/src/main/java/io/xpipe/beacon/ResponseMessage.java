@@ -1,3 +1,4 @@
 package io.xpipe.beacon;
 
-public interface ResponseMessage {}
+public interface ResponseMessage {
+}

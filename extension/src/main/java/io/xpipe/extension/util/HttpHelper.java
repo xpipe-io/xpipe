@@ -13,13 +13,14 @@ public class HttpHelper {
 
     public static Path downloadFile(String urlS) throws Exception {
         var url = new URL(urlS);
-        var bytes = HttpHelper.executeGet(url, aFloat -> {});
+        var bytes = HttpHelper.executeGet(url, aFloat -> {
+        });
         var downloadFile = Files.createTempFile(null, null);
         Files.write(downloadFile, bytes);
         return downloadFile;
     }
 
-    public  static byte[] executeGet(URL targetURL, Consumer<Float> progress) throws Exception {
+    public static byte[] executeGet(URL targetURL, Consumer<Float> progress) throws Exception {
         HttpURLConnection connection = null;
 
         try {

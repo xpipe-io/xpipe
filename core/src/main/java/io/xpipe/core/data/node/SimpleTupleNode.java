@@ -67,7 +67,9 @@ public class SimpleTupleNode extends TupleNode {
     @Override
     public DataStructureNode clear() {
         nodes.clear();
-        if (names != null) names.clear();
+        if (names != null) {
+            names.clear();
+        }
         return this;
     }
 

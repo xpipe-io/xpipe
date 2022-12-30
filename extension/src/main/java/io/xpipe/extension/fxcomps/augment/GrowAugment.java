@@ -9,6 +9,7 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
 
     private final boolean width;
     private final boolean height;
+
     private GrowAugment(boolean width, boolean height) {
         this.width = width;
         this.height = height;
@@ -30,7 +31,8 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
                                     - p.getInsets().getLeft()
                                     - p.getInsets().getRight(),
                             p.widthProperty(),
-                            p.insetsProperty()));
+                            p.insetsProperty()
+                    ));
         }
         if (height) {
             r.prefHeightProperty()
@@ -45,7 +47,8 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
                                 return val;
                             },
                             p.heightProperty(),
-                            p.insetsProperty()));
+                            p.insetsProperty()
+                    ));
         }
     }
 
@@ -53,8 +56,12 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
     public void augment(S struc) {
         struc.get().parentProperty().addListener((c, o, n) -> {
             if (o instanceof Region) {
-                if (width) struc.get().prefWidthProperty().unbind();
-                if (height) struc.get().prefHeightProperty().unbind();
+                if (width) {
+                    struc.get().prefWidthProperty().unbind();
+                }
+                if (height) {
+                    struc.get().prefHeightProperty().unbind();
+                }
             }
 
             bind(struc.get(), n);

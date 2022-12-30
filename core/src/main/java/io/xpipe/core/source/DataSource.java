@@ -23,7 +23,10 @@ import java.util.Optional;
  * This instance is only valid in combination with its associated data store instance.
  */
 @SuperBuilder
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type"
+)
 public abstract class DataSource<DS extends DataStore> extends JacksonizedValue {
 
     protected DS store;
@@ -39,7 +42,7 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
                         .charset(StreamCharset.UTF8)
                         .build();
                 case RAW -> null;
-                    // TODO
+                // TODO
                 case COLLECTION -> null;
             };
         } catch (Exception ex) {
@@ -47,7 +50,7 @@ public abstract class DataSource<DS extends DataStore> extends JacksonizedValue 
         }
     }
 
-    public  boolean isComplete() {
+    public boolean isComplete() {
         try {
             checkComplete();
             return true;

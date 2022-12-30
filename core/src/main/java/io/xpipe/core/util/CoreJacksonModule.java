@@ -52,7 +52,8 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),
-                new NamedType(HeaderElement.class));
+                new NamedType(HeaderElement.class)
+        );
 
         addSerializer(Charset.class, new CharsetSerializer());
         addDeserializer(Charset.class, new CharsetDeserializer());
@@ -197,12 +198,16 @@ public class CoreJacksonModule extends SimpleModule {
     @JsonSerialize(as = Throwable.class)
     public abstract static class ThrowableTypeMixIn {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
+        @JsonIdentityInfo(
+                generator = ObjectIdGenerators.StringIdGenerator.class,
+                property = "$id"
+        )
         private Throwable cause;
     }
 
     @JsonSerialize(as = DataSourceReference.class)
-    public abstract static class DataSourceReferenceTypeMixIn {}
+    public abstract static class DataSourceReferenceTypeMixIn {
+    }
 
     public class NullSerializer extends JsonSerializer<Object> {
         public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)

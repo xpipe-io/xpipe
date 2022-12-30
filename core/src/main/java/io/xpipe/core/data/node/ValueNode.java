@@ -13,7 +13,8 @@ import java.util.Objects;
 
 public abstract class ValueNode extends DataStructureNode {
 
-    protected ValueNode() {}
+    protected ValueNode() {
+    }
 
     public static ValueNode nullValue() {
         return new SimpleValueNode(new byte[0]).tag(IS_NULL).asValue();

@@ -17,7 +17,8 @@ public class VersionExchange implements MessageExchange {
     @lombok.extern.jackson.Jacksonized
     @lombok.Builder
     @lombok.Value
-    public static class Request implements RequestMessage {}
+    public static class Request implements RequestMessage {
+    }
 
     @Jacksonized
     @Builder

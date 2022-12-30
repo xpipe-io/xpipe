@@ -55,8 +55,8 @@ public interface ShellProcessControl extends ProcessControl {
 
     default ShellProcessControl subShell(@NonNull ShellType type) {
         return subShell(p -> type.getNormalOpenCommand(), (shellProcessControl, s) -> {
-                    return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
-                })
+            return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
+        })
                 .elevation(getElevationPassword());
     }
 
@@ -71,7 +71,8 @@ public interface ShellProcessControl extends ProcessControl {
 
     ShellProcessControl subShell(
             @NonNull Function<ShellProcessControl, String> command,
-            BiFunction<ShellProcessControl, String, String> terminalCommand);
+            BiFunction<ShellProcessControl, String, String> terminalCommand
+    );
 
     void executeCommand(String command) throws Exception;
 
@@ -81,7 +82,8 @@ public interface ShellProcessControl extends ProcessControl {
     CommandProcessControl command(Function<ShellProcessControl, String> command);
 
     CommandProcessControl command(
-            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand);
+            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand
+    );
 
     default CommandProcessControl command(String command) {
         return command(shellProcessControl -> command);

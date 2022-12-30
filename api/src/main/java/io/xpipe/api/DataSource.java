@@ -15,10 +15,10 @@ import java.nio.file.Path;
 
 /**
  * Represents a reference to a data source that is managed by X-Pipe.
- *
+ * <p>
  * The actual data is only queried when required and is not cached.
  * Therefore, the queried data is always up-to-date at the point of calling a method that queries the data.
- *
+ * <p>
  * As soon a data source reference is created, the data source is locked
  * within X-Pipe to prevent concurrent modification and the problems that can arise from it.
  * By default, the lock is held until the calling program terminates and prevents
@@ -29,14 +29,14 @@ public interface DataSource {
 
     /**
      * NOT YET IMPLEMENTED!
-     *
+     * <p>
      * Creates a new supplier data source that will be interpreted as the generated data source.
      * In case this program should be a data source generator, this method has to be called at
      * least once to register that it actually generates a data source.
-     *
+     * <p>
      * All content that is written to this data source until the generator program terminates is
      * will be available later on when the data source is used as a supplier later on.
-     *
+     * <p>
      * In case this method is called multiple times, the same data source is returned.
      *
      * @return the generator data source
@@ -132,9 +132,9 @@ public interface DataSource {
     /**
      * Creates a new data source from an input stream.
      *
-     * @param id the data source id
+     * @param id   the data source id
      * @param type the data source type
-     * @param in the input stream to read
+     * @param in   the input stream to read
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
     public static DataSource create(DataSourceId id, String type, InputStream in) {
@@ -153,10 +153,11 @@ public interface DataSource {
 
     /**
      * Creates a new data source from an input stream.
-     *1
-     * @param id the data source id
+     * 1
+     *
+     * @param id   the data source id
      * @param type the data source type
-     * @param in the data store to add
+     * @param in   the data store to add
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
     public static DataSource create(DataSourceId id, String type, DataStore in) {

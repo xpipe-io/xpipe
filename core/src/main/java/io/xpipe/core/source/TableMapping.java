@@ -13,6 +13,17 @@ import java.util.stream.IntStream;
 @Getter
 public class TableMapping {
 
+    protected final Integer[] columMap;
+    private final TupleType inputType;
+    private final TupleType outputType;
+
+    @JsonCreator
+    public TableMapping(TupleType inputType, TupleType outputType, Integer[] columMap) {
+        this.inputType = inputType;
+        this.outputType = outputType;
+        this.columMap = columMap;
+    }
+
     private static Integer[] range(int size) {
         var array = new Integer[size];
         for (int i = 0; i < size; i++) {
@@ -56,19 +67,6 @@ public class TableMapping {
         }
 
         return OptionalInt.empty();
-    }
-
-    private final TupleType inputType;
-
-    private final TupleType outputType;
-
-    protected final Integer[] columMap;
-
-    @JsonCreator
-    public TableMapping(TupleType inputType, TupleType outputType, Integer[] columMap) {
-        this.inputType = inputType;
-        this.outputType = outputType;
-        this.columMap = columMap;
     }
 
     public boolean isIdentity() {

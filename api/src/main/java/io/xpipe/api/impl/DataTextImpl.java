@@ -24,10 +24,11 @@ import java.util.stream.StreamSupport;
 
 public class DataTextImpl extends DataSourceImpl implements DataText {
 
-     DataTextImpl(
+    DataTextImpl(
             DataSourceId sourceId,
             DataSourceConfig sourceConfig,
-            io.xpipe.core.source.DataSource<?> internalSource) {
+            io.xpipe.core.source.DataSource<?> internalSource
+    ) {
         super(sourceId, sourceConfig, internalSource);
     }
 

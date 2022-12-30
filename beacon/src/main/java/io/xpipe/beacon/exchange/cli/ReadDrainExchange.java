@@ -30,5 +30,6 @@ public class ReadDrainExchange implements MessageExchange {
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {}
+    public static class Response implements ResponseMessage {
+    }
 }

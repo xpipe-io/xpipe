@@ -19,7 +19,8 @@ public class GenericTupleReader implements GenericAbstractReader {
     private GenericAbstractReader currentReader;
     private DataStructureNode created;
 
-    public GenericTupleReader() {}
+    public GenericTupleReader() {
+    }
 
     public static GenericTupleReader newReader(int length) {
         var tr = new GenericTupleReader();

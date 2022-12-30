@@ -24,6 +24,26 @@ public abstract class ProxyFunction {
         layer = l;
     }
 
+    @SneakyThrows
+    public ProxyFunction callAndCopy() {
+        var proxyStore = ProxyProvider.get().getProxy(getProxyBase());
+        if (proxyStore != null) {
+            return ProxyProvider.get().call(this, proxyStore);
+        } else {
+            callLocal();
+            return this;
+        }
+    }
+
+    @SneakyThrows
+    protected Object getProxyBase() {
+        var first = Arrays.stream(getClass().getDeclaredFields()).findFirst().orElseThrow();
+        first.setAccessible(true);
+        return first.get(this);
+    }
+
+    public abstract void callLocal();
+
     public static class Serializer extends StdSerializer<ProxyFunction> {
 
         protected Serializer() {
@@ -60,24 +80,4 @@ public abstract class ProxyFunction {
             return (ProxyFunction) JacksonMapper.getDefault().treeToValue(tree, targetClass);
         }
     }
-
-    @SneakyThrows
-    public ProxyFunction callAndCopy() {
-        var proxyStore = ProxyProvider.get().getProxy(getProxyBase());
-        if (proxyStore != null) {
-            return ProxyProvider.get().call(this, proxyStore);
-        } else {
-            callLocal();
-            return this;
-        }
-    }
-
-    @SneakyThrows
-    protected Object getProxyBase() {
-        var first = Arrays.stream(getClass().getDeclaredFields()).findFirst().orElseThrow();
-        first.setAccessible(true);
-        return first.get(this);
-    }
-
-    public abstract void callLocal();
 }
