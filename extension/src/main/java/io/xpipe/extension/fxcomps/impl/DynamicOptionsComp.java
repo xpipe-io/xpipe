@@ -104,7 +104,8 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
                                 .orElse(0.0);
                         return m;
                     },
-                    compRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
+                    compRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0])
+            );
             compRegions.forEach(r -> r.prefWidthProperty().bind(compWidthBinding));
         }
 
@@ -121,7 +122,8 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
                                 .orElse(0.0);
                         return m;
                     },
-                    nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
+                    nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0])
+            );
             nameRegions.forEach(r -> r.prefWidthProperty().bind(nameWidthBinding));
         }
 
@@ -132,5 +134,6 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
         return entries;
     }
 
-    public record Entry(String key, ObservableValue<String> name, Comp<?> comp) {}
+    public record Entry(String key, ObservableValue<String> name, Comp<?> comp) {
+    }
 }

@@ -40,7 +40,8 @@ public class SvgComp {
                 return new Size(
                         Double.parseDouble(string.substring(
                                 0, string.length() - unit.toString().length())),
-                        unit);
+                        unit
+                );
             }
         }
         return new Size(Double.parseDouble(string), SizeUnits.PX);
@@ -96,7 +97,8 @@ public class SvgComp {
                             return wv.getWidth() / width.getValue().doubleValue();
                         },
                         wv.widthProperty(),
-                        width));
+                        width
+                ));
 
         wv.maxWidthProperty().bind(wv.prefWidthProperty());
         wv.maxHeightProperty().bind(wv.prefHeightProperty());

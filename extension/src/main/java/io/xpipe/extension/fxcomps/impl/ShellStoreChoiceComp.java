@@ -76,9 +76,9 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
         });
 
         var available = XPipeDaemon.getInstance().getNamedStores().stream()
-                                .filter(s -> s != self)
-                                .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
-                                .map(s -> (ShellStore) s)
+                .filter(s -> s != self)
+                .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
+                .map(s -> (ShellStore) s)
                 .toList();
         available.forEach(s -> comboBox.add((T) s));
         ComboBox<Node> cb = comboBox.build();

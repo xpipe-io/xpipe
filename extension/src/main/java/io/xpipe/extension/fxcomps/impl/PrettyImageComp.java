@@ -37,7 +37,8 @@ public class PrettyImageComp extends SimpleComp {
                         return height * aspectRatioProperty.doubleValue();
                     }
                 },
-                aspectRatioProperty);
+                aspectRatioProperty
+        );
         var heightProperty = Bindings.createDoubleBinding(
                 () -> {
                     boolean widthLimited = width / height < aspectRatioProperty.doubleValue();
@@ -47,7 +48,8 @@ public class PrettyImageComp extends SimpleComp {
                         return height;
                     }
                 },
-                aspectRatioProperty);
+                aspectRatioProperty
+        );
 
         Node node;
 
@@ -60,7 +62,8 @@ public class PrettyImageComp extends SimpleComp {
                                 / storeIcon.getHeight().getValue().doubleValue();
                     },
                     storeIcon.getWidth(),
-                    storeIcon.getHeight()));
+                    storeIcon.getHeight()
+            ));
             node = storeIcon.createWebview();
             ((WebView) node).prefWidthProperty().bind(widthProperty);
             ((WebView) node).maxWidthProperty().bind(widthProperty);
@@ -78,7 +81,8 @@ public class PrettyImageComp extends SimpleComp {
                                 aspectRatioProperty.set(image.getWidth() / image.getHeight());
                                 return image;
                             },
-                            PlatformThread.sync(value)));
+                            PlatformThread.sync(value)
+                    ));
             storeIcon.fitWidthProperty().bind(widthProperty);
             storeIcon.fitHeightProperty().bind(heightProperty);
             storeIcon.setSmooth(true);

@@ -9,11 +9,6 @@ import java.util.stream.Collectors;
 
 public abstract class PrefsProvider {
 
-    protected <T extends Field<?>> T editable(T o, ObservableBooleanValue v) {
-        o.editableProperty().bind(v);
-        return o;
-    }
-
     private static Set<PrefsProvider> ALL;
 
     public static void init(ModuleLayer layer) {
@@ -31,6 +26,11 @@ public abstract class PrefsProvider {
     @SuppressWarnings("unchecked")
     public static <T extends PrefsProvider> T get(Class<T> c) {
         return (T) ALL.stream().filter(prefsProvider -> prefsProvider.getClass().equals(c)).findAny().orElseThrow();
+    }
+
+    protected <T extends Field<?>> T editable(T o, ObservableBooleanValue v) {
+        o.editableProperty().bind(v);
+        return o;
     }
 
     public abstract void addPrefs(PrefsHandler handler);

@@ -20,7 +20,10 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.function.Function;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE
+)
 @AllArgsConstructor
 public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
@@ -75,5 +78,6 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    public record Entry(ObservableValue<String> name, Comp<?> comp) {}
+    public record Entry(ObservableValue<String> name, Comp<?> comp) {
+    }
 }

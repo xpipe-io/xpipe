@@ -22,10 +22,11 @@ public class CharsetChoiceComp extends SimpleComp {
                 charset,
                 streamCharset -> {
                     return new Label(streamCharset.getCharset().displayName()
-                            + (streamCharset.hasByteOrderMark() ? " (BOM)" : ""));
+                                             + (streamCharset.hasByteOrderMark() ? " (BOM)" : ""));
                 },
                 new Label(I18n.get("extension.none")),
-                null);
+                null
+        );
         builder.addFilter((charset, filter) -> {
             return charset.getCharset().displayName().contains(filter);
         });
@@ -38,7 +39,7 @@ public class CharsetChoiceComp extends SimpleComp {
         for (var e : StreamCharset.RARE) {
             builder.add(e);
         }
-        var comboBox =  builder.build();
+        var comboBox = builder.build();
         comboBox.setVisibleRowCount(16);
         return comboBox;
     }

@@ -20,6 +20,7 @@ public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
 
     private final Property<Entry> selected;
     private final List<Entry> entries;
+
     public TabPaneComp(Property<Entry> selected, List<Entry> entries) {
         this.selected = selected;
         this.entries = entries;
@@ -59,5 +60,6 @@ public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
         return new SimpleCompStructure<>(tabPane);
     }
 
-    public record Entry(ObservableValue<String> name, String graphic, Comp<?> comp) {}
+    public record Entry(ObservableValue<String> name, String graphic, Comp<?> comp) {
+    }
 }

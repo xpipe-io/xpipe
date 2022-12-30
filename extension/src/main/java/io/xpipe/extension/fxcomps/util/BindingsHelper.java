@@ -20,8 +20,9 @@ public class BindingsHelper {
     public static <T extends Binding<?>> T persist(T binding) {
         var dependencies = new HashSet<ObservableValue<?>>();
         while (dependencies.addAll(binding.getDependencies().stream()
-                .map(o -> (ObservableValue<?>) o)
-                .toList())) {}
+                                           .map(o -> (ObservableValue<?>) o)
+                                           .toList())) {
+        }
         dependencies.add(binding);
         BINDINGS.put(new WeakReference<>(binding), dependencies);
         return binding;

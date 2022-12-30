@@ -18,7 +18,10 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Map;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE
+)
 public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
     Property<T> value;

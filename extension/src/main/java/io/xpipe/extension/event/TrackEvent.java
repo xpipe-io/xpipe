@@ -14,21 +14,19 @@ import java.util.stream.Collectors;
 @Getter
 public class TrackEvent {
 
-    public static TrackEventBuilder storage() {
-        return TrackEvent.builder().category("storage");
-    }
-
     private final Thread thread = Thread.currentThread();
     private final Instant instant = Instant.now();
     private String type;
     private String message;
     private String category;
-
     @Singular
     private Map<String, Object> tags;
-
     @Singular
     private List<Object> elements;
+
+    public static TrackEventBuilder storage() {
+        return TrackEvent.builder().category("storage");
+    }
 
     public static TrackEventBuilder fromMessage(String type, String message) {
         return builder().type(type).message(message);
@@ -115,10 +113,10 @@ public class TrackEvent {
                 var valueString = e.getValue() != null ? e.getValue().toString() : "null";
                 var value = valueString.contains("\n")
                         ? "\n"
-                                + (valueString.toString()
-                                        .lines()
-                                        .map(line -> "    | " + line)
-                                        .collect(Collectors.joining("\n")))
+                        + (valueString.toString()
+                        .lines()
+                        .map(line -> "    | " + line)
+                        .collect(Collectors.joining("\n")))
                         : valueString;
                 s.append("    ")
                         .append(e.getKey())
