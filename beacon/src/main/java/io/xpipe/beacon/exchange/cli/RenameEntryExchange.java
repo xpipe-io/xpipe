@@ -25,14 +25,12 @@ public class RenameEntryExchange implements MessageExchange {
         DataSourceReference ref;
 
         @NonNull
-        String newName;
+        DataSourceId newId;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        DataSourceId newId;
     }
 }

@@ -43,7 +43,6 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
             pane = content;
         } else {
             var content = new VBox();
-            content.setAlignment(Pos.CENTER);
             content.setSpacing(7);
             pane = content;
         }
@@ -52,19 +51,19 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
         var compRegions = new ArrayList<Region>();
 
         for (var entry : getEntries()) {
-            var line = new HBox();
-            line.setFillHeight(true);
-            if (!wrap) {
-                line.prefWidthProperty().bind(pane.widthProperty());
-            }
-            line.setSpacing(8);
-
             Region compRegion = null;
             if (entry.comp() != null) {
                 compRegion = entry.comp().createRegion();
             }
 
             if (entry.name() != null) {
+                var line = new HBox();
+                line.setFillHeight(true);
+                if (!wrap) {
+                    line.prefWidthProperty().bind(pane.widthProperty());
+                }
+                line.setSpacing(8);
+
                 var name = new Label();
                 name.textProperty().bind(entry.name());
                 name.prefHeightProperty().bind(line.heightProperty());
@@ -76,17 +75,20 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
                 }
                 nameRegions.add(name);
                 line.getChildren().add(name);
-            }
 
-            if (entry.comp() != null) {
-                compRegions.add(compRegion);
-                line.getChildren().add(compRegion);
-                if (!wrap) {
-                    HBox.setHgrow(compRegion, Priority.ALWAYS);
+                if (compRegion != null) {
+                    compRegions.add(compRegion);
+                    line.getChildren().add(compRegion);
+                    if (!wrap) {
+                        HBox.setHgrow(compRegion, Priority.ALWAYS);
+                    }
                 }
-            }
 
-            pane.getChildren().add(line);
+                pane.getChildren().add(line);
+            } else {
+                compRegions.add(compRegion);
+                pane.getChildren().add(compRegion);
+            }
         }
 
         if (wrap) {

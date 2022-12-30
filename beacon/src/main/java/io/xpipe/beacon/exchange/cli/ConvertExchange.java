@@ -37,7 +37,6 @@ public class ConvertExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
         DialogReference config;
     }
 }
