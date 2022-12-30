@@ -37,7 +37,8 @@ public class CustomComboBoxBuilder<T> {
     private Node filterNode;
 
     public CustomComboBoxBuilder(
-            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
+            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto
+    ) {
         this.selected = selected;
         this.nodeFunction = nodeFunction;
         this.emptyNode = emptyNode;
@@ -122,9 +123,9 @@ public class CustomComboBoxBuilder<T> {
                 var filteredNodes = nodes.stream()
                         .filter(e -> e.equals(cb.getValue())
                                 || !(nodeMap.get(e) != null
-                                        && (filterable.contains(nodeMap.get(e))
-                                                && filterString.getValue() != null
-                                                && !filterPredicate.test(nodeMap.get(e), c))))
+                                && (filterable.contains(nodeMap.get(e))
+                                && filterString.getValue() != null
+                                && !filterPredicate.test(nodeMap.get(e), c))))
                         .toList();
                 cb.setItems(FXCollections.observableList(filteredNodes));
             });

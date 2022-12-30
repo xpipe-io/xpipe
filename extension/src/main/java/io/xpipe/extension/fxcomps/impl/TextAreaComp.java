@@ -57,7 +57,7 @@ public class TextAreaComp extends SimpleComp {
             var isEqual = Bindings.createBooleanBinding(() -> Objects.equals(lazyValue.getValue(), value.getValue()), value, lazyValue);
             var button = new IconButtonComp("mdi2c-checkbox-marked-outline").hide(isEqual).createRegion();
             var anchorPane = new AnchorPane(text, button);
-            AnchorPane.setBottomAnchor(button, 5.0 );
+            AnchorPane.setBottomAnchor(button, 5.0);
             AnchorPane.setRightAnchor(button, 5.0);
 
             text.prefWidthProperty().bind(anchorPane.widthProperty());

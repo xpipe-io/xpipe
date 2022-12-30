@@ -92,7 +92,8 @@ public class DataStoreFormatter {
             var lengthShare = (length - 3) / 2;
             return String.format(
                     "%s.%s",
-                    DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
+                    DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare)
+            );
         }
 
         return cut(input, length);

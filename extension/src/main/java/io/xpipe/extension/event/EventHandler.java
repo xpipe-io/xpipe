@@ -23,8 +23,12 @@ public abstract class EventHandler {
 
         @Override
         public void handle(ErrorEvent ee) {
-            if (ee.getDescription() != null) System.err.println(ee.getDescription());
-            if (ee.getThrowable() != null) ee.getThrowable().printStackTrace();
+            if (ee.getDescription() != null) {
+                System.err.println(ee.getDescription());
+            }
+            if (ee.getThrowable() != null) {
+                ee.getThrowable().printStackTrace();
+            }
         }
     };
 
@@ -42,12 +46,11 @@ public abstract class EventHandler {
         public void handle(ErrorEvent ee) {
         }
     };
+    private static EventHandler INSTANCE;
 
     public static void set(EventHandler handler) {
         INSTANCE = handler;
     }
-
-    private static EventHandler INSTANCE;
 
     private static void init() {
         if (INSTANCE == null) {

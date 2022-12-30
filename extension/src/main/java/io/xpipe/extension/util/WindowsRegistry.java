@@ -11,7 +11,7 @@ public class WindowsRegistry {
     public static final int HKEY_LOCAL_MACHINE = 0x80000002;
 
     public static Optional<String> readString(int hkey, String key) {
-        return readString(hkey,key, null);
+        return readString(hkey, key, null);
     }
 
     public static Optional<String> readString(int hkey, String key, String valueName) {

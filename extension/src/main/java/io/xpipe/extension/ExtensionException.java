@@ -2,7 +2,8 @@ package io.xpipe.extension;
 
 public class ExtensionException extends RuntimeException {
 
-    public ExtensionException() {}
+    public ExtensionException() {
+    }
 
     public ExtensionException(String message) {
         super(message);

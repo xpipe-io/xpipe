@@ -22,7 +22,9 @@ public class SimpleValidator implements Validator {
             new ReadOnlyObjectWrapper<>(new ValidationResult());
     private final ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
 
-    /** Create a check that lives within this checker's domain.
+    /**
+     * Create a check that lives within this checker's domain.
+     *
      * @return A check object whose dependsOn, decorates, etc. methods can be called
      */
     public Check createCheck() {
@@ -31,7 +33,9 @@ public class SimpleValidator implements Validator {
         return check;
     }
 
-    /** Add another check to the checker. Changes in the check's validationResultProperty will be reflected in the checker.
+    /**
+     * Add another check to the checker. Changes in the check's validationResultProperty will be reflected in the checker.
+     *
      * @param check The check to add.
      */
     public void add(Check check) {
@@ -40,7 +44,9 @@ public class SimpleValidator implements Validator {
         check.validationResultProperty().addListener(listener);
     }
 
-    /** Removes a check from this validator.
+    /**
+     * Removes a check from this validator.
+     *
      * @param check The check to remove from this validator.
      */
     public void remove(Check check) {
@@ -51,21 +57,27 @@ public class SimpleValidator implements Validator {
         refreshProperties();
     }
 
-    /** Retrieves current validation result
+    /**
+     * Retrieves current validation result
+     *
      * @return validation result
      */
     public ValidationResult getValidationResult() {
         return validationResultProperty.get();
     }
 
-    /** Can be used to track validation result changes
+    /**
+     * Can be used to track validation result changes
+     *
      * @return The Validation result property.
      */
     public ReadOnlyObjectProperty<ValidationResult> validationResultProperty() {
         return validationResultProperty.getReadOnlyProperty();
     }
 
-    /** A read-only boolean property indicating whether any of the checks of this validator emitted an error. */
+    /**
+     * A read-only boolean property indicating whether any of the checks of this validator emitted an error.
+     */
     public ReadOnlyBooleanProperty containsErrorsProperty() {
         return containsErrorsProperty.getReadOnlyProperty();
     }
@@ -74,7 +86,9 @@ public class SimpleValidator implements Validator {
         return containsErrorsProperty().get();
     }
 
-    /** Run all checks (decorating nodes if appropriate)
+    /**
+     * Run all checks (decorating nodes if appropriate)
+     *
      * @return true if no errors were found, false otherwise
      */
     public boolean validate() {
@@ -97,7 +111,8 @@ public class SimpleValidator implements Validator {
         containsErrorsProperty.set(hasErrors);
     }
 
-    /** Create a string property that depends on the validation result.
+    /**
+     * Create a string property that depends on the validation result.
      * Each error message will be displayed on a separate line prefixed with a bullet.
      */
     public StringBinding createStringBinding() {
@@ -117,6 +132,7 @@ public class SimpleValidator implements Validator {
                     }
                     return str.toString();
                 },
-                validationResultProperty);
+                validationResultProperty
+        );
     }
 }

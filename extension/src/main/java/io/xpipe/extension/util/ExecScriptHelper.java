@@ -20,6 +20,7 @@ public class ExecScriptHelper {
             return createExecScript(l, content);
         }
     }
+
     @SneakyThrows
     public static String createExecScript(ShellProcessControl processControl, String content) {
         var fileName = "exec-" + getConnectionHash(content);
@@ -35,7 +36,8 @@ public class ExecScriptHelper {
         try (var c = processControl.command(processControl.getShellType()
                                                     .joinCommands(
                                                             processControl.getShellType().createFileWriteCommand(file),
-                                                            processControl.getShellType().getMakeExecutableCommand(file)))
+                                                            processControl.getShellType().getMakeExecutableCommand(file)
+                                                    ))
                 .start()) {
             c.discardOut();
             c.discardErr();

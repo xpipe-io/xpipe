@@ -42,7 +42,7 @@ public class DataSourceProviders {
                 case STRUCTURE -> DataSourceProviders.byId("xpbs");
                 case TEXT -> DataSourceProviders.byId("text");
                 case RAW -> DataSourceProviders.byId("binary");
-                    // TODO
+                // TODO
                 case COLLECTION -> null;
             };
         } catch (Exception ex) {
@@ -126,7 +126,7 @@ public class DataSourceProviders {
 
         return ALL.stream()
                 .filter(d -> d.getPossibleNames().stream()
-                                .anyMatch(s -> nameAlternatives(s).stream().anyMatch(s1 -> s1.equalsIgnoreCase(name)))
+                        .anyMatch(s -> nameAlternatives(s).stream().anyMatch(s1 -> s1.equalsIgnoreCase(name)))
                         || d.getId().equalsIgnoreCase(name))
                 .findAny();
     }
@@ -139,7 +139,8 @@ public class DataSourceProviders {
                 String.join("-", split),
                 split.stream()
                         .map(s -> s.equals(split.get(0)) ? s : s.substring(0, 1).toUpperCase() + s.substring(1))
-                        .collect(Collectors.joining()));
+                        .collect(Collectors.joining())
+        );
     }
 
     public static Optional<DataSourceProvider<?>> byPreferredStore(DataStore store, DataSourceType type) {

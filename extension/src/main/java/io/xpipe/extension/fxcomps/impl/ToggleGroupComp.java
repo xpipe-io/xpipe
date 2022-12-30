@@ -64,7 +64,9 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
         });
 
         group.selectedToggleProperty().addListener((obsVal, oldVal, newVal) -> {
-            if (newVal == null) oldVal.setSelected(true);
+            if (newVal == null) {
+                oldVal.setSelected(true);
+            }
         });
 
         return new SimpleCompStructure<>(box);

@@ -16,16 +16,16 @@ public interface DataStoreActionProvider<T extends DataStore> {
     public static void init(ModuleLayer layer) {
         if (ALL.size() == 0) {
             ALL.addAll(ServiceLoader.load(layer, DataStoreActionProvider.class).stream()
-                    .map(p -> (DataStoreActionProvider<?>) p.get())
-                    .filter(provider -> {
-                        try {
-                            return provider.isActive();
-                        } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).handle();
-                            return false;
-                        }
-                    })
-                    .toList());
+                               .map(p -> (DataStoreActionProvider<?>) p.get())
+                               .filter(provider -> {
+                                   try {
+                                       return provider.isActive();
+                                   } catch (Exception e) {
+                                       ErrorEvent.fromThrowable(e).handle();
+                                       return false;
+                                   }
+                               })
+                               .toList());
         }
     }
 
@@ -43,11 +43,13 @@ public interface DataStoreActionProvider<T extends DataStore> {
         return true;
     }
 
-    default void applyToRegion(T store, Region region) {}
+    default void applyToRegion(T store, Region region) {
+    }
 
     ObservableValue<String> getName(T store);
 
     String getIcon(T store);
 
-    default void execute(T store) throws Exception {}
+    default void execute(T store) throws Exception {
+    }
 }

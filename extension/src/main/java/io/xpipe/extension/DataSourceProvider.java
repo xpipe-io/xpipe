@@ -33,7 +33,8 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         throw new ExtensionException();
     }
 
-    default void init() throws Exception {}
+    default void init() throws Exception {
+    }
 
     default String i18n(String key) {
         return I18n.get(i18nKey(key));
@@ -64,6 +65,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
     default String queryInformationString(DataStore store, int length) throws Exception {
         return getDisplayName();
     }
+
     default String getDisplayIconFileName() {
         return getModuleName() + ":" + getId() + "_icon.png";
     }
@@ -86,14 +88,14 @@ public interface DataSourceProvider<T extends DataSource<?>> {
      * Checks whether this provider supports the store in principle.
      * This method should not perform any further checks,
      * just check whether it may be possible that the store is supported.
-     *
+     * <p>
      * This method will be called for validation purposes.
      */
     boolean couldSupportStore(DataStore store);
 
     /**
      * Performs a deep inspection to check whether this provider supports a given store.
-     *
+     * <p>
      * This functionality will be used in case no preferred provider has been found.
      */
     default boolean supportsStore(DataStore store) {

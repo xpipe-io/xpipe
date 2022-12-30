@@ -43,13 +43,13 @@ public class WriteModeChoiceComp extends SimpleComp implements Validatable {
         var a = available;
         Property<Map<WriteMode, ObservableValue<String>>> map = new SimpleObjectProperty<>(new LinkedHashMap<WriteMode, ObservableValue<String>>());
         for (WriteMode writeMode : a) {
-            map.getValue().put(writeMode,I18n.observable(writeMode.getId()));
+            map.getValue().put(writeMode, I18n.observable(writeMode.getId()));
         }
 
         PlatformThread.sync(available).addListener((ListChangeListener<? super WriteMode>) c -> {
             var newMap = new LinkedHashMap<WriteMode, ObservableValue<String>>();
             for (WriteMode writeMode : c.getList()) {
-                newMap.put(writeMode,I18n.observable(writeMode.getId()));
+                newMap.put(writeMode, I18n.observable(writeMode.getId()));
             }
             map.setValue(newMap);
 
