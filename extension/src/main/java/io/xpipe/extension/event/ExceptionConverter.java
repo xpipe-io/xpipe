@@ -8,30 +8,25 @@ public class ExceptionConverter {
 
     public static String convertMessage(Throwable ex) {
         var msg = ex.getLocalizedMessage();
-        if (ex instanceof StackOverflowError) {
-            return I18n.get("extension.stackOverflow", msg);
+
+        if (!I18n.INSTANCE.isLoaded()) {
+            return msg;
         }
 
-        if (ex instanceof FileNotFoundException) {
-            return I18n.get("extension.fileNotFound", msg);
-        }
+        return switch (ex) {
+            case StackOverflowError e -> I18n.get("extension.stackOverflow");
+            case OutOfMemoryError e -> I18n.get("extension.outOfMemory");
+            case FileNotFoundException e -> I18n.get("extension.fileNotFound", msg);
+            case NullPointerException e -> I18n.get("extension.nullPointer");
+            case UnsupportedOperationException e -> I18n.get("extension.unsupportedOperation", msg);
+            case ClassNotFoundException e -> I18n.get("extension.classNotFound", msg);
+            default -> {
+                if (msg == null || msg.trim().length() == 0) {
+                    yield I18n.get("extension.noInformationAvailable");
+                }
 
-        if (ex instanceof UnsupportedOperationException) {
-            return I18n.get("extension.unsupportedOperation", msg);
-        }
-
-        if (ex instanceof ClassNotFoundException) {
-            return I18n.get("extension.classNotFound", msg);
-        }
-
-        if (ex instanceof NullPointerException) {
-            return I18n.get("extension.nullPointer", msg);
-        }
-
-        if (msg == null || msg.trim().length() == 0) {
-            return I18n.get("extension.noInformationAvailable");
-        }
-
-        return msg;
+                yield msg;
+            }
+        };
     }
 }
