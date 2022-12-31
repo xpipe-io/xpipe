@@ -36,6 +36,7 @@ public class ErrorEvent {
     }
 
     public void handle() {
+        EventHandler.get().modify(this);
         EventHandler.get().handle(this);
     }
 
@@ -49,6 +50,10 @@ public class ErrorEvent {
     }
 
     public static class ErrorEventBuilder {
+
+        public ErrorEventBuilder term() {
+            return terminal(true);
+        }
 
         public ErrorEventBuilder omit() {
             return omitted(true);

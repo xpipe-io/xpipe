@@ -27,4 +27,6 @@ public interface I18n {
     String getKey(String s);
 
     String getLocalised(String s, Object... vars);
+
+    boolean isLoaded();
 }

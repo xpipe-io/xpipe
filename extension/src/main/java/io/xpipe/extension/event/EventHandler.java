@@ -30,6 +30,11 @@ public abstract class EventHandler {
                 ee.getThrowable().printStackTrace();
             }
         }
+
+        @Override
+        public void modify(ErrorEvent ee) {
+
+        }
     };
 
     public static final EventHandler OMIT = new EventHandler() {
@@ -44,6 +49,11 @@ public abstract class EventHandler {
 
         @Override
         public void handle(ErrorEvent ee) {
+        }
+
+        @Override
+        public void modify(ErrorEvent ee) {
+
         }
     };
     private static EventHandler INSTANCE;
@@ -68,4 +78,6 @@ public abstract class EventHandler {
     public abstract void handle(TrackEvent te);
 
     public abstract void handle(ErrorEvent ee);
+
+    public abstract void modify(ErrorEvent ee);
 }
