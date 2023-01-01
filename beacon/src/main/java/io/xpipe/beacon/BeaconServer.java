@@ -2,8 +2,7 @@ package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.StopExchange;
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -111,17 +110,16 @@ public class BeaconServer {
     }
 
     public static String getDaemonDebugExecutable(String installationBase) throws Exception {
-        try (ShellProcessControl pc = new LocalStore().create().start()) {
-            var debug = BeaconConfig.launchDaemonInDebugMode();
-            if (!debug) {
-                throw new IllegalStateException();
+        var osType = OsType.getLocal();
+        var debug = BeaconConfig.launchDaemonInDebugMode();
+        if (!debug) {
+            throw new IllegalStateException();
+        } else {
+            if (BeaconConfig.attachDebuggerToDaemon()) {
+                return FileNames.join(
+                        installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType));
             } else {
-                if (BeaconConfig.attachDebuggerToDaemon()) {
-                    return FileNames.join(
-                            installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(pc.getOsType()));
-                } else {
-                    return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugScriptPath(pc.getOsType()));
-                }
+                return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugScriptPath(osType));
             }
         }
     }

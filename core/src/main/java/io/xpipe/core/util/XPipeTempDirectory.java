@@ -19,13 +19,13 @@ public class XPipeTempDirectory {
     public static String get(ShellProcessControl proc) throws Exception {
         var base = proc.getOsType().getTempDirectory(proc);
         var dir = FileNames.join(base, "xpipe");
-        if (!proc.executeBooleanSimpleCommand(proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(dir)))) {
-            throw new IOException("Unable to access or create temporary directory " + dir);
-        }
 
-        if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MAC)) {
-            proc.executeSimpleCommand("(chmod -f 777 \"" + dir + "\" || true)");
+        if (!proc.executeBooleanSimpleCommand(proc.getShellType().createFileExistsCommand(dir))) {
+            proc.executeSimpleCommand(proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(dir)), "Unable to access or create temporary directory " + dir);
 
+            if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MAC)) {
+                proc.executeSimpleCommand("(chmod -f 777 \"" + dir + "\"");
+            }
         }
 
         return dir;

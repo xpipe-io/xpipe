@@ -5,6 +5,7 @@ import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.FilenameStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
+import io.xpipe.core.util.ValidationException;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -59,13 +60,13 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
     @Override
     public void checkComplete() throws Exception {
         if (fileSystem == null) {
-            throw new IllegalStateException("File system is missing");
+            throw new ValidationException("File system is missing");
         }
         if (file == null) {
-            throw new IllegalStateException("File is missing");
+            throw new ValidationException("File is missing");
         }
         if (!FileNames.isAbsolute(file)) {
-            throw new IllegalStateException("File path is not absolute");
+            throw new ValidationException("File path is not absolute");
         }
     }
 
