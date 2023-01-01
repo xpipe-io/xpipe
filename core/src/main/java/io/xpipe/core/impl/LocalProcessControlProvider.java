@@ -1,6 +1,7 @@
 package io.xpipe.core.impl;
 
 import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellTypes;
 
 import java.util.ServiceLoader;
 
@@ -9,6 +10,10 @@ public abstract class LocalProcessControlProvider {
     private static LocalProcessControlProvider INSTANCE;
 
     public static LocalProcessControlProvider get() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException("Process control not initialized");
+        }
+
         return INSTANCE;
     }
 
@@ -16,10 +21,10 @@ public abstract class LocalProcessControlProvider {
         INSTANCE = layer != null
                 ? ServiceLoader.load(layer, LocalProcessControlProvider.class)
                 .findFirst()
-                .orElse(null)
+                .orElseThrow()
                 : ServiceLoader.load(LocalProcessControlProvider.class)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow();
     }
 
     public static ShellProcessControl create() {

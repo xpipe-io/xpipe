@@ -31,10 +31,14 @@ public class XPipeInstallation {
         Path path = Path.of(ProcessHandle.current().info().command().orElseThrow());
         var name = path.getFileName().toString();
         if (name.endsWith("java") || name.endsWith("java.exe")) {
-            return Path.of(System.getProperty("user.dir"));
+            var isImage = ModuleHelper.isImage();
+            if (!isImage) {
+                return Path.of(System.getProperty("user.dir"));
+            }
+            return getLocalInstallationBasePathForJavaExecutable(path);
+        } else {
+            return getLocalInstallationBasePathForExecutable(path);
         }
-
-        return getLocalInstallationBasePathForExecutable(path);
     }
 
     public static Path getLocalDynamicLibraryDirectory() {
@@ -53,6 +57,16 @@ public class XPipeInstallation {
         return OsType.getLocal().equals(OsType.MAC)
                 ? path.resolve("Contents").resolve("extensions")
                 : path.resolve("extensions");
+    }
+
+    private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
+        if (OsType.getLocal().equals(OsType.MAC)) {
+            return executable.getParent().getParent().getParent().getParent().getParent();
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return executable.getParent().getParent().getParent().getParent();
+        } else {
+            return executable.getParent().getParent().getParent();
+        }
     }
 
     private static Path getLocalInstallationBasePathForExecutable(Path executable) {

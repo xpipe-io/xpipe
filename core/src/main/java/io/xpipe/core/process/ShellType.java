@@ -89,6 +89,8 @@ public interface ShellType {
 
     String createFileExistsCommand(String file);
 
+    String createFileTouchCommand(String file);
+
     String createWhichCommand(String executable);
 
     Charset determineCharset(ShellProcessControl control) throws Exception;

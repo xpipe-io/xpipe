@@ -176,6 +176,11 @@ public class ShellTypes {
         }
 
         @Override
+        public String createFileTouchCommand(String file) {
+            return "COPY NUL \"" + file + "\"";
+        }
+
+        @Override
         public String createWhichCommand(String executable) {
             return "where \"" + executable + "\"";
         }
@@ -221,6 +226,11 @@ public class ShellTypes {
     @JsonTypeName("powershell")
     @Value
     public static class PowerShell implements ShellType {
+
+        @Override
+        public String createFileTouchCommand(String file) {
+            return "$error_count=$error.Count; Out-File -FilePath \"" + file + "\"; $LASTEXITCODE=$error.Count - $error_count";
+        }
 
         @Override
         public String getOrConcatenationOperator() {
@@ -403,6 +413,11 @@ public class ShellTypes {
     }
 
     public abstract static class PosixBase implements ShellType {
+
+        @Override
+        public String createFileTouchCommand(String file) {
+            return "touch \"" + file + "\"";
+        }
 
         @Override
         public List<String> executeCommandListWithShell(String cmd) {
