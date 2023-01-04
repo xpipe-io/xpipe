@@ -7,7 +7,7 @@ import java.io.IOException;
 public class ApplicationHelper {
 
     public static boolean isInPath(ShellProcessControl processControl, String executable) throws Exception {
-        return processControl.executeBooleanSimpleCommand(processControl.getShellType().createWhichCommand(executable));
+        return processControl.executeBooleanSimpleCommand(processControl.getShellType().getWhichCommand(executable));
     }
 
     public static void checkSupport(ShellProcessControl processControl, String executable, String displayName) throws Exception {

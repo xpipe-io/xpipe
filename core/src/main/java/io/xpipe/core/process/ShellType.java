@@ -5,6 +5,7 @@ import io.xpipe.core.charsetter.NewLine;
 
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @JsonTypeInfo(
@@ -15,15 +16,11 @@ public interface ShellType {
 
     String getScriptFileEnding();
 
-    default String commandWithVariable(String key, String value, String command) {
-        return joinCommands(getSetVariableCommand(key, value), command);
-    }
+    String addInlineVariablesToCommand(Map<String, String> variables, String command);
 
     String getPauseCommand();
 
-    String createInitFileContent(String command);
-
-    String getTerminalFileOpenCommand(String file);
+    String prepareScriptContent(String content);
 
     default String flatten(List<String> command) {
         return command.stream()
@@ -34,12 +31,6 @@ public interface ShellType {
                         : s)
                 .collect(Collectors.joining(" "));
     }
-
-    default String joinCommands(String... s) {
-        return String.join(getConcatenationOperator(), s);
-    }
-
-    void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception;
 
     default String getExitCommand() {
         return "exit";
@@ -61,11 +52,11 @@ public interface ShellType {
         return getEchoCommand(s, false);
     }
 
+     String getSetVariableCommand(String variable, String value);
+
+
     String getEchoCommand(String s, boolean toErrorStream);
 
-    String queryShellProcessId(ShellProcessControl control) throws Exception;
-
-    String getSetVariableCommand(String variableName, String value);
 
     default String getPrintVariableCommand(String name) {
         return getPrintVariableCommand("", name);
@@ -79,19 +70,21 @@ public interface ShellType {
 
     List<String> executeCommandListWithShell(String cmd);
 
-    List<String> createMkdirsCommand(String dirs);
+    List<String> getMkdirsCommand(String dirs);
 
-    String createFileReadCommand(String file);
+    String getFileReadCommand(String file);
 
-    String createFileWriteCommand(String file);
+    String getStreamFileWriteCommand(String file);
 
-    String createFileDeleteCommand(String file);
+    String getSimpleFileWriteCommand(String content, String file);
 
-    String createFileExistsCommand(String file);
+    String getFileDeleteCommand(String file);
 
-    String createFileTouchCommand(String file);
+    String getFileExistsCommand(String file);
 
-    String createWhichCommand(String executable);
+    String getFileTouchCommand(String file);
+
+    String getWhichCommand(String executable);
 
     Charset determineCharset(ShellProcessControl control) throws Exception;
 
@@ -103,5 +96,5 @@ public interface ShellType {
 
     String getExecutable();
 
-    boolean echoesInput();
+    boolean doesRepeatInput();
 }

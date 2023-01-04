@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 public interface CommandProcessControl extends ProcessControl {
 
+    @Override
+    public CommandProcessControl sensitive();
     CommandProcessControl complex();
 
     default InputStream startExternalStdout() throws Exception {
@@ -64,9 +66,7 @@ public interface CommandProcessControl extends ProcessControl {
 
     String readOnlyStdout() throws Exception;
 
-    public default void discardOrThrow() throws Exception {
-        readOrThrow();
-    }
+    public void discardOrThrow() throws Exception;
 
     void accumulateStdout(Consumer<String> con);
 

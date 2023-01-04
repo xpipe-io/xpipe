@@ -15,6 +15,11 @@ public class OutputStreamStore implements StreamDataStore {
     }
 
     @Override
+    public boolean isContentExclusivelyAccessible() {
+        return true;
+    }
+
+    @Override
     public DataFlow getFlow() {
         return DataFlow.OUTPUT;
     }

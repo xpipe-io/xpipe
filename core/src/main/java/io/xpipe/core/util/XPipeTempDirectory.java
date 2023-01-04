@@ -20,8 +20,8 @@ public class XPipeTempDirectory {
         var base = proc.getOsType().getTempDirectory(proc);
         var dir = FileNames.join(base, "xpipe");
 
-        if (!proc.executeBooleanSimpleCommand(proc.getShellType().createFileExistsCommand(dir))) {
-            proc.executeSimpleCommand(proc.getShellType().flatten(proc.getShellType().createMkdirsCommand(dir)), "Unable to access or create temporary directory " + dir);
+        if (!proc.executeBooleanSimpleCommand(proc.getShellType().getFileExistsCommand(dir))) {
+            proc.executeSimpleCommand(proc.getShellType().flatten(proc.getShellType().getMkdirsCommand(dir)), "Unable to access or create temporary directory " + dir);
 
             if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MAC)) {
                 proc.executeSimpleCommand("(chmod -f 777 \"" + dir + "\"");
@@ -33,7 +33,7 @@ public class XPipeTempDirectory {
 
     public static void clear(ShellProcessControl proc) throws Exception {
         var dir = get(proc);
-        if (!proc.executeBooleanSimpleCommand(proc.getShellType().createFileDeleteCommand(dir))) {
+        if (!proc.executeBooleanSimpleCommand(proc.getShellType().getFileDeleteCommand(dir))) {
             throw new IOException("Unable to delete temporary directory " + dir);
         }
     }
