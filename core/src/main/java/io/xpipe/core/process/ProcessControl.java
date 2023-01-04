@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 
 public interface ProcessControl extends Closeable, AutoCloseable {
 
+    ProcessControl sensitive();
+
     String prepareTerminalOpen() throws Exception;
 
     void closeStdin() throws IOException;

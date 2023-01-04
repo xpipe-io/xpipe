@@ -6,11 +6,11 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ShellTypes {
@@ -46,6 +46,16 @@ public class ShellTypes {
     public static class Cmd implements ShellType {
 
         @Override
+        public String addInlineVariablesToCommand(Map<String, String> variables, String command) {
+            var content = "";
+            for (Map.Entry<String, String> e : variables.entrySet()) {
+                content += ("set \"" + e.getKey() + "=" + e.getValue().replaceAll("\"", "^$0") + "\"");
+                content += getConcatenationOperator();
+            }
+            return content + command;
+        }
+
+        @Override
         public String getSetVariableCommand(String variableName, String value) {
             return ("set \"" + variableName + "=" + value.replaceAll("\"", "^$0") + "\"");
         }
@@ -67,19 +77,6 @@ public class ShellTypes {
         }
 
         @Override
-        public String queryShellProcessId(ShellProcessControl control) throws IOException {
-            control.writeLine("powershell (Get-WmiObject Win32_Process -Filter ProcessId=$PID).ParentProcessId");
-
-            var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
-            // Read echo of command
-            r.readLine();
-            // Read actual output
-            var line = r.readLine();
-            r.readLine();
-            return line;
-        }
-
-        @Override
         public String getConcatenationOperator() {
             return "&";
         }
@@ -87,11 +84,6 @@ public class ShellTypes {
         @Override
         public String getMakeExecutableCommand(String file) {
             return "echo.";
-        }
-
-        @Override
-        public String getTerminalFileOpenCommand(String file) {
-            return String.format("%s %s \"%s\"", getExecutable(), "/C", file);
         }
 
         public String escapeStringValue(String input) {
@@ -109,20 +101,8 @@ public class ShellTypes {
         }
 
         @Override
-        public String createInitFileContent(String command) {
-            return "@echo off\n" + command;
-        }
-
-        @Override
-        public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
-            try (CommandProcessControl c = control.command("net session >NUL 2>NUL")) {
-                var exitCode = c.getExitCode();
-                if (exitCode != 0) {
-                    throw new IllegalStateException("The command \"" + displayCommand + "\" requires elevation.");
-                }
-            }
-
-            control.executeCommand(command);
+        public String prepareScriptContent(String content) {
+            return "@echo off\n" + content;
         }
 
         @Override
@@ -151,37 +131,42 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createMkdirsCommand(String dirs) {
+        public List<String> getMkdirsCommand(String dirs) {
             return List.of("(", "if", "not", "exist", dirs, "mkdir", dirs, ")");
         }
 
         @Override
-        public String createFileReadCommand(String file) {
+        public String getFileReadCommand(String file) {
             return "type \"" + file + "\"";
         }
 
         @Override
-        public String createFileWriteCommand(String file) {
+        public String getStreamFileWriteCommand(String file) {
             return "findstr \"^\" > \"" + file + "\"";
         }
 
         @Override
-        public String createFileDeleteCommand(String file) {
+        public String getSimpleFileWriteCommand(String content, String file) {
+            return "echo " + content + " > \"" + file + "\"";
+        }
+
+        @Override
+        public String getFileDeleteCommand(String file) {
             return "rd /s /q \"" + file + "\"";
         }
 
         @Override
-        public String createFileExistsCommand(String file) {
+        public String getFileExistsCommand(String file) {
             return String.format("dir /a \"%s\"", file);
         }
 
         @Override
-        public String createFileTouchCommand(String file) {
+        public String getFileTouchCommand(String file) {
             return "COPY NUL \"" + file + "\"";
         }
 
         @Override
-        public String createWhichCommand(String executable) {
+        public String getWhichCommand(String executable) {
             return "where \"" + executable + "\"";
         }
 
@@ -218,7 +203,7 @@ public class ShellTypes {
         }
 
         @Override
-        public boolean echoesInput() {
+        public boolean doesRepeatInput() {
             return true;
         }
     }
@@ -228,7 +213,22 @@ public class ShellTypes {
     public static class PowerShell implements ShellType {
 
         @Override
-        public String createFileTouchCommand(String file) {
+        public String addInlineVariablesToCommand(Map<String, String> variables, String command) {
+            var content = "";
+            for (Map.Entry<String, String> e : variables.entrySet()) {
+                content += "$env:" + e.getKey() + " = \"" + escapeStringValue(e.getValue()) + "\"";
+                content += getConcatenationOperator();
+            }
+            return content + command;
+        }
+
+        @Override
+        public String getSimpleFileWriteCommand(String content, String file) {
+            return "echo \"" + content + "\" | Out-File \"" + file + "\"";
+        }
+
+        @Override
+        public String getFileTouchCommand(String file) {
             return "$error_count=$error.Count; Out-File -FilePath \"" + file + "\"; $LASTEXITCODE=$error.Count - $error_count";
         }
 
@@ -258,18 +258,6 @@ public class ShellTypes {
         }
 
         @Override
-        public String queryShellProcessId(ShellProcessControl control) throws IOException {
-            control.writeLine("echo $PID");
-
-            var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
-            // Read echo of command
-            r.readLine();
-            // Read actual output
-            var line = r.readLine();
-            return line;
-        }
-
-        @Override
         public String getConcatenationOperator() {
             return ";";
         }
@@ -280,7 +268,7 @@ public class ShellTypes {
         }
 
         @Override
-        public boolean echoesInput() {
+        public boolean doesRepeatInput() {
             return true;
         }
 
@@ -295,31 +283,12 @@ public class ShellTypes {
         }
 
         @Override
-        public String createInitFileContent(String command) {
-            return command;
-        }
-
-        @Override
-        public String getTerminalFileOpenCommand(String file) {
-            return String.format("%s -ExecutionPolicy Bypass -File \"%s\"", getExecutable(), file);
+        public String prepareScriptContent(String content) {
+            return content;
         }
 
         public String escapeStringValue(String input) {
             return input.replaceAll("[\"]", "`$0");
-        }
-
-        @Override
-        public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
-            try (CommandProcessControl c = control.command(
-                            "([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security" +
-                                    ".Principal.WindowsBuiltinRole]::Administrator)")
-                    .start()) {
-                if (c.startAndCheckExit()) {
-                    throw new IllegalStateException("The command \"" + displayCommand + "\" requires elevation.");
-                }
-            }
-
-            control.executeCommand(command);
         }
 
         @Override
@@ -347,32 +316,32 @@ public class ShellTypes {
         }
 
         @Override
-        public String createFileReadCommand(String file) {
+        public String getFileReadCommand(String file) {
             return "cmd /c type \"" + file + "\"";
         }
 
         @Override
-        public String createFileWriteCommand(String file) {
+        public String getStreamFileWriteCommand(String file) {
             return "cmd /c 'findstr \"^\" > \"" + file + "\"'";
         }
 
         @Override
-        public List<String> createMkdirsCommand(String dirs) {
+        public List<String> getMkdirsCommand(String dirs) {
             return List.of("cmd", "/c", "mkdir", dirs);
         }
 
         @Override
-        public String createFileDeleteCommand(String file) {
+        public String getFileDeleteCommand(String file) {
             return "rm /path \"" + file + "\" -force";
         }
 
         @Override
-        public String createFileExistsCommand(String file) {
+        public String getFileExistsCommand(String file) {
             return String.format("cmd /c dir /a \"%s\"", file);
         }
 
         @Override
-        public String createWhichCommand(String executable) {
+        public String getWhichCommand(String executable) {
             return "$LASTEXITCODE=(1 - (Get-Command -erroraction \"silentlycontinue\" \"" + executable + "\").Length)";
         }
 
@@ -415,7 +384,12 @@ public class ShellTypes {
     public abstract static class PosixBase implements ShellType {
 
         @Override
-        public String createFileTouchCommand(String file) {
+        public String getSimpleFileWriteCommand(String content, String file) {
+            return "echo \"" + content + "\" > \"" + file + "\"";
+        }
+
+        @Override
+        public String getFileTouchCommand(String file) {
             return "touch \"" + file + "\"";
         }
 
@@ -429,12 +403,12 @@ public class ShellTypes {
         }
 
         @Override
-        public String createFileDeleteCommand(String file) {
+        public String getFileDeleteCommand(String file) {
             return "rm -rf \"" + file + "\"";
         }
 
         @Override
-        public String createWhichCommand(String executable) {
+        public String getWhichCommand(String executable) {
             return "which \"" + executable + "\"";
         }
 
@@ -449,20 +423,25 @@ public class ShellTypes {
         }
 
         @Override
-        public String commandWithVariable(String key, String value, String command) {
-            return getSetVariableCommand(key, value) + " " + command;
+        public String addInlineVariablesToCommand(Map<String, String> variables, String command) {
+            var content = "";
+            for (Map.Entry<String, String> e : variables.entrySet()) {
+                content += e.getKey() + "=\"" + e.getValue() + "\"";
+                content += getConcatenationOperator();
+            }
+            return content + command;
         }
 
         @Override
         public String getPauseCommand() {
-            return "bash -c read -rsp \"Press any key to continue...\n\" -n 1 key";
+            return "bash -c read -rsp \"Press any key to continue...\" -n 1 key";
         }
 
         public abstract String getName();
 
         @Override
-        public String createInitFileContent(String command) {
-            return command;
+        public String prepareScriptContent(String content) {
+            return content;
         }
 
         @Override
@@ -481,23 +460,6 @@ public class ShellTypes {
         }
 
         @Override
-        public String getTerminalFileOpenCommand(String file) {
-            return String.format("%s -i -c \"%s\"", getExecutable(), file);
-        }
-
-        @Override
-        public void elevate(ShellProcessControl control, String command, String displayCommand) throws Exception {
-            if (control.getElevationPassword() == null) {
-                control.executeCommand("SUDO_ASKPASS=/bin/false sudo -n -p \"\" -S -- " + command);
-                return;
-            }
-
-            // For sudo to always query for a password by using the -k switch
-            control.executeCommand("sudo -p \"\" -k -S -- " + command);
-            control.writeLine(control.getElevationPassword().getSecretValue());
-        }
-
-        @Override
         public String getExitCodeVariable() {
             return "?";
         }
@@ -508,18 +470,8 @@ public class ShellTypes {
         }
 
         @Override
-        public String queryShellProcessId(ShellProcessControl control) throws Exception {
-            try (CommandProcessControl c = control.command("echo $$").start()) {
-                var out = c.readOnlyStdout();
-                var matcher = Pattern.compile("\\d+$").matcher(out);
-                matcher.find();
-                return matcher.group(0);
-            }
-        }
-
-        @Override
-        public String getSetVariableCommand(String variableName, String value) {
-            return variableName + "=\"" + value + "\"";
+        public String getSetVariableCommand(String variable, String value) {
+            return "export " + variable + "=\"" + value + "\"";
         }
 
         @Override
@@ -533,22 +485,22 @@ public class ShellTypes {
         }
 
         @Override
-        public List<String> createMkdirsCommand(String dirs) {
+        public List<String> getMkdirsCommand(String dirs) {
             return List.of("mkdir", "-p", dirs);
         }
 
         @Override
-        public String createFileReadCommand(String file) {
+        public String getFileReadCommand(String file) {
             return "cat \"" + file + "\"";
         }
 
         @Override
-        public String createFileWriteCommand(String file) {
+        public String getStreamFileWriteCommand(String file) {
             return "cat > \"" + file + "\"";
         }
 
         @Override
-        public String createFileExistsCommand(String file) {
+        public String getFileExistsCommand(String file) {
             return String.format("test -f \"%s\" || test -d \"%s\"", file, file);
         }
 
@@ -563,7 +515,7 @@ public class ShellTypes {
         }
 
         @Override
-        public boolean echoesInput() {
+        public boolean doesRepeatInput() {
             return false;
         }
     }
@@ -572,6 +524,11 @@ public class ShellTypes {
     @Value
     @EqualsAndHashCode(callSuper = false)
     public static class Sh extends PosixBase {
+
+        @Override
+        public String getStreamFileWriteCommand(String file) {
+            throw new UnsupportedOperationException();
+        }
 
         @Override
         public String getExecutable() {

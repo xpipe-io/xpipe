@@ -1,7 +1,6 @@
 package io.xpipe.core.impl;
 
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.process.ShellTypes;
 
 import java.util.ServiceLoader;
 
