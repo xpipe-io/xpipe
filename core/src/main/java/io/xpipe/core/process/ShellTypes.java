@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -103,6 +104,10 @@ public class ShellTypes {
         @Override
         public String prepareScriptContent(String content) {
             return "@echo off\n" + content;
+        }
+
+        @Override
+        public void disableHistory(ShellProcessControl pc) throws IOException {
         }
 
         @Override
@@ -211,6 +216,11 @@ public class ShellTypes {
     @JsonTypeName("powershell")
     @Value
     public static class PowerShell implements ShellType {
+
+        @Override
+        public void disableHistory(ShellProcessControl pc) throws Exception {
+            pc.executeCommand("Set-PSReadLineOption -HistorySaveStyle SaveNothing");
+        }
 
         @Override
         public String addInlineVariablesToCommand(Map<String, String> variables, String command) {
@@ -447,6 +457,11 @@ public class ShellTypes {
         @Override
         public String getPrintVariableCommand(String prefix, String name) {
             return "echo " + prefix + "$" + name;
+        }
+
+        @Override
+        public void disableHistory(ShellProcessControl pc) throws Exception {
+            pc.executeCommand("unset HISTFILE");
         }
 
         @Override

@@ -3,6 +3,7 @@ package io.xpipe.core.process;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,8 @@ public interface ShellType {
                         : s)
                 .collect(Collectors.joining(" "));
     }
+
+    void disableHistory(ShellProcessControl pc) throws Exception;
 
     default String getExitCommand() {
         return "exit";
