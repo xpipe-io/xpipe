@@ -27,6 +27,10 @@ public abstract class LocalProcessControlProvider {
     }
 
     public static ShellProcessControl create() {
+        if (INSTANCE == null) {
+            throw new IllegalStateException("Not initialized");
+        }
+
         return INSTANCE.createProcessControl();
     }
 
