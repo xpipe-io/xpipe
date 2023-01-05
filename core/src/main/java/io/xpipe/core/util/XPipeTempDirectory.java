@@ -3,16 +3,19 @@ package io.xpipe.core.util;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.store.ShellStore;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class XPipeTempDirectory {
 
-    public static Path getLocal() throws Exception {
-        try (var pc = ShellStore.local().create().start()) {
-            return Path.of(get(pc));
+    public static Path getLocal() {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            return Path.of(System.getenv("TEMP")).resolve("xpipe");
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return Path.of("/tmp/xpipe");
+        } else {
+            return Path.of(System.getenv("TMPDIR"), "xpipe");
         }
     }
 
@@ -24,7 +27,7 @@ public class XPipeTempDirectory {
             proc.executeSimpleCommand(proc.getShellType().flatten(proc.getShellType().getMkdirsCommand(dir)), "Unable to access or create temporary directory " + dir);
 
             if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MAC)) {
-                proc.executeSimpleCommand("(chmod -f 777 \"" + dir + "\"");
+                proc.executeSimpleCommand("chmod -f 777 \"" + dir + "\"");
             }
         }
 

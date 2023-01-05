@@ -30,21 +30,37 @@ public class XPipeSession {
 
     private static XPipeSession INSTANCE;
 
-    public static void init(UUID buildSessionId) throws Exception {
-        var sessionFile = XPipeTempDirectory.getLocal().resolve("xpipe_session");
-        var isNew = !Files.exists(sessionFile);
-        var systemSessionId = isNew ? UUID.randomUUID() : UUID.fromString(Files.readString(sessionFile));
-
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            var pf = Path.of("C:\\pagefile.sys");
-            BasicFileAttributes attr = Files.readAttributes(pf, BasicFileAttributes.class);
-            var timeUuid = UUID.nameUUIDFromBytes(attr.creationTime().toInstant().toString().getBytes());
-            isNew = isNew && timeUuid.equals(systemSessionId);
-            systemSessionId = timeUuid;
+    public static void init(UUID buildSessionId) {
+        if (INSTANCE != null) {
+            return;
         }
 
-        Files.writeString(sessionFile, systemSessionId.toString());
-        INSTANCE = new XPipeSession(isNew, UUID.randomUUID(), buildSessionId, systemSessionId);
+        var sessionFile = XPipeTempDirectory.getLocal().resolve("xpipe_session");
+        var isNewSystemSession = !Files.exists(sessionFile);
+        var systemSessionId = isNewSystemSession
+                ? UUID.randomUUID()
+                : UuidHelper.parse(() -> Files.readString(sessionFile)).orElse(UUID.randomUUID());
+
+        try {
+            if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                var pf = Path.of("C:\\pagefile.sys");
+                BasicFileAttributes attr = Files.readAttributes(pf, BasicFileAttributes.class);
+                var timeUuid = UUID.nameUUIDFromBytes(
+                        attr.creationTime().toInstant().toString().getBytes());
+                isNewSystemSession = isNewSystemSession && timeUuid.equals(systemSessionId);
+                systemSessionId = timeUuid;
+            }
+        } catch (Exception ex) {
+            isNewSystemSession = true;
+            systemSessionId = UUID.randomUUID();
+        }
+
+        try {
+            Files.writeString(sessionFile, systemSessionId.toString());
+        } catch (Exception ignored) {
+        }
+
+        INSTANCE = new XPipeSession(isNewSystemSession, UUID.randomUUID(), buildSessionId, systemSessionId);
     }
 
     public static XPipeSession get() {
