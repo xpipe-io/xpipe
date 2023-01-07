@@ -40,7 +40,7 @@ public interface DataStoreProvider {
     }
 
     default GuiDialog guiDialog(Property<DataStore> store) {
-        throw new ExtensionException("Gui Dialog is not implemented by provider " + getId());
+        return null;
     }
 
     default boolean init() throws Exception {
