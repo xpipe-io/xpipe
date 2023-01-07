@@ -35,6 +35,7 @@ public class CustomComboBoxBuilder<T> {
     private final List<T> filterable = new ArrayList<>();
     private BiPredicate<T, String> filterPredicate;
     private Node filterNode;
+    private Function<T, Node> unknownNode;
 
     public CustomComboBoxBuilder(
             Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto
@@ -48,6 +49,10 @@ public class CustomComboBoxBuilder<T> {
     public void addAction(Node node, Runnable run) {
         nodes.add(node);
         actionsMap.put(node, run);
+    }
+
+    public void setUnknownNode(Function<T, Node> node) {
+        unknownNode = node;
     }
 
     public Node add(T val) {
@@ -101,8 +106,8 @@ public class CustomComboBoxBuilder<T> {
                     .filter(e -> Objects.equals(c, e.getValue()))
                     .map(e -> e.getKey())
                     .findAny()
-                    .orElse(null);
-            cb.setValue(Optional.ofNullable(item).orElse(emptyNode));
+                            .orElse(c == null || unknownNode == null? emptyNode : unknownNode.apply(c));
+            cb.setValue(item);
         });
         cb.valueProperty().addListener((c, o, n) -> {
             if (nodeMap.containsKey(n)) {
@@ -161,7 +166,9 @@ public class CustomComboBoxBuilder<T> {
                 return;
             }
 
+            // Case for dynamically created unknown nodes
             if (!nodeMap.containsKey(item)) {
+                setGraphic(item);
                 return;
             }
 

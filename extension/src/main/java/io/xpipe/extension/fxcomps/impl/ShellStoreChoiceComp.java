@@ -3,7 +3,6 @@ package io.xpipe.extension.fxcomps.impl;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.extension.DataStoreProviders;
 import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import io.xpipe.extension.util.CustomComboBoxBuilder;
 import io.xpipe.extension.util.XPipeDaemon;
@@ -37,7 +36,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                 .filter(e -> e.equals(s))
                 .findAny()
                 .flatMap(store -> XPipeDaemon.getInstance().getStoreName(store))
-                .orElse("?");
+                .orElse(I18n.get("unknown"));
 
         return new Label(name, imgView);
     }
@@ -45,41 +44,15 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
     @Override
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
-        var comboBox = new CustomComboBoxBuilder<T>(selected, this::createGraphic, null, n -> {
-            if (n != null) {
-                try {
-                    n.checkComplete();
-                    // n.test();
-                } catch (Exception ex) {
-                    var name = XPipeDaemon.getInstance().getNamedStores().stream()
-                            .filter(e -> e.equals(n))
-                            .findAny()
-                            .flatMap(store -> XPipeDaemon.getInstance().getStoreName(store))
-                            .orElse("?");
-                    ErrorEvent.fromMessage(I18n.get("extension.namedHostNotActive", name))
-                            .reportable(false)
-                            .handle();
-                    return false;
-                }
-            }
-
-            //            if (n != null && !supportCheck.test(n)) {
-            //                var name = XPipeDaemon.getInstance().getNamedStores().stream()
-            //                        .filter(e -> e.equals(n)).findAny()
-            //                        .flatMap(store ->
-            // XPipeDaemon.getInstance().getStoreName(store)).orElse(I18n.get("localMachine"));
-            //                ErrorEvent.fromMessage(I18n.get("extension.namedHostFeatureUnsupported",
-            // name)).reportable(false).handle();
-            //                return false;
-            //            }
-            return true;
-        });
+        var comboBox = new CustomComboBoxBuilder<T>(selected, this::createGraphic, new Label(I18n.get("none")), n -> true);
+        comboBox.setUnknownNode(t -> createGraphic(t));
 
         var available = XPipeDaemon.getInstance().getNamedStores().stream()
                 .filter(s -> s != self)
                 .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
                 .map(s -> (ShellStore) s)
                 .toList();
+
         available.forEach(s -> comboBox.add((T) s));
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("choice-comp");

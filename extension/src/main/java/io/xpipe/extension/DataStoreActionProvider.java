@@ -52,4 +52,8 @@ public interface DataStoreActionProvider<T extends DataStore> {
 
     default void execute(T store) throws Exception {
     }
+
+    default boolean showIfDisabled() {
+        return true;
+    }
 }
