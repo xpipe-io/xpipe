@@ -15,7 +15,7 @@ public class BeaconConfig {
     private static final String ATTACH_DEBUGGER_PROP = "io.xpipe.beacon.attachDebuggerToDaemon";
     private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.printDaemonOutput";
     private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.customDaemonCommand";
-    private static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
+    public static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
     private static final String LOCAL_PROXY_PROP = "io.xpipe.beacon.localProxy";
 
     public static boolean localProxy() {

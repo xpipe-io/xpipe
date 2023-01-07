@@ -1,6 +1,7 @@
 package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,12 @@ public class JacksonMapper {
     private static final ObjectMapper DEFAULT;
     private static ObjectMapper INSTANCE = new ObjectMapper();
     private static boolean init = false;
+
+    public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
+        var mapper = getDefault();
+        var tree = mapper.readTree(s);
+        return mapper.treeToValue(tree, c);
+    }
 
     static {
         ObjectMapper objectMapper = BASE;
