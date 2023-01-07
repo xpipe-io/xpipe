@@ -22,7 +22,7 @@ public class SecretFieldComp extends Comp<CompStructure<TextField>> {
         var text = new PasswordField();
         text.setText(value.getValue() != null ? value.getValue().getSecretValue() : null);
         text.textProperty().addListener((c, o, n) -> {
-            value.setValue(n != null && n.length() > 0 ? SecretValue.create(n) : null);
+            value.setValue(n != null && n.length() > 0 ? SecretValue.encrypt(n) : null);
         });
         value.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {

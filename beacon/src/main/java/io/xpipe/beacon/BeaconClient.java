@@ -337,6 +337,19 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
+    @JsonTypeName("daemon")
+    @Value
+    @Builder
+    @Jacksonized
+    @EqualsAndHashCode(callSuper = false)
+    public static class DaemonInformation extends ClientInformation {
+
+        @Override
+        public String toDisplayString() {
+            return "Daemon";
+        }
+    }
+
     @JsonTypeName("gateway")
     @Value
     @Builder

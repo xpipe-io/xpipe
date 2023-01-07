@@ -50,6 +50,10 @@ public interface DataStoreProvider {
     default void storageInit() throws Exception {
     }
 
+    default boolean isShareable() {
+        return false;
+    }
+
     String queryInformationString(DataStore store, int length) throws Exception;
 
     public String toSummaryString(DataStore store, int length);
