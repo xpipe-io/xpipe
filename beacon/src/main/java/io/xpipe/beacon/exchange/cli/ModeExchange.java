@@ -3,6 +3,7 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.core.util.XPipeDaemonMode;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -20,12 +21,14 @@ public class ModeExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        String modeId;
+        XPipeDaemonMode mode;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
+        @NonNull
+        XPipeDaemonMode usedMode;
     }
 }
