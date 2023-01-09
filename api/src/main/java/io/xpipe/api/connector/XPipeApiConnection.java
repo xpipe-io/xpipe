@@ -6,6 +6,7 @@ import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.exchange.cli.DialogExchange;
 import io.xpipe.core.dialog.DialogReference;
+import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.util.Optional;
@@ -133,7 +134,7 @@ public final class XPipeApiConnection extends BeaconConnection {
 
     private void start() throws Exception {
         var installation = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
-        BeaconServer.start(installation);
+        BeaconServer.start(installation, XPipeDaemonMode.BACKGROUND);
     }
 
     @FunctionalInterface

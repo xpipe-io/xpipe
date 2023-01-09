@@ -4,6 +4,7 @@ import io.xpipe.beacon.exchange.StopExchange;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.io.BufferedReader;
@@ -39,10 +40,10 @@ public class BeaconServer {
         return null;
     }
 
-    public static Process start(String installationBase) throws Exception {
+    public static Process start(String installationBase, XPipeDaemonMode mode) throws Exception {
         String command;
         if (!BeaconConfig.launchDaemonInDebugMode()) {
-            command = XPipeInstallation.createExternalAsyncLaunchCommand(installationBase, BeaconConfig.getDaemonArguments());
+            command = XPipeInstallation.createExternalAsyncLaunchCommand(installationBase, mode, BeaconConfig.getDaemonArguments());
         } else {
             command = XPipeInstallation.createExternalLaunchCommand(
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments());

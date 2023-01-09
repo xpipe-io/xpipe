@@ -4,6 +4,7 @@ import io.xpipe.api.DataSource;
 import io.xpipe.beacon.BeaconDaemonController;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeSession;
 import io.xpipe.extension.XPipeServiceProviders;
 import org.junit.jupiter.api.AfterAll;
@@ -30,7 +31,7 @@ public class DaemonExtensionTest extends ExtensionTest {
         JacksonMapper.initModularized(ModuleLayer.boot());
         XPipeServiceProviders.load(ModuleLayer.boot());
         XPipeSession.init(UUID.randomUUID());
-        BeaconDaemonController.start();
+        BeaconDaemonController.start(XPipeDaemonMode.TRAY);
     }
 
     @AfterAll

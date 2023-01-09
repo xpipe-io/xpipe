@@ -1,5 +1,6 @@
 package io.xpipe.beacon;
 
+import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ public class BeaconDaemonController {
 
     private static boolean alreadyStarted;
 
-    public static void start() throws Exception {
+    public static void start(XPipeDaemonMode mode) throws Exception {
         if (BeaconServer.isRunning()) {
             alreadyStarted = true;
             return;
@@ -20,7 +21,7 @@ public class BeaconDaemonController {
             custom = true;
         } else {
             var defaultBase = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
-            process = BeaconServer.start(defaultBase);
+            process = BeaconServer.start(defaultBase, mode);
         }
 
         waitForStartup(process, custom);

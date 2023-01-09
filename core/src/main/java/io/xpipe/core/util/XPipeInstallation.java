@@ -11,15 +11,15 @@ import java.util.List;
 
 public class XPipeInstallation {
 
-    public static String createExternalAsyncLaunchCommand(String installationBase, String arguments) {
+    public static String createExternalAsyncLaunchCommand(String installationBase, XPipeDaemonMode mode, String arguments) {
         var suffix = (arguments != null ? " " + arguments : "");
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/app/bin/xpiped\" --external" + suffix + " & disown";
+            return "nohup \"" + installationBase + "/app/bin/xpiped\" --mode " + mode.getDisplayName() + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MAC)) {
-            return "open \"" + installationBase + "\" --args --external" + suffix;
+            return "open \"" + installationBase + "\" --args --mode " + mode.getDisplayName() + suffix;
         }
 
-        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\" --external" + suffix;
+        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\" --mode " + mode.getDisplayName() + suffix;
     }
 
     public static String createExternalLaunchCommand(String command, String arguments) {
