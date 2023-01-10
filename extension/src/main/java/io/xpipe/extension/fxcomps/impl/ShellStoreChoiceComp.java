@@ -14,20 +14,41 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
-/*
-TODO: Integrate store validation more into this comp.
- */
 @AllArgsConstructor
 public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
 
+    public static ShellStoreChoiceComp<ShellStore> proxy(Property<ShellStore> selected) {
+        return new ShellStoreChoiceComp<>(Mode.PROXY_CHOICE, null, selected, ShellStore.class, shellStore -> true);
+    }
+
+    public static ShellStoreChoiceComp<ShellStore> host(Property<ShellStore> selected) {
+        return new ShellStoreChoiceComp<>(Mode.HOST_CHOICE, null, selected, ShellStore.class, shellStore -> true);
+    }
+
+
+    public static ShellStoreChoiceComp<ShellStore> proxy(ShellStore self, Property<ShellStore> selected) {
+        return new ShellStoreChoiceComp<>(Mode.PROXY_CHOICE, self, selected, ShellStore.class, shellStore -> true);
+    }
+
+    public static ShellStoreChoiceComp<ShellStore> host(ShellStore self, Property<ShellStore> selected) {
+        return new ShellStoreChoiceComp<>(Mode.HOST_CHOICE, self, selected, ShellStore.class, shellStore -> true);
+    }
+
+    public static enum Mode {
+        HOST_CHOICE,
+        PROXY_CHOICE
+    }
+
+    private final Mode mode;
     private final T self;
     private final Property<T> selected;
     private final Class<T> storeClass;
     private final Predicate<T> applicableCheck;
 
-    private Region createGraphic(T s) {
+    protected Region createGraphic(T s) {
         var provider = DataStoreProviders.byStore(s);
         var imgView =
                 new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName()), 16, 16).createRegion();
@@ -35,7 +56,13 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
         var name = XPipeDaemon.getInstance().getNamedStores().stream()
                 .filter(e -> e.equals(s))
                 .findAny()
-                .flatMap(store -> XPipeDaemon.getInstance().getStoreName(store))
+                .flatMap(store -> {
+                    if (ShellStore.isLocal(store.asNeeded()) && mode == Mode.PROXY_CHOICE) {
+                        return Optional.of(I18n.get("none"));
+                    }
+
+                    return XPipeDaemon.getInstance().getStoreName(store);
+                })
                 .orElse(I18n.get("unknown"));
 
         return new Label(name, imgView);
