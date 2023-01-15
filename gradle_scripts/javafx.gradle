@@ -8,6 +8,10 @@ if (currentOS.isWindows()) {
     platform = 'linux'
 } else if (currentOS.isMacOsX()) {
     platform = 'mac'
+    def macArch = System.getProperty ("os.arch");
+    if (macArch == 'aarch64') {
+        platform = 'mac-aarch64'
+    }
 }
 
 configurations {
