@@ -106,7 +106,7 @@ public class TrackEvent {
 
     @Override
     public String toString() {
-        var s = new StringBuilder(message);
+        var s = new StringBuilder(message != null ? message : "");
         if (tags.size() > 0) {
             s.append(" {\n");
             for (var e : tags.entrySet()) {

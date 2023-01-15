@@ -5,6 +5,7 @@ import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellProcessControl;
+import lombok.SneakyThrows;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -27,8 +28,13 @@ public class XPipeInstallation {
         return "\"" + command + "\" --external" + suffix;
     }
 
+    @SneakyThrows
     public static Path getLocalInstallationBasePath() {
-        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow());
+        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
+        if (!path.isAbsolute()) {
+            path = Path.of(System.getProperty("user.dir")).resolve(path).toRealPath();
+        }
+
         var name = path.getFileName().toString();
         if (name.endsWith("java") || name.endsWith("java.exe")) {
             var isImage = ModuleHelper.isImage();
@@ -55,13 +61,13 @@ public class XPipeInstallation {
     public static Path getLocalExtensionsDirectory() {
         Path path = getLocalInstallationBasePath();
         return OsType.getLocal().equals(OsType.MAC)
-                ? path.resolve("Contents").resolve("extensions")
+                ? path.resolve("Contents").resolve("Resources").resolve("extensions")
                 : path.resolve("extensions");
     }
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
         if (OsType.getLocal().equals(OsType.MAC)) {
-            return executable.getParent().getParent().getParent().getParent().getParent();
+            return executable.getParent().getParent().getParent().getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return executable.getParent().getParent().getParent().getParent();
         } else {
@@ -94,7 +100,7 @@ public class XPipeInstallation {
         }
 
         if (p.getOsType().equals(OsType.MAC)) {
-            return FileNames.getParent(FileNames.getParent(FileNames.getParent(FileNames.getParent(cliExecutable))));
+            return FileNames.getParent(FileNames.getParent(FileNames.getParent(cliExecutable)));
         } else {
             return FileNames.getParent(FileNames.getParent(cliExecutable));
         }
@@ -169,7 +175,7 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "scripts", "xpiped_debug.sh");
         } else {
-            return FileNames.join("Content", "scripts", "xpiped_debug.sh");
+            return FileNames.join("Content", "Resources", "scripts", "xpiped_debug.sh");
         }
     }
 
@@ -179,7 +185,7 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "scripts", "xpiped_debug_attach.sh");
         } else {
-            return FileNames.join("Content", "scripts", "xpiped_debug_attach.sh");
+            return FileNames.join("Content", "Resources", "scripts", "xpiped_debug_attach.sh");
         }
     }
 
