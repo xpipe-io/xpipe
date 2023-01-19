@@ -3,7 +3,6 @@ package io.xpipe.core.charsetter;
 import io.xpipe.core.util.Identifiers;
 import lombok.Value;
 
-import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -56,20 +55,10 @@ public class StreamCharset {
             Identifiers.get("utf", "16", "le", "bom")
     );
 
-    public static final StreamCharset UTF16 =
-            new StreamCharset(StandardCharsets.UTF_16, null, Identifiers.get("utf", "16"));
+    public static final StreamCharset UTF16 = UTF16_LE;
 
-    public static final StreamCharset UTF16_BOM = new StreamCharset(
-            StandardCharsets.UTF_16,
-            ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)
-                    ? UTF16_BE_BOM.getByteOrderMark()
-                    : UTF16_LE_BOM.getByteOrderMark(),
-            Identifiers.get("utf", "16", "bom")
-    );
+    public static final StreamCharset UTF16_BOM = UTF16_LE_BOM;
 
-    // ======
-    // UTF-32
-    // ======
     public static final List<StreamCharset> COMMON = List.of(
             UTF8,
             UTF8_BOM,
@@ -101,6 +90,10 @@ public class StreamCharset {
                     Identifiers.join(Identifiers.get("windows", "1252"), Identifiers.get("1252"))
             )
     );
+
+    // ======
+    // UTF-32
+    // ======
     public static final StreamCharset UTF32_LE =
             new StreamCharset(Charset.forName("utf-32le"), null, Identifiers.get("utf", "32", "le"));
     public static final StreamCharset UTF32_LE_BOM = new StreamCharset(

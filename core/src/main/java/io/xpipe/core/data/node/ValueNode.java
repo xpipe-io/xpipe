@@ -66,43 +66,57 @@ public abstract class ValueNode extends DataStructureNode {
 
     public static ValueNode ofBytes(byte[] data) {
         var created = of(data);
-        created.tag(IS_BINARY);
+        if (data != null) {
+        created.tag(IS_BINARY);}
         return created;
     }
 
     public static ValueNode ofText(String text) {
         var created = of(text);
-        created.tag(IS_TEXT);
+        if (text != null) {
+            created.tag(IS_TEXT);
+        }
         return created;
     }
 
     public static ValueNode ofInteger(int integer) {
         var created = of(integer);
         created.tag(IS_INTEGER);
+        created.tag(INTEGER_VALUE, integer);
         return created;
     }
 
     public static ValueNode ofInteger(BigInteger integer) {
         var created = of(integer);
-        created.tag(IS_INTEGER);
+        if (integer != null) {
+            created.tag(IS_INTEGER);
+            created.tag(INTEGER_VALUE, integer);
+        }
         return created;
     }
 
     public static ValueNode ofDecimal(double decimal) {
         var created = of(decimal);
         created.tag(IS_DECIMAL);
+        created.tag(DECIMAL_VALUE, decimal);
         return created;
     }
 
     public static ValueNode ofDecimal(BigDecimal decimal) {
         var created = of(decimal);
-        created.tag(IS_DECIMAL);
+        if (decimal != null) {
+            created.tag(IS_DECIMAL);
+            created.tag(DECIMAL_VALUE, decimal);
+        }
         return created;
     }
 
     public static ValueNode ofBoolean(Boolean bool) {
         var created = of(bool);
-        created.tag(IS_BOOLEAN);
+        if (bool != null) {
+            created.tag(IS_BOOLEAN);
+            created.tag(bool ? BOOLEAN_TRUE : BOOLEAN_FALSE);
+        }
         return created;
     }
 

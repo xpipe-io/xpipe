@@ -1,7 +1,6 @@
 package io.xpipe.extension.fxcomps.util;
 
 import javafx.beans.binding.Binding;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
@@ -15,12 +14,12 @@ public class BindingsHelper {
     /*
     TODO: Proper cleanup. Maybe with a separate thread?
      */
-    private static final Map<WeakReference<Object>, Set<ObservableValue<?>>> BINDINGS = new ConcurrentHashMap<>();
+    private static final Map<WeakReference<Object>, Set<javafx.beans.Observable>> BINDINGS = new ConcurrentHashMap<>();
 
     public static <T extends Binding<?>> T persist(T binding) {
-        var dependencies = new HashSet<ObservableValue<?>>();
+        var dependencies = new HashSet<javafx.beans.Observable>();
         while (dependencies.addAll(binding.getDependencies().stream()
-                                           .map(o -> (ObservableValue<?>) o)
+                                           .map(o -> (javafx.beans.Observable) o)
                                            .toList())) {
         }
         dependencies.add(binding);

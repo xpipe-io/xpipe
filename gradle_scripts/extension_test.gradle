@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 apply from: "$buildscript.sourceFile/../junit.gradle"
 
 def useExtension = System.getProperty('excludeExtensionLibrary') == null
@@ -33,8 +35,10 @@ test {
             " -Dio.xpipe.beacon.printMessages=false" +
             " -Dio.xpipe.app.logLevel=trace"
 
-    if (findProject(':app') != null) {
-        systemProperty "io.xpipe.beacon.customDaemonCommand", "cmd.exe /c start \"\"X-Pipe Debug\"\" /i \"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
+    // Use cmd window for tests
+    if (findProject(':app') != null && System.getenv("XPIPE_MAPPING") != null && DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        systemProperty "io.xpipe.beacon.customDaemonCommand",
+                       "cmd.exe /c start \"\"X-Pipe Debug\"\" /i \"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
     }
 
 

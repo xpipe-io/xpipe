@@ -20,10 +20,10 @@ public abstract class LocalProcessControlProvider {
         INSTANCE = layer != null
                 ? ServiceLoader.load(layer, LocalProcessControlProvider.class)
                 .findFirst()
-                .orElseThrow()
+                .orElse(null)
                 : ServiceLoader.load(LocalProcessControlProvider.class)
                 .findFirst()
-                .orElseThrow();
+                .orElse(null);
     }
 
     public static ShellProcessControl create() {
