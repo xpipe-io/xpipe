@@ -1,10 +1,11 @@
 package io.xpipe.core.impl;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -17,13 +18,15 @@ import java.io.*;
 @SuperBuilder
 @Jacksonized
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class InMemoryStore extends JacksonizedValue implements StreamDataStore {
 
     private byte[] value;
 
-    @JsonCreator
-    public InMemoryStore(byte[] value) {
-        this.value = value;
+    @Override
+    public String toString() {
+        return value != null && value.length > 100 ? "<memory>" : (value != null ? new String(value) : "null");
     }
 
     @Override
@@ -33,7 +36,7 @@ public class InMemoryStore extends JacksonizedValue implements StreamDataStore {
 
     @Override
     public InputStream openInput() throws Exception {
-        return new ByteArrayInputStream(value);
+        return value != null ? new ByteArrayInputStream(value) : InputStream.nullInputStream();
     }
 
     @Override

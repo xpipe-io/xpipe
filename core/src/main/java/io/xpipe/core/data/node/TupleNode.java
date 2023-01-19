@@ -1,9 +1,8 @@
 package io.xpipe.core.data.node;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class TupleNode extends DataStructureNode {
 
@@ -39,6 +38,21 @@ public abstract class TupleNode extends DataStructureNode {
 
     public final boolean isTuple() {
         return true;
+    }
+
+    @Override
+    public Stream<DataStructureNode> stream() {
+        return getNodes().stream();
+    }
+
+    @Override
+    public Spliterator<DataStructureNode> spliterator() {
+        return stream().spliterator();
+    }
+
+    @Override
+    public Iterator<DataStructureNode> iterator() {
+        return stream().iterator();
     }
 
     @Override

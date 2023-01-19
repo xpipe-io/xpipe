@@ -57,6 +57,7 @@ public abstract class ArrayNode extends DataStructureNode {
         return "array node";
     }
 
+
     @Override
     public final String toString(int indent) {
         var content = getNodes().stream().map(n -> n.toString(indent)).collect(Collectors.joining(", "));

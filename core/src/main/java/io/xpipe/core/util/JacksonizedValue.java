@@ -15,7 +15,7 @@ public class JacksonizedValue {
     }
 
     @SneakyThrows
-    public final String toString() {
+    public String toString() {
         var tree = JacksonMapper.getDefault().valueToTree(this);
         return tree.toPrettyString();
     }

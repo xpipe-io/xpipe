@@ -17,6 +17,7 @@ open module io.xpipe.extension {
     requires transitive io.xpipe.core;
     requires io.xpipe.beacon;
     requires io.xpipe.api;
+    requires static org.hamcrest;
     requires com.fasterxml.jackson.databind;
     requires static com.sun.jna;
     requires static com.sun.jna.platform;

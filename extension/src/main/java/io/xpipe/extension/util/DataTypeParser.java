@@ -4,13 +4,18 @@ import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.ValueNode;
 
 import java.util.Currency;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DataTypeParser {
 
+    private static final Map<String, Currency> currencies =
+            Currency.getAvailableCurrencies().stream().collect(Collectors.toMap(currency -> currency.getSymbol(), currency -> currency));
+
     public static Optional<ValueNode> parseMonetary(String val) {
-        for (Currency availableCurrency : Currency.getAvailableCurrencies()) {
-            if (val.contains(availableCurrency.getSymbol())) {
+        for (var availableCurrency : currencies.entrySet()) {
+            if (val.contains(availableCurrency.getKey())) {
                 String newStr = DataTypeParserInternal.cleanseNumberString(val);
                 var node = DataTypeParserInternal.parseDecimalFromCleansed(newStr);
                 if (node.isEmpty()) {
@@ -18,7 +23,7 @@ public class DataTypeParser {
                 }
 
                 return Optional.of(ValueNode.ofCurrency(
-                        val, node.get().getMetaAttribute(DataStructureNode.DECIMAL_VALUE), availableCurrency));
+                        val, node.get().getMetaAttribute(DataStructureNode.DECIMAL_VALUE), availableCurrency.getValue()));
             }
         }
         return Optional.empty();

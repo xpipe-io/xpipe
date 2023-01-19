@@ -22,7 +22,16 @@ public final class TextSource extends TextDataSource<StreamDataStore> implements
 
     @Override
     protected io.xpipe.core.source.TextWriteConnection newWriteConnection(WriteMode mode) {
-        return new TextWriteConnection(this);
+        var sup = super.newWriteConnection(mode);
+        if (sup != null) {
+            return sup;
+        }
+
+        if (mode.equals(WriteMode.REPLACE)) {
+            return new TextWriteConnection(this);
+        }
+
+        throw new UnsupportedOperationException(mode.getId());
     }
 
     @Override

@@ -34,8 +34,10 @@ public class TypeConverter {
             var number = NumberUtils.createNumber(string);
             if (number instanceof Float || number instanceof Double) {
                 node.tag(DataStructureNode.IS_DECIMAL);
+                node.tag(DataStructureNode.DECIMAL_VALUE, number.doubleValue());
             } else {
                 node.tag(DataStructureNode.IS_INTEGER);
+                node.tag(DataStructureNode.INTEGER_VALUE, number.intValue());
             }
         }
     }
@@ -72,11 +74,11 @@ public class TypeConverter {
         }
 
         if (node.hasMetaAttribute(DataStructureNode.BOOLEAN_FALSE)) {
-            return Boolean.parseBoolean(node.getMetaAttribute(DataStructureNode.BOOLEAN_FALSE));
+            return false;
         }
 
         if (node.hasMetaAttribute(DataStructureNode.BOOLEAN_TRUE)) {
-            return Boolean.parseBoolean(node.getMetaAttribute(DataStructureNode.BOOLEAN_TRUE));
+            return true;
         }
 
         var string = node.asString();

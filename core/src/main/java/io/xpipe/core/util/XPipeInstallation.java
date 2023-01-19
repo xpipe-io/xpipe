@@ -23,9 +23,9 @@ public class XPipeInstallation {
         return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\" --mode " + mode.getDisplayName() + suffix;
     }
 
-    public static String createExternalLaunchCommand(String command, String arguments) {
+    public static String createExternalLaunchCommand(String command, String arguments, XPipeDaemonMode mode) {
         var suffix = (arguments != null ? " " + arguments : "");
-        return "\"" + command + "\" --external" + suffix;
+        return "\"" + command + "\" --mode " + mode.getDisplayName() + suffix;
     }
 
     @SneakyThrows

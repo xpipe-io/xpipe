@@ -41,8 +41,17 @@ public interface DataSource {
      *
      * @return the generator data source
      */
-    @Deprecated
-    static DataSource supplySource() {
+    static DataSource drain() {
+        return null;
+    }
+
+    /**
+     * NOT YET IMPLEMENTED!
+     * <p>
+     * Creates a data source sink that will block with any read operations
+     * until an external data producer routes the output into this sink.
+     */
+    static DataSource sink() {
         return null;
     }
 
