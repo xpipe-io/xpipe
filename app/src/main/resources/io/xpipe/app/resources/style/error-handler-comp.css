@@ -1,0 +1,33 @@
+.error-handler-comp .top {
+-fx-padding: 1.0em 1.5em 1.0em 1.5em;
+-fx-spacing: 1em;
+}
+
+.error-handler-comp .actions {
+-fx-spacing: 0.3em;
+}
+
+.error-handler-comp .details {
+-fx-padding: 0 1.5em 1.0em 1.5em;
+}
+
+.error-report .report {
+-fx-padding: 1.0em 1.5em 1em 1.5em;
+-fx-spacing: 1.3em;
+}
+
+.error-report .report, .error-report .attachments {
+-fx-spacing: 0.3em;
+}
+
+.error-report .attachments .attachment-list {
+-fx-padding: 0.5em;
+}
+
+.error-report .buttons {
+-fx-border-color: -xp-border;
+-fx-border-width: 0.1em 0 0 0;
+-fx-padding: 1.0em 1.5em 1em 1.5em;
+-fx-background-color: -xp-base-accent;
+-fx-effect: dropshadow(three-pass-box, #333, 6, 0, 0, -1);
+}

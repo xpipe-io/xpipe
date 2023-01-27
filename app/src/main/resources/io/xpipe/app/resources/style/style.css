@@ -1,0 +1,47 @@
+* {
+-fx-text-fill: -xp-text-base;
+}
+
+.window-content {
+-fx-padding: 1.2em;
+}
+
+.radio-button
+{
+    -fx-text-fill: -xp-text-accent-base;
+}
+
+.message-comp {
+-fx-padding: 0.6em;
+-fx-background-color: #FF9999AA;
+-fx-border-width: 1px;
+-fx-border-color: -xp-border;
+-fx-border-radius: 2px;
+}
+
+.icon-button-comp {
+ -fx-padding: 0.05em;
+}
+
+.background {
+-fx-transparency: 10%;
+}
+
+.scroll-pane {
+-fx-background-color:transparent;
+}
+
+.jfx-list-view {
+ -fx-background-insets: 0;
+ -fx-padding: 0;
+}
+
+.loading-comp .spinner {
+-jfx-radius: 2.15em;
+-fx-background-color:transparent;
+}
+
+.loading-comp {
+-fx-background-color: #FFFFFFAA;
+}
+

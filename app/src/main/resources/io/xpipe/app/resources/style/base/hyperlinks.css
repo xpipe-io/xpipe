@@ -1,0 +1,6 @@
+.hyperlink {
+-fx-text-fill: #4FA64F;
+-fx-underline: true;
+-fx-border-color: transparent;
+-fx-padding: 0;
+}

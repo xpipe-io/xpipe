@@ -1,0 +1,41 @@
+dependencies {
+    implementation files("$buildDir/generated-modules/sentry-6.11.0.jar")
+}
+
+addDependenciesModuleInfo {
+    overwriteExistingFiles = true
+    jdepsExtraArgs = ['-q']
+    outputDirectory = file("$buildDir/generated-modules")
+    modules {
+        module {
+            artifact 'io.sentry:sentry:6.11.0'
+            moduleInfoSource = '''
+                module io.sentry {
+                    exports io.sentry;
+                    opens io.sentry;
+                    
+                    exports io.sentry.protocol;
+                    opens io.sentry.protocol;
+                    
+                    exports io.sentry.config;
+                    opens io.sentry.config;
+                    
+                    exports io.sentry.transport;
+                    opens io.sentry.transport;
+                    
+                    exports io.sentry.util;
+                    opens io.sentry.util;
+                                        
+                    exports io.sentry.cache;
+                    opens io.sentry.cache;
+                                        
+                    exports io.sentry.exception;
+                    opens io.sentry.exception;
+                                        
+                    exports io.sentry.hints;
+                    opens io.sentry.hints;
+                }
+            '''
+        }
+    }
+}

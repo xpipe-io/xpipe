@@ -1,0 +1,87 @@
+dependencies {
+    implementation files("$buildDir/generated-modules/richtextfx-0.10.6.jar")
+    implementation files("$buildDir/generated-modules/flowless-0.6.6.jar")
+    implementation files("$buildDir/generated-modules/undofx-2.1.1.jar")
+    implementation files("$buildDir/generated-modules/wellbehavedfx-0.3.3.jar")
+    implementation files("$buildDir/generated-modules/reactfx-2.0-M5.jar")
+}
+
+addDependenciesModuleInfo {
+    overwriteExistingFiles = true
+    jdepsExtraArgs = ['-q']
+    outputDirectory = file("$buildDir/generated-modules")
+    modules {
+        module {
+            artifact group: 'org.fxmisc.flowless', name: 'flowless', version: '0.6.6'
+            moduleInfoSource = '''
+                module org.fxmisc.flowless {
+                    exports org.fxmisc.flowless;
+                    requires static javafx.base;
+                    requires static javafx.controls;
+                    requires org.reactfx;
+                    requires org.fxmisc.wellbehavedfx;
+                }
+            '''
+        }
+
+        module {
+            artifact group: 'org.fxmisc.undo', name: 'undofx', version: '2.1.1'
+            moduleInfoSource = '''
+                module org.fxmisc.undofx {
+                    exports org.fxmisc.undo;
+                    requires static javafx.base;
+                    requires static javafx.controls;
+                    requires org.reactfx;
+                    requires org.fxmisc.wellbehavedfx;
+                }
+            '''
+        }
+
+        module {
+            artifact group: 'org.fxmisc.wellbehaved', name: 'wellbehavedfx', version: '0.3.3'
+            moduleInfoSource = '''
+                module org.fxmisc.wellbehavedfx {
+                    exports org.fxmisc.wellbehaved.event;
+                    exports org.fxmisc.wellbehaved.event.template;
+                    
+                    requires static javafx.base;
+                    requires static javafx.controls;
+                    requires org.reactfx;
+                }
+            '''
+        }
+
+        module {
+            artifact group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.6'
+            moduleInfoSource = '''
+                module org.fxmisc.richtext {
+                    exports org.fxmisc.richtext;
+                    exports org.fxmisc.richtext.model;
+                    exports org.fxmisc.richtext.event;
+                    
+                    requires org.fxmisc.flowless;
+                    requires org.fxmisc.undofx;
+                    requires org.fxmisc.wellbehavedfx;
+                    requires static javafx.base;
+                    requires static javafx.controls;
+                    requires org.reactfx;
+                }
+            '''
+        }
+
+        module {
+            artifact group: 'org.reactfx', name: 'reactfx', version: '2.0-M5'
+            moduleInfoSource = '''
+                module org.reactfx {
+                    exports org.reactfx;
+                    exports org.reactfx.collection;
+                    exports org.reactfx.value;
+                    exports org.reactfx.util;
+                    
+                    requires static javafx.base;
+                    requires static javafx.controls;
+                }
+            '''
+        }
+    }
+}

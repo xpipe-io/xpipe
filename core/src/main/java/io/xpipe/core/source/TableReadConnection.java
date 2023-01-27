@@ -73,8 +73,6 @@ public interface TableReadConnection extends DataSourceReadConnection {
 
     /**
      * Consumes the table rows until the acceptor returns false.
-     *
-     * @return
      */
     void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception;
 

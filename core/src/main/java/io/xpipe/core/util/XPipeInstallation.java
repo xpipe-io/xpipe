@@ -7,20 +7,25 @@ import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellProcessControl;
 import lombok.SneakyThrows;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 public class XPipeInstallation {
 
-    public static String createExternalAsyncLaunchCommand(String installationBase, XPipeDaemonMode mode, String arguments) {
+    public static String createExternalAsyncLaunchCommand(
+            String installationBase, XPipeDaemonMode mode, String arguments) {
         var suffix = (arguments != null ? " " + arguments : "");
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/app/bin/xpiped\" --mode " + mode.getDisplayName() + suffix + " & disown";
+            return "nohup \"" + installationBase + "/app/bin/xpiped\" --mode " + mode.getDisplayName() + suffix
+                    + " & disown";
         } else if (OsType.getLocal().equals(OsType.MAC)) {
             return "open \"" + installationBase + "\" --args --mode " + mode.getDisplayName() + suffix;
         }
 
-        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\" --mode " + mode.getDisplayName() + suffix;
+        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
+                + "\" --mode " + mode.getDisplayName() + suffix;
     }
 
     public static String createExternalLaunchCommand(String command, String arguments, XPipeDaemonMode mode) {
@@ -30,7 +35,8 @@ public class XPipeInstallation {
 
     @SneakyThrows
     public static Path getLocalInstallationBasePath() {
-        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
+        Path path =
+                Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
         if (!path.isAbsolute()) {
             path = Path.of(System.getProperty("user.dir")).resolve(path).toRealPath();
         }
@@ -43,7 +49,30 @@ public class XPipeInstallation {
             }
             return getLocalInstallationBasePathForJavaExecutable(path);
         } else {
-            return getLocalInstallationBasePathForExecutable(path);
+            return getLocalInstallationBasePathForDaemonExecutable(path);
+        }
+    }
+
+    public static boolean isInstallationDistribution() {
+        var base = getLocalInstallationBasePath();
+        if (OsType.getLocal().equals(OsType.MAC)) {
+            if (!base.toString().equals(getLocalDefaultInstallationBasePath(false))) {
+                return false;
+            }
+
+            try {
+                var process = new ProcessBuilder("pkgutil", "--pkg-info", "io.xpipe.xpipe")
+                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                        .redirectError(ProcessBuilder.Redirect.DISCARD)
+                        .start();
+                process.waitFor();
+                return process.exitValue() == 0;
+            } catch (Exception ex) {
+                return false;
+            }
+        } else {
+            var file = base.resolve("installation");
+            return Files.exists(file);
         }
     }
 
@@ -54,7 +83,11 @@ public class XPipeInstallation {
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return path.resolve("lib").resolve("runtime").resolve("lib");
         } else {
-            return path.resolve("Contents").resolve("runtime").resolve("Contents").resolve("Home").resolve("lib");
+            return path.resolve("Contents")
+                    .resolve("runtime")
+                    .resolve("Contents")
+                    .resolve("Home")
+                    .resolve("lib");
         }
     }
 
@@ -67,7 +100,13 @@ public class XPipeInstallation {
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
         if (OsType.getLocal().equals(OsType.MAC)) {
-            return executable.getParent().getParent().getParent().getParent().getParent().getParent();
+            return executable
+                    .getParent()
+                    .getParent()
+                    .getParent()
+                    .getParent()
+                    .getParent()
+                    .getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return executable.getParent().getParent().getParent().getParent();
         } else {
@@ -75,7 +114,7 @@ public class XPipeInstallation {
         }
     }
 
-    private static Path getLocalInstallationBasePathForExecutable(Path executable) {
+    private static Path getLocalInstallationBasePathForDaemonExecutable(Path executable) {
         if (OsType.getLocal().equals(OsType.MAC)) {
             return executable.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
@@ -85,13 +124,13 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getInstallationBasePathForCLI(ShellProcessControl p, String cliExecutable) throws Exception {
-        var defaultInstallation = getDefaultInstallationBasePath(p, true);
+    public static String getLocalInstallationBasePathForCLI(String cliExecutable) throws Exception {
+        var defaultInstallation = getLocalDefaultInstallationBasePath(true);
         if (cliExecutable == null) {
             return defaultInstallation;
         }
 
-        if (p.getOsType().equals(OsType.LINUX) && cliExecutable.equals("/usr/bin/xpipe")) {
+        if (OsType.getLocal().equals(OsType.LINUX) && cliExecutable.equals("/usr/bin/xpipe")) {
             return defaultInstallation;
         }
 
@@ -99,11 +138,20 @@ public class XPipeInstallation {
             return defaultInstallation;
         }
 
-        if (p.getOsType().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MAC)) {
             return FileNames.getParent(FileNames.getParent(FileNames.getParent(cliExecutable)));
         } else {
             return FileNames.getParent(FileNames.getParent(cliExecutable));
         }
+    }
+
+    public static String queryLocalInstallationVersion(String exec) throws Exception {
+        var process = new ProcessBuilder(exec, "version")
+                .redirectError(ProcessBuilder.Redirect.DISCARD)
+                .start();
+        var v = new String(process.getInputStream().readAllBytes(), StandardCharsets.US_ASCII);
+        process.waitFor();
+        return v;
     }
 
     public static String queryInstallationVersion(ShellProcessControl p, String exec) throws Exception {
@@ -148,7 +196,8 @@ public class XPipeInstallation {
         return path;
     }
 
-    public static String getDefaultInstallationBasePath(ShellProcessControl p, boolean acceptPortable) throws Exception {
+    public static String getDefaultInstallationBasePath(ShellProcessControl p, boolean acceptPortable)
+            throws Exception {
         if (acceptPortable) {
             var customHome = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
             if (!customHome.isEmpty()) {

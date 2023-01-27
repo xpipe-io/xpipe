@@ -1,9 +1,7 @@
 package io.xpipe.extension.fxcomps.impl;
 
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import io.xpipe.extension.util.CustomComboBoxBuilder;
 import io.xpipe.extension.util.XPipeDaemon;
@@ -27,7 +25,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
                 .filter(e -> e.equals(store))
                 .findAny()
                 .map(e -> XPipeDaemon.getInstance().getStoreName(e).orElse("?"))
-                .orElse(I18n.get("localMachine"));
+                .orElse("?");
         return name;
     }
 
@@ -41,7 +39,6 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
     protected Region createSimple() {
         var comboBox = new CustomComboBoxBuilder<>(selected, this::createGraphic, null, v -> true);
         comboBox.addFilter((v, s) -> getName(v).toLowerCase().contains(s));
-        comboBox.add(new LocalStore());
         XPipeDaemon.getInstance().getNamedStores().stream()
                 .filter(e -> e instanceof FileSystemStore)
                 .map(e -> (FileSystemStore) e)

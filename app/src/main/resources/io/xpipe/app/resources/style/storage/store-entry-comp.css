@@ -1,0 +1,27 @@
+
+.store-entry-comp .date, .store-entry-comp .summary {
+-fx-text-fill: -xp-text-light;
+}
+
+.store-entry-comp:failed .jfx-text-field {
+-fx-text-fill: red;
+}
+
+.store-entry-comp:incomplete .jfx-text-field {
+-fx-text-fill: gray;
+}
+.store-entry-comp:incomplete .summary {
+-fx-text-fill: gray;
+}
+.store-entry-comp:incomplete .information {
+-fx-text-fill: gray;
+}
+.store-entry-comp:incomplete .date {
+-fx-text-fill: gray;
+}
+.store-entry-comp:incomplete .icon {
+-fx-opacity: 0.5;
+}
+
+
+

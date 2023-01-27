@@ -20,7 +20,7 @@ public interface DataSourceActionProvider<T extends DataSource<?>> {
                                .filter(provider -> {
                                    try {
                                        return provider.isActive();
-                                   } catch (Exception e) {
+                                   } catch (Throwable e) {
                                        ErrorEvent.fromThrowable(e).handle();
                                        return false;
                                    }

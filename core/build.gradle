@@ -5,9 +5,9 @@ plugins {
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-apply from: "$projectDir/../gradle_scripts/java.gradle"
-apply from: "$projectDir/../gradle_scripts/lombok.gradle"
-apply from: "$projectDir/../gradle_scripts/junit.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
 
 compileJava {
     options.compilerArgs << '-parameters'
@@ -20,7 +20,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "2.13.0"
 }
 
-version = file('../misc/version').text
+version = file("$rootDir/dist/version").text
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-core'
 
@@ -28,5 +28,10 @@ repositories {
     mavenCentral()
 }
 
+task dist(type: Copy) {
+    from jar.archiveFile
+    into "${project(':dist').buildDir}/dist/libraries"
+}
+
 apply from: 'publish.gradle'
-apply from: "$projectDir/../gradle_scripts/publish-base.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/publish-base.gradle"

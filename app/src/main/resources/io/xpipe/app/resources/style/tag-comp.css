@@ -1,0 +1,8 @@
+.tag-comp {
+-fx-border-width: 1px;
+-fx-border-color: -xp-border;
+-fx-background-color: -xp-base;
+-fx-border-radius: 4px;
+-fx-background-radius: 4px;
+-fx-padding: 0.15em;
+}
