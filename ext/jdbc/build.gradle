@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/extension.gradle"
+
+compileJava {
+    doFirst {
+        options.compilerArgs += [
+                '--module-path', classpath.asPath
+        ]
+        classpath = files()
+    }
+}
+
+configurations {
+    compileOnly.extendsFrom(dep)
+    testImplementation.extendsFrom(dep)
+}
+
+dependencies {
+    compileOnly project(':app')
+    compileOnly 'net.synedra:validatorfx:0.3.1'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:11.2.1.jre17'
+    implementation 'org.rauschig:jarchivelib:1.2.0'
+    implementation 'org.postgresql:postgresql:42.3.6'
+    testImplementation project(':base')
+    testImplementation project(':jdbcx')
+    testCompileOnly project(':app')
+}
+

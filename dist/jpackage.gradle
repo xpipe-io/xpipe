@@ -1,0 +1,114 @@
+import java.util.stream.Collectors
+
+def distDir = "$buildDir/dist"
+
+def distJvmArgs = new ArrayList<String>(project(':app').application.applicationDefaultJvmArgs)
+
+def releaseArguments = distJvmArgs + [
+        '-Dio.xpipe.app.writeLogs=true',
+        "-Dio.xpipe.app.buildId=$project.buildId",
+        '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279'
+]
+
+if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    releaseArguments += '-Xdock:name=X-Pipe'
+}
+
+// To remove warnings, the plugin probably does not expect the JPackage tasks to be in a separate project
+application {
+    mainModule = 'io.xpipe.app'
+    mainClass = 'io.xpipe.app.Main'
+}
+
+def appDependencies = project(':app').configurations.findByName('runtimeClasspath').getFiles().stream()
+        .collect(Collectors.toMap(f -> f.toPath().getFileName().toString(), f -> f, (f1, f2) -> f1))
+        .values()
+def appModuleNames = ['app']
+appDependencies.removeIf(f -> appModuleNames.stream()
+        .anyMatch(m -> f.toPath().getFileName().toString().contains("${m}.jar")))
+def appModuleOutputFiles = ["${project(':app').buildDir}/libs/app.jar"]
+dependencies {
+    implementation files(appDependencies.toArray())
+    implementation files(appModuleOutputFiles.toArray())
+}
+
+jlink {
+    imageDir = file("$buildDir/image")
+    options = [
+            // Disable this as this removes line numbers from stack traces!
+            // '--strip-debug',
+            '--compress', '2',
+            '--no-header-files',
+            '--no-man-pages',
+            // '--strip-native-commands'
+    ]
+
+    launcher {
+        moduleName = 'io.xpipe.app'
+        mainClassName = 'io.xpipe.app.Main'
+        name = 'xpiped'
+        jvmArgs = releaseArguments
+    }
+
+    jpackage {
+        imageOutputDir = file("$distDir/jpackage")
+        imageName = 'xpiped'
+        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+            icon = "logo/logo.ico"
+            appVersion = version
+        } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+            icon = "logo/logo.png"
+            appVersion = version
+        } else {
+            icon = "logo/logo.icns"
+
+            def cert = System.getenv('MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_USER_NAME')
+            if (cert != null) {
+                imageOptions += [
+                        '--mac-signing-key-user-name', cert
+                ]
+            }
+
+            imageOptions += [
+                    '--mac-sign',
+                    '--mac-package-signing-prefix', 'io.xpipe.app',
+                    '--mac-package-name', "X-Pipe Desktop",
+                    '--mac-app-category', 'productivity',
+                    // '--mac-entitlements', "$projectDir/misc/mac/Entitlements.plist"
+            ]
+
+            resourceDir = file("$projectDir/misc/mac")
+
+            // Mac does not like a zero major version
+            def modifiedVersion = version.toString()
+            if (Integer.parseInt(modifiedVersion.substring(0, 1)) == 0) {
+                modifiedVersion = "1" + modifiedVersion.substring(1)
+            }
+            appVersion = modifiedVersion
+        }
+        skipInstaller = true
+        applicationName = 'X-Pipe'
+    }
+}
+
+tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
+
+def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
+def extModuleNames = Arrays.asList(file("$rootDir/ext").list()).stream()
+        .map(l -> project(":$l")).toList()
+task copyBundledExtensions(type: DefaultTask) {
+    doLast {
+        for (def extProject : extModuleNames) {
+            def shouldObfuscate = project.ext.obfuscate && file("$rootDir/private_extensions.txt").exists() && file("$rootDir/private_extensions.txt").readLines().contains(extProject.getName())
+            def dir = shouldObfuscate ? "${extProject.buildDir}/libs_obf" : "${extProject.buildDir}/libs"
+            if (file(dir).exists()) {
+                copy {
+                    from(dir)
+                    into "$distDir/jpackage/$outputName/extensions/${extProject.name}"
+                    include '*.jar'
+                }
+            }
+        }
+    }
+}
+jpackage.finalizedBy(copyBundledExtensions)

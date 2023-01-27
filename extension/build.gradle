@@ -5,15 +5,15 @@ plugins {
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
-apply from: "$projectDir/../gradle_scripts/java.gradle"
-apply from: "$projectDir/../gradle_scripts/javafx.gradle"
-apply from: "$projectDir/../gradle_scripts/lombok.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 
 configurations {
     compileOnly.extendsFrom(dep)
 }
 
-version = file('../misc/version').text
+version = file("$rootDir/dist/version").text
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-extension'
 
@@ -31,6 +31,7 @@ dependencies {
     compileOnly group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.10.9'
     compileOnly 'net.synedra:validatorfx:0.3.1'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.0'
     compileOnly 'com.jfoenix:jfoenix:9.0.10'
     compileOnly 'org.controlsfx:controlsfx:11.1.2'
     compileOnly 'org.apache.commons:commons-lang3:3.12.0'
@@ -38,6 +39,10 @@ dependencies {
     compileOnly name: 'formsfx-core-lazy-11.5.0'
 }
 
+task dist(type: Copy) {
+    from jar.archiveFile
+    into "${project(':dist').buildDir}/dist/libraries"
+}
 
 apply from: 'publish.gradle'
-apply from: "$projectDir/../gradle_scripts/publish-base.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/publish-base.gradle"

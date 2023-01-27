@@ -1,0 +1,68 @@
+package io.xpipe.app.core;
+
+import io.xpipe.app.launcher.LauncherInput;
+import io.xpipe.extension.I18n;
+import javafx.scene.control.Alert;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.DataFormat;
+
+import java.util.List;
+
+public class AppActionDetector {
+
+    private static String lastDetectedAction;
+
+    private static String getClipboardAction() {
+        var content = Clipboard.getSystemClipboard().getContent(DataFormat.URL);
+        if (content == null) {
+            content = Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
+        }
+
+        return content != null?content.toString():null;
+    }
+
+    private static void handle(String content,  boolean showAlert) {
+        var detected = LauncherInput.of(content);
+        if (detected.size() == 0) {
+            return;
+        }
+
+        if (showAlert && !showAlert()) {
+            return;
+        }
+
+        LauncherInput.handle(List.of(content));
+    }
+
+    public static void detectOnFocus() {
+        var content = getClipboardAction();
+        if (content == null) {
+            lastDetectedAction = null;
+            return;
+        }
+        if (content.equals(lastDetectedAction)) {
+            return;
+        }
+        lastDetectedAction = content;
+        handle(content, true);
+    }
+
+    public static void detectOnPaste() {
+        var content = getClipboardAction();
+        if (content == null) {
+            return;
+        }
+        lastDetectedAction = content;
+        handle(content, false);
+    }
+
+    private static boolean showAlert() {
+        var paste = AppWindowHelper.showBlockingAlert(alert -> {
+            alert.setAlertType(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(I18n.get("clipboardActionDetectedTitle"));
+            alert.setHeaderText(I18n.get("clipboardActionDetectedHeader"));
+            alert.getDialogPane().setContent(AppWindowHelper.alertContentText(I18n.get("clipboardActionDetectedContent")));
+        }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
+        return paste;
+    }
+}

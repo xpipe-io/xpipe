@@ -1,0 +1,71 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
+apply from: "$buildscript.sourceFile/../junit.gradle"
+
+def useExtension = System.getProperty('excludeExtensionLibrary') == null
+
+dependencies {
+    testImplementation project(':api')
+    testImplementation project(':core')
+        testImplementation project(':extension')
+
+    testImplementation "org.openjfx:javafx-base:19:win"
+    testImplementation "org.openjfx:javafx-controls:19:win"
+    testImplementation "org.openjfx:javafx-graphics:19:win"
+}
+
+def attachDebugger = System.getProperty('idea.debugger.dispatch.addr') != null
+def daemonCommand = attachDebugger ? ':app:runAttachedDebugger' : ':app:run'
+
+test {
+    workingDir = rootDir
+
+    jvmArgs += ["--enable-preview", "-Xmx2g"]
+
+    // Daemon properties
+    systemProperty "io.xpipe.beacon.daemonArgs",
+            " -Dio.xpipe.beacon.port=21723" +
+            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+            " -Dio.xpipe.storage.persist=false" +
+            " -Dio.xpipe.app.writeSysOut=true" +
+            " -Dio.xpipe.app.writeLogs=false" +
+            " -Dio.xpipe.beacon.printMessages=false" +
+            " -Dio.xpipe.app.logLevel=trace"
+
+    // Use cmd window for tests
+    if (!rootProject.ci && DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        systemProperty "io.xpipe.beacon.customDaemonCommand",
+                       "cmd.exe /c start \"\"X-Pipe Debug\"\" /i \"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
+    }
+
+
+    // Client properties
+    // systemProperty 'io.xpipe.beacon.printMessages', "true"
+    systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
+    systemProperty "io.xpipe.beacon.port", "21723"
+    systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
+    systemProperty "io.xpipe.beacon.attachDebuggerToDaemon", "$daemonCommand"
+}
+
+task productionTest(type: Test) {
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+    workingDir = rootDir
+
+    jvmArgs += ["--enable-preview", "-Xmx2g"]
+
+    // Daemon properties
+    systemProperty "io.xpipe.beacon.daemonArgs",
+            " -Dio.xpipe.beacon.port=21723" +
+            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+            " -Dio.xpipe.storage.persist=false" +
+            " -Dio.xpipe.app.writeSysOut=true" +
+            " -Dio.xpipe.app.writeLogs=false" +
+            " -Dio.xpipe.beacon.printMessages=false" +
+            " -Dio.xpipe.app.logLevel=trace"
+
+    // Client properties
+    systemProperty 'io.xpipe.beacon.printMessages', "true"
+    systemProperty 'io.xpipe.beacon.printDaemonOutput', "true"
+    systemProperty "io.xpipe.beacon.port", "21723"
+}

@@ -1,0 +1,13 @@
+.context-menu {
+-fx-background-radius: 5px;
+}
+
+.header-menu-item {
+    -fx-background-color: white;
+    -fx-opacity: 1.0;
+}
+
+.header-menu-item .label {
+    -fx-background-color: white;
+    -fx-opacity: 1.0;
+}

@@ -6,6 +6,7 @@ import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.prefs.PrefsProvider;
+import io.xpipe.extension.util.ModuleLayerLoader;
 import io.xpipe.extension.util.XPipeDaemon;
 
 public class XPipeServiceProviders {
@@ -32,13 +33,13 @@ public class XPipeServiceProviders {
             });
         }
 
-        DataStoreActionProvider.init(layer);
-        DataSourceActionProvider.init(layer);
+        var hasDaemon = XPipeDaemon.getInstanceIfPresent().isPresent();
+        ModuleLayerLoader.loadAll(layer, hasDaemon);
 
-        SupportedApplicationProviders.loadAll(layer);
-        ProxyFunction.init(layer);
-
-        if (XPipeDaemon.getInstanceIfPresent().isPresent()) {
+        if (hasDaemon) {
+            DataStoreActionProvider.init(layer);
+            DataSourceActionProvider.init(layer);
+            ProxyFunction.init(layer);
             PrefsProvider.init(layer);
         }
 

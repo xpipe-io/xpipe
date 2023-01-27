@@ -1,0 +1,42 @@
+.third-party-dependency-list-comp {
+
+}
+
+.third-party-dependency-list-comp .titled-pane {
+-fx-background-color: transparent;
+}
+
+.third-party-dependency-list-comp .titled-pane .text-area {
+/* -fx-font-family: Monospace; */
+}
+
+.titled-pane > .title > .arrow-button .arrow {
+-fx-background-color: -xp-base;
+-fx-focus-color: transparent;
+-fx-border-width: 1px;
+-fx-border-color: -xp-border;
+-fx-border-radius: 4px;
+-fx-background-radius: 4px;
+}
+
+.titled-pane:hover > .title > .arrow-button .arrow {
+-fx-background-color: -xp-base-highlight;
+-fx-focus-color: transparent;
+-fx-border-color: -xp-border-highlight;
+}
+
+.titled-pane:pressed > .title > .arrow-button .arrow {
+-fx-background-color: -xp-base-pressed;
+-fx-focus-color: transparent;
+-fx-border-color: -xp-border-pressed;
+}
+
+.titled-pane > .title {
+-fx-background-color: transparent;
+-fx-background-insets: 0;
+}
+
+.titled-pane:hover > .title {
+-fx-background-color: #0001;
+-fx-background-insets: 0;
+}

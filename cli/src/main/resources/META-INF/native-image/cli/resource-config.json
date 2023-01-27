@@ -1,0 +1,18 @@
+{
+  "bundles": [
+    {
+      "name": "org.ocpsoft.prettytime.i18n.Resources"
+    }
+  ],
+  "resources": [
+    {
+      "pattern": ".*/project.properties"
+    },
+    {
+      "pattern": ".*/config.properties"
+    },
+    {
+      "pattern": ".*/services/.*"
+    }
+  ]
+}

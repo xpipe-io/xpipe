@@ -1,0 +1,26 @@
+task copyRuntimeLibs(type: Copy) {
+    into project.jar.destinationDirectory
+    from configurations.runtimeClasspath
+    exclude "${project.name}.jar"
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
+jar.dependsOn(copyRuntimeLibs)
+
+apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
+
+dependencies {
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
+    compileOnly project(':extension')
+    compileOnly 'net.synedra:validatorfx:0.3.1'
+
+    if (project != project(':base')) {
+        compileOnly project(':base')
+    }
+
+    testImplementation project(':extension')
+}
+

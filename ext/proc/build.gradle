@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/extension.gradle"
+
+tasks.withType(JavaCompile).configureEach {
+    doFirst {
+        options.compilerArgs += [
+                '--module-path', classpath.asPath
+        ]
+        classpath = files()
+    }
+}
+
+configurations {
+    compileOnly.extendsFrom(dep)
+}
+
+dependencies {
+    implementation 'com.github.mwiede:jsch:0.2.5'
+    compileOnly project(':app')
+    testImplementation project(':app')
+    testImplementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-exec:1.3'
+    compileOnly name: 'preferencesfx-core-lazy-11.11.0'
+    compileOnly name: 'formsfx-core-lazy-11.5.0'
+}
+
+List<String> jvmDevArgs = [
+        "--add-reads", "io.xpipe.ext.proc=ALL-UNNAMED"
+]
+
+tasks.withType(Test) {
+    jvmArgs += jvmDevArgs
+}

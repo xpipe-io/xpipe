@@ -1,0 +1,57 @@
+dependencies {
+    implementation files("$buildDir/generated-modules/asciitable-0.3.2.jar")
+    implementation files("$buildDir/generated-modules/skb-interfaces-0.0.2.jar")
+    implementation files("$buildDir/generated-modules/ascii-utf-themes-0.0.1.jar")
+}
+
+addDependenciesModuleInfo {
+    overwriteExistingFiles = true
+    jdepsExtraArgs = ['-q']
+    outputDirectory = file("$buildDir/generated-modules")
+    modules {
+        module {
+            artifact 'de.vandermeer:asciitable:0.3.2'
+            moduleInfoSource = '''
+                module de.vandermeer.asciitable {
+                    exports de.vandermeer.asciitable;
+                    
+                    requires de.vandermeer.skb_interfaces;
+                    requires de.vandermeer.ascii_utf_themes;
+                    requires org.apache.commons.lang3;
+                }
+            '''
+        }
+        module {
+            artifact 'de.vandermeer:skb-interfaces:0.0.2'
+            moduleInfoSource = '''
+                module de.vandermeer.skb_interfaces {
+                    exports de.vandermeer.skb.interfaces;
+                    exports de.vandermeer.skb.interfaces.render;
+                    exports de.vandermeer.skb.interfaces.document;
+                    exports de.vandermeer.skb.interfaces.categories;
+                    exports de.vandermeer.skb.interfaces.categories.has;
+                    exports de.vandermeer.skb.interfaces.transformers;
+                    exports de.vandermeer.skb.interfaces.transformers.arrays2d;
+                    exports de.vandermeer.skb.interfaces.transformers.textformat;
+                    exports de.vandermeer.skb.interfaces.strategies.collections;
+                    exports de.vandermeer.skb.interfaces.strategies.collections.list;
+                    
+                    requires org.apache.commons.lang3;
+                }
+            '''
+        }
+        module {
+            artifact 'de.vandermeer:ascii-utf-themes:0.0.1'
+            moduleInfoSource = '''
+                module de.vandermeer.ascii_utf_themes {
+                    exports de.vandermeer.asciithemes;
+                    exports de.vandermeer.asciithemes.a7;
+                    exports de.vandermeer.asciithemes.u8;
+                    
+                    requires de.vandermeer.skb_interfaces;
+                    requires org.apache.commons.lang3;
+                }
+            '''
+        }
+    }
+}

@@ -1,0 +1,194 @@
+import java.util.stream.Collectors
+
+plugins {
+    id 'application'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def appVersion = file('../dist/version').text
+def apiVersion = project(':api').version
+
+configurations {
+    dep
+}
+
+apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
+apply from: "$projectDir/gradle_scripts/richtextfx.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/prettytime.gradle"
+apply from: "$projectDir/gradle_scripts/sentry.gradle"
+apply from: "$projectDir/gradle_scripts/fxtrayicon.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
+apply from: "$projectDir/gradle_scripts/github-api.gradle"
+apply from: "$projectDir/gradle_scripts/flexmark.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/picocli.gradle"
+
+configurations {
+    implementation.extendsFrom(dep)
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':extension')
+    implementation project(':beacon')
+
+    implementation 'net.java.dev.jna:jna-jpms:5.12.1'
+    implementation 'net.java.dev.jna:jna-platform-jpms:5.12.1'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
+    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.13.0"
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.13.0"
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "2.13.0"
+    implementation group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.2.0"
+    implementation group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
+    implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
+    implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
+    implementation name: 'preferencesfx-core-lazy-11.11.0'
+    implementation name: 'formsfx-core-lazy-11.5.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0'
+    implementation 'io.xpipe:modulefs:0.1.4'
+    implementation 'com.jfoenix:jfoenix:9.0.10'
+    implementation 'org.controlsfx:controlsfx:11.1.1'
+    implementation 'net.synedra:validatorfx:0.3.1'
+}
+
+apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
+
+sourceSets {
+    main {
+        output.resourcesDir("$buildDir/classes/java/main")
+    }
+}
+
+dependencies {
+    testImplementation project(':api')
+    testImplementation project(':core')
+    testImplementation project(':extension')
+}
+
+Arrays.stream(file("$rootDir/ext").list())
+        .map(l -> project(":$l")).forEach(p -> {
+    dependencies {
+        testCompileOnly p
+    }
+})
+
+
+List<String> jvmRunArgs = [
+        "--add-exports", "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
+        "--add-exports", "javafx.graphics/com.sun.javafx.stage=com.jfoenix",
+        "--add-exports", "javafx.base/com.sun.javafx.binding=com.jfoenix",
+        "--add-exports", "javafx.base/com.sun.javafx.event=com.jfoenix",
+        "--add-exports", "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
+        "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
+        "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
+        "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
+        "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.extension",
+        "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
+        "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
+        "--add-opens", "java.base/java.lang=io.xpipe.app",
+        "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
+        "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.extension",
+        "-Xmx8g",
+        "--enable-preview",
+        //  "-XX:+ExitOnOutOfMemoryError",
+        "-Dfile.encoding=UTF-8",
+        "-Dvisualvm.display.name=X-Pipe"
+]
+
+
+def extensionDirList = Arrays.stream(file("$rootDir/ext").list())
+        .map(l -> project(":$l").buildDir.toString() + "/libs").collect(Collectors.joining(File.pathSeparator));
+
+test {
+    jvmArgs += jvmRunArgs
+    systemProperty 'io.xpipe.app.mode', 'background'
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_test/"
+    systemProperty 'io.xpipe.app.writeLogs', "false"
+    systemProperty 'io.xpipe.app.writeSysOut', "true"
+    systemProperty 'io.xpipe.app.developerMode', "true"
+    systemProperty 'io.xpipe.app.logLevel', "trace"
+    //systemProperty "io.xpipe.beacon.port", "21722"
+    systemProperty "io.xpipe.app.extensions", extensionDirList
+}
+
+
+def extensionJarDepList = Arrays.stream(file("$rootDir/ext").list())
+        .map(l -> project(":$l").getTasksByName('jar', true)).toList();
+
+jar {
+    finalizedBy(extensionJarDepList)
+}
+
+application {
+    mainModule = 'io.xpipe.app'
+    mainClass = 'io.xpipe.app.Main'
+    applicationDefaultJvmArgs = jvmRunArgs
+}
+
+run {
+    systemProperty 'io.xpipe.app.mode', 'gui'
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local3/"
+    systemProperty 'io.xpipe.app.writeLogs', "true"
+    systemProperty 'io.xpipe.app.writeSysOut', "true"
+    systemProperty 'io.xpipe.app.developerMode', "true"
+    systemProperty 'io.xpipe.app.logLevel', "trace"
+    systemProperty "io.xpipe.beacon.port", "21724"
+    // systemProperty "io.xpipe.beacon.printMessages", "true"
+    systemProperty "io.xpipe.app.extensions", extensionDirList
+    // systemProperty 'io.xpipe.app.debugPlatform', "true"
+
+    // systemProperty "io.xpipe.beacon.localProxy", "true"
+
+    systemProperties System.getProperties()
+    systemProperty 'java.library.path', "./lib"
+}
+
+task runAttachedDebugger(type: JavaExec) {
+    classpath = run.classpath
+    mainModule = 'io.xpipe.app'
+    mainClass = 'io.xpipe.app.Main'
+    modularity.inferModulePath = true
+    jvmArgs += jvmRunArgs
+    jvmArgs += List.of(
+            "-javaagent:${System.getProperty("user.home")}/.attachme/attachme-agent-1.2.1.jar=port:7857,host:localhost",
+            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:0"
+    )
+    systemProperties run.systemProperties
+}
+
+task writeBuildProperties(type: DefaultTask) {
+    doLast {
+        def resourcesDir = new File(sourceSets.main.output.resourcesDir, "io/xpipe/app/resources")
+        resourcesDir.mkdirs()
+        def contents = "version=$appVersion\n" +
+                "build=$appVersion-${new Date().format('yyyyMMddHHmm')}\n" +
+                "apiVersion=$apiVersion\n"
+        new File(resourcesDir, "app.properties").text = contents
+    }
+}
+processResources.finalizedBy(writeBuildProperties)
+
+task writeLicenses(type: DefaultTask) {
+    doLast {
+        def resourcesDir = new File(sourceSets.main.output.resourcesDir, "io/xpipe/app/resources/third-party")
+        resourcesDir.mkdirs()
+        copy {
+            from "$rootDir/dist/licenses"
+            into resourcesDir
+        }
+    }
+}
+processResources.finalizedBy(writeLicenses)
+
+distTar {
+    enabled = false;
+}
+
+distZip {
+    enabled = false;
+}

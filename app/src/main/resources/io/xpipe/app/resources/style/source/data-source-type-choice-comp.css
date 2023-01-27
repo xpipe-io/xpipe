@@ -1,0 +1,17 @@
+.data-source-type {
+-fx-padding: 0.15em 0 0.15em 0.05em;
+}
+
+.data-source-type:hover {
+-fx-background-color: -xp-base-highlight;
+}
+
+.data-source-type .list-cell .label {
+-fx-text-fill: -xp-text-base;
+}
+
+.data-source-type .combo-box-popup .list-view .list-cell {
+-fx-padding: 0.5em;
+-fx-text-fill: blue;
+-fx-background-color: white;
+}

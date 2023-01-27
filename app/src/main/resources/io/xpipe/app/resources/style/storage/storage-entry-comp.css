@@ -1,0 +1,66 @@
+.storage-entry-comp .jfx-text-field {
+-fx-padding: 0;
+}
+
+.storage-entry-comp .content {
+-fx-padding: 0.65em 0 0.65em 0;
+-fx-background-color: DDD;
+-fx-background-radius: 2px 0 0 2px;
+ -fx-border-width: 1px;
+-fx-border-color: -xp-border-accent;
+-fx-border-radius: 2px 0 0 2px;
+}
+
+.storage-entry-comp .update {
+ -fx-border-width: 1px 1px 1px 0;
+-fx-border-color: -xp-border-accent;
+-fx-background-color: -xp-base-accent;
+-fx-background-radius: 0;
+-fx-border-radius: 0;
+-fx-text-fill: -xp-text-accent-base;
+-fx-font-size: 1.15em;
+}
+
+.storage-entry-comp .retrieve {
+ -fx-border-width: 1px 1px 1px 0;
+-fx-border-color: -xp-border-accent;
+-fx-background-color: -xp-base-accent;
+-fx-background-radius: 0;
+-fx-border-radius: 0;
+-fx-text-fill: -xp-text-accent-base;
+-fx-font-size: 1.15em;
+}
+
+.storage-entry-comp .settings {
+ -fx-border-width: 1px 1px 1px 0;
+-fx-border-color: -xp-border-accent;
+-fx-text-fill: -xp-text-base;
+-fx-font-size: 1.15em;
+-fx-background-color: DDD;
+-fx-background-radius: 0 2px 2px 0;
+-fx-border-radius: 0 2px 2px 0;
+}
+
+.storage-entry-comp .text-field {
+-fx-padding: 0;
+}
+
+.storage-entry-comp .input-line {
+-fx-opacity: 0.2;
+}
+
+.storage-entry-comp .data-store-type-comp .ikonli-font-icon {
+-fx-icon-color: #222;
+}
+
+.storage-entry-comp .readable-instant-comp, .storage-entry-comp .size {
+-fx-text-fill: -xp-text-light;
+}
+
+.storage-entry-comp .information, .storage-entry-comp .summary, .storage-entry-comp .date {
+-fx-text-fill: -xp-text-light;
+}
+
+.storage-entry-comp .description, .storage-entry-comp .readable-instant-comp {
+-fx-padding: 0 0 0 0.1em;
+}

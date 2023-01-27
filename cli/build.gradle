@@ -1,0 +1,288 @@
+plugins {
+    id 'application'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+    id 'org.graalvm.buildtools.native' version '0.9.19'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/picocli.gradle"
+apply from: "$projectDir/gradle_scripts/asciitable.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/prettytime.gradle"
+
+configurations {
+    implementation.extendsFrom(dep)
+}
+
+List<String> jvmDevArgs = [
+        "--add-reads", "de.vandermeer.asciitable=ALL-UNNAMED",
+        "--add-reads", "de.vandermeer.skb_interfaces=ALL-UNNAMED"
+]
+
+Map<String, String> prodProperties = Map.of(
+        //'io.xpipe.beacon.debugOutput', 'true',
+        'io.xpipe.cli.debug', 'true'
+)
+
+def attachDebugger = System.getProperty('idea.debugger.dispatch.addr') != null
+def daemonCommand = attachDebugger ? ':app:runAttachedDebugger' : ':app:run'
+
+
+run {
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
+    } else {
+        systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir/gradlew\" --console=plain $daemonCommand"
+    }
+
+    // systemProperty 'io.xpipe.beacon.printMessages', "true"
+    systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
+    systemProperty 'io.xpipe.cli.debug', 'true'
+    //systemProperty "io.xpipe.beacon.port", "21724"
+    systemProperties System.getProperties()
+    standardInput = System.in
+}
+
+test {
+    jvmArgs(jvmDevArgs)
+
+    workingDir = rootDir
+}
+
+application {
+    mainModule = 'io.xpipe.cli'
+    mainClass = 'io.xpipe.cli.Main'
+    applicationDefaultJvmArgs = jvmDevArgs
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':beacon')
+    implementation 'net.java.dev.jna:jna-jpms:5.12.1'
+    implementation 'org.jline:jline-terminal:3.21.0'
+    implementation 'org.jline:jline-terminal-jna:3.21.0'
+    implementation 'org.antlr:stringtemplate:4.0.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.4"
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.13.4"
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "2.13.4"
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+task runManPageGenerator(type: JavaExec) {
+    classpath(configurations.compileClasspath, configurations.annotationProcessor, sourceSets.main.runtimeClasspath)
+    mainClass = 'picocli.codegen.docgen.manpage.ManPageGenerator'
+    args "--outdir=${project.buildDir}/generated-picocli-docs", 'io.xpipe.cli.XPipeCommand'
+}
+
+task runAutocompleteGenerator(type: JavaExec) {
+    classpath(configurations.compileClasspath, configurations.annotationProcessor, sourceSets.main.runtimeClasspath)
+    mainClass = 'picocli.AutoComplete'
+    args '--force', 'io.xpipe.cli.XPipeCommand'
+    workingDir buildDir
+}
+
+def generatedResourcesFolder = "$projectDir/build/generated-resources"
+
+task writeServices(type: DefaultTask) {
+    doLast {
+        def content = "";
+        file(new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange")).eachFile {
+            if (it.name == 'data' || it.name == 'api' || it.name == 'cli') {
+                return
+            }
+
+            def name = it.name.take(it.name.lastIndexOf('.'));
+            if (name == 'MessageExchange' || name == 'MessageExchanges') {
+                return;
+            }
+
+            def fqname = "io.xpipe.beacon.exchange.$name"
+            content += fqname + "\n"
+        }
+
+        file(new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange/api")).eachFile {
+            def name = it.name.take(it.name.lastIndexOf('.'));
+            def fqname = "io.xpipe.beacon.exchange.api.$name"
+            content += fqname + "\n"
+        }
+
+        file(new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange/cli")).eachFile {
+            def name = it.name.take(it.name.lastIndexOf('.'));
+            def fqname = "io.xpipe.beacon.exchange.cli.$name"
+            content += fqname + "\n"
+        }
+
+        def outFile = new File(generatedResourcesFolder, "META-INF/services/io.xpipe.beacon.exchange.MessageExchange")
+        outFile.parentFile.mkdirs()
+        outFile.text = content
+    }
+}
+
+static String appendExchangeReflectInfo(String itName, String base, String content) {
+    def name = itName.take(itName.lastIndexOf('.'));
+
+    def fqname = "$base.$name\$Request"
+    content += "{\"name\": \"${fqname}\",\n\"allDeclaredConstructors\": true,\n\"allDeclaredFields\": true\n},"
+    fqname = "$base.$name\$Response"
+    content += "{\"name\": \"${fqname}\",\n\"allDeclaredConstructors\": true,\n\"allDeclaredFields\": true\n},"
+
+    fqname = "$base.$name\$Request\$RequestBuilder"
+    content += "{\"name\": \"${fqname}\",\n\"allDeclaredMethods\": true,\n\"allDeclaredConstructors\": true,\n\"allDeclaredFields\": true\n},"
+    fqname = "$base.$name\$Response\$ResponseBuilder"
+    content += "{\"name\": \"${fqname}\",\n\"allDeclaredMethods\": true,\n\"allDeclaredConstructors\": true,\n\"allDeclaredFields\": true\n},"
+    return content;
+}
+
+static String appendDataReflectInfo(String itName, String base, String content) {
+    def name = itName.contains(".") ? itName.take(itName.lastIndexOf('.')) : itName;
+    def fqname = "$base.$name"
+    content += "{\"name\": \"${fqname}\",\n\"allDeclaredMethods\": true,\n\"allDeclaredConstructors\": true\n,\n\"allDeclaredFields\": true\n},"
+    return content;
+}
+
+task writeReflectConfig(type: DefaultTask) {
+    doLast {
+        def content = "[";
+        file(new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange")).eachFile {
+            if (it.name == 'data' || it.name == 'api' || it.name == 'cli') {
+                return
+            }
+
+            def name = it.name.take(it.name.lastIndexOf('.'));
+            if (name == 'MessageExchange' || name == 'MessageExchanges') {
+                return
+            }
+
+            content = appendExchangeReflectInfo(it.name, "io.xpipe.beacon.exchange", content)
+        }
+
+        file(new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange/api")).eachFile {
+            content = appendExchangeReflectInfo(it.name, "io.xpipe.beacon.exchange.api", content)
+        }
+
+        file(new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange/cli")).eachFile {
+            content = appendExchangeReflectInfo(it.name, "io.xpipe.beacon.exchange.cli", content)
+        }
+
+        file(new File(project(":core").sourceSets.main.java.srcDirs[0], "io/xpipe/core/source")).eachFile {
+            content = appendDataReflectInfo(it.name, "io.xpipe.core.source", content)
+        }
+
+        file(new File(project(":core").sourceSets.main.java.srcDirs[0], "io/xpipe/core/dialog")).eachFile {
+            content = appendDataReflectInfo(it.name, "io.xpipe.core.dialog", content)
+        }
+
+        file(new File(project(":core").sourceSets.main.java.srcDirs[0], "io/xpipe/core/data/type")).eachFile {
+            content = appendDataReflectInfo(it.name, "io.xpipe.core.data.type", content)
+        }
+
+        file(new File(project(":core").sourceSets.main.java.srcDirs[0], "io/xpipe/core/store")).eachFile {
+            content = appendDataReflectInfo(it.name, "io.xpipe.core.store", content)
+        }
+
+        file(new File(project(":core").sourceSets.main.java.srcDirs[0], "io/xpipe/core/impl")).eachFile {
+            content = appendDataReflectInfo(it.name, "io.xpipe.core.impl", content)
+        }
+
+        file(new File(project(":core").sourceSets.main.java.srcDirs[0], "io/xpipe/core/util")).eachFile {
+            content = appendDataReflectInfo(it.name, "io.xpipe.core.util", content)
+        }
+
+        def dataDir = new File(project(":beacon").sourceSets.main.java.srcDirs[0], "io/xpipe/beacon/exchange/data")
+        fileTree(dataDir).each {
+            def name = it.name.take(it.name.lastIndexOf('.'));
+            def fqname = "io.xpipe.beacon.exchange.data.$name"
+            content += "{\"name\": \"${fqname}\",\n\"allDeclaredMethods\": true,\n\"allDeclaredConstructors\": true\n,\n\"allDeclaredFields\": true\n},"
+            fqname = "io.xpipe.beacon.exchange.data.$name\$${name}Builder"
+            content += "{\"name\": \"${fqname}\",\n\"allDeclaredMethods\": true,\n\"allDeclaredConstructors\": true\n,\n\"allDeclaredFields\": true\n},"
+        }
+
+        // Throwable
+        def fqname = "java.lang.Throwable"
+        content += "{\"name\": \"${fqname}\",\n\"allDeclaredMethods\": true,\n\"allDeclaredConstructors\": true\n,\n\"allDeclaredFields\": true\n},"
+
+
+        content = appendDataReflectInfo("Resources", "org.ocpsoft.prettytime.i18n", content)
+        content = appendDataReflectInfo("Resources_en", "org.ocpsoft.prettytime.i18n", content)
+
+        content = content.substring(0, content.length() - 1) + "]"
+
+        def outFile = new File(generatedResourcesFolder, "META-INF/native-image/cli_providers/reflect-config.json")
+        outFile.parentFile.mkdirs()
+        outFile.text = content
+    }
+}
+
+sourceSets {
+    main {
+        output.dir(generatedResourcesFolder, builtBy: 'generateGraalConfigs')
+    }
+}
+
+task generateGraalConfigs(type: DefaultTask) {}
+generateGraalConfigs.dependsOn(writeServices)
+generateGraalConfigs.dependsOn(writeReflectConfig)
+
+nativeCompile.dependsOn(shadowJar)
+
+productionTest {
+    useJUnitPlatform()
+    jvmArgs(jvmDevArgs)
+    workingDir = rootDir
+    environment 'CLI_TEST_PROD', 'true'
+}
+
+//print('Running with ' + System.getProperty("java.vm.vendor") + " "
+//              + System.getProperty("java.vm.name") + " ("
+//              + System.getProperty("java.vm.version") + ")")
+
+graalvmNative {
+    binaries {
+        main {
+            imageName = 'xpipe' // The name of the native image, defaults to the project name
+            mainClass = 'io.xpipe.cli.Main' // The main class to use, defaults to the application.mainClass
+            debug = false // Determines if debug info should be generated, defaults to false
+            verbose = true // Add verbose output, defaults to false
+            sharedLibrary = false
+            requiredVersion = '22.3'
+            jvmArgs.addAll(
+                    '-Xmx4G',
+                    '-Dpicocli.converters.excludes=java.time.*,java.sql.*'
+            )
+            buildArgs.addAll(
+                    // '--debug-attach=8000',
+                    '--enable-https',
+                    '--install-exit-handlers',
+                    '-H:+ReportExceptionStackTraces',
+                    '-H:+AddAllCharsets',
+                    '-H:+IncludeAllLocales',
+                    '-H:-BuildOutputProgress',
+                    '--initialize-at-build-time=' +
+                            'picocli,' +
+                            'io.xpipe.core,' +
+                            'io.xpipe.cli,' +
+                            'io.xpipe.cli.BuildTimeInitialization,' +
+                            'io.xpipe.cli.XPipeCommand,' +
+                            'org.ocpsoft.prettytime,' +
+                            'com.fasterxml.jackson')
+
+            // Build Time
+            systemProperties(prodProperties)
+        }
+    }
+}
+
+tasks.named("nativeCompile") {
+    classpathJar = shadowJar.outputs.files.singleFile
+}
