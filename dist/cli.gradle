@@ -1,0 +1,70 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
+
+def distDir = "$buildDir/dist"
+def windows = org.gradle.internal.os.OperatingSystem.current().isWindows();
+
+
+apply plugin: 'org.asciidoctor.jvm.convert'
+asciidoctor {
+    dependsOn(project(':cli').runManPageGenerator)
+    sourceDir = file("${project(':cli').buildDir}/generated-picocli-docs")
+    outputDir = file("$distDir/docs")
+    logDocuments = false
+    outputOptions {
+        backends = ['manpage', 'html5']
+    }
+
+    inProcess = JAVA_EXEC
+    forkOptions {
+        jvmArgs("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.io=ALL-UNNAMED")
+    }
+    options header_footer: false
+}
+
+task copyCompletion(type: Copy) {
+    dependsOn(project(':cli').runAutocompleteGenerator)
+    from new File(project(':cli').buildDir, 'xpipe_completion')
+    into "$distDir/cli"
+}
+
+task buildCli(type: DefaultTask) {
+    if (!org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        dependsOn(project(':cli').getTasksByName('nativeCompile', true))
+    }
+
+    doLast {
+        if (windows) {
+            exec {
+                executable project(':cli').projectDir.toString() + '/native-build.bat'
+                environment System.getenv()
+            }
+        }
+
+        Files.createDirectories(Paths.get(distDir, 'cli'))
+        def ending = windows ? ".exe" : ""
+        var outputFile = Paths.get(project(':cli').buildDir.toString() + "/native/nativeCompile/xpipe$ending")
+        if (!Files.exists(outputFile)) {
+            throw new IOException("Cli output file does not exist")
+        }
+
+        Files.copy(outputFile, Paths.get(distDir, 'cli', "xpipe$ending"), StandardCopyOption.REPLACE_EXISTING)
+    }
+}
+
+if (rootProject.os.isWindows() && rootProject.fullVersion) {
+    task signCliExecutable(type: Exec) {
+        commandLine "$projectDir\\tools\\sign_cli.bat"
+    }
+    buildCli.finalizedBy(signCliExecutable)
+
+
+    task iconCliExecutable(type: Exec) {
+        commandLine "$projectDir\\tools\\rcedit-x64.exe", "$distDir\\cli\\xpipe.exe", '--set-icon', "$projectDir\\logo\\logo.ico"
+    }
+    buildCli.finalizedBy(iconCliExecutable)
+}
+
+buildCli.dependsOn(copyCompletion)
+buildCli.dependsOn(asciidoctor)

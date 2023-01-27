@@ -131,5 +131,5 @@ Most simple Comp definitions can be defined inline with the `Comp.of(...)` metho
 ## Creating more complex comps
 
 For actual comp implementations, see for example
-the [X-Pipe Extension API](https://github.com/xpipe-io/xpipe_java/tree/master/extension/src/main/java/io/xpipe/extension/comp)
+the [X-Pipe Extension API](https://github.com/xpipe-io/xpipe/tree/master/extension/src/main/java/io/xpipe/extension/comp)
 .

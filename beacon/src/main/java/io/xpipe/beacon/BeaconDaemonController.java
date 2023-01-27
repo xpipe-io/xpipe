@@ -48,9 +48,10 @@ public class BeaconDaemonController {
 
     private static void waitForStartup(Process process, boolean custom) throws IOException {
         for (int i = 0; i < 160; i++) {
-            if (process != null && !custom && !process.isAlive()) {
-                throw new IOException("Daemon start failed");
-            }
+            // Breaks when using nohup & disown
+//            if (process != null && !custom && !process.isAlive()) {
+//                throw new IOException("Daemon start failed");
+//            }
 
             if (process != null && custom && !process.isAlive() && process.exitValue() != 0) {
                 throw new IOException("Custom launch command failed");

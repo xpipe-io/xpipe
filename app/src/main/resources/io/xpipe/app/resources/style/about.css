@@ -1,0 +1,29 @@
+
+.open-source-notices .open-source-header {
+-fx-padding: 0.2em 0.3em 0.35em 0.3em;
+-fx-graphic-text-gap: 6px;
+}
+
+.open-source-notices {
+
+}
+
+.properties-comp {
+-fx-spacing: 0.4em;
+}
+
+.properties-comp .header {
+-fx-graphic-text-gap: 0.8em;
+}
+
+.about-tab .information {
+-fx-spacing: 2em;
+}
+
+.about-tab {
+-fx-padding: 1.3em;
+}
+
+.about-tab .update-check {
+-fx-spacing: 0.6em;
+}

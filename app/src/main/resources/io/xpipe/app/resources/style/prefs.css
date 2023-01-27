@@ -1,0 +1,56 @@
+
+.undo-redo-box * {
+visibility: hidden;
+}
+
+.prefs .group-title {
+-fx-font-size: 1.1em;
+}
+
+.prefs .formsfx-form * {
+-fx-font-size: 0.7em;
+}
+
+.prefs .formsfx-group * {
+-fx-font-size: 0.7em;
+}
+
+.prefs .simple-control {
+-fx-pref-height: 2em;
+}
+
+.prefs .simple-select-control {
+-fx-pref-height: 2em;
+}
+
+.integer-slider-control {
+-fx-alignment: CENTER;
+}
+
+.prefs .bread-crumb-bar {
+visibility: hidden;
+-fx-font-size: 0.1em;
+}
+
+.prefs .custom-text-field {
+-fx-border-width: 1em;
+}
+
+.prefs .tree-view {
+}
+
+.prefs {
+-fx-border-width: 0;
+-fx-padding: 1em 1em 4em 1em;
+-fx-border-color: transparent;
+ -fx-background-insets: 0;
+}
+
+.prefs > * > * {
+ -fx-background-insets: 0;
+}
+
+.prefs .split-pane-divider {
+-fx-padding: 0 ;
+dividerPositions: 0.5;
+}

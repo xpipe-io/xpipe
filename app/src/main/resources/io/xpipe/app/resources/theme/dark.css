@@ -1,0 +1,20 @@
+* {
+    -xp-base: #111111;
+    -xp-base-highlight: #219AC250;
+    -xp-base-pressed: #419AC290;
+
+    -xp-border: #073B4C43;
+    -xp-border-highlight: #053B4C93;
+    -xp-border-pressed: #033B4C43;
+
+    -xp-text-base: #333;
+    -xp-text-light: #666;
+
+    -xp-text-base-inverted: #333;
+    -xp-text-light-inverted: grey;
+
+    -xp-base-accent: #4764C2FF;
+    -xp-border-accent: #19254DFF;
+    -xp-text-accent-base: white;
+    -xp-text-accent-light: #CCF;
+}

@@ -1,0 +1,38 @@
+package io.xpipe.app.exchange.cli;
+
+import io.xpipe.app.exchange.MessageExchangeImpl;
+import io.xpipe.beacon.BeaconHandler;
+import io.xpipe.beacon.exchange.cli.StoreProviderListExchange;
+import io.xpipe.beacon.exchange.data.ProviderEntry;
+import io.xpipe.extension.DataStoreProvider;
+import io.xpipe.extension.DataStoreProviders;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public class StoreProviderListExchangeImpl extends StoreProviderListExchange
+        implements MessageExchangeImpl<StoreProviderListExchange.Request, StoreProviderListExchange.Response> {
+
+    @Override
+    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+        var categories = DataStoreProvider.Category.values();
+        var all = DataStoreProviders.getAll();
+        var map = Arrays.stream(categories)
+                .collect(Collectors.toMap(category -> getName(category), category -> all.stream()
+                        .filter(dataStoreProvider ->
+                                dataStoreProvider.getCategory().equals(category))
+                        .map(p -> ProviderEntry.builder()
+                                .id(p.getId())
+                                .description(p.getDisplayDescription())
+                                .hidden(!p.shouldShow())
+                                .build())
+                        .toList()));
+
+        return Response.builder().entries(map).build();
+    }
+
+    private String getName(DataStoreProvider.Category category) {
+        return category.name().substring(0, 1).toUpperCase()
+                + category.name().substring(1).toLowerCase();
+    }
+}

@@ -1,0 +1,42 @@
+.dialog-pane:header .header-panel {
+-fx-background-color: -xp-base-accent;
+}
+
+.dialog-pane:header .header-panel .graphic-container {
+    -fx-font-size: 0.5em;
+}
+
+.dialog-pane:header > .content {
+-fx-border-width: 2px 0 0 0;
+-fx-border-color: -xp-text-accent-light;
+-fx-background-color: -xp-base-accent;
+    -fx-border-insets: 0 1.333em 1em 1em;
+    -fx-padding: 1.333em 0 0 0;
+}
+
+.content-text {
+    -fx-text-fill: white;
+}
+
+.dialog-pane:header .content.label {
+    -fx-text-fill: white;
+}
+
+.dialog-pane:header .header-panel .label {
+    -fx-font-size: 1.0em;
+    -fx-wrap-text: true;
+    -fx-text-fill: white;
+}
+
+.dialog-pane:header {
+    -fx-pref-height: 2em;
+}
+
+.dialog-pane:header > *.button-bar > *.container {
+-fx-border-width: 1px 0 0 0;
+-fx-border-color: -xp-border-accent;
+}
+
+.dialog-pane:header > *.label.content{
+    -fx-font-size: 0.8em;
+}

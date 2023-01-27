@@ -1,15 +1,15 @@
-rootProject.name = 'xpipe_java'
+rootProject.name = 'xpipe'
 
 include 'api'
 include 'core'
 include 'beacon'
 include 'extension'
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
-    }
+for (def ext : file("ext").list()) {
+    include "$ext"
+    project(":$ext").projectDir = file("ext/$ext")
 }
+
+include 'app'
+include 'cli'
+include 'dist'

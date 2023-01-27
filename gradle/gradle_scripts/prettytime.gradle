@@ -1,0 +1,22 @@
+dependencies {
+    implementation files("$buildDir/generated-modules/prettytime-5.0.2.Final.jar")
+}
+
+addDependenciesModuleInfo {
+    overwriteExistingFiles = true
+    jdepsExtraArgs = ['-q']
+    outputDirectory = file("$buildDir/generated-modules")
+    modules {
+        module {
+            artifact 'org.ocpsoft.prettytime:prettytime:5.0.2.Final'
+            moduleInfoSource = '''
+                module org.ocpsoft.prettytime {
+                    exports org.ocpsoft.prettytime;
+                    exports org.ocpsoft.prettytime.format;
+                    exports org.ocpsoft.prettytime.i18n;
+                    exports org.ocpsoft.prettytime.units;
+                }
+            '''
+        }
+    }
+}

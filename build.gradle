@@ -1,10 +1,28 @@
 plugins {
-    id 'org.jreleaser' version '1.3.1'
+    id "io.codearte.nexus-staging" version "0.30.0"
 }
 
-if(project == rootProject) {
-    apply plugin: "io.codearte.nexus-staging"
+def getArchName() {
+    var arch = System.getProperty("os.arch").toLowerCase(Locale.ROOT)
+    if (arch == 'amd64' || arch == 'x86_64') {
+        return 'x86_64'
+    }
+
+    if (arch == 'arm' || arch == 'aarch64') {
+        return 'arm64'
+    }
+
+    if (arch == 'x86') {
+        return 'x86'
+    }
+
+    return arch
 }
 
-version file('misc/version').text
-apply from: 'jreleaser.gradle'
+project.ext {
+    ci = System.getenv('CI') != null
+    os = org.gradle.internal.os.OperatingSystem.current()
+    fullVersion = file("$rootDir/private_files.txt").exists()
+    arch = getArchName()
+    privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
+}

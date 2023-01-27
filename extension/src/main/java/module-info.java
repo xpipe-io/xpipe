@@ -1,7 +1,8 @@
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.DataStoreActionProvider;
-import io.xpipe.extension.SupportedApplicationProvider;
+import io.xpipe.extension.DataSourceTarget;
+import io.xpipe.extension.util.ModuleLayerLoader;
 import io.xpipe.extension.util.XPipeDaemon;
 
 open module io.xpipe.extension {
@@ -13,6 +14,7 @@ open module io.xpipe.extension {
     exports io.xpipe.extension.fxcomps.impl;
     exports io.xpipe.extension.fxcomps.util;
     exports io.xpipe.extension.fxcomps.augment;
+    exports io.xpipe.extension.test;
 
     requires transitive io.xpipe.core;
     requires io.xpipe.beacon;
@@ -22,6 +24,7 @@ open module io.xpipe.extension {
     requires static com.sun.jna;
     requires static com.sun.jna.platform;
     requires static org.junit.jupiter.api;
+    requires static org.junit.jupiter.params;
     requires static org.apache.commons.lang3;
     requires static javafx.base;
     requires static javafx.graphics;
@@ -39,7 +42,7 @@ open module io.xpipe.extension {
     requires static com.dlsc.formsfx;
 
     uses DataSourceProvider;
-    uses SupportedApplicationProvider;
+    uses DataSourceTarget;
     uses DataStoreActionProvider;
     uses io.xpipe.extension.I18n;
     uses io.xpipe.extension.event.EventHandler;
@@ -49,4 +52,7 @@ open module io.xpipe.extension {
     uses io.xpipe.extension.Cache;
     uses io.xpipe.extension.DataSourceActionProvider;
     uses ProxyFunction;
+    uses io.xpipe.extension.util.ModuleLayerLoader;
+
+    provides ModuleLayerLoader with DataSourceTarget.Loader;
 }

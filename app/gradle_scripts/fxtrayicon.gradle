@@ -1,0 +1,24 @@
+dependencies {
+    implementation files("$buildDir/generated-modules/FXTrayIcon-3.1.2.jar")
+}
+
+addDependenciesModuleInfo {
+    overwriteExistingFiles = true
+    jdepsExtraArgs = ['-q']
+    outputDirectory = file("$buildDir/generated-modules")
+    modules {
+        module {
+            artifact 'com.dustinredmond.fxtrayicon:FXTrayIcon:3.1.2'
+            moduleInfoSource = '''
+                module com.dustinredmond.fxtrayicon {
+                    exports com.dustinredmond.fxtrayicon;
+                    exports com.dustinredmond.fxtrayicon.annotations;
+                    
+                    requires transitive javafx.controls;
+                    requires transitive javafx.base;
+                    requires transitive java.desktop;
+                }
+            '''
+        }
+    }
+}

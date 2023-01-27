@@ -21,10 +21,13 @@ public class DataStoreProviders {
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
-                    p.init();
+                    if (!p.init()) {
+                        return true;
+                    }
+
                     p.validate();
                     return false;
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                     return true;
                 }
