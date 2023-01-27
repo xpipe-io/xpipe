@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-ospackage-plugin:9.1.1'
+    }
+}
+
+plugins {
+    id 'org.beryx.jlink' version '2.25.0'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'org.jreleaser' version '1.3.1'
+}
+
+apply plugin: 'nebula.ospackage'
+apply plugin: 'nebula.deb'
+apply plugin: 'nebula.rpm'
+
+repositories {
+    mavenCentral()
+}
+
+
+version = file('version').text
+
+project.ext {
+    buildId = UUID.nameUUIDFromBytes(version.toString().getBytes())
+    obfuscate = true
+}
+
+task dist(type: DefaultTask) {}
+
+clean {
+    setDelete(Set.of())
+    doLast {
+        fileTree(dir: project.buildDir).exclude("jreleaser/**").visit { FileVisitDetails details ->
+            delete details.file
+        }
+    }
+}
+
+distTar {
+    enabled = false;
+}
+
+distZip {
+    enabled = false;
+}
+
+apply from: 'base.gradle'
+apply from: 'jpackage.gradle'
+apply from: 'cli.gradle'
+
+if (rootProject.fullVersion) {
+    apply from: 'portable.gradle'
+    apply from: 'proguard.gradle'
+    apply from: 'jreleaser.gradle'
+
+    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+        apply from: 'linux_packages.gradle'
+    } else if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        apply from: 'msi.gradle'
+    } else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        apply from: 'pkg.gradle'
+    }
+
+    apply from: 'test.gradle'
+}

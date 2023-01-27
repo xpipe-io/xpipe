@@ -15,11 +15,11 @@ publishing {
             pom {
                 name = 'X-Pipe Java API'
                 description = 'Contains everything necessary to interact with X-Pipe from Java applications.'
-                url = 'https://github.com/xpipe-io/xpipe_java/api'
+                url = 'https://github.com/xpipe-io/xpipe/api'
                 licenses {
                     license {
                         name = 'The MIT License (MIT)'
-                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE.md'
+                        url = 'https://github.com/xpipe-io/xpipe/LICENSE.md'
                     }
                 }
                 developers {
@@ -30,9 +30,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/xpipe-io/xpipe_java.git'
-                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe_java.git'
-                    url = 'https://github.com/xpipe-io/xpipe_java'
+                    connection = 'scm:git:git://github.com/xpipe-io/xpipe.git'
+                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe.git'
+                    url = 'https://github.com/xpipe-io/xpipe'
                 }
             }
         }

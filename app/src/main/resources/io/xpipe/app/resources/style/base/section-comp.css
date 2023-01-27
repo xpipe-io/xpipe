@@ -1,0 +1,13 @@
+.section-comp {
+-fx-vgap: 7px;
+-fx-hgap: 10px;
+}
+
+.title-header {
+-fx-font-size: 1.2em;
+-fx-padding: 15px 0 3px 0;
+}
+
+.choice-pane-comp {
+-fx-spacing: 7px;
+}

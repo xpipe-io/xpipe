@@ -27,7 +27,7 @@ public class DataSourceProviders {
                     p.init();
                     p.validate();
                     return false;
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     ErrorEvent.fromThrowable(e).handle();
                     return true;
                 }

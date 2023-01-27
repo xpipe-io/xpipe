@@ -8,11 +8,11 @@ publishing {
             pom {
                 name = 'X-Pipe Extension Base'
                 description = 'Classes required to create X-Pipe extensions.'
-                url = 'https://github.com/xpipe-io/xpipe_java/extension'
+                url = 'https://github.com/xpipe-io/xpipe/extension'
                 licenses {
                     license {
                         name = 'The MIT License (MIT)'
-                        url = 'https://github.com/xpipe-io/xpipe_java/LICENSE.md'
+                        url = 'https://github.com/xpipe-io/xpipe/LICENSE.md'
                     }
                 }
                 developers {
@@ -23,9 +23,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:git://github.com/xpipe-io/xpipe_java.git'
-                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe_java.git'
-                    url = 'https://github.com/xpipe-io/xpipe_java'
+                    connection = 'scm:git:git://github.com/xpipe-io/xpipe.git'
+                    developerConnection = 'scm:git:ssh://github.com/xpipe-io/xpipe.git'
+                    url = 'https://github.com/xpipe-io/xpipe'
                 }
             }
         }

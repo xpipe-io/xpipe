@@ -1,0 +1,10 @@
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.name}"]
+}
+
+dependencies {
+    implementation 'info.picocli:picocli:4.7.0'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.0'
+    testImplementation 'info.picocli:picocli:4.7.0'
+    testAnnotationProcessor 'info.picocli:picocli-codegen:4.7.0'
+}

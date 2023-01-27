@@ -1,0 +1,46 @@
+.toggle-group-comp .toggle-button {
+-fx-border-width: 1px;
+-fx-border-color: -xp-border;
+-fx-background-color: -xp-base;
+-fx-border-radius: 2px;
+-fx-padding: 0.3em 1em 0.3em 1em;
+}
+
+.toggle-group-comp .toggle-button.first {
+-fx-border-width: 1px 0 1px 1px;
+-fx-border-radius: 2px 0 0 2px;
+-fx-background-radius: 2px 0 0 2px;
+}
+
+.toggle-group-comp .toggle-button.center {
+-fx-border-width: 1px 0 1px 0;
+-fx-border-radius: 0;
+-fx-background-radius: 0;
+}
+
+.toggle-group-comp .toggle-button.last {
+-fx-border-width: 1px 1px 1px 0;
+-fx-border-radius: 0px 2px 2px 0;
+-fx-background-radius: 0px 2px 2px 0;
+}
+
+.toggle-group-comp .toggle-button.first.last {
+-fx-border-width: 1px 1px 1px 1px;
+-fx-border-radius: 2px 2px 2px 2px;
+-fx-background-radius: 2px 2px 2px 2;
+}
+
+.toggle-group-comp .toggle-button:hover {
+-fx-background-color: -xp-base-highlight;
+-fx-border-color: -xp-border-highlight;
+}
+
+.toggle-group-comp .toggle-button:pressed {
+-fx-background-color: -xp-base-pressed;
+-fx-border-color: -xp-border-pressed;
+}
+
+.toggle-group-comp .toggle-button:selected {
+-fx-background-color: -xp-base-pressed;
+-fx-border-color: -xp-border-pressed;
+}

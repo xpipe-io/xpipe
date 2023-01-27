@@ -20,7 +20,7 @@ public interface DataStoreActionProvider<T extends DataStore> {
                                .filter(provider -> {
                                    try {
                                        return provider.isActive();
-                                   } catch (Exception e) {
+                                   } catch (Throwable e) {
                                        ErrorEvent.fromThrowable(e).handle();
                                        return false;
                                    }

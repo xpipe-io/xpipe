@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" width="161.54" height="129.74"
+     version="1.1" viewBox="0 0 42.742 34.328"
+     xmlns="http://www.w3.org/2000/svg">
+    <metadata>
+        <rdf:RDF>
+            <cc:Work rdf:about="">
+                <dc:format>image/svg+xml</dc:format>
+                <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+            </cc:Work>
+        </rdf:RDF>
+    </metadata>
+    <g transform="translate(-17.885 -155.17)">
+        <rect transform="matrix(.74741 .66436 -.56483 .82521 0 0)" x="110.55" y="99.04" width="8.1876" height="2.7754"
+              style="fill:#264653;paint-order:stroke fill markers;stroke-width:0"/>
+        <rect transform="matrix(1 0 .0034771 .99999 0 0)" x="22.234" y="158.86" width="33.863" height="3.4968"
+              style="fill:#264653;paint-order:stroke fill markers;stroke-width:0"/>
+        <rect transform="matrix(1 0 .0028273 1 0 0)" x="22.348" y="155.22" width="8.9427" height="4.1729"
+              style="fill:#264653;paint-order:stroke fill markers;stroke-width:0"/>
+        <rect transform="matrix(1 0 .003337 .99999 0 0)" x="23.336" y="162.72" width="31.691" height="25.597"
+              style="fill:#264653;paint-order:stroke fill markers;stroke-width:2.1784;stroke:#264653"/>
+        <rect transform="matrix(.68156 .73176 -.67748 .73554 0 0)" x="128.94" y="82.733" width="6.8756" height="2.8801"
+              style="fill:#264653;paint-order:stroke fill markers;stroke-width:0"/>
+        <rect x="24.056" y="160.58" width="31.341" height="26.048"
+              style="fill:#c0c0c0;paint-order:stroke fill markers"/>
+    </g>
+    <g transform="translate(-3.4705e-7 -3.7276e-6)" style="display:none">
+        <rect transform="matrix(1 0 .11726 .9931 0 0)" x="-.0039963" y=".034088" width="8.902" height="4.3726"
+              style="display:inline;fill:#264653;paint-order:stroke fill markers;stroke-width:0"/>
+        <rect transform="matrix(1 0 .14093 .99002 0 0)" x="1.2548" y="6.1133" width="30.21" height="26.142"
+              style="display:inline;fill:#c0c0c0;paint-order:stroke fill markers"/>
+        <rect transform="matrix(1 0 .14416 .98955 0 0)" x="-.12341" y="4.2326" width="32.736" height="3.5595"
+              style="display:inline;fill:#264653;paint-order:stroke fill markers;stroke-width:0"/>
+        <rect transform="matrix(1 0 .14416 .98955 0 0)" x=".30473" y="8.1631" width="31.922" height="26.056"
+              style="display:inline;fill:#264653;paint-order:stroke fill markers;stroke-width:.94219;stroke:#264653"/>
+    </g>
+    <g transform="translate(-3.4705e-7 -3.7276e-6)">
+        <rect transform="matrix(1 0 -.14416 .98955 0 0)" x="10.909" y="9.37" width="31.922" height="24.124"
+              style="fill:#8ecae6;paint-order:stroke fill markers;stroke-width:2.2058;stroke:#264653"/>
+    </g>
+</svg>

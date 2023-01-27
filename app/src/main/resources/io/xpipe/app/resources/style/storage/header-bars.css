@@ -1,0 +1,93 @@
+.bar {
+-fx-padding: 0.8em 1.0em 0.8em 1.0em;
+-fx-background-color: -xp-base-accent;
+-fx-text-fill: -xp-text-accent-base;
+-fx-border-color: -xp-border-accent;
+}
+
+.store-header-bar {
+-fx-background-radius: 0 0 3px 0;
+-fx-border-radius: 0 0 3px 0;
+ -fx-border-width: 0 2px 2px 0;
+}
+
+.store-creation-bar {
+-fx-background-radius: 0 3px 3px 0;
+-fx-border-radius: 0 3px 3px 0;
+ -fx-border-width: 0 2px 2px 0;
+-fx-spacing: 0.2em;
+}
+
+.filler-bar {
+-fx-background-radius: 0 3px 0 0;
+-fx-border-radius: 0 3px 0 0;
+ -fx-border-width: 0 2px 0 0;
+}
+
+.sidebar {
+-fx-spacing: 5px;
+}
+
+.bar .button-comp {
+-fx-border-width: 0;
+-fx-border-color: -xp-border;
+-fx-background-color: transparent;
+-fx-border-radius: 2px;
+-fx-background-radius: 2px;
+-fx-text-fill: -xp-text-accent-light;
+-fx-padding: 0.2em 0em 0.2em 0em;
+}
+
+.collections-bar {
+-fx-background-radius: 0 0 3px 0;
+-fx-border-radius: 0 0 3px 0;
+ -fx-border-width: 0 2px 2px 0;
+}
+
+.entry-bar {
+-fx-background-radius: 0 0 3px 3px;
+-fx-border-radius: 0 0 3px 3px;
+ -fx-border-width: 0 2px 2px 2px;
+-fx-background-color: -xp-base-accent;
+}
+
+.entry-bar .horizontal-comp {
+-fx-spacing: 5px;
+}
+
+.bar .icon-button-comp {
+-fx-text-fill: -xp-text-accent-base;
+}
+
+.bar .name {
+-fx-text-fill: -xp-text-accent-base;
+}
+
+.bar .count-comp {
+-fx-padding: 0.0em 0em 0.0em 0.4em;
+-fx-text-fill: -xp-text-accent-light;
+}
+
+.bar .filter-bar {
+-fx-padding: 0.8em 0 0.0em 0;
+}
+
+.bar .filter-bar .text-field {
+-fx-padding: 0.35em;
+-fx-background-color: transparent;
+-fx-background-radius: 0.5em;
+-fx-background-color: #0004;
+-fx-text-fill: -xp-text-accent-base;
+}
+
+.bar .filter-bar .background {
+-fx-text-fill: -xp-text-accent-light;
+}
+
+.bar .filter-bar .background .ikonli-font-icon {
+-fx-icon-color: -xp-text-accent-light;
+}
+
+.filter-bar .input-line {
+-fx-opacity: 0.2;
+}

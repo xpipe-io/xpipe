@@ -83,6 +83,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
         available.forEach(s -> comboBox.add((T) s));
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("choice-comp");
+        cb.setMaxWidth(2000);
         return cb;
     }
 }
