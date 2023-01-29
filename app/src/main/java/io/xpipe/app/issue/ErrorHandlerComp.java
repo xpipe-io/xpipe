@@ -83,7 +83,8 @@ public class ErrorHandlerComp extends SimpleComp {
         if (desc == null) {
             desc = I18n.get("errorNoDetail");
         }
-        var top = JfxHelper.createNamedEntry(I18n.get(headerId), desc, graphic);
+        var limitedDescription = desc.substring(0, Math.min(1000, desc.length()));
+        var top = JfxHelper.createNamedEntry(I18n.get(headerId), limitedDescription, graphic);
 
         var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
         if (event.isReportable()) {

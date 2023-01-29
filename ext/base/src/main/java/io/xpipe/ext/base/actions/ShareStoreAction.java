@@ -1,15 +1,16 @@
 package io.xpipe.ext.base.actions;
 
+import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.DataStoreProviders;
 import io.xpipe.extension.I18n;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.DataFormat;
 
-import java.util.Map;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 public class ShareStoreAction implements DataStoreActionProvider<DataStore> {
 
@@ -45,6 +46,9 @@ public class ShareStoreAction implements DataStoreActionProvider<DataStore> {
     @Override
     public void execute(DataStore store) throws Exception {
         var string = create(store);
-        Clipboard.getSystemClipboard().setContent(Map.of(DataFormat.PLAIN_TEXT, string, DataFormat.URL, string));
+        var selection = new StringSelection(string);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        AppActionLinkDetector.setLastDetectedAction(string);
+        clipboard.setContents(selection, selection);
     }
 }

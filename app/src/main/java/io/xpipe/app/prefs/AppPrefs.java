@@ -112,8 +112,6 @@ public class AppPrefs {
     private final BooleanField automaticallyUpdateField = BooleanField.ofBooleanType(automaticallyUpdate)
             .editable(AppDistributionType.get().supportsUpdate())
             .render(() -> new ToggleControl());
-    private final BooleanProperty sendAnonymousErrorReports = typed(new SimpleBooleanProperty(true), Boolean.class);
-    private final BooleanProperty sendUsageStatistics = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanProperty updateToPrereleases = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
 
@@ -282,14 +280,6 @@ public class AppPrefs {
     // Developer mode
     // ==============
 
-    public ReadOnlyBooleanProperty sendAnonymousErrorReports() {
-        return sendAnonymousErrorReports;
-    }
-
-    public ReadOnlyBooleanProperty sendUsageStatistics() {
-        return sendUsageStatistics;
-    }
-
     public ReadOnlyBooleanProperty updateToPrereleases() {
         return updateToPrereleases;
     }
@@ -386,8 +376,6 @@ public class AppPrefs {
                                         externalStartupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour),
                                 Setting.of("automaticallyUpdate", automaticallyUpdateField, automaticallyUpdate),
-                                Setting.of("sendAnonymousErrorReports", sendAnonymousErrorReports),
-                                Setting.of("sendUsageStatistics", sendUsageStatistics),
                                 Setting.of("storageDirectory", storageDirectoryControl, internalStorageDirectory),
                                 Setting.of("logLevel", logLevelField, internalLogLevel))),
                 Category.of(
