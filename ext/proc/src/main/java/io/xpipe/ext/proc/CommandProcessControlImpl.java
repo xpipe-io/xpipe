@@ -58,6 +58,7 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
     private String timedOutError;
     private Integer exitTimeout;
     private boolean complex;
+    private boolean obeysReturnValueConvention = true;
 
     public CommandProcessControlImpl(
             ShellProcessControl parent,
@@ -66,6 +67,12 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         this.command = command;
         this.parent = parent;
         this.terminalCommand = terminalCommand;
+    }
+
+    @Override
+    public CommandProcessControl doesNotObeyReturnValueConvention() {
+        this.obeysReturnValueConvention = false;
+        return this;
     }
 
     @Override
@@ -413,7 +420,8 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         }
 
         var exitCode = getExitCode();
-        if (exitCode == 0 && !(read.get().isEmpty() && !readError.get().isEmpty())) {
+        var success = (obeysReturnValueConvention && exitCode == 0) || (!obeysReturnValueConvention && !(read.get().isEmpty() && !readError.get().isEmpty()));
+        if (success) {
             return read.get().trim();
         } else {
             throw new ProcessOutputException(
@@ -446,7 +454,8 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         }
 
         var exitCode = getExitCode();
-        if (exitCode != 0 || (read.get().isEmpty() && !readError.get().isEmpty())) {
+        var success = (obeysReturnValueConvention && exitCode == 0) || (!obeysReturnValueConvention && !(read.get().isEmpty() && !readError.get().isEmpty()));
+        if (!success) {
             throw new ProcessOutputException(
                     "Command returned with " + exitCode + ": " + readError.get().trim());
         }

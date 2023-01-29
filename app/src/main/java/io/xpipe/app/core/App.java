@@ -66,7 +66,7 @@ public class App extends Application {
         var content = new AppLayoutComp();
         content.apply(struc -> {
             struc.get().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-                AppActionDetector.detectOnFocus();
+                AppActionLinkDetector.detectOnFocus();
             });
         });
         var title = String.format("X-Pipe Desktop (%s)", AppProperties.get().getVersion());

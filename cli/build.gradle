@@ -261,6 +261,8 @@ graalvmNative {
                     '-Dpicocli.converters.excludes=java.time.*,java.sql.*'
             )
             buildArgs.addAll(
+                    '--static',
+                    '--libc=musl',
                     // '--debug-attach=8000',
                     '--enable-https',
                     '--install-exit-handlers',
