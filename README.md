@@ -160,3 +160,12 @@ You are also able to properly debug the built production application through two
 Note that when any unit test is run using a debugger, the X-Pipe daemon process that is started will also attempt
 to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme) as well.
 
+### Development FAQ
+
+##### Why are there no GitHub actions workflows or other continuous integration pipelines set up for this repository?
+
+There are several test workflows run in a private environment as they use private test connections
+such as remote server connections and database connections.
+Other private workflows are responsible for packaging, signing, and distributing the releases.
+So you can assume that the code is tested!
+

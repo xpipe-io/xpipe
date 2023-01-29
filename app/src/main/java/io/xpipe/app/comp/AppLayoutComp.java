@@ -4,7 +4,7 @@ import io.xpipe.app.comp.about.AboutTabComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
 import io.xpipe.app.comp.storage.collection.SourceCollectionLayoutComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
-import io.xpipe.app.core.AppActionDetector;
+import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppProperties;
@@ -36,7 +36,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
         selected = new SimpleObjectProperty<>(entries.get(0));
 
         shortcut(new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN), structure -> {
-            AppActionDetector.detectOnPaste();
+            AppActionLinkDetector.detectOnPaste();
         });
     }
 

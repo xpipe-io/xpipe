@@ -34,6 +34,12 @@ public class SaveSourceTarget implements DataSourceTarget {
         var storageGroup = new SimpleObjectProperty<DataSourceCollection>();
         var dataSourceEntry = new SimpleObjectProperty<DataSourceEntry>();
         SimpleChangeListener.apply(id, val -> {
+            if (val == null) {
+                storageGroup.set(null);
+                dataSourceEntry.set(null);
+                return;
+            }
+
             storageGroup.set(
                     SourceCollectionViewState.get().getSelectedGroup() != null
                             ? SourceCollectionViewState.get().getSelectedGroup().getCollection()
