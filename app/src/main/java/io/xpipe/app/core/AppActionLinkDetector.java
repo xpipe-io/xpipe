@@ -8,7 +8,7 @@ import javafx.scene.input.DataFormat;
 
 import java.util.List;
 
-public class AppActionDetector {
+public class AppActionLinkDetector {
 
     private static String lastDetectedAction;
 
@@ -32,6 +32,10 @@ public class AppActionDetector {
         }
 
         LauncherInput.handle(List.of(content));
+    }
+
+    public static void setLastDetectedAction(String s) {
+        lastDetectedAction = s;
     }
 
     public static void detectOnFocus() {

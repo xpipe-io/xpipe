@@ -47,8 +47,8 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
-    implementation name: 'preferencesfx-core-lazy-11.11.0'
-    implementation name: 'formsfx-core-lazy-11.5.0'
+    implementation group: 'com.dlsc.preferencesfx', name: 'preferencesfx-core', version: '11.15.0'
+    implementation group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0'
     implementation 'io.xpipe:modulefs:0.1.4'
     implementation 'com.jfoenix:jfoenix:9.0.10'

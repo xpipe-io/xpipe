@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 public interface CommandProcessControl extends ProcessControl {
 
+    public CommandProcessControl doesNotObeyReturnValueConvention();
+
     @Override
     public CommandProcessControl sensitive();
     CommandProcessControl complex();

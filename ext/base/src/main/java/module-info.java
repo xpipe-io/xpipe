@@ -9,19 +9,12 @@ import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.DataStoreProvider;
 import io.xpipe.extension.DataSourceTarget;
 
-module io.xpipe.ext.base {
+open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
-
-    opens io.xpipe.ext.base;
-
     exports io.xpipe.ext.base.apps;
-
-    opens io.xpipe.ext.base.apps;
-
     exports io.xpipe.ext.base.actions;
 
-    opens io.xpipe.ext.base.actions;
-
+    requires java.desktop;
     requires io.xpipe.core;
     requires io.xpipe.extension;
     requires com.fasterxml.jackson.databind;
