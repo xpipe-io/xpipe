@@ -9,8 +9,7 @@ repositories {
     mavenCentral()
 }
 
-def appVersion = file('../dist/version').text
-def apiVersion = project(':api').version
+def appVersion = rootProject.versionString
 
 configurations {
     dep
@@ -136,7 +135,7 @@ run {
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"
-    systemProperty 'io.xpipe.app.logLevel', "trace"
+    systemProperty 'io.xpipe.app.logLevel', "debug"
     systemProperty "io.xpipe.beacon.port", "21724"
     // systemProperty "io.xpipe.beacon.printMessages", "true"
     systemProperty "io.xpipe.app.extensions", extensionDirList
@@ -166,8 +165,7 @@ task writeBuildProperties(type: DefaultTask) {
         def resourcesDir = new File(sourceSets.main.output.resourcesDir, "io/xpipe/app/resources")
         resourcesDir.mkdirs()
         def contents = "version=$appVersion\n" +
-                "build=$appVersion-${new Date().format('yyyyMMddHHmm')}\n" +
-                "apiVersion=$apiVersion\n"
+                "build=$appVersion-${new Date().format('yyyyMMddHHmm')}\n"
         new File(resourcesDir, "app.properties").text = contents
     }
 }

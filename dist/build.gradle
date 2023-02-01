@@ -23,7 +23,7 @@ repositories {
 }
 
 
-version = file('version').text
+version = rootProject.versionString
 
 project.ext {
     buildId = UUID.nameUUIDFromBytes(version.toString().getBytes())
