@@ -11,7 +11,7 @@ apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
 System.setProperty('excludeExtensionLibrary', 'true')
 apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
 
-version = file("$rootDir/dist/version").text
+version = rootProject.versionString
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-api'
 
