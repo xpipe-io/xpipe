@@ -7,6 +7,7 @@ import com.dlsc.preferencesfx.formsfx.view.controls.ToggleControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
+import com.dlsc.preferencesfx.util.VisibilityProperty;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppStyle;
@@ -104,6 +105,9 @@ public class AppPrefs {
                             ? ExternalStartupBehaviour.TRAY
                             : ExternalStartupBehaviour.BACKGROUND),
             ExternalStartupBehaviour.class);
+
+
+
     private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
             Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
                     .render(() -> new TranslatableComboBoxControl<>());
@@ -395,7 +399,7 @@ public class AppPrefs {
                         Group.of(
                                 "editor",
                                 Setting.of("defaultProgram", externalEditorControl, externalEditor),
-                                Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand),
+                                Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand).applyVisibility( VisibilityProperty.of(externalEditor.isEqualTo(ExternalEditorType.CUSTOM))),
                                 Setting.of(
                                         "editorReloadTimeout",
                                         editorReloadTimeout,

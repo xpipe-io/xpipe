@@ -66,7 +66,6 @@ public class ShellEnvironmentStoreProvider implements DataStoreProvider {
     @Override
     public String toSummaryString(DataStore store, int length) {
         ShellEnvironmentStore s = store.asNeeded();
-        var local = ShellStore.isLocal(s.getHost());
         var commandSummary = "<" + s.getCommands().lines().count() + " commands>";
         return commandSummary;
     }
