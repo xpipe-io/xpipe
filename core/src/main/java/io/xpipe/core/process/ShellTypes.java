@@ -423,7 +423,7 @@ public class ShellTypes {
 
         @Override
         public String getTextFileWriteCommand(String content, String file) {
-            return "echo -e '" + content.replaceAll("\n", "\\\\n").replaceAll("'","\\\\'") + "' > \"" + file + "\"";
+            return "echo -e '" + content.replaceAll("\n", "\\\\n").replaceAll("'","'\\\\''") + "' > \"" + file + "\"";
         }
 
         @Override

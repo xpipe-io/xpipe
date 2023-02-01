@@ -23,6 +23,7 @@ import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.impl.*;
+import io.xpipe.core.process.ShellType;
 import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceReference;
@@ -46,14 +47,15 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
                 new NamedType(WildcardType.class),
-                new NamedType(ShellTypes.Cmd.class),
-                new NamedType(ShellTypes.PowerShell.class),
-                new NamedType(ShellTypes.PosixBase.class),
                 new NamedType(BaseQueryElement.class),
                 new NamedType(ChoiceElement.class),
                 new NamedType(BusyElement.class),
                 new NamedType(HeaderElement.class)
         );
+
+        for (ShellType t : ShellTypes.getAllShellTypes()) {
+            context.registerSubtypes(new NamedType(t.getClass()));
+        }
 
         addSerializer(Charset.class, new CharsetSerializer());
         addDeserializer(Charset.class, new CharsetDeserializer());
