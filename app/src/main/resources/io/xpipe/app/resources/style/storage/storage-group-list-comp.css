@@ -75,3 +75,7 @@
 -fx-padding: 0;
 -fx-focus-color: transparent;
 }
+
+.store-list-comp .list-cell {
+-fx-padding: 0;
+}

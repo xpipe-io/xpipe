@@ -1,6 +1,8 @@
 package io.xpipe.extension.fxcomps.util;
 
 import javafx.beans.binding.Binding;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
@@ -8,6 +10,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class BindingsHelper {
 
@@ -42,6 +45,45 @@ public class BindingsHelper {
         l2.addListener((ListChangeListener<? super V>) c -> {
             runnable.run();
         });
+    }
+
+    public static <T, V> ObservableList<T> mappedContentBinding(ObservableList<V> l2, Function<V, T> map) {
+        ObservableList<T> l1 = FXCollections.observableList(new ArrayList<>());
+        Runnable runnable = () -> {
+            setContent(l1, l2.stream().map(map).toList());
+        };
+        runnable.run();
+        l2.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
+        });
+        return l1;
+    }
+
+    public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, Comparator<V> comp) {
+        ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
+        Runnable runnable = () -> {
+            setContent(l1, l2.stream().sorted(comp).toList());
+        };
+        runnable.run();
+        l2.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
+        });
+        return l1;
+    }
+
+    public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, ObservableValue<Predicate<V>> predicate) {
+        ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
+        Runnable runnable = () -> {
+            setContent(l1, l2.stream().filter(predicate.getValue()).toList());
+        };
+        runnable.run();
+        l2.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
+        });
+        predicate.addListener((c,o,n) -> {
+            runnable.run();
+        });
+        return l1;
     }
 
     public static <T> void setContent(ObservableList<T> toSet, List<? extends T> newList) {

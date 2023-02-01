@@ -82,7 +82,7 @@ public abstract class DataStorage {
     }
 
     public DataSourceCollection getInternalCollection() {
-        var found = sourceCollections.stream().filter(o -> o.getName().equals("Internal")).findAny();
+        var found = sourceCollections.stream().filter(o -> o.getName() != null && o.getName().equals("Internal")).findAny();
         if (found.isPresent()) {
             return found.get();
         }

@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.ListViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
 import io.xpipe.extension.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
@@ -15,14 +14,18 @@ import java.util.Map;
 public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
+        var topLevel = StoreEntrySection.createTopLevels();
+        var filtered = BindingsHelper.filteredContentBinding(
+                topLevel,
+                StoreViewState.get().getFilterString().map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListViewComp<>(
-                StoreViewState.get().getShownEntries(),
-                StoreViewState.get().getAllEntries(),
+                filtered,
+                topLevel,
                 null,
-                (StoreEntryWrapper e) -> {
-                    return new StoreEntryComp(e).apply(GrowAugment.create(true, false));
+                (StoreEntrySection e) -> {
+                    return e.comp(true);
                 });
-        return content;
+        return content.styleClass("store-list-comp");
     }
 
     @Override
