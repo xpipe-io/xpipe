@@ -6,7 +6,6 @@ import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellType;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.SecretValue;
-import io.xpipe.core.util.XPipeTempDirectory;
 import io.xpipe.extension.event.TrackEvent;
 import lombok.SneakyThrows;
 
@@ -15,10 +14,10 @@ import java.util.Random;
 
 public class ScriptHelper {
 
-    public static int getConnectionHash(String command) {
-        // This deterministic approach can cause permission problems when two different users execute the same command on a system
+    public static int getScriptId() {
+        // A deterministic approach can cause permission problems when two different users execute the same command on a system
+        // Therefore, use a random approach
         return new Random().nextInt(Integer.MAX_VALUE);
-        //return Math.abs(Objects.hash(command, XPipeSession.get().getSystemSessionId()));
     }
 
     @SneakyThrows
@@ -44,7 +43,8 @@ public class ScriptHelper {
         }
 
         if (toExecuteInShell != null) {
-            content += toExecuteInShell + nl;
+            // Normalize line endings
+            content += String.join(nl, toExecuteInShell.lines().toList()) + nl;
             content += t.getExitCommand() + nl;
         }
 
@@ -52,19 +52,11 @@ public class ScriptHelper {
         return t.getInitFileOpenCommand(initFile);
     }
 
-    public static String prepend(ShellProcessControl processControl, List<String> init, String commands) {
-        var prefix = init != null && init.size() > 0
-                ? String.join(processControl.getShellType().getNewLine().getNewLineString(), init)
-                        + processControl.getShellType().getNewLine().getNewLineString()
-                : "";
-        return prefix + commands;
-    }
-
     @SneakyThrows
     public static String createExecScript(ShellProcessControl processControl, String content, boolean restart) {
-        var fileName = "exec-" + getConnectionHash(content);
+        var fileName = "exec-" + getScriptId();
         ShellType type = processControl.getShellType();
-        var temp = XPipeTempDirectory.get(processControl);
+        var temp = processControl.getTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
         return createExecScript(processControl, file, content, restart);
     }
@@ -75,20 +67,15 @@ public class ScriptHelper {
         ShellType type = processControl.getShellType();
         content = type.prepareScriptContent(content);
 
-        if (processControl.executeBooleanSimpleCommand(type.getFileExistsCommand(file))) {
-            return file;
-        }
-
         TrackEvent.withTrace("proc", "Writing exec script")
                 .tag("file", file)
                 .tag("content", content)
                 .handle();
 
-        processControl.executeSimpleCommand(type.getFileTouchCommand(file), "Failed to create script " + file);
+        // processControl.executeSimpleCommand(type.getFileTouchCommand(file), "Failed to create script " + file);
+        processControl.executeSimpleCommand(type.getTextFileWriteCommand(content, file));
         processControl.executeSimpleCommand(
                 type.getMakeExecutableCommand(file), "Failed to make script " + file + " executable");
-
-        processControl.executeSimpleCommand(type.getTextFileWriteCommand(content, file));
         return file;
     }
 
@@ -96,8 +83,8 @@ public class ScriptHelper {
     public static String createAskPassScript(
             SecretValue pass, ShellProcessControl parent, ShellType type, boolean restart) {
         var content = type.getScriptEchoCommand(pass.getSecretValue());
-        var temp = XPipeTempDirectory.get(parent);
-        var file = FileNames.join(temp, "askpass-" + getConnectionHash(content) + "." + type.getScriptFileEnding());
+        var temp = parent.getTemporaryDirectory();
+        var file = FileNames.join(temp, "askpass-" + getScriptId() + "." + type.getScriptFileEnding());
         return createExecScript(parent, file, content, restart);
     }
 }
