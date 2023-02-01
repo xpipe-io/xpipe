@@ -15,6 +15,11 @@ public interface ShellProcessControl extends ProcessControl {
 
     String prepareIntermediateTerminalOpen(String content) throws Exception;
 
+    String getTemporaryDirectory() throws Exception;
+
+    public void checkRunning() throws Exception;
+
+
     default String executeStringSimpleCommand(String command) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
             return c.readOrThrow();

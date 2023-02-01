@@ -8,7 +8,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import io.xpipe.extension.fxcomps.SimpleCompStructure;
@@ -21,6 +20,7 @@ import io.xpipe.extension.fxcomps.impl.PrettyImageComp;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
 import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
 import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
@@ -103,7 +103,9 @@ public class StoreEntryComp extends SimpleComp {
         var storeIcon = imageComp.createRegion();
         storeIcon.getStyleClass().add("icon");
         if (entry.getState().getValue().isUsable()) {
-            new FancyTooltipAugment<>(new SimpleStringProperty(entry.getEntry().getProvider().getDisplayName())).augment(storeIcon);
+            new FancyTooltipAugment<>(new SimpleStringProperty(
+                            entry.getEntry().getProvider().getDisplayName()))
+                    .augment(storeIcon);
         }
         return storeIcon;
     }
@@ -121,7 +123,6 @@ public class StoreEntryComp extends SimpleComp {
         var grid = new GridPane();
 
         var storeIcon = createIcon();
-
 
         grid.getColumnConstraints()
                 .addAll(
@@ -167,11 +168,9 @@ public class StoreEntryComp extends SimpleComp {
 
             var button = new IconButtonComp(
                     actionProvider.getIcon(entry.getEntry().getStore().asNeeded()), () -> {
-                        try {
+                        ThreadHelper.runFailableAsync(() -> {
                             actionProvider.execute(entry.getEntry().getStore().asNeeded());
-                        } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).handle();
-                        }
+                        });
                     });
             button.apply(new FancyTooltipAugment<>(
                     actionProvider.getName(entry.getEntry().getStore().asNeeded())));
@@ -224,11 +223,9 @@ public class StoreEntryComp extends SimpleComp {
             var icon = actionProvider.getIcon(entry.getEntry().getStore().asNeeded());
             var item = new MenuItem(null, new FontIcon(icon));
             item.setOnAction(event -> {
-                try {
+                ThreadHelper.runFailableAsync(() -> {
                     actionProvider.execute(entry.getEntry().getStore().asNeeded());
-                } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
-                }
+                });
             });
             item.textProperty().bind(name);
             item.disableProperty().bind(Bindings.not(p.getValue()));
