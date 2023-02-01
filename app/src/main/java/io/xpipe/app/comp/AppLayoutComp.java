@@ -80,8 +80,8 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
             pane.setCenter(r);
         });
         pane.setCenter(selected.getValue().comp().createRegion());
-        pane.setPrefWidth(1200);
-        pane.setPrefHeight(700);
+        pane.setPrefWidth(1280);
+        pane.setPrefHeight(720);
         AppFont.normal(pane);
         return new SimpleCompStructure<>(pane);
     }

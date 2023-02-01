@@ -17,16 +17,16 @@ public class DataStorageWriter {
     public static JsonNode storeToNode(DataStore store) {
         var mapper = JacksonMapper.newMapper();
         var tree = mapper.valueToTree(store);
-        return replaceReferencesWithIds(store, tree);
+        return replaceReferencesWithIds(tree, true);
     }
 
     public static JsonNode sourceToNode(DataSource<?> source) {
         var mapper = JacksonMapper.newMapper();
         var tree = mapper.valueToTree(source);
-        return replaceReferencesWithIds(source, tree);
+        return replaceReferencesWithIds(tree, true);
     }
 
-    private static JsonNode replaceReferencesWithIds(Object root, JsonNode node) {
+    private static JsonNode replaceReferencesWithIds(JsonNode node, boolean isRoot) {
         var mapper = JacksonMapper.newMapper();
 
         node = replaceReferencesWithIds(
@@ -38,7 +38,7 @@ public class DataStorageWriter {
 
                     try {
                         var store = mapper.treeToValue(possibleReference, DataStore.class);
-                        if (root == null || !root.equals(store)) {
+                        if (!isRoot) {
                             var found = DataStorage.get().getEntryByStore(store);
                             return found.map(dataSourceEntry -> dataSourceEntry.getUuid());
                         }
@@ -46,14 +46,14 @@ public class DataStorageWriter {
                     }
                     return Optional.empty();
                 },
-                "storeId");
+                "storeId", isRoot);
 
         node = replaceReferencesWithIds(
                 node,
                 possibleReference -> {
                     try {
                         var source = mapper.treeToValue(possibleReference, DataSource.class);
-                        if (root == null || !root.equals(source)) {
+                        if (!isRoot) {
                             var found = DataStorage.get().getEntryBySource(source);
                             return found.map(dataSourceEntry -> dataSourceEntry.getUuid());
                         }
@@ -61,13 +61,13 @@ public class DataStorageWriter {
                     }
                     return Optional.empty();
                 },
-                "sourceId");
+                "sourceId", isRoot);
 
         return node;
     }
 
     private static JsonNode replaceReferencesWithIds(
-            JsonNode node, Function<JsonNode, Optional<UUID>> function, String key) {
+            JsonNode node, Function<JsonNode, Optional<UUID>> function, String key, boolean isRoot) {
         if (!node.isObject()) {
             return node;
         }
@@ -80,7 +80,7 @@ public class DataStorageWriter {
 
         var replacement = JsonNodeFactory.instance.objectNode();
         node.fields().forEachRemaining(stringJsonNodeEntry -> {
-            var resolved = replaceReferencesWithIds(null, stringJsonNodeEntry.getValue());
+            var resolved = replaceReferencesWithIds(stringJsonNodeEntry.getValue(), false);
             replacement.set(stringJsonNodeEntry.getKey(), resolved);
         });
         return replacement;

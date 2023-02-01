@@ -40,8 +40,8 @@ public class DataStoreFormatter {
             return func.apply(length);
         }
 
-        var fileString = func.apply(length - atString.length() - 4);
-        return String.format("%s -> %s", atString, fileString);
+        var fileString = func.apply(length - atString.length() - 3);
+        return String.format("%s > %s", atString, fileString);
     }
 
     public static String toName(DataStore input) {
@@ -89,6 +89,17 @@ public class DataStoreFormatter {
             var split = input.split("\\.");
             var name = split[0];
             var region = split[2];
+            var lengthShare = (length - 3) / 2;
+            return String.format(
+                    "%s.%s",
+                    DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare)
+            );
+        }
+
+        if (input.endsWith(".compute.amazonaws.com")) {
+            var split = input.split("\\.");
+            var name = split[0];
+            var region = split[1];
             var lengthShare = (length - 3) / 2;
             return String.format(
                     "%s.%s",

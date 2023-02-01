@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -93,6 +94,10 @@ public class StoreViewState {
 
     public StorageFilter getFilter() {
         return filter;
+    }
+
+    public ObservableValue<String> getFilterString() {
+        return filter.filterProperty();
     }
 
     public ObservableList<StoreEntryWrapper> getAllEntries() {
