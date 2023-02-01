@@ -1,6 +1,7 @@
 package io.xpipe.ext.jdbc;
 
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.ProxyProvider;
 import io.xpipe.extension.DataStoreProvider;
 import io.xpipe.extension.util.DataStoreFormatter;
@@ -19,6 +20,13 @@ public abstract class JdbcStoreProvider implements DataStoreProvider {
     public boolean isShareable() {
         return true;
     }
+
+    @Override
+    public DataStore getParent(DataStore store) {
+        JdbcBaseStore s = store.asNeeded();
+        return !ShellStore.isLocal(s.getProxy()) ? s.getProxy() : null;
+    }
+
 
     @Override
     public boolean init() throws Exception {

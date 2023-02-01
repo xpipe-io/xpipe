@@ -21,6 +21,12 @@ import java.util.List;
 public class WslStoreProvider implements DataStoreProvider {
 
     @Override
+    public DataStore getParent(DataStore store) {
+        WslStore s = store.asNeeded();
+        return s.getHost();
+    }
+
+    @Override
     public GuiDialog guiDialog(Property<DataStore> store) {
         var val = new SimpleValidator();
         WslStore st = (WslStore) store.getValue();

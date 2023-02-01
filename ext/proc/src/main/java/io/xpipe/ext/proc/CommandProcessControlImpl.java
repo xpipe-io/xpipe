@@ -90,7 +90,7 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
                             : terminalCommand.apply(parent))
                     + operator
                     + parent.getShellType().getPauseCommand();
-            return parent.prepareTerminalOpen(consoleCommand);
+            return parent.prepareIntermediateTerminalOpen(consoleCommand);
         }
     }
 
@@ -150,8 +150,8 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         parent.start();
 
         var baseCommand = command.apply(parent);
-        this.complex = complex || baseCommand.contains("\n");
-        if (complex) {
+        var createExecScript = complex || baseCommand.contains("\n");
+        if (createExecScript) {
             var script = ScriptHelper.createExecScript(parent, baseCommand, true);
             baseCommand = "\"" + script + "\"";
         }
@@ -182,7 +182,7 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         if (elevated) {
             string = ElevationHelper.elevateNormalCommand(string, parent, baseCommand);
         }
-        parent.executeCommand(string);
+        parent.executeLine(string);
         running = true;
 
         // Check for custom charset

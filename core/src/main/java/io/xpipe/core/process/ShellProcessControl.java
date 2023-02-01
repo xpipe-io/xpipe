@@ -11,11 +11,9 @@ import java.util.function.Predicate;
 
 public interface ShellProcessControl extends ProcessControl {
 
-    default String prepareTerminalOpen() throws Exception {
-        return prepareTerminalOpen(null);
-    }
+    String prepareTerminalOpen() throws Exception;
 
-    String prepareTerminalOpen(String content) throws Exception;
+    String prepareIntermediateTerminalOpen(String content) throws Exception;
 
     default String executeStringSimpleCommand(String command) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
@@ -35,7 +33,7 @@ public interface ShellProcessControl extends ProcessControl {
         }
     }
 
-    default void executeSimpleCommand(String command,String failMessage) throws Exception {
+    default void executeSimpleCommand(String command, String failMessage) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
             c.discardOrThrow();
         } catch (ProcessOutputException out) {
@@ -60,12 +58,14 @@ public interface ShellProcessControl extends ProcessControl {
 
     ShellProcessControl elevation(SecretValue value);
 
+    ShellProcessControl initWith(List<String> cmds);
+
     SecretValue getElevationPassword();
 
     default ShellProcessControl subShell(@NonNull ShellType type) {
         return subShell(p -> type.getNormalOpenCommand(), (shellProcessControl, s) -> {
-            return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
-        })
+                    return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
+                })
                 .elevation(getElevationPassword());
     }
 
@@ -80,10 +80,9 @@ public interface ShellProcessControl extends ProcessControl {
 
     ShellProcessControl subShell(
             @NonNull Function<ShellProcessControl, String> command,
-            BiFunction<ShellProcessControl, String, String> terminalCommand
-    );
+            BiFunction<ShellProcessControl, String, String> terminalCommand);
 
-    void executeCommand(String command) throws Exception;
+    void executeLine(String command) throws Exception;
 
     @Override
     ShellProcessControl start() throws Exception;
@@ -91,8 +90,7 @@ public interface ShellProcessControl extends ProcessControl {
     CommandProcessControl command(Function<ShellProcessControl, String> command);
 
     CommandProcessControl command(
-            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand
-    );
+            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand);
 
     default CommandProcessControl command(String command) {
         return command(shellProcessControl -> command);

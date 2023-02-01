@@ -27,6 +27,11 @@ public class LocalProcessControlImpl extends ShellProcessControlImpl {
     protected boolean stdinClosed;
     private Process process;
 
+    @Override
+    public String prepareTerminalOpen() throws Exception {
+        return prepareIntermediateTerminalOpen(null);
+    }
+
     public void closeStdin() throws IOException {
         if (stdinClosed) {
             return;
@@ -99,15 +104,10 @@ public class LocalProcessControlImpl extends ShellProcessControlImpl {
     }
 
     @Override
-    public String prepareTerminalOpen(String content) throws Exception {
-        try (var ignored = start()) {
-            if (content == null) {
-                return getShellType().getNormalOpenCommand();
-            }
-
-            var file = ScriptHelper.createExecScript(this, content, false);
-
-            TrackEvent.withTrace("proc", "Writing open init script")
+    public String prepareIntermediateTerminalOpen(String content) throws Exception {
+        try (var pc = start()) {
+            var file = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, content);
+            TrackEvent.withDebug("proc", "Writing open init script")
                     .tag("file", file)
                     .tag("content", content)
                     .handle();
@@ -149,6 +149,10 @@ public class LocalProcessControlImpl extends ShellProcessControlImpl {
         shellType = ShellHelper.determineType(this, Charset.defaultCharset(), command, null, startTimeout);
         charset = shellType.determineCharset(this);
         osType = OsType.getLocal();
+
+        for (String s : initCommands) {
+            executeLine(s);
+        }
 
         return this;
     }

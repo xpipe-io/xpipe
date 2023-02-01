@@ -1,26 +1,29 @@
 
-.store-entry-comp .date, .store-entry-comp .summary {
+.store-entry-grid .date, .store-entry-grid .summary {
 -fx-text-fill: -xp-text-light;
 }
 
-.store-entry-comp:failed .jfx-text-field {
+.store-entry-grid:failed .jfx-text-field {
 -fx-text-fill: red;
 }
 
-.store-entry-comp:incomplete .jfx-text-field {
+.store-entry-grid:incomplete .jfx-text-field {
 -fx-text-fill: gray;
 }
-.store-entry-comp:incomplete .summary {
+.store-entry-grid:incomplete .summary {
 -fx-text-fill: gray;
 }
-.store-entry-comp:incomplete .information {
+.store-entry-grid:incomplete .information {
 -fx-text-fill: gray;
 }
-.store-entry-comp:incomplete .date {
+.store-entry-grid:incomplete .date {
 -fx-text-fill: gray;
 }
-.store-entry-comp:incomplete .icon {
+.store-entry-grid:incomplete .icon {
 -fx-opacity: 0.5;
+}
+.store-entry-comp {
+-fx-padding: 6px;
 }
 
 

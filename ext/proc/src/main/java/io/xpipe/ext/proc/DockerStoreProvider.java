@@ -21,6 +21,12 @@ import java.util.List;
 public class DockerStoreProvider implements DataStoreProvider {
 
     @Override
+    public DataStore getParent(DataStore store) {
+        DockerStore s = store.asNeeded();
+        return s.getHost();
+    }
+
+    @Override
     public boolean isShareable() {
         return true;
     }

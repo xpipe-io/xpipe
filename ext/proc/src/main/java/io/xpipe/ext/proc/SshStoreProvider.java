@@ -22,10 +22,15 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-import java.nio.file.Path;
 import java.util.List;
 
 public class SshStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DataStore getParent(DataStore store) {
+        SshStore s = store.asNeeded();
+        return !ShellStore.isLocal(s.getProxy()) ? s.getProxy() : null;
+    }
 
     @Override
     public boolean isShareable() {
@@ -89,10 +94,9 @@ public class SshStoreProvider implements DataStoreProvider {
                         () -> {
                             return keyFileProperty.get() != null
                                     ? SshStore.SshKey.builder()
-                                            .file(Path.of(keyFileProperty
+                                            .file(keyFileProperty
                                                     .get()
-                                                    .getFile()
-                                                    .toString()))
+                                                    .getFile())
                                             .password(keyPasswordProperty.get())
                                             .build()
                                     : null;

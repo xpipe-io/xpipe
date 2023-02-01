@@ -6,6 +6,7 @@ import io.xpipe.ext.proc.augment.SshCommandAugmentation;
 import io.xpipe.ext.proc.util.ShellHelper;
 import io.xpipe.ext.proc.util.SshToolHelper;
 import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.ScriptHelper;
 
 import java.io.IOException;
@@ -28,6 +29,11 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
     public SshProcessControlImpl(SshStore store) {
         this.store = store;
         this.elevationPassword = store.getPassword();
+    }
+
+    @Override
+    public String prepareTerminalOpen() throws Exception {
+        return prepareIntermediateTerminalOpen(null);
     }
 
     public void closeStdin() throws IOException {
@@ -61,7 +67,7 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
     }
 
     @Override
-    public String prepareTerminalOpen(String content) throws Exception {
+    public String prepareIntermediateTerminalOpen(String content) throws Exception {
         String script = null;
         if (content != null) {
             try (var pc = start()) {
@@ -81,7 +87,7 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
             var operator = pc.getShellType().getOrConcatenationOperator();
             var consoleCommand = passwordCommand + operator + pc.getShellType().getPauseCommand();
 
-            return pc.prepareTerminalOpen(consoleCommand);
+            return pc.prepareIntermediateTerminalOpen(consoleCommand);
         }
     }
 
@@ -113,10 +119,6 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
     @Override
     public boolean isLocal() {
         return false;
-    }
-
-    private int getConnectionHash() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -157,27 +159,20 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
                 .tag("charset", charset.name())
                 .handle();
 
-        return this;
-    }
-
-    @Override
-    public void executeCommand(String command) throws Exception {
-        TrackEvent.withTrace("ssh", "Executing ssh command")
-                .tag("command", command)
-                .tag("previousChannelActive", channel != null)
-                .handle();
-
-        if (channel != null) {
-            channel.disconnect();
-        }
-
         channel = session.openChannel("exec");
-        ((ChannelExec) channel).setCommand(command);
+        ((ChannelExec) channel).setCommand(getShellType().getNormalOpenCommand());
         ((ChannelExec) channel).setPty(false);
         stdout = channel.getInputStream();
         stderr = ((ChannelExec) channel).getErrStream();
         stdin = channel.getOutputStream();
         channel.connect();
+
+        // Execute optional init commands
+        for (String s : initCommands) {
+            executeLine(s);
+        }
+
+        return this;
     }
 
     @Override
@@ -197,9 +192,11 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
         running = false;
         stdinClosed = true;
 
-        shellType = null;
-        charset = null;
-        osType = null;
+        if (!PrefsProvider.get(ProcPrefs.class).enableCaching().get()) {
+            shellType = null;
+            charset = null;
+            command = null;
+        }
 
         getStderr().close();
         getStdin().close();

@@ -22,7 +22,7 @@ public class SshToolHelper {
                 store.getPort().toString()));
         if (store.getKey() != null) {
             list.add("-i");
-            list.add(store.getKey().getFile().toString());
+            list.add(store.getKey().getFile());
         }
         return parent.getShellType().flatten(list);
     }

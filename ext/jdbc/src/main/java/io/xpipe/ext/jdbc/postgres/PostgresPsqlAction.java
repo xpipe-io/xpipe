@@ -60,7 +60,7 @@ public class PostgresPsqlAction implements DataStoreActionProvider<PostgresSimpl
             var t = pc.getShellType();
             String passwordPrefix = "";
             if (store.getAuth() instanceof SimpleAuthMethod p && p.getPassword() != null) {
-                var passwordCommand = t.getSetVariableCommand(
+                var passwordCommand = t.getSetEnvironmentVariableCommand(
                         "PGPASSWORD",
                         p.getPassword().getSecretValue());
                 passwordPrefix = passwordCommand + "\n";

@@ -39,6 +39,10 @@ public interface DataStoreProvider {
         throw new ExtensionException("Provider " + getId() + " has no set category");
     }
 
+    default DataStore getParent(DataStore store) {
+        return null;
+    }
+
     default GuiDialog guiDialog(Property<DataStore> store) {
         return null;
     }

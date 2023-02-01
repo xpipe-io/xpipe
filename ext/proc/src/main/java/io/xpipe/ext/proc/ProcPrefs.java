@@ -10,6 +10,7 @@ import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.prefs.PrefsHandler;
 import io.xpipe.extension.prefs.PrefsProvider;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
@@ -17,11 +18,18 @@ import java.util.List;
 
 public class ProcPrefs extends PrefsProvider {
 
+    private final BooleanProperty enableCaching = new SimpleBooleanProperty(true);
+
+    public ObservableBooleanValue enableCaching() {
+        return enableCaching;
+    }
+
     private final ObjectProperty<TerminalType> terminalType = new SimpleObjectProperty<>(TerminalType.getDefault());
     private final SimpleListProperty<TerminalType> terminalTypeList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(TerminalType.class)));
     private final SingleSelectionField<TerminalType> terminalTypeControl =
             Field.ofSingleSelectionType(terminalTypeList, terminalType).render(() -> new TranslatableComboBoxControl<>());
+
     // Custom terminal
     // ===============
     private final StringProperty customTerminalCommand = new SimpleStringProperty("");

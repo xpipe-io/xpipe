@@ -5,6 +5,7 @@ import io.xpipe.ext.proc.util.ElevationHelper;
 import io.xpipe.ext.proc.util.ShellHelper;
 import io.xpipe.ext.proc.util.ShellReader;
 import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.ScriptHelper;
 import lombok.NonNull;
 
@@ -45,50 +46,60 @@ public class SubShellProcessControlImpl extends ShellProcessControlImpl {
     }
 
     @Override
-    public String prepareTerminalOpen(String content) throws Exception {
+    public String prepareTerminalOpen() throws Exception {
+        if (isRunning()) {
+            exitAndWait();
+        }
+
+        try (var parentPc = parent.start()) {
+            var operator = parent.getShellType().getOrConcatenationOperator();
+            var consoleCommand = this.terminalCommand.apply(parent, null);
+            var elevated = elevationFunction.test(parent);
+            if (elevated) {
+                consoleCommand = ElevationHelper.elevateTerminalCommand(consoleCommand, parent);
+            }
+
+            var openCommand = "";
+            try (var pc = start()) {
+                var initCommand = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, null);
+                openCommand = consoleCommand + " " + initCommand + operator
+                        + parent.getShellType().getPauseCommand();
+                TrackEvent.withDebug("proc", "Preparing for terminal open")
+                        .tag("initCommand", initCommand)
+                        .tag("openCommand", openCommand)
+                        .handle();
+            }
+            return parent.prepareIntermediateTerminalOpen(openCommand);
+            }
+    }
+
+    @Override
+    public String prepareIntermediateTerminalOpen(String content) throws Exception {
         if (this.terminalCommand == null) {
             throw new UnsupportedOperationException("Terminal open not supported");
         }
 
-        if (content == null) {
-            if (isRunning()) {
-                exitAndWait();
+        try (var pc = start()) {
+            var operator = parent.getShellType().getOrConcatenationOperator();
+            var file = ScriptHelper.createExecScript(this, content, false);
+
+            var terminalCommand = this.terminalCommand.apply(parent, file);
+            var elevated = elevationFunction.test(parent);
+            if (elevated) {
+                terminalCommand = ElevationHelper.elevateTerminalCommand(terminalCommand, parent);
             }
 
-            try (var ignored = parent.start()) {
-                var operator = parent.getShellType().getOrConcatenationOperator();
-                var consoleCommand = this.terminalCommand.apply(parent, null);
-                var elevated = elevationFunction.test(parent);
-                if (elevated) {
-                    consoleCommand = ElevationHelper.elevateTerminalCommand(consoleCommand, parent);
-                }
-                var openCommand =
-                        consoleCommand + operator + parent.getShellType().getPauseCommand();
-                return parent.prepareTerminalOpen(openCommand);
-            }
-        } else {
-            try (var ignored = start()) {
-                var operator = parent.getShellType().getOrConcatenationOperator();
-                var file = ScriptHelper.createExecScript(this, content, false);
+            var initCommand = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, terminalCommand);
+            var openCommand = initCommand + operator + parent.getShellType().getPauseCommand();
+            TrackEvent.withDebug("proc", "Preparing for terminal open")
+                    .tag("file", file)
+                    .tag("content", ShellHelper.censor(content, sensitive))
+                    .tag("openCommand", openCommand)
+                    .tag("initCommand", initCommand)
+                    .handle();
 
-                var consoleCommand = this.terminalCommand.apply(parent, file);
-                var elevated = elevationFunction.test(parent);
-                if (elevated) {
-                    consoleCommand = ElevationHelper.elevateTerminalCommand(consoleCommand, parent);
-                }
-                var openCommand =
-                        consoleCommand + operator + parent.getShellType().getPauseCommand();
-
-                TrackEvent.withTrace("proc", "Preparing for console open")
-                        .tag("file", file)
-                        .tag("content", ShellHelper.censor(content, sensitive))
-                        .tag("openCommand", openCommand)
-                        .handle();
-
-                exitAndWait();
-                parent.restart();
-                return parent.prepareTerminalOpen(openCommand);
-            }
+            exitAndWait();
+            return parent.prepareIntermediateTerminalOpen(openCommand);
         }
     }
 
@@ -159,7 +170,7 @@ public class SubShellProcessControlImpl extends ShellProcessControlImpl {
         if (elevated) {
             commandToExecute = ElevationHelper.elevateNormalCommand(commandToExecute, parent, command);
         }
-        parent.executeCommand(commandToExecute);
+        parent.executeLine(commandToExecute);
 
         // Wait for prefix output
         // In case this fails, we know that the whole command has not been executed, which can only happen if the syntax ever occurred
@@ -170,20 +181,31 @@ public class SubShellProcessControlImpl extends ShellProcessControlImpl {
         }
 
         running = true;
-        shellType =
-                ShellHelper.determineType(this, parent.getCharset(), commandToExecute, uuid.toString(), startTimeout);
+        if (shellType == null) {
+            shellType = ShellHelper.determineType(
+                    this, parent.getCharset(), commandToExecute, uuid.toString(), startTimeout);
+        }
         shellType.disableHistory(this);
-        charset = shellType.determineCharset(this);
-        osType = ShellHelper.determineOsType(this);
+        if (charset == null) {
+            charset = shellType.determineCharset(this);
+        }
+        if (osType == null) {
+            osType = ShellHelper.determineOsType(this);
+        }
 
-        TrackEvent.withTrace("proc", "Detected shell environment...")
+        TrackEvent.withDebug("proc", "Detected shell environment...")
                 .tag("shellType", shellType.getName())
                 .tag("charset", charset.name())
                 .tag("osType", osType.getName())
                 .handle();
 
+        // Execute optional init commands
+        for (String s : initCommands) {
+            executeLine(s);
+        }
+
         // Read all output until now
-        executeCommand(getShellType().getEchoCommand(uuid.toString(), false)
+        executeLine(getShellType().getEchoCommand(uuid.toString(), false)
                 + getShellType().getConcatenationOperator()
                 + getShellType().getEchoCommand(uuid.toString(), true));
         ShellReader.readUntilOccurrence(getStdout(), getCharset(), uuid.toString(), commandToExecute, false);
@@ -251,9 +273,11 @@ public class SubShellProcessControlImpl extends ShellProcessControlImpl {
             running = false;
         }
 
-        shellType = null;
-        charset = null;
+        if (!PrefsProvider.get(ProcPrefs.class).enableCaching().get()) {
+            shellType = null;
+            charset = null;
+            command = null;
+        }
         uuid = null;
-        command = null;
     }
 }

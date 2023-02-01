@@ -1,12 +1,17 @@
 package io.xpipe.ext.proc;
 
-import io.xpipe.core.process.*;
+import io.xpipe.core.process.CommandProcessControl;
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellType;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.ext.proc.util.ShellReader;
 import lombok.Getter;
 import lombok.NonNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -16,6 +21,7 @@ public abstract class ShellProcessControlImpl extends ProcessControlImpl impleme
     protected Integer startTimeout = 10000;
     protected UUID uuid;
     protected String command;
+    protected List<String> initCommands = new ArrayList<>();
 
     @Getter
     protected ShellType shellType;
@@ -39,6 +45,12 @@ public abstract class ShellProcessControlImpl extends ProcessControlImpl impleme
     }
 
     @Override
+    public ShellProcessControl initWith(List<String> cmds) {
+        this.initCommands.addAll(cmds);
+        return this;
+    }
+
+    @Override
     public ShellProcessControl subShell(
             @NonNull Function<ShellProcessControl, String> command,
             BiFunction<ShellProcessControl, String, String> terminalCommand) {
@@ -57,7 +69,7 @@ public abstract class ShellProcessControlImpl extends ProcessControlImpl impleme
     }
 
     @Override
-    public void executeCommand(String command) throws Exception {
+    public void executeLine(String command) throws Exception {
         writeLine(command);
         if (getShellType().doesRepeatInput()) {
             ShellReader.readLine(getStdout(), getCharset());

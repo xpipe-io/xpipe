@@ -27,6 +27,12 @@ import java.util.List;
 public class CommandStoreProvider implements DataStoreProvider {
 
     @Override
+    public DataStore getParent(DataStore store) {
+        CommandStore s = store.asNeeded();
+        return s.getHost();
+    }
+
+    @Override
     public boolean isShareable() {
         return true;
     }

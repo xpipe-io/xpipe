@@ -6,6 +6,8 @@ import io.xpipe.core.store.MachineStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.JacksonizedValue;
 import io.xpipe.core.util.SecretValue;
+import io.xpipe.ext.proc.augment.SshCommandAugmentation;
+import io.xpipe.ext.proc.util.SshToolHelper;
 import io.xpipe.extension.util.Validators;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,8 +15,6 @@ import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.nio.file.Path;
 
 @SuperBuilder
 @Jacksonized
@@ -50,7 +50,41 @@ public class SshStore extends JacksonizedValue implements MachineStore {
 
     @Override
     public ShellProcessControl create() {
-        return new SshProcessControlImpl(this);
+        if (ShellStore.isLocal(proxy)) {
+            return new SshProcessControlImpl(this);
+        }
+
+        return proxy.create()
+                .subShell(
+                        shellProcessControl -> {
+                            var command = SshToolHelper.toCommand(this, shellProcessControl);
+                            var augmentedCommand = new SshCommandAugmentation().prepareNonTerminalCommand(shellProcessControl, command);
+                            var passwordCommand = SshToolHelper.passPassword(
+                                    augmentedCommand,
+                                    getPassword(),
+                                    getKey() != null ? getKey().getPassword() : null,
+                                    shellProcessControl);
+                            return passwordCommand;
+                        },
+                        (shellProcessControl, s) -> {
+                            var command = SshToolHelper.toCommand(this, shellProcessControl);
+                            var augmentedCommand = new SshCommandAugmentation().prepareTerminalCommand(shellProcessControl, command, s);
+                            var passwordCommand = SshToolHelper.passPassword(
+                                    augmentedCommand,
+                                    getPassword(),
+                                    getKey() != null ? getKey().getPassword() : null,
+                                    shellProcessControl);
+
+                            if (true) return passwordCommand;
+                            var operator = shellProcessControl.getShellType().getOrConcatenationOperator();
+                            var consoleCommand = passwordCommand + operator + shellProcessControl.getShellType().getPauseCommand();
+                            try {
+                                return shellProcessControl.prepareIntermediateTerminalOpen(consoleCommand);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        })
+                .elevated(shellProcessControl -> true);
     }
 
     @SuperBuilder
@@ -58,7 +92,7 @@ public class SshStore extends JacksonizedValue implements MachineStore {
     @Getter
     public static class SshKey {
         @NonNull
-        Path file;
+        String file;
 
         SecretValue password;
     }

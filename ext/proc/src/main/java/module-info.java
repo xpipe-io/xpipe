@@ -40,6 +40,7 @@ open module io.xpipe.ext.proc {
             LaunchCommandAction;
     provides DataStoreProvider with
             SshStoreProvider,
+            ShellEnvironmentStoreProvider,
             CommandStoreProvider,
             DockerStoreProvider,
             ShellCommandStoreProvider,

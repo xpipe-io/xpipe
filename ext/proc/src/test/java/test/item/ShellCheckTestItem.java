@@ -7,6 +7,9 @@ import lombok.Getter;
 import org.apache.commons.lang3.function.FailableConsumer;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.List;
+import java.util.UUID;
+
 @Getter
 public enum ShellCheckTestItem {
     OS_NAME(shellProcessControl -> {
@@ -22,9 +25,21 @@ public enum ShellCheckTestItem {
         Assertions.assertEquals("world", s2);
     }),
 
+    INIT_FILE(shellProcessControl -> {
+        var content = "<contentß>";
+        try (var c = shellProcessControl
+                .subShell(shellProcessControl.getShellType())
+                .initWith(List.of(shellProcessControl.getShellType().getSetEnvironmentVariableCommand("testVar", content)))
+                .start()) {
+            var output = c.executeStringSimpleCommand(
+                    shellProcessControl.getShellType().getPrintEnvironmentVariableCommand("testVar"));
+            Assertions.assertEquals(content, output);
+        }
+    }),
+
     STREAM_WRITE(shellProcessControl -> {
         var content = "hello\nworldß";
-        var fileOne = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), "f1.txt");
+        var fileOne = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
         try (var c = shellProcessControl
                 .command(shellProcessControl.getShellType().getStreamFileWriteCommand(fileOne))
                 .start()) {
@@ -36,7 +51,7 @@ public enum ShellCheckTestItem {
 
         shellProcessControl.restart();
 
-        var fileTwo = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), "f2.txt");
+        var fileTwo = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
         try (var c = shellProcessControl
                 .subShell(shellProcessControl.getShellType())
                 .command(shellProcessControl.getShellType().getStreamFileWriteCommand(fileTwo))
@@ -59,11 +74,13 @@ public enum ShellCheckTestItem {
 
     SIMPLE_WRITE(shellProcessControl -> {
         var content = "hello worldß";
-        var fileOne = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), "f1.txt");
-        shellProcessControl.executeSimpleCommand(shellProcessControl.getShellType().getSimpleFileWriteCommand(content, fileOne));
+        var fileOne = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
+        shellProcessControl.executeSimpleCommand(
+                shellProcessControl.getShellType().getTextFileWriteCommand(content, fileOne));
 
-        var fileTwo = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), "f2.txt");
-        shellProcessControl.executeSimpleCommand(shellProcessControl.getShellType().getSimpleFileWriteCommand(content, fileTwo));
+        var fileTwo = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
+        shellProcessControl.executeSimpleCommand(
+                shellProcessControl.getShellType().getTextFileWriteCommand(content, fileTwo));
 
         var s1 = shellProcessControl.executeStringSimpleCommand(
                 shellProcessControl.getShellType().getFileReadCommand(fileOne));
@@ -74,12 +91,12 @@ public enum ShellCheckTestItem {
     }),
 
     TERMINAL_OPEN(shellProcessControl -> {
-        shellProcessControl.prepareTerminalOpen(null);
+        shellProcessControl.prepareIntermediateTerminalOpen(null);
     }),
 
     COMMAND_TERMINAL_OPEN(shellProcessControl -> {
         for (CommandCheckTestItem v : CommandCheckTestItem.values()) {
-            shellProcessControl.prepareTerminalOpen(v.getCommandFunction().apply(shellProcessControl));
+            shellProcessControl.prepareIntermediateTerminalOpen(v.getCommandFunction().apply(shellProcessControl));
         }
     }),
 

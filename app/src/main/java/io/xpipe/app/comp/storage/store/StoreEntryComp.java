@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
+import com.jfoenix.controls.JFXButton;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppFont;
@@ -10,6 +11,7 @@ import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.SimpleComp;
+import io.xpipe.extension.fxcomps.SimpleCompStructure;
 import io.xpipe.extension.fxcomps.augment.GrowAugment;
 import io.xpipe.extension.fxcomps.augment.PopupMenuAugment;
 import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
@@ -100,6 +102,9 @@ public class StoreEntryComp extends SimpleComp {
         var imageComp = new PrettyImageComp(new SimpleStringProperty(img), 55, 45);
         var storeIcon = imageComp.createRegion();
         storeIcon.getStyleClass().add("icon");
+        if (entry.getState().getValue().isUsable()) {
+            new FancyTooltipAugment<>(new SimpleStringProperty(entry.getEntry().getProvider().getDisplayName())).augment(storeIcon);
+        }
         return storeIcon;
     }
 
@@ -117,6 +122,7 @@ public class StoreEntryComp extends SimpleComp {
 
         var storeIcon = createIcon();
 
+
         grid.getColumnConstraints()
                 .addAll(
                         createShareConstraint(grid, STORE_TYPE_WIDTH), createShareConstraint(grid, NAME_WIDTH),
@@ -133,7 +139,7 @@ public class StoreEntryComp extends SimpleComp {
         AppFont.small(size);
         AppFont.small(date);
 
-        grid.getStyleClass().add("store-entry-comp");
+        grid.getStyleClass().add("store-entry-grid");
 
         grid.setOnMouseClicked(event -> {
             if (entry.getEditable().get()) {
@@ -143,7 +149,12 @@ public class StoreEntryComp extends SimpleComp {
 
         applyState(grid);
 
-        return grid;
+        var button = new JFXButton();
+        button.setGraphic(grid);
+        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(grid));
+        button.getStyleClass().add("store-entry-comp");
+        button.setMaxWidth(2000);
+        return button;
     }
 
     private Comp<?> createButtonBar() {

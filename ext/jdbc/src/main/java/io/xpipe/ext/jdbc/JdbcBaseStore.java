@@ -1,5 +1,6 @@
 package io.xpipe.ext.jdbc;
 
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.Proxyable;
 
 import java.sql.Connection;
@@ -25,6 +26,8 @@ public interface JdbcBaseStore extends JdbcStore, Proxyable {
     String toUrl();
 
     Map<String, String> createProperties();
+
+    ShellStore getProxy();
 
     default Map<String, Object> createDefaultProperties() {
         return Map.of();

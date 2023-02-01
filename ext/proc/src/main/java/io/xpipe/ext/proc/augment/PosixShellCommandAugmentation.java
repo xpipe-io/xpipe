@@ -5,7 +5,7 @@ import java.util.List;
 public class PosixShellCommandAugmentation extends CommandAugmentation {
     @Override
     public boolean matches(String executable) {
-        return executable.equals("sh") || executable.equals("bash");
+        return executable.equals("sh") || executable.equals("bash") || executable.equals("zsh");
     }
 
     @Override
