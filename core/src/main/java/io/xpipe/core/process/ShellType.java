@@ -3,7 +3,6 @@ package io.xpipe.core.process;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public interface ShellType {
         return getEchoCommand(s, false);
     }
 
-     String getSetVariableCommand(String variable, String value);
+     String getSetEnvironmentVariableCommand(String variable, String value);
 
 
     String getEchoCommand(String s, boolean toErrorStream);
@@ -67,7 +66,13 @@ public interface ShellType {
 
     String getPrintVariableCommand(String prefix, String name);
 
+    default String getPrintEnvironmentVariableCommand(String name) {
+        return getPrintVariableCommand(name);
+    }
+
     String getNormalOpenCommand();
+
+    String getInitFileOpenCommand(String file);
 
     String executeCommandWithShell(String cmd);
 
@@ -79,7 +84,7 @@ public interface ShellType {
 
     String getStreamFileWriteCommand(String file);
 
-    String getSimpleFileWriteCommand(String content, String file);
+    String getTextFileWriteCommand(String content, String file);
 
     String getFileDeleteCommand(String file);
 

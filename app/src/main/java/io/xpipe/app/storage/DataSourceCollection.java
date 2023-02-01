@@ -60,6 +60,7 @@ public class DataSourceCollection extends StorageElement {
         var json = mapper.readTree(dir.resolve("collection.json").toFile());
         var uuid = UUID.fromString(json.required("uuid").textValue());
         var name = json.required("name").textValue();
+        Objects.requireNonNull(name);
         var lastModified = Instant.parse(json.required("lastModified").textValue());
 
         JavaType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, UUID.class);

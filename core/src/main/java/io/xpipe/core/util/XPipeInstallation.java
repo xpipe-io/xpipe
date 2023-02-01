@@ -79,9 +79,9 @@ public class XPipeInstallation {
     public static Path getLocalDynamicLibraryDirectory() {
         Path path = getLocalInstallationBasePath();
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return path.resolve("runtime").resolve("bin");
+            return path.resolve("app").resolve("runtime").resolve("bin");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return path.resolve("lib").resolve("runtime").resolve("lib");
+            return path.resolve("app").resolve("lib").resolve("runtime").resolve("lib");
         } else {
             return path.resolve("Contents")
                     .resolve("runtime")
@@ -95,7 +95,7 @@ public class XPipeInstallation {
         Path path = getLocalInstallationBasePath();
         return OsType.getLocal().equals(OsType.MAC)
                 ? path.resolve("Contents").resolve("Resources").resolve("extensions")
-                : path.resolve("extensions");
+                : path.resolve("app").resolve("extensions");
     }
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
@@ -108,9 +108,9 @@ public class XPipeInstallation {
                     .getParent()
                     .getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return executable.getParent().getParent().getParent().getParent();
+            return executable.getParent().getParent().getParent().getParent().getParent();
         } else {
-            return executable.getParent().getParent().getParent();
+            return executable.getParent().getParent().getParent().getParent();
         }
     }
 
@@ -118,9 +118,9 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.MAC)) {
             return executable.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return executable.getParent().getParent();
+            return executable.getParent().getParent().getParent();
         } else {
-            return executable.getParent();
+            return executable.getParent().getParent();
         }
     }
 

@@ -248,6 +248,7 @@ productionTest {
 //              + System.getProperty("java.vm.version") + ")")
 
 graalvmNative {
+    testSupport = false
     binaries {
         main {
             imageName = 'xpipe' // The name of the native image, defaults to the project name
@@ -261,8 +262,6 @@ graalvmNative {
                     '-Dpicocli.converters.excludes=java.time.*,java.sql.*'
             )
             buildArgs.addAll(
-                    '--static',
-                    '--libc=musl',
                     // '--debug-attach=8000',
                     '--enable-https',
                     '--install-exit-handlers',
@@ -278,6 +277,13 @@ graalvmNative {
                             'io.xpipe.cli.XPipeCommand,' +
                             'org.ocpsoft.prettytime,' +
                             'com.fasterxml.jackson')
+
+            if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+                buildArgs.addAll(
+                        '--static',
+                        '--libc=musl'
+                )
+            }
 
             // Build Time
             systemProperties(prodProperties)

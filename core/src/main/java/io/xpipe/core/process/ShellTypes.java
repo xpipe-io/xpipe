@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -57,7 +58,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getSetVariableCommand(String variableName, String value) {
+        public String getSetEnvironmentVariableCommand(String variableName, String value) {
             return ("set \"" + variableName + "=" + value.replaceAll("\"", "^$0") + "\"");
         }
 
@@ -68,13 +69,13 @@ public class ShellTypes {
 
         @Override
         public String getEchoCommand(String s, boolean toErrorStream) {
-            return "(echo " + s + (toErrorStream ? ")1>&2" : ")");
+            return "(echo " + escapeStringValue(s).replaceAll("\r\n", "^\r\n") + (toErrorStream ? ")1>&2" : ")");
         }
 
         @Override
         public String getScriptEchoCommand(String s) {
-            return ("@echo off\r\nset \"echov=" + escapeStringValue(s)
-                    + "\"\r\necho %echov%\r\n@echo on\n(goto) 2>nul & del \"%~f0\"");
+            return ("set \"echov=" + escapeStringValue(s)
+                    + "\"\r\necho %echov%\r\n@echo on\r\n(goto) 2>nul & del \"%~f0\"");
         }
 
         @Override
@@ -103,7 +104,7 @@ public class ShellTypes {
 
         @Override
         public String prepareScriptContent(String content) {
-            return "@echo off\n" + content;
+            return "@echo off\r\n" + content;
         }
 
         @Override
@@ -123,6 +124,11 @@ public class ShellTypes {
         @Override
         public String getNormalOpenCommand() {
             return "cmd";
+        }
+
+        @Override
+        public String getInitFileOpenCommand(String file) {
+            return "cmd /K \"" + file + "\"";
         }
 
         @Override
@@ -151,8 +157,15 @@ public class ShellTypes {
         }
 
         @Override
-        public String getSimpleFileWriteCommand(String content, String file) {
-            return "echo " + content + " > \"" + file + "\"";
+        public String getTextFileWriteCommand(String content, String file) {
+            // if (true) return getEchoCommand(content, false) + " > \"" + file + "\"";
+
+            var command = new ArrayList<String>();
+            for (String line : content.split("(\n|\r\n)")) {
+                command.add("echo " + escapeStringValue(line) + ">> \"" + file + "\"");
+                command.add("echo." + ">> \"" + file + "\"");
+            }
+            return String.join("&", command);
         }
 
         @Override
@@ -219,7 +232,7 @@ public class ShellTypes {
 
         @Override
         public void disableHistory(ShellProcessControl pc) throws Exception {
-            pc.executeCommand("Set-PSReadLineOption -HistorySaveStyle SaveNothing");
+            pc.executeLine("Set-PSReadLineOption -HistorySaveStyle SaveNothing");
         }
 
         @Override
@@ -233,8 +246,8 @@ public class ShellTypes {
         }
 
         @Override
-        public String getSimpleFileWriteCommand(String content, String file) {
-            return "echo \"" + content + "\" | Out-File \"" + file + "\"";
+        public String getTextFileWriteCommand(String content, String file) {
+            return "echo \"" + content.replaceAll("(\n|\r\n)", "`n") + "\" | Out-File \"" + file + "\"";
         }
 
         @Override
@@ -258,7 +271,12 @@ public class ShellTypes {
         }
 
         @Override
-        public String getSetVariableCommand(String variableName, String value) {
+        public String getPrintEnvironmentVariableCommand(String name) {
+            return "echo \"" + "$env:" + escapeStringValue(name) + "\"";
+        }
+
+        @Override
+        public String getSetEnvironmentVariableCommand(String variableName, String value) {
             return "$env:" + variableName + " = \"" + escapeStringValue(value) + "\"";
         }
 
@@ -318,6 +336,11 @@ public class ShellTypes {
         @Override
         public String getNormalOpenCommand() {
             return "powershell /nologo";
+        }
+
+        @Override
+        public String getInitFileOpenCommand(String file) {
+            return "powershell.exe -NoExit -File \"" + file + "\"";
         }
 
         @Override
@@ -394,8 +417,13 @@ public class ShellTypes {
     public abstract static class PosixBase implements ShellType {
 
         @Override
-        public String getSimpleFileWriteCommand(String content, String file) {
-            return "echo \"" + content + "\" > \"" + file + "\"";
+        public String getInitFileOpenCommand(String file) {
+            return getName() + " --rcfile \"" + file + "\"";
+        }
+
+        @Override
+        public String getTextFileWriteCommand(String content, String file) {
+            return "echo -e '" + content.replaceAll("\n", "\\\\n").replaceAll("'","\\\\'") + "' > \"" + file + "\"";
         }
 
         @Override
@@ -461,7 +489,7 @@ public class ShellTypes {
 
         @Override
         public void disableHistory(ShellProcessControl pc) throws Exception {
-            pc.executeCommand("unset HISTFILE");
+            pc.executeLine("unset HISTFILE");
         }
 
         @Override
@@ -485,7 +513,7 @@ public class ShellTypes {
         }
 
         @Override
-        public String getSetVariableCommand(String variable, String value) {
+        public String getSetEnvironmentVariableCommand(String variable, String value) {
             return "export " + variable + "=\"" + value + "\"";
         }
 

@@ -72,6 +72,10 @@ public class TrackEvent {
         return builder().type("debug").message(message);
     }
 
+    public static TrackEventBuilder withDebug(String cat, String message) {
+        return builder().category(cat).type("debug").message(message);
+    }
+
     public static void debug(String cat, String message) {
         builder().category(cat).type("debug").message(message).build().handle();
     }

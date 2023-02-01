@@ -3,8 +3,6 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
 def distDir = "$buildDir/dist"
-def windows = org.gradle.internal.os.OperatingSystem.current().isWindows();
-
 
 apply plugin: 'org.asciidoctor.jvm.convert'
 asciidoctor {
@@ -29,21 +27,37 @@ task copyCompletion(type: Copy) {
     into "$distDir/cli"
 }
 
+task setupMusl(type: Exec) {
+    commandLine "${project(':cli').projectDir.toString()}/musl-setup.sh", project(':cli').projectDir.toString()
+}
+
 task buildCli(type: DefaultTask) {
-    if (!org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+        dependsOn(setupMusl)
+        project(':cli').getTasksByName('nativeCompile', true).forEach(v->v.mustRunAfter(setupMusl))
+    }
+
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         dependsOn(project(':cli').getTasksByName('nativeCompile', true))
     }
 
     doLast {
-        if (windows) {
+        if (rootProject.os.isWindows()) {
             exec {
                 executable project(':cli').projectDir.toString() + '/native-build.bat'
                 environment System.getenv()
             }
         }
 
+        if (rootProject.os.isLinux()) {
+            exec {
+                commandLine project(':cli').projectDir.toString() + '/native-build-musl.sh', project(':cli').projectDir.toString()
+                environment System.getenv()
+            }
+        }
+
         Files.createDirectories(Paths.get(distDir, 'cli'))
-        def ending = windows ? ".exe" : ""
+        def ending = rootProject.os.isWindows() ? ".exe" : ""
         var outputFile = Paths.get(project(':cli').buildDir.toString() + "/native/nativeCompile/xpipe$ending")
         if (!Files.exists(outputFile)) {
             throw new IOException("Cli output file does not exist")

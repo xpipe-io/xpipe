@@ -5,16 +5,12 @@ import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
 import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import javafx.animation.Animation;
-import javafx.animation.PauseTransition;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
 import lombok.Builder;
 import lombok.Value;
 
@@ -80,17 +76,6 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
             currentValue.setValue(newValue);
         });
 
-        Animation delay = new PauseTransition(Duration.millis(800));
-        delay.setOnFinished(e -> {
-            r.setDisable(false);
-            r.requestFocus();
-        });
-        sp.addEventFilter(MouseEvent.MOUSE_ENTERED, e -> {
-            delay.playFromStart();
-        });
-        sp.addEventFilter(MouseEvent.MOUSE_EXITED, e -> {
-            delay.stop();
-        });
         r.focusedProperty().addListener((c, o, n) -> {
             if (!n) {
                 r.setDisable(true);
