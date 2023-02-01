@@ -20,7 +20,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "2.13.0"
 }
 
-version = file("$rootDir/dist/version").text
+version = rootProject.versionString
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-core'
 
