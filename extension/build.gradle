@@ -13,7 +13,7 @@ configurations {
     compileOnly.extendsFrom(dep)
 }
 
-version = file("$rootDir/dist/version").text
+version = rootProject.versionString
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-extension'
 

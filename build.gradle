@@ -25,4 +25,6 @@ project.ext {
     fullVersion = file("$rootDir/private_files.txt").exists()
     arch = getArchName()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
+    isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
+    versionString = file('version').text + (isFullRelease ? '' : '-SNAPSHOT')
 }
