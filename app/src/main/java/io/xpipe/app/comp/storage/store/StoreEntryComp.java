@@ -142,12 +142,6 @@ public class StoreEntryComp extends SimpleComp {
 
         grid.getStyleClass().add("store-entry-grid");
 
-        grid.setOnMouseClicked(event -> {
-            if (entry.getEditable().get()) {
-                entry.editDialog();
-            }
-        });
-
         applyState(grid);
 
         var button = new JFXButton();
@@ -155,6 +149,14 @@ public class StoreEntryComp extends SimpleComp {
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(grid));
         button.getStyleClass().add("store-entry-comp");
         button.setMaxWidth(2000);
+        button.setFocusTraversable(false);
+        button.setOnAction(event -> {
+            event.consume();
+            if (entry.getEditable().get()) {
+                entry.editDialog();
+            }
+        });
+
         return button;
     }
 
