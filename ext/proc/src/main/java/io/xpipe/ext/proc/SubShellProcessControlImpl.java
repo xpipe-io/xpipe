@@ -47,54 +47,26 @@ public class SubShellProcessControlImpl extends ShellProcessControlImpl {
 
     @Override
     public String prepareTerminalOpen() throws Exception {
-        if (isRunning()) {
-            exitAndWait();
-        }
-
-        try (var parentPc = parent.start()) {
-            var operator = parent.getShellType().getOrConcatenationOperator();
-            var consoleCommand = this.terminalCommand.apply(parent, null);
-            var elevated = elevationFunction.test(parent);
-            if (elevated) {
-                consoleCommand = ElevationHelper.elevateTerminalCommand(consoleCommand, parent);
-            }
-
-            var openCommand = "";
-            try (var pc = start()) {
-                var initCommand = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, null);
-                openCommand = consoleCommand + " " + initCommand + operator
-                        + parent.getShellType().getPauseCommand();
-                TrackEvent.withDebug("proc", "Preparing for terminal open")
-                        .tag("initCommand", initCommand)
-                        .tag("openCommand", openCommand)
-                        .handle();
-            }
-            return parent.prepareIntermediateTerminalOpen(openCommand);
-            }
+        return prepareIntermediateTerminalOpen(null);
     }
 
     @Override
-    public String prepareIntermediateTerminalOpen(String content) throws Exception {
+    public String prepareIntermediateTerminalOpen(String toExecuteInThis) throws Exception {
         if (this.terminalCommand == null) {
             throw new UnsupportedOperationException("Terminal open not supported");
         }
 
         try (var pc = start()) {
             var operator = parent.getShellType().getOrConcatenationOperator();
-            var file = ScriptHelper.createExecScript(this, content, false);
-
-            var terminalCommand = this.terminalCommand.apply(parent, file);
+            var initCommand = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, toExecuteInThis);
+            var terminalCommand = this.terminalCommand.apply(parent, initCommand);
             var elevated = elevationFunction.test(parent);
             if (elevated) {
                 terminalCommand = ElevationHelper.elevateTerminalCommand(terminalCommand, parent);
             }
-
-            var initCommand = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, terminalCommand);
-            var openCommand = initCommand + operator + parent.getShellType().getPauseCommand();
+            var openCommand = terminalCommand + operator + parent.getShellType().getPauseCommand();
             TrackEvent.withDebug("proc", "Preparing for terminal open")
-                    .tag("file", file)
-                    .tag("content", ShellHelper.censor(content, sensitive))
-                    .tag("openCommand", openCommand)
+                    .tag("toExecuteInThis", ShellHelper.censor(toExecuteInThis, sensitive))
                     .tag("initCommand", initCommand)
                     .handle();
 
@@ -277,6 +249,7 @@ public class SubShellProcessControlImpl extends ShellProcessControlImpl {
             shellType = null;
             charset = null;
             command = null;
+            tempDirectory = null;
         }
         uuid = null;
     }

@@ -19,8 +19,6 @@ def getArchName() {
     return arch
 }
 
-println(System.getenv('RELEASE'))
-
 project.ext {
     ci = System.getenv('CI') != null
     os = org.gradle.internal.os.OperatingSystem.current()

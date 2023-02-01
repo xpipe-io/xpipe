@@ -51,6 +51,7 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
     private final Function<ShellProcessControl, String> terminalCommand;
     private CommandProcessControlInputStream stdout;
     private CommandProcessControlInputStream stderr;
+    private String displayCommand;
     private boolean elevated;
     private boolean manageParent;
     private int exitCode = -1;
@@ -177,8 +178,9 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         TrackEvent.withTrace("proc", "Starting command execution ...")
                 .tag("baseCommand", ShellHelper.censor(baseCommand, sensitive))
                 .tag("shellType", parent.getShellType().getName())
+                .tag("elevated", elevated)
                 .handle();
-
+        displayCommand = baseCommand;
         if (elevated) {
             string = ElevationHelper.elevateNormalCommand(string, parent, baseCommand);
         }
@@ -225,7 +227,8 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
             }
         }
 
-        TrackEvent.withTrace("proc", "Stdout finished")
+        TrackEvent.withDebug("proc", "Command finished")
+                .tag("command", displayCommand)
                 .tag("finishReason", r)
                 .tag("exitCode", exitCode)
                 .handle();

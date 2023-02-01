@@ -59,11 +59,9 @@ public class DockerStore extends JacksonizedValue implements MachineStore {
                                 "docker exec -i " + containerName + " " + ShellTypes.BASH.getNormalOpenCommand(),
                         (shellProcessControl, s) -> {
                             if (s != null) {
-                                return "docker exec -it " + containerName + " "
-                                        + ShellTypes.BASH.executeCommandWithShell(s);
+                                return "docker exec -it " + containerName + " " + s;
                             } else {
-                                return "docker exec -it " + containerName + " "
-                                        + ShellTypes.BASH.getNormalOpenCommand();
+                                return "docker exec -it " + containerName;
                             }
                         })
                 .elevated(shellProcessControl -> true);

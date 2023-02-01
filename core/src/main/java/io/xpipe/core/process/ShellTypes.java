@@ -162,10 +162,10 @@ public class ShellTypes {
 
             var command = new ArrayList<String>();
             for (String line : content.split("(\n|\r\n)")) {
-                command.add("echo " + escapeStringValue(line) + ">> \"" + file + "\"");
-                command.add("echo." + ">> \"" + file + "\"");
+                var echoCommand = line.isEmpty() ? "echo." : "echo " + escapeStringValue(line);
+                command.add(echoCommand + ">> \"" + file + "\"");
             }
-            return String.join("&", command);
+            return String.join("&", command).replaceFirst(">>", ">");
         }
 
         @Override
@@ -437,7 +437,7 @@ public class ShellTypes {
         }
 
         public String getScriptEchoCommand(String s) {
-            return "#!" + getExecutable() + "\n" + getEchoCommand(s, false) + "\nrm -- \"$0\"";
+            return getEchoCommand(s, false) + "\nrm -- \"$0\"";
         }
 
         @Override

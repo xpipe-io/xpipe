@@ -5,6 +5,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellType;
 import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.XPipeTempDirectory;
 import io.xpipe.ext.proc.util.ShellReader;
 import lombok.Getter;
 import lombok.NonNull;
@@ -22,6 +23,7 @@ public abstract class ShellProcessControlImpl extends ProcessControlImpl impleme
     protected UUID uuid;
     protected String command;
     protected List<String> initCommands = new ArrayList<>();
+    protected String tempDirectory;
 
     @Getter
     protected ShellType shellType;
@@ -31,6 +33,23 @@ public abstract class ShellProcessControlImpl extends ProcessControlImpl impleme
 
     @Getter
     protected SecretValue elevationPassword;
+
+    @Override
+    public String getTemporaryDirectory() throws Exception {
+        if (tempDirectory == null) {
+            checkRunning();
+            tempDirectory = XPipeTempDirectory.get(this);
+        }
+
+        return tempDirectory;
+    }
+
+    @Override
+    public void checkRunning() throws Exception {
+        if (!isRunning()) {
+            throw new IllegalStateException("Shell process control is not running");
+        }
+    }
 
     @Override
     public ShellProcessControl sensitive() {

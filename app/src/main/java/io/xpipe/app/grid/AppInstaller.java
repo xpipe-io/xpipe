@@ -11,7 +11,6 @@ import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
-import io.xpipe.core.util.XPipeTempDirectory;
 import io.xpipe.extension.util.ScriptHelper;
 import lombok.Getter;
 
@@ -38,8 +37,7 @@ public class AppInstaller {
         if (s.isLocal()) {
             targetFile = localFile.toString();
         } else {
-            targetFile = FileNames.join(
-                    XPipeTempDirectory.get(s), localFile.getFileName().toString());
+            targetFile = FileNames.join(s.getTemporaryDirectory(), localFile.getFileName().toString());
             try (CommandProcessControl c = s.command(s.getShellType().getStreamFileWriteCommand(targetFile))
                     .start()) {
                 c.discardOut();

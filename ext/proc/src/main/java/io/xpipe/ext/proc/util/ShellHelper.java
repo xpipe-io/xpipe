@@ -21,6 +21,10 @@ public class ShellHelper {
     private static final String DETECTOR_COMMAND = "echo " + DETECTOR_STRING;
 
     public static String censor(String command,  boolean sensitive   ) {
+        if (command == null) {
+            return command;
+        }
+
         if (!sensitive) {
             return command;
         }

@@ -196,6 +196,7 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
             shellType = null;
             charset = null;
             command = null;
+            tempDirectory = null;
         }
 
         getStderr().close();

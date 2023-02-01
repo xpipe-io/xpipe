@@ -72,10 +72,13 @@ public class LocalProcessControlImpl extends ShellProcessControlImpl {
         getStdin().close();
 
         stdinClosed = true;
-        shellType = null;
-        charset = null;
         uuid = null;
-        command = null;
+        if (!PrefsProvider.get(ProcPrefs.class).enableCaching().get()) {
+            shellType = null;
+            charset = null;
+            command = null;
+            tempDirectory = null;
+        }
 
         try {
             process.waitFor(EXIT_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -106,13 +109,12 @@ public class LocalProcessControlImpl extends ShellProcessControlImpl {
     @Override
     public String prepareIntermediateTerminalOpen(String content) throws Exception {
         try (var pc = start()) {
-            var file = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, content);
+            var initCommand = ScriptHelper.constructOpenWithInitScriptCommand(pc, initCommands, content);
             TrackEvent.withDebug("proc", "Writing open init script")
-                    .tag("file", file)
+                    .tag("initCommand", initCommand)
                     .tag("content", content)
                     .handle();
-
-            return file;
+            return initCommand;
         }
     }
 
@@ -146,8 +148,12 @@ public class LocalProcessControlImpl extends ShellProcessControlImpl {
         process = Runtime.getRuntime().exec(args.toArray(String[]::new));
         stdinClosed = false;
         running = true;
-        shellType = ShellHelper.determineType(this, Charset.defaultCharset(), command, null, startTimeout);
-        charset = shellType.determineCharset(this);
+        if (shellType == null) {
+            shellType = ShellHelper.determineType(this, Charset.defaultCharset(), command, null, startTimeout);
+        }
+        if (charset == null) {
+            charset = shellType.determineCharset(this);
+        }
         osType = OsType.getLocal();
 
         for (String s : initCommands) {
