@@ -31,7 +31,7 @@ public class AppDownloads {
                 .withRateLimitHandler(RateLimitHandler.FAIL)
                 .withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
                 .build();
-        repository = github.getRepository("xpipe-io/xpipe-app");
+        repository = github.getRepository("xpipe-io/xpipe");
         return repository;
     }
 
