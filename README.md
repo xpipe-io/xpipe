@@ -102,6 +102,15 @@ many IDEs still have problems building this project properly.
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is intellij.
 
+### Requirements
+
+To build the CLI, [GraalVM](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.0) is required.
+Furthermore, you also need the platform specific toolchains to be installed:
+
+- Windows: [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/?q=build+tools)
+- Linux: `build-essential libz-dev zlib1g-dev`
+- MacOS: xcode with `xcode-select --install`
+
 ### Building and Running
 
 You can use the gradle wrapper to build and run the project:
@@ -113,7 +122,7 @@ You can use the gradle wrapper to build and run the project:
   Note here that you should always clean the CLI project first, as the native image plugin is a little buggy in that regard.
 - `gradlew <project>:test` will run the tests of the specified project. 
 
-Some unit tests depend on a connection to an X-Pipe daemon to properly function.
+Some production unit tests depend on a connection to an X-Pipe daemon to properly function.
 To launch the installed daemon, it is required that you either have X-Pipe
 installed or have set the `XPIPE_HOME` environment variable in case you are using a portable version.
 
@@ -124,6 +133,7 @@ You are also able to properly debug the built production application through two
 
 Note that when any unit test is run using a debugger, the X-Pipe daemon process that is started will also attempt
 to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme) as well.
+
 
 ### Development FAQ
 
