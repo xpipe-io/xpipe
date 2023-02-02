@@ -4,6 +4,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellTypes;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.extension.prefs.PrefsChoiceValue;
+import io.xpipe.extension.util.ApplicationHelper;
 import io.xpipe.extension.util.WindowsRegistry;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -124,15 +125,18 @@ public abstract class ExternalEditorType implements PrefsChoiceValue {
         protected abstract Optional<Path> determinePath();
 
         @Override
-        public void launch(Path file) throws IOException {
+        public void launch(Path file) throws Exception {
             var path = determinePath();
             if (path.isEmpty()) {
                 throw new IOException("Unable to find installation of " + getId());
             }
 
-            var cmd = "\"" + path.get() + "\"";
-            var list = ShellTypes.getPlatformDefault().executeCommandListWithShell(cmd + " \"" + file + "\"");
-            new ProcessBuilder(list).start();
+            ApplicationHelper.executeLocalApplication(getCommand(path.get(), file));
+        }
+
+        protected String getCommand(Path p, Path file) {
+            var cmd = "\"" + p + "\"";
+            return "start \"\" " + cmd + " \"" + file + "\"";
         }
 
         @Override
