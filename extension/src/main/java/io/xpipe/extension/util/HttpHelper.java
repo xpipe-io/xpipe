@@ -27,7 +27,7 @@ public class HttpHelper {
             // Create connection
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setRequestMethod("GET");
-            connection.addRequestProperty("User-Agent", "https://github.com/xpipe-io/xpipe-app");
+            connection.addRequestProperty("User-Agent", "https://github.com/xpipe-io/xpipe");
             connection.addRequestProperty("Accept", "*/*");
 
             int responseCode = connection.getResponseCode();
