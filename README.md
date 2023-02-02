@@ -1,107 +1,68 @@
 <img src="https://user-images.githubusercontent.com/72509152/213873342-7638e830-8a95-4b5d-ad3e-5a9a0b4bf538.png" alt="drawing" width="300"/>
 
-As the name suggests, X-Pipe (short for eXtended Pipe) has
-the goal of improving on the established concept of pipes.
-As with normal pipes, the main goal of X-Pipe essentially is the transfer of data from producers to consumers.
-It focuses on the following three ideas:
+### Next level remote data workflows for everyone
 
-- Could we support connections to any remote system with pipes instead of limiting yourself to your local system?
-  If so, we should focus on supporting already existing tools
-  to establish remote connections instead of reinventing the wheel?
+X-Pipe is a tool for working with remote connections and the data that can be accessed through them.
+The focus lies on providing an easy remote connection handling workflow
+and on top of that additional data intermediation capabilities
+such that you can work with all kinds of data located on essentially any remote system with ease.
+So if you are a data analyst/scientist, a system administrator, a software engineer, or generally
+just work a lot with remote connections and data, then X-Pipe is designed for you!
 
-- Could we support more than just transferring raw bytes and text?
-  Why not work on a higher level of abstraction instead,
-  which would allow for a connection between producers and consumers
-  that work on the same type of data, e.g. a table, even though the underlying formats are different.
-
-- Could we make the process as user friendly as possible?
-  Most tools in that space grow to be incredible complex and make it very difficult for users to get started.
-  The goal is too provide a use a friendly alternative that almost anyone can use instantly.
-
-X-Pipe consists out of two main components that achieve these goals:
-
-- The Connection Explorer provides the ability to flexibly connect to any remote system
-
-- The Data Explorer then builds on top of it to allow you to smartly work with all kinds of data
-
-Note that this project is still in early development!
+The X-Pipe project is designed to be an open platform, both in terms of development from
+a developer's perspective and the workflow from a user's perspective.
+X-Pipe is open source on [GitHub](https://github.com/xpipe-io/xpipe) and is
+designed to utilize and integrate well with other popular tools and workflows,
+focusing on augmenting them rather than replacing them.
 
 ## Connection Explorer
 
 The connection explorer allows you to connect to, manage, and interact with all kinds of remote systems.
-
-<img src="https://user-images.githubusercontent.com/72509152/213240153-3f742f03-1289-44c3-bf4d-626d9886ffcf.png" alt="drawing" height="450"/>
-
 It comes with the following main features:
 
-#### Ultra Flexible Connector
+#### Flexible Connector
 
 - Can connect to standard servers, database servers, and more
-
 - Supports established protocols (e.g. SSH and more) plus any custom connection methods that work through the command-line
-
 - Is able to integrate any kind of proxies into the connection process, even ones with different protocols
 
 #### Instant launch for remote shells and commands
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
-
 - Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and database shells (e.g. PSQL Shell)
-
 - Comes with integrations for all commonly used terminals in Windows and Linux
-
 - Exclusively uses established CLI tools and therefore works out of the box on most systems and doesn't require any additional setup
+- Allows you to customize the launched shell's init environment
 
-#### Connection Manager
+#### Simple connection Management
 
 - Easily create and manage all kinds of remote connections
-
 - Securely stores all information exclusively on your computer and encrypts all secret information
+- Allows you to share connection configurations to any other trusted party through shareable URLs
 
-- Allows you to share connections and their information to any other trusted system in your network
+<img src="https://user-images.githubusercontent.com/72509152/213240153-3f742f03-1289-44c3-bf4d-626d9886ffcf.png" alt="drawing" height="450"/>
 
 ## Data Explorer
 
 Building on top of the connection explorer, the data explorer
 allows you to manage and work with all kinds of data sources:
 
-<img src="https://user-images.githubusercontent.com/72509152/213240736-7a27fb3c-e8c3-4c92-bcea-2a782e53dc31.png" alt="drawing" height="450"/>
-
 #### Work with your data on a higher level
 
 - X-Pipe utilizes structures of data instead of the raw data itself, allowing for
   a higher level workflow that is independent of the underlying data format
-
 - Save time when adding data sources by making use of the advanced
   auto detection feature of X-Pipe where you don't have to worry about encodings, format configurations, and more
-
 - Easily convert between different data representations
 
 #### Integrate X-Pipe with your favorite tools and workflows
 
 - Easily import and export all kinds of data formats and technologies
-
-- Access data sources from the commandline with the X-Pipe CLI or
-  your favorite programming languages using the X-Pipe API
-
+- Access data sources from the command-line with the X-Pipe CLI or
+  your favorite programming languages using the X-Pipe APIs
 - Connect select third party applications directly to X-Pipe through extensions
 
-### Summary
-
-Even though X-Pipe comes with wide variety of features and components, it essentially still only focuses on one goal:
-
-*To get your data from A to B in the easiest way possible while also preserving
-compatibility through intermediation.
-For that, you can use the medium you like the most, whether that is a GUI, a CLI, or an API.*
-
-Essentially, X-Pipe aims to make the transfer process as quick as possible
-so you can spend more time actually working with your
-data instead of figuring out how to transfer it.
-X-Pipe can therefore be a massive timesaver for
-anyone who interacts with a wide range of data.
-In case this sounds interesting to you, take a look at the
-complete installation instructions and the user guide that can be
-found in the [X-Pipe Documentation](https://docs.xpipe.io/guide/installation.html).
+<img src="https://user-images.githubusercontent.com/72509152/213240736-7a27fb3c-e8c3-4c92-bcea-2a782e53dc31.png" alt="drawing" height="450"/>
 
 ## Repository Structure
 
