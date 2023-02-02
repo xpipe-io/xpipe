@@ -1,1 +1,39 @@
-plugins { id 'java' }
+plugins {
+    id 'java'
+    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+}
+
+dependencies {
+    implementation('org.apache.poi:poi-ooxml:5.2.3') {
+        exclude group: 'org.apache.commons', module: 'commons-collections4'
+        exclude group: 'org.apache.commons', module: 'commons-math3'
+        exclude group: 'commons-io', module: 'commons-io'
+        exclude group: 'org.apache.commons', module: 'commons-lang3'
+    }
+    implementation files("$buildDir/generated-modules/SparseBitSet-1.2.jar")
+    implementation files("$buildDir/generated-modules/commons-collections4-4.4.jar")
+}
+
+apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/extension.gradle"
+
+configurations {
+    compileOnly.extendsFrom(dep)
+    testImplementation.extendsFrom(dep)
+}
+
+addDependenciesModuleInfo {
+    overwriteExistingFiles = true
+    jdepsExtraArgs = ['-q']
+    outputDirectory = file("$buildDir/generated-modules")
+    modules {
+        module {
+            artifact 'com.zaxxer:SparseBitSet:1.2'
+            moduleInfoSource = '''
+                module SparseBitSet {
+                    exports com.zaxxer.sparsebits;
+                }
+            '''
+        }
+    }
+}
