@@ -138,7 +138,7 @@ public class ShellTypes {
 
         @Override
         public List<String> executeCommandListWithShell(String cmd) {
-            return List.of("cmd", "/C", cmd);
+            return List.of("cmd", "/C", cmd.replaceAll("[\\^]", "^$0"));
         }
 
         @Override

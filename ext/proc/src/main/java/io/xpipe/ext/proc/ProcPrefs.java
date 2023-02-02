@@ -5,6 +5,7 @@ import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.formsfx.model.structure.StringField;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
 import com.dlsc.preferencesfx.model.Setting;
+import com.dlsc.preferencesfx.util.VisibilityProperty;
 import io.xpipe.app.prefs.TranslatableComboBoxControl;
 import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.prefs.PrefsHandler;
@@ -27,8 +28,9 @@ public class ProcPrefs extends PrefsProvider {
     private final ObjectProperty<TerminalType> terminalType = new SimpleObjectProperty<>(TerminalType.getDefault());
     private final SimpleListProperty<TerminalType> terminalTypeList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(TerminalType.class)));
-    private final SingleSelectionField<TerminalType> terminalTypeControl =
-            Field.ofSingleSelectionType(terminalTypeList, terminalType).render(() -> new TranslatableComboBoxControl<>());
+    private final SingleSelectionField<TerminalType> terminalTypeControl = Field.ofSingleSelectionType(
+                    terminalTypeList, terminalType)
+            .render(() -> new TranslatableComboBoxControl<>());
 
     // Custom terminal
     // ===============
@@ -55,7 +57,8 @@ public class ProcPrefs extends PrefsProvider {
         handler.addSetting(
                 List.of("integrations"),
                 "proc.terminal",
-                Setting.of("proc.customTerminalCommand", customTerminalCommandControl, customTerminalCommand),
+                Setting.of("proc.customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
+                        .applyVisibility(VisibilityProperty.of(terminalType.isEqualTo(TerminalType.CUSTOM))),
                 String.class);
     }
 }

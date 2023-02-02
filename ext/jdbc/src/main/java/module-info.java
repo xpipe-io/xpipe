@@ -35,6 +35,7 @@ open module io.xpipe.ext.jdbc {
     requires com.microsoft.sqlserver.jdbc;
     requires org.postgresql.jdbc;
     requires io.xpipe.beacon;
+    requires io.xpipe.app;
     // requires mysql.connector.java;
 
     uses Driver;

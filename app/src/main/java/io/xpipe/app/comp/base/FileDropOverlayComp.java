@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.CompStructure;
 import javafx.geometry.Pos;
@@ -9,19 +10,19 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang3.function.FailableConsumer;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class FileDropOverlayComp<T extends CompStructure<?>> extends Comp<FileDropOverlayComp.Structure<T>> {
 
     private final Comp<T> comp;
-    private final Consumer<List<Path>> fileConsumer;
+    private final FailableConsumer<List<Path>, Exception> fileConsumer;
 
-    public FileDropOverlayComp(Comp<T> comp, Consumer<List<Path>> fileConsumer) {
+    public FileDropOverlayComp(Comp<T> comp, FailableConsumer<List<Path>, Exception> fileConsumer) {
         this.comp = comp;
         this.fileConsumer = fileConsumer;
     }
@@ -66,7 +67,12 @@ public class FileDropOverlayComp<T extends CompStructure<?>> extends Comp<FileDr
                 event.setDropCompleted(true);
                 Dragboard db = event.getDragboard();
                 var list = db.getFiles().stream().map(File::toPath).toList();
-                fileConsumer.accept(list);
+
+                try {
+                    fileConsumer.accept(list);
+                } catch (Throwable t) {
+                    ErrorEvent.fromThrowable(t).handle();
+                }
             }
             event.consume();
         });

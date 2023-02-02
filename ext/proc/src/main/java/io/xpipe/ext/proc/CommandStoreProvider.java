@@ -1,5 +1,6 @@
 package io.xpipe.ext.proc;
 
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.impl.LocalStore;
@@ -72,7 +73,10 @@ public class CommandStoreProvider implements DataStoreProvider {
                         I18n.observable("proc.shellType"),
                         new ShellTypeChoiceComp(shellTypeProperty),
                         shellTypeProperty)
-                .addStringArea("proc.command", commandProp, false)
+                .addComp(
+                        I18n.observable("proc.command"),
+                        new IntegratedTextAreaComp(commandProp, false, "command"),
+                        commandProp)
                 .nonNull(val)
                 .addComp("proc.usage", new DataStoreFlowChoiceComp(flowProperty, DataFlow.values()), flowProperty)
                 .addToggle("requiresElevation", requiresElevationProperty)

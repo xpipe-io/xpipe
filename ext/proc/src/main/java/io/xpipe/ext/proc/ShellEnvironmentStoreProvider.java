@@ -1,5 +1,6 @@
 package io.xpipe.ext.proc;
 
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellType;
 import io.xpipe.core.store.DataStore;
@@ -44,7 +45,10 @@ public class ShellEnvironmentStoreProvider implements DataStoreProvider {
                         I18n.observable("proc.shellType"),
                         new ShellTypeChoiceComp(shellTypeProperty),
                         shellTypeProperty)
-                .addStringArea("proc.commands", commandProp, false)
+                .addComp(
+                        I18n.observable("proc.commands"),
+                        new IntegratedTextAreaComp(commandProp, false, "commands"),
+                        commandProp)
                 .nonNull(val)
                 .bind(
                         () -> {

@@ -1,6 +1,7 @@
 package io.xpipe.ext.jdbc.source;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.store.DataStore;
@@ -46,7 +47,10 @@ public class JdbcStaticQuerySource extends JdbcQuerySource {
             var databaseProperty = new SimpleObjectProperty<>(source.getValue().getDatabase());
             var store = source.getValue().getStore();
             return new DynamicOptionsBuilder(false)
-                    .addStringArea("query", queryQ, true)
+                    .addComp(
+                            I18n.observable("query"),
+                            new IntegratedTextAreaComp(queryQ, true, "query"),
+                            queryQ)
                     .addChoice(
                             databaseProperty,
                             I18n.observable("jdbc.database"),
