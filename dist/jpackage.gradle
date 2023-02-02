@@ -55,10 +55,10 @@ jlink {
         imageName = 'xpiped'
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             icon = "logo/logo.ico"
-            appVersion = version
+            appVersion = rootProject.canonicalVersionString
         } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
             icon = "logo/logo.png"
-            appVersion = version
+            appVersion = rootProject.canonicalVersionString
         } else {
             icon = "logo/logo.icns"
 
@@ -80,7 +80,7 @@ jlink {
             resourceDir = file("$projectDir/misc/mac")
 
             // Mac does not like a zero major version
-            def modifiedVersion = version.toString()
+            def modifiedVersion = rootProject.canonicalVersionString
             if (Integer.parseInt(modifiedVersion.substring(0, 1)) == 0) {
                 modifiedVersion = "1" + modifiedVersion.substring(1)
             }
