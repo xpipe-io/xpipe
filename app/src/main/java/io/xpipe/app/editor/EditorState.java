@@ -9,9 +9,8 @@ import io.xpipe.extension.util.ThreadHelper;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardWatchEventKinds;
@@ -126,6 +125,25 @@ public class EditorState {
     public void startEditing(
             String keyName,
             Object key,
+            String input,
+            Consumer<String> output) {
+        if (input == null) {
+            input = "";
+        }
+
+        String s = input;
+        startEditing(keyName, key, () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), () -> new ByteArrayOutputStream(s.length()) {
+            @Override
+            public void close() throws IOException {
+                super.close();
+                output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+            }
+        });
+    }
+
+    public void startEditing(
+            String keyName,
+            Object key,
             Charsetter.FailableSupplier<InputStream, Exception> input,
             Charsetter.FailableSupplier<OutputStream, Exception> output) {
         var ext = getForKey(key);
@@ -168,7 +186,7 @@ public class EditorState {
         }
 
         try {
-            editor.launch(Path.of(file));
+            editor.launch(Path.of(file).toRealPath());
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }
