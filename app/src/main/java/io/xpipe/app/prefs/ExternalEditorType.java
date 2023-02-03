@@ -73,14 +73,14 @@ public abstract class ExternalEditorType implements PrefsChoiceValue {
     public static final ExternalEditorType TEXT_EDIT = new MacOsFullPathType("app.textEdit") {
         @Override
         protected Path determinePath() {
-            return Path.of("/Applications/TextEdit.app");
+            return Path.of("/System/Applications/TextEdit.app");
         }
     };
 
     public static final ExternalEditorType NOTEPADPP_MACOS = new MacOsFullPathType("app.notepad++") {
         @Override
         protected Path determinePath() {
-            return Path.of("/Applications/TextEdit.app");
+            return Path.of("/Applications/Notepad++.app");
         }
     };
 
