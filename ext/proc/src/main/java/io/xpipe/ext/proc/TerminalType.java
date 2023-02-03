@@ -10,7 +10,6 @@ import io.xpipe.extension.util.ApplicationHelper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -25,7 +24,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSupported() {
+        public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.WINDOWS);
         }
     };
@@ -38,8 +37,8 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSupported() {
-            return true;
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
         }
     };
 
@@ -52,7 +51,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
                 }
 
                 @Override
-                public boolean isSupported() {
+                public boolean isSelectable() {
                     return OsType.getLocal().equals(OsType.WINDOWS);
                 }
             };
@@ -66,7 +65,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
                 }
 
                 @Override
-                public boolean isSupported() {
+                public boolean isSelectable() {
                     return OsType.getLocal().equals(OsType.LINUX);
                 }
             };
@@ -79,7 +78,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSupported() {
+        public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
@@ -92,27 +91,31 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSupported() {
+        public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
 
-    public static final TerminalType MAC_TERMINAL = new MacType("proc.mac_terminal", "Terminal") {};
+    public static final TerminalType MACOS_TERMINAL = new MacType("proc.macosTerminal", "Terminal");
+
+    public static final TerminalType ITERM2 = new MacType("proc.iterm2", "iTerm2");
+
     public static final TerminalType CUSTOM = new TerminalType("app.custom") {
 
         @Override
         public void launch(String name, String command) throws Exception {
             var custom =
                     PrefsProvider.get(ProcPrefs.class).customTerminalCommand().getValue();
-            if (custom == null || custom.isEmpty()) {
+            if (custom == null || custom.trim().isEmpty()) {
                 return;
             }
 
-            ShellStore.local().create().executeSimpleCommand(custom + " " + command);
+            var format = custom.contains("$cmd") ? custom : custom + " $cmd";
+            ShellStore.local().create().executeSimpleCommand(format.replace("$cmd", command));
         }
 
         @Override
-        public boolean isSupported() {
+        public boolean isSelectable() {
             return true;
         }
 
@@ -121,27 +124,26 @@ public abstract class TerminalType implements PrefsChoiceValue {
             return false;
         }
     };
-    public static final List<TerminalType> ALL =
-            List.of(CMD, POWERSHELL, WINDOWS_TERMINAL, GNOME_TERMINAL, KONSOLE, XFCE, MAC_TERMINAL, CUSTOM);
-    private String id;
+
+    public static final List<TerminalType> ALL = List.of(
+                    WINDOWS_TERMINAL, POWERSHELL, CMD,
+                    KONSOLE, XFCE, GNOME_TERMINAL,
+                    ITERM2, MACOS_TERMINAL,
+                    CUSTOM)
+            .stream()
+            .filter(terminalType -> terminalType.isSelectable())
+            .toList();
 
     public static TerminalType getDefault() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return CMD;
-        } else {
-            var toChooseFrom = new ArrayList<>(ALL);
-            toChooseFrom.remove(CMD);
-            toChooseFrom.remove(POWERSHELL);
-            return toChooseFrom.stream()
-                    .filter(terminalType -> terminalType.isAvailable())
-                    .findFirst()
-                    .orElse(TerminalType.GNOME_TERMINAL);
-        }
+        return ALL.stream()
+                .filter(terminalType -> terminalType.isAvailable()).findFirst().orElse(null);
     }
+
+    private String id;
 
     public abstract void launch(String name, String command) throws Exception;
 
-    public abstract boolean isSupported();
+    public abstract boolean isSelectable();
 
     public abstract boolean isAvailable();
 
@@ -164,7 +166,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSupported() {
+        public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.MAC);
         }
 
@@ -212,7 +214,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSupported() {
+        public boolean isSelectable() {
             return true;
         }
     }

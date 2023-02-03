@@ -25,7 +25,7 @@ public class ProcPrefs extends PrefsProvider {
         return enableCaching;
     }
 
-    private final ObjectProperty<TerminalType> terminalType = new SimpleObjectProperty<>(TerminalType.getDefault());
+    private final ObjectProperty<TerminalType> terminalType = new SimpleObjectProperty<>();
     private final SimpleListProperty<TerminalType> terminalTypeList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(TerminalType.class)));
     private final SingleSelectionField<TerminalType> terminalTypeControl = Field.ofSingleSelectionType(
@@ -60,5 +60,12 @@ public class ProcPrefs extends PrefsProvider {
                 Setting.of("proc.customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
                         .applyVisibility(VisibilityProperty.of(terminalType.isEqualTo(TerminalType.CUSTOM))),
                 String.class);
+    }
+
+    @Override
+    public void init() {
+        if (terminalType.get() == null) {
+            terminalType.set(TerminalType.getDefault());
+        }
     }
 }

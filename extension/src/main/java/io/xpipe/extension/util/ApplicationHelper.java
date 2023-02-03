@@ -2,18 +2,27 @@ package io.xpipe.extension.util;
 
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.store.ShellStore;
+import io.xpipe.extension.event.TrackEvent;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class ApplicationHelper {
 
     public static void executeLocalApplication(String s) throws Exception {
         var args = ShellTypes.getPlatformDefault().executeCommandListWithShell(s);
-        var p = new ProcessBuilder(args).redirectOutput(ProcessBuilder.Redirect.DISCARD).start();
-        var error = new String(p.getErrorStream().readAllBytes(), StandardCharsets.UTF_8);
-        if (p.waitFor() != 0) {
-            throw new IOException(error);
+        TrackEvent.withDebug("proc", "Executing local application").elements(args).handle();
+        try (var c = ShellStore.local().create().command(s).start()) {
+            c.discardOrThrow();
+        }
+    }
+
+    public static void executeLocalApplication(List<String> s) throws Exception {
+        var args = ShellTypes.getPlatformDefault().executeCommandListWithShell(s);
+        TrackEvent.withDebug("proc", "Executing local application").elements(args).handle();
+        try (var c = ShellStore.local().create().command(s).start()) {
+            c.discardOrThrow();
         }
     }
 
