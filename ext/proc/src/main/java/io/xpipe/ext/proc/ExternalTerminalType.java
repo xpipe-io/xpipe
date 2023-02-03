@@ -1,5 +1,6 @@
 package io.xpipe.ext.proc;
 
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.ShellStore;
@@ -7,18 +8,12 @@ import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.ApplicationHelper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public abstract class TerminalType implements PrefsChoiceValue {
+public interface ExternalTerminalType extends PrefsChoiceValue {
 
-    public static final TerminalType CMD = new SimpleType("proc.cmd", "cmd", "cmd.exe") {
+    public static final ExternalTerminalType CMD = new SimpleType("proc.cmd", "cmd", "cmd.exe") {
 
         @Override
         protected String toCommand(String name, String command) {
@@ -31,7 +26,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
     };
 
-    public static final TerminalType POWERSHELL = new SimpleType("proc.powershell", "powershell", "PowerShell") {
+    public static final ExternalTerminalType POWERSHELL = new SimpleType("proc.powershell", "powershell", "PowerShell") {
 
         @Override
         protected String toCommand(String name, String command) {
@@ -44,7 +39,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
     };
 
-    public static final TerminalType WINDOWS_TERMINAL =
+    public static final ExternalTerminalType WINDOWS_TERMINAL =
             new SimpleType("proc.windowsTerminal", "wt.exe", "Windows Terminal") {
 
                 @Override
@@ -58,7 +53,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
                 }
             };
 
-    public static final TerminalType GNOME_TERMINAL =
+    public static final ExternalTerminalType GNOME_TERMINAL =
             new SimpleType("proc.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
                 @Override
@@ -72,7 +67,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
                 }
             };
 
-    public static final TerminalType KONSOLE = new SimpleType("proc.konsole", "konsole", "Konsole") {
+    public static final ExternalTerminalType KONSOLE = new SimpleType("proc.konsole", "konsole", "Konsole") {
 
         @Override
         protected String toCommand(String name, String command) {
@@ -85,7 +80,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
     };
 
-    public static final TerminalType XFCE = new SimpleType("proc.xfce", "xfce4-terminal", "Xfce") {
+    public static final ExternalTerminalType XFCE = new SimpleType("proc.xfce", "xfce4-terminal", "Xfce") {
 
         @Override
         protected String toCommand(String name, String command) {
@@ -98,38 +93,15 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
     };
 
-    public static final TerminalType MACOS_TERMINAL = new MacType("proc.macosTerminal", "Terminal");
+    public static final ExternalTerminalType MACOS_TERMINAL = new MacOsType();
 
-    public static final TerminalType ITERM2 = new ITerm2Type();
+    public static final ExternalTerminalType ITERM2 = new ITerm2Type();
 
-    public static final TerminalType WARP = new WarpType();
+    public static final ExternalTerminalType WARP = new WarpType();
 
-    public static final TerminalType CUSTOM = new TerminalType("app.custom") {
+    public static final ExternalTerminalType CUSTOM = new CustomType();
 
-        @Override
-        public void launch(String name, String command) throws Exception {
-            var custom =
-                    PrefsProvider.get(ProcPrefs.class).customTerminalCommand().getValue();
-            if (custom == null || custom.trim().isEmpty()) {
-                return;
-            }
-
-            var format = custom.contains("$cmd") ? custom : custom + " $cmd";
-            ShellStore.local().create().executeSimpleCommand(format.replace("$cmd", command));
-        }
-
-        @Override
-        public boolean isSelectable() {
-            return true;
-        }
-
-        @Override
-        public boolean isAvailable() {
-            return false;
-        }
-    };
-
-    public static final List<TerminalType> ALL = List.of(
+    public static final List<ExternalTerminalType> ALL = List.of(
                     WINDOWS_TERMINAL,
                     POWERSHELL,
                     CMD,
@@ -144,42 +116,60 @@ public abstract class TerminalType implements PrefsChoiceValue {
             .filter(terminalType -> terminalType.isSelectable())
             .toList();
 
-    public static TerminalType getDefault() {
+    public static ExternalTerminalType getDefault() {
         return ALL.stream()
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
                 .orElse(null);
     }
 
-    private String id;
-
     public abstract void launch(String name, String command) throws Exception;
 
-    public abstract boolean isSelectable();
+    static class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
-    public abstract boolean isAvailable();
+        public MacOsType() {
+            super("proc.macosTerminal", "Terminal");
+        }
 
-    static class MacType extends TerminalType {
+        @Override
+        public void launch(String name, String command) throws Exception {
+            var custom =
+                    PrefsProvider.get(ProcPrefs.class).customTerminalCommand().getValue();
+            if (custom == null || custom.trim().isEmpty()) {
+                return;
+            }
 
-        private final String terminalName;
+            var format = custom.contains("$cmd") ? custom : custom + " $cmd";
+            try (var pc = ShellStore.local().create().start()) {
+                var toExecute = format.replace("$cmd", command);
+                if (pc.getOsType().equals(OsType.WINDOWS)) {
+                    toExecute = "start \"" + name + "\" " + toExecute;
+                } else {
+                    toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                }
+                pc.executeSimpleCommand(toExecute);
+            }
+        }
+    }
 
-        public MacType(String id, String terminalName) {
-            super(id);
-            this.terminalName = terminalName;
+    static class CustomType extends ExternalApplicationType implements ExternalTerminalType {
+
+        public CustomType() {
+            super("proc.custom");
         }
 
         @Override
         public void launch(String name, String command) throws Exception {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
                 var suffix = command.equals(pc.getShellType().getNormalOpenCommand()) ? "\"\"" : "\"" + command + "\"";
-                var cmd = "osascript -e 'tell app \"" + terminalName + "\" to do script " + suffix + "'";
+                var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
                 pc.executeSimpleCommand(cmd);
             }
         }
 
         @Override
         public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MAC);
+            return true;
         }
 
         @Override
@@ -188,10 +178,10 @@ public abstract class TerminalType implements PrefsChoiceValue {
         }
     }
 
-    static class ITerm2Type extends TerminalType {
+    static class ITerm2Type extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public ITerm2Type() {
-            super("proc.iterm2");
+            super("proc.iterm2", "iTerm2");
         }
 
         @Override
@@ -200,7 +190,6 @@ public abstract class TerminalType implements PrefsChoiceValue {
                 var cmd = String.format(
                         """
                                         osascript - "$@" <<EOF
-                                        on run argv
                                         tell application "iTerm"
                                             activate
                                             set new_term to (create window with profile "Default" command "%s")
@@ -211,22 +200,12 @@ public abstract class TerminalType implements PrefsChoiceValue {
                 pc.executeSimpleCommand(cmd);
             }
         }
-
-        @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MAC);
-        }
-
-        @Override
-        public boolean isAvailable() {
-            return Files.exists(Path.of("/Applications/iTerm2.app"));
-        }
     }
 
-    static class WarpType extends TerminalType {
+    static class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public WarpType() {
-            super("proc.warp");
+            super("proc.warp", "Warp");
         }
 
         @Override
@@ -234,41 +213,30 @@ public abstract class TerminalType implements PrefsChoiceValue {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
                 var cmd = String.format(
                         """
-                                        osascript - "$@" <<EOF
-                                        tell application "Warp" to activate'
-                                        sudo osascript -e 'tell application "System Events" to tell process "Warp" to keystroke "t" using command down'
-                                        sleep 1
-                                        sudo osascript -e 'tell application "System Events"
-                                        tell process "Warp"
-                                        keystroke "%s"
-                                        key code 36
-                                        end tell
-                                        end tell
-                                        EOF""",
+                                 osascript - "$@" <<EOF
+                                 tell application "Warp" to activate
+                                 tell application "System Events" to tell process "Warp" to keystroke "t" using command down
+                                 delay 1
+                                 tell application "System Events"
+                                 tell process "Warp"
+                                 keystroke "%s"
+                                 key code 36
+                                 end tell
+                                 end tell
+                                 EOF
+                                         """,
                         command);
                 pc.executeSimpleCommand(cmd);
             }
         }
-
-        @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MAC);
-        }
-
-        @Override
-        public boolean isAvailable() {
-            return Files.exists(Path.of("/Applications/iTerm2.app"));
-        }
     }
 
-    public abstract static class SimpleType extends TerminalType {
+    public abstract static class SimpleType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
 
-        private final String executable;
         private final String displayName;
 
         public SimpleType(String id, String executable, String displayName) {
-            super(id);
-            this.executable = executable;
+            super(id, executable);
             this.displayName = displayName;
         }
 

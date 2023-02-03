@@ -25,10 +25,10 @@ public class ProcPrefs extends PrefsProvider {
         return enableCaching;
     }
 
-    private final ObjectProperty<TerminalType> terminalType = new SimpleObjectProperty<>();
-    private final SimpleListProperty<TerminalType> terminalTypeList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(TerminalType.class)));
-    private final SingleSelectionField<TerminalType> terminalTypeControl = Field.ofSingleSelectionType(
+    private final ObjectProperty<ExternalTerminalType> terminalType = new SimpleObjectProperty<>();
+    private final SimpleListProperty<ExternalTerminalType> terminalTypeList = new SimpleListProperty<>(
+            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class)));
+    private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(
                     terminalTypeList, terminalType)
             .render(() -> new TranslatableComboBoxControl<>());
 
@@ -37,9 +37,9 @@ public class ProcPrefs extends PrefsProvider {
     private final StringProperty customTerminalCommand = new SimpleStringProperty("");
     private final StringField customTerminalCommandControl = editable(
             StringField.ofStringType(customTerminalCommand).render(() -> new SimpleTextControl()),
-            terminalType.isEqualTo(TerminalType.CUSTOM));
+            terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
 
-    public ObservableValue<TerminalType> terminalType() {
+    public ObservableValue<ExternalTerminalType> terminalType() {
         return terminalType;
     }
 
@@ -53,19 +53,19 @@ public class ProcPrefs extends PrefsProvider {
                 List.of("integrations"),
                 "proc.terminal",
                 Setting.of("app.defaultProgram", terminalTypeControl, terminalType),
-                TerminalType.class);
+                ExternalTerminalType.class);
         handler.addSetting(
                 List.of("integrations"),
                 "proc.terminal",
                 Setting.of("proc.customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
-                        .applyVisibility(VisibilityProperty.of(terminalType.isEqualTo(TerminalType.CUSTOM))),
+                        .applyVisibility(VisibilityProperty.of(terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
                 String.class);
     }
 
     @Override
     public void init() {
         if (terminalType.get() == null) {
-            terminalType.set(TerminalType.getDefault());
+            terminalType.set(ExternalTerminalType.getDefault());
         }
     }
 }
