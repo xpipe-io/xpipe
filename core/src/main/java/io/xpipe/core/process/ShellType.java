@@ -78,6 +78,8 @@ public interface ShellType {
 
     List<String> executeCommandListWithShell(String cmd);
 
+    List<String> executeCommandListWithShell(List<String> cmd);
+
     List<String> getMkdirsCommand(String dirs);
 
     String getFileReadCommand(String file);
