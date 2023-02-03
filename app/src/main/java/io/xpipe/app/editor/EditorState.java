@@ -181,7 +181,7 @@ public class EditorState {
 
     public void openInEditor(String file) {
         var editor = AppPrefs.get().externalEditor().getValue();
-        if (editor == null || !editor.isSupported()) {
+        if (editor == null || !editor.isSelectable()) {
             return;
         }
 

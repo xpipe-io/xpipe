@@ -32,7 +32,7 @@ public enum CloseBehaviour implements PrefsChoiceValue {
         this.exit = exit;
     }
 
-    public boolean isSupported() {
+    public boolean isSelectable() {
         return true;
     }
 }

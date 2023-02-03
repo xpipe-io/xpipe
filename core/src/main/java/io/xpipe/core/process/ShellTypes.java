@@ -142,6 +142,14 @@ public class ShellTypes {
         }
 
         @Override
+        public List<String> executeCommandListWithShell(List<String> cmd) {
+            var list = new ArrayList<String>();
+            list.addAll(List.of("cmd", "/C"));
+            list.addAll(cmd.stream().map(s -> s.replaceAll(" ", "^ ")).toList());
+            return list;
+        }
+
+        @Override
         public List<String> getMkdirsCommand(String dirs) {
             return List.of("(", "if", "not", "exist", dirs, "mkdir", dirs, ")");
         }
@@ -229,6 +237,11 @@ public class ShellTypes {
     @JsonTypeName("powershell")
     @Value
     public static class PowerShell implements ShellType {
+
+        @Override
+        public List<String> executeCommandListWithShell(List<String> cmd) {
+            return List.of("powershell", "-Command", flatten(cmd));
+        }
 
         @Override
         public void disableHistory(ShellProcessControl pc) throws Exception {
@@ -415,6 +428,11 @@ public class ShellTypes {
     }
 
     public abstract static class PosixBase implements ShellType {
+
+        @Override
+        public List<String> executeCommandListWithShell(List<String> cmd) {
+            return List.of(getExecutable(), "-c", flatten(cmd));
+        }
 
         @Override
         public String getInitFileOpenCommand(String file) {

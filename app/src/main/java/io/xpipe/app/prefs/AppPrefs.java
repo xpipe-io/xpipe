@@ -61,9 +61,9 @@ public class AppPrefs {
     private final ObjectProperty<SupportedLocale> languageInternal =
             typed(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), SupportedLocale.class);
     public final Property<SupportedLocale> language = new SimpleObjectProperty<>(SupportedLocale.ENGLISH);
-    private final SingleSelectionField<SupportedLocale> languageControl =
-            Field.ofSingleSelectionType(languageList, languageInternal).render(() -> new TranslatableComboBoxControl<>());
-
+    private final SingleSelectionField<SupportedLocale> languageControl = Field.ofSingleSelectionType(
+                    languageList, languageInternal)
+            .render(() -> new TranslatableComboBoxControl<>());
 
     private final ObjectProperty<AppStyle.Theme> themeInternal =
             typed(new SimpleObjectProperty<>(AppStyle.Theme.LIGHT), AppStyle.Theme.class);
@@ -85,32 +85,36 @@ public class AppPrefs {
 
     private final ObjectProperty<CloseBehaviour> closeBehaviour =
             typed(new SimpleObjectProperty<>(CloseBehaviour.QUIT), CloseBehaviour.class);
-    private final SingleSelectionField<CloseBehaviour> closeBehaviourControl =
-            Field.ofSingleSelectionType(closeBehaviourList, closeBehaviour).render(() -> new TranslatableComboBoxControl<>());
-    private final ObjectProperty<ExternalEditorType> externalEditor =
-            typed(new SimpleObjectProperty<>(ExternalEditorType.getDefault()), ExternalEditorType.class);
-    private final SingleSelectionField<ExternalEditorType> externalEditorControl =
-            Field.ofSingleSelectionType(externalEditorList, externalEditor).render(() -> new TranslatableComboBoxControl<>());
+    private final SingleSelectionField<CloseBehaviour> closeBehaviourControl = Field.ofSingleSelectionType(
+                    closeBehaviourList, closeBehaviour)
+            .render(() -> new TranslatableComboBoxControl<>());
 
     // External editor
     // ===============
-    private final StringProperty customEditorCommand = typed(new SimpleStringProperty(""), String.class);
+
+    final ObjectProperty<ExternalEditorType> externalEditor =
+            typed(new SimpleObjectProperty<>(), ExternalEditorType.class);
+    private final SingleSelectionField<ExternalEditorType> externalEditorControl = Field.ofSingleSelectionType(
+                    externalEditorList, externalEditor)
+            .render(() -> new TranslatableComboBoxControl<>());
+
+    final StringProperty customEditorCommand = typed(new SimpleStringProperty(""), String.class);
     private final StringField customEditorCommandControl = editable(
             StringField.ofStringType(customEditorCommand).render(() -> new SimpleTextControl()),
             externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
     private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
     private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour = typed(
             new SimpleObjectProperty<>(
-                    ExternalStartupBehaviour.TRAY.isSupported()
+                    ExternalStartupBehaviour.TRAY.isSelectable()
                             ? ExternalStartupBehaviour.TRAY
                             : ExternalStartupBehaviour.BACKGROUND),
             ExternalStartupBehaviour.class);
 
-
-
     private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
             Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
                     .render(() -> new TranslatableComboBoxControl<>());
+    // Automatically update
+    // ====================
     private final BooleanProperty automaticallyUpdate =
             typed(new SimpleBooleanProperty(AppDistributionType.get().supportsUpdate()), Boolean.class);
     private final BooleanField automaticallyUpdateField = BooleanField.ofBooleanType(automaticallyUpdate)
@@ -135,8 +139,8 @@ public class AppPrefs {
     private final ObjectProperty<String> internalLogLevel =
             typed(new SimpleObjectProperty<>(DEFAULT_LOG_LEVEL), String.class);
 
-    // Automatically update
-    // ====================
+    // Log level
+    // =========
     private final ObjectProperty<String> effectiveLogLevel = LOG_LEVEL_FIXED
             ? new SimpleObjectProperty<>(System.getProperty(LOG_LEVEL_PROP).toLowerCase())
             : internalLogLevel;
@@ -144,6 +148,8 @@ public class AppPrefs {
                     logLevelList, effectiveLogLevel)
             .editable(!LOG_LEVEL_FIXED)
             .render(() -> new SimpleComboBoxControl<>());
+    // Developer mode
+    // ==============
     private final BooleanProperty internalDeveloperMode = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanProperty effectiveDeveloperMode = System.getProperty(DEVELOPER_MODE_PROP) != null
             ? new SimpleBooleanProperty(Boolean.parseBoolean(System.getProperty(DEVELOPER_MODE_PROP)))
@@ -176,6 +182,70 @@ public class AppPrefs {
                     developerDisableConnectorInstallationVersionCheck)
             .render(() -> new ToggleControl());
 
+    public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {
+        return closeBehaviour;
+    }
+
+    public ReadOnlyProperty<ExternalEditorType> externalEditor() {
+        return externalEditor;
+    }
+
+    public ObservableValue<String> customEditorCommand() {
+        return customEditorCommand;
+    }
+
+    public final ReadOnlyIntegerProperty editorReloadTimeout() {
+        return editorReloadTimeout;
+    }
+
+    public ReadOnlyProperty<ExternalStartupBehaviour> externalStartupBehaviour() {
+        return externalStartupBehaviour;
+    }
+
+    public ReadOnlyBooleanProperty automaticallyUpdate() {
+        return automaticallyUpdate;
+    }
+
+    public ReadOnlyBooleanProperty updateToPrereleases() {
+        return updateToPrereleases;
+    }
+
+    public ReadOnlyBooleanProperty confirmDeletions() {
+        return confirmDeletions;
+    }
+
+    public ObservableValue<Path> storageDirectory() {
+        return effectiveStorageDirectory;
+    }
+
+    public ReadOnlyProperty<String> logLevel() {
+        return effectiveLogLevel;
+    }
+
+    public ObservableValue<Boolean> developerMode() {
+        return effectiveDeveloperMode;
+    }
+
+    public ReadOnlyBooleanProperty developerDisableUpdateVersionCheck() {
+        return developerDisableUpdateVersionCheck;
+    }
+
+    public ReadOnlyBooleanProperty developerDisableGuiRestrictions() {
+        return developerDisableGuiRestrictions;
+    }
+
+    public ReadOnlyBooleanProperty developerDisableConnectorInstallationVersionCheck() {
+        return developerDisableConnectorInstallationVersionCheck;
+    }
+
+    public ReadOnlyBooleanProperty developerShowHiddenProviders() {
+        return developerShowHiddenProviders;
+    }
+
+    public ReadOnlyBooleanProperty developerShowHiddenEntries() {
+        return developerShowHiddenEntries;
+    }
+
     private AppPreferencesFx preferencesFx;
     private boolean controlsSetup;
 
@@ -194,6 +264,8 @@ public class AppPrefs {
     public static void init() {
         INSTANCE = new AppPrefs();
         INSTANCE.preferencesFx.loadSettings();
+        INSTANCE.initValues();
+        PrefsProvider.getAll().forEach(prov -> prov.init());
     }
 
     public static AppPrefs get() {
@@ -246,8 +318,11 @@ public class AppPrefs {
         save();
     }
 
-    // Log level
-    // =========
+    public void initValues() {
+        if (externalEditor.get() == null) {
+            ExternalEditorType.detectDefault();
+        }
+    }
 
     public void save() {
         preferencesFx.saveSettings();
@@ -255,76 +330,6 @@ public class AppPrefs {
 
     public void cancel() {
         preferencesFx.discardChanges();
-    }
-
-    public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {
-        return closeBehaviour;
-    }
-
-    public ReadOnlyProperty<ExternalEditorType> externalEditor() {
-        return externalEditor;
-    }
-
-    public ObservableValue<String> customEditorCommand() {
-        return customEditorCommand;
-    }
-
-    public final ReadOnlyIntegerProperty editorReloadTimeout() {
-        return editorReloadTimeout;
-    }
-
-    public ReadOnlyProperty<ExternalStartupBehaviour> externalStartupBehaviour() {
-        return externalStartupBehaviour;
-    }
-
-    public ReadOnlyBooleanProperty automaticallyUpdate() {
-        return automaticallyUpdate;
-    }
-
-    // Developer mode
-    // ==============
-
-    public ReadOnlyBooleanProperty updateToPrereleases() {
-        return updateToPrereleases;
-    }
-
-    public ReadOnlyBooleanProperty confirmDeletions() {
-        return confirmDeletions;
-    }
-
-    public ObservableValue<Path> storageDirectory() {
-        return effectiveStorageDirectory;
-    }
-
-    // Developer options
-    // ====================
-
-    public ReadOnlyProperty<String> logLevel() {
-        return effectiveLogLevel;
-    }
-
-    public ObservableValue<Boolean> developerMode() {
-        return effectiveDeveloperMode;
-    }
-
-    public ReadOnlyBooleanProperty developerDisableUpdateVersionCheck() {
-        return developerDisableUpdateVersionCheck;
-    }
-
-    public ReadOnlyBooleanProperty developerDisableGuiRestrictions() {
-        return developerDisableGuiRestrictions;
-    }
-
-    public ReadOnlyBooleanProperty developerDisableConnectorInstallationVersionCheck() {
-        return developerDisableConnectorInstallationVersionCheck;
-    }
-
-    public ReadOnlyBooleanProperty developerShowHiddenProviders() {
-        return developerShowHiddenProviders;
-    }
-
-    public ReadOnlyBooleanProperty developerShowHiddenEntries() {
-        return developerShowHiddenEntries;
     }
 
     public Class<?> getSettingType(String breadcrumb) {
@@ -391,15 +396,15 @@ public class AppPrefs {
                                 Setting.of("useSystemFont", useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
                                 Setting.of("fontSize", fontSizeInternal, fontSizeMin, fontSizeMax)),
-                        Group.of(
-                                "windowOptions",
-                                Setting.of("saveWindowLocation", saveWindowLocationInternal))),
+                        Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
                 Category.of(
                         "integrations",
                         Group.of(
                                 "editor",
                                 Setting.of("defaultProgram", externalEditorControl, externalEditor),
-                                Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand).applyVisibility( VisibilityProperty.of(externalEditor.isEqualTo(ExternalEditorType.CUSTOM))),
+                                Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand)
+                                        .applyVisibility(VisibilityProperty.of(
+                                                externalEditor.isEqualTo(ExternalEditorType.CUSTOM))),
                                 Setting.of(
                                         "editorReloadTimeout",
                                         editorReloadTimeout,
