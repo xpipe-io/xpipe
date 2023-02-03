@@ -1,7 +1,10 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.store.ShellStore;
+import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.util.ApplicationHelper;
 import io.xpipe.extension.util.WindowsRegistry;
@@ -134,6 +137,15 @@ public abstract class ExternalEditorType implements PrefsChoiceValue {
         public void launch(Path file) throws IOException {
             var list = ShellTypes.getPlatformDefault().executeCommandListWithShell(command + " \"" + file + "\"");
             new ProcessBuilder(list).start();
+        }
+
+        public boolean isAvailable() {
+            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+                return pc.executeBooleanSimpleCommand(pc.getShellType().getWhichCommand(command));
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return false;
+            }
         }
 
         @Override
