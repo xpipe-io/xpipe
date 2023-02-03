@@ -15,7 +15,7 @@ public enum ExternalStartupBehaviour implements PrefsChoiceValue {
     private final String id;
     private final OperationMode mode;
 
-    public boolean isSupported() {
+    public boolean isSelectable() {
         return true;
     }
 }

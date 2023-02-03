@@ -115,9 +115,9 @@ Furthermore, you also need the platform specific toolchains to be installed:
 
 You can use the gradle wrapper to build and run the project:
 - `gradlew app:run` will run the desktop application. You can set various useful properties in `app/build.gradle`
-- `gradlew builtCli` will create a native image for the CLI application
+- `gradlew buildCli` will create a native image for the CLI application
 - `gradlew dist` will create a distributable production version in `dist/build/dist/base`.
-  To include this CLI executable in this build, make sure to run `gradlew builtCli` first
+  To include this CLI executable in this build, make sure to run `gradlew buildCli` first
 - You can also run the CLI application in development mode with something like `gradlew :cli:clean :cli:run --args="daemon start"`.
   Note here that you should always clean the CLI project first, as the native image plugin is a little buggy in that regard.
 - `gradlew <project>:test` will run the tests of the specified project. 

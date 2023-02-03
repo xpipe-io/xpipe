@@ -34,4 +34,6 @@ public abstract class PrefsProvider {
     }
 
     public abstract void addPrefs(PrefsHandler handler);
+
+    public abstract void init();
 }
