@@ -38,9 +38,9 @@ It comes with the following main features:
 - Exclusively uses established CLI tools and therefore works out of the box on most systems and doesn't require any additional setup
 - Allows you to customize the launched shell's init environment
 
-#### Simple connection Management
+#### All your connections in one place
 
-- Easily create and manage all kinds of remote connections
+- Easily create and manage all kinds of remote connections at one location
 - Securely stores all information exclusively on your computer and encrypts all secret information
 - Allows you to share connection configurations to any other trusted party through shareable URLs
 
