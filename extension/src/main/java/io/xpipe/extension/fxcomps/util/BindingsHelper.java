@@ -1,10 +1,14 @@
 package io.xpipe.extension.fxcomps.util;
 
+import io.xpipe.extension.util.ThreadHelper;
 import javafx.beans.binding.Binding;
+import javafx.beans.binding.ListBinding;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import lombok.Value;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -14,12 +18,54 @@ import java.util.function.Predicate;
 
 public class BindingsHelper {
 
+    private static final Set<ReferenceEntry> REFERENCES = Collections.newSetFromMap(new ConcurrentHashMap<ReferenceEntry, Boolean>());
+
+    @Value
+    private static class ReferenceEntry {
+
+        WeakReference<?> source;
+        Object target;
+
+        public boolean canGc() {
+            return source.get() == null;
+        }
+    }
+
+    static {
+        ThreadHelper.create("referenceGC", true, () -> {
+                    while (true) {
+                        for (ReferenceEntry reference : REFERENCES) {
+                            if (reference.canGc()) {
+                                REFERENCES.remove(reference);
+                            }
+                        }
+                        ThreadHelper.sleep(1000);
+                    }
+                })
+                .start();
+    }
+
+    public static void linkPersistently(Object source, Object target) {
+        REFERENCES.add(new ReferenceEntry(new WeakReference<>(source), target));
+    }
+
     /*
     TODO: Proper cleanup. Maybe with a separate thread?
      */
     private static final Map<WeakReference<Object>, Set<javafx.beans.Observable>> BINDINGS = new ConcurrentHashMap<>();
 
     public static <T extends Binding<?>> T persist(T binding) {
+        var dependencies = new HashSet<javafx.beans.Observable>();
+        while (dependencies.addAll(binding.getDependencies().stream()
+                                           .map(o -> (javafx.beans.Observable) o)
+                                           .toList())) {
+        }
+        dependencies.add(binding);
+        BINDINGS.put(new WeakReference<>(binding), dependencies);
+        return binding;
+    }
+
+    public static <T extends ListBinding<?>> T persist(T binding) {
         var dependencies = new HashSet<javafx.beans.Observable>();
         while (dependencies.addAll(binding.getDependencies().stream()
                                            .map(o -> (javafx.beans.Observable) o)
@@ -56,6 +102,7 @@ public class BindingsHelper {
         l2.addListener((ListChangeListener<? super V>) c -> {
             runnable.run();
         });
+        linkPersistently(l2, l1);
         return l1;
     }
 
@@ -68,7 +115,12 @@ public class BindingsHelper {
         l2.addListener((ListChangeListener<? super V>) c -> {
             runnable.run();
         });
+        linkPersistently(l2, l1);
         return l1;
+    }
+
+    public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2,Predicate<V> predicate) {
+        return filteredContentBinding(l2, new SimpleObjectProperty<>(predicate));
     }
 
     public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, ObservableValue<Predicate<V>> predicate) {
@@ -83,6 +135,7 @@ public class BindingsHelper {
         predicate.addListener((c,o,n) -> {
             runnable.run();
         });
+        linkPersistently(l2, l1);
         return l1;
     }
 

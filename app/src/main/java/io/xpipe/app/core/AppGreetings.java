@@ -90,6 +90,7 @@ public class AppGreetings {
                                 label.setGraphic(cb);
                                 AppFont.medium(label);
                                 label.setPadding(new Insets(40, 0, 10, 0));
+                                label.setOnMouseClicked(event -> accepted.set(!accepted.get()));
                                 return label;
                             })
                             .createRegion();
