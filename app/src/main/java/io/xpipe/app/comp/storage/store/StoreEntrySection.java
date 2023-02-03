@@ -25,19 +25,15 @@ public class StoreEntrySection implements StorageFilter.Filterable {
     }
 
     public static ObservableList<StoreEntrySection> createTopLevels() {
-        var topLevel = BindingsHelper.mappedContentBinding(
-                StoreViewState.get()
-                        .getAllEntries()
-                        .filtered(storeEntryWrapper ->
-                                !storeEntryWrapper.getEntry().getState().isUsable()
-                                        || storeEntryWrapper
-                                                        .getEntry()
-                                                        .getProvider()
-                                                        .getParent(storeEntryWrapper
-                                                                .getEntry()
-                                                                .getStore())
-                                                == null),
-                storeEntryWrapper -> create(storeEntryWrapper));
+        var filtered = BindingsHelper.filteredContentBinding(
+                StoreViewState.get().getAllEntries(),
+                storeEntryWrapper -> !storeEntryWrapper.getEntry().getState().isUsable()
+                        || storeEntryWrapper
+                                        .getEntry()
+                                        .getProvider()
+                                        .getParent(storeEntryWrapper.getEntry().getStore())
+                                == null);
+        var topLevel = BindingsHelper.mappedContentBinding(filtered, storeEntryWrapper -> create(storeEntryWrapper));
         var ordered = BindingsHelper.orderedContentBinding(
                 topLevel,
                 Comparator.<StoreEntrySection, Instant>comparing(storeEntrySection ->
@@ -51,16 +47,15 @@ public class StoreEntrySection implements StorageFilter.Filterable {
             return new StoreEntrySection(e, FXCollections.observableArrayList());
         }
 
-        var children = BindingsHelper.mappedContentBinding(
-                StoreViewState.get()
-                        .getAllEntries()
-                        .filtered(other -> other.getEntry().getState().isUsable()
-                                && e.getEntry()
-                                        .getStore()
-                                        .equals(other.getEntry()
-                                                .getProvider()
-                                                .getParent(other.getEntry().getStore()))),
-                entry1 -> create(entry1));
+        var filtered = BindingsHelper.filteredContentBinding(
+                StoreViewState.get().getAllEntries(),
+                other -> other.getEntry().getState().isUsable()
+                        && e.getEntry()
+                                .getStore()
+                                .equals(other.getEntry()
+                                        .getProvider()
+                                        .getParent(other.getEntry().getStore())));
+        var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1));
         var ordered = BindingsHelper.orderedContentBinding(
                 children,
                 Comparator.<StoreEntrySection, Instant>comparing(storeEntrySection ->
@@ -94,7 +89,9 @@ public class StoreEntrySection implements StorageFilter.Filterable {
                         storeEntrySection.entry.lastAccessProperty().getValue()));
         var shown = BindingsHelper.filteredContentBinding(
                 all,
-                StoreViewState.get().getFilterString().map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
+                StoreViewState.get()
+                        .getFilterString()
+                        .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListBoxViewComp<>(shown, all, (StoreEntrySection e) -> {
                     return e.comp(false).apply(GrowAugment.create(true, false));
                 })

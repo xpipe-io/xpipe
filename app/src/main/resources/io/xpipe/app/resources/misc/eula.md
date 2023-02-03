@@ -46,15 +46,10 @@ specific information we send, please visit https://xpipe.io/privacy_policy. You 
 1. **Automatic Software Updates.** The Software communicates with its server (and sends information described at the URL
    above) to determine whether there are any patches, bug fixes, updates, upgrades or other modifications to improve the
    Software. You agree that the Software may automatically install any such improvements to the Software on your
-   computer without providing any further notice or receiving any additional consent. This feature may not be disabled.
-   If you do not want to receive automatic updates, you must uninstall the Software.
+   computer without providing any further notice or receiving any additional consent. This feature may be disabled.
 2. **Error Reports.** In order to help us improve the Software, when the Software encounters certain errors, it will
    automatically send some information to its server about the error (as described at the URL above). This feature may
-   not be disabled. If you do not want to send error reports to its server, you must uninstall the Software.
-3. **Anonymized Usage Data.** X-Pipe collects anonymized data about your usage of the Software to help us make it more
-   awesome. Approximately once a day the Software sends such data (as described in more detail at the URL above) to its
-   server. If you do not want to send anonymized usage data to the server, you may opt out by changing your settings in
-   the Preferences view.
+   be disabled.
 
 ### Open-Source Notices
 
