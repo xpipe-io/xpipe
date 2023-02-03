@@ -10,6 +10,8 @@ import io.xpipe.extension.util.ApplicationHelper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Getter
@@ -98,7 +100,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
 
     public static final TerminalType MACOS_TERMINAL = new MacType("proc.macosTerminal", "Terminal");
 
-    public static final TerminalType ITERM2 = new MacType("proc.iterm2", "iTerm2");
+    public static final TerminalType ITERM2 = new ITerm2Type();
 
     public static final TerminalType WARP = new MacType("proc.warp", "Warp");
 
@@ -175,6 +177,39 @@ public abstract class TerminalType implements PrefsChoiceValue {
         @Override
         public boolean isAvailable() {
             return true;
+        }
+    }
+
+    static class ITerm2Type extends TerminalType {
+
+        public ITerm2Type() {
+            super("proc.iterm2");
+        }
+
+        @Override
+        public void launch(String name, String command) throws Exception {
+            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+                var cmd = String.format("""
+                                        osascript - "$@" <<EOF
+                                        on run argv
+                                        tell application "iTerm"
+                                            activate
+                                            set new_term to (create window with profile "Default" command "%s")
+                                        end tell
+                                        end run
+                                        EOF""", command);
+                pc.executeSimpleCommand(cmd);
+            }
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.MAC);
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return Files.exists(Path.of("/Applications/iTerm2.app"));
         }
     }
 
