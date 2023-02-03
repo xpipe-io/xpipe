@@ -54,27 +54,22 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
     }
 
-    public static class LinuxPathApplication extends ExternalApplicationType {
+    public static abstract class PathApplication extends ExternalApplicationType {
 
-        protected final String command;
+        protected final String executable;
 
-        public LinuxPathApplication(String id, String command) {
+        public PathApplication(String id, String executable) {
             super(id);
-            this.command = command;
+            this.executable = executable;
         }
 
         public boolean isAvailable() {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                return pc.executeBooleanSimpleCommand(pc.getShellType().getWhichCommand(command));
+                return pc.executeBooleanSimpleCommand(pc.getShellType().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;
             }
-        }
-
-        @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.LINUX);
         }
     }
 

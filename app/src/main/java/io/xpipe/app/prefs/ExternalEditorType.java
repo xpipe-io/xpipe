@@ -109,7 +109,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     public void launch(Path file) throws Exception;
 
 
-    public static class LinuxPathType extends ExternalApplicationType.LinuxPathApplication implements ExternalEditorType {
+    public static class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
         public LinuxPathType(String id, String command) {
             super(id, command);
@@ -117,8 +117,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws IOException {
-            var list = ShellTypes.getPlatformDefault().executeCommandListWithShell(command + " \"" + file + "\"");
+            var list = ShellTypes.getPlatformDefault().executeCommandListWithShell(executable + " \"" + file + "\"");
             new ProcessBuilder(list).start();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
         }
     }
 
@@ -174,7 +179,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             var env = System.getenv("VISUAL");
             if (env != null) {
                 var found = LINUX_EDITORS.stream()
-                        .filter(externalEditorType -> externalEditorType.command.equalsIgnoreCase(env))
+                        .filter(externalEditorType -> externalEditorType.executable.equalsIgnoreCase(env))
                         .findFirst()
                         .orElse(null);
                 if (found == null) {

@@ -80,12 +80,12 @@ public class App extends Application {
         appWindow.show();
 
         // For demo purposes
-        if (true) {
-            stage.setX(310);
-            stage.setY(178);
-            stage.setWidth(1300);
-            stage.setHeight(730);
-        }
+//        if (true) {
+//            stage.setX(310);
+//            stage.setY(178);
+//            stage.setWidth(1300);
+//            stage.setHeight(730);
+//        }
     }
 
     public void focus() {
