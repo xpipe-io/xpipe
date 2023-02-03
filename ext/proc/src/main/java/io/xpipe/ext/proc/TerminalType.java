@@ -100,6 +100,8 @@ public abstract class TerminalType implements PrefsChoiceValue {
 
     public static final TerminalType ITERM2 = new MacType("proc.iterm2", "iTerm2");
 
+    public static final TerminalType WARP = new MacType("proc.warp", "Warp");
+
     public static final TerminalType CUSTOM = new TerminalType("app.custom") {
 
         @Override
@@ -128,7 +130,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
     public static final List<TerminalType> ALL = List.of(
                     WINDOWS_TERMINAL, POWERSHELL, CMD,
                     KONSOLE, XFCE, GNOME_TERMINAL,
-                    ITERM2, MACOS_TERMINAL,
+                    WARP, ITERM2, MACOS_TERMINAL,
                     CUSTOM)
             .stream()
             .filter(terminalType -> terminalType.isSelectable())
