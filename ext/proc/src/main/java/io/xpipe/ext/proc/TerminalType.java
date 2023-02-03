@@ -102,7 +102,7 @@ public abstract class TerminalType implements PrefsChoiceValue {
 
     public static final TerminalType ITERM2 = new ITerm2Type();
 
-    public static final TerminalType WARP = new MacType("proc.warp", "Warp");
+    public static final TerminalType WARP = new WarpType();
 
     public static final TerminalType CUSTOM = new TerminalType("app.custom") {
 
@@ -130,9 +130,15 @@ public abstract class TerminalType implements PrefsChoiceValue {
     };
 
     public static final List<TerminalType> ALL = List.of(
-                    WINDOWS_TERMINAL, POWERSHELL, CMD,
-                    KONSOLE, XFCE, GNOME_TERMINAL,
-                    WARP, ITERM2, MACOS_TERMINAL,
+                    WINDOWS_TERMINAL,
+                    POWERSHELL,
+                    CMD,
+                    KONSOLE,
+                    XFCE,
+                    GNOME_TERMINAL,
+                    WARP,
+                    ITERM2,
+                    MACOS_TERMINAL,
                     CUSTOM)
             .stream()
             .filter(terminalType -> terminalType.isSelectable())
@@ -140,7 +146,9 @@ public abstract class TerminalType implements PrefsChoiceValue {
 
     public static TerminalType getDefault() {
         return ALL.stream()
-                .filter(terminalType -> terminalType.isAvailable()).findFirst().orElse(null);
+                .filter(terminalType -> terminalType.isAvailable())
+                .findFirst()
+                .orElse(null);
     }
 
     private String id;
@@ -189,7 +197,8 @@ public abstract class TerminalType implements PrefsChoiceValue {
         @Override
         public void launch(String name, String command) throws Exception {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                var cmd = String.format("""
+                var cmd = String.format(
+                        """
                                         osascript - "$@" <<EOF
                                         on run argv
                                         tell application "iTerm"
@@ -197,7 +206,46 @@ public abstract class TerminalType implements PrefsChoiceValue {
                                             set new_term to (create window with profile "Default" command "%s")
                                         end tell
                                         end run
-                                        EOF""", command);
+                                        EOF""",
+                        command);
+                pc.executeSimpleCommand(cmd);
+            }
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.MAC);
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return Files.exists(Path.of("/Applications/iTerm2.app"));
+        }
+    }
+
+    static class WarpType extends TerminalType {
+
+        public WarpType() {
+            super("proc.warp");
+        }
+
+        @Override
+        public void launch(String name, String command) throws Exception {
+            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+                var cmd = String.format(
+                        """
+                                        osascript - "$@" <<EOF
+                                        tell application "Warp" to activate'
+                                        sudo osascript -e 'tell application "System Events" to tell process "Warp" to keystroke "t" using command down'
+                                        sleep 1
+                                        sudo osascript -e 'tell application "System Events"
+                                        tell process "Warp"
+                                        keystroke "%s"
+                                        key code 36
+                                        end tell
+                                        end tell
+                                        EOF""",
+                        command);
                 pc.executeSimpleCommand(cmd);
             }
         }
