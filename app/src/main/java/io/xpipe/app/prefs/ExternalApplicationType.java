@@ -40,7 +40,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
                 try (var c = pc.command(String.format("osascript -e 'POSIX path of (path to application \"%s\")'", applicationName)).start()) {
                     var path = c.readOnlyStdout();
-                    if (!c.waitFor()) {
+                    if (c.getExitCode() != 0) {
                         return Optional.empty();
                     }
                     return Optional.of(Path.of(path));
