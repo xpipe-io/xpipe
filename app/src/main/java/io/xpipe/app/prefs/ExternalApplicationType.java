@@ -36,6 +36,21 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             this.applicationName = applicationName;
         }
 
+        protected Optional<Path> getApplicationPath() {
+            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+                try (var c = pc.command(String.format("osascript -e 'POSIX path of (path to application \"%s\")'", applicationName)).start()) {
+                    var path = c.readOnlyStdout();
+                    if (!c.waitFor()) {
+                        return Optional.empty();
+                    }
+                    return Optional.of(Path.of(path));
+                }
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+                return Optional.empty();
+            }
+        }
+
         @Override
         public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.MAC);
@@ -43,14 +58,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         @Override
         public boolean isAvailable() {
-            try {
-                return ShellStore.local()
-                        .create()
-                        .executeBooleanSimpleCommand(String.format("mdfind -name '%s.app'", applicationName));
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-                return false;
-            }
+            return getApplicationPath().isPresent();
         }
     }
 
