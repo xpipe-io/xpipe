@@ -79,7 +79,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     public static final ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
 
-    public static final ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "VSCode");
+    public static final ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
 
     public static final ExternalEditorType CUSTOM = new ExternalEditorType() {
 
