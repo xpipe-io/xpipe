@@ -26,18 +26,19 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType POWERSHELL = new SimpleType("proc.powershell", "powershell", "PowerShell") {
+    public static final ExternalTerminalType POWERSHELL =
+            new SimpleType("proc.powershell", "powershell", "PowerShell") {
 
-        @Override
-        protected String toCommand(String name, String command) {
-            return "powershell.exe -Command " + command;
-        }
+                @Override
+                protected String toCommand(String name, String command) {
+                    return "powershell.exe -Command " + command;
+                }
 
-        @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.WINDOWS);
-        }
-    };
+                @Override
+                public boolean isSelectable() {
+                    return OsType.getLocal().equals(OsType.WINDOWS);
+                }
+            };
 
     public static final ExternalTerminalType WINDOWS_TERMINAL =
             new SimpleType("proc.windowsTerminal", "wt.exe", "Windows Terminal") {
@@ -93,7 +94,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType MACOS_TERMINAL = new MacOsType();
+    public static final ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
 
     public static final ExternalTerminalType ITERM2 = new ITerm2Type();
 
@@ -125,16 +126,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     public abstract void launch(String name, String command) throws Exception;
 
-    static class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    static class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
-        public MacOsType() {
+        public MacOsTerminalType() {
             super("proc.macosTerminal", "Terminal");
         }
 
         @Override
         public void launch(String name, String command) throws Exception {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                var suffix = command.equals(pc.getShellType().getNormalOpenCommand()) ? "\"\"" : "\"" + command + "\"";
+                var suffix = command.equals(pc.getShellType().getNormalOpenCommand())
+                        ? "\"\""
+                        : "\"" + command.replaceAll("\"", "\\\\\"") + "\"";
                 var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
                 pc.executeSimpleCommand(cmd);
             }
@@ -230,7 +233,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    public abstract static class SimpleType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
+    public abstract static class SimpleType extends ExternalApplicationType.PathApplication
+            implements ExternalTerminalType {
 
         private final String displayName;
 
