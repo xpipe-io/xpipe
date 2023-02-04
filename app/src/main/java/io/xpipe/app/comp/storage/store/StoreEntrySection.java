@@ -83,10 +83,7 @@ public class StoreEntrySection implements StorageFilter.Filterable {
             return new HorizontalComp(topEntryList);
         }
 
-        var all = BindingsHelper.orderedContentBinding(
-                children,
-                Comparator.comparing(storeEntrySection ->
-                        storeEntrySection.entry.lastAccessProperty().getValue()));
+        var all = children;
         var shown = BindingsHelper.filteredContentBinding(
                 all,
                 StoreViewState.get()
