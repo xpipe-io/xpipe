@@ -634,6 +634,11 @@ public class ShellTypes {
     public static class Zsh extends PosixBase {
 
         @Override
+        public String getInitFileOpenCommand(String file) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public String getExecutable() {
             return "/bin/zsh";
         }
