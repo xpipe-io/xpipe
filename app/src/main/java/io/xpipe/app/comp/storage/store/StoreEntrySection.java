@@ -7,6 +7,7 @@ import io.xpipe.extension.fxcomps.augment.GrowAugment;
 import io.xpipe.extension.fxcomps.impl.HorizontalComp;
 import io.xpipe.extension.fxcomps.impl.VerticalComp;
 import io.xpipe.extension.fxcomps.util.BindingsHelper;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.*;
@@ -79,10 +80,6 @@ public class StoreEntrySection implements StorageFilter.Filterable {
         });
         List<Comp<?>> topEntryList = top ? List.of(root) : List.of(icon, root);
 
-        if (children.size() == 0) {
-            return new HorizontalComp(topEntryList);
-        }
-
         var all = children;
         var shown = BindingsHelper.filteredContentBinding(
                 all,
@@ -103,7 +100,8 @@ public class StoreEntrySection implements StorageFilter.Filterable {
         return new VerticalComp(List.of(
                 new HorizontalComp(topEntryList),
                 new HorizontalComp(List.of(spacer, content))
-                        .apply(struc -> struc.get().setFillHeight(true))));
+                        .apply(struc -> struc.get().setFillHeight(true))
+                        .hide(Bindings.size(children).isEqualTo(0))));
     }
 
     @Override

@@ -37,6 +37,13 @@ public class ShellEnvironmentStore extends JacksonizedValue implements MachineSt
     }
 
     @Override
+    public void validate() throws Exception {
+        try (var ignored = create().start()) {
+
+        }
+    }
+
+    @Override
     public ShellProcessControl create() {
         var pc = host.create();
         if (shell != null) {
