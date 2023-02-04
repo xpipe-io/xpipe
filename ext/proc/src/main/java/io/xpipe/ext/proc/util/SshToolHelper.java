@@ -48,7 +48,7 @@ public class SshToolHelper {
             scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellTypes.CMD : ShellTypes.BASH;
         }
 
-        var file = ScriptHelper.createAskPassScript(passwordToUse, parent, scriptType, true);
+        var file = ScriptHelper.createAskPassScript(passwordToUse, parent, scriptType);
         var variables = Map.of(
                 "DISPLAY", "localhost:0.0",
                 "SSH_ASKPASS", file,

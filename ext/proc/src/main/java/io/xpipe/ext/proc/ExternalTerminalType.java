@@ -133,6 +133,22 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
+            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+                var suffix = command.equals(pc.getShellType().getNormalOpenCommand()) ? "\"\"" : "\"" + command + "\"";
+                var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
+                pc.executeSimpleCommand(cmd);
+            }
+        }
+    }
+
+    static class CustomType extends ExternalApplicationType implements ExternalTerminalType {
+
+        public CustomType() {
+            super("proc.custom");
+        }
+
+        @Override
+        public void launch(String name, String command) throws Exception {
             var custom =
                     PrefsProvider.get(ProcPrefs.class).customTerminalCommand().getValue();
             if (custom == null || custom.trim().isEmpty()) {
@@ -148,22 +164,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";
                 }
                 pc.executeSimpleCommand(toExecute);
-            }
-        }
-    }
-
-    static class CustomType extends ExternalApplicationType implements ExternalTerminalType {
-
-        public CustomType() {
-            super("proc.custom");
-        }
-
-        @Override
-        public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                var suffix = command.equals(pc.getShellType().getNormalOpenCommand()) ? "\"\"" : "\"" + command + "\"";
-                var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
-                pc.executeSimpleCommand(cmd);
             }
         }
 
@@ -194,9 +194,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                             activate
                                             set new_term to (create window with profile "Default" command "%s")
                                         end tell
-                                        end run
                                         EOF""",
-                        command);
+                        command.replaceAll("\"", "\\\\\""));
                 pc.executeSimpleCommand(cmd);
             }
         }
@@ -225,7 +224,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                  end tell
                                  EOF
                                          """,
-                        command);
+                        command.replaceAll("\"", "\\\\\""));
                 pc.executeSimpleCommand(cmd);
             }
         }

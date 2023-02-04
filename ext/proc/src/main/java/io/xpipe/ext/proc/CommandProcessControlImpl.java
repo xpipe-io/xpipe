@@ -153,7 +153,7 @@ public class CommandProcessControlImpl extends ProcessControlImpl implements Com
         var baseCommand = command.apply(parent);
         var createExecScript = complex || baseCommand.contains("\n");
         if (createExecScript) {
-            var script = ScriptHelper.createExecScript(parent, baseCommand, true);
+            var script = ScriptHelper.createExecScript(parent, baseCommand);
             baseCommand = "\"" + script + "\"";
         }
 

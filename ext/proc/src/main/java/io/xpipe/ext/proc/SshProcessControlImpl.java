@@ -71,7 +71,7 @@ public class SshProcessControlImpl extends ShellProcessControlImpl {
         String script = null;
         if (content != null) {
             try (var pc = start()) {
-                script = ScriptHelper.createExecScript(pc, content, false);
+                script = ScriptHelper.createExecScript(pc, content);
             }
         }
 

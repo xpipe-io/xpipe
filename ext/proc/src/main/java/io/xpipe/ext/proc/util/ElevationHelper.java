@@ -20,7 +20,7 @@ public class ElevationHelper {
             return c;
         }
 
-        var file = ScriptHelper.createAskPassScript(parent.getElevationPassword(), parent, parent.getShellType(), true);
+        var file = ScriptHelper.createAskPassScript(parent.getElevationPassword(), parent, parent.getShellType());
         return "SUDO_ASKPASS=\"" + file + "\" sudo -k -p \"\" -A -- "
                 + parent.getShellType().executeCommandWithShell(command);
     }
@@ -42,7 +42,7 @@ public class ElevationHelper {
             scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellTypes.CMD : ShellTypes.BASH;
         }
 
-        var file = ScriptHelper.createAskPassScript(parent.getElevationPassword(), parent, scriptType, true);
+        var file = ScriptHelper.createAskPassScript(parent.getElevationPassword(), parent, scriptType);
         var cmd = "SUDO_ASKPASS=\"" + file + "\" sudo -k -p \"\" -A -- " + command;
 
         return cmd;

@@ -160,7 +160,7 @@ public class AppInstaller {
                                 "/qb"));
                 var start = ShellTypes.getPlatformDefault().flatten(List.of("start", "\"\"", exec));
                 var command = installer + "\r\n" + start;
-                var script = ScriptHelper.createExecScript(shellProcessControl, command, true);
+                var script = ScriptHelper.createExecScript(shellProcessControl, command);
                 shellProcessControl.executeSimpleCommand("start /min " + script);
             }
         }
