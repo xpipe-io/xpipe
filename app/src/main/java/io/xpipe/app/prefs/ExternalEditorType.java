@@ -71,7 +71,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            ApplicationHelper.executeLocalApplication(List.of("open", "-a", applicationName, file.toString()));
+            ApplicationHelper.executeLocalApplication(List.of("open", "-a", getApplicationPath().orElseThrow().toString(), file.toString()));
         }
     }
 
