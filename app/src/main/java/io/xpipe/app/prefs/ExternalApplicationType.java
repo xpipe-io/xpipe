@@ -38,7 +38,11 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         protected Optional<Path> getApplicationPath() {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                try (var c = pc.command(String.format("osascript -e 'POSIX path of (path to application \"%s\")'", applicationName)).start()) {
+                try (var c = pc.command(String.format(
+                        "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister " +
+                                "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|/Volumes/%s\" | uniq)'",
+                                applicationName, applicationName))
+                        .start()) {
                     var path = c.readOnlyStdout();
                     if (c.getExitCode() != 0) {
                         return Optional.empty();
