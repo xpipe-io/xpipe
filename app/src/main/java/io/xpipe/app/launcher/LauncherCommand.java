@@ -11,6 +11,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.extension.util.ThreadHelper;
 import picocli.CommandLine;
 
 import java.awt.*;
@@ -74,6 +75,14 @@ public class LauncherCommand implements Callable<Integer> {
                 if (inputs.size() > 0) {
                     con.performSimpleExchange(
                             OpenExchange.Request.builder().arguments(inputs).build());
+                }
+
+                if (OsType.getLocal().equals(OsType.MAC)) {
+                    Desktop.getDesktop().setOpenURIHandler(e -> {
+                        con.performSimpleExchange(
+                                OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                    });
+                    ThreadHelper.sleep(1000);
                 }
             }
             TrackEvent.info("Another instance is already running on this port. Quitting ...");

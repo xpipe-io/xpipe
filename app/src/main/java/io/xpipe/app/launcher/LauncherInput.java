@@ -5,6 +5,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.event.ErrorEvent;
+import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.util.ActionProvider;
 import lombok.Getter;
 import lombok.Value;
@@ -20,6 +21,8 @@ import java.util.List;
 public abstract class LauncherInput {
 
     public static void handle(List<String> arguments) {
+        TrackEvent.withDebug("launcher", "Handling arguments").elements(arguments).handle();
+
         var all = new ArrayList<ActionProvider.Action>();
         arguments.forEach(s -> {
             try {
