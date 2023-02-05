@@ -5,9 +5,9 @@ import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
+import io.xpipe.extension.util.ActionProvider;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -29,7 +29,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final Property<DataStoreEntry.State> state = new SimpleObjectProperty<>();
     private final StringProperty information = new SimpleStringProperty();
     private final StringProperty summary = new SimpleStringProperty();
-    private final Map<DataStoreActionProvider<?>, ObservableBooleanValue> actionProviders;
+    private final Map<ActionProvider, ObservableBooleanValue> actionProviders;
     private final BooleanProperty editable = new SimpleBooleanProperty();
     private final BooleanProperty renamable = new SimpleBooleanProperty();
     private final BooleanProperty refreshable = new SimpleBooleanProperty();
@@ -40,10 +40,10 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
         this.actionProviders = new LinkedHashMap<>();
-        DataStoreActionProvider.ALL.stream()
+        ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
-                            && dataStoreActionProvider
+                            && dataStoreActionProvider.getDataStoreCallSite() != null && dataStoreActionProvider.getDataStoreCallSite()
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
@@ -54,7 +54,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                                     return false;
                                 }
 
-                                return dataStoreActionProvider.isApplicable(
+                                return dataStoreActionProvider.getDataStoreCallSite().isApplicable(
                                         entry.getStore().asNeeded());
                             },
                             disabledProperty(),

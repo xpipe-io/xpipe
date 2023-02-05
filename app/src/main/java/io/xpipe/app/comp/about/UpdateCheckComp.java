@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.about;
 
-import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.grid.AppUpdater;
 import io.xpipe.app.util.Hyperlinks;
@@ -101,7 +101,7 @@ public class UpdateCheckComp extends SimpleComp {
                             }
 
                             if (updateAvailable.getValue()) {
-                                return AppDistributionType.get().supportsUpdate()
+                                return XPipeDistributionType.get().supportsUpdate()
                                         ? I18n.get("downloadUpdate")
                                         : I18n.get("checkOutUpdate");
                             } else {
@@ -134,7 +134,7 @@ public class UpdateCheckComp extends SimpleComp {
                 return;
             }
 
-            if (updateAvailable.getValue() && !AppDistributionType.get().supportsUpdate()) {
+            if (updateAvailable.getValue() && !XPipeDistributionType.get().supportsUpdate()) {
                 Hyperlinks.open(
                         AppUpdater.get().getLastUpdateCheckResult().getValue().getReleaseUrl());
             } else if (updateAvailable.getValue()) {

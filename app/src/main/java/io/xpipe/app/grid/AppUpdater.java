@@ -1,7 +1,7 @@
 package io.xpipe.app.grid;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -54,7 +54,7 @@ public class AppUpdater {
                         .equals(AppProperties.get().getVersion())) {
             downloadedUpdate.setValue(null);
         }
-        if (!AppDistributionType.get().supportsUpdate()) {
+        if (!XPipeDistributionType.get().supportsUpdate()) {
             downloadedUpdate.setValue(null);
         }
 
@@ -124,8 +124,8 @@ public class AppUpdater {
 
         INSTANCE = new AppUpdater();
 
-        if (AppDistributionType.get().supportsUpdate()
-                && AppDistributionType.get() != AppDistributionType.DEVELOPMENT) {
+        if (XPipeDistributionType.get().supportsUpdate()
+                && XPipeDistributionType.get() != XPipeDistributionType.DEVELOPMENT) {
             ThreadHelper.create("updater", true, () -> {
                         ThreadHelper.sleep(Duration.ofMinutes(10).toMillis());
                         event("Starting background updater thread");
@@ -182,7 +182,7 @@ public class AppUpdater {
             return;
         }
 
-        if (!AppDistributionType.get().supportsUpdate()) {
+        if (!XPipeDistributionType.get().supportsUpdate()) {
             return;
         }
 

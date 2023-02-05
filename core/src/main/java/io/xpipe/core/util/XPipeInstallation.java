@@ -177,6 +177,31 @@ public class XPipeInstallation {
         }
     }
 
+    public static Path getLocalDefaultInstallationIcon() {
+        Path path = getLocalInstallationBasePath();
+
+        // Check for development environment
+        if (!ModuleHelper.isImage()) {
+            if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                return path.resolve("dist").resolve("logo").resolve("logo.ico");
+            } else if (OsType.getLocal().equals(OsType.LINUX)) {
+                return path.resolve("dist").resolve("logo").resolve("logo.png");
+            } else {
+                return path.resolve("dist").resolve("logo").resolve("logo.icns");
+            }
+        }
+
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            return path.resolve("app").resolve("logo.ico");
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return path.resolve("logo.png");
+        } else {
+            return path.resolve("Contents")
+                    .resolve("Resources")
+                    .resolve("logo.icns");
+        }
+    }
+
     public static String getLocalDefaultInstallationBasePath(boolean acceptCustomHome) {
         var customHome = System.getenv("XPIPE_HOME");
         if (customHome != null && !customHome.isEmpty() && acceptCustomHome) {
