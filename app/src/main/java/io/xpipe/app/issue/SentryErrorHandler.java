@@ -4,7 +4,7 @@ import io.sentry.*;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
@@ -22,7 +22,7 @@ public class SentryErrorHandler {
                 options.setEnableUncaughtExceptionHandler(false);
                 options.setAttachServerName(false);
                 // options.setDebug(true);
-                options.setDist(AppDistributionType.get().getName());
+                options.setDist(XPipeDistributionType.get().getName());
                 options.setRelease(AppProperties.get().getVersion());
                 options.setEnableShutdownHook(false);
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());

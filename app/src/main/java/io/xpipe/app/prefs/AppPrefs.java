@@ -8,7 +8,7 @@ import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import com.dlsc.preferencesfx.util.VisibilityProperty;
-import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.extension.event.ErrorEvent;
@@ -116,9 +116,9 @@ public class AppPrefs {
     // Automatically update
     // ====================
     private final BooleanProperty automaticallyUpdate =
-            typed(new SimpleBooleanProperty(AppDistributionType.get().supportsUpdate()), Boolean.class);
+            typed(new SimpleBooleanProperty(XPipeDistributionType.get().supportsUpdate()), Boolean.class);
     private final BooleanField automaticallyUpdateField = BooleanField.ofBooleanType(automaticallyUpdate)
-            .editable(AppDistributionType.get().supportsUpdate())
+            .editable(XPipeDistributionType.get().supportsUpdate())
             .render(() -> new ToggleControl());
     private final BooleanProperty updateToPrereleases = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
