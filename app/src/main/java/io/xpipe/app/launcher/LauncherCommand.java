@@ -7,11 +7,13 @@ import io.xpipe.app.issue.BasicErrorHandler;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.exchange.FocusExchange;
 import io.xpipe.beacon.exchange.OpenExchange;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import picocli.CommandLine;
 
+import java.awt.*;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -107,6 +109,14 @@ public class LauncherCommand implements Callable<Integer> {
         checkStart();
         OperationMode.switchTo(OperationMode.map(getEffectiveMode()));
         LauncherInput.handle(inputs);
+
+        // URL open operations have to be handled in a special way on macOS!
+        if (OsType.getLocal().equals(OsType.MAC)) {
+            Desktop.getDesktop().setOpenURIHandler(e -> {
+                LauncherInput.handle(List.of(e.getURI().toString()));
+            });
+        }
+
         return 0;
     }
 }
