@@ -38,7 +38,7 @@ public class DesktopShortcuts {
                         Categories=Utility;Development;Office;
                         """,
                 name, target, icon.toString());
-        var file = Path.of("~/Desktop/" + name + ".desktop").toRealPath();
+        var file = Path.of(System.getProperty("user.home") + "/Desktop/" + name + ".desktop");
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
     }
@@ -51,7 +51,7 @@ public class DesktopShortcuts {
                         open %s
                         """,
                 target);
-        var file = Path.of("~/Desktop/" + name + ".command").toRealPath();
+        var file = Path.of(System.getProperty("user.home") + "/Desktop/" + name + ".command").toRealPath();
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
 
