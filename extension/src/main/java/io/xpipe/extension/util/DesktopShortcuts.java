@@ -68,7 +68,18 @@ public class DesktopShortcuts {
                        Rez -append $rsrc -o $iconDestination
                         """,
                 icon, target);
-        ShellStore.local().create().executeSimpleCommand(iconScriptContent);
+        
+        try (var pc = ShellStore.local().create().start()) {
+            var base = System.getProperty("user.home") + "/Desktop/" + name;
+                    pc.executeSimpleCommand(pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/MacOS")));
+
+            var executable = base + "/Contents/MacOS/" + name + ".sh";
+            pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand(content, executable));
+            pc.executeSimpleCommand(pc.getShellType().getMakeExecutableCommand(executable));
+
+            pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand("APPL??", base + "/PkgInfo"));
+            pc.executeSimpleCommand(iconScriptContent);
+        }
     }
 
     public static void create(String target, String name) throws Exception {
