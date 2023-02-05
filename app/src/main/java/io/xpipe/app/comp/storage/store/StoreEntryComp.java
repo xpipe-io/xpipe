@@ -163,7 +163,7 @@ public class StoreEntryComp extends SimpleComp {
     private Comp<?> createButtonBar() {
         var list = new ArrayList<Comp<?>>();
         for (var p : entry.getActionProviders().entrySet()) {
-            var actionProvider = p.getKey();
+            var actionProvider = p.getKey().getDataStoreCallSite();
             if (!actionProvider.isMajor()) {
                 continue;
             }
@@ -171,7 +171,8 @@ public class StoreEntryComp extends SimpleComp {
             var button = new IconButtonComp(
                     actionProvider.getIcon(entry.getEntry().getStore().asNeeded()), () -> {
                         ThreadHelper.runFailableAsync(() -> {
-                            actionProvider.execute(entry.getEntry().getStore().asNeeded());
+                            var action = actionProvider.createAction(entry.getEntry().getStore().asNeeded());
+                            action.execute();
                         });
                     });
             button.apply(new FancyTooltipAugment<>(
@@ -216,7 +217,7 @@ public class StoreEntryComp extends SimpleComp {
         AppFont.normal(contextMenu.getStyleableNode());
 
         for (var p : entry.getActionProviders().entrySet()) {
-            var actionProvider = p.getKey();
+            var actionProvider = p.getKey().getDataStoreCallSite();
             if (actionProvider.isMajor()) {
                 continue;
             }
@@ -226,7 +227,8 @@ public class StoreEntryComp extends SimpleComp {
             var item = new MenuItem(null, new FontIcon(icon));
             item.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
-                    actionProvider.execute(entry.getEntry().getStore().asNeeded());
+                    var action = actionProvider.createAction(entry.getEntry().getStore().asNeeded());
+                    action.execute();
                 });
             });
             item.textProperty().bind(name);

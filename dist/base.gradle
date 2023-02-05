@@ -22,6 +22,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$distDir/jpackage/xpiped"
                 into "$distDir/base/app"
             }
+            copy {
+                from "$projectDir/logo/logo.ico"
+                into "$distDir/base/app"
+            }
 
             file("$distDir/base/app/xpiped.exe").writable = true
             exec {
@@ -86,7 +90,12 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$distDir/jpackage/xpiped"
                 into "$distDir/base/app"
             }
+            copy {
+                from "$projectDir/logo/logo.png"
+                into "$distDir/base/"
+            }
 
+            // Fixes a JPackage bug
             copy {
                 from "$distDir/base/app/lib/app/xpiped.cfg"
                 into "$distDir/base/app"
@@ -134,6 +143,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             copy {
                 from "$distDir/jpackage/xpiped.app/Contents"
                 into "$distDir/X-Pipe.app/Contents/"
+            }
+            copy {
+                from "$projectDir/logo/logo.icns"
+                into "$distDir/X-Pipe.app/Contents/Resources/"
             }
             copy {
                 from "$distDir/cli/xpipe"

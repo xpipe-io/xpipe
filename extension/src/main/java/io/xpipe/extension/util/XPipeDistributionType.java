@@ -1,11 +1,13 @@
-package io.xpipe.app.core;
+package io.xpipe.extension.util;
 
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.extension.event.TrackEvent;
 
-public interface AppDistributionType {
+public interface XPipeDistributionType {
 
-    AppDistributionType DEVELOPMENT = new AppDistributionType() {
+    XPipeDistributionType DEVELOPMENT = new XPipeDistributionType() {
 
         @Override
         public boolean supportsUpdate() {
@@ -18,11 +20,17 @@ public interface AppDistributionType {
         }
 
         @Override
+        public boolean supportsURLs() {
+            // Enabled for testing
+            return true;
+        }
+
+        @Override
         public String getName() {
             return "development";
         }
     };
-    AppDistributionType PORTABLE = new AppDistributionType() {
+    XPipeDistributionType PORTABLE = new XPipeDistributionType() {
 
         @Override
         public boolean supportsUpdate() {
@@ -33,11 +41,16 @@ public interface AppDistributionType {
         public void performUpdateAction() {}
 
         @Override
+        public boolean supportsURLs() {
+            return OsType.getLocal().equals(OsType.MAC);
+        }
+
+        @Override
         public String getName() {
             return "portable";
         }
     };
-    AppDistributionType INSTALLATION = new AppDistributionType() {
+    XPipeDistributionType INSTALLATION = new XPipeDistributionType() {
 
         @Override
         public boolean supportsUpdate() {
@@ -50,13 +63,18 @@ public interface AppDistributionType {
         }
 
         @Override
+        public boolean supportsURLs() {
+            return true;
+        }
+
+        @Override
         public String getName() {
             return "install";
         }
     };
 
-    static AppDistributionType get() {
-        if (!AppProperties.get().isImage()) {
+    static XPipeDistributionType get() {
+        if (!ModuleHelper.isImage()) {
             return DEVELOPMENT;
         }
 
@@ -70,6 +88,8 @@ public interface AppDistributionType {
     boolean supportsUpdate();
 
     void performUpdateAction();
+
+    boolean supportsURLs();
 
     String getName();
 }
