@@ -45,39 +45,37 @@ public class DesktopShortcuts {
 
     private static void createMacOSShortcut(String target, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
+        var base = System.getProperty("user.home") + "/Desktop/" + name + ".app";
         var content = String.format(
                 """
                         #!/bin/bash
                         open %s
                         """,
                 target);
-        var file = Path.of(System.getProperty("user.home") + "/Desktop/" + name + ".command").toRealPath();
-        Files.writeString(file, content);
-        file.toFile().setExecutable(true);
-
         var iconScriptContent = String.format(
                 """
-                       iconSource="%s"
-                       iconDestination="%s"
-                       icon=/tmp/`basename $iconSource`
-                       rsrc=/tmp/icon.rsrc
-                       cp $iconSource $icon
-                       sips -i $icon
-                       DeRez -only icns $icon > $rsrc
-                       SetFile -a C $iconDestination
-                       Rez -append $rsrc -o $iconDestination
-                        """,
-                icon, target);
+                        iconSource="%s"
+                        iconDestination="%s"
+                        icon=/tmp/`basename $iconSource`
+                        rsrc=/tmp/icon.rsrc
+                        cp "$iconSource" "$icon"
+                        sips -i "$icon"
+                        DeRez -only icns "$icon" > "$rsrc"
+                        SetFile -a C "$iconDestination"
+                        touch $iconDestination/$'Icon\\r'
+                        Rez -append $rsrc -o $iconDestination/Icon?
+                        SetFile -a V $iconDestination/Icon?
+                         """,
+                icon, base);
         
         try (var pc = ShellStore.local().create().start()) {
-            var base = System.getProperty("user.home") + "/Desktop/" + name;
                     pc.executeSimpleCommand(pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/MacOS")));
 
-            var executable = base + "/Contents/MacOS/" + name + ".sh";
+            var executable = base + "/Contents/MacOS/" + name;
             pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand(content, executable));
-            pc.executeSimpleCommand(pc.getShellType().getMakeExecutableCommand(executable));
+            pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
 
-            pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand("APPL??", base + "/PkgInfo"));
+            pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand("APPL????", base + "/PkgInfo"));
             pc.executeSimpleCommand(iconScriptContent);
         }
     }
