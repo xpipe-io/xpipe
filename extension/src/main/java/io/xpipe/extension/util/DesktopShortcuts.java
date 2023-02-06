@@ -56,6 +56,8 @@ public class DesktopShortcuts {
         try (var pc = ShellStore.local().create().start()) {
             pc.executeSimpleCommand(
                     pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/MacOS")));
+            pc.executeSimpleCommand(
+                    pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/Resources")));
 
             var executable = base + "/Contents/MacOS/" + name;
             pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand(content, executable));
