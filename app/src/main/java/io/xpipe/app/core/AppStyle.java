@@ -146,8 +146,8 @@ public class AppStyle {
     @AllArgsConstructor
     @Getter
     public enum Theme implements PrefsChoiceValue {
-        LIGHT("light"),
-        DARK("dark");
+        LIGHT("light");
+        // DARK("dark");
 
         private final String id;
 
