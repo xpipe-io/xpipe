@@ -52,41 +52,27 @@ public class DesktopShortcuts {
                         open %s
                         """,
                 target);
-        var iconScriptContent = String.format(
-                """
-                        iconSource="%s"
-                        iconDestination="%s"
-                        icon=/tmp/`basename $iconSource`
-                        rsrc=/tmp/icon.rsrc
-                        cp "$iconSource" "$icon"
-                        sips -i "$icon"
-                        DeRez -only icns "$icon" > "$rsrc"
-                        SetFile -a C "$iconDestination"
-                        touch $iconDestination/$'Icon\\r'
-                        Rez -append $rsrc -o $iconDestination/Icon?
-                        SetFile -a V $iconDestination/Icon?
-                         """,
-                icon, base);
-        
+
         try (var pc = ShellStore.local().create().start()) {
-                    pc.executeSimpleCommand(pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/MacOS")));
+            pc.executeSimpleCommand(
+                    pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/MacOS")));
 
             var executable = base + "/Contents/MacOS/" + name;
             pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand(content, executable));
             pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
 
             pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand("APPL????", base + "/PkgInfo"));
-            pc.executeSimpleCommand(iconScriptContent);
+            pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/" + name + ".icns\"");
         }
     }
 
     public static void create(String target, String name) throws Exception {
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
-             createWindowsShortcut(target, name);
+            createWindowsShortcut(target, name);
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-             createLinuxShortcut(target, name);
+            createLinuxShortcut(target, name);
         } else {
-             createMacOSShortcut(target, name);
+            createMacOSShortcut(target, name);
         }
     }
 }
