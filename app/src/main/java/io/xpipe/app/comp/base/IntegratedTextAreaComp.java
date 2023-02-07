@@ -18,11 +18,13 @@ public class IntegratedTextAreaComp extends SimpleComp {
     private final Property<String> value;
     private final boolean lazy;
     private final String identifier;
+    private final String fileType;
 
-    public IntegratedTextAreaComp(Property<String> value, boolean lazy, String identifier) {
+    public IntegratedTextAreaComp(Property<String> value, boolean lazy, String identifier, String fileType) {
         this.value = value;
         this.lazy = lazy;
         this.identifier = identifier;
+        this.fileType = fileType;
     }
 
     @Override
@@ -44,7 +46,7 @@ public class IntegratedTextAreaComp extends SimpleComp {
 
     private Region createOpenButton(Region container) {
         var button = new IconButtonComp("mdal-edit", () -> EditorState.get()
-                .startEditing(identifier, this, value.getValue(), (s) -> {
+                .startEditing(identifier, fileType, this, value.getValue(), (s) -> {
                     Platform.runLater(() -> value.setValue(s));
                 })).createRegion();
         return button;

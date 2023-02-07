@@ -1,5 +1,6 @@
 package io.xpipe.app.grid;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.util.HttpHelper;
@@ -81,6 +82,12 @@ public class AppDownloads {
     public static Optional<GHRelease> getLatestSuitableRelease() {
         try {
             var repo = getRepository();
+
+            // Always choose most up-to-date release as we assume that there are only full releases and prereleases
+            if (AppPrefs.get().updateToPrereleases().get()) {
+                return Optional.ofNullable(repo.listReleases().iterator().next());
+            }
+
             return Optional.ofNullable(repo.getLatestRelease());
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).omit().handle();

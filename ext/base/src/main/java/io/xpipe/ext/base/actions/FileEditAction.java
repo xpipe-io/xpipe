@@ -36,7 +36,7 @@ public class FileEditAction implements DataStoreActionProvider<FileStore> {
             EditorState.get().openInEditor(store.getFile());
         } else {
             EditorState.get()
-                    .startEditing(store.getFileName(), store, () -> store.openInput(), () -> store.openOutput());
+                    .startEditing(store.getFileName(), store.getFileExtension(), store, () -> store.openInput(), () -> store.openOutput());
         }
     }
 }
