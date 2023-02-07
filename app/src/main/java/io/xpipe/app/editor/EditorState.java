@@ -124,6 +124,7 @@ public class EditorState {
 
     public void startEditing(
             String keyName,
+            String fileType,
             Object key,
             String input,
             Consumer<String> output) {
@@ -132,7 +133,7 @@ public class EditorState {
         }
 
         String s = input;
-        startEditing(keyName, key, () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), () -> new ByteArrayOutputStream(s.length()) {
+        startEditing(keyName, fileType, key, () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), () -> new ByteArrayOutputStream(s.length()) {
             @Override
             public void close() throws IOException {
                 super.close();
@@ -143,6 +144,7 @@ public class EditorState {
 
     public void startEditing(
             String keyName,
+            String fileType,
             Object key,
             Charsetter.FailableSupplier<InputStream, Exception> input,
             Charsetter.FailableSupplier<OutputStream, Exception> output) {
@@ -152,7 +154,7 @@ public class EditorState {
             return;
         }
 
-        var name = keyName + " - " + UUID.randomUUID().toString().substring(0, 6) + ".txt";
+        var name = keyName + " - " + UUID.randomUUID().toString().substring(0, 6) + "." + (fileType != null ? fileType : "txt");
         Path file = TEMP.resolve(name);
         try {
             FileUtils.forceMkdirParent(file.toFile());
