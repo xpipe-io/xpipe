@@ -8,7 +8,6 @@ import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import com.dlsc.preferencesfx.util.VisibilityProperty;
-import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.extension.event.ErrorEvent;
@@ -16,6 +15,7 @@ import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
 import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.prefs.PrefsHandler;
 import io.xpipe.extension.prefs.PrefsProvider;
+import io.xpipe.extension.util.XPipeDistributionType;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
@@ -114,14 +114,17 @@ public class AppPrefs {
     private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
             Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
                     .render(() -> new TranslatableComboBoxControl<>());
+
     // Automatically update
     // ====================
     private final BooleanProperty automaticallyUpdate =
             typed(new SimpleBooleanProperty(XPipeDistributionType.get().supportsUpdate()), Boolean.class);
-    private final BooleanField automaticallyUpdateField = BooleanField.ofBooleanType(automaticallyUpdate)
-            .editable(XPipeDistributionType.get().supportsUpdate())
-            .render(() -> new ToggleControl());
-    private final BooleanProperty updateToPrereleases = typed(new SimpleBooleanProperty(true), Boolean.class);
+    private final BooleanField automaticallyUpdateField =
+            BooleanField.ofBooleanType(automaticallyUpdate).render(() -> new ToggleControl());
+    private final BooleanProperty updateToPrereleases = typed(new SimpleBooleanProperty(false), Boolean.class);
+    private final BooleanField updateToPrereleasesField =
+            BooleanField.ofBooleanType(updateToPrereleases).render(() -> new ToggleControl());
+
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
 
     // External startup behaviour
@@ -383,11 +386,20 @@ public class AppPrefs {
                                 Setting.of(
                                         "externalStartupBehaviour",
                                         externalStartupBehaviourControl,
-                                        externalStartupBehaviour),
+                                        externalStartupBehaviour
+                                ),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour),
-                                Setting.of("automaticallyUpdate", automaticallyUpdateField, automaticallyUpdate),
+                                Setting.of("automaticallyUpdate", automaticallyUpdateField, automaticallyUpdate)
+                                        .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
+                                                XPipeDistributionType.get().supportsUpdate()))),
+                                Setting.of("updateToPrereleases", updateToPrereleasesField, updateToPrereleases)
+                                        .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
+                                                XPipeDistributionType.get().supportsUpdate()))),
                                 Setting.of("storageDirectory", storageDirectoryControl, internalStorageDirectory),
-                                Setting.of("logLevel", logLevelField, internalLogLevel))),
+                                Setting.of("logLevel", logLevelField, internalLogLevel),
+                                Setting.of("developerMode", developerModeField, internalDeveloperMode)
+                        )
+                ),
                 Category.of(
                         "appearance",
                         Group.of(
@@ -396,8 +408,10 @@ public class AppPrefs {
                                 Setting.of("theme", themeControl, themeInternal),
                                 Setting.of("useSystemFont", useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
-                                Setting.of("fontSize", fontSizeInternal, fontSizeMin, fontSizeMax)),
-                        Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
+                                Setting.of("fontSize", fontSizeInternal, fontSizeMin, fontSizeMax)
+                        ),
+                        Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))
+                ),
                 Category.of(
                         "integrations",
                         Group.of(
@@ -410,30 +424,41 @@ public class AppPrefs {
                                         "editorReloadTimeout",
                                         editorReloadTimeout,
                                         editorReloadTimeoutMin,
-                                        editorReloadTimeoutMax))),
+                                        editorReloadTimeoutMax
+                                )
+                        )
+                ),
                 Category.of(
                         "developer",
-                        Setting.of("developerMode", developerModeField, internalDeveloperMode),
                         Setting.of(
                                 "developerDisableUpdateVersionCheck",
                                 developerDisableUpdateVersionCheckField,
-                                developerDisableUpdateVersionCheck),
+                                developerDisableUpdateVersionCheck
+                        ),
                         Setting.of(
                                 "developerDisableGuiRestrictions",
                                 developerDisableGuiRestrictionsField,
-                                developerDisableGuiRestrictions),
+                                developerDisableGuiRestrictions
+                        ),
                         Setting.of(
                                 "developerDisableConnectorInstallationVersionCheck",
                                 developerDisableConnectorInstallationVersionCheckField,
-                                developerDisableConnectorInstallationVersionCheck),
+                                developerDisableConnectorInstallationVersionCheck
+                        ),
                         Setting.of(
                                 "developerShowHiddenEntries",
                                 developerShowHiddenEntriesField,
-                                developerShowHiddenEntries),
+                                developerShowHiddenEntries
+                        ),
                         Setting.of(
                                 "developerShowHiddenProviders",
                                 developerShowHiddenProvidersField,
-                                developerShowHiddenProviders))));
+                                developerShowHiddenProviders
+                        )
+                )
+        ));
+
+        categories.get(categories.size() - 1).setVisibilityProperty(VisibilityProperty.of(developerMode()));
 
         var handler = new PrefsHandlerImpl(categories);
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(handler));

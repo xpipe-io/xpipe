@@ -1,7 +1,7 @@
 task copyRuntimeLibs(type: Copy) {
     into project.jar.destinationDirectory
     from configurations.runtimeClasspath
-    exclude "${project.name}.jar"
+    exclude "${project.name}.jar", "${project.name.substring(0, project.name.length() - 1)}.jar"
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)

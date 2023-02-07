@@ -34,7 +34,7 @@ It comes with the following main features:
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
 - Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and database shells (e.g. PSQL Shell)
-- Comes with integrations for all commonly used terminals in Windows and Linux
+- Comes with integrations for all commonly used terminals for all operating systems
 - Exclusively uses established CLI tools and therefore works out of the box on most systems and doesn't require any additional setup
 - Allows you to customize the launched shell's init environment
 
@@ -42,7 +42,8 @@ It comes with the following main features:
 
 - Easily create and manage all kinds of remote connections at one location
 - Securely stores all information exclusively on your computer and encrypts all secret information
-- Allows you to share connection configurations to any other trusted party through shareable URLs
+- Share connection configurations to any other trusted party through shareable URLs
+- Create desktop shortcuts to open your connections
 
 <img src="https://user-images.githubusercontent.com/72509152/213240153-3f742f03-1289-44c3-bf4d-626d9886ffcf.png" alt="drawing" height="450"/>
 
