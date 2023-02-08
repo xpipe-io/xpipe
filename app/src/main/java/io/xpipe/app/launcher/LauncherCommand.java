@@ -77,7 +77,7 @@ public class LauncherCommand implements Callable<Integer> {
                             OpenExchange.Request.builder().arguments(inputs).build());
                 }
 
-                if (OsType.getLocal().equals(OsType.MAC)) {
+                if (OsType.getLocal().equals(OsType.MACOS)) {
                     Desktop.getDesktop().setOpenURIHandler(e -> {
                         con.performSimpleExchange(
                                 OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
@@ -120,7 +120,7 @@ public class LauncherCommand implements Callable<Integer> {
         LauncherInput.handle(inputs);
 
         // URL open operations have to be handled in a special way on macOS!
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             Desktop.getDesktop().setOpenURIHandler(e -> {
                 LauncherInput.handle(List.of(e.getURI().toString()));
             });

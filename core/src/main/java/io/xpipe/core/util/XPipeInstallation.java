@@ -20,7 +20,7 @@ public class XPipeInstallation {
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + installationBase + "/app/bin/xpiped\" --mode " + mode.getDisplayName() + suffix
                     + " & disown";
-        } else if (OsType.getLocal().equals(OsType.MAC)) {
+        } else if (OsType.getLocal().equals(OsType.MACOS)) {
             return "open \"" + installationBase + "\" --args --mode " + mode.getDisplayName() + suffix;
         }
 
@@ -55,7 +55,7 @@ public class XPipeInstallation {
 
     public static boolean isInstallationDistribution() {
         var base = getLocalInstallationBasePath();
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             if (!base.toString().equals(getLocalDefaultInstallationBasePath(false))) {
                 return false;
             }
@@ -93,13 +93,13 @@ public class XPipeInstallation {
 
     public static Path getLocalExtensionsDirectory() {
         Path path = getLocalInstallationBasePath();
-        return OsType.getLocal().equals(OsType.MAC)
+        return OsType.getLocal().equals(OsType.MACOS)
                 ? path.resolve("Contents").resolve("Resources").resolve("extensions")
                 : path.resolve("app").resolve("extensions");
     }
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             return executable
                     .getParent()
                     .getParent()
@@ -115,7 +115,7 @@ public class XPipeInstallation {
     }
 
     private static Path getLocalInstallationBasePathForDaemonExecutable(Path executable) {
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             return executable.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return executable.getParent().getParent().getParent();
@@ -138,7 +138,7 @@ public class XPipeInstallation {
             return defaultInstallation;
         }
 
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             return FileNames.getParent(FileNames.getParent(FileNames.getParent(cliExecutable)));
         } else {
             return FileNames.getParent(FileNames.getParent(cliExecutable));

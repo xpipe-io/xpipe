@@ -6,10 +6,13 @@ import lombok.NonNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface ShellProcessControl extends ProcessControl {
+
+    void onInit(Consumer<ShellProcessControl> pc);
 
     String prepareTerminalOpen() throws Exception;
 

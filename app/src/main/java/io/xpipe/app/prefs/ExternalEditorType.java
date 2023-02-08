@@ -5,7 +5,6 @@ import io.xpipe.core.process.ShellTypes;
 import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.util.ApplicationHelper;
 import io.xpipe.extension.util.WindowsRegistry;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -38,13 +37,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         protected Optional<Path> determinePath() {
-            Optional<String> launcherDir = Optional.empty();
-            if (SystemUtils.IS_OS_WINDOWS) {
-                launcherDir = WindowsRegistry.readString(
-                                WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null)
-                        .map(p -> p + "\\notepad++.exe");
-            }
-
+            Optional<String> launcherDir;
+            launcherDir = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null)
+                    .map(p -> p + "\\notepad++.exe");
             return launcherDir.map(Path::of);
         }
     };
@@ -71,7 +66,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            ApplicationHelper.executeLocalApplication(List.of("open", "-a", getApplicationPath().orElseThrow().toString(), file.toString()));
+            ApplicationHelper.executeLocalApplication(
+                    List.of("open", "-a", getApplicationPath().orElseThrow().toString(), file.toString()));
         }
     }
 
@@ -92,7 +88,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
             var format = customCommand.contains("$file") ? customCommand : customCommand + " $file";
             var fileString = file.toString().contains(" ") ? "\"" + file + "\"" : file.toString();
-            ApplicationHelper.executeLocalApplication(format.replace("$file",fileString));
+            ApplicationHelper.executeLocalApplication(format.replace("$file", fileString));
         }
 
         @Override
@@ -107,7 +103,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     public void launch(Path file) throws Exception;
-
 
     public static class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
@@ -127,7 +122,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    public abstract static class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType implements ExternalEditorType {
+    public abstract static class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
+            implements ExternalEditorType {
 
         public WindowsFullPathType(String id) {
             super(id);
@@ -147,23 +143,23 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     public static final List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
     public static final List<LinuxPathType> LINUX_EDITORS =
             List.of(VSCODE_LINUX, NOTEPADPLUSPLUS_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
-    public static final List<ExternalEditorType> MACOS_EDITORS =
-            List.of(VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+    public static final List<ExternalEditorType> MACOS_EDITORS = List.of(VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
     public static final List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
-        var all = new ArrayList<ExternalEditorType>();
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            all.addAll(WINDOWS_EDITORS);
-        }
-        if (OsType.getLocal().equals(OsType.LINUX)) {
-            all.addAll(LINUX_EDITORS);
-        }
-        if (OsType.getLocal().equals(OsType.MAC)) {
-            all.addAll(MACOS_EDITORS);
-        }
-        all.add(CUSTOM);
-        return all;
-    }).get();
+                var all = new ArrayList<ExternalEditorType>();
+                if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                    all.addAll(WINDOWS_EDITORS);
+                }
+                if (OsType.getLocal().equals(OsType.LINUX)) {
+                    all.addAll(LINUX_EDITORS);
+                }
+                if (OsType.getLocal().equals(OsType.MACOS)) {
+                    all.addAll(MACOS_EDITORS);
+                }
+                all.add(CUSTOM);
+                return all;
+            })
+            .get();
 
     public static void detectDefault() {
         var typeProperty = AppPrefs.get().externalEditor;
@@ -190,13 +186,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 }
             } else {
                 typeProperty.set(LINUX_EDITORS.stream()
-                                         .filter(externalEditorType -> externalEditorType.isAvailable())
-                                         .findFirst()
-                                         .orElse(null));
+                        .filter(externalEditorType -> externalEditorType.isAvailable())
+                        .findFirst()
+                        .orElse(null));
             }
         }
 
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             typeProperty.set(MACOS_EDITORS.stream()
                     .filter(externalEditorType -> externalEditorType.isAvailable())
                     .findFirst()

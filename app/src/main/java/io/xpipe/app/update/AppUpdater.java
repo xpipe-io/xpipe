@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.impl.ProcessControlProvider;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.XPipeSession;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;

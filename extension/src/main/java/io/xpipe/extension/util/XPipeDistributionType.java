@@ -42,7 +42,7 @@ public interface XPipeDistributionType {
 
         @Override
         public boolean supportsURLs() {
-            return OsType.getLocal().equals(OsType.MAC);
+            return OsType.getLocal().equals(OsType.MACOS);
         }
 
         @Override
