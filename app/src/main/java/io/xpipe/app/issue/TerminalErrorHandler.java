@@ -3,7 +3,7 @@ package io.xpipe.app.issue;
 import io.sentry.Sentry;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.grid.AppUpdater;
+import io.xpipe.app.update.AppUpdater;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.ErrorEvent;
 import javafx.application.Platform;

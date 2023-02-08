@@ -118,6 +118,6 @@ public class JavaTarget implements DataSourceTarget {
 
     @Override
     public String getSetupGuideURL() {
-        return "https://docs.xpipe.io/en/latest/api/java.html";
+        return "https://xpipe.io/docs/en/latest/api/java.html";
     }
 }

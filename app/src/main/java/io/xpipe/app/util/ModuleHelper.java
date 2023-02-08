@@ -1,37 +1,11 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.Translatable;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import lombok.SneakyThrows;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ModuleHelper {
-
-    @SneakyThrows
-    public static String getCallerModuleName() {
-        var callers = CallingClass.INSTANCE.getCallingClasses();
-        for (Class<?> caller : callers) {
-            if (caller.equals(CallingClass.class)
-                    || caller.equals(ModuleHelper.class)
-                    || caller.equals(AppI18n.class)
-                    || caller.equals(I18n.class)
-                    || caller.equals(FancyTooltipAugment.class)
-                    || caller.equals(PrefsChoiceValue.class)
-                    || caller.equals(Translatable.class)
-                    || caller.equals(DynamicOptionsBuilder.class)) {
-                continue;
-            }
-            var split = caller.getModule().getName().split("\\.");
-            return split[split.length - 1];
-        }
-        return "";
-    }
 
     public static boolean isImage() {
         return ModuleHelper.class

@@ -2,7 +2,7 @@ package io.xpipe.app.comp.about;
 
 import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.grid.AppUpdater;
+import io.xpipe.app.update.AppUpdater;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.fxcomps.SimpleComp;

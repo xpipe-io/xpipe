@@ -2,8 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppWindowHelper;
-import io.xpipe.app.grid.AppDownloads;
-import io.xpipe.app.grid.AppInstaller;
+import io.xpipe.app.update.AppDownloads;
+import io.xpipe.app.update.AppInstaller;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellProcessControl;

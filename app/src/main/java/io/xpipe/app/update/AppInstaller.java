@@ -1,10 +1,10 @@
-package io.xpipe.app.grid;
+package io.xpipe.app.update;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.TerminalProvider;
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalProcessControlProvider;
 import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
@@ -196,8 +196,7 @@ public class AppInstaller {
                 var command = "set -x\n" + "DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe\n"
                         + "DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy \"" + file + "\"\n"
                         + "xpipe daemon start";
-                var script = ScriptHelper.createLocalExecScript(command);
-                LocalProcessControlProvider.get().openInTerminal("X-Pipe Updater", script);
+                TerminalProvider.open("X-Pipe Updater", command);
             }
         }
 
@@ -223,8 +222,7 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var command = "set -x\n" + "sudo rpm -U -v --force \"" + file + "\"\n" + "xpipe daemon start";
-                var script = ScriptHelper.createLocalExecScript(command);
-                LocalProcessControlProvider.get().openInTerminal("X-Pipe Updater", script);
+                TerminalProvider.open("X-Pipe Updater", command);
             }
         }
 
@@ -250,8 +248,7 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var command = "set -x\n" + "sudo installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /\n" + "xpipe daemon start";
-                var script = ScriptHelper.createLocalExecScript(command);
-                LocalProcessControlProvider.get().openInTerminal("X-Pipe Updater", script);
+                TerminalProvider.open("X-Pipe Updater", command);
             }
         }
     }

@@ -1,4 +1,4 @@
-package io.xpipe.extension.util;
+package io.xpipe.extension.test;
 
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.XPipeSession;

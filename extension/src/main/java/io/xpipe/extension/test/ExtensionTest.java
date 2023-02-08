@@ -1,4 +1,4 @@
-package io.xpipe.extension.util;
+package io.xpipe.extension.test;
 
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.impl.FileStore;

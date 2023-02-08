@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.editor.EditorState;
+import io.xpipe.app.util.ExternalEditor;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import io.xpipe.extension.fxcomps.impl.IconButtonComp;
@@ -45,7 +45,7 @@ public class IntegratedTextAreaComp extends SimpleComp {
     }
 
     private Region createOpenButton(Region container) {
-        var button = new IconButtonComp("mdal-edit", () -> EditorState.get()
+        var button = new IconButtonComp("mdal-edit", () -> ExternalEditor.get()
                 .startEditing(identifier, fileType, this, value.getValue(), (s) -> {
                     Platform.runLater(() -> value.setValue(s));
                 })).createRegion();

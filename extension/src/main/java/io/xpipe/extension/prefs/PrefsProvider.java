@@ -1,6 +1,7 @@
 package io.xpipe.extension.prefs;
 
 import com.dlsc.formsfx.model.structure.Field;
+import io.xpipe.extension.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableBooleanValue;
 
 import java.util.ServiceLoader;
@@ -11,11 +12,23 @@ public abstract class PrefsProvider {
 
     private static Set<PrefsProvider> ALL;
 
-    public static void init(ModuleLayer layer) {
-        if (ALL == null) {
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
             ALL = ServiceLoader.load(layer, PrefsProvider.class).stream()
                     .map(ServiceLoader.Provider::get)
                     .collect(Collectors.toSet());
+        }
+
+        @Override
+        public boolean requiresFullDaemon() {
+            return true;
+        }
+
+        @Override
+        public boolean prioritizeLoading() {
+            return false;
         }
     }
 

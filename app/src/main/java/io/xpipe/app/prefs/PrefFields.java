@@ -11,7 +11,7 @@ import javafx.util.StringConverter;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class Fields {
+public class PrefFields {
 
     public static StringField ofPath(ObjectProperty<Path> fileProperty) {
         StringProperty stringProperty = new SimpleStringProperty();

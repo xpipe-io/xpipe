@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.util.ConfigHelper;
+import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
@@ -32,7 +32,7 @@ public class JsonStorageHandler implements StorageHandler {
 
     private JsonNode getContent(String key) {
         if (content == null) {
-            content = (ObjectNode) ConfigHelper.readConfig(file);
+            content = (ObjectNode) JsonConfigHelper.readConfig(file);
         }
         return content.get(key);
     }
@@ -42,7 +42,7 @@ public class JsonStorageHandler implements StorageHandler {
     }
 
     void save() {
-        ConfigHelper.writeConfig(file, content);
+        JsonConfigHelper.writeConfig(file, content);
     }
 
     @Override
