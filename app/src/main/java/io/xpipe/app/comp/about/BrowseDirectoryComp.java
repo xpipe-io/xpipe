@@ -9,7 +9,7 @@ import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.DesktopHelper;
 import javafx.scene.layout.Region;
 
 public class BrowseDirectoryComp extends SimpleComp {
@@ -36,13 +36,13 @@ public class BrowseDirectoryComp extends SimpleComp {
                 .addComp(
                         "logFiles",
                         new ButtonComp(I18n.observable("openLogsDirectory"), () -> {
-                            OsHelper.browsePath(AppLogs.get().getSessionLogsDirectory());
+                            DesktopHelper.browsePath(AppLogs.get().getSessionLogsDirectory());
                         }),
                         null)
                 .addComp(
                         "installationFiles",
                         new ButtonComp(I18n.observable("openInstallationDirectory"), () -> {
-                            OsHelper.browsePath(XPipeInstallation.getLocalInstallationBasePath());
+                            DesktopHelper.browsePath(XPipeInstallation.getLocalInstallationBasePath());
                         }),
                         null)
                 .build();

@@ -4,7 +4,7 @@ import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.DesktopHelper;
 import javafx.beans.value.ObservableValue;
 
 import java.nio.file.Files;
@@ -34,6 +34,6 @@ public class FileBrowseAction implements DataStoreActionProvider<FileStore> {
 
     @Override
     public void execute(FileStore store) throws Exception {
-        OsHelper.browseFileInDirectory(Path.of(store.getFile()));
+        DesktopHelper.browseFileInDirectory(Path.of(store.getFile()));
     }
 }

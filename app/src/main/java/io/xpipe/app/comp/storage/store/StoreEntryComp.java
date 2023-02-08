@@ -19,7 +19,7 @@ import io.xpipe.extension.fxcomps.impl.IconButtonComp;
 import io.xpipe.extension.fxcomps.impl.PrettyImageComp;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
 import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.DesktopHelper;
 import io.xpipe.extension.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -245,7 +245,7 @@ public class StoreEntryComp extends SimpleComp {
 
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(I18n.get("browse"), new FontIcon("mdi2f-folder-open-outline"));
-            browse.setOnAction(event -> OsHelper.browsePath(entry.getEntry().getDirectory()));
+            browse.setOnAction(event -> DesktopHelper.browsePath(entry.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
         }
 
