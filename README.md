@@ -84,8 +84,22 @@ The other modules make up the X-Pipe implementation and are licensed under GPL:
 - [app](app) - Contains the X-Pipe daemon implementation and the X-Pipe desktop application code
 - [cli](cli) - The X-Pipe CLI implementation, a GraalVM native image application
 - [dist](dist) - Tools to create a distributable package of X-Pipe
-- [ext](ext) - Available X-Pipe extensions. Note that essentially every feature is implemented as an extension
+- [ext](ext) - Available X-Pipe extensions. Essentially every feature is implemented as an extension
 
+### Open source model
+
+X-Pipe utilizes an open core model, which essentially means that
+the main application core is open source while certain other components are not.
+In this case these non open source components are planned to be future parts of a potential commercialization.
+Furthermore, some tests and especially test environments and that run on private servers
+are also not included in this repository (Don't want to leak server information).
+Finally, scripts and workflows to create signed executables and installers
+are also not included to prevent attackers from easily impersonating the shipping the X-Pipe application malware.
+
+The license model is chosen in such a way that you are
+able to use and integrate X-Pipe within your application through the MIT-licensed API.
+In any other case where you plan to contribute to the X-Pipe platform itself, which is GPL licensed,
+I would still have to figure out how to exactly handle these kinds of contributions.
 
 ## Development
 

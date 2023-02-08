@@ -1,16 +1,14 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.core.util.XPipeTempDirectory;
+import io.xpipe.core.util.XPipeSession;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,44 +20,7 @@ public class StandardStorage extends DataStorage {
     private DataSourceCollection recovery;
 
     private boolean isNewSession() {
-        try {
-            if (SystemUtils.IS_OS_WINDOWS) {
-                var sessionFile = dir.resolve("session");
-                if (!Files.exists(sessionFile)) {
-                    return true;
-                }
-
-                var lastSessionEndTime = Instant.parse(Files.readString(sessionFile));
-                var pf = Path.of("C:\\pagefile.sys");
-                var lastBootTime = Files.getLastModifiedTime(pf).toInstant();
-                return lastSessionEndTime.isBefore(lastBootTime);
-            } else {
-                var sessionFile = XPipeTempDirectory.getLocal().resolve("xpipe_session");
-                return !Files.exists(sessionFile);
-            }
-
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-            return true;
-        }
-    }
-
-    private void writeSessionInfo() {
-        try {
-            if (SystemUtils.IS_OS_WINDOWS) {
-                var sessionFile = dir.resolve("session");
-                var now = Instant.now().toString();
-                Files.writeString(sessionFile, now);
-            } else {
-                var sessionFile = XPipeTempDirectory.getLocal().resolve("xpipe_session");
-                if (!Files.exists(sessionFile)) {
-                    Files.createFile(sessionFile);
-                }
-            }
-
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-        }
+        return XPipeSession.get().isNewSystemSession();
     }
 
     private void deleteLeftovers() {
@@ -322,8 +283,6 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
-
-        writeSessionInfo();
     }
 
     @Override

@@ -63,7 +63,7 @@ public class AppInstaller {
             return Files.exists(Path.of("/etc/debian_version")) ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
         }
 
-        if (OsType.getLocal().equals(OsType.MAC)) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             return new InstallerAssetType.Pkg();
         }
 
@@ -82,7 +82,7 @@ public class AppInstaller {
             }
         }
 
-        if (p.getOsType().equals(OsType.MAC)) {
+        if (p.getOsType().equals(OsType.MACOS)) {
             return new InstallerAssetType.Pkg();
         }
 

@@ -7,12 +7,12 @@ public interface OsType {
 
     Windows WINDOWS = new Windows();
     Linux LINUX = new Linux();
-    Mac MAC = new Mac();
+    MacOs MACOS = new MacOs();
 
     public static OsType getLocal() {
         String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((osName.contains("mac")) || (osName.contains("darwin"))) {
-            return MAC;
+            return MACOS;
         } else if (osName.contains("win")) {
             return WINDOWS;
         } else if (osName.contains("nux")) {
@@ -124,7 +124,7 @@ public interface OsType {
         }
     }
 
-    static class Mac implements OsType {
+    static class MacOs implements OsType {
 
         @Override
         public String getTempDirectory(ShellProcessControl pc) throws Exception {

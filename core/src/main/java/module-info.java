@@ -1,4 +1,4 @@
-import io.xpipe.core.impl.ProcessControlProvider;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.util.CoreJacksonModule;
 

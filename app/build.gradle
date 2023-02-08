@@ -89,7 +89,7 @@ List<String> jvmRunArgs = [
         "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.extension",
         "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
         "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
-        "--add-opens", "java.base/java.lang=io.xpipe.app",
+        "--add-opens", "java.base/java.lang=io.xpipe.core",
         "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
         "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.extension",
         "-Xmx8g",
