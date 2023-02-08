@@ -33,12 +33,15 @@ public class SourceEntryContextMenu<S extends CompStructure<?>> extends PopupMen
         AppFont.normal(cm.getStyleableNode());
 
         for (var actionProvider : entry.getActionProviders()) {
-            var name = actionProvider.getName(entry.getEntry().getSource().asNeeded());
-            var icon = actionProvider.getIcon(entry.getEntry().getSource().asNeeded());
+            var c = actionProvider.getDataSourceCallSite();
+            var name = c.getName(entry.getEntry().getSource().asNeeded());
+            var icon = c.getIcon(entry.getEntry().getSource().asNeeded());
             var item = new MenuItem(null, new FontIcon(icon));
             item.setOnAction(event -> {
+                event.consume();
                 try {
-                    actionProvider.execute(entry.getEntry().getSource().asNeeded());
+                    var action = c.createAction(entry.getEntry().getSource().asNeeded());
+                    action.execute();
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }

@@ -1,4 +1,4 @@
-package io.xpipe.extension.util;
+package io.xpipe.extension.test;
 
 import io.xpipe.api.DataSource;
 import io.xpipe.beacon.BeaconDaemonController;

@@ -1,4 +1,4 @@
-package io.xpipe.app.grid;
+package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.extension.I18n;

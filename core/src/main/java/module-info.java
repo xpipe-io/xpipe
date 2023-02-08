@@ -1,4 +1,4 @@
-import io.xpipe.core.impl.LocalProcessControlProvider;
+import io.xpipe.core.impl.ProcessControlProvider;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.util.CoreJacksonModule;
 
@@ -24,7 +24,7 @@ open module io.xpipe.core {
 
     uses com.fasterxml.jackson.databind.Module;
     uses io.xpipe.core.source.WriteMode;
-    uses LocalProcessControlProvider;
+    uses ProcessControlProvider;
     uses io.xpipe.core.util.ProxyProvider;
     uses io.xpipe.core.util.ProxyManagerProvider;
     uses io.xpipe.core.util.DataStateProvider;

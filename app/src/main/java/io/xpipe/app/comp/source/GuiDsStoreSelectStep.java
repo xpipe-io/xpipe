@@ -3,7 +3,6 @@ package io.xpipe.app.comp.source;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.comp.source.store.DsDbStoreChooserComp;
 import io.xpipe.app.comp.source.store.DsStreamStoreChoiceComp;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.extension.DataSourceProvider;
@@ -42,7 +41,7 @@ public class GuiDsStoreSelectStep extends MultiStepComp.Step<CompStructure<? ext
             DataSourceProvider.Category category,
             ObjectProperty<? extends DataSource<?>> baseSource,
             BooleanProperty loading) {
-        super(Hyperlinks.openLink(Hyperlinks.DOCS_DATA_INPUT));
+        super(null);
         this.parent = parent;
         this.provider = provider;
         this.input = input;

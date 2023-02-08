@@ -57,7 +57,7 @@ public class CommandLineTarget implements DataSourceTarget {
 
     @Override
     public String getSetupGuideURL() {
-        return "https://docs.xpipe.io/en/latest/guide/cli/index.html";
+        return "https://xpipe.io/docs/en/latest/guide/cli/index.html";
     }
 
     @Override

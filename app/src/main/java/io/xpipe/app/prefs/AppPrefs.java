@@ -16,6 +16,7 @@ import io.xpipe.extension.prefs.PrefsChoiceValue;
 import io.xpipe.extension.prefs.PrefsHandler;
 import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.XPipeDistributionType;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
@@ -25,6 +26,24 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class AppPrefs {
+
+    private  static ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
+        return Bindings.createBooleanBinding(
+                () -> {
+                    return AppPrefs.get().developerMode().getValue() || o.get();
+                },
+                o,
+                AppPrefs.get().developerMode());
+    }
+
+    private  static ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
+        return Bindings.createBooleanBinding(
+                () -> {
+                    return !AppPrefs.get().developerMode().getValue() || o.get();
+                },
+                o,
+                AppPrefs.get().developerMode());
+    }
 
     private static final int tooltipDelayMin = 0;
     private static final int tooltipDelayMax = 1500;
@@ -134,7 +153,7 @@ public class AppPrefs {
     private final ObjectProperty<Path> effectiveStorageDirectory = STORAGE_DIR_FIXED
             ? new SimpleObjectProperty<>(AppProperties.get().getDataDir().resolve("storage"))
             : internalStorageDirectory;
-    private final StringField storageDirectoryControl = Fields.ofPath(effectiveStorageDirectory)
+    private final StringField storageDirectoryControl = PrefFields.ofPath(effectiveStorageDirectory)
             .editable(!STORAGE_DIR_FIXED)
             .validate(
                     CustomValidators.absolutePath(),
@@ -230,24 +249,24 @@ public class AppPrefs {
         return effectiveDeveloperMode;
     }
 
-    public ReadOnlyBooleanProperty developerDisableUpdateVersionCheck() {
-        return developerDisableUpdateVersionCheck;
+    public ObservableBooleanValue developerDisableUpdateVersionCheck() {
+        return bindDeveloperTrue(developerDisableUpdateVersionCheck);
     }
 
-    public ReadOnlyBooleanProperty developerDisableGuiRestrictions() {
-        return developerDisableGuiRestrictions;
+    public ObservableBooleanValue developerDisableGuiRestrictions() {
+        return bindDeveloperTrue(developerDisableGuiRestrictions);
     }
 
-    public ReadOnlyBooleanProperty developerDisableConnectorInstallationVersionCheck() {
-        return developerDisableConnectorInstallationVersionCheck;
+    public ObservableBooleanValue developerDisableConnectorInstallationVersionCheck() {
+        return bindDeveloperTrue(developerDisableConnectorInstallationVersionCheck);
     }
 
-    public ReadOnlyBooleanProperty developerShowHiddenProviders() {
-        return developerShowHiddenProviders;
+    public ObservableBooleanValue developerShowHiddenProviders() {
+        return bindDeveloperTrue(developerShowHiddenProviders);
     }
 
-    public ReadOnlyBooleanProperty developerShowHiddenEntries() {
-        return developerShowHiddenEntries;
+    public ObservableBooleanValue developerShowHiddenEntries() {
+        return bindDeveloperTrue(developerShowHiddenEntries);
     }
 
     private AppPreferencesFx preferencesFx;

@@ -15,13 +15,13 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ConfigHelper {
+public class JsonConfigHelper {
 
     public static JsonNode readConfig(Path in) {
         JsonNode node = JsonNodeFactory.instance.objectNode();
         try {
             if (Files.exists(in)) {
-                ObjectMapper o = JacksonMapper.newMapper();
+                ObjectMapper o = JacksonMapper.getDefault();
                 node = o.readTree(Files.readAllBytes(in));
             }
         } catch (IOException e) {
@@ -41,7 +41,7 @@ public class ConfigHelper {
         var writer = new StringWriter();
         JsonFactory f = new JsonFactory();
         try (JsonGenerator g = f.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
-            JacksonMapper.newMapper().writeTree(g, node);
+            JacksonMapper.getDefault().writeTree(g, node);
             var newContent = writer.toString();
             Files.writeString(out, newContent);
         } catch (IOException e) {

@@ -1,7 +1,7 @@
 package io.xpipe.app.exchange.cli;
 
 import io.xpipe.app.exchange.MessageExchangeImpl;
-import io.xpipe.app.storage.XPipeInstanceHelper;
+import io.xpipe.app.update.XPipeInstanceHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.cli.InstanceExchange;
 import io.xpipe.core.impl.LocalStore;

@@ -1,4 +1,4 @@
-package io.xpipe.app.grid;
+package io.xpipe.app.update;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.extension.event.ErrorEvent;

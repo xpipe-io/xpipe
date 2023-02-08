@@ -27,8 +27,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.prefs;
     exports io.xpipe.app.comp.source.store;
     exports io.xpipe.app.storage;
-    exports io.xpipe.app.editor;
-    exports io.xpipe.app.grid;
+    exports io.xpipe.app.update;
     exports io.xpipe.app.comp.storage;
     exports io.xpipe.app.comp.storage.collection;
 
@@ -98,6 +97,7 @@ open module io.xpipe.app {
     requires jdk.jdwp.agent;
 
     uses MessageExchangeImpl;
+    uses io.xpipe.app.util.TerminalProvider;
 
     provides DataStateProvider with
             DataStateProviderImpl;

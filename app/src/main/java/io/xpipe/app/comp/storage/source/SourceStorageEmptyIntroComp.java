@@ -45,9 +45,9 @@ public class SourceStorageEmptyIntroComp extends SimpleComp {
         documentation.heightProperty().addListener((c, o, n) -> {
             dfi.iconSizeProperty().set(n.intValue());
         });
-        var docLink = new Hyperlink(Hyperlinks.DOCS_GETTING_STARTED);
+        var docLink = new Hyperlink(Hyperlinks.DOCUMENTATION);
         docLink.setOnAction(e -> {
-            Hyperlinks.open(Hyperlinks.DOCS_GETTING_STARTED);
+            Hyperlinks.open(Hyperlinks.DOCUMENTATION);
         });
         var docLinkPane = new StackPane(docLink);
         docLinkPane.setAlignment(Pos.CENTER);
