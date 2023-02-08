@@ -5,7 +5,7 @@ import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.TextSource;
-import io.xpipe.extension.util.DaemonExtensionTest;
+import io.xpipe.extension.test.DaemonExtensionTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

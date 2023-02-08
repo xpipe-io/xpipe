@@ -1,4 +1,4 @@
-package io.xpipe.app.editor;
+package io.xpipe.app.util;
 
 import io.xpipe.app.core.FileWatchManager;
 import io.xpipe.app.prefs.AppPrefs;
@@ -22,14 +22,14 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
-public class EditorState {
+public class ExternalEditor {
 
     private static final Path TEMP =
             FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("editor");
-    private static EditorState INSTANCE;
+    private static ExternalEditor INSTANCE;
     private final Set<Entry> openEntries = new CopyOnWriteArraySet<>();
 
-    public static EditorState get() {
+    public static ExternalEditor get() {
         return INSTANCE;
     }
 
@@ -42,7 +42,7 @@ public class EditorState {
     }
 
     public static void init() {
-        INSTANCE = new EditorState();
+        INSTANCE = new ExternalEditor();
         try {
             FileUtils.forceMkdir(TEMP.toFile());
 

@@ -4,11 +4,16 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.ModuleHelper;
 import io.xpipe.extension.I18n;
+import io.xpipe.extension.Translatable;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.extension.prefs.PrefsChoiceValue;
+import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.value.ObservableValue;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -89,11 +94,31 @@ public class AppI18n implements I18n {
         prettyTime = null;
     }
 
+    @SneakyThrows
+    private  static String getCallerModuleName() {
+        var callers = ModuleHelper.CallingClass.INSTANCE.getCallingClasses();
+        for (Class<?> caller : callers) {
+            if (caller.equals(ModuleHelper.CallingClass.class)
+                    || caller.equals(ModuleHelper.class)
+                    || caller.equals(AppI18n.class)
+                    || caller.equals(I18n.class)
+                    || caller.equals(FancyTooltipAugment.class)
+                    || caller.equals(PrefsChoiceValue.class)
+                    || caller.equals(Translatable.class)
+                    || caller.equals(DynamicOptionsBuilder.class)) {
+                continue;
+            }
+            var split = caller.getModule().getName().split("\\.");
+            return split[split.length - 1];
+        }
+        return "";
+    }
+
     @Override
     public String getKey(String s) {
         var key = s;
         if (!s.contains(".")) {
-            key = ModuleHelper.getCallerModuleName() + "." + s;
+            key = getCallerModuleName() + "." + s;
         }
         return key;
     }

@@ -2,7 +2,7 @@ package io.xpipe.app.comp.about;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.editor.EditorState;
+import io.xpipe.app.util.ExternalEditor;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.extension.I18n;
@@ -30,7 +30,7 @@ public class BrowseDirectoryComp extends SimpleComp {
                 .addComp(
                         "logFile",
                         new ButtonComp(I18n.observable("openCurrentLogFile"), () -> {
-                            EditorState.get().openInEditor(AppLogs.get().getSessionLogsDirectory().resolve("xpipe.log").toString());
+                            ExternalEditor.get().openInEditor(AppLogs.get().getSessionLogsDirectory().resolve("xpipe.log").toString());
                         }),
                         null)
                 .addComp(

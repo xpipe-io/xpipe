@@ -1,6 +1,6 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.grid.UpdateChangelogAlert;
+import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.issue.ErrorHandler;

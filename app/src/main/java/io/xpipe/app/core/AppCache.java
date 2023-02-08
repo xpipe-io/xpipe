@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.util.ConfigHelper;
+import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.extension.Cache;
 import io.xpipe.extension.event.ErrorEvent;
@@ -49,7 +49,7 @@ public class AppCache implements Cache {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
-                var tree = ConfigHelper.readConfig(path);
+                var tree = JsonConfigHelper.readConfig(path);
                 if (tree.isMissingNode()) {
                     return notPresent.get();
                 }
@@ -69,7 +69,7 @@ public class AppCache implements Cache {
         try {
             FileUtils.forceMkdirParent(path.toFile());
             var tree = JacksonMapper.newMapper().valueToTree(val);
-            ConfigHelper.writeConfig(path, tree);
+            JsonConfigHelper.writeConfig(path, tree);
         } catch (Exception e) {
             ErrorEvent.fromThrowable("Could not parse cached data for key " + key, e)
                     .omitted(true)

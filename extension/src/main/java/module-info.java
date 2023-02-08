@@ -2,6 +2,7 @@ import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.extension.DataSourceProvider;
 import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.DataSourceTarget;
+import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.ActionProvider;
 import io.xpipe.extension.util.ModuleLayerLoader;
 import io.xpipe.extension.util.XPipeDaemon;
@@ -51,10 +52,9 @@ open module io.xpipe.extension {
     uses io.xpipe.extension.DataStoreProvider;
     uses XPipeDaemon;
     uses io.xpipe.extension.Cache;
-    uses io.xpipe.extension.DataSourceActionProvider;
     uses ProxyFunction;
     uses ActionProvider;
     uses io.xpipe.extension.util.ModuleLayerLoader;
 
-    provides ModuleLayerLoader with DataSourceTarget.Loader;
+    provides ModuleLayerLoader with DataSourceTarget.Loader, ActionProvider.Loader, PrefsProvider.Loader;
 }

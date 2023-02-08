@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.actions;
 
-import io.xpipe.app.editor.EditorState;
+import io.xpipe.app.util.ExternalEditor;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.DataFlow;
@@ -33,9 +33,9 @@ public class FileEditAction implements DataStoreActionProvider<FileStore> {
     @Override
     public void execute(FileStore store) throws Exception {
         if (store.getFileSystem().equals(new LocalStore())) {
-            EditorState.get().openInEditor(store.getFile());
+            ExternalEditor.get().openInEditor(store.getFile());
         } else {
-            EditorState.get()
+            ExternalEditor.get()
                     .startEditing(store.getFileName(), store.getFileExtension(), store, () -> store.openInput(), () -> store.openOutput());
         }
     }

@@ -31,6 +31,11 @@ public interface DataSourceTarget {
         public boolean requiresFullDaemon() {
             return true;
         }
+
+        @Override
+        public boolean prioritizeLoading() {
+            return false;
+        }
     }
 
     public static Optional<DataSourceTarget> byId(String id) {

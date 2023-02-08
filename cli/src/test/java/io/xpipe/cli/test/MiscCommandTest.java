@@ -1,6 +1,6 @@
 package io.xpipe.cli.test;
 
-import io.xpipe.extension.util.DaemonExtensionTest;
+import io.xpipe.extension.test.DaemonExtensionTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -3,7 +3,7 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
-import io.xpipe.app.grid.UpdateAvailableAlert;
+import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.util.ThreadHelper;
 import javafx.application.Application;

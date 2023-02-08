@@ -1,6 +1,6 @@
 package io.xpipe.cli.test;
 
-import io.xpipe.extension.util.ExtensionTest;
+import io.xpipe.extension.test.ExtensionTest;
 import lombok.Getter;
 
 import java.nio.file.Path;

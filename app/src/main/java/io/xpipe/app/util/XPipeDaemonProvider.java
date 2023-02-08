@@ -7,7 +7,7 @@ import io.xpipe.app.comp.source.store.NamedStoreChoiceComp;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.grid.AppDownloads;
+import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.charsetter.Charsetter;

@@ -1,4 +1,4 @@
-package io.xpipe.app.grid;
+package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.extension.util.XPipeDistributionType;
@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.impl.LocalProcessControlProvider;
+import io.xpipe.core.impl.ProcessControlProvider;
 import io.xpipe.core.util.XPipeSession;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
@@ -112,7 +112,7 @@ public class AppUpdater {
         if (layer == null) {
             return;
         }
-        LocalProcessControlProvider.init(layer);
+        ProcessControlProvider.init(layer);
 
         INSTANCE = new AppUpdater();
     }
