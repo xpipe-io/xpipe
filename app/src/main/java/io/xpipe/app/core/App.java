@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
 import io.xpipe.app.comp.AppLayoutComp;
+import io.xpipe.core.process.OsType;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
@@ -10,7 +11,6 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.SystemUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -38,7 +38,7 @@ public class App extends Application {
 
         // Set dock icon explicitly on mac
         // This is necessary in case X-Pipe was started through a script as it will have no icon otherwise
-        if (SystemUtils.IS_OS_MAC) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             try {
                 var iconUrl = Main.class.getResourceAsStream("resources/img/logo.png");
                 if (iconUrl != null) {

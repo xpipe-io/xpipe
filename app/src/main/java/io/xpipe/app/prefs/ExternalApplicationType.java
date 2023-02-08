@@ -57,7 +57,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         @Override
         public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MAC);
+            return OsType.getLocal().equals(OsType.MACOS);
         }
 
         @Override

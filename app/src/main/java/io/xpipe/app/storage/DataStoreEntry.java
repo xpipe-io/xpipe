@@ -121,6 +121,7 @@ public class DataStoreEntry extends StorageElement {
         var information = Optional.ofNullable(json.get("information"))
                 .map(JsonNode::textValue)
                 .orElse(null);
+
         var lastUsed = Instant.parse(json.required("lastUsed").textValue());
         var lastModified = Instant.parse(json.required("lastModified").textValue());
         var configuration = Optional.ofNullable(json.get("configuration"))

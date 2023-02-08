@@ -3,7 +3,6 @@ package io.xpipe.ext.pdx.parser;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
-import org.apache.commons.lang3.SystemUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -40,7 +39,7 @@ public final class TextFormatParser {
 
     public static TextFormatParser eu4() {
         return new TextFormatParser(
-                SystemUtils.IS_OS_MAC ? StandardCharsets.UTF_8 : Charset.forName("windows-1252"),
+                Charset.forName("windows-1252"),
                 TaggedNodes.NO_TAGS,
                 s -> s.equals("map_area_data"));
     }
@@ -59,14 +58,14 @@ public final class TextFormatParser {
 
     public static TextFormatParser ck2() {
         return new TextFormatParser(
-                SystemUtils.IS_OS_MAC ? StandardCharsets.UTF_8 : Charset.forName("windows-1252"),
+                Charset.forName("windows-1252"),
                 TaggedNodes.NO_TAGS,
                 s -> false);
     }
 
     public static TextFormatParser vic2() {
         return new TextFormatParser(
-                SystemUtils.IS_OS_MAC ? StandardCharsets.UTF_8 : Charset.forName("windows-1252"),
+                Charset.forName("windows-1252"),
                 TaggedNodes.NO_TAGS,
                 s -> false);
     }

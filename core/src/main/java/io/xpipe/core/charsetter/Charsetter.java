@@ -112,9 +112,7 @@ public abstract class Charsetter {
 
         if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof MachineStore m) {
             if (result.getNewLine() == null) {
-                try (var pc = m.create().start()) {
-                    result = new Result(result.getCharset(), pc.getShellType().getNewLine());
-                }
+                result = new Result(result.getCharset(), m.getShellType() != null ? m.getShellType().getNewLine() : null);
             }
         }
 

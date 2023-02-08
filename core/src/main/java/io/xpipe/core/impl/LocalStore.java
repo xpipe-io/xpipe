@@ -1,6 +1,7 @@
 package io.xpipe.core.impl;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.MachineStore;
@@ -47,7 +48,7 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
     }
 
     @Override
-    public ShellProcessControl create() {
+    public ShellProcessControl createControl() {
         return ProcessControlProvider.createLocal();
     }
 

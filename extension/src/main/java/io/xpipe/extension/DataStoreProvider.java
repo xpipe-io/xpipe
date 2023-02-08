@@ -79,7 +79,7 @@ public interface DataStoreProvider {
     }
 
     default String getModuleName() {
-        var n = getClass().getPackageName();
+        var n = getClass().getModule().getName();
         var i = n.lastIndexOf('.');
         return i != -1 ? n.substring(i + 1) : n;
     }

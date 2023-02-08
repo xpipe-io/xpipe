@@ -199,18 +199,15 @@ public class ShellTypes {
         @Override
         public Charset determineCharset(ShellProcessControl control) throws Exception {
             control.writeLine("chcp");
-
+            var pattern = Pattern.compile("^[\\w ]+: (\\d+)$");
             var r = new BufferedReader(new InputStreamReader(control.getStdout(), StandardCharsets.US_ASCII));
-            // Read echo of command
-            r.readLine();
-            // Read actual output
-            var line = r.readLine();
-            // Read additional empty line
-            r.readLine();
-
-            var matcher = Pattern.compile("\\d+").matcher(line);
-            matcher.find();
-            return Charset.forName("ibm" + matcher.group());
+            while (true) {
+                var line = r.readLine();
+                var matcher = pattern.matcher(line);
+                if (matcher.matches()) {
+                    return Charset.forName("ibm" + matcher.group(1));
+                }
+            }
         }
 
         @Override
