@@ -8,7 +8,7 @@ import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.augment.PopupMenuAugment;
-import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.DesktopHelper;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -89,7 +89,7 @@ public class SourceEntryContextMenu<S extends CompStructure<?>> extends PopupMen
 
             var openDir = new MenuItem(I18n.get("browseInternal"), new FontIcon("mdi2f-folder-open-outline"));
             openDir.setOnAction(e -> {
-                OsHelper.browsePath(entry.getEntry().getDirectory());
+                DesktopHelper.browsePath(entry.getEntry().getDirectory());
             });
             cm.getItems().add(openDir);
         }

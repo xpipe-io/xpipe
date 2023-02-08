@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.exchange.MessageExchangeImpls;
-import io.xpipe.app.util.ModuleHelper;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.extension.ModuleInstall;
 import io.xpipe.extension.XPipeServiceProviders;

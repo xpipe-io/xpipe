@@ -2,11 +2,12 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.update.AppInstaller;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ProxyManagerProvider;
 import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.extension.I18n;

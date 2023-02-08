@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ModuleHelper;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import lombok.Value;

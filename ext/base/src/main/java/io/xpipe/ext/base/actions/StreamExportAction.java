@@ -4,7 +4,7 @@ import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.DesktopHelper;
 import io.xpipe.extension.util.ThreadHelper;
 import javafx.beans.value.ObservableValue;
 import javafx.stage.FileChooser;
@@ -49,7 +49,7 @@ public class StreamExportAction implements DataStoreActionProvider<StreamDataSto
                 try (OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
                     inputStream.transferTo(outputStream);
                 }
-                OsHelper.browseFileInDirectory(outputFile.toPath());
+                DesktopHelper.browseFileInDirectory(outputFile.toPath());
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             }

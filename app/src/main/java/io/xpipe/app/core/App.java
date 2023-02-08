@@ -69,7 +69,7 @@ public class App extends Application {
                 AppActionLinkDetector.detectOnFocus();
             });
         });
-        var title = String.format("X-Pipe Desktop (%s)", AppProperties.get().getVersion());
+        var title = String.format("X-Pipe Desktop (Alpha %s)", AppProperties.get().getVersion());
         var appWindow = new AppMainWindow(stage);
         appWindow.initialize();
         appWindow.setContent(title, content);

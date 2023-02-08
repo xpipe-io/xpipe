@@ -1,14 +1,6 @@
-repositories {
-    mavenCentral()
-    flatDir {
-        dirs file(buildscript.sourceFile).parent
-    }
-}
-
 dependencies {
-    // A forked version of Lombok because the official one doesn't support Java 19 yet
-    compileOnly name: 'lombok-jdk19-20221010'
-    annotationProcessor name: 'lombok-jdk19-20221010'
-    testCompileOnly name: 'lombok-jdk19-20221010'
-    testAnnotationProcessor name: 'lombok-jdk19-20221010'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    testCompileOnly 'org.projectlombok:lombok:1.18.26'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
