@@ -3,6 +3,7 @@ package io.xpipe.extension.fxcomps.util;
 import io.xpipe.extension.util.ThreadHelper;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.ListBinding;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,6 +20,17 @@ import java.util.function.Predicate;
 public class BindingsHelper {
 
     private static final Set<ReferenceEntry> REFERENCES = Collections.newSetFromMap(new ConcurrentHashMap<ReferenceEntry, Boolean>());
+
+    public static <T, V> void bindExclusive(
+            Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind
+    ) {
+        selected.addListener((c, o, n) -> {
+            toBind.unbind();
+            toBind.bind(map.get(n));
+        });
+
+        toBind.bind(map.get(selected.getValue()));
+    }
 
     @Value
     private static class ReferenceEntry {

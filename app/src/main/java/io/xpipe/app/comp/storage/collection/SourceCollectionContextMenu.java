@@ -5,7 +5,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.augment.PopupMenuAugment;
-import io.xpipe.extension.util.OsHelper;
+import io.xpipe.extension.util.DesktopHelper;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -88,7 +88,7 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         if (AppPrefs.get().developerMode().getValue()) {
             var openDir = new MenuItem(I18n.get("openDir"), new FontIcon("mdal-edit"));
             openDir.setOnAction(e -> {
-                OsHelper.browseFileInDirectory(group.getCollection().getDirectory());
+                DesktopHelper.browseFileInDirectory(group.getCollection().getDirectory());
             });
             cm.getItems().add(openDir);
         }

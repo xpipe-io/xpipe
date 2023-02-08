@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.app.util.ModuleHelper;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.Translatable;
 import io.xpipe.extension.event.ErrorEvent;
@@ -25,7 +25,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
@@ -94,11 +97,20 @@ public class AppI18n implements I18n {
         prettyTime = null;
     }
 
+    @SuppressWarnings("removal")
+    public static class CallingClass extends SecurityManager {
+        public static final CallingClass INSTANCE = new CallingClass();
+
+        public Class<?>[] getCallingClasses() {
+            return getClassContext();
+        }
+    }
+
     @SneakyThrows
     private  static String getCallerModuleName() {
-        var callers = ModuleHelper.CallingClass.INSTANCE.getCallingClasses();
+        var callers = CallingClass.INSTANCE.getCallingClasses();
         for (Class<?> caller : callers) {
-            if (caller.equals(ModuleHelper.CallingClass.class)
+            if (caller.equals(CallingClass.class)
                     || caller.equals(ModuleHelper.class)
                     || caller.equals(AppI18n.class)
                     || caller.equals(I18n.class)
