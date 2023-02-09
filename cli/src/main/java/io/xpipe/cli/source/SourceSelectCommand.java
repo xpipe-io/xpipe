@@ -21,6 +21,7 @@ public class SourceSelectCommand extends BaseCommand {
             arity = "1",
             converter = DataSourceReferenceConverter.class)
     DataSourceReference ref = DataSourceReference.latest();
+
     @CommandLine.Mixin
     private HelpMixin help;
 

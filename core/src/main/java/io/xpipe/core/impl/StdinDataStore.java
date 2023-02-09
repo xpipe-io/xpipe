@@ -26,8 +26,7 @@ public class StdinDataStore extends JacksonizedValue implements StreamDataStore 
         // Prevent closing the standard in when the returned input stream is closed
         return new FilterInputStream(in) {
             @Override
-            public void close() throws IOException {
-            }
+            public void close() throws IOException {}
         };
     }
 }

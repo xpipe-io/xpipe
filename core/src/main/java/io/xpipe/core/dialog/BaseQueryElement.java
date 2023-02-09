@@ -21,8 +21,7 @@ public class BaseQueryElement extends DialogElement {
 
     @JsonCreator
     public BaseQueryElement(
-            String description, boolean newLine, boolean required, boolean secret, boolean quiet, String value
-    ) {
+            String description, boolean newLine, boolean required, boolean secret, boolean quiet, String value) {
         this.description = description;
         this.newLine = newLine;
         this.required = required;

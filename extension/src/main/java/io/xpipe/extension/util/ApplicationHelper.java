@@ -12,7 +12,9 @@ public class ApplicationHelper {
 
     public static void executeLocalApplication(String s) throws Exception {
         var args = ShellTypes.getPlatformDefault().executeCommandListWithShell(s);
-        TrackEvent.withDebug("proc", "Executing local application").elements(args).handle();
+        TrackEvent.withDebug("proc", "Executing local application")
+                .elements(args)
+                .handle();
         try (var c = ShellStore.local().create().command(s).start()) {
             c.discardOrThrow();
         }
@@ -20,17 +22,21 @@ public class ApplicationHelper {
 
     public static void executeLocalApplication(List<String> s) throws Exception {
         var args = ShellTypes.getPlatformDefault().executeCommandListWithShell(s);
-        TrackEvent.withDebug("proc", "Executing local application").elements(args).handle();
+        TrackEvent.withDebug("proc", "Executing local application")
+                .elements(args)
+                .handle();
         try (var c = ShellStore.local().create().command(s).start()) {
             c.discardOrThrow();
         }
     }
 
     public static boolean isInPath(ShellProcessControl processControl, String executable) throws Exception {
-        return processControl.executeBooleanSimpleCommand(processControl.getShellType().getWhichCommand(executable));
+        return processControl.executeBooleanSimpleCommand(
+                processControl.getShellType().getWhichCommand(executable));
     }
 
-    public static void checkSupport(ShellProcessControl processControl, String executable, String displayName) throws Exception {
+    public static void checkSupport(ShellProcessControl processControl, String executable, String displayName)
+            throws Exception {
         if (!isInPath(processControl, executable)) {
             throw new IOException(displayName + " executable " + executable + " not found in PATH");
         }

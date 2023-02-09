@@ -15,8 +15,10 @@ public class StoreRenameCommand extends BaseCommand {
 
     @CommandLine.Parameters(paramLabel = "<store>", description = "The old store name.", arity = "1")
     String store;
+
     @CommandLine.Parameters(paramLabel = "<name>", description = "The new store name.", arity = "1")
     String name;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

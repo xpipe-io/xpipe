@@ -18,8 +18,10 @@ public class StartCommand extends BaseCommand {
     @CommandLine.Mixin
     private HelpMixin help;
 
-    @CommandLine.Parameters(description = "Optional arguments to pass to the daemon",
-            paramLabel = "<input>", converter = InputArgumentConverter.class)
+    @CommandLine.Parameters(
+            description = "Optional arguments to pass to the daemon",
+            paramLabel = "<input>",
+            converter = InputArgumentConverter.class)
     List<String> inputs = List.of();
 
     @Override
@@ -29,7 +31,9 @@ public class StartCommand extends BaseCommand {
             return 0;
         }
 
-        var arguments = inputs.stream().map(s -> s.startsWith("\"") && s.endsWith("\"") ? s : "\"" + s + "\"").collect(Collectors.joining(" "));
+        var arguments = inputs.stream()
+                .map(s -> s.startsWith("\"") && s.endsWith("\"") ? s : "\"" + s + "\"")
+                .collect(Collectors.joining(" "));
         System.setProperty(BeaconConfig.DAEMON_ARGUMENTS_PROP, arguments);
 
         return super.call();

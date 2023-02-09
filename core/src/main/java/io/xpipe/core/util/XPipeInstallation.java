@@ -196,9 +196,7 @@ public class XPipeInstallation {
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return path.resolve("logo.png");
         } else {
-            return path.resolve("Contents")
-                    .resolve("Resources")
-                    .resolve("logo.icns");
+            return path.resolve("Contents").resolve("Resources").resolve("logo.icns");
         }
     }
 

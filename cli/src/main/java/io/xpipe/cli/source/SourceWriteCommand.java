@@ -30,33 +30,40 @@ public class SourceWriteCommand extends BaseCommand {
             description = "The output format type",
             paramLabel = "<type>")
     String type;
+
     @CommandLine.Parameters(
             description = "The data source reference",
             arity = "0..1",
             paramLabel = "<source>",
             converter = DataSourceReferenceConverter.class)
     DataSourceReference ref = DataSourceReference.latest();
+
     @CommandLine.Option(
             names = {"--output-store"},
             description = "The output store to write to.",
             paramLabel = "<output store>",
             converter = DataStoreConverter.class)
     DataStore outputStore = StdoutDataStore.builder().build();
+
     @CommandLine.Option(
             names = {"--output-source"},
             description = "The output source to write to.",
             paramLabel = "<output source>",
             converter = DataSourceReferenceConverter.class)
     DataSourceReference outputSource;
+
     @CommandLine.Option(
             names = {"-m", "--mode"},
             description = "The write mode",
             paramLabel = "<mode>")
     String mode;
+
     @CommandLine.Mixin
     ConfigOverride config;
+
     @CommandLine.Mixin
     QuietOverride quietOverride;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

@@ -29,26 +29,29 @@ public class IntegratedTextAreaComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var fileDrop = new FileDropOverlayComp<>(Comp.of(() -> {
-            var textArea = new TextAreaComp(value, lazy).createRegion();
-            var copyButton = createOpenButton(textArea);
-            var pane = new AnchorPane(copyButton);
-            pane.setPickOnBounds(false);
-            AnchorPane.setTopAnchor(copyButton, 10.0);
-            AnchorPane.setRightAnchor(copyButton, 10.0);
+        var fileDrop = new FileDropOverlayComp<>(
+                Comp.of(() -> {
+                    var textArea = new TextAreaComp(value, lazy).createRegion();
+                    var copyButton = createOpenButton(textArea);
+                    var pane = new AnchorPane(copyButton);
+                    pane.setPickOnBounds(false);
+                    AnchorPane.setTopAnchor(copyButton, 10.0);
+                    AnchorPane.setRightAnchor(copyButton, 10.0);
 
-            var c = new StackPane();
-            c.getChildren().addAll(textArea, pane);
-            return c;
-        }), paths -> value.setValue(Files.readString(paths.get(0))));
+                    var c = new StackPane();
+                    c.getChildren().addAll(textArea, pane);
+                    return c;
+                }),
+                paths -> value.setValue(Files.readString(paths.get(0))));
         return fileDrop.createRegion();
     }
 
     private Region createOpenButton(Region container) {
         var button = new IconButtonComp("mdal-edit", () -> ExternalEditor.get()
-                .startEditing(identifier, fileType, this, value.getValue(), (s) -> {
-                    Platform.runLater(() -> value.setValue(s));
-                })).createRegion();
+                        .startEditing(identifier, fileType, this, value.getValue(), (s) -> {
+                            Platform.runLater(() -> value.setValue(s));
+                        }))
+                .createRegion();
         return button;
     }
 }

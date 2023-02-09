@@ -33,8 +33,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         throw new ExtensionException();
     }
 
-    default void init() throws Exception {
-    }
+    default void init() throws Exception {}
 
     default String i18n(String key) {
         return I18n.get(i18nKey(key));

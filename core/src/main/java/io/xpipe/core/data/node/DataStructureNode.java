@@ -129,13 +129,13 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
     public String metaToString() {
         return "("
                 + (metaAttributes != null
-                ? metaAttributes.entrySet().stream()
-                .sorted(Comparator.comparingInt(entry -> entry.getKey()))
-                .map(e -> e.getValue() != null
-                        ? e.getKey() + ":" + e.getValue()
-                        : e.getKey().toString())
-                .collect(Collectors.joining("|"))
-                : "")
+                        ? metaAttributes.entrySet().stream()
+                                .sorted(Comparator.comparingInt(entry -> entry.getKey()))
+                                .map(e -> e.getValue() != null
+                                        ? e.getKey() + ":" + e.getValue()
+                                        : e.getKey().toString())
+                                .collect(Collectors.joining("|"))
+                        : "")
                 + ")";
     }
 
@@ -242,6 +242,5 @@ public abstract class DataStructureNode implements Iterable<DataStructureNode> {
         throw unsupported("iterator creation");
     }
 
-    public record KeyValue(String key, DataStructureNode value) {
-    }
+    public record KeyValue(String key, DataStructureNode value) {}
 }

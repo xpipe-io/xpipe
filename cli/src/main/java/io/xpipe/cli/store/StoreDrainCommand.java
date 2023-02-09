@@ -23,12 +23,14 @@ public class StoreDrainCommand extends BaseCommand {
             description = "The custom drain name",
             paramLabel = "<name>")
     String name;
+
     @CommandLine.Option(
             names = {"--encoding"},
             description = "A custom encoding to use instead of the default encoding of the console",
             converter = StreamCharsetConverter.class,
             paramLabel = "<encoding>")
     StreamCharset encoding;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

@@ -38,8 +38,7 @@ public class CustomComboBoxBuilder<T> {
     private Function<T, Node> unknownNode;
 
     public CustomComboBoxBuilder(
-            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto
-    ) {
+            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
         this.selected = selected;
         this.nodeFunction = nodeFunction;
         this.emptyNode = emptyNode;
@@ -106,7 +105,7 @@ public class CustomComboBoxBuilder<T> {
                     .filter(e -> Objects.equals(c, e.getValue()))
                     .map(e -> e.getKey())
                     .findAny()
-                            .orElse(c == null || unknownNode == null? emptyNode : unknownNode.apply(c));
+                    .orElse(c == null || unknownNode == null ? emptyNode : unknownNode.apply(c));
             cb.setValue(item);
         });
         cb.valueProperty().addListener((c, o, n) -> {
@@ -128,9 +127,9 @@ public class CustomComboBoxBuilder<T> {
                 var filteredNodes = nodes.stream()
                         .filter(e -> e.equals(cb.getValue())
                                 || !(nodeMap.get(e) != null
-                                && (filterable.contains(nodeMap.get(e))
-                                && filterString.getValue() != null
-                                && !filterPredicate.test(nodeMap.get(e), c))))
+                                        && (filterable.contains(nodeMap.get(e))
+                                                && filterString.getValue() != null
+                                                && !filterPredicate.test(nodeMap.get(e), c))))
                         .toList();
                 cb.setItems(FXCollections.observableList(filteredNodes));
             });

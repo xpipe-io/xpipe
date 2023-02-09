@@ -30,8 +30,7 @@ public class StoreViewState {
     private final ObservableList<StoreEntryWrapper> shownEntries =
             FXCollections.observableList(new CopyOnWriteArrayList<>());
 
-    private final ObservableBooleanValue empty =
-            BindingsHelper.persist(Bindings.equal(Bindings.size(allEntries), 1));
+    private final ObservableBooleanValue empty = BindingsHelper.persist(Bindings.equal(Bindings.size(allEntries), 1));
 
     private StoreViewState() {
         try {

@@ -38,8 +38,10 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
     });
 
     protected final ShellProcessControl parent;
+
     @NonNull
     protected final FailableFunction<ShellProcessControl, String, Exception> command;
+
     protected final FailableFunction<ShellProcessControl, String, Exception> terminalCommand;
     protected boolean elevated;
     protected int exitCode = -1;
@@ -198,7 +200,9 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
         }
 
         var exitCode = getExitCode();
-        var success = (obeysReturnValueConvention && exitCode == 0) || (!obeysReturnValueConvention && !(read.get().isEmpty() && !readError.get().isEmpty()));
+        var success = (obeysReturnValueConvention && exitCode == 0)
+                || (!obeysReturnValueConvention
+                        && !(read.get().isEmpty() && !readError.get().isEmpty()));
         if (success) {
             return read.get().trim();
         } else {
@@ -232,7 +236,9 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
         }
 
         var exitCode = getExitCode();
-        var success = (obeysReturnValueConvention && exitCode == 0) || (!obeysReturnValueConvention && !(read.get().isEmpty() && !readError.get().isEmpty()));
+        var success = (obeysReturnValueConvention && exitCode == 0)
+                || (!obeysReturnValueConvention
+                        && !(read.get().isEmpty() && !readError.get().isEmpty()));
         if (!success) {
             throw new ProcessOutputException(
                     "Command returned with " + exitCode + ": " + readError.get().trim());

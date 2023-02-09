@@ -30,10 +30,13 @@ public class DataSourceEntry extends StorageElement {
 
     @NonFinal
     State state;
+
     @NonFinal
     String information;
+
     @NonFinal
     JsonNode sourceNode;
+
     @NonFinal
     DataSource<?> dataSource;
 
@@ -70,10 +73,17 @@ public class DataSourceEntry extends StorageElement {
     }
 
     public static DataSourceEntry createNew(
-            @NonNull UUID uuid, @NonNull String name, @NonNull DataSource<?> dataSource
-    ) {
+            @NonNull UUID uuid, @NonNull String name, @NonNull DataSource<?> dataSource) {
         var entry = new DataSourceEntry(
-                null, uuid, name, Instant.now(), Instant.now(), true, DataStorageWriter.sourceToNode(dataSource), null, State.INCOMPLETE);
+                null,
+                uuid,
+                name,
+                Instant.now(),
+                Instant.now(),
+                true,
+                DataStorageWriter.sourceToNode(dataSource),
+                null,
+                State.INCOMPLETE);
         entry.simpleRefresh();
         return entry;
     }
@@ -137,12 +147,12 @@ public class DataSourceEntry extends StorageElement {
         var oldSource = dataSource;
         DataSource<?> newSource = DataStorageParser.sourceFromNode(sourceNode);
 
-//        TrackEvent.storage()
-//                .trace()
-//                .message("Refreshing data source entry")
-//                .tag("old", oldSource)
-//                .tag("new", newSource)
-//                .handle();
+        //        TrackEvent.storage()
+        //                .trace()
+        //                .message("Refreshing data source entry")
+        //                .tag("old", oldSource)
+        //                .tag("new", newSource)
+        //                .handle();
 
         if (newSource == null) {
             dataSource = null;

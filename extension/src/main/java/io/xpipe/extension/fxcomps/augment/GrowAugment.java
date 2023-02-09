@@ -31,8 +31,7 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
                                     - p.getInsets().getLeft()
                                     - p.getInsets().getRight(),
                             p.widthProperty(),
-                            p.insetsProperty()
-                    ));
+                            p.insetsProperty()));
         }
         if (height) {
             r.prefHeightProperty()
@@ -47,8 +46,7 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
                                 return val;
                             },
                             p.heightProperty(),
-                            p.insetsProperty()
-                    ));
+                            p.insetsProperty()));
         }
     }
 

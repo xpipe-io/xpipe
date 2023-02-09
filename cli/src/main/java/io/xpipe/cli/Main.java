@@ -28,7 +28,7 @@ public class Main {
         }
 
         try (var ignored = TerminalHelper.init()) {
-        return XPipeCommand.execute(args);
+            return XPipeCommand.execute(args);
         }
     }
 }

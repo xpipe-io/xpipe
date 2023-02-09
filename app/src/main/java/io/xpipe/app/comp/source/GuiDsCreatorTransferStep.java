@@ -45,7 +45,8 @@ public class GuiDsCreatorTransferStep extends MultiStepComp.Step<CompStructure<?
                         return null;
                     }
 
-                    var name = DataStorage.get().createUniqueSourceEntryName(DataStorage.get().getInternalCollection(), source.get());
+                    var name = DataStorage.get()
+                            .createUniqueSourceEntryName(DataStorage.get().getInternalCollection(), source.get());
                     var entry = DataSourceEntry.createNew(UUID.randomUUID(), name, this.source.get());
                     return entry;
                 },

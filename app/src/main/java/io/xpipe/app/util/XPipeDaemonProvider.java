@@ -7,9 +7,9 @@ import io.xpipe.app.comp.source.store.NamedStoreChoiceComp;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.update.AppDownloads;
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
@@ -71,7 +71,8 @@ public class XPipeDaemonProvider implements XPipeDaemon {
             Property<DataSourceProvider<?>> provider,
             boolean showAnonymous,
             boolean showSaved) {
-        return (T) new DsStreamStoreChoiceComp(storeProperty, provider, showAnonymous, showSaved, DsStreamStoreChoiceComp.Mode.WRITE);
+        return (T) new DsStreamStoreChoiceComp(
+                storeProperty, provider, showAnonymous, showSaved, DsStreamStoreChoiceComp.Mode.WRITE);
     }
 
     @Override

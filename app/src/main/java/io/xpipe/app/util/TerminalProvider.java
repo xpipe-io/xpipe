@@ -13,7 +13,9 @@ public abstract class TerminalProvider {
 
         @Override
         public void init(ModuleLayer layer) {
-            INSTANCE = ServiceLoader.load(layer, TerminalProvider.class).findFirst().orElseThrow();
+            INSTANCE = ServiceLoader.load(layer, TerminalProvider.class)
+                    .findFirst()
+                    .orElseThrow();
         }
 
         @Override
@@ -35,5 +37,5 @@ public abstract class TerminalProvider {
         INSTANCE.openInTerminal(title, command);
     }
 
-    protected  abstract void openInTerminal(String title, String command) throws Exception;
+    protected abstract void openInTerminal(String title, String command) throws Exception;
 }

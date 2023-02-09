@@ -68,7 +68,6 @@ public class StreamExportAction implements ActionProvider {
                 return StreamDataStore.class;
             }
 
-
             @Override
             public ObservableValue<String> getName(StreamDataStore store) {
                 return I18n.observable("base.exportStream");
@@ -78,7 +77,6 @@ public class StreamExportAction implements ActionProvider {
             public String getIcon(StreamDataStore store) {
                 return "mdi2f-file-export-outline";
             }
-
         };
     }
 }

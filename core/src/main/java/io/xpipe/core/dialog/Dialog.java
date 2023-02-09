@@ -58,8 +58,11 @@ public abstract class Dialog {
      * @param selected    the selected element index
      */
     public static Dialog.Choice choice(
-            String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, boolean quiet, int selected
-    ) {
+            String description,
+            List<io.xpipe.core.dialog.Choice> elements,
+            boolean required,
+            boolean quiet,
+            int selected) {
         Dialog.Choice c = new Dialog.Choice(description, elements, required, quiet, selected);
         c.evaluateTo(c::getSelected);
         return c;
@@ -77,8 +80,7 @@ public abstract class Dialog {
      */
     @SafeVarargs
     public static <T> Dialog.Choice choice(
-            String description, Function<T, String> toString, boolean required, boolean quiet, T def, T... vals
-    ) {
+            String description, Function<T, String> toString, boolean required, boolean quiet, T def, T... vals) {
         var elements = Arrays.stream(vals)
                 .map(v -> new io.xpipe.core.dialog.Choice(null, toString.apply(v)))
                 .toList();
@@ -115,8 +117,7 @@ public abstract class Dialog {
             boolean required,
             boolean quiet,
             T value,
-            QueryConverter<T> converter
-    ) {
+            QueryConverter<T> converter) {
         var q = new <T>Dialog.Query(description, newLine, required, quiet, value, converter, false);
         q.evaluateTo(q::getConvertedValue);
         return q;
@@ -162,8 +163,7 @@ public abstract class Dialog {
                 DialogElement currentElement = ds[current].receive(answer);
                 if (currentElement == null) {
                     DialogElement next = null;
-                    while (current < ds.length - 1 && (next = ds[++current].start()) == null) {
-                    }
+                    while (current < ds.length - 1 && (next = ds[++current].start()) == null) {}
                     ;
                     return next;
                 }
@@ -354,8 +354,7 @@ public abstract class Dialog {
             List<io.xpipe.core.dialog.Choice> elements,
             boolean required,
             int selected,
-            Function<Integer, Dialog> c
-    ) {
+            Function<Integer, Dialog> c) {
         var choice = new ChoiceElement(description, elements, required, false, selected);
         return new Dialog() {
 
@@ -468,7 +467,12 @@ public abstract class Dialog {
 
         private final ChoiceElement element;
 
-        private Choice(String description, List<io.xpipe.core.dialog.Choice> elements, boolean required, boolean quiet, int selected) {
+        private Choice(
+                String description,
+                List<io.xpipe.core.dialog.Choice> elements,
+                boolean required,
+                boolean quiet,
+                int selected) {
             this.element = new ChoiceElement(description, elements, required, quiet, selected);
         }
 
@@ -502,8 +506,7 @@ public abstract class Dialog {
                 boolean quiet,
                 T value,
                 QueryConverter<T> converter,
-                boolean hidden
-        ) {
+                boolean hidden) {
             this.element = new QueryElement(description, newLine, required, quiet, value, converter, hidden);
         }
 

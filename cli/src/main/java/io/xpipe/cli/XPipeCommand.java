@@ -25,7 +25,7 @@ import picocli.CommandLine;
             "3:Connection error: could either not start or communicate to the X-Pipe daemon"
         },
         subcommands = {
-                OpenCommand.class,
+            OpenCommand.class,
             StoreCommand.class,
             SourceCommand.class,
             DaemonCommand.class,

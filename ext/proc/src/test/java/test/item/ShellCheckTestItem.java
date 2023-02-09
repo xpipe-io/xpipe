@@ -28,7 +28,8 @@ public enum ShellCheckTestItem {
         var content = "<contentß>";
         try (var c = shellProcessControl
                 .subShell(shellProcessControl.getShellType())
-                .initWith(List.of(shellProcessControl.getShellType().getSetEnvironmentVariableCommand("testVar", content)))
+                .initWith(List.of(
+                        shellProcessControl.getShellType().getSetEnvironmentVariableCommand("testVar", content)))
                 .start()) {
             var output = c.executeStringSimpleCommand(
                     shellProcessControl.getShellType().getPrintEnvironmentVariableCommand("testVar"));
@@ -38,7 +39,9 @@ public enum ShellCheckTestItem {
 
     STREAM_WRITE(shellProcessControl -> {
         var content = "hello\nworldß";
-        var fileOne = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
+        var fileOne = FileNames.join(
+                shellProcessControl.getOsType().getTempDirectory(shellProcessControl),
+                UUID.randomUUID().toString());
         try (var c = shellProcessControl
                 .command(shellProcessControl.getShellType().getStreamFileWriteCommand(fileOne))
                 .start()) {
@@ -50,7 +53,9 @@ public enum ShellCheckTestItem {
 
         shellProcessControl.restart();
 
-        var fileTwo = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
+        var fileTwo = FileNames.join(
+                shellProcessControl.getOsType().getTempDirectory(shellProcessControl),
+                UUID.randomUUID().toString());
         try (var c = shellProcessControl
                 .subShell(shellProcessControl.getShellType())
                 .command(shellProcessControl.getShellType().getStreamFileWriteCommand(fileTwo))
@@ -73,11 +78,15 @@ public enum ShellCheckTestItem {
 
     SIMPLE_WRITE(shellProcessControl -> {
         var content = "hello worldß";
-        var fileOne = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
+        var fileOne = FileNames.join(
+                shellProcessControl.getOsType().getTempDirectory(shellProcessControl),
+                UUID.randomUUID().toString());
         shellProcessControl.executeSimpleCommand(
                 shellProcessControl.getShellType().getTextFileWriteCommand(content, fileOne));
 
-        var fileTwo = FileNames.join(shellProcessControl.getOsType().getTempDirectory(shellProcessControl), UUID.randomUUID().toString());
+        var fileTwo = FileNames.join(
+                shellProcessControl.getOsType().getTempDirectory(shellProcessControl),
+                UUID.randomUUID().toString());
         shellProcessControl.executeSimpleCommand(
                 shellProcessControl.getShellType().getTextFileWriteCommand(content, fileTwo));
 
@@ -95,12 +104,14 @@ public enum ShellCheckTestItem {
 
     COMMAND_TERMINAL_OPEN(shellProcessControl -> {
         for (CommandCheckTestItem v : CommandCheckTestItem.values()) {
-            shellProcessControl.prepareIntermediateTerminalOpen(v.getCommandFunction().apply(shellProcessControl));
+            shellProcessControl.prepareIntermediateTerminalOpen(
+                    v.getCommandFunction().apply(shellProcessControl));
         }
     }),
 
     ECHO(shellProcessControl -> {
-        shellProcessControl.executeSimpleCommand(shellProcessControl.getShellType().getEchoCommand("test", false));
+        shellProcessControl.executeSimpleCommand(
+                shellProcessControl.getShellType().getEchoCommand("test", false));
     });
 
     private final FailableConsumer<ShellProcessControl, Exception> shellCheck;

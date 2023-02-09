@@ -20,6 +20,7 @@ public class ShellCommandStore extends JacksonizedValue implements MachineStore 
 
     private final String cmd;
     private final ShellStore host;
+
     public ShellCommandStore(String cmd, ShellStore host) {
         this.cmd = cmd;
         this.host = host;

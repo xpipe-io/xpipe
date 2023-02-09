@@ -16,7 +16,8 @@ public class ModeCommand extends BaseCommand {
             paramLabel = "<mode>",
             description =
                     "The mode to switch to. The mode id must be [background, tray, gui]. Note that not necessarily all operation "
-                            + "modes are supported on your current platform.", converter = ModeConverter.class)
+                            + "modes are supported on your current platform.",
+            converter = ModeConverter.class)
     XPipeDaemonMode mode;
 
     @CommandLine.Mixin

@@ -81,7 +81,6 @@ public final class ExclusiveValidator<T> implements Validator {
                 () -> {
                     return get().createStringBinding(prefix, separator).get();
                 },
-                observables
-        );
+                observables);
     }
 }

@@ -22,7 +22,6 @@ public interface ShellProcessControl extends ProcessControl {
 
     public void checkRunning() throws Exception;
 
-
     default String executeStringSimpleCommand(String command) throws Exception {
         try (CommandProcessControl c = command(command).start()) {
             return c.readOrThrow();
@@ -98,7 +97,8 @@ public interface ShellProcessControl extends ProcessControl {
     CommandProcessControl command(FailableFunction<ShellProcessControl, String, Exception> command);
 
     CommandProcessControl command(
-            FailableFunction<ShellProcessControl, String, Exception> command, FailableFunction<ShellProcessControl, String, Exception> terminalCommand);
+            FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand);
 
     default CommandProcessControl command(String command) {
         return command(shellProcessControl -> command);

@@ -51,10 +51,7 @@ public class SshStoreProvider implements DataStoreProvider {
         var key = new SimpleObjectProperty<>(st.getKey());
 
         var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
-                .addComp(
-                        I18n.observable("proxy"),
-                        ShellStoreChoiceComp.host(st, shellProp),
-                        shellProp)
+                .addComp(I18n.observable("proxy"), ShellStoreChoiceComp.host(st, shellProp), shellProp)
                 .nonNull(val)
                 .addString(I18n.observable("host"), host)
                 .nonNull(val)
@@ -94,9 +91,7 @@ public class SshStoreProvider implements DataStoreProvider {
                         () -> {
                             return keyFileProperty.get() != null
                                     ? SshStore.SshKey.builder()
-                                            .file(keyFileProperty
-                                                    .get()
-                                                    .getFile())
+                                            .file(keyFileProperty.get().getFile())
                                             .password(keyPasswordProperty.get())
                                             .build()
                                     : null;

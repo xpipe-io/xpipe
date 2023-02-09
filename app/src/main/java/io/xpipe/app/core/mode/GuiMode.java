@@ -1,10 +1,10 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.issue.ErrorHandler;
 import io.xpipe.app.issue.ErrorHandlerComp;
+import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import javafx.application.Platform;

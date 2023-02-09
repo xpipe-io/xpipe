@@ -10,7 +10,7 @@ import java.util.Locale;
 @Getter
 public enum SupportedLocale implements PrefsChoiceValue {
     ENGLISH(Locale.ENGLISH, "english");
-    //GERMAN(Locale.GERMAN, "german");
+    // GERMAN(Locale.GERMAN, "german");
 
     private final Locale locale;
     private final String id;

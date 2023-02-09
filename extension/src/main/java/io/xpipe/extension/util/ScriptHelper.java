@@ -120,7 +120,8 @@ public class ScriptHelper {
             }
 
             // Check for special case of the command being a shell command
-            if (Arrays.stream(ShellTypes.getAllShellTypes()).anyMatch(shellType -> cmd.equals(shellType.getNormalOpenCommand()))) {
+            if (Arrays.stream(ShellTypes.getAllShellTypes())
+                    .anyMatch(shellType -> cmd.equals(shellType.getNormalOpenCommand()))) {
                 return cmd;
             }
         }

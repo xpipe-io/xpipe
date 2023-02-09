@@ -219,7 +219,9 @@ public class AppWindowHelper {
         } else {
             var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo.png");
             if (url.isPresent()) {
-                ((Stage) a.getDialogPane().getScene().getWindow()).getIcons().add(new Image(url.get().toString()));
+                ((Stage) a.getDialogPane().getScene().getWindow())
+                        .getIcons()
+                        .add(new Image(url.get().toString()));
             }
         }
     }

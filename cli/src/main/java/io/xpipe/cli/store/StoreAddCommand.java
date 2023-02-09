@@ -24,6 +24,7 @@ public class StoreAddCommand extends BaseCommand {
 
     @CommandLine.Parameters(arity = "0..1", description = "The store type id.", paramLabel = "<type>")
     String type;
+
     @CommandLine.Option(
             arity = "0..1",
             names = {"-n", "--name"},
@@ -32,6 +33,7 @@ public class StoreAddCommand extends BaseCommand {
                             + "data store creation process.",
             paramLabel = "<name>")
     String name;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

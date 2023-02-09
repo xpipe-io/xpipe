@@ -46,10 +46,7 @@ public class ShellCommandStoreProvider implements DataStoreProvider {
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCmd());
 
         var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
-                .addComp(
-                        I18n.observable("host"),
-                        ShellStoreChoiceComp.host(st, hostProperty),
-                        hostProperty)
+                .addComp(I18n.observable("host"), ShellStoreChoiceComp.host(st, hostProperty), hostProperty)
                 .nonNull(val)
                 .addString(I18n.observable("proc.command"), commandProp)
                 .nonNull(val)

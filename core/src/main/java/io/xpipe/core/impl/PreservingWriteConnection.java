@@ -15,8 +15,7 @@ public class PreservingWriteConnection implements DataSourceConnection {
     private final boolean append;
 
     public PreservingWriteConnection(
-            DataSourceType type, DataSource<?> source, boolean append, DataSourceConnection connection
-    ) {
+            DataSourceType type, DataSource<?> source, boolean append, DataSourceConnection connection) {
         this.type = type;
         this.source = source;
         this.append = append;
@@ -29,7 +28,7 @@ public class PreservingWriteConnection implements DataSourceConnection {
         var nativeSource = DataSource.createInternalDataSource(type, nativeStore);
         if (source.getStore().canOpen()) {
             try (var in = source.openReadConnection();
-                 var out = nativeSource.openWriteConnection(WriteMode.REPLACE)) {
+                    var out = nativeSource.openWriteConnection(WriteMode.REPLACE)) {
                 in.init();
                 out.init();
                 in.forward(out);

@@ -28,23 +28,29 @@ public class SourceConvertCommand extends BaseCommand {
             description =
                     "The general category to use for conversion instead of an explicit type. Valid values: ${COMPLETION-CANDIDATES}")
     public Category category;
+
     @CommandLine.Mixin
     SourceRefMixin source;
+
     @CommandLine.Option(
             names = {"-t", "--type"},
             description = "The data source type to convert to",
             paramLabel = "<type>")
     String type;
+
     @CommandLine.Option(
             names = {"-n", "--new"},
             description = "The data source id of a newly created copy",
             paramLabel = "<source id>",
             converter = DataSourceIdConverter.class)
     DataSourceId copyTarget;
+
     @CommandLine.Mixin
     ConfigOverride config;
+
     @CommandLine.Mixin
     QuietOverride fixed;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

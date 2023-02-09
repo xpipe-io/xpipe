@@ -17,8 +17,7 @@ import java.util.Optional;
 @Value
 public class WildcardType extends DataType {
 
-    private WildcardType() {
-    }
+    private WildcardType() {}
 
     /**
      * Creates a new instance.

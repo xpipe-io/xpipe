@@ -23,10 +23,12 @@ public class SourceRemoveCommand extends BaseCommand {
             paramLabel = "<target>",
             arity = "1")
     public String target;
+
     @CommandLine.Option(
             names = {"-c", "--collection"},
             description = "Indicates that the whole collection that is identified by the name should be removed")
     public boolean collection;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

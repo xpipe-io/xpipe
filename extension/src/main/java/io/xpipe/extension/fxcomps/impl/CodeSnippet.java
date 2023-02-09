@@ -120,9 +120,7 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
         }
     }
 
-    public record Line(List<CodeSnippet.Element> elements) {
-    }
+    public record Line(List<CodeSnippet.Element> elements) {}
 
-    public record ColorScheme(Color keyword, Color identifier, Color type, Color string) {
-    }
+    public record ColorScheme(Color keyword, Color identifier, Color type, Color string) {}
 }

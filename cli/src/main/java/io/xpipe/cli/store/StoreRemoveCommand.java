@@ -17,6 +17,7 @@ public class StoreRemoveCommand extends BaseCommand {
 
     @CommandLine.Parameters(paramLabel = "<store>", description = "The store name.", arity = "1")
     String store;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

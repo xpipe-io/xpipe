@@ -22,13 +22,7 @@ public class DataSourceReferenceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-            strings = {
-                    "abc:",
-                    "ab::c",
-                    "::abc"
-            }
-    )
+    @ValueSource(strings = {"abc:", "ab::c", "::abc"})
     public void parseInvalidParameters(String arg) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             DataSourceReference.parse(arg);

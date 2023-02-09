@@ -14,7 +14,10 @@ public class SourceIoCommandTest extends DaemonExtensionTest {
     @EnumSource(value = TestDataSources.Config.class)
     public void testWriteToStreamWithProvider(TestDataSources.Config c) throws Exception {
         c.addDefault();
-        try (var cap = CliInterface.get().execAndCapture(c.addConfigArgs(List.of("source", "write", "--type", c.provider)), InputStream.nullInputStream())) {
+        try (var cap = CliInterface.get()
+                .execAndCapture(
+                        c.addConfigArgs(List.of("source", "write", "--type", c.provider)),
+                        InputStream.nullInputStream())) {
             cap.checkEquals(c.getOutputReference());
         }
     }
@@ -24,7 +27,10 @@ public class SourceIoCommandTest extends DaemonExtensionTest {
     public void testFileReadWithoutProvider(TestDataSources.Config c) throws Exception {
         CliTestHelper.exec(c.addConfigArgs(
                 List.of("source", "add", "--quiet", c.getInputFile().toString())));
-        try (var cap = CliInterface.get().execAndCapture(c.addConfigArgs(List.of("source", "write", "--type", c.provider)), InputStream.nullInputStream())) {
+        try (var cap = CliInterface.get()
+                .execAndCapture(
+                        c.addConfigArgs(List.of("source", "write", "--type", c.provider)),
+                        InputStream.nullInputStream())) {
             cap.checkEquals(c.getOutputReference());
         }
     }
@@ -34,7 +40,10 @@ public class SourceIoCommandTest extends DaemonExtensionTest {
     public void testPipeRead(TestDataSources.Config c) throws Exception {
         try (var in = Files.newInputStream(c.getInputFile())) {
             CliInterface.get().exec(c.addConfigArgs(List.of("source", "add", "--quiet", "--type", c.provider)), in);
-            try (var cap = CliInterface.get().execAndCapture(c.addConfigArgs(List.of("source", "write", "--type", c.provider)), InputStream.nullInputStream())) {
+            try (var cap = CliInterface.get()
+                    .execAndCapture(
+                            c.addConfigArgs(List.of("source", "write", "--type", c.provider)),
+                            InputStream.nullInputStream())) {
                 cap.checkEquals(c.getOutputReference());
             }
         }

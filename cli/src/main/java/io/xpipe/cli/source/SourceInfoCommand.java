@@ -15,6 +15,7 @@ public class SourceInfoCommand extends BaseCommand {
 
     @CommandLine.Mixin
     SourceRefMixin source;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

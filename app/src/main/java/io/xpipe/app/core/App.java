@@ -69,7 +69,8 @@ public class App extends Application {
                 AppActionLinkDetector.detectOnFocus();
             });
         });
-        var title = String.format("X-Pipe Desktop (Alpha %s)", AppProperties.get().getVersion());
+        var title =
+                String.format("X-Pipe Desktop (Alpha %s)", AppProperties.get().getVersion());
         var appWindow = new AppMainWindow(stage);
         appWindow.initialize();
         appWindow.setContent(title, content);
@@ -80,12 +81,12 @@ public class App extends Application {
         appWindow.show();
 
         // For demo purposes
-//        if (true) {
-//            stage.setX(310);
-//            stage.setY(178);
-//            stage.setWidth(1300);
-//            stage.setHeight(730);
-//        }
+        //        if (true) {
+        //            stage.setX(310);
+        //            stage.setY(178);
+        //            stage.setWidth(1300);
+        //            stage.setHeight(730);
+        //        }
     }
 
     public void focus() {

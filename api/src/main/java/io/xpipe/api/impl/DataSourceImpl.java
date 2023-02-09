@@ -18,8 +18,7 @@ public abstract class DataSourceImpl implements DataSource {
     private final io.xpipe.core.source.DataSource<?> internalSource;
 
     public DataSourceImpl(
-            DataSourceId sourceId, DataSourceConfig config, io.xpipe.core.source.DataSource<?> internalSource
-    ) {
+            DataSourceId sourceId, DataSourceConfig config, io.xpipe.core.source.DataSource<?> internalSource) {
         this.sourceId = sourceId;
         this.config = config;
         this.internalSource = internalSource;

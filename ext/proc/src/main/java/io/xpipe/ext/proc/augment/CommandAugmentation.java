@@ -84,7 +84,8 @@ public abstract class CommandAugmentation {
         return proc.getShellType().flatten(split);
     }
 
-    protected abstract void prepareBaseCommand(ShellProcessControl processControl, List<String> baseCommand) throws Exception;
+    protected abstract void prepareBaseCommand(ShellProcessControl processControl, List<String> baseCommand)
+            throws Exception;
 
     protected abstract void modifyTerminalCommand(List<String> baseCommand, boolean hasSubCommand);
 

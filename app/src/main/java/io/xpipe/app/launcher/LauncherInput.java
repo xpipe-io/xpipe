@@ -21,7 +21,9 @@ import java.util.List;
 public abstract class LauncherInput {
 
     public static void handle(List<String> arguments) {
-        TrackEvent.withDebug("launcher", "Handling arguments").elements(arguments).handle();
+        TrackEvent.withDebug("launcher", "Handling arguments")
+                .elements(arguments)
+                .handle();
 
         var all = new ArrayList<ActionProvider.Action>();
         arguments.forEach(s -> {
@@ -76,7 +78,7 @@ public abstract class LauncherInput {
                                             .equalsIgnoreCase(action))
                             .findFirst();
                     if (found.isPresent()) {
-                        ActionProvider.Action a  = null;
+                        ActionProvider.Action a = null;
                         try {
                             a = found.get().getLauncherCallSite().createAction(args);
                         } catch (Exception e) {

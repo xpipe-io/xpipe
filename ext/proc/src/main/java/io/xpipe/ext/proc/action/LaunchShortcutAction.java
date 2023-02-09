@@ -33,7 +33,6 @@ public class LaunchShortcutAction implements ActionProvider {
         return XPipeDistributionType.get().supportsURLs();
     }
 
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<ShellStore>() {

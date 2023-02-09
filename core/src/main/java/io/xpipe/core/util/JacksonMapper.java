@@ -32,13 +32,13 @@ public class JacksonMapper {
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
         objectMapper.setVisibility(objectMapper
-                                           .getSerializationConfig()
-                                           .getDefaultVisibilityChecker()
-                                           .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                                           .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                                           .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                                           .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
-                                           .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
+                .getSerializationConfig()
+                .getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
+                .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
 
         var modules = findModules(ModuleLayer.boot());
         objectMapper.registerModules(modules);

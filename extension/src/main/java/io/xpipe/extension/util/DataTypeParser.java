@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 
 public class DataTypeParser {
 
-    private static final Map<String, Currency> currencies =
-            Currency.getAvailableCurrencies().stream().collect(Collectors.toMap(currency -> currency.getSymbol(), currency -> currency));
+    private static final Map<String, Currency> currencies = Currency.getAvailableCurrencies().stream()
+            .collect(Collectors.toMap(currency -> currency.getSymbol(), currency -> currency));
 
     public static Optional<ValueNode> parseMonetary(String val) {
         for (var availableCurrency : currencies.entrySet()) {
@@ -23,7 +23,9 @@ public class DataTypeParser {
                 }
 
                 return Optional.of(ValueNode.ofCurrency(
-                        val, node.get().getMetaAttribute(DataStructureNode.DECIMAL_VALUE), availableCurrency.getValue()));
+                        val,
+                        node.get().getMetaAttribute(DataStructureNode.DECIMAL_VALUE),
+                        availableCurrency.getValue()));
             }
         }
         return Optional.empty();

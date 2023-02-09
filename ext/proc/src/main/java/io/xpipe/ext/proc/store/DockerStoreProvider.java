@@ -41,10 +41,7 @@ public class DockerStoreProvider implements DataStoreProvider {
         Property<String> containerProp = new SimpleObjectProperty<>(st.getContainerName());
 
         var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
-                .addComp(
-                        I18n.observable("host"),
-                        ShellStoreChoiceComp.host(st, shellProp),
-                        shellProp)
+                .addComp(I18n.observable("host"), ShellStoreChoiceComp.host(st, shellProp), shellProp)
                 .nonNull(val)
                 .addString(I18n.observable("proc.container"), containerProp)
                 .nonNull(val)

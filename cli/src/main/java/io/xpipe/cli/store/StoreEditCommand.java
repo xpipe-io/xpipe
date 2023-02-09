@@ -15,6 +15,7 @@ public class StoreEditCommand extends BaseCommand {
 
     @CommandLine.Parameters(paramLabel = "<store>", description = "The name of the store to edit.", arity = "1")
     String store;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

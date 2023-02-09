@@ -35,28 +35,34 @@ public class SourceAddCommand extends BaseCommand {
             names = {"--confirm"},
             description = "Interactively confirm all determined configuration parameters")
     public boolean confirm;
+
     @CommandLine.Option(
             names = {"-t", "--type"},
             description = "The data source type. Only needs to be explicitly specified in case "
                     + "the automatic detection does not return the correct results or is not desired.",
             paramLabel = "<type>")
     String type;
+
     @CommandLine.Option(
             names = {"-i", "--id"},
             description = "The canonical data source reference that can be used to access the contents later on.",
             paramLabel = "<id>",
             converter = DataSourceIdConverter.class)
     DataSourceId id = null;
+
     @CommandLine.Parameters(
             arity = "0..1",
             description =
                     "The input store. This can either be a data store name or a file name. If left empty, the stdin contents are used instead.",
             paramLabel = "<input>")
     String input;
+
     @CommandLine.Mixin
     ConfigOverride config;
+
     @CommandLine.Mixin
     QuietOverride quietOverride;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

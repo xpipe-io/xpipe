@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 public class LocalCommandControlImpl extends CommandControlImpl {
 
@@ -19,8 +18,7 @@ public class LocalCommandControlImpl extends CommandControlImpl {
     public LocalCommandControlImpl(
             ShellProcessControl parent,
             @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
-            FailableFunction<ShellProcessControl, String, Exception> terminalCommand
-    ) {
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         super(parent, command, terminalCommand);
     }
 

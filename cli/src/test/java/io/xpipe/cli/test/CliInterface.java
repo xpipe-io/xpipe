@@ -44,7 +44,10 @@ public abstract class CliInterface {
             var file = Files.createTempFile(null, null);
             Files.write(file, in.readAllBytes());
 
-            var proc = new ProcessBuilder(all).redirectInput(file.toFile()).redirectError(ProcessBuilder.Redirect.PIPE).start();
+            var proc = new ProcessBuilder(all)
+                    .redirectInput(file.toFile())
+                    .redirectError(ProcessBuilder.Redirect.PIPE)
+                    .start();
             return new ProductionOutputCapture(proc);
         }
 

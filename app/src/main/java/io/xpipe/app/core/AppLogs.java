@@ -42,8 +42,10 @@ public class AppLogs {
     private final PrintStream originalSysErr;
     private final Path logDir;
     private final boolean writeToSysout;
+
     @Getter
     private final boolean writeToFile;
+
     private final PrintStream outStream;
     private final Map<String, PrintStream> categoryWriters;
 

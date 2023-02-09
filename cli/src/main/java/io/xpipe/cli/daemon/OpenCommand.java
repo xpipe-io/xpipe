@@ -9,18 +9,21 @@ import picocli.CommandLine;
 
 import java.util.List;
 
-@CommandLine.Command(name = "open", description = "Opens the specified inputs with the X-Pipe daemon", sortOptions = false)
+@CommandLine.Command(
+        name = "open",
+        description = "Opens the specified inputs with the X-Pipe daemon",
+        sortOptions = false)
 public class OpenCommand extends BaseCommand {
 
     @CommandLine.Mixin
     private HelpMixin help;
 
-    @CommandLine.Parameters(
-            paramLabel = "<input>", converter = InputArgumentConverter.class)
+    @CommandLine.Parameters(paramLabel = "<input>", converter = InputArgumentConverter.class)
     List<String> inputs = List.of();
 
     @Override
     protected void execute(XPipeCliConnection con) throws Exception {
-        con.performSimpleExchange(OpenExchange.Request.builder().arguments(inputs).build());
+        con.performSimpleExchange(
+                OpenExchange.Request.builder().arguments(inputs).build());
     }
 }

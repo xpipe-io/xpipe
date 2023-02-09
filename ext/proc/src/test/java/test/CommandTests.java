@@ -61,7 +61,8 @@ public class CommandTests extends LocalExtensionTest {
 
     @ParameterizedTest
     @MethodSource("commandChecksProvider")
-    public void testSubDoubleCommandChecks(ShellProcessControl shellTestItem, CommandCheckTestItem tc) throws Exception {
+    public void testSubDoubleCommandChecks(ShellProcessControl shellTestItem, CommandCheckTestItem tc)
+            throws Exception {
         try (var pc = shellTestItem.start()) {
             try (ShellProcessControl sub = pc.subShell(pc.getShellType()).start()) {
                 try (var c = sub.command(tc.getCommandFunction().apply(sub)).start()) {
@@ -77,7 +78,8 @@ public class CommandTests extends LocalExtensionTest {
 
     @ParameterizedTest
     @MethodSource("commandChecksProvider")
-    public void testDoubleSubCommandChecks(ShellProcessControl shellTestItem, CommandCheckTestItem tc) throws Exception {
+    public void testDoubleSubCommandChecks(ShellProcessControl shellTestItem, CommandCheckTestItem tc)
+            throws Exception {
         try (var pc = shellTestItem.start()) {
             try (ShellProcessControl sub = pc.subShell(pc.getShellType()).start()) {
                 try (var c = sub.command(tc.getCommandFunction().apply(sub)).start()) {

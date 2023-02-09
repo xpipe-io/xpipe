@@ -15,11 +15,15 @@ public class ErrorEvent {
     private final List<TrackEvent> trackEvents = EventHandler.get().snapshotEvents();
     private String description;
     private boolean terminal;
+
     @Builder.Default
     private boolean omitted = false;
+
     @Builder.Default
     private boolean reportable = true;
+
     private Throwable throwable;
+
     @Singular
     private List<Path> attachments;
 

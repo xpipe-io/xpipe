@@ -57,7 +57,8 @@ public class CsvDelimiter {
 
     public static CsvDelimiter detectDelimiter(List<String> lines, Character quote) {
         return CsvDelimiter.ALL.stream()
-                .filter(c -> isPossibleDelimiter(lines, quote, c.getNamedCharacter().getCharacter()))
+                .filter(c ->
+                        isPossibleDelimiter(lines, quote, c.getNamedCharacter().getCharacter()))
                 .max(Comparator.comparingInt(c -> getUnquotedOccurenceCount(
                         lines.get(0), quote, c.getNamedCharacter().getCharacter())))
                 .orElse(ALL.get(0));

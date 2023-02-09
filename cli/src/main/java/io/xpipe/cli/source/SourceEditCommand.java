@@ -19,8 +19,10 @@ public class SourceEditCommand extends BaseCommand {
 
     @CommandLine.Mixin
     SourceRefMixin source;
+
     @CommandLine.Mixin
     ConfigOverride config;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

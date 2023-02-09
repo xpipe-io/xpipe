@@ -8,10 +8,7 @@ import picocli.CommandLine;
 
 import java.util.Map;
 
-@CommandLine.Command(
-        name = "info",
-        header = "Displays information about the data store.",
-        sortOptions = false)
+@CommandLine.Command(name = "info", header = "Displays information about the data store.", sortOptions = false)
 public class StoreInfoCommand extends BaseCommand {
 
     @CommandLine.Parameters(paramLabel = "<store>", description = "The store name.", arity = "1")

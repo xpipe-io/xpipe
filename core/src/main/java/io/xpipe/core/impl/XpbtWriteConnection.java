@@ -19,6 +19,7 @@ public class XpbtWriteConnection extends StreamWriteConnection implements Simple
 
     @Getter
     private final XpbtSource source;
+
     private TupleType writtenDescriptor;
 
     public XpbtWriteConnection(XpbtSource source) {
@@ -53,5 +54,4 @@ public class XpbtWriteConnection extends StreamWriteConnection implements Simple
         }
         writer.flush();
     }
-
 }

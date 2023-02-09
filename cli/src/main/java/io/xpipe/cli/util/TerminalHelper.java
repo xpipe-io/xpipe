@@ -13,8 +13,9 @@ public class TerminalHelper {
     public static Terminal init() {
         try {
             systemTerminal = TerminalBuilder.builder().system(true).dumb(true).build();
-            dumb = systemTerminal.getType().equals(Terminal.TYPE_DUMB) || systemTerminal.getType().equals(Terminal.TYPE_DUMB_COLOR);
-        return systemTerminal;
+            dumb = systemTerminal.getType().equals(Terminal.TYPE_DUMB)
+                    || systemTerminal.getType().equals(Terminal.TYPE_DUMB_COLOR);
+            return systemTerminal;
         } catch (IOException e) {
             return null;
         }

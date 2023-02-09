@@ -10,10 +10,7 @@ import java.io.InputStream;
 public class DataRawImpl extends DataSourceImpl implements DataRaw {
 
     public DataRawImpl(
-            DataSourceId sourceId,
-            DataSourceConfig sourceConfig,
-            io.xpipe.core.source.DataSource<?> internalSource
-    ) {
+            DataSourceId sourceId, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
         super(sourceId, sourceConfig, internalSource);
     }
 

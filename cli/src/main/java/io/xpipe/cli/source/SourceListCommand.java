@@ -20,6 +20,7 @@ public class SourceListCommand extends BaseCommand {
 
     @CommandLine.Parameters(paramLabel = "<collection>", description = "The optional collection name", arity = "0..1")
     String collection;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

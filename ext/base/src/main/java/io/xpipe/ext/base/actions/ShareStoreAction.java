@@ -43,7 +43,6 @@ public class ShareStoreAction implements ActionProvider {
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<DataStore>() {
 
-
             @Override
             public boolean showIfDisabled() {
                 return false;

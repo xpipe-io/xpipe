@@ -106,6 +106,8 @@ public class Deobfuscator {
         }
 
         var t = ShellTypes.getPlatformDefault();
-        return ShellStore.local().create().executeBooleanSimpleCommand(t.getWhichCommand("retrace." + t.getScriptFileEnding()));
+        return ShellStore.local()
+                .create()
+                .executeBooleanSimpleCommand(t.getWhichCommand("retrace." + t.getScriptFileEnding()));
     }
 }

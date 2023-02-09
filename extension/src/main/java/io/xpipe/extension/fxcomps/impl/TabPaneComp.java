@@ -60,6 +60,5 @@ public class TabPaneComp extends Comp<CompStructure<JFXTabPane>> {
         return new SimpleCompStructure<>(tabPane);
     }
 
-    public record Entry(ObservableValue<String> name, String graphic, Comp<?> comp) {
-    }
+    public record Entry(ObservableValue<String> name, String graphic, Comp<?> comp) {}
 }

@@ -17,10 +17,6 @@ public class Identifiers {
 
     private static List<String> nameAlternatives(List<String> split) {
         return List.of(
-                String.join("", split),
-                String.join(" ", split),
-                String.join("_", split),
-                String.join("-", split)
-        );
+                String.join("", split), String.join(" ", split), String.join("_", split), String.join("-", split));
     }
 }

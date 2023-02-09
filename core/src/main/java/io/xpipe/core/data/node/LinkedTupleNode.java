@@ -86,8 +86,7 @@ public class LinkedTupleNode extends TupleNode {
     public DataType determineDataType() {
         return TupleType.of(
                 getKeyNames(),
-                getNodes().stream().map(DataStructureNode::determineDataType).toList()
-        );
+                getNodes().stream().map(DataStructureNode::determineDataType).toList());
     }
 
     @Override

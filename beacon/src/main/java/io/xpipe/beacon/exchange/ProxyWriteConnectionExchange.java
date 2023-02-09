@@ -20,13 +20,15 @@ public class ProxyWriteConnectionExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull DataSource<?> source;
-        @NonNull WriteMode mode;
+        @NonNull
+        DataSource<?> source;
+
+        @NonNull
+        WriteMode mode;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {
-    }
+    public static class Response implements ResponseMessage {}
 }

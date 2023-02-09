@@ -23,12 +23,14 @@ public class SourceRenameCommand extends BaseCommand {
             arity = "1",
             converter = DataSourceReferenceConverter.class)
     DataSourceReference old;
+
     @CommandLine.Parameters(
             paramLabel = "<new id>",
             description = "The new source id.",
             arity = "1",
             converter = DataSourceIdConverter.class)
     DataSourceId newId;
+
     @CommandLine.Mixin
     private HelpMixin help;
 

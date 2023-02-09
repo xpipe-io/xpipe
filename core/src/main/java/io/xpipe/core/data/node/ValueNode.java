@@ -13,8 +13,7 @@ import java.util.Objects;
 
 public abstract class ValueNode extends DataStructureNode {
 
-    protected ValueNode() {
-    }
+    protected ValueNode() {}
 
     public static ValueNode nullValue() {
         return new SimpleValueNode(new byte[0]).tag(IS_NULL).asValue();
@@ -67,7 +66,8 @@ public abstract class ValueNode extends DataStructureNode {
     public static ValueNode ofBytes(byte[] data) {
         var created = of(data);
         if (data != null) {
-        created.tag(IS_BINARY);}
+            created.tag(IS_BINARY);
+        }
         return created;
     }
 
