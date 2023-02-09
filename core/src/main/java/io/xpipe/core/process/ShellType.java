@@ -60,11 +60,9 @@ public interface ShellType {
     String getEchoCommand(String s, boolean toErrorStream);
 
 
-    default String getPrintVariableCommand(String name) {
-        return getPrintVariableCommand("", name);
-    }
+    String getPrintVariableCommand(String name);
 
-    String getPrintVariableCommand(String prefix, String name);
+    String getPrintExitCodeCommand(String prefix);
 
     default String getPrintEnvironmentVariableCommand(String name) {
         return getPrintVariableCommand(name);

@@ -41,7 +41,7 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellProcessControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(ShellTypes.CMD, ShellTypes.CMD.getPrintVariableCommand("TEMP"));
+            return pc.executeStringSimpleCommand(pc.getShellType().getPrintEnvironmentVariableCommand("TEMP"));
         }
 
         @Override
@@ -52,7 +52,7 @@ public interface OsType {
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                         pc.subShell(ShellTypes.CMD).command("systeminfo").start()) {
+                         pc.command("systeminfo").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }

@@ -1,6 +1,5 @@
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataStoreActionProvider;
 import io.xpipe.extension.DataSourceTarget;
 import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.ActionProvider;
@@ -45,7 +44,6 @@ open module io.xpipe.extension {
 
     uses DataSourceProvider;
     uses DataSourceTarget;
-    uses DataStoreActionProvider;
     uses io.xpipe.extension.I18n;
     uses io.xpipe.extension.event.EventHandler;
     uses io.xpipe.extension.prefs.PrefsProvider;

@@ -171,13 +171,18 @@ public class StoreEntryComp extends SimpleComp {
             var button = new IconButtonComp(
                     actionProvider.getIcon(entry.getEntry().getStore().asNeeded()), () -> {
                         ThreadHelper.runFailableAsync(() -> {
-                            var action = actionProvider.createAction(entry.getEntry().getStore().asNeeded());
+                            var action = actionProvider.createAction(
+                                    entry.getEntry().getStore().asNeeded());
                             action.execute();
                         });
                     });
             button.apply(new FancyTooltipAugment<>(
                     actionProvider.getName(entry.getEntry().getStore().asNeeded())));
-            button.disable(Bindings.not(p.getValue()));
+            if (!actionProvider.showIfDisabled()) {
+                button.hide(Bindings.not(p.getValue()));
+            } else {
+                button.disable(Bindings.not(p.getValue()));
+            }
             list.add(button);
         }
 
@@ -227,7 +232,8 @@ public class StoreEntryComp extends SimpleComp {
             var item = new MenuItem(null, new FontIcon(icon));
             item.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
-                    var action = actionProvider.createAction(entry.getEntry().getStore().asNeeded());
+                    var action = actionProvider.createAction(
+                            entry.getEntry().getStore().asNeeded());
                     action.execute();
                 });
             });
@@ -245,7 +251,8 @@ public class StoreEntryComp extends SimpleComp {
 
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(I18n.get("browse"), new FontIcon("mdi2f-folder-open-outline"));
-            browse.setOnAction(event -> DesktopHelper.browsePath(entry.getEntry().getDirectory()));
+            browse.setOnAction(
+                    event -> DesktopHelper.browsePath(entry.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
         }
 
