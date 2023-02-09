@@ -47,8 +47,7 @@ public class XpbtReadConnection extends StreamReadConnection implements TableRea
         this.inputStream.skip(headerLength + 1);
         List<String> names = JacksonMapper.newMapper()
                 .disable(JsonParser.Feature.AUTO_CLOSE_SOURCE)
-                .readerFor(new TypeReference<List<String>>() {
-                })
+                .readerFor(new TypeReference<List<String>>() {})
                 .readValue(header);
         TupleType dataType = TupleType.tableType(names);
         this.dataType = dataType;

@@ -132,7 +132,6 @@ public class SimpleValidator implements Validator {
                     }
                     return str.toString();
                 },
-                validationResultProperty
-        );
+                validationResultProperty);
     }
 }

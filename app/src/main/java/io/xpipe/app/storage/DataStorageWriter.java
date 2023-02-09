@@ -46,7 +46,8 @@ public class DataStorageWriter {
                     }
                     return Optional.empty();
                 },
-                "storeId", isRoot);
+                "storeId",
+                isRoot);
 
         node = replaceReferencesWithIds(
                 node,
@@ -61,7 +62,8 @@ public class DataStorageWriter {
                     }
                     return Optional.empty();
                 },
-                "sourceId", isRoot);
+                "sourceId",
+                isRoot);
 
         return node;
     }

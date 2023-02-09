@@ -72,7 +72,6 @@ public interface ActionProvider {
         return null;
     }
 
-
     public static interface DataStoreCallSite<T extends DataStore> {
 
         Action createAction(T store);

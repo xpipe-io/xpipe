@@ -30,9 +30,9 @@ public class BeaconServer {
         if (custom != null) {
             var command = ShellTypes.getPlatformDefault()
                     .executeCommandListWithShell(custom
-                                                         + (BeaconConfig.getDaemonArguments() != null
-                            ? " " + BeaconConfig.getDaemonArguments()
-                            : ""));
+                            + (BeaconConfig.getDaemonArguments() != null
+                                    ? " " + BeaconConfig.getDaemonArguments()
+                                    : ""));
             Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
             printDaemonOutput(process, command);
             return process;
@@ -43,7 +43,8 @@ public class BeaconServer {
     public static Process start(String installationBase, XPipeDaemonMode mode) throws Exception {
         String command;
         if (!BeaconConfig.launchDaemonInDebugMode()) {
-            command = XPipeInstallation.createExternalAsyncLaunchCommand(installationBase, mode, BeaconConfig.getDaemonArguments());
+            command = XPipeInstallation.createExternalAsyncLaunchCommand(
+                    installationBase, mode, BeaconConfig.getDaemonArguments());
         } else {
             command = XPipeInstallation.createExternalLaunchCommand(
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments(), mode);
@@ -77,8 +78,7 @@ public class BeaconServer {
                         ioe.printStackTrace();
                     }
                 },
-                "daemon sysout"
-        );
+                "daemon sysout");
         out.setDaemon(true);
         out.start();
 
@@ -98,8 +98,7 @@ public class BeaconServer {
                         ioe.printStackTrace();
                     }
                 },
-                "daemon syserr"
-        );
+                "daemon syserr");
         err.setDaemon(true);
         err.start();
     }
@@ -117,8 +116,7 @@ public class BeaconServer {
             throw new IllegalStateException();
         } else {
             if (BeaconConfig.attachDebuggerToDaemon()) {
-                return FileNames.join(
-                        installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType));
+                return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType));
             } else {
                 return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugScriptPath(osType));
             }

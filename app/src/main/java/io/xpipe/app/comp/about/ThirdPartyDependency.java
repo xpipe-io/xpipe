@@ -22,8 +22,7 @@ public record ThirdPartyDependency(String name, String version, String licenseNa
                 }
 
                 try (var list = Files.list(path)) {
-                    for (var p : list
-                            .filter(p -> p.getFileName().toString().endsWith(".properties"))
+                    for (var p : list.filter(p -> p.getFileName().toString().endsWith(".properties"))
                             .sorted(Comparator.comparing(path1 -> path1.toString()))
                             .toList()) {
                         var props = new Properties();

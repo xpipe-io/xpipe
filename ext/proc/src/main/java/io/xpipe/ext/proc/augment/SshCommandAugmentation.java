@@ -24,7 +24,9 @@ public class SshCommandAugmentation extends CommandAugmentation {
 
         // Ensure proper permissions for keys
         var key = getParameter(baseCommand, "-i");
-        if (key.isPresent() && (processControl.getOsType().equals(OsType.LINUX) || processControl.getOsType().equals(OsType.MACOS)) ){
+        if (key.isPresent()
+                && (processControl.getOsType().equals(OsType.LINUX)
+                        || processControl.getOsType().equals(OsType.MACOS))) {
             processControl.executeSimpleCommand("chmod 400 \"" + key.get() + "\"");
         }
 

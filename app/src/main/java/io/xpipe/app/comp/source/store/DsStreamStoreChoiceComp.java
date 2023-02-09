@@ -56,8 +56,8 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
             Property<DataStore> selected,
             Property<DataSourceProvider<?>> provider,
             boolean showAnonymous,
-            boolean showSaved, Mode mode
-    ) {
+            boolean showSaved,
+            Mode mode) {
         this.selected = selected;
         this.provider = provider;
         this.showAnonymous = showAnonymous;
@@ -69,9 +69,12 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
 
     @Override
     protected Region createSimple() {
-        var isNamedStore = XPipeDaemon.getInstance().getStoreName(selected.getValue()).isPresent();
+        var isNamedStore =
+                XPipeDaemon.getInstance().getStoreName(selected.getValue()).isPresent();
         var localStore = new SimpleObjectProperty<DataStore>(
-                !isNamedStore && selected.getValue() instanceof FileStore fileStore && fileStore.getFileSystem() instanceof LocalStore
+                !isNamedStore
+                                && selected.getValue() instanceof FileStore fileStore
+                                && fileStore.getFileSystem() instanceof LocalStore
                         ? selected.getValue()
                         : null);
         var browseComp = new DsLocalFileBrowseComp(provider, localStore, mode).apply(GrowAugment.create(true, false));
@@ -99,7 +102,9 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
                 provider != null ? provider : new SimpleObjectProperty<>());
 
         var remoteStore = new SimpleObjectProperty<DataStore>(
-                isNamedStore && selected.getValue() instanceof FileStore fileStore && !(fileStore.getFileSystem() instanceof LocalStore)
+                isNamedStore
+                                && selected.getValue() instanceof FileStore fileStore
+                                && !(fileStore.getFileSystem() instanceof LocalStore)
                         ? selected.getValue()
                         : null);
         var remote = new TabPaneComp.Entry(
@@ -111,14 +116,15 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
                 "mdrmz-storage",
                 NamedStoreChoiceComp.create(filter, namedStore, DataStoreProvider.Category.STREAM));
 
-        var otherStore = new SimpleObjectProperty<DataStore>(localStore.get() == null && remoteStore.get() == null && !isNamedStore ? selected.getValue() : null);
+        var otherStore = new SimpleObjectProperty<DataStore>(
+                localStore.get() == null && remoteStore.get() == null && !isNamedStore ? selected.getValue() : null);
         var other = new TabPaneComp.Entry(
                 I18n.observable("other"),
                 "mdrmz-web_asset",
                 new DataStoreSelectorComp(DataStoreProvider.Category.STREAM, otherStore));
 
         var selectedTab = new SimpleObjectProperty<TabPaneComp.Entry>();
-        if (localStore.get()  != null) {
+        if (localStore.get() != null) {
             selectedTab.set(local);
         } else if (remoteStore.get() != null) {
             selectedTab.set(remote);
@@ -132,7 +138,8 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
 
         selected.addListener((observable, oldValue, newValue) -> {
             if (provider != null && provider.getValue() == null) {
-                provider.setValue(DataSourceProviders.byPreferredStore(newValue, null).orElse(null));
+                provider.setValue(
+                        DataSourceProviders.byPreferredStore(newValue, null).orElse(null));
             }
         });
 

@@ -20,12 +20,15 @@ public class ModeExchangeImpl extends ModeExchange
             throw new ClientException("Unsupported mode: " + msg.getMode().getDisplayName() + ". Supported: "
                     + String.join(
                             ", ",
-                            OperationMode.getAll().stream().filter(OperationMode::isSupported)
+                            OperationMode.getAll().stream()
+                                    .filter(OperationMode::isSupported)
                                     .map(OperationMode::getId)
                                     .toList()));
         }
 
         OperationMode.switchTo(mode);
-        return ModeExchange.Response.builder().usedMode(OperationMode.map(OperationMode.get())).build();
+        return ModeExchange.Response.builder()
+                .usedMode(OperationMode.map(OperationMode.get()))
+                .build();
     }
 }

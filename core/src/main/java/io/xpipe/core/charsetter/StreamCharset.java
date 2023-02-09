@@ -19,13 +19,8 @@ public class StreamCharset {
 
     public static final StreamCharset UTF8_BOM = new StreamCharset(
             StandardCharsets.UTF_8,
-            new byte[]{
-                    (byte) 0xEF,
-                    (byte) 0xBB,
-                    (byte) 0xBF
-            },
-            Identifiers.get("utf", "8", "bom")
-    );
+            new byte[] {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF},
+            Identifiers.get("utf", "8", "bom"));
 
     // ======
     // UTF-16
@@ -36,24 +31,16 @@ public class StreamCharset {
 
     public static final StreamCharset UTF16_BE_BOM = new StreamCharset(
             StandardCharsets.UTF_16BE,
-            new byte[]{
-                    (byte) 0xFE,
-                    (byte) 0xFF
-            },
-            Identifiers.get("utf", "16", "be", "bom")
-    );
+            new byte[] {(byte) 0xFE, (byte) 0xFF},
+            Identifiers.get("utf", "16", "be", "bom"));
 
     public static final StreamCharset UTF16_LE =
             new StreamCharset(StandardCharsets.UTF_16LE, null, Identifiers.get("utf", "16", "le"));
 
     public static final StreamCharset UTF16_LE_BOM = new StreamCharset(
             StandardCharsets.UTF_16LE,
-            new byte[]{
-                    (byte) 0xFF,
-                    (byte) 0xFE
-            },
-            Identifiers.get("utf", "16", "le", "bom")
-    );
+            new byte[] {(byte) 0xFF, (byte) 0xFE},
+            Identifiers.get("utf", "16", "le", "bom"));
 
     public static final StreamCharset UTF16 = UTF16_LE;
 
@@ -67,8 +54,7 @@ public class StreamCharset {
             new StreamCharset(
                     StandardCharsets.US_ASCII,
                     null,
-                    Identifiers.join(Identifiers.get("ascii"), Identifiers.get("us", "ascii"))
-            ),
+                    Identifiers.join(Identifiers.get("ascii"), Identifiers.get("us", "ascii"))),
             new StreamCharset(
                     StandardCharsets.ISO_8859_1,
                     null,
@@ -76,20 +62,15 @@ public class StreamCharset {
                             Identifiers.get("iso", "8859"),
                             Identifiers.get("iso", "8859", "1"),
                             Identifiers.get("8859"),
-                            Identifiers.get("8859", "1")
-                    )
-            ),
+                            Identifiers.get("8859", "1"))),
             new StreamCharset(
                     Charset.forName("Windows-1251"),
                     null,
-                    Identifiers.join(Identifiers.get("windows", "1251"), Identifiers.get("1251"))
-            ),
+                    Identifiers.join(Identifiers.get("windows", "1251"), Identifiers.get("1251"))),
             new StreamCharset(
                     Charset.forName("Windows-1252"),
                     null,
-                    Identifiers.join(Identifiers.get("windows", "1252"), Identifiers.get("1252"))
-            )
-    );
+                    Identifiers.join(Identifiers.get("windows", "1252"), Identifiers.get("1252"))));
 
     // ======
     // UTF-32
@@ -98,26 +79,16 @@ public class StreamCharset {
             new StreamCharset(Charset.forName("utf-32le"), null, Identifiers.get("utf", "32", "le"));
     public static final StreamCharset UTF32_LE_BOM = new StreamCharset(
             Charset.forName("utf-32le"),
-            new byte[]{
-                    0x00,
-                    0x00,
-                    (byte) 0xFE,
-                    (byte) 0xFF
-            },
-            Identifiers.get("utf", "32", "le", "bom")
-    );
+            new byte[] {0x00, 0x00, (byte) 0xFE, (byte) 0xFF},
+            Identifiers.get("utf", "32", "le", "bom"));
     public static final StreamCharset UTF32_BE =
             new StreamCharset(Charset.forName("utf-32be"), null, Identifiers.get("utf", "32", "be"));
     public static final StreamCharset UTF32_BE_BOM = new StreamCharset(
             Charset.forName("utf-32be"),
-            new byte[]{
-                    (byte) 0xFF,
-                    (byte) 0xFE,
-                    0x00,
-                    0x00,
-                    },
-            Identifiers.get("utf", "32", "be", "bom")
-    );
+            new byte[] {
+                (byte) 0xFF, (byte) 0xFE, 0x00, 0x00,
+            },
+            Identifiers.get("utf", "32", "be", "bom"));
     private static final List<StreamCharset> RARE_NAMED =
             List.of(UTF16_LE, UTF16_LE_BOM, UTF16_BE, UTF16_BE_BOM, UTF32_LE, UTF32_LE_BOM, UTF32_BE, UTF32_BE_BOM);
 
@@ -130,19 +101,17 @@ public class StreamCharset {
                                     && !charset.displayName().startsWith("X-")
                                     && !charset.displayName().endsWith("-BOM")
                                     && COMMON.stream()
-                                    .noneMatch(c -> c.getCharset().equals(charset))
+                                            .noneMatch(c -> c.getCharset().equals(charset))
                                     && RARE_NAMED.stream()
-                                    .noneMatch(c -> c.getCharset().equals(charset)))
+                                            .noneMatch(c -> c.getCharset().equals(charset)))
                             .map(charset -> new StreamCharset(
                                     charset,
                                     null,
-                                    Identifiers.get(charset.name().split("-"))
-                            ))
-            )
+                                    Identifiers.get(charset.name().split("-")))))
             .toList();
 
-    public static final List<StreamCharset> ALL = Stream.concat(COMMON.stream(), RARE.stream()).toList();
-
+    public static final List<StreamCharset> ALL =
+            Stream.concat(COMMON.stream(), RARE.stream()).toList();
 
     Charset charset;
     byte[] byteOrderMark;
@@ -151,13 +120,15 @@ public class StreamCharset {
     public static StreamCharset get(Charset charset, boolean byteOrderMark) {
         return ALL.stream()
                 .filter(streamCharset ->
-                                streamCharset.getCharset().equals(charset) && streamCharset.hasByteOrderMark() == byteOrderMark)
+                        streamCharset.getCharset().equals(charset) && streamCharset.hasByteOrderMark() == byteOrderMark)
                 .findFirst()
                 .orElseThrow();
     }
 
     public static StreamCharset get(String s) {
-        var found = ALL.stream().filter(streamCharset -> streamCharset.getNames().contains(s.toLowerCase(Locale.ROOT))).findFirst();
+        var found = ALL.stream()
+                .filter(streamCharset -> streamCharset.getNames().contains(s.toLowerCase(Locale.ROOT)))
+                .findFirst();
         if (found.isEmpty()) {
             throw new IllegalArgumentException("Unknown charset name: " + s);
         }

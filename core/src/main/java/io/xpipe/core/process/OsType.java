@@ -51,8 +51,7 @@ public interface OsType {
 
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
-            try (CommandProcessControl c =
-                         pc.command("systeminfo").start()) {
+            try (CommandProcessControl c = pc.command("systeminfo").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
@@ -144,7 +143,7 @@ public interface OsType {
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                         pc.subShell(ShellTypes.BASH).command("sw_vers").start()) {
+                    pc.subShell(ShellTypes.BASH).command("sw_vers").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
@@ -154,9 +153,9 @@ public interface OsType {
         public String determineOperatingSystemName(ShellProcessControl pc) throws Exception {
             var properties = getProperties(pc);
             var name = pc.executeStringSimpleCommand(
-                    "awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup " +
-                            "Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | " +
-                            "awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}'");
+                    "awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup "
+                            + "Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | "
+                            + "awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}'");
             return properties.get("ProductName") + " " + name + " " + properties.get("ProductVersion");
         }
     }

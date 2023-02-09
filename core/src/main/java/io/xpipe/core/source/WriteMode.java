@@ -17,8 +17,8 @@ public class WriteMode extends JacksonizedValue {
     public static void init(ModuleLayer layer) {
         if (ALL.size() == 0) {
             ALL.addAll(ServiceLoader.load(layer, WriteMode.class).stream()
-                               .map(p -> p.get())
-                               .toList());
+                    .map(p -> p.get())
+                    .toList());
         }
     }
 
@@ -34,14 +34,11 @@ public class WriteMode extends JacksonizedValue {
     }
 
     @JsonTypeName("replace")
-    public static final class Replace extends WriteMode {
-    }
+    public static final class Replace extends WriteMode {}
 
     @JsonTypeName("append")
-    public static final class Append extends WriteMode {
-    }
+    public static final class Append extends WriteMode {}
 
     @JsonTypeName("prepend")
-    public static final class Prepend extends WriteMode {
-    }
+    public static final class Prepend extends WriteMode {}
 }

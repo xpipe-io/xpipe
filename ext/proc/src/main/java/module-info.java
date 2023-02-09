@@ -1,6 +1,8 @@
 import io.xpipe.app.util.TerminalProvider;
 import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.ext.proc.*;
+import io.xpipe.ext.proc.ProcPrefs;
+import io.xpipe.ext.proc.ProcProvider;
+import io.xpipe.ext.proc.TerminalProviderImpl;
 import io.xpipe.ext.proc.action.InstallConnectorAction;
 import io.xpipe.ext.proc.action.LaunchAction;
 import io.xpipe.ext.proc.action.LaunchShortcutAction;
@@ -27,7 +29,8 @@ open module io.xpipe.ext.proc {
     requires static commons.exec;
     requires static com.dlsc.preferencesfx;
 
-    provides TerminalProvider with TerminalProviderImpl;
+    provides TerminalProvider with
+            TerminalProviderImpl;
     provides PrefsProvider with
             ProcPrefs;
     provides CommandAugmentation with

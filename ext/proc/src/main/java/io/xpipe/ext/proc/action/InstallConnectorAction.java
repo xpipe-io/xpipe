@@ -24,7 +24,8 @@ public class InstallConnectorAction implements ActionProvider {
 
         @Override
         public void execute() throws Exception {
-            try (ShellProcessControl s = ((ShellStore) entry.getStore()).create().start()) {
+            try (ShellProcessControl s =
+                    ((ShellStore) entry.getStore()).create().start()) {
                 ProxyManagerProvider.get().setup(s);
             }
         }
@@ -58,7 +59,6 @@ public class InstallConnectorAction implements ActionProvider {
             public String getIcon(ShellStore store) {
                 return "mdi2c-code-greater-than";
             }
-
         };
     }
 }

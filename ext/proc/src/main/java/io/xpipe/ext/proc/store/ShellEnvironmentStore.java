@@ -21,7 +21,6 @@ public class ShellEnvironmentStore extends JacksonizedValue implements MachineSt
     private final ShellStore host;
     private final ShellType shell;
 
-
     public ShellEnvironmentStore(String commands, ShellStore host, ShellType shell) {
         this.commands = commands;
         this.host = host;
@@ -38,9 +37,7 @@ public class ShellEnvironmentStore extends JacksonizedValue implements MachineSt
 
     @Override
     public void validate() throws Exception {
-        try (var ignored = create().start()) {
-
-        }
+        try (var ignored = create().start()) {}
     }
 
     @Override

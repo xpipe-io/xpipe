@@ -28,7 +28,8 @@ public class Validators {
         }
     }
 
-    public static void hostFeature(ShellStore host, Predicate<ShellStore> predicate, String name) throws ValidationException {
+    public static void hostFeature(ShellStore host, Predicate<ShellStore> predicate, String name)
+            throws ValidationException {
         if (!predicate.test(host)) {
             throw new ValidationException(I18n.get("extension.hostFeatureUnsupported", name));
         }

@@ -22,7 +22,8 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.setTitle(I18n.get("connectorInstallationTitle"));
                     alert.setHeaderText(I18n.get("connectorInstallationHeader"));
-                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(I18n.get("connectorInstallationContent")));
+                    alert.getDialogPane()
+                            .setContent(AppWindowHelper.alertContentText(I18n.get("connectorInstallationContent")));
                 })
                 .filter(buttonType -> buttonType.getButtonData().isDefaultButton())
                 .isPresent();

@@ -23,7 +23,9 @@ module io.xpipe.beacon {
     opens io.xpipe.beacon.exchange.api;
     opens io.xpipe.beacon.exchange.data;
     opens io.xpipe.beacon.exchange.cli;
+
     exports io.xpipe.beacon.util;
+
     opens io.xpipe.beacon.util;
 
     requires static com.fasterxml.jackson.core;
@@ -34,9 +36,12 @@ module io.xpipe.beacon {
     uses MessageExchange;
     uses ProxyFunction;
 
-    provides ProxyProvider with BeaconProxyImpl;
-    provides SecretProvider with SecretProviderImpl;
-    provides Module with BeaconJacksonModule;
+    provides ProxyProvider with
+            BeaconProxyImpl;
+    provides SecretProvider with
+            SecretProviderImpl;
+    provides Module with
+            BeaconJacksonModule;
     provides io.xpipe.beacon.exchange.MessageExchange with
             ForwardExchange,
             InstanceExchange,

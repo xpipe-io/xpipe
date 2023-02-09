@@ -71,7 +71,8 @@ public class LauncherCommand implements Callable<Integer> {
         if (BeaconServer.isRunning()) {
             try (var con = new LauncherConnection()) {
                 con.constructSocket();
-                con.performSimpleExchange(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
+                con.performSimpleExchange(
+                        FocusExchange.Request.builder().mode(getEffectiveMode()).build());
                 if (inputs.size() > 0) {
                     con.performSimpleExchange(
                             OpenExchange.Request.builder().arguments(inputs).build());
@@ -79,8 +80,9 @@ public class LauncherCommand implements Callable<Integer> {
 
                 if (OsType.getLocal().equals(OsType.MACOS)) {
                     Desktop.getDesktop().setOpenURIHandler(e -> {
-                        con.performSimpleExchange(
-                                OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                        con.performSimpleExchange(OpenExchange.Request.builder()
+                                .arguments(List.of(e.getURI().toString()))
+                                .build());
                     });
                     ThreadHelper.sleep(1000);
                 }

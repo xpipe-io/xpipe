@@ -1,6 +1,5 @@
 package io.xpipe.ext.proc;
 
-import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.*;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.extension.event.TrackEvent;
@@ -25,7 +24,8 @@ public class LocalShellControlImpl extends ShellControlImpl {
 
     @Override
     public CommandProcessControl command(
-            FailableFunction<ShellProcessControl, String, Exception> command, FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
+            FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         var control = ProcessControlProvider.createCommand(this, command, terminalCommand);
         if (control != null) {
             return control;
@@ -183,5 +183,4 @@ public class LocalShellControlImpl extends ShellControlImpl {
     public InputStream getStderr() {
         return process.getErrorStream();
     }
-
 }

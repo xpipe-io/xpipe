@@ -34,7 +34,7 @@ public class AppProperties {
         Properties props = new Properties();
         AppResources.with(AppResources.XPIPE_MODULE, "app.properties", p -> {
             if (Files.exists(p)) {
-                try (var in = Files.newInputStream(p)){
+                try (var in = Files.newInputStream(p)) {
                     props.load(in);
                 } catch (IOException e) {
                     ErrorEvent.fromThrowable(e).omitted(true).build().handle();
@@ -44,7 +44,9 @@ public class AppProperties {
 
         version = Optional.ofNullable(props.getProperty("version")).orElse("dev");
         build = Optional.ofNullable(props.getProperty("build")).orElse("unknown");
-        buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId")).map(UUID::fromString).orElse(UUID.randomUUID());
+        buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))
+                .map(UUID::fromString)
+                .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
 
         extensionPaths = parseExtensionPaths();

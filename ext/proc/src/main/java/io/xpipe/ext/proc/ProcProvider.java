@@ -11,17 +11,17 @@ public class ProcProvider extends ProcessControlProvider {
 
     @Override
     public ShellProcessControl sub(
-            ShellProcessControl parent, @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
-            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand
-    ) {
+            ShellProcessControl parent,
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
+            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand) {
         return null;
     }
 
     @Override
     public CommandProcessControl command(
-            ShellProcessControl parent, @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
-            FailableFunction<ShellProcessControl, String, Exception> terminalCommand
-    ) {
+            ShellProcessControl parent,
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         return null;
     }
 

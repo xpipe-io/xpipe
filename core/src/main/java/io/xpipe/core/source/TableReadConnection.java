@@ -37,8 +37,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
             }
 
             @Override
-            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {
-            }
+            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {}
 
             @Override
             public ArrayNode readRows(int maxLines) throws Exception {

@@ -13,34 +13,49 @@ public abstract class ProcessControlProvider {
     private static List<ProcessControlProvider> INSTANCES;
 
     public static void init(ModuleLayer layer) {
-        INSTANCES = ServiceLoader.load(layer, ProcessControlProvider.class)
-                .stream().map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get()).toList();
+        INSTANCES = ServiceLoader.load(layer, ProcessControlProvider.class).stream()
+                .map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get())
+                .toList();
     }
 
     public static ShellProcessControl createLocal() {
-        return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl()).filter(
-                Objects::nonNull).findFirst().orElseThrow();
+        return INSTANCES.stream()
+                .map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl())
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow();
     }
 
     public static ShellProcessControl createSub(
             ShellProcessControl parent,
             @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
             FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand) {
-        return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.sub(parent, commandFunction, terminalCommand)).filter(
-                Objects::nonNull).findFirst().orElseThrow();
+        return INSTANCES.stream()
+                .map(localProcessControlProvider ->
+                        localProcessControlProvider.sub(parent, commandFunction, terminalCommand))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow();
     }
 
     public static CommandProcessControl createCommand(
             ShellProcessControl parent,
             @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
             FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
-        return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.command(parent, command, terminalCommand)).filter(
-                Objects::nonNull).findFirst().orElseThrow();
+        return INSTANCES.stream()
+                .map(localProcessControlProvider ->
+                        localProcessControlProvider.command(parent, command, terminalCommand))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow();
     }
 
     public static ShellProcessControl createSsh(Object sshStore) {
-        return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.createSshControl(sshStore)).filter(
-                Objects::nonNull).findFirst().orElseThrow();
+        return INSTANCES.stream()
+                .map(localProcessControlProvider -> localProcessControlProvider.createSshControl(sshStore))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow();
     }
 
     public abstract ShellProcessControl sub(

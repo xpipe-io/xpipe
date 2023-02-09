@@ -16,7 +16,8 @@ import java.util.ServiceLoader;
 
 public interface DataSourceTarget {
 
-    static List<DataSourceTarget> ALL = new ArrayList<>();;
+    static List<DataSourceTarget> ALL = new ArrayList<>();
+    ;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -24,7 +25,8 @@ public interface DataSourceTarget {
         public void init(ModuleLayer layer) {
             ALL.clear();
             ALL.addAll(ServiceLoader.load(layer, DataSourceTarget.class).stream()
-                    .map(ServiceLoader.Provider::get).toList());
+                    .map(ServiceLoader.Provider::get)
+                    .toList());
         }
 
         @Override

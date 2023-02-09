@@ -4,10 +4,10 @@ import io.sentry.*;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.extension.util.XPipeDistributionType;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;

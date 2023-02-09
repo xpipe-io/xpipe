@@ -19,12 +19,12 @@ public class ProxyReadConnectionExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull DataSource<?> source;
+        @NonNull
+        DataSource<?> source;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {
-    }
+    public static class Response implements ResponseMessage {}
 }

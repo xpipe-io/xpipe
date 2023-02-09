@@ -24,7 +24,9 @@ public class XPipeTempDirectory {
         var dir = FileNames.join(base, "xpipe");
 
         if (!proc.executeBooleanSimpleCommand(proc.getShellType().getFileExistsCommand(dir))) {
-            proc.executeSimpleCommand(proc.getShellType().flatten(proc.getShellType().getMkdirsCommand(dir)), "Unable to access or create temporary directory " + dir);
+            proc.executeSimpleCommand(
+                    proc.getShellType().flatten(proc.getShellType().getMkdirsCommand(dir)),
+                    "Unable to access or create temporary directory " + dir);
 
             if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MACOS)) {
                 proc.executeSimpleCommand("chmod -f 777 \"" + dir + "\"");

@@ -35,8 +35,8 @@ public class DsStorageTargetComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var type = new DataSourceTypeComp(
-                        dataSourceEntry.getValue().getDataSourceType(),
-                        dataSourceEntry.getValue().getSource().getFlow());
+                dataSourceEntry.getValue().getDataSourceType(),
+                dataSourceEntry.getValue().getSource().getFlow());
         type.apply(struc -> struc.get().prefWidthProperty().bind(struc.get().prefHeightProperty()));
         type.apply(struc -> struc.get().setPrefHeight(60));
 

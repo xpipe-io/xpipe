@@ -5,8 +5,7 @@ package io.xpipe.beacon;
  */
 public class ConnectorException extends Exception {
 
-    public ConnectorException() {
-    }
+    public ConnectorException() {}
 
     public ConnectorException(String message) {
         super(message);

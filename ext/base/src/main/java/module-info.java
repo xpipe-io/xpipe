@@ -2,8 +2,8 @@ import io.xpipe.ext.base.*;
 import io.xpipe.ext.base.actions.*;
 import io.xpipe.ext.base.apps.*;
 import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataStoreProvider;
 import io.xpipe.extension.DataSourceTarget;
+import io.xpipe.extension.DataStoreProvider;
 import io.xpipe.extension.util.ActionProvider;
 
 open module io.xpipe.ext.base {
@@ -21,7 +21,8 @@ open module io.xpipe.ext.base {
     requires static net.synedra.validatorfx;
     requires static io.xpipe.app;
 
-    provides ActionProvider with AddStoreAction,
+    provides ActionProvider with
+            AddStoreAction,
             StreamExportAction,
             ShareStoreAction,
             FileBrowseAction,

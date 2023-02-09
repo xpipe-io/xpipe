@@ -34,13 +34,7 @@ public class ShellTypes {
     }
 
     public static ShellType[] getAllShellTypes() {
-        return new ShellType[]{
-                CMD,
-                POWERSHELL,
-                ZSH,
-                BASH,
-                SH
-        };
+        return new ShellType[] {CMD, POWERSHELL, ZSH, BASH, SH};
     }
 
     @JsonTypeName("cmd")
@@ -113,8 +107,7 @@ public class ShellTypes {
         }
 
         @Override
-        public void disableHistory(ShellProcessControl pc) throws IOException {
-        }
+        public void disableHistory(ShellProcessControl pc) throws IOException {}
 
         @Override
         public String getExitCodeVariable() {
@@ -267,7 +260,8 @@ public class ShellTypes {
 
         @Override
         public String getFileTouchCommand(String file) {
-            return "$error_count=$error.Count; Out-File -FilePath \"" + file + "\"; $LASTEXITCODE=$error.Count - $error_count";
+            return "$error_count=$error.Count; Out-File -FilePath \"" + file
+                    + "\"; $LASTEXITCODE=$error.Count - $error_count";
         }
 
         @Override
@@ -448,7 +442,7 @@ public class ShellTypes {
 
         @Override
         public String getTextFileWriteCommand(String content, String file) {
-            return "echo -e '" + content.replaceAll("\n", "\\\\n").replaceAll("'","'\\\\''") + "' > \"" + file + "\"";
+            return "echo -e '" + content.replaceAll("\n", "\\\\n").replaceAll("'", "'\\\\''") + "' > \"" + file + "\"";
         }
 
         @Override

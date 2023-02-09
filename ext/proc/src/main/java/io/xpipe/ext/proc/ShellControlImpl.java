@@ -85,7 +85,8 @@ public abstract class ShellControlImpl extends ProcessControlImpl implements She
 
     @Override
     public CommandProcessControl command(
-            FailableFunction<ShellProcessControl, String, Exception> command, FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
+            FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         var control = ProcessControlProvider.createCommand(this, command, terminalCommand);
         return control;
     }

@@ -19,11 +19,11 @@ import java.util.function.Predicate;
 
 public class BindingsHelper {
 
-    private static final Set<ReferenceEntry> REFERENCES = Collections.newSetFromMap(new ConcurrentHashMap<ReferenceEntry, Boolean>());
+    private static final Set<ReferenceEntry> REFERENCES =
+            Collections.newSetFromMap(new ConcurrentHashMap<ReferenceEntry, Boolean>());
 
     public static <T, V> void bindExclusive(
-            Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind
-    ) {
+            Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind) {
         selected.addListener((c, o, n) -> {
             toBind.unbind();
             toBind.bind(map.get(n));
@@ -69,9 +69,8 @@ public class BindingsHelper {
     public static <T extends Binding<?>> T persist(T binding) {
         var dependencies = new HashSet<javafx.beans.Observable>();
         while (dependencies.addAll(binding.getDependencies().stream()
-                                           .map(o -> (javafx.beans.Observable) o)
-                                           .toList())) {
-        }
+                .map(o -> (javafx.beans.Observable) o)
+                .toList())) {}
         dependencies.add(binding);
         BINDINGS.put(new WeakReference<>(binding), dependencies);
         return binding;
@@ -80,9 +79,8 @@ public class BindingsHelper {
     public static <T extends ListBinding<?>> T persist(T binding) {
         var dependencies = new HashSet<javafx.beans.Observable>();
         while (dependencies.addAll(binding.getDependencies().stream()
-                                           .map(o -> (javafx.beans.Observable) o)
-                                           .toList())) {
-        }
+                .map(o -> (javafx.beans.Observable) o)
+                .toList())) {}
         dependencies.add(binding);
         BINDINGS.put(new WeakReference<>(binding), dependencies);
         return binding;
@@ -131,11 +129,12 @@ public class BindingsHelper {
         return l1;
     }
 
-    public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2,Predicate<V> predicate) {
+    public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, Predicate<V> predicate) {
         return filteredContentBinding(l2, new SimpleObjectProperty<>(predicate));
     }
 
-    public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, ObservableValue<Predicate<V>> predicate) {
+    public static <V> ObservableList<V> filteredContentBinding(
+            ObservableList<V> l2, ObservableValue<Predicate<V>> predicate) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
             setContent(l1, l2.stream().filter(predicate.getValue()).toList());
@@ -144,7 +143,7 @@ public class BindingsHelper {
         l2.addListener((ListChangeListener<? super V>) c -> {
             runnable.run();
         });
-        predicate.addListener((c,o,n) -> {
+        predicate.addListener((c, o, n) -> {
             runnable.run();
         });
         linkPersistently(l2, l1);

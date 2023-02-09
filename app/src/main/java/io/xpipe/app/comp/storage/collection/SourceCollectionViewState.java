@@ -158,7 +158,8 @@ public class SourceCollectionViewState {
 
     private ObservableList<SourceCollectionWrapper> filter(ObservableList<SourceCollectionWrapper> list) {
         return list.filtered(storeEntryWrapper -> {
-            if (AppPrefs.get().developerMode().getValue() && AppPrefs.get().developerShowHiddenEntries().get()) {
+            if (AppPrefs.get().developerMode().getValue()
+                    && AppPrefs.get().developerShowHiddenEntries().get()) {
                 return true;
             } else {
                 return !storeEntryWrapper.isInternal();

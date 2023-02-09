@@ -23,28 +23,23 @@ public class DataSourceTargetChoiceComp extends Comp<CompStructure<ComboBox<Node
     private final Property<DataSourceTarget> selectedApplication;
     private final List<DataSourceTarget> all;
 
-    private DataSourceTargetChoiceComp(
-            Property<DataSourceTarget> selectedApplication, List<DataSourceTarget> all) {
+    private DataSourceTargetChoiceComp(Property<DataSourceTarget> selectedApplication, List<DataSourceTarget> all) {
         this.selectedApplication = selectedApplication;
         this.all = all;
     }
 
     public static DataSourceTargetChoiceComp create(
-            Property<DataSourceTarget> selectedApplication,
-            Predicate<DataSourceTarget> filter) {
+            Property<DataSourceTarget> selectedApplication, Predicate<DataSourceTarget> filter) {
         selectedApplication.addListener((observable, oldValue, val) -> {
             AppCache.update("application-last-used", val != null ? val.getId() : null);
         });
-        var all = DataSourceTarget.getAll().stream()
-                .filter((p) -> filter.test(p))
-                .toList();
+        var all =
+                DataSourceTarget.getAll().stream().filter((p) -> filter.test(p)).toList();
 
         if (selectedApplication.getValue() == null) {
             String selectedId = AppCache.get("application-last-used", String.class, () -> null);
             var selectedProvider = selectedId != null
-                    ? DataSourceTarget.byId(selectedId)
-                            .filter(filter)
-                            .orElse(null)
+                    ? DataSourceTarget.byId(selectedId).filter(filter).orElse(null)
                     : null;
             selectedApplication.setValue(selectedProvider);
         }

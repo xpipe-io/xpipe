@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
 
 public abstract class ArrayNode extends DataStructureNode {
 
-    protected ArrayNode() {
-    }
+    protected ArrayNode() {}
 
     public static ArrayNode empty() {
         return of(List.of());
@@ -56,7 +55,6 @@ public abstract class ArrayNode extends DataStructureNode {
     protected final String getName() {
         return "array node";
     }
-
 
     @Override
     public final String toString(int indent) {

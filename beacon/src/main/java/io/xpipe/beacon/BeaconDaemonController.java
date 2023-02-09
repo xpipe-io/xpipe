@@ -39,7 +39,10 @@ public class BeaconDaemonController {
             return;
         }
 
-        var client = BeaconClient.connect(BeaconClient.ApiClientInformation.builder().version("?").language("Java API Test").build());
+        var client = BeaconClient.connect(BeaconClient.ApiClientInformation.builder()
+                .version("?")
+                .language("Java API Test")
+                .build());
         if (!BeaconServer.tryStop(client)) {
             throw new AssertionError();
         }
@@ -49,9 +52,9 @@ public class BeaconDaemonController {
     private static void waitForStartup(Process process, boolean custom) throws IOException {
         for (int i = 0; i < 160; i++) {
             // Breaks when using nohup & disown
-//            if (process != null && !custom && !process.isAlive()) {
-//                throw new IOException("Daemon start failed");
-//            }
+            //            if (process != null && !custom && !process.isAlive()) {
+            //                throw new IOException("Daemon start failed");
+            //            }
 
             if (process != null && custom && !process.isAlive() && process.exitValue() != 0) {
                 throw new IOException("Custom launch command failed");
@@ -63,9 +66,9 @@ public class BeaconDaemonController {
             }
 
             var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder()
-                                                    .version("?")
-                                                    .language("Java")
-                                                    .build());
+                    .version("?")
+                    .language("Java")
+                    .build());
             if (s.isPresent()) {
                 return;
             }

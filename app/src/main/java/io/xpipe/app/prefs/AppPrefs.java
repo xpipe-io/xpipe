@@ -27,7 +27,7 @@ import java.util.*;
 
 public class AppPrefs {
 
-    private  static ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
+    private static ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
                 () -> {
                     return AppPrefs.get().developerMode().getValue() || o.get();
@@ -36,7 +36,7 @@ public class AppPrefs {
                 AppPrefs.get().developerMode());
     }
 
-    private  static ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
+    private static ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
                 () -> {
                     return !AppPrefs.get().developerMode().getValue() || o.get();
@@ -405,8 +405,7 @@ public class AppPrefs {
                                 Setting.of(
                                         "externalStartupBehaviour",
                                         externalStartupBehaviourControl,
-                                        externalStartupBehaviour
-                                ),
+                                        externalStartupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour),
                                 Setting.of("automaticallyUpdate", automaticallyUpdateField, automaticallyUpdate)
                                         .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
@@ -416,9 +415,7 @@ public class AppPrefs {
                                                 XPipeDistributionType.get().supportsUpdate()))),
                                 Setting.of("storageDirectory", storageDirectoryControl, internalStorageDirectory),
                                 Setting.of("logLevel", logLevelField, internalLogLevel),
-                                Setting.of("developerMode", developerModeField, internalDeveloperMode)
-                        )
-                ),
+                                Setting.of("developerMode", developerModeField, internalDeveloperMode))),
                 Category.of(
                         "appearance",
                         Group.of(
@@ -427,10 +424,8 @@ public class AppPrefs {
                                 Setting.of("theme", themeControl, themeInternal),
                                 Setting.of("useSystemFont", useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
-                                Setting.of("fontSize", fontSizeInternal, fontSizeMin, fontSizeMax)
-                        ),
-                        Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))
-                ),
+                                Setting.of("fontSize", fontSizeInternal, fontSizeMin, fontSizeMax)),
+                        Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
                 Category.of(
                         "integrations",
                         Group.of(
@@ -443,39 +438,29 @@ public class AppPrefs {
                                         "editorReloadTimeout",
                                         editorReloadTimeout,
                                         editorReloadTimeoutMin,
-                                        editorReloadTimeoutMax
-                                )
-                        )
-                ),
+                                        editorReloadTimeoutMax))),
                 Category.of(
                         "developer",
                         Setting.of(
                                 "developerDisableUpdateVersionCheck",
                                 developerDisableUpdateVersionCheckField,
-                                developerDisableUpdateVersionCheck
-                        ),
+                                developerDisableUpdateVersionCheck),
                         Setting.of(
                                 "developerDisableGuiRestrictions",
                                 developerDisableGuiRestrictionsField,
-                                developerDisableGuiRestrictions
-                        ),
+                                developerDisableGuiRestrictions),
                         Setting.of(
                                 "developerDisableConnectorInstallationVersionCheck",
                                 developerDisableConnectorInstallationVersionCheckField,
-                                developerDisableConnectorInstallationVersionCheck
-                        ),
+                                developerDisableConnectorInstallationVersionCheck),
                         Setting.of(
                                 "developerShowHiddenEntries",
                                 developerShowHiddenEntriesField,
-                                developerShowHiddenEntries
-                        ),
+                                developerShowHiddenEntries),
                         Setting.of(
                                 "developerShowHiddenProviders",
                                 developerShowHiddenProvidersField,
-                                developerShowHiddenProviders
-                        )
-                )
-        ));
+                                developerShowHiddenProviders))));
 
         categories.get(categories.size() - 1).setVisibilityProperty(VisibilityProperty.of(developerMode()));
 

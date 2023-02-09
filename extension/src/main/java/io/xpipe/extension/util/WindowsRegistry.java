@@ -15,7 +15,8 @@ public class WindowsRegistry {
     }
 
     public static Optional<String> readString(int hkey, String key, String valueName) {
-        if (!Advapi32Util.registryValueExists(hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName)) {
+        if (!Advapi32Util.registryValueExists(
+                hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName)) {
             return Optional.empty();
         }
 

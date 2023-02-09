@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 public class ShellTestItem {
 
     public static Stream<Named<ShellProcessControl>> getAll() {
-        return TestModule.getArguments(ShellProcessControl.class, "test.item.BasicShellTestItem", "test.item.PrivateShellTestItem");
+        return TestModule.getArguments(
+                ShellProcessControl.class, "test.item.BasicShellTestItem", "test.item.PrivateShellTestItem");
     }
 }

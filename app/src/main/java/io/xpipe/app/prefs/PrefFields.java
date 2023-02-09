@@ -29,9 +29,8 @@ public class PrefFields {
                 return Path.of(value);
             }
         });
-        return StringField.ofStringType(
-                stringProperty).render(
-                () -> new SimpleChooserControl(
+        return StringField.ofStringType(stringProperty)
+                .render(() -> new SimpleChooserControl(
                         I18n.get("browse"), fileProperty.getValue().toFile(), true));
     }
 }

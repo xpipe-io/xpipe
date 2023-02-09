@@ -37,11 +37,16 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
         connection = XPipeApiConnection.open();
 
         store = new InternalStreamStore();
-        var addReq = StoreAddExchange.Request.builder().storeInput(store).name(store.getUuid().toString()).build();
+        var addReq = StoreAddExchange.Request.builder()
+                .storeInput(store)
+                .name(store.getUuid().toString())
+                .build();
         StoreAddExchange.Response addRes = connection.performSimpleExchange(addReq);
         QuietDialogHandler.handle(addRes.getConfig(), connection);
 
-        connection.sendRequest(WriteStreamExchange.Request.builder().name(store.getUuid().toString()).build());
+        connection.sendRequest(WriteStreamExchange.Request.builder()
+                .name(store.getUuid().toString())
+                .build());
         bodyOutput = connection.sendBody();
     }
 

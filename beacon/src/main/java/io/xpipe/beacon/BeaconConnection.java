@@ -78,8 +78,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
-            REQ req, BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer
-    ) {
+            REQ req, BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
         checkClosed();
 
         performInputOutputExchange(req, null, responseConsumer);
@@ -88,8 +87,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputOutputExchange(
             REQ req,
             BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter,
-            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer
-    ) {
+            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
         checkClosed();
 
         try {
@@ -151,8 +149,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performOutputExchange(
-            REQ req, BeaconClient.FailableConsumer<OutputStream, Exception> reqWriter
-    ) {
+            REQ req, BeaconClient.FailableConsumer<OutputStream, Exception> reqWriter) {
         checkClosed();
 
         try {
@@ -183,7 +180,10 @@ public abstract class BeaconConnection implements AutoCloseable {
 
     public InternalStreamStore createInternalStreamStore(String name) {
         var store = new InternalStreamStore();
-        var addReq = StoreAddExchange.Request.builder().storeInput(store).name(name != null ? name : store.getUuid().toString()).build();
+        var addReq = StoreAddExchange.Request.builder()
+                .storeInput(store)
+                .name(name != null ? name : store.getUuid().toString())
+                .build();
         StoreAddExchange.Response addRes = performSimpleExchange(addReq);
         QuietDialogHandler.handle(addRes.getConfig(), this);
         return store;
@@ -194,8 +194,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public void writeStream(String name, InputStream in) {
-        performOutputExchange(
-                WriteStreamExchange.Request.builder().name(name).build(), in::transferTo);
+        performOutputExchange(WriteStreamExchange.Request.builder().name(name).build(), in::transferTo);
     }
 
     private BeaconException unwrapException(Exception exception) {

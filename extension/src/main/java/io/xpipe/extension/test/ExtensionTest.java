@@ -15,7 +15,8 @@ public class ExtensionTest {
             Assertions.assertEquals(expected, actual);
         } else {
             for (int i = 0; i < Math.min(expected.size(), actual.size()); i++) {
-                Assertions.assertEquals(expected.getNodes().get(i), actual.getNodes().get(i));
+                Assertions.assertEquals(
+                        expected.getNodes().get(i), actual.getNodes().get(i));
             }
             Assertions.assertEquals(expected, actual);
         }

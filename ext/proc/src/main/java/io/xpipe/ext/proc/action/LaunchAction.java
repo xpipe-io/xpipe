@@ -20,11 +20,11 @@ public class LaunchAction implements ActionProvider {
 
         DataStoreEntry entry;
 
-
         @Override
         public boolean requiresPlatform() {
             return false;
         }
+
         @Override
         public void execute() throws Exception {
             var storeName = entry.getName();
@@ -45,7 +45,9 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public ActionProvider.Action createAction(List<String> args) {
-                var entry = DataStorage.get().getStoreEntryByUuid(UUID.fromString(args.get(1))).orElseThrow();
+                var entry = DataStorage.get()
+                        .getStoreEntryByUuid(UUID.fromString(args.get(1)))
+                        .orElseThrow();
                 return new Action(entry);
             }
         };

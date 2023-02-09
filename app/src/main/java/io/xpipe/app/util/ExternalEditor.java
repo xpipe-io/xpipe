@@ -122,24 +122,24 @@ public class ExternalEditor {
         return Optional.empty();
     }
 
-    public void startEditing(
-            String keyName,
-            String fileType,
-            Object key,
-            String input,
-            Consumer<String> output) {
+    public void startEditing(String keyName, String fileType, Object key, String input, Consumer<String> output) {
         if (input == null) {
             input = "";
         }
 
         String s = input;
-        startEditing(keyName, fileType, key, () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), () -> new ByteArrayOutputStream(s.length()) {
-            @Override
-            public void close() throws IOException {
-                super.close();
-                output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-            }
-        });
+        startEditing(
+                keyName,
+                fileType,
+                key,
+                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                () -> new ByteArrayOutputStream(s.length()) {
+                    @Override
+                    public void close() throws IOException {
+                        super.close();
+                        output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+                    }
+                });
     }
 
     public void startEditing(
@@ -154,7 +154,8 @@ public class ExternalEditor {
             return;
         }
 
-        var name = keyName + " - " + UUID.randomUUID().toString().substring(0, 6) + "." + (fileType != null ? fileType : "txt");
+        var name = keyName + " - " + UUID.randomUUID().toString().substring(0, 6) + "."
+                + (fileType != null ? fileType : "txt");
         Path file = TEMP.resolve(name);
         try {
             FileUtils.forceMkdirParent(file.toFile());

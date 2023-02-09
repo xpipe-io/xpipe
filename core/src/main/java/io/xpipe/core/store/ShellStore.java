@@ -8,8 +8,7 @@ import io.xpipe.core.process.ShellType;
 
 import java.nio.charset.Charset;
 
-public interface ShellStore extends DataStore, StatefulDataStore
-{
+public interface ShellStore extends DataStore, StatefulDataStore {
 
     public static MachineStore local() {
         return new LocalStore();
@@ -42,6 +41,7 @@ public interface ShellStore extends DataStore, StatefulDataStore
     default OsType getOsType() {
         return getState("os", OsType.class, null);
     }
+
     default Charset getCharset() {
         return getState("charset", Charset.class, null);
     }
@@ -56,8 +56,7 @@ public interface ShellStore extends DataStore, StatefulDataStore
 
     @Override
     default void validate() throws Exception {
-        try (ShellProcessControl pc = create().start()) {
-        }
+        try (ShellProcessControl pc = create().start()) {}
     }
 
     public default String queryMachineName() throws Exception {

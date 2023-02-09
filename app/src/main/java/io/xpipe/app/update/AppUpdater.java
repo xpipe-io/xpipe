@@ -1,7 +1,6 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.extension.util.XPipeDistributionType;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -12,6 +11,7 @@ import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.util.BusyProperty;
 import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.extension.util.XPipeDistributionType;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;

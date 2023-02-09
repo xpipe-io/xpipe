@@ -28,6 +28,7 @@ public class SshStore extends JacksonizedValue implements MachineStore {
     String user;
     SecretValue password;
     SshKey key;
+
     public SshStore(ShellStore proxy, String host, Integer port, String user, SecretValue password, SshKey key) {
         this.proxy = proxy;
         this.host = host;

@@ -51,5 +51,4 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
     public ShellProcessControl createControl() {
         return ProcessControlProvider.createLocal();
     }
-
 }

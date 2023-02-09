@@ -35,6 +35,7 @@ public class BeaconClient implements AutoCloseable {
 
     @Getter
     private final Closeable base;
+
     private final InputStream in;
     private final OutputStream out;
 
@@ -296,10 +297,7 @@ public class BeaconClient implements AutoCloseable {
         void run() throws E;
     }
 
-    @JsonTypeInfo(
-            use = JsonTypeInfo.Id.NAME,
-            property = "type"
-    )
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public abstract static class ClientInformation {
 
         public final CliClientInformation cli() {

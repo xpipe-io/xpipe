@@ -32,9 +32,7 @@ public abstract class EventHandler {
         }
 
         @Override
-        public void modify(ErrorEvent ee) {
-
-        }
+        public void modify(ErrorEvent ee) {}
     };
 
     public static final EventHandler OMIT = new EventHandler() {
@@ -44,17 +42,13 @@ public abstract class EventHandler {
         }
 
         @Override
-        public void handle(TrackEvent te) {
-        }
+        public void handle(TrackEvent te) {}
 
         @Override
-        public void handle(ErrorEvent ee) {
-        }
+        public void handle(ErrorEvent ee) {}
 
         @Override
-        public void modify(ErrorEvent ee) {
-
-        }
+        public void modify(ErrorEvent ee) {}
     };
     private static EventHandler INSTANCE;
 

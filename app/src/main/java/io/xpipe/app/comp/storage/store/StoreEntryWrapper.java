@@ -43,7 +43,9 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         ActionProvider.ALL.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
-                            && dataStoreActionProvider.getDataStoreCallSite() != null && dataStoreActionProvider.getDataStoreCallSite()
+                            && dataStoreActionProvider.getDataStoreCallSite() != null
+                            && dataStoreActionProvider
+                                    .getDataStoreCallSite()
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
@@ -54,8 +56,9 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                                     return false;
                                 }
 
-                                return dataStoreActionProvider.getDataStoreCallSite().isApplicable(
-                                        entry.getStore().asNeeded());
+                                return dataStoreActionProvider
+                                        .getDataStoreCallSite()
+                                        .isApplicable(entry.getStore().asNeeded());
                             },
                             disabledProperty(),
                             state,

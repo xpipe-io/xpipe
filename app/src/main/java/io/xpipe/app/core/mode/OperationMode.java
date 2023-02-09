@@ -77,9 +77,9 @@ public abstract class OperationMode {
                 OperationMode.shutdown(true, false);
             }));
 
-//            if (true) {
-//                throw new OutOfMemoryError();
-//            }
+            //            if (true) {
+            //                throw new OutOfMemoryError();
+            //            }
 
             TrackEvent.info("mode", "Initial setup");
             AppProperties.init();

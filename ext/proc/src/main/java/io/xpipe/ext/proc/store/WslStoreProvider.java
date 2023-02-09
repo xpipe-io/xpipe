@@ -38,10 +38,7 @@ public class WslStoreProvider implements DataStoreProvider {
 
         Property<String> userProp = new SimpleObjectProperty<>(st.getUser());
         var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
-                .addComp(
-                        I18n.observable("host"),
-                        ShellStoreChoiceComp.host(st, shellProp),
-                        shellProp)
+                .addComp(I18n.observable("host"), ShellStoreChoiceComp.host(st, shellProp), shellProp)
                 .nonNull(val)
                 .addString(I18n.observable("proc.distribution"), distProp)
                 .nonNull(val)

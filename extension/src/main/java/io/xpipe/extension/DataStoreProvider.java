@@ -51,8 +51,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default void storageInit() throws Exception {
-    }
+    default void storageInit() throws Exception {}
 
     default boolean isShareable() {
         return false;

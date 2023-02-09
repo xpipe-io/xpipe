@@ -31,7 +31,6 @@ public class SecretProviderImpl extends SecretProvider {
         return nonce;
     }
 
-
     private static SecretKey getAESKey(int keysize) throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         var salt = new byte[16];

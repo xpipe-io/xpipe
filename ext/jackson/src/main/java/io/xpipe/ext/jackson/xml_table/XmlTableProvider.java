@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class XmlTableProvider
         implements UniformDataSourceProvider<XmlTableProvider.Source>,
-                   SimpleFileDataSourceProvider<XmlTableProvider.Source> {
+                SimpleFileDataSourceProvider<XmlTableProvider.Source> {
 
     @Override
     public boolean shouldShow(DataSourceType type) {
