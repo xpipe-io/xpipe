@@ -2,7 +2,6 @@ package test.item;
 
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.ext.proc.util.ShellHelper;
 import lombok.Getter;
 import org.apache.commons.lang3.function.FailableConsumer;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Getter
 public enum ShellCheckTestItem {
     OS_NAME(shellProcessControl -> {
-        var os = ShellHelper.determineOsType(shellProcessControl);
+        var os = shellProcessControl.getOsType();
         os.determineOperatingSystemName(shellProcessControl);
     }),
 
@@ -101,7 +100,7 @@ public enum ShellCheckTestItem {
     }),
 
     ECHO(shellProcessControl -> {
-        ShellHelper.determineOsType(shellProcessControl);
+        shellProcessControl.executeSimpleCommand(shellProcessControl.getShellType().getEchoCommand("test", false));
     });
 
     private final FailableConsumer<ShellProcessControl, Exception> shellCheck;

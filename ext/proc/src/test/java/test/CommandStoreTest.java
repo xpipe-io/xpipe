@@ -56,7 +56,7 @@ public class CommandStoreTest extends LocalExtensionTest {
                 .elevation(SecretValue.encrypt("123"))
                 .start()) {
             try (var command = pc.command(List.of("echo", "hi")).elevated().start()) {
-                var read = command.readOnlyStdout();
+                var read = command.readOrThrow();
                 Assertions.assertEquals("hi", read);
             }
         }

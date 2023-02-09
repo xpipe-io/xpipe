@@ -11,6 +11,10 @@ public class DataStateProviderImpl extends DataStateProvider {
 
     @Override
     public void putState(DataStore store, String key, Object value) {
+        if (DataStorage.get() == null) {
+            return;
+        }
+
         var entry = DataStorage.get().getEntryByStore(store);
         if (entry.isEmpty()) {
             return;
@@ -22,6 +26,10 @@ public class DataStateProviderImpl extends DataStateProvider {
 
     @Override
     public <T> T getState(DataStore store, String key, Class<T> c, Supplier<T> def) {
+        if (DataStorage.get() == null) {
+            return def.get();
+        }
+
         var entry = DataStorage.get().getEntryByStore(store);
         if (entry.isEmpty()) {
             return def.get();

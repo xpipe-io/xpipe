@@ -13,7 +13,7 @@ public abstract class TerminalProvider {
 
         @Override
         public void init(ModuleLayer layer) {
-            ServiceLoader.load(layer, TerminalProvider.class).findFirst().orElseThrow();
+            INSTANCE = ServiceLoader.load(layer, TerminalProvider.class).findFirst().orElseThrow();
         }
 
         @Override

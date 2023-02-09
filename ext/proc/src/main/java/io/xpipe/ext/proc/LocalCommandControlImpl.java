@@ -2,6 +2,7 @@ package io.xpipe.ext.proc;
 
 import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.util.FailableFunction;
 import io.xpipe.extension.util.ScriptHelper;
 import lombok.NonNull;
 
@@ -17,8 +18,8 @@ public class LocalCommandControlImpl extends CommandControlImpl {
 
     public LocalCommandControlImpl(
             ShellProcessControl parent,
-            @NonNull Function<ShellProcessControl, String> command,
-            Function<ShellProcessControl, String> terminalCommand
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand
     ) {
         super(parent, command, terminalCommand);
     }

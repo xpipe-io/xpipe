@@ -1,12 +1,12 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.util.FailableBiFunction;
+import io.xpipe.core.util.FailableFunction;
 import lombok.NonNull;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.ServiceLoader;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public abstract class ProcessControlProvider {
 
@@ -18,21 +18,22 @@ public abstract class ProcessControlProvider {
     }
 
     public static ShellProcessControl createLocal() {
-        return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl()).findFirst().orElseThrow();
+        return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl()).filter(
+                Objects::nonNull).findFirst().orElseThrow();
     }
 
     public static ShellProcessControl createSub(
             ShellProcessControl parent,
-            @NonNull Function<ShellProcessControl, String> commandFunction,
-            BiFunction<ShellProcessControl, String, String> terminalCommand) {
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
+            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand) {
         return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.sub(parent, commandFunction, terminalCommand)).filter(
                 Objects::nonNull).findFirst().orElseThrow();
     }
 
     public static CommandProcessControl createCommand(
             ShellProcessControl parent,
-            @NonNull Function<ShellProcessControl, String> command,
-            Function<ShellProcessControl, String> terminalCommand) {
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         return INSTANCES.stream().map(localProcessControlProvider -> localProcessControlProvider.command(parent, command, terminalCommand)).filter(
                 Objects::nonNull).findFirst().orElseThrow();
     }
@@ -44,13 +45,13 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellProcessControl sub(
             ShellProcessControl parent,
-            @NonNull Function<ShellProcessControl, String> commandFunction,
-            BiFunction<ShellProcessControl, String, String> terminalCommand);
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
+            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand);
 
     public abstract CommandProcessControl command(
             ShellProcessControl parent,
-            @NonNull Function<ShellProcessControl, String> command,
-            Function<ShellProcessControl, String> terminalCommand);
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand);
 
     public abstract ShellProcessControl createLocalProcessControl();
 

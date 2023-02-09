@@ -2,6 +2,7 @@ package io.xpipe.ext.proc;
 
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.*;
+import io.xpipe.core.util.FailableFunction;
 import io.xpipe.extension.event.TrackEvent;
 import io.xpipe.extension.prefs.PrefsProvider;
 import io.xpipe.extension.util.ScriptHelper;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class LocalShellControlImpl extends ShellControlImpl {
@@ -25,7 +25,7 @@ public class LocalShellControlImpl extends ShellControlImpl {
 
     @Override
     public CommandProcessControl command(
-            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand) {
+            FailableFunction<ShellProcessControl, String, Exception> command, FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         var control = ProcessControlProvider.createCommand(this, command, terminalCommand);
         if (control != null) {
             return control;

@@ -9,6 +9,7 @@ import io.xpipe.core.util.SecretValue;
 import io.xpipe.extension.event.TrackEvent;
 import lombok.SneakyThrows;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -91,11 +92,37 @@ public class ScriptHelper {
           } "$@"
             """;
 
+    public static String unquote(String input) {
+        if (input.startsWith("\"") && input.endsWith("\"")) {
+            return input.substring(1, input.length() - 1);
+        }
+
+        if (input.startsWith("'") && input.endsWith("'")) {
+            return input.substring(1, input.length() - 1);
+        }
+
+        return input;
+    }
+
     public static String constructOpenWithInitScriptCommand(
             ShellProcessControl processControl, List<String> init, String toExecuteInShell) {
         ShellType t = processControl.getShellType();
         if (init.size() == 0 && toExecuteInShell == null) {
             return t.getNormalOpenCommand();
+        }
+
+        if (init.size() == 0) {
+            var cmd = unquote(toExecuteInShell);
+
+            // Check for special case of the command to be executed just being another shell script
+            if (cmd.endsWith(".sh") || cmd.endsWith(".bat")) {
+                return t.executeCommandWithShell(cmd);
+            }
+
+            // Check for special case of the command being a shell command
+            if (Arrays.stream(ShellTypes.getAllShellTypes()).anyMatch(shellType -> cmd.equals(shellType.getNormalOpenCommand()))) {
+                return cmd;
+            }
         }
 
         String nl = t.getNewLine().getNewLineString();

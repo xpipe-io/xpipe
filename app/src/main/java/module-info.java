@@ -7,12 +7,14 @@ import io.xpipe.app.exchange.cli.*;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
+import io.xpipe.app.util.TerminalProvider;
 import io.xpipe.app.util.XPipeDaemonProvider;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ProxyManagerProvider;
 import io.xpipe.extension.Cache;
 import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.EventHandler;
+import io.xpipe.extension.util.ModuleLayerLoader;
 import io.xpipe.extension.util.XPipeDaemon;
 import org.slf4j.spi.SLF4JServiceProvider;
 
@@ -99,6 +101,7 @@ open module io.xpipe.app {
     uses MessageExchangeImpl;
     uses io.xpipe.app.util.TerminalProvider;
 
+    provides ModuleLayerLoader with TerminalProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;
     provides ProxyManagerProvider with

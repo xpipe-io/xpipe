@@ -56,6 +56,11 @@ public class LaunchAction implements ActionProvider {
         return new DataStoreCallSite<DataStore>() {
 
             @Override
+            public boolean showIfDisabled() {
+                return false;
+            }
+
+            @Override
             public boolean isApplicable(DataStore o) throws Exception {
                 return o instanceof ShellStore;
             }
