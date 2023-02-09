@@ -74,10 +74,6 @@ public abstract class DataStorage {
     }
 
     public static DataStorage get() {
-        if (INSTANCE == null) {
-            throw new IllegalStateException("Not initialized");
-        }
-
         return INSTANCE;
     }
 
@@ -175,6 +171,10 @@ public abstract class DataStorage {
     }
 
     public Optional<DataSourceCollection> getCollectionForName(String name) {
+        if (name == null) {
+            return Optional.ofNullable(getInternalCollection());
+        }
+
         return sourceCollections.stream()
                 .filter(c -> name.equalsIgnoreCase(c.getName()))
                 .findAny();

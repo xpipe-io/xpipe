@@ -1,22 +1,17 @@
 package io.xpipe.ext.proc;
 
-import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.process.CommandProcessControl;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.process.ShellType;
+import io.xpipe.core.process.*;
+import io.xpipe.core.util.FailableBiFunction;
+import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.XPipeTempDirectory;
 import lombok.Getter;
-import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public abstract class ShellControlImpl extends ProcessControlImpl implements ShellProcessControl {
 
@@ -78,19 +73,19 @@ public abstract class ShellControlImpl extends ProcessControlImpl implements She
 
     @Override
     public ShellProcessControl subShell(
-            @NonNull Function<ShellProcessControl, String> command,
-            BiFunction<ShellProcessControl, String, String> terminalCommand) {
+            FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand) {
         return ProcessControlProvider.createSub(this, command, terminalCommand);
     }
 
     @Override
-    public CommandProcessControl command(Function<ShellProcessControl, String> command) {
+    public CommandProcessControl command(FailableFunction<ShellProcessControl, String, Exception> command) {
         return command(command, command);
     }
 
     @Override
     public CommandProcessControl command(
-            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand) {
+            FailableFunction<ShellProcessControl, String, Exception> command, FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         var control = ProcessControlProvider.createCommand(this, command, terminalCommand);
         return control;
     }

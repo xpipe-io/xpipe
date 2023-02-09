@@ -1,5 +1,7 @@
 package io.xpipe.ext.proc.augment;
 
+import io.xpipe.core.process.ShellProcessControl;
+
 import java.util.List;
 
 public class CmdCommandAugmentation extends CommandAugmentation {
@@ -9,7 +11,7 @@ public class CmdCommandAugmentation extends CommandAugmentation {
     }
 
     @Override
-    protected void prepareBaseCommand(List<String> baseCommand) {
+    protected void prepareBaseCommand(ShellProcessControl processControl, List<String> baseCommand) {
         remove(baseCommand, "/C");
     }
 

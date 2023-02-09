@@ -59,12 +59,17 @@ public class ShellTypes {
 
         @Override
         public String getSetEnvironmentVariableCommand(String variableName, String value) {
-            return ("set \"" + variableName + "=" + value.replaceAll("\"", "^$0") + "\"");
+            return ("set \"" + variableName + "=" + value.replaceAll("[&^|<>\"]", "^$0") + "\"");
         }
 
         @Override
-        public String getPrintVariableCommand(String prefix, String name) {
-            return "call echo " + prefix + "^%" + name + "^%";
+        public String getPrintExitCodeCommand(String prefix) {
+            return "call echo " + prefix + "^%" + getExitCodeVariable() + "^%";
+        }
+
+        @Override
+        public String getPrintVariableCommand(String name) {
+            return "call echo ^%" + name + "^%";
         }
 
         @Override
@@ -276,8 +281,13 @@ public class ShellTypes {
         }
 
         @Override
-        public String getPrintVariableCommand(String prefix, String name) {
-            return "echo \"" + escapeStringValue(prefix) + "$" + escapeStringValue(name) + "\"";
+        public String getPrintExitCodeCommand(String prefix) {
+            return "echo \"" + prefix + "$(If ($?) {0} Else {1})\"";
+        }
+
+        @Override
+        public String getPrintVariableCommand(String name) {
+            return "echo \"" + "$" + escapeStringValue(name) + "\"";
         }
 
         @Override
@@ -428,7 +438,7 @@ public class ShellTypes {
 
         @Override
         public List<String> executeCommandListWithShell(List<String> cmd) {
-            return List.of(getExecutable(), "-c", flatten(cmd));
+            return List.of(getName(), "-c", flatten(cmd));
         }
 
         @Override
@@ -448,7 +458,7 @@ public class ShellTypes {
 
         @Override
         public List<String> executeCommandListWithShell(String cmd) {
-            return List.of(getExecutable(), "-c", cmd);
+            return List.of(getName(), "-c", cmd);
         }
 
         public String getScriptEchoCommand(String s) {
@@ -494,12 +504,17 @@ public class ShellTypes {
 
         @Override
         public String prepareScriptContent(String content) {
-            return content;
+            return "#!" + getExecutable() + "\n" + content;
         }
 
         @Override
-        public String getPrintVariableCommand(String prefix, String name) {
-            return "echo " + prefix + "$" + name;
+        public String getPrintExitCodeCommand(String prefix) {
+            return "echo " + prefix + "$" + getExitCodeVariable();
+        }
+
+        @Override
+        public String getPrintVariableCommand(String name) {
+            return "echo \"$" + name + "\"";
         }
 
         @Override

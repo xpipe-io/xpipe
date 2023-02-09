@@ -4,6 +4,7 @@ import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellType;
+import io.xpipe.core.util.FailableFunction;
 import io.xpipe.extension.event.TrackEvent;
 import lombok.NonNull;
 
@@ -16,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public abstract class CommandControlImpl extends ProcessControlImpl implements CommandProcessControl {
 
@@ -39,8 +39,8 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
 
     protected final ShellProcessControl parent;
     @NonNull
-    protected final Function<ShellProcessControl, String> command;
-    protected final Function<ShellProcessControl, String> terminalCommand;
+    protected final FailableFunction<ShellProcessControl, String, Exception> command;
+    protected final FailableFunction<ShellProcessControl, String, Exception> terminalCommand;
     protected boolean elevated;
     protected int exitCode = -1;
     protected String timedOutError;
@@ -50,8 +50,8 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
 
     public CommandControlImpl(
             ShellProcessControl parent,
-            @NonNull Function<ShellProcessControl, String> command,
-            Function<ShellProcessControl, String> terminalCommand) {
+            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
         this.command = command;
         this.parent = parent;
         this.terminalCommand = terminalCommand;

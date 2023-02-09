@@ -1,3 +1,4 @@
+import io.xpipe.app.util.TerminalProvider;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.ext.proc.*;
 import io.xpipe.ext.proc.action.InstallConnectorAction;
@@ -21,12 +22,12 @@ open module io.xpipe.ext.proc {
     requires static javafx.controls;
     requires io.xpipe.core;
     requires com.fasterxml.jackson.databind;
-    requires static com.jcraft.jsch;
     requires static io.xpipe.extension;
     requires static io.xpipe.app;
     requires static commons.exec;
     requires static com.dlsc.preferencesfx;
 
+    provides TerminalProvider with TerminalProviderImpl;
     provides PrefsProvider with
             ProcPrefs;
     provides CommandAugmentation with

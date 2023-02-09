@@ -1,13 +1,13 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.util.FailableBiFunction;
+import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface ShellProcessControl extends ProcessControl {
@@ -87,18 +87,18 @@ public interface ShellProcessControl extends ProcessControl {
     }
 
     ShellProcessControl subShell(
-            @NonNull Function<ShellProcessControl, String> command,
-            BiFunction<ShellProcessControl, String, String> terminalCommand);
+            FailableFunction<ShellProcessControl, String, Exception> command,
+            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand);
 
     void executeLine(String command) throws Exception;
 
     @Override
     ShellProcessControl start() throws Exception;
 
-    CommandProcessControl command(Function<ShellProcessControl, String> command);
+    CommandProcessControl command(FailableFunction<ShellProcessControl, String, Exception> command);
 
     CommandProcessControl command(
-            Function<ShellProcessControl, String> command, Function<ShellProcessControl, String> terminalCommand);
+            FailableFunction<ShellProcessControl, String, Exception> command, FailableFunction<ShellProcessControl, String, Exception> terminalCommand);
 
     default CommandProcessControl command(String command) {
         return command(shellProcessControl -> command);

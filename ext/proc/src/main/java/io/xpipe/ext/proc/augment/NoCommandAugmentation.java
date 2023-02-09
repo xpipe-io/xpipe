@@ -1,5 +1,7 @@
 package io.xpipe.ext.proc.augment;
 
+import io.xpipe.core.process.ShellProcessControl;
+
 import java.util.List;
 
 public class NoCommandAugmentation extends CommandAugmentation {
@@ -10,7 +12,7 @@ public class NoCommandAugmentation extends CommandAugmentation {
     }
 
     @Override
-    protected void prepareBaseCommand(List<String> baseCommand) {}
+    protected void prepareBaseCommand(ShellProcessControl processControl, List<String> baseCommand) {}
 
     @Override
     protected void modifyTerminalCommand(List<String> baseCommand, boolean hasSubCommand) {}
