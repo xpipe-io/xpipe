@@ -45,14 +45,16 @@ public class UserReportComp extends SimpleComp {
 
     private Comp<?> createAttachments() {
         var list = new ListSelectorComp<>(event.getAttachments(), file -> {
-            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                return I18n.get("logFilesAttachment");
-            }
+                    if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
+                        return I18n.get("logFilesAttachment");
+                    }
 
-            return file.getFileName().toString();
-        }).styleClass("attachment-list");
+                    return file.getFileName().toString();
+                })
+                .styleClass("attachment-list");
         var tp = new TitledPaneComp(I18n.observable("additionalErrorAttachments"), list, 100)
-                .apply(s -> AppFont.medium(s.get())).styleClass("attachments");
+                .apply(s -> AppFont.medium(s.get()))
+                .styleClass("attachments");
         return tp;
         //
         //        var list = FXCollections.observableList(event.getSensitiveDiagnostics());

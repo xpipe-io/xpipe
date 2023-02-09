@@ -19,5 +19,4 @@ public abstract class SimpleProxyFunction<T> extends ProxyFunction {
         var result = callAndCopy();
         return ((SimpleProxyFunction<T>) result).getResult();
     }
-
 }

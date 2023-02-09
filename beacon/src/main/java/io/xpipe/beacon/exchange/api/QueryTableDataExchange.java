@@ -34,6 +34,7 @@ public class QueryTableDataExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull TupleType dataType;
+        @NonNull
+        TupleType dataType;
     }
 }

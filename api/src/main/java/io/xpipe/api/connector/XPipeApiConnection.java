@@ -13,8 +13,7 @@ import java.util.Optional;
 
 public final class XPipeApiConnection extends BeaconConnection {
 
-    private XPipeApiConnection() {
-    }
+    private XPipeApiConnection() {}
 
     public static XPipeApiConnection open() {
         var con = new XPipeApiConnection();
@@ -32,8 +31,8 @@ public final class XPipeApiConnection extends BeaconConnection {
                 }
 
                 DialogExchange.Response response = con.performSimpleExchange(DialogExchange.Request.builder()
-                                                                                     .dialogKey(reference.getDialogId())
-                                                                                     .build());
+                        .dialogKey(reference.getDialogId())
+                        .build());
                 element = response.getElement();
                 if (response.getElement() == null) {
                     break;
@@ -80,9 +79,9 @@ public final class XPipeApiConnection extends BeaconConnection {
             }
 
             var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder()
-                                                    .version("?")
-                                                    .language("Java")
-                                                    .build());
+                    .version("?")
+                    .language("Java")
+                    .build());
             if (s.isPresent()) {
                 return s;
             }
@@ -124,9 +123,9 @@ public final class XPipeApiConnection extends BeaconConnection {
 
         try {
             beaconClient = BeaconClient.connect(BeaconClient.ApiClientInformation.builder()
-                                                        .version("?")
-                                                        .language("Java")
-                                                        .build());
+                    .version("?")
+                    .language("Java")
+                    .build());
         } catch (Exception ex) {
             throw new BeaconException("Unable to connect to running xpipe daemon", ex);
         }

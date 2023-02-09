@@ -21,14 +21,8 @@ public class ProxyFunctionExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
 
-        @JsonSerialize(
-                using = ProxyFunction.Serializer.class,
-                as = ProxyFunction.class
-        )
-        @JsonDeserialize(
-                using = ProxyFunction.Deserializer.class,
-                as = ProxyFunction.class
-        )
+        @JsonSerialize(using = ProxyFunction.Serializer.class, as = ProxyFunction.class)
+        @JsonDeserialize(using = ProxyFunction.Deserializer.class, as = ProxyFunction.class)
         ProxyFunction function;
     }
 
@@ -37,14 +31,8 @@ public class ProxyFunctionExchange implements MessageExchange {
     @Value
     public static class Response implements ResponseMessage {
 
-        @JsonSerialize(
-                using = ProxyFunction.Serializer.class,
-                as = ProxyFunction.class
-        )
-        @JsonDeserialize(
-                using = ProxyFunction.Deserializer.class,
-                as = ProxyFunction.class
-        )
+        @JsonSerialize(using = ProxyFunction.Serializer.class, as = ProxyFunction.class)
+        @JsonDeserialize(using = ProxyFunction.Deserializer.class, as = ProxyFunction.class)
         ProxyFunction function;
     }
 }

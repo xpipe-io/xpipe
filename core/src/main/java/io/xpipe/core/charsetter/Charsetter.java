@@ -23,8 +23,7 @@ public abstract class Charsetter {
     public static Charsetter INSTANCE;
     private static CharsetterUniverse universe;
 
-    protected Charsetter() {
-    }
+    protected Charsetter() {}
 
     protected static void checkInit() {
         if (universe == null) {
@@ -78,8 +77,7 @@ public abstract class Charsetter {
     }
 
     public abstract Result read(
-            FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con
-    )
+            FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con)
             throws Exception;
 
     public Result detect(StreamDataStore store) throws Exception {
@@ -112,7 +110,9 @@ public abstract class Charsetter {
 
         if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof MachineStore m) {
             if (result.getNewLine() == null) {
-                result = new Result(result.getCharset(), m.getShellType() != null ? m.getShellType().getNewLine() : null);
+                result = new Result(
+                        result.getCharset(),
+                        m.getShellType() != null ? m.getShellType().getNewLine() : null);
             }
         }
 

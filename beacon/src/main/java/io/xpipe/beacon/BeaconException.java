@@ -5,8 +5,7 @@ package io.xpipe.beacon;
  */
 public class BeaconException extends RuntimeException {
 
-    public BeaconException() {
-    }
+    public BeaconException() {}
 
     public BeaconException(String message) {
         super(message);

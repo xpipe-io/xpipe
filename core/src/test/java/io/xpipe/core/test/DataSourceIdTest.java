@@ -42,18 +42,7 @@ public class DataSourceIdTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-            strings = {
-                    "abc",
-                    "abc:",
-                    "ab::c",
-                    "::abc",
-                    "  ab",
-                    "::::",
-                    "",
-                    " "
-            }
-    )
+    @ValueSource(strings = {"abc", "abc:", "ab::c", "::abc", "  ab", "::::", "", " "})
     public void testFromStringInvalidParameters(String arg) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             DataSourceId.fromString(arg);

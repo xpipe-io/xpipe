@@ -2,8 +2,8 @@ package io.xpipe.ext.base.apps;
 
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.extension.I18n;
 import io.xpipe.extension.DataSourceTarget;
+import io.xpipe.extension.I18n;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.impl.CodeSnippet;
 import io.xpipe.extension.fxcomps.impl.CodeSnippetComp;

@@ -11,8 +11,8 @@ public interface MachineStore extends FileSystemStore, ShellStore {
 
     @Override
     public default InputStream openInput(String file) throws Exception {
-        return create().command(proc -> proc.getShellType()
-                        .getFileReadCommand(proc.getOsType().normalizeFileName(file)))
+        return create().command(proc ->
+                        proc.getShellType().getFileReadCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdout();
     }
 
@@ -36,7 +36,7 @@ public interface MachineStore extends FileSystemStore, ShellStore {
     public default boolean mkdirs(String file) throws Exception {
         try (var pc = create().command(proc -> proc.getShellType()
                         .flatten(proc.getShellType()
-                                         .getMkdirsCommand(proc.getOsType().normalizeFileName(file))))
+                                .getMkdirsCommand(proc.getOsType().normalizeFileName(file))))
                 .start()) {
             return pc.discardAndCheckExit();
         }

@@ -76,8 +76,7 @@ public class DynamicOptionsBuilder {
     }
 
     public DynamicOptionsBuilder addCharacter(
-            Property<Character> prop, ObservableValue<String> name, Map<Character, ObservableValue<String>> names
-    ) {
+            Property<Character> prop, ObservableValue<String> name, Map<Character, ObservableValue<String>> names) {
         var comp = new CharChoiceComp(prop, names, null);
         entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
@@ -88,28 +87,28 @@ public class DynamicOptionsBuilder {
             Property<Character> prop,
             ObservableValue<String> name,
             Map<Character, ObservableValue<String>> names,
-            ObservableValue<String> customName
-    ) {
+            ObservableValue<String> customName) {
         var comp = new CharChoiceComp(prop, names, customName);
         entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
         return this;
     }
 
-    public DynamicOptionsBuilder addToggle(
-            String nameKey,
-            Property<Boolean> prop
-    ) {
-        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(
-                Map.of(Boolean.TRUE, I18n.observable("extension.yes"), Boolean.FALSE, I18n.observable("extension.no"))));
+    public DynamicOptionsBuilder addToggle(String nameKey, Property<Boolean> prop) {
+        var comp = new ToggleGroupComp<>(
+                prop,
+                new SimpleObjectProperty<>(Map.of(
+                        Boolean.TRUE,
+                        I18n.observable("extension.yes"),
+                        Boolean.FALSE,
+                        I18n.observable("extension.no"))));
         entries.add(new DynamicOptionsComp.Entry(nameKey, I18n.observable(nameKey), comp));
         props.add(prop);
         return this;
     }
 
     public <V> DynamicOptionsBuilder addToggle(
-            Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names
-    ) {
+            Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names) {
         var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(names));
         entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
@@ -117,8 +116,10 @@ public class DynamicOptionsBuilder {
     }
 
     public <V> DynamicOptionsBuilder addChoice(
-            Property<V> prop, ObservableValue<String> name, Map<V, ObservableValue<String>> names, boolean includeNone
-    ) {
+            Property<V> prop,
+            ObservableValue<String> name,
+            Map<V, ObservableValue<String>> names,
+            boolean includeNone) {
         var comp = new ChoiceComp<>(prop, names, includeNone);
         entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
@@ -126,8 +127,10 @@ public class DynamicOptionsBuilder {
     }
 
     public <V> DynamicOptionsBuilder addChoice(
-            Property<V> prop, ObservableValue<String> name, ObservableValue<Map<V, ObservableValue<String>>> names, boolean includeNone
-    ) {
+            Property<V> prop,
+            ObservableValue<String> name,
+            ObservableValue<Map<V, ObservableValue<String>>> names,
+            boolean includeNone) {
         var comp = new ChoiceComp<>(prop, names, includeNone);
         entries.add(new DynamicOptionsComp.Entry(null, name, comp));
         props.add(prop);
@@ -241,8 +244,7 @@ public class DynamicOptionsBuilder {
     }
 
     public final <T, V extends T> DynamicOptionsBuilder bindChoice(
-            Supplier<Property<? extends V>> creator, Property<T> toSet
-    ) {
+            Supplier<Property<? extends V>> creator, Property<T> toSet) {
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
                 toSet.unbind();
@@ -258,8 +260,9 @@ public class DynamicOptionsBuilder {
             entries.add(
                     0,
                     new DynamicOptionsComp.Entry(
-                            null, null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header"))
-            );
+                            null,
+                            null,
+                            Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         }
         return new DynamicOptionsComp(entries, wrap);
     }

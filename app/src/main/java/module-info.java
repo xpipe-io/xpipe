@@ -101,7 +101,8 @@ open module io.xpipe.app {
     uses MessageExchangeImpl;
     uses io.xpipe.app.util.TerminalProvider;
 
-    provides ModuleLayerLoader with TerminalProvider.Loader;
+    provides ModuleLayerLoader with
+            TerminalProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;
     provides ProxyManagerProvider with

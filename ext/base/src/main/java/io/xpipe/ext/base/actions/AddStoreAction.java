@@ -21,6 +21,7 @@ public class AddStoreAction implements ActionProvider {
         public boolean requiresPlatform() {
             return true;
         }
+
         @Override
         public void execute() throws Exception {
             if (store == null) {

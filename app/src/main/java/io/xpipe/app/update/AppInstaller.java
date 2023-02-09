@@ -37,7 +37,8 @@ public class AppInstaller {
         if (s.isLocal()) {
             targetFile = localFile.toString();
         } else {
-            targetFile = FileNames.join(s.getTemporaryDirectory(), localFile.getFileName().toString());
+            targetFile = FileNames.join(
+                    s.getTemporaryDirectory(), localFile.getFileName().toString());
             try (CommandProcessControl c = s.command(s.getShellType().getStreamFileWriteCommand(targetFile))
                     .start()) {
                 c.discardOut();
@@ -60,7 +61,9 @@ public class AppInstaller {
         }
 
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return Files.exists(Path.of("/etc/debian_version")) ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
+            return Files.exists(Path.of("/etc/debian_version"))
+                    ? new InstallerAssetType.Debian()
+                    : new InstallerAssetType.Rpm();
         }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
@@ -236,7 +239,8 @@ public class AppInstaller {
             @Override
             public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
                 try (var pc = shellProcessControl.subShell(ShellTypes.BASH).start()) {
-                    try (CommandProcessControl c = pc.command("installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /")
+                    try (CommandProcessControl c = pc.command(
+                                    "installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /")
                             .elevated()
                             .start()) {
                         c.discardOrThrow();
@@ -247,7 +251,8 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = "set -x\n" + "sudo installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /\n" + "xpipe daemon start";
+                var command = "set -x\n" + "sudo installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /\n"
+                        + "xpipe daemon start";
                 TerminalProvider.open("X-Pipe Updater", command);
             }
         }

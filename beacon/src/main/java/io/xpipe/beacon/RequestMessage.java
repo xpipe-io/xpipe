@@ -1,4 +1,3 @@
 package io.xpipe.beacon;
 
-public interface RequestMessage {
-}
+public interface RequestMessage {}

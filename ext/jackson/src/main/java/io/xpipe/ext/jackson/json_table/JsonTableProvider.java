@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class JsonTableProvider
         implements UniformDataSourceProvider<JsonTableProvider.Source>,
-                   SimpleFileDataSourceProvider<JsonTableProvider.Source> {
+                SimpleFileDataSourceProvider<JsonTableProvider.Source> {
 
     @Override
     public boolean supportsConversion(JsonTableProvider.Source in, DataSourceType t) {

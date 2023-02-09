@@ -8,10 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
 
     String getScriptFileEnding();
@@ -25,8 +22,8 @@ public interface ShellType {
     default String flatten(List<String> command) {
         return command.stream()
                 .map(s -> s.contains(" ")
-                        && !(s.startsWith("\"") && s.endsWith("\""))
-                        && !(s.startsWith("'") && s.endsWith("'"))
+                                && !(s.startsWith("\"") && s.endsWith("\""))
+                                && !(s.startsWith("'") && s.endsWith("'"))
                         ? "\"" + s + "\""
                         : s)
                 .collect(Collectors.joining(" "));
@@ -54,11 +51,9 @@ public interface ShellType {
         return getEchoCommand(s, false);
     }
 
-     String getSetEnvironmentVariableCommand(String variable, String value);
-
+    String getSetEnvironmentVariableCommand(String variable, String value);
 
     String getEchoCommand(String s, boolean toErrorStream);
-
 
     String getPrintVariableCommand(String name);
 

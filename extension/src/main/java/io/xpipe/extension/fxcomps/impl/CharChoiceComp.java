@@ -20,8 +20,7 @@ public class CharChoiceComp extends Comp<CompStructure<HBox>> {
     public CharChoiceComp(
             Property<Character> value,
             Map<Character, ObservableValue<String>> range,
-            ObservableValue<String> customName
-    ) {
+            ObservableValue<String> customName) {
         this.value = value;
         this.range = range;
         this.customName = customName;

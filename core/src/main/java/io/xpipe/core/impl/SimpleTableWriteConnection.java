@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface SimpleTableWriteConnection<T extends TableDataSource<?>> extends TableWriteConnection {
 
-
     public T getSource();
 
     public default Optional<TupleType> getType() throws Exception {

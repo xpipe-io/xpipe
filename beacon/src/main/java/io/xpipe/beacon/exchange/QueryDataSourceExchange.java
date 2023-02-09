@@ -43,7 +43,8 @@ public class QueryDataSourceExchange implements MessageExchange {
         @NonNull
         String provider;
 
-        @NonNull DataSourceType type;
+        @NonNull
+        DataSourceType type;
 
         @NonNull
         LinkedHashMap<String, String> config;

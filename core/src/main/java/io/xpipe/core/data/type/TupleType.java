@@ -65,7 +65,9 @@ public class TupleType extends DataType {
             throw new UnsupportedOperationException();
         }
 
-        return new TupleType(subNames, subNames.stream().map(s -> types.get(getNames().indexOf(s))).toList());
+        return new TupleType(
+                subNames,
+                subNames.stream().map(s -> types.get(getNames().indexOf(s))).toList());
     }
 
     @Override

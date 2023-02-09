@@ -5,14 +5,10 @@ import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type"
-)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public class JacksonizedValue {
 
-    public JacksonizedValue() {
-    }
+    public JacksonizedValue() {}
 
     @SneakyThrows
     public String toString() {

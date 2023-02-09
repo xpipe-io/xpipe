@@ -50,12 +50,14 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
             builder.contentEncoding(res.headers().firstValue("Content-Encoding").orElse(null));
             var contentType = res.headers().firstValue("Content-Type");
             if (contentType.isPresent()) {
-                var s = Arrays.stream(contentType.get().split(";")).map(String::trim).toList();
+                var s = Arrays.stream(contentType.get().split(";"))
+                        .map(String::trim)
+                        .toList();
                 builder.mimeType(s.get(0));
                 if (s.size() > 1) {
                     try {
-                    var cs = Charset.forName(s.get(1));
-                        builder.charset(StreamCharset.get(cs,false));
+                        var cs = Charset.forName(s.get(1));
+                        builder.charset(StreamCharset.get(cs, false));
                     } catch (IllegalCharsetNameException ignored) {
 
                     }
@@ -69,9 +71,9 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
         String mimeType;
     }
 
-
     public CachedResponseInfo getInfo() {
-        return getState("info", CachedResponseInfo.class, CachedResponseInfo.builder().build());
+        return getState(
+                "info", CachedResponseInfo.class, CachedResponseInfo.builder().build());
     }
 
     public URI getURL() {
@@ -113,7 +115,9 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
     }
 
     private HttpClient createClient() {
-        var client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).build();
+        var client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .build();
         return client;
     }
 

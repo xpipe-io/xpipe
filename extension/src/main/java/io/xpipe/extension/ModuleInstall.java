@@ -8,6 +8,7 @@ public abstract class ModuleInstall {
 
     @Getter
     private final String id;
+
     @Getter
     private final String module;
 

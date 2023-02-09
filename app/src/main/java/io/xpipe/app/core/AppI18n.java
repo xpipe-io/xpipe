@@ -107,7 +107,7 @@ public class AppI18n implements I18n {
     }
 
     @SneakyThrows
-    private  static String getCallerModuleName() {
+    private static String getCallerModuleName() {
         var callers = CallingClass.INSTANCE.getCallingClasses();
         for (Class<?> caller : callers) {
             if (caller.equals(CallingClass.class)
@@ -158,7 +158,9 @@ public class AppI18n implements I18n {
     }
 
     private boolean matchesLocale(Path f) {
-        var l = AppPrefs.get() != null ? AppPrefs.get().language.getValue().getLocale() : SupportedLocale.ENGLISH.getLocale();
+        var l = AppPrefs.get() != null
+                ? AppPrefs.get().language.getValue().getLocale()
+                : SupportedLocale.ENGLISH.getLocale();
         var name = FilenameUtils.getBaseName(f.getFileName().toString());
         var ending = "_" + l.toLanguageTag();
         return name.endsWith(ending);
@@ -208,6 +210,9 @@ public class AppI18n implements I18n {
                         .handle();
             });
         }
-        this.prettyTime = new PrettyTime(AppPrefs.get() != null ? AppPrefs.get().language.getValue().getLocale() : SupportedLocale.ENGLISH.getLocale());
+        this.prettyTime = new PrettyTime(
+                AppPrefs.get() != null
+                        ? AppPrefs.get().language.getValue().getLocale()
+                        : SupportedLocale.ENGLISH.getLocale());
     }
 }

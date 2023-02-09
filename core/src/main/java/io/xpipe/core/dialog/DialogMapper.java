@@ -34,8 +34,7 @@ public class DialogMapper {
 
         var newElement = dialog.next(response);
         if (element.equals(newElement)) {
-            throw new IllegalStateException(
-                    "Loop for key " + newElement.toDisplayString());
+            throw new IllegalStateException("Loop for key " + newElement.toDisplayString());
         }
 
         element = newElement;

@@ -66,7 +66,8 @@ public class GuiDsStoreSelectStep extends MultiStepComp.Step<CompStructure<? ext
 
     private Region createCategoryChooserComp() {
         if (category == DataSourceProvider.Category.STREAM) {
-            return new DsStreamStoreChoiceComp(input, provider, true, true, DsStreamStoreChoiceComp.Mode.OPEN).createRegion();
+            return new DsStreamStoreChoiceComp(input, provider, true, true, DsStreamStoreChoiceComp.Mode.OPEN)
+                    .createRegion();
         }
 
         if (category == DataSourceProvider.Category.DATABASE) {

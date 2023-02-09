@@ -104,7 +104,6 @@ public class ChainedValidator implements Validator {
                             .map(v -> v.createStringBinding(prefix, separator).get())
                             .collect(Collectors.joining("\n"));
                 },
-                observables
-        );
+                observables);
     }
 }

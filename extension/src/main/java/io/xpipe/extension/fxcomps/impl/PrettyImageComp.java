@@ -37,8 +37,7 @@ public class PrettyImageComp extends SimpleComp {
                         return height * aspectRatioProperty.doubleValue();
                     }
                 },
-                aspectRatioProperty
-        );
+                aspectRatioProperty);
         var heightProperty = Bindings.createDoubleBinding(
                 () -> {
                     boolean widthLimited = width / height < aspectRatioProperty.doubleValue();
@@ -48,22 +47,20 @@ public class PrettyImageComp extends SimpleComp {
                         return height;
                     }
                 },
-                aspectRatioProperty
-        );
+                aspectRatioProperty);
 
         Node node;
 
         if (value.getValue().endsWith(".svg")) {
-            var storeIcon =
-                    SvgComp.create(Bindings.createStringBinding(() -> XPipeDaemon.getInstance().svgImage(value.getValue()), value));
+            var storeIcon = SvgComp.create(
+                    Bindings.createStringBinding(() -> XPipeDaemon.getInstance().svgImage(value.getValue()), value));
             aspectRatioProperty.bind(Bindings.createDoubleBinding(
                     () -> {
                         return storeIcon.getWidth().getValue().doubleValue()
                                 / storeIcon.getHeight().getValue().doubleValue();
                     },
                     storeIcon.getWidth(),
-                    storeIcon.getHeight()
-            ));
+                    storeIcon.getHeight()));
             node = storeIcon.createWebview();
             ((WebView) node).prefWidthProperty().bind(widthProperty);
             ((WebView) node).maxWidthProperty().bind(widthProperty);
@@ -81,8 +78,7 @@ public class PrettyImageComp extends SimpleComp {
                                 aspectRatioProperty.set(image.getWidth() / image.getHeight());
                                 return image;
                             },
-                            PlatformThread.sync(value)
-                    ));
+                            PlatformThread.sync(value)));
             storeIcon.fitWidthProperty().bind(widthProperty);
             storeIcon.fitHeightProperty().bind(heightProperty);
             storeIcon.setSmooth(true);

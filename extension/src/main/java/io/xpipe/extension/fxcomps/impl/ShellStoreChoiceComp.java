@@ -28,7 +28,6 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
         return new ShellStoreChoiceComp<>(Mode.HOST_CHOICE, null, selected, ShellStore.class, shellStore -> true);
     }
 
-
     public static ShellStoreChoiceComp<ShellStore> proxy(ShellStore self, Property<ShellStore> selected) {
         return new ShellStoreChoiceComp<>(Mode.PROXY_CHOICE, self, selected, ShellStore.class, shellStore -> true);
     }
@@ -71,7 +70,8 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
     @Override
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
-        var comboBox = new CustomComboBoxBuilder<T>(selected, this::createGraphic, new Label(I18n.get("none")), n -> true);
+        var comboBox =
+                new CustomComboBoxBuilder<T>(selected, this::createGraphic, new Label(I18n.get("none")), n -> true);
         comboBox.setUnknownNode(t -> createGraphic(t));
 
         var available = XPipeDaemon.getInstance().getNamedStores().stream()

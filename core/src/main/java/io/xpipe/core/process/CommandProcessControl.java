@@ -11,6 +11,7 @@ public interface CommandProcessControl extends ProcessControl {
 
     @Override
     public CommandProcessControl sensitive();
+
     CommandProcessControl complex();
 
     default InputStream startExternalStdout() throws Exception {

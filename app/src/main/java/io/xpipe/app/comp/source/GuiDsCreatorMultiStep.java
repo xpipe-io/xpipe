@@ -40,7 +40,8 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
 
     private GuiDsCreatorMultiStep(
             Stage window,
-            DataSourceEntry editing, DataSourceCollection targetGroup,
+            DataSourceEntry editing,
+            DataSourceCollection targetGroup,
             DataSourceProvider.Category category,
             DataSourceProvider<?> provider,
             DI store,
@@ -72,13 +73,7 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
                     I18n.get("newDataSource"),
                     window -> {
                         var ms = new GuiDsCreatorMultiStep<>(
-                                window,
-                                null, sourceCollection,
-                                category,
-                                null,
-                                null,
-                                null,
-                                State.CREATE);
+                                window, null, sourceCollection, category, null, null, null, State.CREATE);
                         loading.bind(ms.loading);
                         window.setOnCloseRequest(e -> {
                             if (ms.state == State.CREATE && ms.source.getValue() != null) {
@@ -102,7 +97,8 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
                     window -> {
                         var ms = new GuiDsCreatorMultiStep<>(
                                 window,
-                                entry, DataStorage.get()
+                                entry,
+                                DataStorage.get()
                                         .getCollectionForSourceEntry(entry)
                                         .orElse(null),
                                 entry.getProvider().getCategory(),
@@ -130,7 +126,8 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
                     window -> {
                         var gui = new GuiDsCreatorMultiStep<>(
                                 window,
-                                null, sourceCollection,
+                                null,
+                                sourceCollection,
                                 category,
                                 provider.orElse(null),
                                 store,
@@ -266,7 +263,8 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
         switch (state) {
             case EDIT -> {}
             case CREATE -> {
-                list.add(new Entry(I18n.observable("target"), new GuiDsCreatorTransferStep(targetGroup, store, source)));
+                list.add(
+                        new Entry(I18n.observable("target"), new GuiDsCreatorTransferStep(targetGroup, store, source)));
             }
         }
         return list;

@@ -54,5 +54,8 @@ open module io.xpipe.extension {
     uses ActionProvider;
     uses io.xpipe.extension.util.ModuleLayerLoader;
 
-    provides ModuleLayerLoader with DataSourceTarget.Loader, ActionProvider.Loader, PrefsProvider.Loader;
+    provides ModuleLayerLoader with
+            DataSourceTarget.Loader,
+            ActionProvider.Loader,
+            PrefsProvider.Loader;
 }

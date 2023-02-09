@@ -6,23 +6,17 @@ import lombok.Getter;
 
 @Getter
 public enum CloseBehaviour implements PrefsChoiceValue {
-    QUIT(
-            "app.quit",
-            () -> {
-                OperationMode.shutdown(false, false);
-            }),
+    QUIT("app.quit", () -> {
+        OperationMode.shutdown(false, false);
+    }),
 
-    CONTINUE_IN_BACKGROUND(
-            "app.continueInBackground",
-            () -> {
-                OperationMode.switchToAsync(OperationMode.BACKGROUND);
-            }),
+    CONTINUE_IN_BACKGROUND("app.continueInBackground", () -> {
+        OperationMode.switchToAsync(OperationMode.BACKGROUND);
+    }),
 
-    MINIMIZE_TO_TRAY(
-            "app.minimizeToTray",
-            () -> {
-                OperationMode.switchToAsync(OperationMode.TRAY);
-            });
+    MINIMIZE_TO_TRAY("app.minimizeToTray", () -> {
+        OperationMode.switchToAsync(OperationMode.TRAY);
+    });
 
     private String id;
     private Runnable exit;

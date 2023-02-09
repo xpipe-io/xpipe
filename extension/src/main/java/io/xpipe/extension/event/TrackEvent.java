@@ -19,8 +19,10 @@ public class TrackEvent {
     private String type;
     private String message;
     private String category;
+
     @Singular
     private Map<String, Object> tags;
+
     @Singular
     private List<Object> elements;
 
@@ -117,16 +119,13 @@ public class TrackEvent {
                 var valueString = e.getValue() != null ? e.getValue().toString() : "null";
                 var value = valueString.contains("\n")
                         ? "\n"
-                        + (valueString.toString()
-                        .lines()
-                        .map(line -> "    | " + line)
-                        .collect(Collectors.joining("\n")))
+                                + (valueString
+                                        .toString()
+                                        .lines()
+                                        .map(line -> "    | " + line)
+                                        .collect(Collectors.joining("\n")))
                         : valueString;
-                s.append("    ")
-                        .append(e.getKey())
-                        .append("=")
-                        .append(value)
-                        .append("\n");
+                s.append("    ").append(e.getKey()).append("=").append(value).append("\n");
             }
             s.append("}");
         }
@@ -134,9 +133,7 @@ public class TrackEvent {
         if (elements.size() > 0) {
             s.append(" [\n");
             for (var e : elements) {
-                s.append("    ")
-                        .append(e != null ? e.toString() : "null")
-                        .append("\n");
+                s.append("    ").append(e != null ? e.toString() : "null").append("\n");
             }
             s.append("]");
         }

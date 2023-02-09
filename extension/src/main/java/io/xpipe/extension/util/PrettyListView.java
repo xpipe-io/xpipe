@@ -79,16 +79,14 @@ public class PrettyListView<T> extends ListView<T> {
                 w - prefWidth - insets.getRight(),
                 insets.getTop(),
                 prefWidth,
-                h - insets.getTop() - insets.getBottom()
-        );
+                h - insets.getTop() - insets.getBottom());
 
         final double prefHeight = hBar.prefHeight(-1);
         hBar.resizeRelocate(
                 insets.getLeft(),
                 h - prefHeight - insets.getBottom(),
                 w - insets.getLeft() - insets.getRight(),
-                prefHeight
-        );
+                prefHeight);
     }
 
     public static class NoSelectionModel<T> extends MultipleSelectionModel<T> {
@@ -104,40 +102,31 @@ public class PrettyListView<T> extends ListView<T> {
         }
 
         @Override
-        public void selectIndices(int index, int... indices) {
-        }
+        public void selectIndices(int index, int... indices) {}
 
         @Override
-        public void selectAll() {
-        }
+        public void selectAll() {}
 
         @Override
-        public void selectFirst() {
-        }
+        public void selectFirst() {}
 
         @Override
-        public void selectLast() {
-        }
+        public void selectLast() {}
 
         @Override
-        public void clearAndSelect(int index) {
-        }
+        public void clearAndSelect(int index) {}
 
         @Override
-        public void select(int index) {
-        }
+        public void select(int index) {}
 
         @Override
-        public void select(T obj) {
-        }
+        public void select(T obj) {}
 
         @Override
-        public void clearSelection(int index) {
-        }
+        public void clearSelection(int index) {}
 
         @Override
-        public void clearSelection() {
-        }
+        public void clearSelection() {}
 
         @Override
         public boolean isSelected(int index) {
@@ -150,11 +139,9 @@ public class PrettyListView<T> extends ListView<T> {
         }
 
         @Override
-        public void selectPrevious() {
-        }
+        public void selectPrevious() {}
 
         @Override
-        public void selectNext() {
-        }
+        public void selectNext() {}
     }
 }

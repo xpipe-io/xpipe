@@ -22,17 +22,11 @@ public class CsvDetectorTest extends DaemonExtensionTest {
         Assertions.assertEquals(
                 lines.at(0),
                 TupleNode.of(
-                        names,
-                        List.of(
-                                ValueNode.of("JAN"),
-                                ValueNode.of(340),
-                                ValueNode.of(360),
-                                ValueNode.of(417))));
+                        names, List.of(ValueNode.of("JAN"), ValueNode.of(340), ValueNode.of(360), ValueNode.of(417))));
         Assertions.assertEquals(
                 lines.at(lines.size() - 1),
                 TupleNode.of(
-                        names,
-                        List.of(ValueNode.of("DEC"), ValueNode.of(337), ValueNode.of(405), ValueNode.of(432))));
+                        names, List.of(ValueNode.of("DEC"), ValueNode.of(337), ValueNode.of(405), ValueNode.of(432))));
 
         CsvSource detected = source.getInternalSource().asNeeded();
         Assertions.assertEquals(detected.getHeaderState(), CsvHeaderState.INCLUDED);

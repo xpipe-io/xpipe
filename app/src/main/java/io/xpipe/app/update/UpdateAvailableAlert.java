@@ -12,13 +12,14 @@ public class UpdateAvailableAlert {
             return;
         }
 
-        var update = AppWindowHelper.showBlockingAlert(
-                alert -> {
+        var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(I18n.get("updateReadyTitle"));
                     alert.setHeaderText(I18n.get("updateReadyHeader"));
                     alert.setContentText(I18n.get("updateReadyContent"));
                     alert.setAlertType(Alert.AlertType.INFORMATION);
-                }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
+                })
+                .map(buttonType -> buttonType.getButtonData().isDefaultButton())
+                .orElse(false);
         if (update) {
             AppUpdater.get().executeUpdateAndClose();
         }

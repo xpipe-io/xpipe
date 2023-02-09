@@ -22,8 +22,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<VBox>> {
     private final ObservableList<T> all;
     private final Function<T, Comp<?>> compFunction;
 
-    public ListBoxViewComp(
-            ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction) {
+    public ListBoxViewComp(ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction) {
         this.shown = PlatformThread.sync(shown);
         this.all = PlatformThread.sync(all);
         this.compFunction = compFunction;

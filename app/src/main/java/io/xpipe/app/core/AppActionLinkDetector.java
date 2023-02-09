@@ -18,10 +18,10 @@ public class AppActionLinkDetector {
             content = Clipboard.getSystemClipboard().getContent(DataFormat.PLAIN_TEXT);
         }
 
-        return content != null?content.toString():null;
+        return content != null ? content.toString() : null;
     }
 
-    private static void handle(String content,  boolean showAlert) {
+    private static void handle(String content, boolean showAlert) {
         var detected = LauncherInput.of(content);
         if (detected.size() == 0) {
             return;
@@ -62,11 +62,14 @@ public class AppActionLinkDetector {
 
     private static boolean showAlert() {
         var paste = AppWindowHelper.showBlockingAlert(alert -> {
-            alert.setAlertType(Alert.AlertType.CONFIRMATION);
-            alert.setTitle(I18n.get("clipboardActionDetectedTitle"));
-            alert.setHeaderText(I18n.get("clipboardActionDetectedHeader"));
-            alert.getDialogPane().setContent(AppWindowHelper.alertContentText(I18n.get("clipboardActionDetectedContent")));
-        }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
+                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle(I18n.get("clipboardActionDetectedTitle"));
+                    alert.setHeaderText(I18n.get("clipboardActionDetectedHeader"));
+                    alert.getDialogPane()
+                            .setContent(AppWindowHelper.alertContentText(I18n.get("clipboardActionDetectedContent")));
+                })
+                .map(buttonType -> buttonType.getButtonData().isDefaultButton())
+                .orElse(false);
         return paste;
     }
 }

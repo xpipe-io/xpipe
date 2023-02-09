@@ -29,12 +29,10 @@ public abstract class ProxyProvider {
     public abstract boolean isRemote(Object base);
 
     public abstract <T extends DataSourceReadConnection> T createRemoteReadConnection(
-            DataSource<?> source, ShellStore proxy
-    ) throws Exception;
+            DataSource<?> source, ShellStore proxy) throws Exception;
 
     public abstract <T extends DataSourceConnection> T createRemoteWriteConnection(
-            DataSource<?> source, WriteMode mode, ShellStore proxy
-    ) throws Exception;
+            DataSource<?> source, WriteMode mode, ShellStore proxy) throws Exception;
 
     public abstract ProxyFunction call(ProxyFunction func, ShellStore proxy);
 }

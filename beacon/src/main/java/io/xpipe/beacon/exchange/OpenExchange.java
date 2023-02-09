@@ -20,12 +20,12 @@ public class OpenExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull List<String> arguments;
+        @NonNull
+        List<String> arguments;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {
-    }
+    public static class Response implements ResponseMessage {}
 }

@@ -8,8 +8,8 @@ import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.extension.I18n;
 import io.xpipe.extension.DataSourceTarget;
+import io.xpipe.extension.I18n;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.SimpleComp;
@@ -65,7 +65,9 @@ public class DsDataTransferComp extends SimpleComp {
             AppWindowHelper.sideWindow(
                             I18n.get("pipeDataSource"),
                             window -> {
-                                var ms = new DsDataTransferComp(new SimpleObjectProperty<>(e)).exclude(DataSourceTarget.byId("base.saveSource").orElseThrow());
+                                var ms = new DsDataTransferComp(new SimpleObjectProperty<>(e))
+                                        .exclude(DataSourceTarget.byId("base.saveSource")
+                                                .orElseThrow());
                                 var multi = new MultiStepComp() {
                                     @Override
                                     protected List<Entry> setup() {
@@ -111,9 +113,7 @@ public class DsDataTransferComp extends SimpleComp {
                                 };
                                 return multi.apply(s -> {
                                     SimpleChangeListener.apply(ms.getSelectedTarget(), (c) -> {
-                                        if (c != null
-                                                && c.getAccessType()
-                                                        == DataSourceTarget.AccessType.PASSIVE) {
+                                        if (c != null && c.getAccessType() == DataSourceTarget.AccessType.PASSIVE) {
                                             ((Region) s.get().getChildren().get(2)).setMaxHeight(0);
                                             ((Region) s.get().getChildren().get(2)).setMinHeight(0);
                                             ((Region) s.get().getChildren().get(2)).setVisible(false);
@@ -149,8 +149,9 @@ public class DsDataTransferComp extends SimpleComp {
 
         var chooser = DataSourceTargetChoiceComp.create(
                 selectedTarget,
-                a -> !excludedTargets.contains(a) && a.isApplicable(dataSourceEntry.getValue().getSource()) &&
-                               a.createRetrievalInstructions(
+                a -> !excludedTargets.contains(a)
+                        && a.isApplicable(dataSourceEntry.getValue().getSource())
+                        && a.createRetrievalInstructions(
                                         dataSourceEntry.getValue().getSource(), id)
                                 != null);
 
@@ -165,11 +166,9 @@ public class DsDataTransferComp extends SimpleComp {
                                     return selectedTarget.getValue() != null
                                             && selectedTarget.getValue().getSetupGuideURL() != null;
                                 },
-                                selectedTarget
-                        )));
+                                selectedTarget)));
         var top = new HorizontalComp(List.<Comp<?>>of(
-                        chooser.apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS)),
-                        setupGuideButton))
+                        chooser.apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS)), setupGuideButton))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setSpacing(12);
@@ -179,9 +178,7 @@ public class DsDataTransferComp extends SimpleComp {
         // setupGuideButton.prefHeightProperty().bind(chooserR.heightProperty());
 
         var content = new VBox(
-                new DynamicOptionsComp(
-                                List.of(new DynamicOptionsComp.Entry(null, null, top)), false)
-                        .createRegion(),
+                new DynamicOptionsComp(List.of(new DynamicOptionsComp.Entry(null, null, top)), false).createRegion(),
                 new Region());
         SimpleChangeListener.apply(selectedTarget, c -> {
             if (selectedTarget.getValue() == null) {
@@ -191,9 +188,8 @@ public class DsDataTransferComp extends SimpleComp {
             }
 
             var instructions = selectedTarget
-                            .getValue()
-                            .createRetrievalInstructions(
-                                    dataSourceEntry.getValue().getSource(), id);
+                    .getValue()
+                    .createRetrievalInstructions(dataSourceEntry.getValue().getSource(), id);
             content.getChildren().set(1, instructions.getRegion());
             VBox.setVgrow(instructions.getRegion(), Priority.ALWAYS);
             selectedDisplay.setValue(instructions);

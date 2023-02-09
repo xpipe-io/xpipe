@@ -65,8 +65,8 @@ public class CsvDetector {
         }
 
         var delimiter = CsvDelimiter.detectDelimiter(lines, quoteChar);
-        var array =
-                CsvSplitter.splitRaw(lines, quoteChar, delimiter.getNamedCharacter().getCharacter());
+        var array = CsvSplitter.splitRaw(
+                lines, quoteChar, delimiter.getNamedCharacter().getCharacter());
         var headerState = CsvHeaderState.determine(array, quoteChar);
 
         event("Finished detection").handle();

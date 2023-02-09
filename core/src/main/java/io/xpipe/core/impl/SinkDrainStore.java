@@ -94,7 +94,7 @@ public class SinkDrainStore extends JacksonizedValue implements KnownFormatStrea
 
         if (getState() == State.NONE_CONNECTED) {
             setState(State.CONSUMER_CONNECTED);
-            //waitForOpen();
+            // waitForOpen();
         }
 
         try {
@@ -121,11 +121,12 @@ public class SinkDrainStore extends JacksonizedValue implements KnownFormatStrea
 
         if (getState() == State.NONE_CONNECTED) {
             setState(State.PRODUCER_CONNECTED);
-            //waitForOpen();
+            // waitForOpen();
         }
 
         try {
-            return new FilterOutputStream(Channels.newOutputStream(getOrOpenPipe().sink())) {
+            return new FilterOutputStream(
+                    Channels.newOutputStream(getOrOpenPipe().sink())) {
                 @Override
                 public void close() throws IOException {
                     super.close();

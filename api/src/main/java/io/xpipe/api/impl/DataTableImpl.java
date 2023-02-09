@@ -24,11 +24,7 @@ import java.util.stream.StreamSupport;
 
 public class DataTableImpl extends DataSourceImpl implements DataTable {
 
-    DataTableImpl(
-            DataSourceId id,
-            DataSourceConfig sourceConfig,
-            io.xpipe.core.source.DataSource<?> internalSource
-    ) {
+    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
         super(id, sourceConfig, internalSource);
     }
 
@@ -74,7 +70,6 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
     public Iterator<TupleNode> iterator() {
         return new TableIterator();
     }
-
     ;
 
     private class TableIterator implements Iterator<TupleNode> {

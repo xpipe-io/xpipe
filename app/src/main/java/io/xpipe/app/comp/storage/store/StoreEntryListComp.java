@@ -17,14 +17,12 @@ public class StoreEntryListComp extends SimpleComp {
         var topLevel = StoreEntrySection.createTopLevels();
         var filtered = BindingsHelper.filteredContentBinding(
                 topLevel,
-                StoreViewState.get().getFilterString().map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
-        var content = new ListViewComp<>(
-                filtered,
-                topLevel,
-                null,
-                (StoreEntrySection e) -> {
-                    return e.comp(true);
-                });
+                StoreViewState.get()
+                        .getFilterString()
+                        .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
+        var content = new ListViewComp<>(filtered, topLevel, null, (StoreEntrySection e) -> {
+            return e.comp(true);
+        });
         return content.styleClass("store-list-comp");
     }
 

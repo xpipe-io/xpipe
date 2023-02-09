@@ -9,7 +9,7 @@ public class UuidHelper {
 
     public static Optional<UUID> parse(String s) {
         try {
-        return Optional.of(UUID.fromString(s));
+            return Optional.of(UUID.fromString(s));
         } catch (IllegalArgumentException ex) {
             return Optional.empty();
         }

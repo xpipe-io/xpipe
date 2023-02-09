@@ -100,6 +100,7 @@ The license model is chosen in such a way that you are
 able to use and integrate X-Pipe within your application through the MIT-licensed API.
 In any other case where you plan to contribute to the X-Pipe platform itself, which is GPL licensed,
 I would still have to figure out how to exactly handle these kinds of contributions.
+It is also planned to move many components to a more permissive license in the future.
 
 ## Development
 

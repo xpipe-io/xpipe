@@ -27,7 +27,12 @@ public class FileEditAction implements ActionProvider {
                 ExternalEditor.get().openInEditor(store.getFile());
             } else {
                 ExternalEditor.get()
-                        .startEditing(store.getFileName(), store.getFileExtension(), store, () -> store.openInput(), () -> store.openOutput());
+                        .startEditing(
+                                store.getFileName(),
+                                store.getFileExtension(),
+                                store,
+                                () -> store.openInput(),
+                                () -> store.openOutput());
             }
         }
     }

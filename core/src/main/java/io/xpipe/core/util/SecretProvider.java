@@ -12,7 +12,9 @@ public abstract class SecretProvider {
 
     public static SecretProvider get() {
         if (INSTANCE == null) {
-            INSTANCE = ServiceLoader.load(ModuleLayer.boot(), SecretProvider.class).findFirst().orElseThrow();
+            INSTANCE = ServiceLoader.load(ModuleLayer.boot(), SecretProvider.class)
+                    .findFirst()
+                    .orElseThrow();
         }
 
         return INSTANCE;

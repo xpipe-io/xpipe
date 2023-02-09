@@ -25,7 +25,8 @@ public abstract class PlatformMode extends OperationMode {
         }
 
         try {
-            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            GraphicsDevice[] screenDevices =
+                    GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
             HAS_GRAPHICS = screenDevices != null && screenDevices.length > 0;
         } catch (HeadlessException e) {
             TrackEvent.warn(e.getMessage());
