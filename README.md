@@ -2,7 +2,7 @@
 
 ### Next level remote data workflows for everyone
 
-X-Pipe is a tool for working with remote connections and their data.
+X-Pipe is a tool in an early alpha for working with remote connections and their data.
 The focus lies on providing:
 - An easy remote connection setup and workflow
 - Organization of all your connections in one place

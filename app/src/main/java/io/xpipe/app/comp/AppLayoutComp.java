@@ -51,8 +51,8 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
                 // new SideMenuBarComp.Entry(I18n.observable("account"), "mdi2a-account", new StorageLayoutComp()),
                 new SideMenuBarComp.Entry(I18n.observable("about"), "mdi2p-package-variant", new AboutTabComp())));
         if (AppProperties.get().isDeveloperMode()) {
-            // l.add(new SideMenuBarComp.Entry(I18n.observable("developer"), "mdi2b-book-open-variant", new
-            // DeveloperTabComp()));
+             l.add(new SideMenuBarComp.Entry(I18n.observable("developer"), "mdi2b-book-open-variant", new
+             DeveloperTabComp()));
         }
         //        l.add(new SideMenuBarComp.Entry(I18n.observable("abc"), "mdi2b-book-open-variant", Comp.of(() -> {
         //            var fi = new FontIcon("mdsal-dvr");

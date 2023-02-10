@@ -48,7 +48,10 @@ public class BindingsHelper {
                     while (true) {
                         for (ReferenceEntry reference : REFERENCES) {
                             if (reference.canGc()) {
-                                REFERENCES.remove(reference);
+                                /*
+                                TODO: Figure out why some bindings are garbage collected, even if they shouldn't
+                                 */
+                                // REFERENCES.remove(reference);
                             }
                         }
                         ThreadHelper.sleep(1000);
