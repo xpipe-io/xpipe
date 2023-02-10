@@ -65,7 +65,7 @@ allows you to manage and work with all kinds of data sources:
   your favorite programming languages using the X-Pipe APIs
 - Connect select third party applications directly to X-Pipe through extensions
 
-<img src="https://user-images.githubusercontent.com/72509152/213240736-7a27fb3c-e8c3-4c92-bcea-2a782e53dc31.png" alt="drawing" height="450"/>
+<img src="https://user-images.githubusercontent.com/72509152/218159305-64e2ac2c-2d01-4087-89d2-907f2e3a6bed.png" alt="drawing" height="450"/>
 
 ## Repository Structure
 
