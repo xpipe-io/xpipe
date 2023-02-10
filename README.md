@@ -141,3 +141,9 @@ such as remote server connections and database connections.
 Other private workflows are responsible for packaging, signing, and distributing the releases.
 So you can assume that the code is tested!
 
+## Community
+
+There are several ways to reach out in case you encounter any issues or questions:
+
+- The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb>)
+- The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg>)
