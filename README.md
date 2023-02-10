@@ -2,22 +2,20 @@
 
 ### Next level remote data workflows for everyone
 
-X-Pipe is a tool for working with remote connections and the data that can be accessed through them.
-The focus lies on providing an easy remote connection handling workflow plus data intermediation capabilities
-such that you can work with all kinds of data located on essentially any remote system with ease.
-So if you are
-- a data analyst/scientist
-- a system administrator
-- a software engineer
-- or generally just work a lot with remote connections and data
+X-Pipe is a tool for working with remote connections and their data.
+The focus lies on providing:
+- An easy remote connection setup and workflow
+- Organization of all your connections in one place
+- The ability to automatically launch your remote connections
+- Data intermediation capabilities to be able to work with and transfer more than just bytes and text
 
-then X-Pipe is designed for you!
-
-The X-Pipe project is designed to be an open platform, both in terms of development from
-a developer's perspective and the workflow from a user's perspective.
-X-Pipe is open source and is
-designed to utilize and integrate well with other popular tools and workflows,
+The core idea is to utilize and integrate well with other popular tools and workflows,
 focusing on augmenting them rather than replacing them.
+X-Pipe is built around existing tools and tries to outsource tasks to them,
+such that you can always use your favorite tools to work with X-Pipe, e.g.
+text/code editors, terminals, shells, command-line tools and more.
+The X-Pipe platform is open source and designed to be extensible, allowing anyone
+to implement custom functionality through custom extensions with the help of an exhaustive API.
 
 ## Connection Explorer
 
