@@ -47,7 +47,7 @@ public abstract class ProcessControlProvider {
                         localProcessControlProvider.command(parent, command, terminalCommand))
                 .filter(Objects::nonNull)
                 .findFirst()
-                .orElseThrow();
+                .orElse(null);
     }
 
     public static ShellProcessControl createSsh(Object sshStore) {
