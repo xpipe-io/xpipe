@@ -7,6 +7,20 @@ task copyRuntimeLibs(type: Copy) {
 copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
 jar.dependsOn(copyRuntimeLibs)
 
+def dev = tasks.register('createDevOutput', Copy) {
+    def base = project.name.substring(0, project.name.length() - 1)
+    def isX = project.name.endsWith("x") && findProject(":$base") != null
+    var source = "${project.jar.destinationDirectory.get()}"
+    if (isX) {
+        from source
+        into "${project(':' + base).jar.destinationDirectory.get()}_dev"
+    } else {
+        from source
+        into "${project.jar.destinationDirectory.get()}_dev"
+    }
+}
+jar.finalizedBy(dev)
+
 tasks.register('createExtOutput', Copy) {
     def base = project.name.substring(0, project.name.length() - 1)
     def isX = project.name.endsWith("x") && findProject(":$base") != null

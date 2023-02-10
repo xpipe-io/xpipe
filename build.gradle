@@ -28,6 +28,6 @@ project.ext {
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     versionString = file('version').text + (isFullRelease ? '' : '-SNAPSHOT')
     canonicalVersionString = file('version').text
-    buildId = UUID.nameUUIDFromBytes(version.toString().getBytes())
+    buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
     obfuscate = true
 }

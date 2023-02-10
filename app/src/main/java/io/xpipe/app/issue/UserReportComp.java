@@ -12,8 +12,11 @@ import io.xpipe.extension.I18n;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.SimpleComp;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -21,19 +24,17 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserReportComp extends SimpleComp {
 
     private final StringProperty text = new SimpleStringProperty();
-    private final List<Path> includedDiagnostics;
+    private final ListProperty<Path> includedDiagnostics;
     private final ErrorEvent event;
     private final Stage stage;
 
     public UserReportComp(ErrorEvent event, Stage stage) {
         this.event = event;
-        this.includedDiagnostics = new ArrayList<>(event.getAttachments());
+        this.includedDiagnostics = new SimpleListProperty<>(FXCollections.observableArrayList());
         this.stage = stage;
     }
 
@@ -50,30 +51,13 @@ public class UserReportComp extends SimpleComp {
                     }
 
                     return file.getFileName().toString();
-                })
+                }, includedDiagnostics)
                 .styleClass("attachment-list");
         var tp = new TitledPaneComp(I18n.observable("additionalErrorAttachments"), list, 100)
+                .apply(struc -> struc.get().setExpanded(true))
                 .apply(s -> AppFont.medium(s.get()))
                 .styleClass("attachments");
         return tp;
-        //
-        //        var list = FXCollections.observableList(event.getSensitiveDiagnostics());
-        //        return new ListViewComp<>(list, list, null, a -> {
-        //            var label = new Label(a.getFileName().toString());
-        //            var cb = new JFXCheckBox();
-        //            cb.setSelected(includedDiagnostics.contains(a));
-        //            cb.selectedProperty().addListener((c,o,n) -> {
-        //                if (n) {
-        //                    includedDiagnostics.add(a);
-        //                } else {
-        //                    includedDiagnostics.remove(a);
-        //                }
-        //            });
-        //            var spacer = new Region();
-        //            var c = new HBox(label, spacer, cb);
-        //            HBox.setHgrow(spacer, Priority.ALWAYS);
-        //            return WrapperComp.of(() -> c);
-        //        });
     }
 
     @Override

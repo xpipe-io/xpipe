@@ -58,7 +58,7 @@ public class AppExtensionManager {
                         .resolve("ext")
                         .resolve(name)
                         .resolve("build")
-                        .resolve("libs");
+                        .resolve("libs_dev");
         var layer = loadDirectory(userDir);
         return layer.size() > 0 ? layer.get(0) : null;
     }

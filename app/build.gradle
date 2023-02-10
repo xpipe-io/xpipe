@@ -101,7 +101,7 @@ List<String> jvmRunArgs = [
 
 
 def extensionDirList = Arrays.stream(file("$rootDir/ext").list())
-        .map(l -> project(":$l").buildDir.toString() + "/libs").collect(Collectors.joining(File.pathSeparator));
+        .map(l -> project(":$l").buildDir.toString() + "/libs_dev").filter {file(it).exists()}.collect(Collectors.joining(File.pathSeparator));
 
 test {
     jvmArgs += jvmRunArgs
@@ -135,7 +135,7 @@ run {
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"
-    systemProperty 'io.xpipe.app.logLevel', "debug"
+    systemProperty 'io.xpipe.app.logLevel', "trace"
     systemProperty "io.xpipe.beacon.port", "21724"
     // systemProperty "io.xpipe.beacon.printMessages", "true"
     systemProperty "io.xpipe.app.extensions", extensionDirList

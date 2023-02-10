@@ -3,8 +3,6 @@ package io.xpipe.app.comp.base;
 import com.jfoenix.controls.JFXCheckBox;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.collections.FXCollections;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
@@ -21,7 +19,7 @@ public class ListSelectorComp<T> extends SimpleComp {
 
     List<T> values;
     Function<T, String> toString;
-    ListProperty<T> selected = new SimpleListProperty<>(FXCollections.observableArrayList());
+    ListProperty<T> selected;
 
     @Override
     protected Region createSimple() {
@@ -35,7 +33,7 @@ public class ListSelectorComp<T> extends SimpleComp {
                     selected.remove(v);
                 }
             });
-            cb.setSelected(true);
+            cb.setSelected(selected.contains(v));
             var l = new Label(toString.apply(v), cb);
             vbox.getChildren().add(l);
         }
