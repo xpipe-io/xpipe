@@ -25,11 +25,6 @@ repositories {
 
 version = rootProject.versionString
 
-project.ext {
-    buildId = UUID.nameUUIDFromBytes(version.toString().getBytes())
-    obfuscate = true
-}
-
 task dist(type: DefaultTask) {}
 
 clean {

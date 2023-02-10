@@ -6,7 +6,7 @@ def distJvmArgs = new ArrayList<String>(project(':app').application.applicationD
 
 def releaseArguments = distJvmArgs + [
         '-Dio.xpipe.app.writeLogs=true',
-        "-Dio.xpipe.app.buildId=$project.buildId",
+        "-Dio.xpipe.app.buildId=$rootProject.buildId",
         '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279'
 ]
 
@@ -94,13 +94,13 @@ jlink {
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
-def extModuleNames = Arrays.asList(file("$rootDir/ext").list()).stream()
+def extModules = Arrays.asList(file("$rootDir/ext").list()).stream()
         .map(l -> project(":$l")).toList()
-task copyBundledExtensions(type: DefaultTask) {
+task copyBundledExtensions(type: DefaultTask,
+                           dependsOn: extModules.stream().map { it.getTasksByName('createExtOutput', true)[0] }.toList()) {
     doLast {
-        for (def extProject : extModuleNames) {
-            def shouldObfuscate = project.ext.obfuscate && file("$rootDir/private_extensions.txt").exists() && file("$rootDir/private_extensions.txt").readLines().contains(extProject.getName())
-            def dir = shouldObfuscate ? "${extProject.buildDir}/libs_obf" : "${extProject.buildDir}/libs"
+        for (def extProject : extModules) {
+            def dir = "${extProject.buildDir}/libs_ext"
             if (file(dir).exists()) {
                 copy {
                     from(dir)
