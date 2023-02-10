@@ -25,7 +25,7 @@ public class ProcPrefs extends PrefsProvider {
         return enableCaching;
     }
 
-    private final ObjectProperty<ExternalTerminalType> terminalType = new SimpleObjectProperty<>();
+    private final ObjectProperty<ExternalTerminalType> terminalType = new SimpleObjectProperty<>(ExternalTerminalType.CUSTOM);
     private final SimpleListProperty<ExternalTerminalType> terminalTypeList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class)));
     private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(

@@ -46,7 +46,7 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
     protected boolean elevated;
     protected int exitCode = -1;
     protected String timedOutError;
-    protected Integer exitTimeout;
+    protected Integer exitTimeout = 5000;
     protected boolean complex;
     protected boolean obeysReturnValueConvention = true;
 
@@ -202,7 +202,7 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
         var exitCode = getExitCode();
         var success = (obeysReturnValueConvention && exitCode == 0)
                 || (!obeysReturnValueConvention
-                        && !(read.get().isEmpty() && !readError.get().isEmpty()));
+                && !(read.get().isEmpty() && !readError.get().isEmpty()));
         if (success) {
             return read.get().trim();
         } else {
@@ -238,7 +238,7 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
         var exitCode = getExitCode();
         var success = (obeysReturnValueConvention && exitCode == 0)
                 || (!obeysReturnValueConvention
-                        && !(read.get().isEmpty() && !readError.get().isEmpty()));
+                && !(read.get().isEmpty() && !readError.get().isEmpty()));
         if (!success) {
             throw new ProcessOutputException(
                     "Command returned with " + exitCode + ": " + readError.get().trim());

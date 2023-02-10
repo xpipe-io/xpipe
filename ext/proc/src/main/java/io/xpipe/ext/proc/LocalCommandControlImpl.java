@@ -25,9 +25,19 @@ public class LocalCommandControlImpl extends CommandControlImpl {
     @Override
     public boolean waitFor() {
         try {
-            return process.waitFor(exitTimeout, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
+            if (exitTimeout != null && process.waitFor(exitTimeout, TimeUnit.MILLISECONDS)) {
+                exitCode = process.exitValue();
+                return true;
+            }
+
+            if (exitTimeout == null) {
+                exitCode = process.waitFor();
+                return true;
+            }
+
             return false;
+        } catch (InterruptedException e) {
+            return true;
         }
     }
 
@@ -64,7 +74,8 @@ public class LocalCommandControlImpl extends CommandControlImpl {
 
     @Override
     public CommandProcessControl start() throws Exception {
-        var file = ScriptHelper.createLocalExecScript(command.apply(parent));
+        var cmd = command.apply(parent);
+        var file = cmd.contains("\n") ? ScriptHelper.createLocalExecScript(cmd) : cmd;
         process = new ProcessBuilder(parent.getShellType().executeCommandListWithShell(file)).start();
         return this;
     }
