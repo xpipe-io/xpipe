@@ -46,9 +46,9 @@ distZip {
 
 apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
-apply from: 'cli.gradle'
 
 if (rootProject.fullVersion) {
+    apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
     apply from: 'jreleaser.gradle'
