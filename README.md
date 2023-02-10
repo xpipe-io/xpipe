@@ -80,7 +80,6 @@ The following for modules make up the X-Pipe API and a licensed under the MIT li
 
 The other modules make up the X-Pipe implementation and are licensed under GPL:
 - [app](app) - Contains the X-Pipe daemon implementation and the X-Pipe desktop application code
-- [cli](cli) - The X-Pipe CLI implementation, a GraalVM native image application
 - [dist](dist) - Tools to create a distributable package of X-Pipe
 - [ext](ext) - Available X-Pipe extensions. Essentially every feature is implemented as an extension
 
@@ -109,27 +108,16 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 All X-Pipe components target [JDK 19](https://openjdk.java.net/projects/jdk/19/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
-As the CLI utilizes the native image capability of [GraalVM](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.0), it is recommended to use GraalVM with Java 19 support.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [moditect](https://github.com/moditect/moditect-gradle-plugin).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
 many IDEs still have problems building this project properly.
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is intellij.
 
-### Requirements
-
-To build the CLI, [GraalVM](https://github.com/graalvm/graalvm-ce-builds/releases/tag/vm-22.3.0) is required.
-Furthermore, you also need the platform specific toolchains to be installed:
-
-- Windows: [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/?q=build+tools)
-- Linux: `build-essential libz-dev zlib1g-dev`
-- MacOS: xcode with `xcode-select --install`
-
 ### Building and Running
 
 You can use the gradle wrapper to build and run the project:
 - `gradlew app:run` will run the desktop application. You can set various useful properties in `app/build.gradle`
-- `gradlew buildCli` will create a native image for the CLI application
 - `gradlew dist` will create a distributable production version in `dist/build/dist/base`.
   To include this CLI executable in this build, make sure to run `gradlew buildCli` first
 - You can also run the CLI application in development mode with something like `gradlew :cli:clean :cli:run --args="daemon start"`.
