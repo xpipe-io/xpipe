@@ -136,11 +136,7 @@ You can use the gradle wrapper to build and run the project:
   To include this CLI executable in this build, make sure to run `gradlew buildCli` first
 - You can also run the CLI application in development mode with something like `gradlew :cli:clean :cli:run --args="daemon start"`.
   Note here that you should always clean the CLI project first, as the native image plugin is a little buggy in that regard.
-- `gradlew <project>:test` will run the tests of the specified project. 
-
-Some production unit tests depend on a connection to an X-Pipe daemon to properly function.
-To launch the installed daemon, it is required that you either have X-Pipe
-installed or have set the `XPIPE_HOME` environment variable in case you are using a portable version.
+- `gradlew <project>:test` will run the tests of the specified project.
 
 You are also able to properly debug the built production application through two different methods:
 - The `app/scripts/xpiped_debug` script will launch the application in debug mode and with a console attached to it
@@ -149,7 +145,6 @@ You are also able to properly debug the built production application through two
 
 Note that when any unit test is run using a debugger, the X-Pipe daemon process that is started will also attempt
 to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme) as well.
-
 
 ### Development FAQ
 
