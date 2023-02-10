@@ -7,7 +7,7 @@ task copyRuntimeLibs(type: Copy) {
 copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
 jar.dependsOn(copyRuntimeLibs)
 
-task createExtOutput(type: Copy) {
+tasks.register('createExtOutput', Copy) {
     def base = project.name.substring(0, project.name.length() - 1)
     def isX = project.name.endsWith("x") && findProject(":$base") != null
 
