@@ -70,7 +70,7 @@ allows you to manage and work with all kinds of data sources:
 
 ## Demo
 
-<video width="700" height="394" src="https://www.youtube.com/embed/pLcBiim_0As"></video>
+https://user-images.githubusercontent.com/72509152/218265431-27bf34ad-03f8-43b7-a8a8-2a4d16eff90a.mp4
 
 ## Repository Structure
 
