@@ -35,6 +35,7 @@ It comes with the following main features:
 - Comes with integrations for all commonly used terminals for all operating systems
 - Exclusively uses established CLI tools and therefore works out of the box on most systems and doesn't require any additional setup
 - Allows you to customize the launched shell's init environment
+- Launch connections from the GUI or commandline
 
 #### All your connections in one place
 
@@ -43,7 +44,7 @@ It comes with the following main features:
 - Share connection configurations to any other trusted party through shareable URLs
 - Create desktop shortcuts to open your connections
 
-<img src="https://user-images.githubusercontent.com/72509152/213240153-3f742f03-1289-44c3-bf4d-626d9886ffcf.png" alt="drawing" height="450"/>
+<img src="https://user-images.githubusercontent.com/72509152/218159305-64e2ac2c-2d01-4087-89d2-907f2e3a6bed.png" alt="drawing" height="450"/>
 
 ## Data Explorer
 
@@ -65,7 +66,7 @@ allows you to manage and work with all kinds of data sources:
   your favorite programming languages using the X-Pipe APIs
 - Connect select third party applications directly to X-Pipe through extensions
 
-<img src="https://user-images.githubusercontent.com/72509152/218159305-64e2ac2c-2d01-4087-89d2-907f2e3a6bed.png" alt="drawing" height="450"/>
+<img src="https://user-images.githubusercontent.com/72509152/213240736-7a27fb3c-e8c3-4c92-bcea-2a782e53dc31.png" alt="drawing" height="450"/>
 
 ## Repository Structure
 

@@ -53,7 +53,7 @@ public class ShellTypes {
 
         @Override
         public String getSetEnvironmentVariableCommand(String variableName, String value) {
-            return ("set \"" + variableName + "=" + value.replaceAll("[&^|<>\"]", "^$0") + "\"");
+            return ("set \"" + variableName + "=" + value.replaceAll("\"", "^$0") + "\"");
         }
 
         @Override

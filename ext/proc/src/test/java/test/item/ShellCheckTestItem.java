@@ -25,7 +25,7 @@ public enum ShellCheckTestItem {
     }),
 
     INIT_FILE(shellProcessControl -> {
-        var content = "<contentß>";
+        var content = "contentß";
         try (var c = shellProcessControl
                 .subShell(shellProcessControl.getShellType())
                 .initWith(List.of(
