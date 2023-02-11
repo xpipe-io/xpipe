@@ -8,7 +8,7 @@ import io.xpipe.core.process.ShellType;
 
 import java.nio.charset.Charset;
 
-public interface ShellStore extends DataStore, StatefulDataStore {
+public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStore {
 
     public static MachineStore local() {
         return new LocalStore();
@@ -22,6 +22,11 @@ public interface ShellStore extends DataStore, StatefulDataStore {
 
     static boolean isLocal(ShellStore s) {
         return s instanceof LocalStore;
+    }
+
+    @Override
+    default String prepareLaunchCommand() throws Exception {
+        return create().prepareTerminalOpen();
     }
 
     default ShellProcessControl create() {

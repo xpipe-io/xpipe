@@ -66,6 +66,7 @@ open module io.xpipe.app {
     requires com.jfoenix;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.material;
+    requires commons.exec;
     requires org.controlsfx.controls;
     requires io.sentry;
     requires io.xpipe.beacon;
@@ -125,6 +126,7 @@ open module io.xpipe.app {
             StoreProviderListExchangeImpl,
             ListCollectionsExchangeImpl,
             OpenExchangeImpl,
+            LaunchExchangeImpl,
             FocusExchangeImpl,
             ListEntriesExchangeImpl,
             ProxyReadConnectionExchangeImpl,
