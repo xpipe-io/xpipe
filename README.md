@@ -68,6 +68,10 @@ allows you to manage and work with all kinds of data sources:
 
 <img src="https://user-images.githubusercontent.com/72509152/213240736-7a27fb3c-e8c3-4c92-bcea-2a782e53dc31.png" alt="drawing" height="450"/>
 
+## Demo
+
+<iframe width="700" height="394" src="https://www.youtube.com/embed/pLcBiim_0As" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## Repository Structure
 
 The following for modules make up the X-Pipe API and a licensed under the MIT license:
