@@ -124,9 +124,6 @@ The tested and recommended IDE is intellij.
 You can use the gradle wrapper to build and run the project:
 - `gradlew app:run` will run the desktop application. You can set various useful properties in `app/build.gradle`
 - `gradlew dist` will create a distributable production version in `dist/build/dist/base`.
-  To include this CLI executable in this build, make sure to run `gradlew buildCli` first
-- You can also run the CLI application in development mode with something like `gradlew :cli:clean :cli:run --args="daemon start"`.
-  Note here that you should always clean the CLI project first, as the native image plugin is a little buggy in that regard.
 - `gradlew <project>:test` will run the tests of the specified project.
 
 You are also able to properly debug the built production application through two different methods:
