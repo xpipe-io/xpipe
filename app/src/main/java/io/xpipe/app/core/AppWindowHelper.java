@@ -74,15 +74,6 @@ public class AppWindowHelper {
         childStage.setY(stage.getY() + stage.getHeight() / 2 - childStage.getHeight() / 2);
     }
 
-    public static void showAlert(Alert a, Consumer<Optional<ButtonType>> bt) {
-        ThreadHelper.runAsync(() -> {
-            var r = showBlockingAlert(a);
-            if (bt != null) {
-                bt.accept(r);
-            }
-        });
-    }
-
     public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
         ThreadHelper.runAsync(() -> {
             var r = showBlockingAlert(c);
@@ -108,11 +99,15 @@ public class AppWindowHelper {
         }
     }
 
-    public static Optional<ButtonType> showBlockingAlert(Alert a) {
+    public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
         AtomicReference<Optional<ButtonType>> result = new AtomicReference<>();
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
+                Alert a = AppWindowHelper.createEmptyAlert();
+                AppFont.normal(a.getDialogPane());
+
+                c.accept(a);
                 result.set(a.showAndWait());
                 latch.countDown();
             });
@@ -121,6 +116,10 @@ public class AppWindowHelper {
             } catch (InterruptedException ignored) {
             }
         } else {
+            Alert a = createEmptyAlert();
+            AppFont.normal(a.getDialogPane());
+            c.accept(a);
+
             Button button = (Button) a.getDialogPane().lookupButton(ButtonType.OK);
             if (button != null) {
                 button.getStyleClass().add("ok-button");
@@ -129,13 +128,6 @@ public class AppWindowHelper {
             result.set(a.showAndWait());
         }
         return result.get();
-    }
-
-    public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
-        Alert a = AppWindowHelper.createEmptyAlert();
-        AppFont.normal(a.getDialogPane());
-        c.accept(a);
-        return showBlockingAlert(a);
     }
 
     public static Alert createEmptyAlert() {

@@ -122,7 +122,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         return ALL.stream()
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
-                .orElse(null);
+                .orElse(CUSTOM);
     }
 
     public abstract void launch(String name, String command) throws Exception;
