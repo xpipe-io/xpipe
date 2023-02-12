@@ -1,6 +1,7 @@
 package io.xpipe.ext.proc;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.util.MacOsPermissions;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.ShellStore;
@@ -223,6 +224,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
+            MacOsPermissions.waitFor();
+
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
                 var cmd = String.format(
                         """
@@ -231,10 +234,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                 tell application "System Events" to tell process "Warp" to keystroke "t" using command down
                                 delay 1
                                 tell application "System Events"
-                                tell process "Warp"
-                                keystroke "%s"
-                                key code 36
-                                end tell
+                                    tell process "Warp"
+                                        keystroke "%s"
+                                        key code 36
+                                    end tell
                                 end tell
                                 EOF
                                         """,
