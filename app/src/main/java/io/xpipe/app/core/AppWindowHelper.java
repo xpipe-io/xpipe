@@ -99,15 +99,11 @@ public class AppWindowHelper {
         }
     }
 
-    public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
+    public static Optional<ButtonType> showBlockingAlert(Alert a) {
         AtomicReference<Optional<ButtonType>> result = new AtomicReference<>();
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
-                Alert a = AppWindowHelper.createEmptyAlert();
-                AppFont.normal(a.getDialogPane());
-
-                c.accept(a);
                 result.set(a.showAndWait());
                 latch.countDown();
             });
@@ -116,10 +112,6 @@ public class AppWindowHelper {
             } catch (InterruptedException ignored) {
             }
         } else {
-            Alert a = createEmptyAlert();
-            AppFont.normal(a.getDialogPane());
-            c.accept(a);
-
             Button button = (Button) a.getDialogPane().lookupButton(ButtonType.OK);
             if (button != null) {
                 button.getStyleClass().add("ok-button");
@@ -128,6 +120,13 @@ public class AppWindowHelper {
             result.set(a.showAndWait());
         }
         return result.get();
+    }
+
+    public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
+        Alert a = AppWindowHelper.createEmptyAlert();
+        AppFont.normal(a.getDialogPane());
+        c.accept(a);
+        return showBlockingAlert(a);
     }
 
     public static Alert createEmptyAlert() {
