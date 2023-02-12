@@ -152,9 +152,14 @@ public class StoreEntryComp extends SimpleComp {
         button.setFocusTraversable(false);
         button.setOnAction(event -> {
             event.consume();
-            if (entry.getEditable().get()) {
-                entry.editDialog();
-            }
+            ThreadHelper.runFailableAsync(() -> {
+                var found = entry.getDefaultActionProvider().getValue();
+                if (found != null) {
+                    found.getDataStoreCallSite()
+                            .createAction(entry.getEntry().getStore().asNeeded())
+                            .execute();
+                }
+            });
         });
 
         return button;
@@ -164,7 +169,7 @@ public class StoreEntryComp extends SimpleComp {
         var list = new ArrayList<Comp<?>>();
         for (var p : entry.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
-            if (!actionProvider.isMajor()) {
+            if (!actionProvider.isMajor() || p.getKey().equals(entry.getDefaultActionProvider().getValue())) {
                 continue;
             }
 
@@ -213,7 +218,7 @@ public class StoreEntryComp extends SimpleComp {
         settingsButton.apply(s -> {
             s.get().prefWidthProperty().bind(Bindings.divide(s.get().heightProperty(), 1.35));
         });
-        settingsButton.apply(new FancyTooltipAugment<>("entrySettings"));
+        settingsButton.apply(new FancyTooltipAugment<>("more"));
         return settingsButton;
     }
 
@@ -262,11 +267,6 @@ public class StoreEntryComp extends SimpleComp {
             DataStorage.get().refreshAsync(entry.getEntry(), true);
         });
         contextMenu.getItems().add(refresh);
-
-        var edit = new MenuItem(I18n.get("edit"), new FontIcon("mdal-edit"));
-        edit.disableProperty().bind(entry.getEditable().not());
-        edit.setOnAction(event -> entry.editDialog());
-        contextMenu.getItems().add(edit);
 
         var del = new MenuItem(I18n.get("delete"), new FontIcon("mdal-delete_outline"));
         del.disableProperty().bind(entry.getDeletable().not());

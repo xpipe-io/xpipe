@@ -80,6 +80,7 @@ public class StoreStorageEmptyIntroComp extends SimpleComp {
 
         var sp = new StackPane(v);
         sp.setAlignment(Pos.CENTER);
+        sp.setPickOnBounds(false);
         return sp;
     }
 }

@@ -57,6 +57,11 @@ public class LaunchAction implements ActionProvider {
         return new DataStoreCallSite<LaunchableStore>() {
 
             @Override
+            public boolean isDefault() {
+                return true;
+            }
+
+            @Override
             public boolean showIfDisabled() {
                 return false;
             }

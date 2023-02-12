@@ -78,6 +78,10 @@ public interface ActionProvider {
 
         Class<T> getApplicableClass();
 
+        default boolean isDefault() {
+            return false;
+        }
+
         default boolean isMajor() {
             return false;
         }

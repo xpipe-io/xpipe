@@ -30,7 +30,7 @@ public class AppPrefs {
     private static ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
                 () -> {
-                    return AppPrefs.get().developerMode().getValue() || o.get();
+                    return AppPrefs.get().developerMode().getValue() && o.get();
                 },
                 o,
                 AppPrefs.get().developerMode());
@@ -39,7 +39,7 @@ public class AppPrefs {
     private static ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
                 () -> {
-                    return !AppPrefs.get().developerMode().getValue() || o.get();
+                    return !AppPrefs.get().developerMode().getValue() && o.get();
                 },
                 o,
                 AppPrefs.get().developerMode());

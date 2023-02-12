@@ -207,7 +207,7 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
             return read.get().trim();
         } else {
             throw new ProcessOutputException(
-                    "Command returned with " + exitCode + ": " + readError.get().trim());
+                    "Command returned with exit code " + exitCode + ": " + readError.get().trim());
         }
     }
 
@@ -241,7 +241,7 @@ public abstract class CommandControlImpl extends ProcessControlImpl implements C
                 && !(read.get().isEmpty() && !readError.get().isEmpty()));
         if (!success) {
             throw new ProcessOutputException(
-                    "Command returned with " + exitCode + ": " + readError.get().trim());
+                    "Command returned with exit code " + exitCode + ": " + readError.get().trim());
         }
     }
 }
