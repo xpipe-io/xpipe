@@ -55,8 +55,6 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
     @Override
     public CompStructure<ComboBox<Node>> createBase() {
         var comboBox = new CustomComboBoxBuilder<>(provider, this::createGraphic, createDefaultNode(), v -> true);
-        comboBox.add(null);
-        comboBox.addSeparator();
         getProviders().stream()
                 .filter(p -> AppPrefs.get().developerShowHiddenProviders().get() || p.shouldShow())
                 .forEach(comboBox::add);

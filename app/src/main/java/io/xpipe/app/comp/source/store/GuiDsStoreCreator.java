@@ -195,21 +195,14 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 }
 
                 var d = n.guiDialog(input);
-
-                if (d == null || d.getComp() == null) {
-                    layout.setCenter(null);
-                    validator.setValue(new SimpleValidator());
-                    return;
-                }
-
                 var propVal = new SimpleValidator();
-                var propR = createStoreProperties(d.getComp(), propVal);
+                var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
                 var box = new VBox(propR);
                 box.setSpacing(7);
 
                 layout.setCenter(box);
 
-                validator.setValue(new ChainedValidator(List.of(d.getValidator(), propVal)));
+                validator.setValue(new ChainedValidator(List.of(d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));
             } else {
                 layout.setCenter(null);
                 validator.setValue(new SimpleValidator());

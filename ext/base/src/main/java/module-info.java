@@ -23,6 +23,7 @@ open module io.xpipe.ext.base {
 
     provides ActionProvider with
             AddStoreAction,
+            EditStoreAction,
             StreamExportAction,
             ShareStoreAction,
             FileBrowseAction,

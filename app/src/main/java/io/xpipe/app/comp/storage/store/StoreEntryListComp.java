@@ -9,7 +9,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.layout.Region;
 
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class StoreEntryListComp extends SimpleComp {
 
@@ -28,13 +28,14 @@ public class StoreEntryListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var map = Map.<Comp<?>, ObservableBooleanValue>of(
+        var map = new LinkedHashMap<Comp<?>, ObservableBooleanValue>();
+        map.put(
                 createList(),
-                BindingsHelper.persist(Bindings.and(
-                        Bindings.not(StoreViewState.get().emptyProperty()),
-                        Bindings.not(Bindings.isEmpty(StoreViewState.get().getShownEntries())))),
-                new StoreStorageEmptyIntroComp(),
-                StoreViewState.get().emptyProperty(),
+                BindingsHelper.persist(
+                        Bindings.not(Bindings.isEmpty(StoreViewState.get().getShownEntries()))));
+
+        map.put(new StoreStorageEmptyIntroComp(), StoreViewState.get().emptyProperty());
+        map.put(
                 new StoreNotFoundComp(),
                 BindingsHelper.persist(Bindings.and(
                         Bindings.not(Bindings.isEmpty(StoreViewState.get().getAllEntries())),

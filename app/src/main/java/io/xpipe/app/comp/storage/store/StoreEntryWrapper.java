@@ -8,9 +8,11 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.extension.fxcomps.util.PlatformThread;
 import io.xpipe.extension.util.ActionProvider;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -30,6 +32,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final StringProperty information = new SimpleStringProperty();
     private final StringProperty summary = new SimpleStringProperty();
     private final Map<ActionProvider, ObservableBooleanValue> actionProviders;
+    private final ObservableValue<ActionProvider> defaultActionProvider;
     private final BooleanProperty editable = new SimpleBooleanProperty();
     private final BooleanProperty renamable = new SimpleBooleanProperty();
     private final BooleanProperty refreshable = new SimpleBooleanProperty();
@@ -65,6 +68,14 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                             lastAccess);
                     actionProviders.put(dataStoreActionProvider, property);
                 });
+        this.defaultActionProvider = Bindings.createObjectBinding(() -> {
+            var found = actionProviders.entrySet().stream()
+                    .filter(e -> e.getValue().get())
+                    .filter(e -> e.getKey().getDataStoreCallSite() != null
+                            && e.getKey().getDataStoreCallSite().isDefault())
+                    .findFirst();
+            return found.map(p -> p.getKey()).orElse(null);
+        }, actionProviders.values().toArray(Observable[]::new));
         setupListeners();
         update();
     }

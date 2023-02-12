@@ -86,8 +86,10 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
 
                 pane.getChildren().add(line);
             } else {
-                compRegions.add(compRegion);
-                pane.getChildren().add(compRegion);
+                if (compRegion != null) {
+                    compRegions.add(compRegion);
+                    pane.getChildren().add(compRegion);
+                }
             }
         }
 

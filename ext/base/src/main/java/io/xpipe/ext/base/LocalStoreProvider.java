@@ -45,9 +45,10 @@ public class LocalStoreProvider implements DataStoreProvider {
         e.setConfiguration(StorageElement.Configuration.builder()
                 .deletable(false)
                 .editable(false)
-                .refreshable(false)
+                .refreshable(true)
                 .renameable(false)
                 .build());
+        e.refresh(true);
     }
 
     @Override

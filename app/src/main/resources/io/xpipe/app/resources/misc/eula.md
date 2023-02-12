@@ -39,8 +39,8 @@ granted by this EULA.
 
 ### Privacy Notices
 
-The Software automatically communicates with its server for three purposes: (1) updating the Software; (2) sending error
-reports; and (3) sending anonymized usage data so we may improve the Software. If you would like to learn more about the
+The Software automatically communicates with its server for two purposes: (1) updating the Software; (2) sending error
+reports; If you would like to learn more about the
 specific information we send, please visit https://xpipe.io/privacy_policy. You may opt out of these features.
 
 1. **Automatic Software Updates.** The Software communicates with its server (and sends information described at the URL
@@ -48,7 +48,7 @@ specific information we send, please visit https://xpipe.io/privacy_policy. You 
    Software. You agree that the Software may automatically install any such improvements to the Software on your
    computer without providing any further notice or receiving any additional consent. This feature may be disabled.
 2. **Error Reports.** In order to help us improve the Software, when the Software encounters certain errors, it will
-   automatically send some information to its server about the error (as described at the URL above). This feature may
+   send some information to its server about the error (as described at the URL above). This feature may
    be disabled.
 
 ### Open-Source Notices
