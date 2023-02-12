@@ -224,7 +224,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            MacOsPermissions.waitFor();
+            MacOsPermissions.waitForAccessibilityPermissions();
 
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
                 var cmd = String.format(
