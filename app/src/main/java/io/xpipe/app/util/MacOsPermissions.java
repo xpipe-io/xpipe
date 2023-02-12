@@ -8,20 +8,22 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Alert;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class MacOsPermissions {
 
     private static Alert createAlert() {
         var alert = AppWindowHelper.createEmptyAlert();
-        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+        alert.setAlertType(Alert.AlertType.INFORMATION);
         alert.setTitle(I18n.get("permissionsAlertTitle"));
         alert.setHeaderText(I18n.get("permissionsAlertTitleHeader"));
         alert.getDialogPane().setContent(AppWindowHelper.alertContentText(I18n.get("permissionsAlertTitleContent")));
-        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+        alert.getButtonTypes().clear();
         return alert;
     }
 
     public static boolean waitForAccessibilityPermissions() throws Exception {
-        var alert = createAlert();
+        AtomicReference<Alert> alert = new AtomicReference<>();
         var state = new SimpleBooleanProperty(true);
         try (var pc = ShellStore.local().create().start()) {
             while (state.get()) {
@@ -29,17 +31,24 @@ public class MacOsPermissions {
                         "osascript -e 'tell application \"System Events\" to keystroke \"t\"'");
                 if (success) {
                     Platform.runLater(() -> {
-                        alert.close();
+                        if (alert.get() != null) {
+                            alert.get().close();
+                        }
                     });
                     return true;
                 } else {
                     Platform.runLater(() -> {
-                        var result = AppWindowHelper.showBlockingAlert(alert)
-                                .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                                .orElse(false);
-                        if (!result) {
-                            state.set(false);
+                        if (alert.get() != null) {
+                            return;
                         }
+
+                        alert.set(createAlert());
+                        AppWindowHelper.showAlert(alert.get(), buttonType -> {
+                            alert.get().close();
+                            if (buttonType.isEmpty() || !buttonType.get().getButtonData().isDefaultButton()) {
+                                state.set(false);
+                            }
+                        });
                     });
                     ThreadHelper.sleep(1000);
                 }

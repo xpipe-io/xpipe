@@ -484,7 +484,7 @@ public class ShellTypes {
             var content = "";
             for (Map.Entry<String, String> e : variables.entrySet()) {
                 content += e.getKey() + "=\"" + e.getValue() + "\"";
-                content += getConcatenationOperator();
+                content += " ";
             }
             return content + command;
         }
