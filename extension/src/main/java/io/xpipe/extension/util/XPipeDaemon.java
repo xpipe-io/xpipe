@@ -47,7 +47,7 @@ public interface XPipeDaemon {
     <T extends Comp<?> & Validatable> T namedStoreChooser(
             ObservableValue<Predicate<DataStore>> filter,
             Property<? extends DataStore> selected,
-            DataStoreProvider.Category category);
+            DataStoreProvider.DataCategory category);
 
     <T extends Comp<?> & Validatable> T namedSourceChooser(
             ObservableValue<Predicate<DataSource<?>>> filter,

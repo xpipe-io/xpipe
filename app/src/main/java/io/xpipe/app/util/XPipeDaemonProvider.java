@@ -80,7 +80,7 @@ public class XPipeDaemonProvider implements XPipeDaemon {
     public <T extends Comp<?> & Validatable> T namedStoreChooser(
             ObservableValue<Predicate<DataStore>> filter,
             Property<? extends DataStore> selected,
-            DataStoreProvider.Category category) {
+            DataStoreProvider.DataCategory category) {
         return (T) new NamedStoreChoiceComp(filter, selected, category);
     }
 

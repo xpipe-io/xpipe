@@ -22,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
 
-    DataStoreProvider.Category category;
+    DataStoreProvider.DataCategory category;
     Property<DataStore> chosenStore;
 
     @Override
@@ -30,7 +30,7 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
         var button = new JFXButton();
         button.setGraphic(getGraphic());
         button.setOnAction(e -> {
-            GuiDsStoreCreator.show("inProgress", null, null, category, entry -> {
+            GuiDsStoreCreator.show("inProgress", null, null, v -> v.getCategory().equals(category), entry -> {
                 chosenStore.setValue(entry.getStore());
             });
             e.consume();

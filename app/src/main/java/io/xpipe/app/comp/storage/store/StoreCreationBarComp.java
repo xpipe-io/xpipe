@@ -20,28 +20,35 @@ public class StoreCreationBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var newOtherStore = new ButtonComp(
+                I18n.observable("addOther"), new FontIcon("mdi2c-card-plus-outline"), () -> {
+            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.OTHER));
+        })
+                .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
+                .apply(new FancyTooltipAugment<>("addOther"));
+
         var newStreamStore = new ButtonComp(
-                        I18n.observable("addStreamStore"), new FontIcon("mdi2c-card-plus-outline"), () -> {
-                            GuiDsStoreCreator.showCreation(DataStoreProvider.Category.STREAM);
+                        I18n.observable("addCommand"), new FontIcon("mdi2c-code-greater-than"), () -> {
+                            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.COMMAND));
                         })
-                .shortcut(new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN))
-                .apply(new FancyTooltipAugment<>("addStreamStore"));
+                .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
+                .apply(new FancyTooltipAugment<>("addCommand"));
 
         var newShellStore = new ButtonComp(
-                        I18n.observable("addShellStore"), new FontIcon("mdi2h-home-plus-outline"), () -> {
-                            GuiDsStoreCreator.showCreation(DataStoreProvider.Category.SHELL);
+                        I18n.observable("addHost"), new FontIcon("mdi2h-home-plus-outline"), () -> {
+                            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.HOST));
                         })
-                .shortcut(new KeyCodeCombination(KeyCode.M, KeyCombination.SHORTCUT_DOWN))
-                .apply(new FancyTooltipAugment<>("addShellStore"));
+                .shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN))
+                .apply(new FancyTooltipAugment<>("addHost"));
 
         var newDbStore = new ButtonComp(
-                        I18n.observable("addDatabaseStore"), new FontIcon("mdi2d-database-plus-outline"), () -> {
-                            GuiDsStoreCreator.showCreation(DataStoreProvider.Category.DATABASE);
+                        I18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus-outline"), () -> {
+                            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
                         })
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))
-                .apply(new FancyTooltipAugment<>("addDatabaseStore"));
+                .apply(new FancyTooltipAugment<>("addDatabase"));
 
-        var box = new VerticalComp(List.of(newShellStore, newDbStore, newStreamStore));
+        var box = new VerticalComp(List.of(newShellStore, newDbStore, newStreamStore, newOtherStore));
         box.apply(s -> AppFont.medium(s.get()));
         var bar = box.createRegion();
         bar.getStyleClass().add("bar");

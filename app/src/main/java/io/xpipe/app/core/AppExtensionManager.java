@@ -254,7 +254,7 @@ public class AppExtensionManager {
             extendedLayer =
                     ModuleLayer.defineModulesWithOneLoader(cf, extended, scl).layer();
         } else {
-            extendedLayer = ModuleLayer.boot();
+            extendedLayer = baseLayer;
         }
 
         addNativeLibrariesToPath();

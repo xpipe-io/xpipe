@@ -30,7 +30,7 @@ public class RawFileOutputTarget implements DataSourceTarget {
                         new SimpleObjectProperty<>(store -> store instanceof StreamDataStore
                                 && (store.getFlow().hasOutput())),
                         target,
-                        DataStoreProvider.Category.STREAM);
+                        DataStoreProvider.DataCategory.STREAM);
         storeChoice
                 .apply(GrowAugment.create(true, true))
                 .apply(struc -> GridPane.setVgrow(struc.get(), Priority.ALWAYS));

@@ -18,28 +18,23 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>>> {
 
-    DataStoreProvider.Category type;
+    Predicate<DataStoreProvider> filter;
     Property<DataStoreProvider> provider;
 
     private Region createDefaultNode() {
-        return switch (type) {
-            case STREAM -> JfxHelper.createNamedEntry(
-                    I18n.get("selectStreamType"), I18n.get("selectStreamTypeDescription"), "file_icon.png");
-            case SHELL -> JfxHelper.createNamedEntry(
-                    I18n.get("selectShellType"), I18n.get("selectShellTypeDescription"), "machine_icon.png");
-            case DATABASE -> JfxHelper.createNamedEntry(
-                    I18n.get("selectDatabaseType"), I18n.get("selectDatabaseTypeDescription"), "db_icon.png");
-        };
+        return JfxHelper.createNamedEntry(
+                    I18n.get("selectType"), I18n.get("selectTypeDescription"), "machine_icon.png");
     }
 
     private List<DataStoreProvider> getProviders() {
         return DataStoreProviders.getAll().stream()
-                .filter(p -> p.getCategory() == type)
+                .filter(filter)
                 .toList();
     }
 

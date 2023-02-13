@@ -26,17 +26,28 @@ public interface DataStoreProvider {
         }
     }
 
-    default Category getCategory() {
+    default DataCategory getCategory() {
         var c = getStoreClasses().get(0);
         if (StreamDataStore.class.isAssignableFrom(c)) {
-            return Category.STREAM;
+            return DataCategory.STREAM;
         }
 
         if (FileSystemStore.class.isAssignableFrom(c) || ShellStore.class.isAssignableFrom(c)) {
-            return Category.SHELL;
+            return DataCategory.SHELL;
         }
 
         throw new ExtensionException("Provider " + getId() + " has no set category");
+    }
+
+    default DisplayCategory getDisplayCategory() {
+        var category = getCategory();
+        if (category.equals(DataCategory.SHELL)) {
+            return DisplayCategory.HOST;
+        }
+        if (category.equals(DataCategory.DATABASE)) {
+            return DisplayCategory.DATABASE;
+        }
+        return DisplayCategory.OTHER;
     }
 
     default DataStore getParent(DataStore store) {
@@ -105,9 +116,16 @@ public interface DataStoreProvider {
         return true;
     }
 
-    enum Category {
+    enum DataCategory {
         STREAM,
         SHELL,
         DATABASE;
+    }
+
+    enum DisplayCategory {
+        HOST,
+        DATABASE,
+        COMMAND,
+        OTHER;
     }
 }

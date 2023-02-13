@@ -402,17 +402,22 @@ public class AppPrefs {
                 Category.of(
                         "system",
                         Group.of(
+                                "appBehaviour",
                                 Setting.of(
                                         "externalStartupBehaviour",
                                         externalStartupBehaviourControl,
                                         externalStartupBehaviour),
-                                Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour),
+                                Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
+                        Group.of(
+                                "updates",
                                 Setting.of("automaticallyUpdate", automaticallyUpdateField, automaticallyUpdate)
                                         .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
                                                 XPipeDistributionType.get().supportsUpdate()))),
                                 Setting.of("updateToPrereleases", updateToPrereleasesField, updateToPrereleases)
                                         .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
-                                                XPipeDistributionType.get().supportsUpdate()))),
+                                                XPipeDistributionType.get().supportsUpdate())))),
+                        Group.of(
+                                "advanced",
                                 Setting.of("storageDirectory", storageDirectoryControl, internalStorageDirectory),
                                 Setting.of("logLevel", logLevelField, internalLogLevel),
                                 Setting.of("developerMode", developerModeField, internalDeveloperMode))),
@@ -423,14 +428,13 @@ public class AppPrefs {
                                 Setting.of("language", languageControl, languageInternal),
                                 Setting.of("theme", themeControl, themeInternal),
                                 Setting.of("useSystemFont", useSystemFontInternal),
-                                Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
-                                Setting.of("fontSize", fontSizeInternal, fontSizeMin, fontSizeMax)),
+                                Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax)),
                         Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
                 Category.of(
                         "integrations",
                         Group.of(
                                 "editor",
-                                Setting.of("defaultProgram", externalEditorControl, externalEditor),
+                                Setting.of("editorProgram", externalEditorControl, externalEditor),
                                 Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand)
                                         .applyVisibility(VisibilityProperty.of(
                                                 externalEditor.isEqualTo(ExternalEditorType.CUSTOM))),
