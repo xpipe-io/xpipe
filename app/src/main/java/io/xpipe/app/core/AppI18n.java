@@ -135,6 +135,15 @@ public class AppI18n implements I18n {
         return key;
     }
 
+    public boolean containsKey(String s) {
+        var key = getKey(s);
+        if (translations == null) {
+            return false;
+        }
+
+        return translations.containsKey(key);
+    }
+
     public String getLocalised(String s, Object... vars) {
         var key = getKey(s);
 

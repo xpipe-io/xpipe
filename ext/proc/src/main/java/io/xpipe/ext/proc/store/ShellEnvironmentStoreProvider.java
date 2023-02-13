@@ -25,6 +25,11 @@ public class ShellEnvironmentStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public DisplayCategory getDisplayCategory() {
+        return DisplayCategory.COMMAND;
+    }
+
+    @Override
     public String getId() {
         return "shellEnvironment";
     }
@@ -81,8 +86,8 @@ public class ShellEnvironmentStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.SHELL;
+    public DataCategory getCategory() {
+        return DataCategory.SHELL;
     }
 
     @Override

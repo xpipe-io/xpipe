@@ -32,7 +32,7 @@ public class DsDbStoreChooserComp extends SimpleComp {
         var filter = Bindings.createObjectBinding(
                 () -> (Predicate<DataStoreEntry>) e -> {
                     if (provider.getValue() == null) {
-                        return e.getProvider().getCategory() == DataStoreProvider.Category.DATABASE;
+                        return e.getProvider().getCategory() == DataStoreProvider.DataCategory.DATABASE;
                     }
 
                     return provider.getValue().couldSupportStore(e.getStore());
@@ -42,7 +42,7 @@ public class DsDbStoreChooserComp extends SimpleComp {
         var connections = new TabPaneComp.Entry(
                 I18n.observable("savedConnections"),
                 "mdi2m-monitor",
-                NamedStoreChoiceComp.create(filter, input, DataStoreProvider.Category.DATABASE)
+                NamedStoreChoiceComp.create(filter, input, DataStoreProvider.DataCategory.DATABASE)
                         .styleClass("store-local-file-chooser"));
 
         var pane = new TabPaneComp(new SimpleObjectProperty<>(connections), List.of(connections));

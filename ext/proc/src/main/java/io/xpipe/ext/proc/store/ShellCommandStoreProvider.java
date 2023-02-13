@@ -79,8 +79,8 @@ public class ShellCommandStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.SHELL;
+    public DataCategory getCategory() {
+        return DataCategory.SHELL;
     }
 
     @Override

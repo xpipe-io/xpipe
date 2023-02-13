@@ -37,6 +37,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
@@ -44,7 +45,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     MultiStepComp parent;
     Property<DataStoreProvider> provider;
     Property<DataStore> input;
-    DataStoreProvider.Category generalType;
+    Predicate<DataStoreProvider> filter;
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
     Property<String> messageProp = new SimpleStringProperty();
@@ -58,13 +59,13 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             MultiStepComp parent,
             Property<DataStoreProvider> provider,
             Property<DataStore> input,
-            DataStoreProvider.Category generalType,
+            Predicate<DataStoreProvider> filter,
             String initialName) {
         super(null);
         this.parent = parent;
         this.provider = provider;
         this.input = input;
-        this.generalType = generalType;
+        this.filter = filter;
         this.name = new SimpleStringProperty(initialName);
         this.input.addListener((c, o, n) -> {
             changedSinceError.setValue(true);
@@ -88,7 +89,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     }
 
     public static void showEdit(DataStoreEntry e) {
-        show(e.getName(), e.getProvider(), e.getStore(), e.getProvider().getCategory(), newE -> {
+        show(e.getName(), e.getProvider(), e.getStore(), v -> true, newE -> {
             ThreadHelper.runAsync(() -> {
                 e.applyChanges(newE);
                 if (!DataStorage.get().getStores().contains(e)) {
@@ -99,9 +100,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         });
     }
 
-    public static void showCreation(DataStoreProvider.Category cat) {
-
-        show(null, null, null, cat, e -> {
+    public static void showCreation(Predicate<DataStoreProvider> filter) {
+        show(null, null, null, filter, e -> {
             try {
                 DataStorage.get().addStore(e);
             } catch (Exception ex) {
@@ -114,13 +114,11 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             String initialName,
             DataStoreProvider provider,
             DataStore s,
-            DataStoreProvider.Category cat,
+            Predicate<DataStoreProvider> filter,
             Consumer<DataStoreEntry> con) {
         var prop = new SimpleObjectProperty<DataStoreProvider>(provider);
         var store = new SimpleObjectProperty<DataStore>(s);
-        var name = cat == DataStoreProvider.Category.SHELL
-                ? "addShellTitle"
-                : cat == DataStoreProvider.Category.DATABASE ? "addDatabaseTitle" : "addStreamTitle";
+        var name = "addConnection";
         Platform.runLater(() -> {
             var stage = AppWindowHelper.sideWindow(
                     I18n.get(name),
@@ -128,7 +126,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         return new MultiStepComp() {
 
                             private final GuiDsStoreCreator creator =
-                                    new GuiDsStoreCreator(this, prop, store, cat, initialName);
+                                    new GuiDsStoreCreator(this, prop, store, filter, initialName);
 
                             @Override
                             protected List<Entry> setup() {
@@ -182,7 +180,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     @Override
     public CompStructure<? extends Region> createBase() {
         var layout = new BorderPane();
-        var providerChoice = new DsStoreProviderChoiceComp(generalType, provider);
+        var providerChoice = new DsStoreProviderChoiceComp(filter, provider);
         providerChoice.apply(GrowAugment.create(true, false));
 
         SimpleChangeListener.apply(provider, n -> {

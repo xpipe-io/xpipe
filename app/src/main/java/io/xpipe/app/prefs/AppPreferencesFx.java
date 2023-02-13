@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import com.dlsc.formsfx.model.structure.Form;
 import com.dlsc.formsfx.model.util.TranslationService;
 import com.dlsc.preferencesfx.PreferencesFxEvent;
 import com.dlsc.preferencesfx.history.History;
@@ -11,6 +12,8 @@ import com.dlsc.preferencesfx.view.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import javafx.scene.control.ScrollPane;
+import lombok.SneakyThrows;
 
 import java.util.List;
 
@@ -56,10 +59,20 @@ public class AppPreferencesFx {
     public void setupControls() {
         undoRedoBox = new UndoRedoBox(preferencesFxModel.getHistory());
 
-        breadCrumbView = new BreadCrumbView(preferencesFxModel, undoRedoBox);
+        breadCrumbView = new BreadCrumbView(preferencesFxModel, undoRedoBox) {
+            @Override
+            public void initializeParts() {
+            }
+
+            @Override
+            public void layoutParts() {
+            }
+        };
         breadCrumbPresenter = new BreadCrumbPresenter(preferencesFxModel, breadCrumbView);
 
         categoryController = new CategoryController();
+        categoryController.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        categoryController.setFitToWidth(true);
         initializeCategoryViews();
 
         // display initial category
@@ -88,9 +101,24 @@ public class AppPreferencesFx {
      */
     private void initializeCategoryViews() {
         preferencesFxModel.getFlatCategoriesLst().forEach(category -> {
-            CategoryView categoryView = new CategoryView(preferencesFxModel, category);
+            var categoryView = new CustomCategoryView(preferencesFxModel, category);
             CategoryPresenter categoryPresenter =
-                    new CategoryPresenter(preferencesFxModel, category, categoryView, breadCrumbPresenter);
+                    new CategoryPresenter(preferencesFxModel, category, categoryView, breadCrumbPresenter) {
+                        @Override
+                        @SneakyThrows
+                        public void initializeViewParts() {
+                            var formMethod = CategoryPresenter.class.getDeclaredMethod("createForm");
+                            formMethod.setAccessible(true);
+
+                            var formField = CategoryPresenter.class.getDeclaredField("form");
+                            formField.setAccessible(true);
+                            formField.set(this, formMethod.invoke(this));
+                            categoryView.initializeFormRenderer((Form) formField.get(this));
+
+                            this.addI18nListener();
+                            this.addInstantPersistenceListener();
+                        }
+                    };
             categoryController.addView(category, categoryView, categoryPresenter);
         });
     }

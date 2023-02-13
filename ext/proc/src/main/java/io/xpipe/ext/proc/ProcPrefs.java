@@ -52,7 +52,7 @@ public class ProcPrefs extends PrefsProvider {
         handler.addSetting(
                 List.of("integrations"),
                 "proc.terminal",
-                Setting.of("app.defaultProgram", terminalTypeControl, terminalType),
+                Setting.of("proc.terminalProgram", terminalTypeControl, terminalType),
                 ExternalTerminalType.class);
         handler.addSetting(
                 List.of("integrations"),

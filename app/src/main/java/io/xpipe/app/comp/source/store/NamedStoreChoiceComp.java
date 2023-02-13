@@ -41,7 +41,7 @@ import java.util.function.Predicate;
 public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
 
     private final ObservableValue<Predicate<DataStore>> filter;
-    private final DataStoreProvider.Category category;
+    private final DataStoreProvider.DataCategory category;
     private final Property<? extends DataStore> selected;
     private final StringProperty filterString = new SimpleStringProperty();
 
@@ -53,7 +53,7 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
     public NamedStoreChoiceComp(
             ObservableValue<Predicate<DataStore>> filter,
             Property<? extends DataStore> selected,
-            DataStoreProvider.Category category) {
+            DataStoreProvider.DataCategory category) {
         this.filter = filter;
         this.selected = selected;
         this.category = category;
@@ -63,7 +63,7 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
     public static NamedStoreChoiceComp create(
             ObservableValue<Predicate<DataStoreEntry>> filter,
             Property<? extends DataStore> selected,
-            DataStoreProvider.Category category) {
+            DataStoreProvider.DataCategory category) {
         return new NamedStoreChoiceComp(
                 Bindings.createObjectBinding(
                         () -> {
@@ -142,7 +142,7 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
         var text = new LabelComp(I18n.observable("noMatchingStoreFound"))
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
         var addButton = new ButtonComp(I18n.observable("addStore"), null, () -> {
-            GuiDsStoreCreator.showCreation(category);
+            GuiDsStoreCreator.showCreation(v -> v.getCategory().equals(category));
         });
         var notice = new VerticalComp(List.of(text, addButton))
                 .apply(struc -> {

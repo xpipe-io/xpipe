@@ -35,6 +35,11 @@ public class CommandStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public DisplayCategory getDisplayCategory() {
+        return DisplayCategory.COMMAND;
+    }
+
+    @Override
     public boolean isShareable() {
         return true;
     }
@@ -108,8 +113,8 @@ public class CommandStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.STREAM;
+    public DataCategory getCategory() {
+        return DataCategory.STREAM;
     }
 
     @Override

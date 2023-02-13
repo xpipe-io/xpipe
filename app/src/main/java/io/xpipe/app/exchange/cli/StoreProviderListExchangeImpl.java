@@ -15,7 +15,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        var categories = DataStoreProvider.Category.values();
+        var categories = DataStoreProvider.DataCategory.values();
         var all = DataStoreProviders.getAll();
         var map = Arrays.stream(categories)
                 .collect(Collectors.toMap(category -> getName(category), category -> all.stream()
@@ -31,7 +31,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
         return Response.builder().entries(map).build();
     }
 
-    private String getName(DataStoreProvider.Category category) {
+    private String getName(DataStoreProvider.DataCategory category) {
         return category.name().substring(0, 1).toUpperCase()
                 + category.name().substring(1).toLowerCase();
     }
