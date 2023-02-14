@@ -36,6 +36,7 @@ open module io.xpipe.app {
     requires com.sun.jna;
     requires com.sun.jna.platform;
     requires org.slf4j;
+    requires atlantafx.base;
     requires org.ocpsoft.prettytime;
     requires com.dlsc.preferencesfx;
     requires com.vladsch.flexmark;

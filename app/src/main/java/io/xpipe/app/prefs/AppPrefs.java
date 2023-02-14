@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import com.dlsc.formsfx.model.structure.*;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleComboBoxControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
-import com.dlsc.preferencesfx.formsfx.view.controls.ToggleControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
@@ -139,10 +138,10 @@ public class AppPrefs {
     private final BooleanProperty automaticallyUpdate =
             typed(new SimpleBooleanProperty(XPipeDistributionType.get().supportsUpdate()), Boolean.class);
     private final BooleanField automaticallyUpdateField =
-            BooleanField.ofBooleanType(automaticallyUpdate).render(() -> new ToggleControl());
+            BooleanField.ofBooleanType(automaticallyUpdate).render(() -> new CustomToggleControl());
     private final BooleanProperty updateToPrereleases = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField updateToPrereleasesField =
-            BooleanField.ofBooleanType(updateToPrereleases).render(() -> new ToggleControl());
+            BooleanField.ofBooleanType(updateToPrereleases).render(() -> new CustomToggleControl());
 
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
 
@@ -179,31 +178,31 @@ public class AppPrefs {
             : internalDeveloperMode;
     private final BooleanField developerModeField = Field.ofBooleanType(effectiveDeveloperMode)
             .editable(System.getProperty(DEVELOPER_MODE_PROP) == null)
-            .render(() -> new ToggleControl());
+            .render(() -> new CustomToggleControl());
 
     private final BooleanProperty developerDisableUpdateVersionCheck =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableUpdateVersionCheckField =
-            BooleanField.ofBooleanType(developerDisableUpdateVersionCheck).render(() -> new ToggleControl());
+            BooleanField.ofBooleanType(developerDisableUpdateVersionCheck).render(() -> new CustomToggleControl());
 
     private final BooleanProperty developerDisableGuiRestrictions =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableGuiRestrictionsField =
-            BooleanField.ofBooleanType(developerDisableGuiRestrictions).render(() -> new ToggleControl());
+            BooleanField.ofBooleanType(developerDisableGuiRestrictions).render(() -> new CustomToggleControl());
 
     private final BooleanProperty developerShowHiddenProviders = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerShowHiddenProvidersField =
-            BooleanField.ofBooleanType(developerShowHiddenProviders).render(() -> new ToggleControl());
+            BooleanField.ofBooleanType(developerShowHiddenProviders).render(() -> new CustomToggleControl());
 
     private final BooleanProperty developerShowHiddenEntries = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerShowHiddenEntriesField =
-            BooleanField.ofBooleanType(developerShowHiddenEntries).render(() -> new ToggleControl());
+            BooleanField.ofBooleanType(developerShowHiddenEntries).render(() -> new CustomToggleControl());
 
     private final BooleanProperty developerDisableConnectorInstallationVersionCheck =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableConnectorInstallationVersionCheckField = BooleanField.ofBooleanType(
                     developerDisableConnectorInstallationVersionCheck)
-            .render(() -> new ToggleControl());
+            .render(() -> new CustomToggleControl());
 
     public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {
         return closeBehaviour;

@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import com.jfoenix.controls.JFXCheckBox;
 import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.beans.property.ListProperty;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
@@ -24,8 +24,9 @@ public class ListSelectorComp<T> extends SimpleComp {
     @Override
     protected Region createSimple() {
         var vbox = new VBox();
+        vbox.getStyleClass().add("content");
         for (var v : values) {
-            var cb = new JFXCheckBox(null);
+            var cb = new CheckBox(null);
             cb.selectedProperty().addListener((c, o, n) -> {
                 if (n) {
                     selected.add(v);

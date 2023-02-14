@@ -17,6 +17,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -24,6 +25,9 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.nio.file.Path;
+
+import static atlantafx.base.theme.Styles.ACCENT;
+import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
 
 public class UserReportComp extends SimpleComp {
 
@@ -45,13 +49,16 @@ public class UserReportComp extends SimpleComp {
     }
 
     private Comp<?> createAttachments() {
-        var list = new ListSelectorComp<>(event.getAttachments(), file -> {
-                    if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                        return I18n.get("logFilesAttachment");
-                    }
+        var list = new ListSelectorComp<>(
+                        event.getAttachments(),
+                        file -> {
+                            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
+                                return I18n.get("logFilesAttachment");
+                            }
 
-                    return file.getFileName().toString();
-                }, includedDiagnostics)
+                            return file.getFileName().toString();
+                        },
+                        includedDiagnostics)
                 .styleClass("attachment-list");
         var tp = new TitledPaneComp(I18n.observable("additionalErrorAttachments"), list, 100)
                 .apply(struc -> struc.get().setExpanded(true))
@@ -93,9 +100,12 @@ public class UserReportComp extends SimpleComp {
         dataPolicyButton.setOnAction(event1 -> {
             Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
         });
-        var sendButton = new ButtonComp(I18n.observable("sendReport"), null, this::send).createRegion();
+        var sendButton = new ButtonComp(I18n.observable("sendReport"), null, this::send)
+                .apply(struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT))
+                .createRegion();
         var spacer = new Region();
         var buttons = new HBox(dataPolicyButton, spacer, sendButton);
+        buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("buttons");
         HBox.setHgrow(spacer, Priority.ALWAYS);
         AppFont.medium(dataPolicyButton);

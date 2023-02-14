@@ -41,7 +41,7 @@ public class IconButtonComp extends Comp<CompStructure<JFXButton>> {
         button.fontProperty().addListener((c, o, n) -> {
             fi.setIconSize((int) new Size(n.getSize(), SizeUnits.PT).pixels());
         });
-        fi.iconColorProperty().bind(button.textFillProperty());
+        //fi.iconColorProperty().bind(button.textFillProperty());
         button.setGraphic(fi);
         button.setOnAction(e -> {
             e.consume();

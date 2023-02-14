@@ -23,6 +23,9 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static atlantafx.base.theme.Styles.ACCENT;
+import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
+
 public class ErrorHandlerComp extends SimpleComp {
 
     private static final AtomicBoolean showing = new AtomicBoolean(false);
@@ -98,6 +101,7 @@ public class ErrorHandlerComp extends SimpleComp {
                 var ac = createActionComp(action);
                 actionBox.getChildren().add(ac);
             }
+            actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
 
             content.getChildren().addAll(actionBox, new Separator(Orientation.HORIZONTAL));
         }

@@ -5,6 +5,7 @@ import io.xpipe.extension.fxcomps.CompStructure;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -48,7 +49,7 @@ public class BigIconButton extends ButtonComp {
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<JFXButton> {
+    public static class Structure implements CompStructure<Button> {
         JFXButton button;
         VBox stack;
         Node graphic;

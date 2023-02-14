@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.controlsfx:controlsfx:11.1.1'
     implementation 'net.synedra:validatorfx:0.3.1'
+    implementation 'io.github.mkpaz:atlantafx-base:1.2.0'
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
@@ -132,7 +133,7 @@ application {
 
 run {
     systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_stage/"
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local6/"
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"

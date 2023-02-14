@@ -1,6 +1,6 @@
 .multi-step-comp > .top .line {
 -fx-max-height: 3px;
--fx-background-color: -xp-border;
+-fx-background-color: -color-accent-fg;
 }
 
 .multi-step-comp .entry {
@@ -9,25 +9,25 @@
 }
 
 .multi-step-comp > .top {
-    -fx-border-color: -xp-border;
+    -fx-border-color: -color-accent-fg;
 -fx-border-width: 0 0 0.1em 0;
--fx-background-color: -xp-base-accent;
+-fx-background-color: -color-accent-subtle;
 -fx-effect: dropshadow(three-pass-box, #333, 6, 0, 0, 2);
 }
 
 .multi-step-comp > .top .name {
--fx-text-fill: -xp-text-accent-base;
+-fx-text-fill: -color-accent-fg;
 }
 
 .multi-step-comp .entry:next .name {
--fx-text-fill: -xp-text-accent-light;
+-fx-text-fill: -color-accent-fg;
 }
 
 .multi-step-comp .buttons {
--fx-border-color: -xp-border;
+-fx-border-color: -color-accent-fg;
 -fx-border-width: 0.1em 0 0 0;
 -fx-padding: 1em;
--fx-background-color: -xp-base-accent;
+-fx-background-color: -color-accent-subtle;
 -fx-effect: dropshadow(three-pass-box, #333, 6, 0, 0, -1);
 }
 
@@ -38,7 +38,7 @@
 -fx-background-radius: 4px;
 -fx-background-color: #073B4C;
 -fx-border-width: 1px;
--fx-border-color: -xp-text-accent-light;
+-fx-border-color:-color-accent-fg;
 -fx-border-radius: 4px;
 }
 
@@ -67,11 +67,11 @@
 }
 
 .multi-step-comp > .top .entry .number {
--fx-text-fill: -xp-text-accent-base;
+-fx-text-fill: white;
 }
 
 .multi-step-comp > .top .entry:next .number {
--fx-text-fill: -xp-text-accent-light;
+-fx-text-fill: white;
 }
 
 .multi-step-comp > .top {

@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import com.jfoenix.controls.JFXButton;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.SimpleCompStructure;
@@ -11,9 +10,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class ButtonComp extends Comp<CompStructure<JFXButton>> {
+public class ButtonComp extends Comp<CompStructure<Button>> {
 
     private final ObservableValue<String> name;
     private final ObjectProperty<Node> graphic;
@@ -48,14 +48,14 @@ public class ButtonComp extends Comp<CompStructure<JFXButton>> {
     }
 
     @Override
-    public CompStructure<JFXButton> createBase() {
-        var button = new JFXButton(null);
+    public CompStructure<Button> createBase() {
+        var button = new Button(null);
         if (name != null) {
             button.textProperty().bind(name);
         }
         var graphic = getGraphic();
         if (graphic instanceof FontIcon f) {
-            f.iconColorProperty().bind(button.textFillProperty());
+            //f.iconColorProperty().bind(button.textFillProperty());
             SimpleChangeListener.apply(button.fontProperty(), c -> {
                 f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
             });

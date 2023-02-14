@@ -1,7 +1,3 @@
-.lazy-text-field-comp {
--fx-text-fill: -xp-text-base;
-}
-
 .lazy-text-field-comp:disabled {
 -fx-opacity: 1.0;
 }

@@ -1,27 +1,27 @@
 .bar {
 -fx-padding: 0.8em 1.0em 0.8em 1.0em;
--fx-background-color: -xp-base-accent;
--fx-text-fill: -xp-text-accent-base;
--fx-border-color: -xp-border-accent;
+-fx-background-color: -color-accent-subtle;
+-fx-border-color: -color-accent-emphasis;
 }
 
 .store-header-bar {
--fx-background-radius: 0 0 3px 0;
--fx-border-radius: 0 0 3px 0;
- -fx-border-width: 0 2px 2px 0;
+-fx-background-radius: 0 0 2px 0;
+-fx-border-radius: 0 0 2px 0;
+ -fx-border-width: 0 0.05em 0.05em 0;
+-fx-spacing: 0.8em;
 }
 
 .store-creation-bar {
--fx-background-radius: 0 3px 3px 0;
--fx-border-radius: 0 3px 3px 0;
- -fx-border-width: 0 2px 2px 0;
+-fx-background-radius: 0 2px 2px 0;
+-fx-border-radius: 0 2px 2px 0;
+ -fx-border-width: 0.05em 0.05em 0.05em 0;
 -fx-spacing: 0.2em;
 }
 
 .filler-bar {
--fx-background-radius: 0 3px 0 0;
--fx-border-radius: 0 3px 0 0;
- -fx-border-width: 0 2px 0 0;
+-fx-background-radius: 0 2px 0 0;
+-fx-border-radius: 0 2px 0 0;
+ -fx-border-width: 0.05em 0.05em 0 0;
 }
 
 .sidebar {
@@ -30,25 +30,24 @@
 
 .bar .button-comp {
 -fx-border-width: 0;
--fx-border-color: -xp-border;
+-fx-border-color: -color-accent-emphasis;
 -fx-background-color: transparent;
 -fx-border-radius: 2px;
 -fx-background-radius: 2px;
--fx-text-fill: -xp-text-accent-light;
 -fx-padding: 0.2em 0em 0.2em 0em;
 }
 
 .collections-bar {
--fx-background-radius: 0 0 3px 0;
--fx-border-radius: 0 0 3px 0;
+-fx-background-radius: 0 0 2px 0;
+-fx-border-radius: 0 0 2px 0;
  -fx-border-width: 0 2px 2px 0;
 }
 
 .entry-bar {
--fx-background-radius: 0 0 3px 3px;
--fx-border-radius: 0 0 3px 3px;
+-fx-background-radius: 0 0 2px 2px;
+-fx-border-radius: 0 0 2px 2px;
  -fx-border-width: 0 2px 2px 2px;
--fx-background-color: -xp-base-accent;
+-fx-background-color: -color-accent-subtle;
 }
 
 .entry-bar .horizontal-comp {
@@ -56,38 +55,28 @@
 }
 
 .bar .icon-button-comp {
--fx-text-fill: -xp-text-accent-base;
+-fx-text-fill: -color-fg-default;
 }
 
 .bar .name {
--fx-text-fill: -xp-text-accent-base;
+-fx-text-fill: -color-fg-default;
 }
 
 .bar .count-comp {
 -fx-padding: 0.0em 0em 0.0em 0.4em;
--fx-text-fill: -xp-text-accent-light;
-}
-
-.bar .filter-bar {
--fx-padding: 0.8em 0 0.0em 0;
 }
 
 .bar .filter-bar .text-field {
 -fx-padding: 0.35em;
--fx-background-color: transparent;
+-fx-text-fill: -color-fg-default;
+}
+.bar .filter-bar {
 -fx-background-radius: 0.5em;
--fx-background-color: #0004;
--fx-text-fill: -xp-text-accent-base;
+-fx-background-color: -color-bg-default;
+ -fx-border-width: 0.05em;
+-fx-border-radius: 0.5em;
+-fx-border-color: -color-accent-emphasis;
 }
-
-.bar .filter-bar .background {
--fx-text-fill: -xp-text-accent-light;
-}
-
-.bar .filter-bar .background .ikonli-font-icon {
--fx-icon-color: -xp-text-accent-light;
-}
-
 .filter-bar .input-line {
 -fx-opacity: 0.2;
 }

@@ -52,7 +52,9 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                             AppFont.setSize(titleLabel, 2);
                             // Set margin for all but first group titles to visually separate groups
                             if (nextRow > 1) {
-                                GridPane.setMargin(titleLabel, new Insets(SPACING * 3, 0, 0, 0));
+                                GridPane.setMargin(titleLabel, new Insets(SPACING * 3, 0, SPACING, 0));
+                            } else {
+                                GridPane.setMargin(titleLabel, new Insets(SPACING, 0,  SPACING, 0));
                             }
                         }
 
@@ -79,7 +81,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 var descriptionLabel = new Label();
                                 descriptionLabel.setWrapText(true);
                                 descriptionLabel.disableProperty().bind(c.getFieldLabel().disabledProperty());
-                                descriptionLabel.opacityProperty().bind(c.getFieldLabel().opacityProperty());
+                                descriptionLabel.opacityProperty().bind(c.getFieldLabel().opacityProperty().multiply(0.8));
                                 descriptionLabel.managedProperty().bind(c.getFieldLabel().managedProperty());
                                 descriptionLabel.visibleProperty().bind(c.getFieldLabel().visibleProperty());
                                 descriptionLabel.setMaxHeight(USE_PREF_SIZE);

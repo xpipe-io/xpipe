@@ -1,8 +1,6 @@
 .filter-comp .text-field {
 -fx-padding: 0.35em;
 -fx-background-color: transparent;
--fx-background-radius: 3px;
--fx-background-color: #0001;
 }
 
 .filter-comp .input-line {

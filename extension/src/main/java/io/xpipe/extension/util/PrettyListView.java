@@ -24,8 +24,6 @@ public class PrettyListView<T> extends ListView<T> {
             getChildren().addAll(vBar, hBar);
         });
 
-        getStyleClass().add("jfx-list-view");
-
         vBar.setManaged(false);
         vBar.setOrientation(Orientation.VERTICAL);
         vBar.getStyleClass().add("pretty-scroll-bar");

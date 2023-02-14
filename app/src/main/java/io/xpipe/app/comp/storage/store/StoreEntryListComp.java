@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.app.comp.base.ListViewComp;
+import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.SimpleComp;
@@ -20,7 +20,7 @@ public class StoreEntryListComp extends SimpleComp {
                 StoreViewState.get()
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
-        var content = new ListViewComp<>(filtered, topLevel, null, (StoreEntrySection e) -> {
+        var content = new ListBoxViewComp<>(filtered, topLevel, (StoreEntrySection e) -> {
             return e.comp(true);
         });
         return content.styleClass("store-list-comp");

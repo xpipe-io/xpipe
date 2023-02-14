@@ -1,6 +1,5 @@
 .intro .label {
 -fx-line-spacing: 5px;
--fx-text-fill: -xp-text-base;
 -fx-graphic-text-gap: 8px;
 }
 
@@ -14,7 +13,6 @@
 
 .intro .label .ikonli-font-icon {
 -fx-line-spacing: 5px;
--fx-icon-color: -xp-text-base;
 }
 
 .intro-add-collection-button {

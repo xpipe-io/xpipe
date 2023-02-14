@@ -5,6 +5,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.extension.fxcomps.Comp;
 import io.xpipe.extension.fxcomps.CompStructure;
 import io.xpipe.extension.fxcomps.SimpleCompStructure;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
@@ -18,6 +19,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         link.setOnAction(e -> {
             Hyperlinks.open(t.link());
         });
+        tp.setPadding(Insets.EMPTY);
         tp.setGraphic(link);
         tp.setAlignment(Pos.CENTER_LEFT);
         AppFont.medium(tp);
@@ -49,6 +51,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         acc.setPrefWidth(500);
         var sp = new ScrollPane(acc);
         sp.setFitToWidth(true);
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         return new SimpleCompStructure<>(sp);
     }
 }

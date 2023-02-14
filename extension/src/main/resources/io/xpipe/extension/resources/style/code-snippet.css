@@ -1,14 +1,14 @@
 .code-snippet {
 -fx-padding: 0.3em 0.5em 0.3em 0.5em;
 -fx-border-width: 0;
--fx-border-color: -xp-border;
+-fx-border-color:-color-accent-fg;
 -fx-spacing: 0;
 -fx-font-family: Monospace;
 }
 
 .code-snippet-container {
 -fx-border-width: 1px;
--fx-border-color: -xp-border;
+-fx-border-color:-color-accent-fg;
 -fx-background-color: transparent;
 -fx-border-radius: 4px;
 -fx-background-radius: 4px;
@@ -32,5 +32,5 @@
 
 .code-snippet-container .spacer {
 -fx-pref-width: 1px;
--fx-background-color: -xp-border;
+-fx-background-color:-color-accent-fg;
 }

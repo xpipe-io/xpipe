@@ -1,11 +1,6 @@
-.jfx-tab-pane .tab-header-area .jfx-rippler {
-    -jfx-rippler-fill: -xp-base-pressed;
-}
-
 .jfx-tab-pane .tab-header-background { -fx-background-color: transparent; }
 
 .jfx-tab-pane .tab-header-area .tab-selected-line {
-    -fx-background-color: -xp-base-accent;
     -fx-pref-height: 1px;
 }
 

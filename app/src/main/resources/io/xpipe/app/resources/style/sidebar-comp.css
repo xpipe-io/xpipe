@@ -1,8 +1,8 @@
 .sidebar-comp {
 -fx-pref-width: 7em;
--fx-background-color: linear-gradient(to right,#EEEEEE, #DDD);
- -fx-border-width: 0;
--fx-border-color: #DDD;
+-fx-background-color: -color-accent-subtle;
+ -fx-border-width: 0 0 0 0.05em;
+-fx-border-color: -color-accent-emphasis;
 -fx-padding: 0;
 }
 
@@ -11,8 +11,7 @@
 }
 
 .sidebar-comp .big-icon-button-comp:selected {
--fx-background-insets: 0, 0 0 0 0.2em;
--fx-background-color: -xp-base-accent, #CCC;
+-fx-background-color: -color-accent-muted;
 }
 
 .sidebar-comp .big-icon-button-comp .icon {
@@ -20,8 +19,8 @@
 }
 
 .sidebar-comp .big-icon-button-comp * {
--fx-text-fill: -xp-text-base;
--fx-icon-color: -xp-text-base;
+-fx-text-fill: -color-fg-default;
+-fx-icon-color: -color-fg-default;
 }
 
 .sidebar-comp .big-icon-button-comp {

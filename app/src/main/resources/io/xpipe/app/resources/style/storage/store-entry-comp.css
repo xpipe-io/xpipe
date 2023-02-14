@@ -1,6 +1,6 @@
 
 .store-entry-grid .date, .store-entry-grid .summary {
--fx-text-fill: -xp-text-light;
+-fx-text-fill: -color-fg-muted;
 }
 
 .store-entry-grid:failed .jfx-text-field {
