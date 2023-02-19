@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.extension.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;

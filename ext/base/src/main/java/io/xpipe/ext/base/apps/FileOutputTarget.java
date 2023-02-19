@@ -1,18 +1,22 @@
 package io.xpipe.ext.base.apps;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.WriteModeChoiceComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.ChainedValidator;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.*;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.fxcomps.impl.WriteModeChoiceComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.ChainedValidator;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.XPipeDaemon;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -37,7 +41,7 @@ public class FileOutputTarget implements DataSourceTarget {
 
         var target = new SimpleObjectProperty<DataStore>();
         var provider = new SimpleObjectProperty<DataSourceProvider<?>>();
-        var defaultProvider = Cache.getIfPresent("lastStreamOutputProvider", String.class)
+        var defaultProvider = AppCache.getIfPresent("lastStreamOutputProvider", String.class)
                 .flatMap(DataSourceProviders::byName)
                 .orElse(null);
         provider.set(defaultProvider);
@@ -108,7 +112,7 @@ public class FileOutputTarget implements DataSourceTarget {
                     @Override
                     public void run() {
                         try {
-                            Cache.update(
+                            AppCache.update(
                                     "lastStreamOutputProvider", provider.get().getId());
                             try (var connection = targetSource.getValue().openWriteConnection(mode.get())) {
                                 connection.init();
@@ -127,7 +131,7 @@ public class FileOutputTarget implements DataSourceTarget {
 
     @Override
     public ObservableValue<String> getName() {
-        return I18n.observable("base.fileOutput");
+        return AppI18n.observable("base.fileOutput");
     }
 
     @Override

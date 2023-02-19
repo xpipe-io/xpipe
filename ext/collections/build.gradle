@@ -12,5 +12,6 @@ configurations {
 }
 
 dependencies {
+    compileOnly project(':app')
     implementation 'org.apache.commons:commons-compress:1.21'
 }

@@ -1,10 +1,10 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;

@@ -3,8 +3,7 @@ package io.xpipe.app.core;
 import com.jfoenix.controls.JFXCheckBox;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
+import io.xpipe.app.fxcomps.Comp;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,7 +20,7 @@ public class AppGreetings {
     public static TitledPane createIntroduction() {
         var tp = new TitledPane();
         tp.setExpanded(true);
-        tp.setText(I18n.get("introduction"));
+        tp.setText(AppI18n.get("introduction"));
         tp.setAlignment(Pos.CENTER_LEFT);
         AppFont.normal(tp);
 
@@ -37,7 +36,7 @@ public class AppGreetings {
     private static TitledPane createPrivacyPolicy() {
         var tp = new TitledPane();
         tp.setExpanded(false);
-        tp.setText(I18n.get("privacyPolicy"));
+        tp.setText(AppI18n.get("privacyPolicy"));
         tp.setAlignment(Pos.CENTER_LEFT);
         AppFont.normal(tp);
 
@@ -53,7 +52,7 @@ public class AppGreetings {
     private static TitledPane createEULA() {
         var tp = new TitledPane();
         tp.setExpanded(false);
-        tp.setText(I18n.get("eula"));
+        tp.setText(AppI18n.get("eula"));
         tp.setAlignment(Pos.CENTER_LEFT);
         AppFont.normal(tp);
 
@@ -74,7 +73,7 @@ public class AppGreetings {
         var accepted = new SimpleBooleanProperty();
         AppWindowHelper.showAlert(
                 alert -> {
-                    alert.setTitle(I18n.get("greetingsAlertTitle"));
+                    alert.setTitle(AppI18n.get("greetingsAlertTitle"));
                     alert.setAlertType(Alert.AlertType.NONE);
                     alert.initModality(Modality.APPLICATION_MODAL);
 
@@ -86,7 +85,7 @@ public class AppGreetings {
                                 var cb = new JFXCheckBox();
                                 cb.selectedProperty().bindBidirectional(accepted);
 
-                                var label = new Label(I18n.get("legalAccept"));
+                                var label = new Label(AppI18n.get("legalAccept"));
                                 label.setGraphic(cb);
                                 AppFont.medium(label);
                                 label.setPadding(new Insets(40, 0, 10, 0));
@@ -101,7 +100,7 @@ public class AppGreetings {
 
                     alert.getDialogPane().setContent(layout);
 
-                    var buttonType = new ButtonType(I18n.get("confirm"), ButtonBar.ButtonData.OK_DONE);
+                    var buttonType = new ButtonType(AppI18n.get("confirm"), ButtonBar.ButtonData.OK_DONE);
                     alert.getButtonTypes().add(buttonType);
                     var button = alert.getDialogPane().lookupButton(buttonType);
                     button.disableProperty().bind(accepted.not());

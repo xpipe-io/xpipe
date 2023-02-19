@@ -1,6 +1,9 @@
 package io.xpipe.ext.jackson.xml_table;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.DialogHelper;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.UniformDataSourceProvider;
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
@@ -12,9 +15,6 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.ext.base.SimpleFileDataSourceProvider;
 import io.xpipe.ext.jackson.xml.XmlProvider;
-import io.xpipe.extension.util.DialogHelper;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.UniformDataSourceProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class XmlTableProvider
         implements UniformDataSourceProvider<XmlTableProvider.Source>,
-                SimpleFileDataSourceProvider<XmlTableProvider.Source> {
+                   SimpleFileDataSourceProvider<XmlTableProvider.Source> {
 
     @Override
     public boolean shouldShow(DataSourceType type) {

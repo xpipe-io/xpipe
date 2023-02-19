@@ -9,12 +9,12 @@ import com.dlsc.preferencesfx.model.Setting;
 import com.dlsc.preferencesfx.util.VisibilityProperty;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppStyle;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
-import io.xpipe.extension.prefs.PrefsHandler;
-import io.xpipe.extension.prefs.PrefsProvider;
-import io.xpipe.extension.util.XPipeDistributionType;
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.PrefsHandler;
+import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.XPipeDistributionType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -98,6 +98,23 @@ public class AppPrefs {
 
     private final BooleanProperty saveWindowLocationInternal = typed(new SimpleBooleanProperty(false), Boolean.class);
     public final ReadOnlyBooleanProperty saveWindowLocation = saveWindowLocationInternal;
+
+    // External terminal
+    // =================
+    private final ObjectProperty<ExternalTerminalType> terminalType = typed(new SimpleObjectProperty<>(), ExternalTerminalType.class);
+    private final SimpleListProperty<ExternalTerminalType> terminalTypeList = new SimpleListProperty<>(
+            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class)));
+    private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(
+                    terminalTypeList, terminalType)
+            .render(() -> new TranslatableComboBoxControl<>());
+
+    // Custom terminal
+    // ===============
+    private final StringProperty customTerminalCommand = typed(new SimpleStringProperty(""), String.class);
+    private final StringField customTerminalCommandControl = editable(
+            StringField.ofStringType(customTerminalCommand).render(() -> new SimpleTextControl()),
+            terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
+
 
     // Close behaviour
     // ===============
@@ -236,6 +253,14 @@ public class AppPrefs {
         return confirmDeletions;
     }
 
+    public ObservableValue<ExternalTerminalType> terminalType() {
+        return terminalType;
+    }
+
+    public ObservableValue<String> customTerminalCommand() {
+        return customTerminalCommand;
+    }
+
     public ObservableValue<Path> storageDirectory() {
         return effectiveStorageDirectory;
     }
@@ -344,6 +369,9 @@ public class AppPrefs {
         if (externalEditor.get() == null) {
             ExternalEditorType.detectDefault();
         }
+        if (terminalType.get() == null) {
+            terminalType.set(ExternalTerminalType.getDefault());
+        }
     }
 
     public void save() {
@@ -441,7 +469,13 @@ public class AppPrefs {
                                         "editorReloadTimeout",
                                         editorReloadTimeout,
                                         editorReloadTimeoutMin,
-                                        editorReloadTimeoutMax))),
+                                        editorReloadTimeoutMax)),
+                Group.of(
+                        "terminal",
+                        Setting.of("terminalProgram", terminalTypeControl, terminalType),
+                        Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
+                                .applyVisibility(VisibilityProperty.of(
+                                        terminalType.isEqualTo(ExternalTerminalType.CUSTOM))))),
                 Category.of(
                         "developer",
                         Setting.of(

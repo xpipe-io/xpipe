@@ -1,14 +1,14 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageElement;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.util.XPipeDaemon;
 
 import java.util.List;
 import java.util.UUID;

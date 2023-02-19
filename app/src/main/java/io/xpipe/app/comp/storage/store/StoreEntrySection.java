@@ -2,11 +2,11 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.storage.StorageFilter;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.fxcomps.impl.HorizontalComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

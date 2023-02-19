@@ -5,13 +5,12 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -44,7 +43,7 @@ public class UserReportComp extends SimpleComp {
 
     public static void show(ErrorEvent event) {
         var window =
-                AppWindowHelper.sideWindow(I18n.get("errorHandler"), w -> new UserReportComp(event, w), true, null);
+                AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> new UserReportComp(event, w), true, null);
         window.showAndWait();
     }
 
@@ -53,14 +52,14 @@ public class UserReportComp extends SimpleComp {
                         event.getAttachments(),
                         file -> {
                             if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                                return I18n.get("logFilesAttachment");
+                                return AppI18n.get("logFilesAttachment");
                             }
 
                             return file.getFileName().toString();
                         },
                         includedDiagnostics)
                 .styleClass("attachment-list");
-        var tp = new TitledPaneComp(I18n.observable("additionalErrorAttachments"), list, 100)
+        var tp = new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
                 .apply(struc -> struc.get().setExpanded(true))
                 .apply(s -> AppFont.medium(s.get()))
                 .styleClass("attachments");
@@ -69,7 +68,7 @@ public class UserReportComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var header = new Label(I18n.get("additionalErrorInfo"));
+        var header = new Label(AppI18n.get("additionalErrorInfo"));
         AppFont.medium(header);
         var tf = new TextArea();
         text.bind(tf.textProperty());
@@ -96,11 +95,11 @@ public class UserReportComp extends SimpleComp {
     }
 
     private Region createBottomBarNavigation() {
-        var dataPolicyButton = new Hyperlink(I18n.get("dataHandlingPolicies"));
+        var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
         dataPolicyButton.setOnAction(event1 -> {
             Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
         });
-        var sendButton = new ButtonComp(I18n.observable("sendReport"), null, this::send)
+        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send)
                 .apply(struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT))
                 .createRegion();
         var spacer = new Region();

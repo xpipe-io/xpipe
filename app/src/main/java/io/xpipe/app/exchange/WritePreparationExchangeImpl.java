@@ -1,11 +1,11 @@
 package io.xpipe.app.exchange;
 
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.exchange.cli.WritePreparationExchange;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
 
 import java.util.HashMap;
 import java.util.Map;

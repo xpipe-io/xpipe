@@ -1,9 +1,9 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.Deobfuscator;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.ILoggerFactory;

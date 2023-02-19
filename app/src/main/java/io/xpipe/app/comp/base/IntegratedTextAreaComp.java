@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.TextAreaComp;
 import io.xpipe.app.util.ExternalEditor;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.IconButtonComp;
-import io.xpipe.extension.fxcomps.impl.TextAreaComp;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.scene.layout.AnchorPane;

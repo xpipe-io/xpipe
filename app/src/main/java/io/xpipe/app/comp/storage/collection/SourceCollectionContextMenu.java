@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.storage.collection;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.augment.PopupMenuAugment;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.augment.PopupMenuAugment;
-import io.xpipe.extension.util.DesktopHelper;
+import io.xpipe.app.util.DesktopHelper;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -28,9 +28,9 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
     private void onDelete() {
         if (group.getEntries().size() > 0) {
             AppWindowHelper.showBlockingAlert(alert -> {
-                        alert.setTitle(I18n.get("confirmCollectionDeletionTitle"));
-                        alert.setHeaderText(I18n.get("confirmCollectionDeletionHeader", group.getName()));
-                        alert.setContentText(I18n.get(
+                        alert.setTitle(AppI18n.get("confirmCollectionDeletionTitle"));
+                        alert.setHeaderText(AppI18n.get("confirmCollectionDeletionHeader", group.getName()));
+                        alert.setContentText(AppI18n.get(
                                 "confirmCollectionDeletionContent",
                                 group.getEntries().size()));
                         alert.setAlertType(Alert.AlertType.CONFIRMATION);
@@ -47,9 +47,9 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
     private void onClean() {
         if (group.getEntries().size() > 0) {
             AppWindowHelper.showBlockingAlert(alert -> {
-                        alert.setTitle(I18n.get("confirmCollectionDeletionTitle"));
-                        alert.setHeaderText(I18n.get("confirmCollectionDeletionHeader", group.getName()));
-                        alert.setContentText(I18n.get(
+                        alert.setTitle(AppI18n.get("confirmCollectionDeletionTitle"));
+                        alert.setHeaderText(AppI18n.get("confirmCollectionDeletionHeader", group.getName()));
+                        alert.setContentText(AppI18n.get(
                                 "confirmCollectionDeletionContent",
                                 group.getEntries().size()));
                         alert.setAlertType(Alert.AlertType.CONFIRMATION);
@@ -72,13 +72,13 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         cm.getItems().add(name);
         cm.getItems().add(new SeparatorMenuItem());
         {
-            var properties = new MenuItem(I18n.get("properties"), new FontIcon("mdi2a-application-cog"));
+            var properties = new MenuItem(AppI18n.get("properties"), new FontIcon("mdi2a-application-cog"));
             properties.setOnAction(e -> {});
 
             //  cm.getItems().add(properties);
         }
         if (group.isRenameable()) {
-            var rename = new MenuItem(I18n.get("rename"), new FontIcon("mdal-edit"));
+            var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
             rename.setOnAction(e -> {
                 renameTextField.requestFocus();
             });
@@ -86,7 +86,7 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         }
 
         if (AppPrefs.get().developerMode().getValue()) {
-            var openDir = new MenuItem(I18n.get("openDir"), new FontIcon("mdal-edit"));
+            var openDir = new MenuItem(AppI18n.get("openDir"), new FontIcon("mdal-edit"));
             openDir.setOnAction(e -> {
                 DesktopHelper.browseFileInDirectory(group.getCollection().getDirectory());
             });
@@ -94,13 +94,13 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         }
 
         if (group.isDeleteable()) {
-            var del = new MenuItem(I18n.get("delete"), new FontIcon("mdal-delete_outline"));
+            var del = new MenuItem(AppI18n.get("delete"), new FontIcon("mdal-delete_outline"));
             del.setOnAction(e -> {
                 onDelete();
             });
             cm.getItems().add(del);
         } else {
-            var del = new MenuItem(I18n.get("clean"), new FontIcon("mdal-delete_outline"));
+            var del = new MenuItem(AppI18n.get("clean"), new FontIcon("mdal-delete_outline"));
             del.setOnAction(e -> {
                 onClean();
             });

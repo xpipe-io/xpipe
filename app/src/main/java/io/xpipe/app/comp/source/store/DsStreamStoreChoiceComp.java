@@ -2,25 +2,25 @@ package io.xpipe.app.comp.source.store;
 
 import io.xpipe.app.comp.base.FileDropOverlayComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.TabPaneComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.SimpleValidator;
+import io.xpipe.app.util.Validatable;
+import io.xpipe.app.util.Validator;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.fxcomps.impl.TabPaneComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.SimpleValidator;
-import io.xpipe.extension.util.Validatable;
-import io.xpipe.extension.util.Validator;
-import io.xpipe.extension.util.XPipeDaemon;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -64,7 +64,7 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
         this.showSaved = showSaved;
         this.mode = mode;
         validator = new SimpleValidator();
-        check = Validator.nonNull(validator, I18n.observable("streamStore"), selected);
+        check = Validator.nonNull(validator, AppI18n.observable("streamStore"), selected);
     }
 
     @Override
@@ -78,12 +78,12 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
                         ? selected.getValue()
                         : null);
         var browseComp = new DsLocalFileBrowseComp(provider, localStore, mode).apply(GrowAugment.create(true, false));
-        var dragAndDropLabel = Comp.of(() -> new Label(I18n.get("dragAndDropFilesHere")))
+        var dragAndDropLabel = Comp.of(() -> new Label(AppI18n.get("dragAndDropFilesHere")))
                 .apply(s -> s.get().setAlignment(Pos.CENTER))
                 .apply(struc -> AppFont.small(struc.get()));
         // var historyComp = new DsFileHistoryComp(provider, chosenFile);
         var local = new TabPaneComp.Entry(
-                I18n.observable("localFile"),
+                AppI18n.observable("localFile"),
                 "mdi2m-monitor",
                 new VerticalComp(List.of(browseComp, dragAndDropLabel))
                         .styleClass("store-local-file-chooser")
@@ -108,18 +108,18 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
                         ? selected.getValue()
                         : null);
         var remote = new TabPaneComp.Entry(
-                I18n.observable("remote"), "mdi2e-earth", new DsRemoteFileChoiceComp(remoteStore));
+                AppI18n.observable("remote"), "mdi2e-earth", new DsRemoteFileChoiceComp(remoteStore));
 
         var namedStore = new SimpleObjectProperty<DataStore>(isNamedStore ? selected.getValue() : null);
         var named = new TabPaneComp.Entry(
-                I18n.observable("stored"),
+                AppI18n.observable("stored"),
                 "mdrmz-storage",
                 NamedStoreChoiceComp.create(filter, namedStore, DataStoreProvider.DataCategory.STREAM));
 
         var otherStore = new SimpleObjectProperty<DataStore>(
                 localStore.get() == null && remoteStore.get() == null && !isNamedStore ? selected.getValue() : null);
         var other = new TabPaneComp.Entry(
-                I18n.observable("other"),
+                AppI18n.observable("other"),
                 "mdrmz-web_asset",
                 new DataStoreSelectorComp(DataStoreProvider.DataCategory.STREAM, otherStore));
 

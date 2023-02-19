@@ -1,5 +1,7 @@
 package io.xpipe.app.exchange;
 
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
@@ -16,8 +18,6 @@ import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
 import lombok.NonNull;
 
 import java.util.Optional;

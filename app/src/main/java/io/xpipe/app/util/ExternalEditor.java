@@ -1,13 +1,15 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.FileWatchManager;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.charsetter.Charsetter;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.function.FailableSupplier;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -146,8 +148,8 @@ public class ExternalEditor {
             String keyName,
             String fileType,
             Object key,
-            Charsetter.FailableSupplier<InputStream, Exception> input,
-            Charsetter.FailableSupplier<OutputStream, Exception> output) {
+            FailableSupplier<InputStream, Exception> input,
+            FailableSupplier<OutputStream, Exception> output) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
             openInEditor(ext.get().file.toString());
@@ -180,6 +182,17 @@ public class ExternalEditor {
 
         ext = getForKey(key);
         openInEditor(ext.orElseThrow().file.toString());
+    }
+
+    public void openInEditor(FileSystem fileSystem, String file) {
+        var editor = AppPrefs.get().externalEditor().getValue();
+        if (editor == null || !editor.isSelectable()) {
+            return;
+        }
+
+        startEditing(FileNames.getFileName(file), FilenameUtils.getExtension(file), file, () -> {
+            return fileSystem.openInput(file);
+        }, () -> fileSystem.openOutput(file));
     }
 
     public void openInEditor(String file) {

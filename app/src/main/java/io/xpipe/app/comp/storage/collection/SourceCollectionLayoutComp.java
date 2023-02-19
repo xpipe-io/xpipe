@@ -3,14 +3,14 @@ package io.xpipe.app.comp.storage.collection;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.storage.source.SourceEntryListComp;
 import io.xpipe.app.comp.storage.source.SourceEntryListHeaderComp;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.fxcomps.impl.StackComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.StackComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -49,7 +49,7 @@ public class SourceCollectionLayoutComp extends SimpleComp {
         var filler = Comp.of(() -> new Region());
         filler.styleClass("bar");
         filler.styleClass("filler-bar");
-        var button = new ButtonComp(I18n.observable("addCollection"), new FontIcon("mdi2f-folder-plus-outline"), () -> {
+        var button = new ButtonComp(AppI18n.observable("addCollection"), new FontIcon("mdi2f-folder-plus-outline"), () -> {
                     SourceCollectionViewState.get().addNewCollection();
                 })
                 .apply(new FancyTooltipAugment<>("addCollectionFolder"));

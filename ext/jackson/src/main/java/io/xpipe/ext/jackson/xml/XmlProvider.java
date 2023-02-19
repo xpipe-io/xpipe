@@ -1,6 +1,8 @@
 package io.xpipe.ext.jackson.xml;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.DialogHelper;
+import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
@@ -11,8 +13,6 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.ext.base.SimpleFileDataSourceProvider;
 import io.xpipe.ext.jackson.xml_table.XmlTableProvider;
-import io.xpipe.extension.util.DialogHelper;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;

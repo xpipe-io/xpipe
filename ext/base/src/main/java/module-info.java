@@ -1,10 +1,10 @@
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.*;
 import io.xpipe.ext.base.actions.*;
 import io.xpipe.ext.base.apps.*;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.util.ActionProvider;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
@@ -13,13 +13,13 @@ open module io.xpipe.ext.base {
 
     requires java.desktop;
     requires io.xpipe.core;
-    requires io.xpipe.extension;
     requires com.fasterxml.jackson.databind;
     requires java.net.http;
     requires static lombok;
     requires static javafx.controls;
     requires static net.synedra.validatorfx;
     requires static io.xpipe.app;
+    requires org.apache.commons.lang3;
 
     provides ActionProvider with
             AddStoreAction,

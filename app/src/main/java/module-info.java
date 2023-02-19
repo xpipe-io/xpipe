@@ -1,21 +1,15 @@
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.api.*;
 import io.xpipe.app.exchange.cli.*;
+import io.xpipe.app.ext.*;
+import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
-import io.xpipe.app.util.ProxyManagerProviderImpl;
-import io.xpipe.app.util.TerminalProvider;
-import io.xpipe.app.util.XPipeDaemonProvider;
+import io.xpipe.app.util.*;
 import io.xpipe.core.util.DataStateProvider;
+import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.util.ProxyManagerProvider;
-import io.xpipe.extension.Cache;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.EventHandler;
-import io.xpipe.extension.util.ModuleLayerLoader;
-import io.xpipe.extension.util.XPipeDaemon;
 import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {
@@ -32,6 +26,12 @@ open module io.xpipe.app {
     exports io.xpipe.app.update;
     exports io.xpipe.app.comp.storage;
     exports io.xpipe.app.comp.storage.collection;
+    exports io.xpipe.app.ext;
+    exports io.xpipe.app.fxcomps.impl;
+    exports io.xpipe.app.fxcomps;
+    exports io.xpipe.app.fxcomps.util;
+    exports io.xpipe.app.fxcomps.augment;
+    exports io.xpipe.app.test;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -50,16 +50,17 @@ open module io.xpipe.app {
     requires net.synedra.validatorfx;
     requires org.fxmisc.undofx;
     requires org.fxmisc.wellbehavedfx;
+    requires org.kordamp.ikonli.feather;
     requires org.reactfx;
     requires com.dustinredmond.fxtrayicon;
     requires io.xpipe.modulefs;
-    requires io.xpipe.extension;
     requires io.xpipe.core;
     requires static lombok;
     requires java.desktop;
     requires org.apache.commons.io;
     requires org.apache.commons.lang3;
     requires javafx.base;
+    requires static org.junit.jupiter.api;
     requires javafx.controls;
     requires javafx.media;
     requires javafx.web;
@@ -99,20 +100,30 @@ open module io.xpipe.app {
 
     // For debugging
     requires jdk.jdwp.agent;
+    requires org.kordamp.ikonli.core;
+    requires static io.xpipe.api;
 
     uses MessageExchangeImpl;
-    uses io.xpipe.app.util.TerminalProvider;
+    uses TerminalHelper;
+    uses io.xpipe.app.ext.ActionProvider;
+
+    uses DataSourceProvider;
+    uses DataSourceTarget;
+    uses EventHandler;
+    uses PrefsProvider;
+    uses DataStoreProvider;
+    uses XPipeDaemon;
+    uses ProxyFunction;
+    uses ModuleLayerLoader;
 
     provides ModuleLayerLoader with
-            TerminalProvider.Loader;
+            DataSourceTarget.Loader,
+            ActionProvider.Loader,
+            PrefsProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;
     provides ProxyManagerProvider with
             ProxyManagerProviderImpl;
-    provides I18n with
-            AppI18n;
-    provides Cache with
-            AppCache;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with

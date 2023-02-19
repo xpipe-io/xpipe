@@ -3,7 +3,6 @@ rootProject.name = 'xpipe'
 include 'api'
 include 'core'
 include 'beacon'
-include 'extension'
 
 for (def ext : file("ext").list()) {
     include "$ext"

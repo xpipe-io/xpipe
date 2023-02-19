@@ -1,15 +1,15 @@
 package io.xpipe.app.comp.source.store;
 
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
@@ -69,16 +69,16 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
 
     private FileChooser createChooser() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(I18n.get("browseFileTitle"));
+        fileChooser.setTitle(AppI18n.get("browseFileTitle"));
 
         if (!hasProvider()) {
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.get("anyFile"), "*"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "*"));
             return fileChooser;
         }
 
         if (hasProvider()) {
             provider.getValue().getFileProvider().getFileExtensions().forEach((key, value) -> {
-                var name = I18n.get(key);
+                var name = AppI18n.get(key);
                 if (value != null) {
                     fileChooser
                             .getExtensionFilters()
@@ -90,7 +90,7 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
             });
 
             if (!provider.getValue().getFileProvider().getFileExtensions().containsValue(null)) {
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.get("anyFile"), "*"));
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "*"));
             }
         }
 
@@ -100,7 +100,7 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
     private Region getGraphic() {
         var graphic = hasProvider() ? provider.getValue().getDisplayIconFileName() : "file_icon.png";
         if (chosenFile.getValue() == null || !(chosenFile.getValue() instanceof FileStore f) || f.getFile() == null) {
-            return JfxHelper.createNamedEntry(I18n.get("browse"), I18n.get("selectFileFromComputer"), graphic);
+            return JfxHelper.createNamedEntry(AppI18n.get("browse"), AppI18n.get("selectFileFromComputer"), graphic);
         } else {
             return JfxHelper.createNamedEntry(
                     f.getFileName().toString(), f.getFile().toString(), graphic);

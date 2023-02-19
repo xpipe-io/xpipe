@@ -72,21 +72,21 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     @Override
     public InputStream openInput() throws Exception {
-        return fileSystem.openInput(file);
+        return fileSystem.createFileSystem().open().openInput(file);
     }
 
     @Override
     public OutputStream openOutput() throws Exception {
-        if (!fileSystem.mkdirs(getParent())) {
+        if (!fileSystem.createFileSystem().open().mkdirs(getParent())) {
             throw new IOException("Unable to create directory: " + getParent());
         }
 
-        return fileSystem.openOutput(file);
+        return fileSystem.createFileSystem().open().openOutput(file);
     }
 
     @Override
     public boolean canOpen() throws Exception {
-        return fileSystem.exists(file);
+        return fileSystem.createFileSystem().open().exists(file);
     }
 
     @Override

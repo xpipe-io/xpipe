@@ -2,10 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
 import io.xpipe.app.comp.AppLayoutComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.OsType;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.image.Image;

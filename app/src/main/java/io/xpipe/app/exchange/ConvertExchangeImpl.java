@@ -1,13 +1,13 @@
 package io.xpipe.app.exchange;
 
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.exchange.cli.ConvertExchange;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
 
 public class ConvertExchangeImpl extends ConvertExchange
         implements MessageExchangeImpl<ConvertExchange.Request, ConvertExchange.Response> {

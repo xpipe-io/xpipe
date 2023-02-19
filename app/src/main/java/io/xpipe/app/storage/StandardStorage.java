@@ -1,8 +1,8 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.XPipeSession;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
 import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
 

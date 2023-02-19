@@ -6,6 +6,6 @@
 -fx-opacity: 0;
 }
 
-.lazy-text-field-comp.text-field .input-line {
--fx-opacity: 0.4;
+.lazy-text-field-comp .input-line {
+-fx-opacity: 0.0;
 }

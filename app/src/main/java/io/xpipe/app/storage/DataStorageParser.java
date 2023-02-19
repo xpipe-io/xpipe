@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
 
 import java.util.HashSet;
 import java.util.Optional;

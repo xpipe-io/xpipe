@@ -3,11 +3,11 @@ package io.xpipe.app.comp.storage.store;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -21,28 +21,28 @@ public class StoreCreationBarComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var newOtherStore = new ButtonComp(
-                I18n.observable("addOther"), new FontIcon("mdi2c-card-plus-outline"), () -> {
+                AppI18n.observable("addOther"), new FontIcon("mdi2c-card-plus-outline"), () -> {
             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.OTHER));
         })
                 .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addOther"));
 
         var newStreamStore = new ButtonComp(
-                        I18n.observable("addCommand"), new FontIcon("mdi2c-code-greater-than"), () -> {
+                        AppI18n.observable("addCommand"), new FontIcon("mdi2c-code-greater-than"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.COMMAND));
                         })
                 .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addCommand"));
 
         var newShellStore = new ButtonComp(
-                        I18n.observable("addHost"), new FontIcon("mdi2h-home-plus-outline"), () -> {
+                        AppI18n.observable("addHost"), new FontIcon("mdi2h-home-plus-outline"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.HOST));
                         })
                 .shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addHost"));
 
         var newDbStore = new ButtonComp(
-                        I18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus-outline"), () -> {
+                        AppI18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus-outline"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
                         })
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))

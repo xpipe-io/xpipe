@@ -1,5 +1,3 @@
-import java.util.stream.Collectors
-
 plugins {
     id 'application'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
@@ -32,9 +30,13 @@ configurations {
 }
 
 dependencies {
+    compileOnly project(':api')
     implementation project(':core')
-    implementation project(':extension')
     implementation project(':beacon')
+
+    compileOnly 'org.hamcrest:hamcrest:2.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.0'
 
     implementation 'net.java.dev.jna:jna-jpms:5.12.1'
     implementation 'net.java.dev.jna:jna-platform-jpms:5.12.1'
@@ -46,6 +48,7 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
+    implementation group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
     implementation name: 'preferencesfx-core-11.15.0'
     implementation group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0'
@@ -67,7 +70,6 @@ sourceSets {
 dependencies {
     testImplementation project(':api')
     testImplementation project(':core')
-    testImplementation project(':extension')
 }
 
 Arrays.stream(file("$rootDir/ext").list())
@@ -87,12 +89,12 @@ List<String> jvmRunArgs = [
         "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
         "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
         "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
-        "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.extension",
+        "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.app",
         "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
         "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
         "--add-opens", "java.base/java.lang=io.xpipe.core",
         "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
-        "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.extension",
+        "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
         "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
         "-Xmx8g",
         "--enable-preview",
@@ -102,9 +104,6 @@ List<String> jvmRunArgs = [
 ]
 
 
-def extensionDirList = Arrays.stream(file("$rootDir/ext").list())
-        .map(l -> project(":$l").buildDir.toString() + "/libs_dev").filter {file(it).exists()}.collect(Collectors.joining(File.pathSeparator));
-
 test {
     jvmArgs += jvmRunArgs
     systemProperty 'io.xpipe.app.mode', 'background'
@@ -113,8 +112,8 @@ test {
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"
     systemProperty 'io.xpipe.app.logLevel', "trace"
+    systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
     //systemProperty "io.xpipe.beacon.port", "21722"
-    systemProperty "io.xpipe.app.extensions", extensionDirList
 }
 
 
@@ -133,14 +132,14 @@ application {
 
 run {
     systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local6/"
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_stage/"
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"
     systemProperty 'io.xpipe.app.logLevel', "trace"
+    systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
     // systemProperty "io.xpipe.beacon.port", "21724"
     // systemProperty "io.xpipe.beacon.printMessages", "true"
-    systemProperty "io.xpipe.app.extensions", extensionDirList
     // systemProperty 'io.xpipe.app.debugPlatform', "true"
 
     // systemProperty "io.xpipe.beacon.localProxy", "true"

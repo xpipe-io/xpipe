@@ -40,7 +40,6 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
                 new NamedType(LocalDirectoryDataStore.class),
-                new NamedType(CollectionEntryDataStore.class),
                 new NamedType(LocalStore.class),
                 new NamedType(NamedStore.class),
                 new NamedType(ValueType.class),
@@ -84,7 +83,7 @@ public class CoreJacksonModule extends SimpleModule {
         TODO: Find better way to supply a default serializer for data sources
          */
         try {
-            Class.forName("io.xpipe.extension.ExtensionException");
+            Class.forName("io.xpipe.app.core.App");
         } catch (ClassNotFoundException e) {
             addSerializer(DataSource.class, new NullSerializer());
             addDeserializer(DataSource.class, new NullDeserializer());

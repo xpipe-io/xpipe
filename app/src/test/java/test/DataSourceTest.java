@@ -1,11 +1,11 @@
 package test;
 
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.impl.InMemoryStore;
 import io.xpipe.core.source.*;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

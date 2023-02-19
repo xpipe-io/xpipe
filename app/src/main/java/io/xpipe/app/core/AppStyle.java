@@ -4,11 +4,10 @@ import atlantafx.base.theme.NordDark;
 import atlantafx.base.theme.NordLight;
 import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import lombok.AllArgsConstructor;
@@ -137,7 +136,7 @@ public class AppStyle {
 
         @Override
         public String toTranslatedString() {
-            return I18n.get(id + "Theme");
+            return theme.getName();
         }
     }
 }

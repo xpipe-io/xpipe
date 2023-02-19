@@ -3,15 +3,15 @@ package io.xpipe.app.comp.source;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.comp.storage.source.SourceEntryWrapper;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.source.TableMapping;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.LabelComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -42,7 +42,7 @@ public class GuiDsTableMappingConfirmation extends SimpleComp {
         var confirmed = new AtomicBoolean();
         AppWindowHelper.showAndWaitForWindow(() -> {
             var stage = AppWindowHelper.sideWindow(
-                    I18n.get("confirmTableMappingTitle"),
+                    AppI18n.get("confirmTableMappingTitle"),
                     window -> {
                         var ms = new GuiDsTableMappingConfirmation(new SimpleObjectProperty<>(mapping));
                         var multi = new MultiStepComp() {
@@ -78,7 +78,7 @@ public class GuiDsTableMappingConfirmation extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var header = new LabelComp(I18n.observable("confirmTableMapping"))
+        var header = new LabelComp(AppI18n.observable("confirmTableMapping"))
                 .apply(struc -> struc.get().setWrapText(true));
         var content = Comp.derive(new DsTableMappingComp(mapping), region -> {
                     var box = new HBox(region);
@@ -87,7 +87,7 @@ public class GuiDsTableMappingConfirmation extends SimpleComp {
                     return box;
                 })
                 .apply(struc -> AppFont.normal(struc.get()));
-        var changeNotice = new LabelComp(I18n.observable("changeTableMapping"))
+        var changeNotice = new LabelComp(AppI18n.observable("changeTableMapping"))
                 .apply(struc -> struc.get().setWrapText(true));
         var changeButton = Comp.of(() -> {
             var hl = new Hyperlink("Customizing Data Flows");

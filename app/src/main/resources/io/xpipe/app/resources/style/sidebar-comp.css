@@ -1,8 +1,8 @@
 .sidebar-comp {
 -fx-pref-width: 7em;
--fx-background-color: -color-accent-subtle;
+-fx-background-color: -color-neutral-muted;
  -fx-border-width: 0 0 0 0.05em;
--fx-border-color: -color-accent-emphasis;
+-fx-border-color: -color-neutral-emphasis;
 -fx-padding: 0;
 }
 

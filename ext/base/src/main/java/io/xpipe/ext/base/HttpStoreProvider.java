@@ -1,17 +1,17 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.fxcomps.impl.DataStoreFlowChoiceComp;
+import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DialogHelper;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.GuiDialog;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.impl.DataStoreFlowChoiceComp;
-import io.xpipe.extension.util.DataStoreFormatter;
-import io.xpipe.extension.util.DialogHelper;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.SimpleValidator;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -43,10 +43,10 @@ public class HttpStoreProvider implements DataStoreProvider {
 
         Property<DataFlow> flowProperty = new SimpleObjectProperty<>(st.getFlow());
 
-        var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
-                .addString(I18n.observable("base.method"), methodProp)
+        var q = new DynamicOptionsBuilder(AppI18n.observable("configuration"))
+                .addString(AppI18n.observable("base.method"), methodProp)
                 .nonNull(val)
-                .addString(I18n.observable("base.uri"), requestProp)
+                .addString(AppI18n.observable("base.uri"), requestProp)
                 .nonNull(val)
                 .addComp(
                         "base.usage",

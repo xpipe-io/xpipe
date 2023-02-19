@@ -1,17 +1,17 @@
 package io.xpipe.ext.base.apps;
 
 import io.xpipe.app.comp.source.GuiDsTableMappingConfirmation;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.fxcomps.impl.WriteModeChoiceComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.ChainedValidator;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.source.*;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.impl.WriteModeChoiceComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.util.ChainedValidator;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.XPipeDaemon;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -96,7 +96,7 @@ public class DataSourceOutputTarget implements DataSourceTarget {
 
     @Override
     public ObservableValue<String> getName() {
-        return I18n.observable("base.dataSourceOutput");
+        return AppI18n.observable("base.dataSourceOutput");
     }
 
     @Override

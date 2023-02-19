@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;

@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.actions;
 
 import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
+import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.SecretValue;
-import io.xpipe.extension.util.ActionProvider;
 import lombok.Value;
 
 import java.util.List;

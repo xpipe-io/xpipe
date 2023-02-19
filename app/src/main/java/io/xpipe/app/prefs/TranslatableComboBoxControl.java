@@ -2,7 +2,7 @@ package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.structure.SingleSelectionField;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
-import io.xpipe.extension.Translatable;
+import io.xpipe.app.util.Translatable;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;

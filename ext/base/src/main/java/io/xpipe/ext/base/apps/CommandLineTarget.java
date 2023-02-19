@@ -1,13 +1,13 @@
 package io.xpipe.ext.base.apps;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.impl.CodeSnippet;
+import io.xpipe.app.fxcomps.impl.CodeSnippetComp;
+import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.impl.CodeSnippet;
-import io.xpipe.extension.fxcomps.impl.CodeSnippetComp;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
@@ -42,7 +42,7 @@ public class CommandLineTarget implements DataSourceTarget {
 
     @Override
     public ObservableValue<String> getName() {
-        return I18n.observable("base.commandLine");
+        return AppI18n.observable("base.commandLine");
     }
 
     @Override

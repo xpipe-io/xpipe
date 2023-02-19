@@ -1,9 +1,9 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.core.impl.InternalStreamStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.GuiDialog;
 import javafx.beans.property.Property;
 
 import java.util.List;

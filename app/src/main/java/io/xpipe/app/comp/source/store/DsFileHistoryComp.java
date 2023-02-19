@@ -3,11 +3,11 @@ package io.xpipe.app.comp.source.store;
 import com.jfoenix.controls.JFXButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.core.impl.FileStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.beans.property.Property;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -39,7 +39,7 @@ public class DsFileHistoryComp extends SimpleComp {
         }
 
         previous.setFillWidth(true);
-        var label = new Label(I18n.get("recentFiles"));
+        var label = new Label(AppI18n.get("recentFiles"));
         AppFont.header(label);
         previous.getChildren().add(label);
 

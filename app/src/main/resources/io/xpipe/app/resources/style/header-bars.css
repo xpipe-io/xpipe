@@ -1,7 +1,7 @@
 .bar {
 -fx-padding: 0.8em 1.0em 0.8em 1.0em;
--fx-background-color: -color-accent-subtle;
--fx-border-color: -color-accent-emphasis;
+-fx-background-color: -color-neutral-muted;
+-fx-border-color: -color-neutral-emphasis;
 }
 
 .store-header-bar {
@@ -30,7 +30,7 @@
 
 .bar .button-comp {
 -fx-border-width: 0;
--fx-border-color: -color-accent-emphasis;
+-fx-border-color: -color-neutral-emphasis;
 -fx-background-color: transparent;
 -fx-border-radius: 2px;
 -fx-background-radius: 2px;
@@ -47,7 +47,7 @@
 -fx-background-radius: 0 0 2px 2px;
 -fx-border-radius: 0 0 2px 2px;
  -fx-border-width: 0 2px 2px 2px;
--fx-background-color: -color-accent-subtle;
+-fx-background-color: -color-neutral-muted;
 }
 
 .entry-bar .horizontal-comp {
@@ -75,7 +75,7 @@
 -fx-background-color: -color-bg-default;
  -fx-border-width: 0.05em;
 -fx-border-radius: 0.5em;
--fx-border-color: -color-accent-emphasis;
+-fx-border-color: -color-neutral-emphasis;
 }
 .filter-bar .input-line {
 -fx-opacity: 0.2;

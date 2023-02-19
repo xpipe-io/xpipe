@@ -7,15 +7,15 @@ import io.xpipe.app.comp.storage.collection.SourceCollectionSortMode;
 import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.collection.SourceCollectionWrapper;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.fxcomps.impl.HorizontalComp;
-import io.xpipe.extension.fxcomps.impl.IconButtonComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -188,7 +188,7 @@ public class SourceEntryListHeaderComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var label = new Label(I18n.get("none"));
+        var label = new Label(AppI18n.get("none"));
         if (SourceCollectionViewState.get().getSelectedGroup() != null) {
             label.textProperty()
                     .bind(SourceCollectionViewState.get().getSelectedGroup().nameProperty());
@@ -239,7 +239,7 @@ public class SourceEntryListHeaderComp extends SimpleComp {
 
     private Comp<?> createActionsButtonBar() {
         var newFile = new ButtonComp(
-                        I18n.observable(group != null ? "addStream" : "pipeStream"),
+                        AppI18n.observable(group != null ? "addStream" : "pipeStream"),
                         new FontIcon("mdi2f-file-plus-outline"),
                         () -> {
                             var selected = SourceCollectionViewState.get()
@@ -253,7 +253,7 @@ public class SourceEntryListHeaderComp extends SimpleComp {
                 .apply(new FancyTooltipAugment<>("addStreamDataSource"));
 
         var newDb = new ButtonComp(
-                        I18n.observable(group != null ? "addDatabase" : "pipeDatabase"),
+                        AppI18n.observable(group != null ? "addDatabase" : "pipeDatabase"),
                         new FontIcon("mdi2d-database-plus-outline"),
                         () -> {
                             var selected = SourceCollectionViewState.get()

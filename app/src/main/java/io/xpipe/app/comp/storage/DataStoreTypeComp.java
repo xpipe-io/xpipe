@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.storage;
 
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;

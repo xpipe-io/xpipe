@@ -11,7 +11,6 @@ import com.dlsc.preferencesfx.formsfx.view.renderer.PreferencesFxGroupRenderer;
 import com.dlsc.preferencesfx.util.PreferencesFxUtils;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.extension.I18n;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -85,9 +84,9 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 descriptionLabel.managedProperty().bind(c.getFieldLabel().managedProperty());
                                 descriptionLabel.visibleProperty().bind(c.getFieldLabel().visibleProperty());
                                 descriptionLabel.setMaxHeight(USE_PREF_SIZE);
-                                if (AppI18n.get().containsKey(descriptionKey)) {
+                                if (AppI18n.getInstance().containsKey(descriptionKey)) {
                                     rowAmount++;
-                                    descriptionLabel.textProperty().bind(I18n.observable(descriptionKey));
+                                    descriptionLabel.textProperty().bind(AppI18n.observable(descriptionKey));
                                     grid.add(descriptionLabel, 0, i + rowAmount, 2, 1);
                                 }
 

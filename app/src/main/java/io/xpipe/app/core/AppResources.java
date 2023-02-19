@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.charsetter.Charsetter;
-import io.xpipe.extension.event.ErrorEvent;
 import io.xpipe.modulefs.ModuleFileSystem;
 
 import java.io.IOException;

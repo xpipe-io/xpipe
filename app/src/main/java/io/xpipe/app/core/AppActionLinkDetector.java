@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.launcher.LauncherInput;
-import io.xpipe.extension.I18n;
 import javafx.scene.control.Alert;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
@@ -63,10 +62,10 @@ public class AppActionLinkDetector {
     private static boolean showAlert() {
         var paste = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle(I18n.get("clipboardActionDetectedTitle"));
-                    alert.setHeaderText(I18n.get("clipboardActionDetectedHeader"));
+                    alert.setTitle(AppI18n.get("clipboardActionDetectedTitle"));
+                    alert.setHeaderText(AppI18n.get("clipboardActionDetectedHeader"));
                     alert.getDialogPane()
-                            .setContent(AppWindowHelper.alertContentText(I18n.get("clipboardActionDetectedContent")));
+                            .setContent(AppWindowHelper.alertContentText(AppI18n.get("clipboardActionDetectedContent")));
                 })
                 .map(buttonType -> buttonType.getButtonData().isDefaultButton())
                 .orElse(false);

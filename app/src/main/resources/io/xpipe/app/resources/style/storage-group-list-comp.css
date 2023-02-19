@@ -58,19 +58,6 @@
 -fx-pref-height: 1px;
 }
 
-.storage-group-list-comp .list-cell:even {
--fx-background-color:transparent;
-}
-
-.storage-group-list-comp .list-cell:odd {
--fx-background-color:transparent;
-}
-
-.storage-group-list-comp .list-cell {
--fx-padding: 0;
--fx-focus-color: transparent;
-}
-
 .storage-group-list-comp .list-cell {
 -fx-padding: 0;
 -fx-focus-color: transparent;

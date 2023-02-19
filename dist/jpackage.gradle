@@ -7,6 +7,7 @@ def distJvmArgs = new ArrayList<String>(project(':app').application.applicationD
 def releaseArguments = distJvmArgs + [
         '-Dio.xpipe.app.writeLogs=true',
         "-Dio.xpipe.app.buildId=$rootProject.buildId",
+        "-Dio.xpipe.app.fullVersion=$rootProject.fullVersion",
         '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279'
 ]
 

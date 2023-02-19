@@ -1,10 +1,10 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellTypes;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
-import io.xpipe.extension.util.ApplicationHelper;
-import io.xpipe.extension.util.WindowsRegistry;
 
 import java.io.IOException;
 import java.nio.file.Path;

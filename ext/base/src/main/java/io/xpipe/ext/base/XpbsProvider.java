@@ -1,9 +1,9 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.util.UniformDataSourceProvider;
 import io.xpipe.core.impl.XpbsSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.util.UniformDataSourceProvider;
 
 import java.util.List;
 import java.util.Map;

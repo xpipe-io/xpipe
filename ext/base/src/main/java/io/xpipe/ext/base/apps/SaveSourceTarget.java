@@ -3,16 +3,16 @@ package io.xpipe.ext.base.apps;
 import io.xpipe.app.comp.source.DsStorageTargetComp;
 import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.SimpleValidator;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -68,7 +68,7 @@ public class SaveSourceTarget implements DataSourceTarget {
 
     @Override
     public ObservableValue<String> getName() {
-        return I18n.observable("base.saveSource");
+        return AppI18n.observable("base.saveSource");
     }
 
     @Override

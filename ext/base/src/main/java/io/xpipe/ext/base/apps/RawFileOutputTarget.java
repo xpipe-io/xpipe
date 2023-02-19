@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.apps;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.XPipeDaemon;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.GridPane;
@@ -66,7 +66,7 @@ public class RawFileOutputTarget implements DataSourceTarget {
 
     @Override
     public ObservableValue<String> getName() {
-        return I18n.observable("base.rawFileOutput");
+        return AppI18n.observable("base.rawFileOutput");
     }
 
     @Override

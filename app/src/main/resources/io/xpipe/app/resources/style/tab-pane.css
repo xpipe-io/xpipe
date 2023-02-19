@@ -8,6 +8,6 @@
     -fx-font-size: 1em;
 }
 
-.tab-content-area {
+.jfx-tab-pane .tab-content-area {
 -fx-padding: 0.5em, 0, 0, 0;
 }

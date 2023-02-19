@@ -1,9 +1,9 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -19,7 +19,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -35,7 +34,6 @@ public class AppWindowHelper {
     public static Node alertContentText(String s) {
         var text = new Text(s);
         text.setWrappingWidth(450);
-        text.setFill(Paint.valueOf("WHITE"));
         AppFont.medium(text);
         return new StackPane(text);
     }

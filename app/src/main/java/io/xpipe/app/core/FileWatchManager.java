@@ -1,8 +1,8 @@
 package io.xpipe.app.core;
 
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.ThreadHelper;
 
 import java.io.IOException;
 import java.nio.file.*;

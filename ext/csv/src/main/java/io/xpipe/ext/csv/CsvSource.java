@@ -1,6 +1,7 @@
 package io.xpipe.ext.csv;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.charsetter.Charsettable;
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.charsetter.NewLine;
@@ -11,7 +12,6 @@ import io.xpipe.core.source.TableWriteConnection;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.util.Validators;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

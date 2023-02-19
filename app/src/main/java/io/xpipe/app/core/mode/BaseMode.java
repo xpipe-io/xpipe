@@ -5,12 +5,12 @@ import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.BasicErrorHandler;
 import io.xpipe.app.issue.ErrorHandler;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppUpdater;
 import io.xpipe.app.util.ExternalEditor;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.extension.event.TrackEvent;
 
 public class BaseMode extends OperationMode {
 

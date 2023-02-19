@@ -3,12 +3,12 @@ package io.xpipe.app.comp.source;
 import com.jfoenix.controls.JFXCheckBox;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataSourceEntry;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,7 +37,7 @@ public class GuiDsCreatorSaveStep extends MultiStepComp.Step<CompStructure<?>> {
             var cb = new JFXCheckBox();
             cb.selectedProperty().bindBidirectional(storeForLaterUse);
 
-            var label = new Label(I18n.get("storeForLaterUse"));
+            var label = new Label(AppI18n.get("storeForLaterUse"));
             label.setGraphic(cb);
             return label;
         });

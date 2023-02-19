@@ -1,12 +1,11 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
 import lombok.Value;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -20,13 +19,13 @@ public class AppProperties {
     private static final String DATA_DIR_PROP = "io.xpipe.app.dataDir";
     private static final String EXTENSION_PATHS_PROP = "io.xpipe.app.extensions";
     private static AppProperties INSTANCE;
+    boolean fullVersion;
     String version;
     String build;
     UUID buildUuid;
     String sentryUrl;
     boolean image;
     Path dataDir;
-    List<Path> extensionPaths;
 
     public AppProperties() {
         image = ModuleHelper.isImage();
@@ -42,14 +41,13 @@ public class AppProperties {
             }
         });
 
+        fullVersion = Optional.ofNullable(props.getProperty("io.xpipe.app.fullVersion")).map(Boolean::parseBoolean).orElse(false);
         version = Optional.ofNullable(props.getProperty("version")).orElse("dev");
         build = Optional.ofNullable(props.getProperty("build")).orElse("unknown");
         buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
-
-        extensionPaths = parseExtensionPaths();
         dataDir = parseDataDir();
     }
 
@@ -72,7 +70,7 @@ public class AppProperties {
                 .tag("version", INSTANCE.version)
                 .tag("build", INSTANCE.build)
                 .tag("dataDir", INSTANCE.dataDir)
-                .tag("extensionPaths", INSTANCE.extensionPaths)
+                .tag("fullVersion", INSTANCE.fullVersion)
                 .build();
 
         for (var e : System.getProperties().entrySet()) {
@@ -105,23 +103,6 @@ public class AppProperties {
         return Path.of(System.getProperty("user.home"), ".xpipe");
     }
 
-    private static List<Path> parseExtensionPaths() {
-        if (System.getProperty(EXTENSION_PATHS_PROP) != null) {
-            return Arrays.stream(System.getProperty(EXTENSION_PATHS_PROP).split(File.pathSeparator))
-                    .<Optional<Path>>map(s -> {
-                        try {
-                            return Optional.of(Path.of(s));
-                        } catch (InvalidPathException ignored) {
-                            return Optional.empty();
-                        }
-                    })
-                    .flatMap(Optional::stream)
-                    .toList();
-        }
-
-        return List.of();
-    }
-
     public Path getDataDir() {
         return dataDir;
     }
@@ -144,9 +125,5 @@ public class AppProperties {
 
     public String getBuild() {
         return build;
-    }
-
-    public List<Path> getExtensionPaths() {
-        return extensionPaths;
     }
 }

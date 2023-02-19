@@ -2,17 +2,17 @@ package io.xpipe.app.comp.source;
 
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.scene.control.Alert;
@@ -70,7 +70,7 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
         Platform.runLater(() -> {
             var loading = new SimpleBooleanProperty();
             var stage = AppWindowHelper.sideWindow(
-                    I18n.get("newDataSource"),
+                    AppI18n.get("newDataSource"),
                     window -> {
                         var ms = new GuiDsCreatorMultiStep<>(
                                 window, null, sourceCollection, category, null, null, null, State.CREATE);
@@ -93,7 +93,7 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
         Platform.runLater(() -> {
             var loading = new SimpleBooleanProperty();
             var stage = AppWindowHelper.sideWindow(
-                    I18n.get("editDataSource"),
+                    AppI18n.get("editDataSource"),
                     window -> {
                         var ms = new GuiDsCreatorMultiStep<>(
                                 window,
@@ -122,7 +122,7 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
         var provider = DataSourceProviders.byPreferredStore(store, null);
         Platform.runLater(() -> {
             var stage = AppWindowHelper.sideWindow(
-                    I18n.get("newDataSource"),
+                    AppI18n.get("newDataSource"),
                     window -> {
                         var gui = new GuiDsCreatorMultiStep<>(
                                 window,
@@ -159,9 +159,9 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
 
     private static void showCloseConfirmAlert(GuiDsCreatorMultiStep<?, ?> ms, Stage s) {
         AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(I18n.get("confirmDsCreationAbortTitle"));
-                    alert.setHeaderText(I18n.get("confirmDsCreationAbortHeader"));
-                    alert.setContentText(I18n.get("confirmDsCreationAbortContent"));
+                    alert.setTitle(AppI18n.get("confirmDsCreationAbortTitle"));
+                    alert.setHeaderText(AppI18n.get("confirmDsCreationAbortHeader"));
+                    alert.setContentText(AppI18n.get("confirmDsCreationAbortContent"));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                 })
                 .filter(b -> b.getButtonData().isDefaultButton())
@@ -256,15 +256,15 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
     @Override
     protected List<Entry> setup() {
         var list = new ArrayList<Entry>();
-        list.add(new Entry(I18n.observable("selectInput"), createInputStep()));
+        list.add(new Entry(AppI18n.observable("selectInput"), createInputStep()));
         list.add(new Entry(
-                I18n.observable("configure"),
+                AppI18n.observable("configure"),
                 new GuiDsConfigStep(provider, store, baseSource, source, dataSourceType, loading)));
         switch (state) {
             case EDIT -> {}
             case CREATE -> {
                 list.add(
-                        new Entry(I18n.observable("target"), new GuiDsCreatorTransferStep(targetGroup, store, source)));
+                        new Entry(AppI18n.observable("target"), new GuiDsCreatorTransferStep(targetGroup, store, source)));
             }
         }
         return list;

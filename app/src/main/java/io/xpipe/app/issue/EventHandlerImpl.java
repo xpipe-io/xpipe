@@ -3,9 +3,6 @@ package io.xpipe.app.issue;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.core.util.Deobfuscator;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.EventHandler;
-import io.xpipe.extension.event.TrackEvent;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

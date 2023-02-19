@@ -1,15 +1,15 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.impl.InMemoryStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.GuiDialog;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.SimpleValidator;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -32,7 +32,7 @@ public class InMemoryStoreProvider implements DataStoreProvider {
         Property<String> valProp = new SimpleObjectProperty<>(
                 st != null ? new String(st.getValue(), charset.getValue().getCharset()) : null);
 
-        var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
+        var q = new DynamicOptionsBuilder(AppI18n.observable("configuration"))
                 .addCharset(charset)
                 .addStringArea((String) null, valProp, false)
                 .bind(
@@ -56,7 +56,7 @@ public class InMemoryStoreProvider implements DataStoreProvider {
     @Override
     public String toSummaryString(DataStore store, int length) {
         InMemoryStore s = store.asNeeded();
-        return I18n.get("base.bytes", s.getValue().length);
+        return AppI18n.get("base.bytes", s.getValue().length);
     }
 
     @Override

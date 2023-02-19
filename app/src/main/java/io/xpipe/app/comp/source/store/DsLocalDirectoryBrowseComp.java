@@ -1,13 +1,13 @@
 package io.xpipe.app.comp.source.store;
 
 import com.jfoenix.controls.JFXButton;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
@@ -33,7 +33,7 @@ public class DsLocalDirectoryBrowseComp extends Comp<CompStructure<Button>> {
         button.setOnAction(e -> {
             var dirChooser = new DirectoryChooser();
             dirChooser.setTitle(
-                    I18n.get("browseDirectoryTitle", provider.getFileProvider().getFileName()));
+                    AppI18n.get("browseDirectoryTitle", provider.getFileProvider().getFileName()));
             File file = dirChooser.showDialog(button.getScene().getWindow());
             if (file != null && file.exists()) {
                 chosenDir.setValue(file.toPath());
@@ -55,7 +55,7 @@ public class DsLocalDirectoryBrowseComp extends Comp<CompStructure<Button>> {
     private Region getGraphic() {
         var graphic = provider.getDisplayIconFileName();
         if (chosenDir.getValue() == null) {
-            return JfxHelper.createNamedEntry(I18n.get("browse"), I18n.get("selectDirectoryFromComputer"), graphic);
+            return JfxHelper.createNamedEntry(AppI18n.get("browse"), AppI18n.get("selectDirectoryFromComputer"), graphic);
         } else {
             return JfxHelper.createNamedEntry(
                     chosenDir.getValue().getFileName().toString(),

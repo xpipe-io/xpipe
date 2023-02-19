@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.storage;
 
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;

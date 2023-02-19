@@ -1,5 +1,8 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.charsetter.Charsetter;
+import lombok.SneakyThrows;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicReference;
@@ -14,6 +17,10 @@ public interface CommandProcessControl extends ProcessControl {
 
     CommandProcessControl complex();
 
+    CommandProcessControl workingDirectory(String directory);
+
+    ShellProcessControl getParent();
+
     default InputStream startExternalStdout() throws Exception {
         try {
             start();
@@ -23,11 +30,13 @@ public interface CommandProcessControl extends ProcessControl {
 
             return new FilterInputStream(getStdout()) {
                 @Override
+                @SneakyThrows
                 public void close() throws IOException {
                     CommandProcessControl.this.close();
                     if (!err.get().isEmpty()) {
                         throw new IOException(err.get());
                     }
+                    CommandProcessControl.this.getParent().restart();
                 }
             };
         } catch (Exception ex) {
@@ -43,9 +52,11 @@ public interface CommandProcessControl extends ProcessControl {
             discardErr();
             return new FilterOutputStream(getStdin()) {
                 @Override
+                @SneakyThrows
                 public void close() throws IOException {
                     closeStdin();
                     CommandProcessControl.this.close();
+                    CommandProcessControl.this.getParent().restart();
                 }
             };
         } catch (Exception ex) {
@@ -67,6 +78,7 @@ public interface CommandProcessControl extends ProcessControl {
 
     CommandProcessControl exitTimeout(Integer timeout);
 
+    public void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c) throws Exception;
     String readOnlyStdout() throws Exception;
 
     public void discardOrThrow() throws Exception;
@@ -76,14 +88,6 @@ public interface CommandProcessControl extends ProcessControl {
     void accumulateStderr(Consumer<String> con);
 
     public String readOrThrow() throws Exception;
-
-    public default boolean startAndCheckExit() {
-        try (var pc = start()) {
-            return pc.discardAndCheckExit();
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     public default boolean discardAndCheckExit() {
         try {

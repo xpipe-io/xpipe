@@ -1,13 +1,13 @@
 package io.xpipe.app.comp.source.store;
 
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.TabPaneComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.TabPaneComp;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -40,7 +40,7 @@ public class DsDbStoreChooserComp extends SimpleComp {
                 provider);
 
         var connections = new TabPaneComp.Entry(
-                I18n.observable("savedConnections"),
+                AppI18n.observable("savedConnections"),
                 "mdi2m-monitor",
                 NamedStoreChoiceComp.create(filter, input, DataStoreProvider.DataCategory.DATABASE)
                         .styleClass("store-local-file-chooser"));

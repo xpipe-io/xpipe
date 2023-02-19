@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.issue.ErrorEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.input.Dragboard;

@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.extension.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleComp;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 

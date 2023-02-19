@@ -6,15 +6,14 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.storage.source.SourceEntryWrapper;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.fxcomps.impl.IconButtonComp;
-import io.xpipe.extension.fxcomps.impl.PrettyImageComp;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.issue.TrackEvent;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -125,7 +124,7 @@ public class SourceCollectionComp extends SimpleComp {
                         infoIcon.setOpacity(0.75);
                         return new StackPane(infoIcon);
                     })
-                    .apply(new FancyTooltipAugment<>(I18n.observable("temporaryCollectionNote")))
+                    .apply(new FancyTooltipAugment<>(AppI18n.observable("temporaryCollectionNote")))
                     .createRegion();
             var label = new Label(group.getName(), tempNote);
             label.getStyleClass().add("temp");

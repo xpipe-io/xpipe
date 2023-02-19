@@ -1,30 +1,14 @@
 package io.xpipe.core.source;
 
 import io.xpipe.core.store.DataStore;
-import lombok.Singular;
 import lombok.experimental.SuperBuilder;
-
-import java.util.Map;
 
 @SuperBuilder
 public abstract class CollectionDataSource<DS extends DataStore> extends DataSource<DS> {
 
-    @Singular
-    private final Map<String, String> preferredProviders;
-
     @Override
     public DataSourceType getType() {
         return DataSourceType.COLLECTION;
-    }
-
-    public CollectionDataSource<DS> annotate(String file, String provider) {
-        preferredProviders.put(file, provider);
-        return this;
-    }
-
-    public CollectionDataSource<DS> annotate(Map<String, String> preferredProviders) {
-        this.preferredProviders.putAll(preferredProviders);
-        return this;
     }
 
     public final CollectionReadConnection openReadConnection() throws Exception {
@@ -46,5 +30,5 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
 
     protected abstract CollectionWriteConnection newWriteConnection(WriteMode mode);
 
-    protected abstract CollectionReadConnection newReadConnection();
+    protected abstract CollectionReadConnection newReadConnection() throws Exception;
 }

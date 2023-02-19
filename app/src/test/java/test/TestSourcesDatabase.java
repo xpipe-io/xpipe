@@ -1,10 +1,10 @@
 package test;
 
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.DataSourceProviders;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;

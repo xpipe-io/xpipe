@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.extension.prefs.PrefsChoiceValue;
+import io.xpipe.app.ext.PrefsChoiceValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

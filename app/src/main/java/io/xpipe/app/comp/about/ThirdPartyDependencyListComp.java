@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.about;
 
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;

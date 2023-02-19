@@ -1,12 +1,11 @@
 package io.xpipe.ext.collections;
 
-import io.xpipe.core.impl.CollectionEntryDataStore;
 import io.xpipe.core.store.StreamDataStore;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class ArchiveEntryStore extends CollectionEntryDataStore {
+public class ArchiveEntryStore extends ArchiveEntryDataStore {
 
     private final ArchiveReadConnection con;
 

@@ -1,7 +1,7 @@
 package io.xpipe.ext.csv;
 
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.NamedCharacter;
+import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.NamedCharacter;
 import lombok.Value;
 
 import java.util.Comparator;

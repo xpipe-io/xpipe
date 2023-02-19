@@ -1,9 +1,8 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.core.store.ShellStore;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Alert;
@@ -34,9 +33,9 @@ public class MacOsPermissions {
 
                         AppWindowHelper.showAlert(a -> {
                             a.setAlertType(Alert.AlertType.INFORMATION);
-                            a.setTitle(I18n.get("permissionsAlertTitle"));
-                            a.setHeaderText(I18n.get("permissionsAlertTitleHeader"));
-                            a.getDialogPane().setContent(AppWindowHelper.alertContentText(I18n.get("permissionsAlertTitleContent")));
+                            a.setTitle(AppI18n.get("permissionsAlertTitle"));
+                            a.setHeaderText(AppI18n.get("permissionsAlertTitleHeader"));
+                            a.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get("permissionsAlertTitleContent")));
                             a.getButtonTypes().clear();
                             alert.set(a);
                         }, buttonType -> {

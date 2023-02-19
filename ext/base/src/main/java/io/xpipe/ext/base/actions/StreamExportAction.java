@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.actions;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.util.ActionProvider;
-import io.xpipe.extension.util.DesktopHelper;
-import io.xpipe.extension.util.ThreadHelper;
 import javafx.beans.value.ObservableValue;
 import javafx.stage.FileChooser;
 import lombok.Value;
@@ -29,8 +29,8 @@ public class StreamExportAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(I18n.get("browseFileTitle"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(I18n.get("anyFile"), "."));
+            fileChooser.setTitle(AppI18n.get("browseFileTitle"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "."));
             var outputFile = fileChooser.showSaveDialog(null);
             if (outputFile == null) {
                 return;
@@ -70,7 +70,7 @@ public class StreamExportAction implements ActionProvider {
 
             @Override
             public ObservableValue<String> getName(StreamDataStore store) {
-                return I18n.observable("base.exportStream");
+                return AppI18n.observable("base.exportStream");
             }
 
             @Override

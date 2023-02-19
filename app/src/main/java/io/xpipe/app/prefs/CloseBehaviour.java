@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
+import io.xpipe.app.ext.PrefsChoiceValue;
 import lombok.Getter;
 
 @Getter

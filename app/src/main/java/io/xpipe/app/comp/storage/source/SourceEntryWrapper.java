@@ -4,16 +4,16 @@ import io.xpipe.app.comp.source.GuiDsCreatorMultiStep;
 import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.collection.SourceCollectionWrapper;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.StorageElement;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataFlow;
-import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.util.ActionProvider;
 import javafx.beans.property.*;
 import lombok.Value;
 
@@ -94,7 +94,7 @@ public class SourceEntryWrapper implements StorageFilter.Filterable {
                         ? entry.getInformation() != null
                                 ? entry.getInformation()
                                 : entry.getProvider().getDisplayName()
-                        : I18n.get("failedToLoad"));
+                        : AppI18n.get("failedToLoad"));
         loading.setValue(entry.getState() == null || entry.getState() == DataSourceEntry.State.VALIDATING);
 
         actionProviders.clear();

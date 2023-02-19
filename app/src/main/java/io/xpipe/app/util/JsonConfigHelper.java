@@ -6,8 +6,8 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.extension.event.ErrorEvent;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;

@@ -3,13 +3,12 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -43,7 +42,7 @@ public class ErrorHandlerComp extends SimpleComp {
                 if (!showing.get()) {
                     showing.set(true);
                     var window = AppWindowHelper.sideWindow(
-                            I18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
+                            AppI18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
                     window.setOnHidden(e -> {
                         showing.set(false);
                     });
@@ -66,7 +65,7 @@ public class ErrorHandlerComp extends SimpleComp {
 
     private Region createDetails() {
         var content = new ErrorDetailsComp(event);
-        var tp = new TitledPaneComp(I18n.observable("errorDetails"), content, 250);
+        var tp = new TitledPaneComp(AppI18n.observable("errorDetails"), content, 250);
         var r = tp.createRegion();
         r.getStyleClass().add("details");
         return r;
@@ -81,17 +80,17 @@ public class ErrorHandlerComp extends SimpleComp {
         var desc = event.getDescription();
         if (desc == null && event.getThrowable() != null) {
             var tName = event.getThrowable().getClass().getSimpleName();
-            desc = I18n.get("errorTypeOccured", tName);
+            desc = AppI18n.get("errorTypeOccured", tName);
         }
         if (desc == null) {
-            desc = I18n.get("errorNoDetail");
+            desc = AppI18n.get("errorNoDetail");
         }
         var limitedDescription = desc.substring(0, Math.min(1000, desc.length()));
-        var top = JfxHelper.createNamedEntry(I18n.get(headerId), limitedDescription, graphic);
+        var top = JfxHelper.createNamedEntry(AppI18n.get(headerId), limitedDescription, graphic);
 
         var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
         if (event.isReportable()) {
-            var header = new Label(I18n.get("possibleActions"));
+            var header = new Label(AppI18n.get("possibleActions"));
             AppFont.header(header);
             var actionBox = new VBox(header);
             actionBox.getStyleClass().add("actions");

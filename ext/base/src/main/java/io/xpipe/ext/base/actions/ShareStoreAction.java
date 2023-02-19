@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.actions;
 
 import io.xpipe.app.core.AppActionLinkDetector;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretValue;
-import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.ActionProvider;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -65,7 +65,7 @@ public class ShareStoreAction implements ActionProvider {
 
             @Override
             public ObservableValue<String> getName(DataStore store) {
-                return I18n.observable("base.copyShareLink");
+                return AppI18n.observable("base.copyShareLink");
             }
 
             @Override

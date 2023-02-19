@@ -2,9 +2,9 @@ package io.xpipe.app.comp.storage.collection;
 
 import io.xpipe.app.comp.storage.DataSourceTypeComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.source.DataSourceType;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -18,38 +18,38 @@ public class SourceCollectionEmptyIntroComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var title = new Label(I18n.get("dataSourceIntroTitle"));
+        var title = new Label(AppI18n.get("dataSourceIntroTitle"));
         AppFont.setSize(title, 7);
         title.getStyleClass().add("title-header");
 
         var descFi = new FontIcon("mdi2i-information-outline");
-        var introDesc = new Label(I18n.get("dataSourceIntroDescription"));
+        var introDesc = new Label(AppI18n.get("dataSourceIntroDescription"));
         introDesc.heightProperty().addListener((c, o, n) -> {
             descFi.iconSizeProperty().set(n.intValue());
         });
 
         var tableFi = new DataSourceTypeComp(DataSourceType.TABLE, null).createRegion();
-        var table = new Label(I18n.get("dataSourceIntroTable"), tableFi);
+        var table = new Label(AppI18n.get("dataSourceIntroTable"), tableFi);
         tableFi.prefWidthProperty().bind(table.heightProperty());
         tableFi.prefHeightProperty().bind(table.heightProperty());
 
         var structureFi = new DataSourceTypeComp(DataSourceType.STRUCTURE, null).createRegion();
-        var structure = new Label(I18n.get("dataSourceIntroStructure"), structureFi);
+        var structure = new Label(AppI18n.get("dataSourceIntroStructure"), structureFi);
         structureFi.prefWidthProperty().bind(structure.heightProperty());
         structureFi.prefHeightProperty().bind(structure.heightProperty());
 
         var textFi = new DataSourceTypeComp(DataSourceType.TEXT, null).createRegion();
-        var text = new Label(I18n.get("dataSourceIntroText"), textFi);
+        var text = new Label(AppI18n.get("dataSourceIntroText"), textFi);
         textFi.prefWidthProperty().bind(text.heightProperty());
         textFi.prefHeightProperty().bind(text.heightProperty());
 
         var binaryFi = new DataSourceTypeComp(DataSourceType.RAW, null).createRegion();
-        var binary = new Label(I18n.get("dataSourceIntroBinary"), binaryFi);
+        var binary = new Label(AppI18n.get("dataSourceIntroBinary"), binaryFi);
         binaryFi.prefWidthProperty().bind(binary.heightProperty());
         binaryFi.prefHeightProperty().bind(binary.heightProperty());
 
         var collectionFi = new DataSourceTypeComp(DataSourceType.COLLECTION, null).createRegion();
-        var collection = new Label(I18n.get("dataSourceIntroCollection"), collectionFi);
+        var collection = new Label(AppI18n.get("dataSourceIntroCollection"), collectionFi);
         collectionFi.prefWidthProperty().bind(collection.heightProperty());
         collectionFi.prefHeightProperty().bind(collection.heightProperty());
 

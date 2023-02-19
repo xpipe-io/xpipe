@@ -4,14 +4,14 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.XPipeDistributionType;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.XPipeSession;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.BusyProperty;
-import io.xpipe.extension.util.ThreadHelper;
-import io.xpipe.extension.util.XPipeDistributionType;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -108,7 +108,7 @@ public class AppUpdater {
         AppProperties.init();
         XPipeSession.init(AppProperties.get().getBuildUuid());
 
-        var layer = AppExtensionManager.loadOnlyBundledExtension("proc");
+        var layer = AppExtensionManager.initBare();
         if (layer == null) {
             return;
         }

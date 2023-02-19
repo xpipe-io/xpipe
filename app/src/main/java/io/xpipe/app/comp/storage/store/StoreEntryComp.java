@@ -5,22 +5,21 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.augment.PopupMenuAugment;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.fxcomps.augment.PopupMenuAugment;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.fxcomps.impl.HorizontalComp;
-import io.xpipe.extension.fxcomps.impl.IconButtonComp;
-import io.xpipe.extension.fxcomps.impl.PrettyImageComp;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.DesktopHelper;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
@@ -255,20 +254,20 @@ public class StoreEntryComp extends SimpleComp {
         }
 
         if (AppPrefs.get().developerMode().getValue()) {
-            var browse = new MenuItem(I18n.get("browse"), new FontIcon("mdi2f-folder-open-outline"));
+            var browse = new MenuItem(AppI18n.get("browse"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
                     event -> DesktopHelper.browsePath(entry.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
         }
 
-        var refresh = new MenuItem(I18n.get("refresh"), new FontIcon("mdal-360"));
+        var refresh = new MenuItem(AppI18n.get("refresh"), new FontIcon("mdal-360"));
         refresh.disableProperty().bind(entry.getRefreshable().not());
         refresh.setOnAction(event -> {
             DataStorage.get().refreshAsync(entry.getEntry(), true);
         });
         contextMenu.getItems().add(refresh);
 
-        var del = new MenuItem(I18n.get("delete"), new FontIcon("mdal-delete_outline"));
+        var del = new MenuItem(AppI18n.get("delete"), new FontIcon("mdal-delete_outline"));
         del.disableProperty().bind(entry.getDeletable().not());
         del.setOnAction(event -> entry.delete());
         contextMenu.getItems().add(del);

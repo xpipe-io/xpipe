@@ -2,12 +2,12 @@ package io.xpipe.app.comp.source;
 
 import com.jfoenix.controls.JFXTextField;
 import io.xpipe.app.comp.storage.DataSourceTypeComp;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.HorizontalComp;
 import javafx.beans.property.Property;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

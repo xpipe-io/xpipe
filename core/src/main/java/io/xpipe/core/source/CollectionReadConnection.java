@@ -1,13 +1,12 @@
 package io.xpipe.core.source;
 
-import io.xpipe.core.impl.CollectionEntryDataStore;
 import lombok.SneakyThrows;
 
 import java.util.stream.Stream;
 
 public interface CollectionReadConnection extends DataSourceReadConnection {
 
-    Stream<CollectionEntryDataStore> listEntries() throws Exception;
+    Stream<DataSource<?>> listEntries() throws Exception;
 
     @SneakyThrows
     default void forward(DataSourceConnection con) throws Exception {

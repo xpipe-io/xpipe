@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.extension.event.TrackEvent;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.Node;

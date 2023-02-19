@@ -3,12 +3,12 @@ package io.xpipe.app.exchange.cli;
 import io.xpipe.app.exchange.MessageExchangeImpl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ServerException;
 import io.xpipe.beacon.exchange.cli.ReadDrainExchange;
 import io.xpipe.core.impl.SinkDrainStore;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.util.ThreadHelper;
 
 import java.io.InputStream;
 import java.util.Optional;

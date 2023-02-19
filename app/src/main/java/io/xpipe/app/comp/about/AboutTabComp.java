@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.about;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -36,16 +36,16 @@ public class AboutTabComp extends Comp<CompStructure<?>> {
     private Comp<?> createLinks() {
         return new DynamicOptionsBuilder(false)
                 .addTitle("links")
-                .addComp(I18n.observable("website"), hyperlink(Hyperlinks.WEBSITE), null)
-                .addComp(I18n.observable("documentation"), hyperlink(Hyperlinks.DOCUMENTATION), null)
-                .addComp(I18n.observable("discord"), hyperlink(Hyperlinks.DISCORD), null)
-                .addComp(I18n.observable("slack"), hyperlink(Hyperlinks.SLACK), null)
-                .addComp(I18n.observable("github"), hyperlink(Hyperlinks.GITHUB), null)
+                .addComp(AppI18n.observable("website"), hyperlink(Hyperlinks.WEBSITE), null)
+                .addComp(AppI18n.observable("documentation"), hyperlink(Hyperlinks.DOCUMENTATION), null)
+                .addComp(AppI18n.observable("discord"), hyperlink(Hyperlinks.DISCORD), null)
+                .addComp(AppI18n.observable("slack"), hyperlink(Hyperlinks.SLACK), null)
+                .addComp(AppI18n.observable("github"), hyperlink(Hyperlinks.GITHUB), null)
                 .buildComp();
     }
 
     private Region createThirdPartyDeps() {
-        var label = new Label(I18n.get("openSourceNotices"), new FontIcon("mdi2o-open-source-initiative"));
+        var label = new Label(AppI18n.get("openSourceNotices"), new FontIcon("mdi2o-open-source-initiative"));
         label.getStyleClass().add("open-source-header");
         var list = createDepsList();
         var box = new VBox(label, list);

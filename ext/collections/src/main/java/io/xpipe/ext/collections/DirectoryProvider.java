@@ -1,10 +1,10 @@
 package io.xpipe.ext.collections;
 
-import io.xpipe.core.impl.CollectionEntryDataStore;
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.util.UniformDataSourceProvider;
 import io.xpipe.core.impl.LocalDirectoryDataStore;
 import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.util.UniformDataSourceProvider;
 import lombok.experimental.SuperBuilder;
 
 import java.io.IOException;
@@ -88,15 +88,15 @@ public class DirectoryProvider implements UniformDataSourceProvider<DirectoryPro
                 }
 
                 @Override
-                public Stream<CollectionEntryDataStore> listEntries() throws Exception {
-                    var entries = new ArrayList<CollectionEntryDataStore>();
+                public Stream<DataSource<?>> listEntries() throws Exception {
+                    var entries = new ArrayList<ArchiveEntryDataStore>();
                     Files.walkFileTree(store.getPath(), new SimpleFileVisitor<>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             var rel = store.getPath().relativize(file);
                             var name = rel.toString();
                             var dir = Files.isDirectory(file);
-                            var e = new CollectionEntryDataStore(dir, name, store) {
+                            var e = new ArchiveEntryDataStore(dir, name, store) {
                                 @Override
                                 public InputStream openInput() throws Exception {
                                     return Files.newInputStream(file);
@@ -116,7 +116,7 @@ public class DirectoryProvider implements UniformDataSourceProvider<DirectoryPro
                             return FileVisitResult.CONTINUE;
                         }
                     });
-                    return entries.stream();
+                    return entries.stream().map(archiveEntryDataStore -> DataSourceProviders.createDefault(archiveEntryDataStore));
                 }
             };
         }

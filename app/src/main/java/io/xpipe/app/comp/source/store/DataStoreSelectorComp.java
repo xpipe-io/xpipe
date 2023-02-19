@@ -1,16 +1,16 @@
 package io.xpipe.app.comp.source.store;
 
 import com.jfoenix.controls.JFXButton;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
@@ -59,7 +59,7 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
         var graphic = provider != null ? provider.getDisplayIconFileName() : "file_icon.png";
         if (chosenStore.getValue() == null || !(chosenStore.getValue() instanceof FileStore f)) {
             return JfxHelper.createNamedEntry(
-                    I18n.get("selectStreamStore"), I18n.get("openStreamStoreWizard"), graphic);
+                    AppI18n.get("selectStreamStore"), AppI18n.get("openStreamStoreWizard"), graphic);
         } else {
             return JfxHelper.createNamedEntry(
                     f.getFileName().toString(), f.getFile().toString(), graphic);

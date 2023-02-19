@@ -1,12 +1,12 @@
 package io.xpipe.app.comp.source;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.util.CustomComboBoxBuilder;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.util.CustomComboBoxBuilder;
 import javafx.beans.property.Property;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -65,24 +65,24 @@ public class DataSourceTargetChoiceComp extends Comp<CompStructure<ComboBox<Node
 
     @Override
     public CompStructure<ComboBox<Node>> createBase() {
-        var addMoreLabel = new Label(I18n.get("addMore"), new FontIcon("mdmz-plus"));
+        var addMoreLabel = new Label(AppI18n.get("addMore"), new FontIcon("mdmz-plus"));
 
         var builder = new CustomComboBoxBuilder<DataSourceTarget>(
                 selectedApplication, app -> createLabel(app), new Label(""), v -> true);
 
         // builder.addFilter((v, s) -> v.getName().getValue().toLowerCase().contains(s));
 
-        builder.addHeader(I18n.get("programmingLanguages"));
+        builder.addHeader(AppI18n.get("programmingLanguages"));
         all.stream()
                 .filter(p -> p.getCategory().equals(DataSourceTarget.Category.PROGRAMMING_LANGUAGE))
                 .forEach(builder::add);
 
-        builder.addHeader(I18n.get("applications"));
+        builder.addHeader(AppI18n.get("applications"));
         all.stream()
                 .filter(p -> p.getCategory().equals(DataSourceTarget.Category.APPLICATION))
                 .forEach(builder::add);
 
-        builder.addHeader(I18n.get("other"));
+        builder.addHeader(AppI18n.get("other"));
         all.stream()
                 .filter(p -> p.getCategory().equals(DataSourceTarget.Category.OTHER))
                 .forEach(builder::add);

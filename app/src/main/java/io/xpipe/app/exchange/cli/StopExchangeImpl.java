@@ -2,9 +2,9 @@ package io.xpipe.app.exchange.cli;
 
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.exchange.MessageExchangeImpl;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.StopExchange;
-import io.xpipe.extension.util.ThreadHelper;
 
 public class StopExchangeImpl extends StopExchange
         implements MessageExchangeImpl<StopExchange.Request, StopExchange.Response> {

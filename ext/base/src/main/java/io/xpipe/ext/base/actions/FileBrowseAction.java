@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.actions;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.ActionProvider;
-import io.xpipe.extension.util.DesktopHelper;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -50,7 +50,7 @@ public class FileBrowseAction implements ActionProvider {
 
             @Override
             public ObservableValue<String> getName(FileStore store) {
-                return I18n.observable("base.browseFile");
+                return AppI18n.observable("base.browseFile");
             }
 
             @Override

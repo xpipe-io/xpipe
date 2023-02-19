@@ -2,18 +2,28 @@ package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.store.FileSystem;
 
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellType {
 
+    default String getCdCommand(String directory){
+        return "cd \"" + directory + "\"";
+    }
+
     String getScriptFileEnding();
 
     String addInlineVariablesToCommand(Map<String, String> variables, String command);
+
+    Stream<FileSystem.FileEntry> listFiles(FileSystem fs, ShellProcessControl control, String dir) throws Exception;
+
+    Stream<String> listRoots(ShellProcessControl control) throws Exception;
 
     String getPauseCommand();
 
@@ -76,6 +86,12 @@ public interface ShellType {
     List<String> getMkdirsCommand(String dirs);
 
     String getFileReadCommand(String file);
+
+    String getPrintWorkingDirectoryCommand();
+
+    String getFileCopyCommand(String oldFile, String newFile);
+
+    String getFileMoveCommand(String oldFile, String newFile);
 
     String getStreamFileWriteCommand(String file);
 

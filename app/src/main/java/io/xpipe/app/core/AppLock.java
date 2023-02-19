@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.extension.event.ErrorEvent;
+import io.xpipe.app.issue.ErrorEvent;
 
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;

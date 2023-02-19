@@ -1,11 +1,11 @@
 package io.xpipe.app.exchange.cli;
 
 import io.xpipe.app.exchange.MessageExchangeImpl;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.cli.SourceProviderListExchange;
 import io.xpipe.beacon.exchange.data.ProviderEntry;
 import io.xpipe.core.source.DataSourceType;
-import io.xpipe.extension.DataSourceProviders;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

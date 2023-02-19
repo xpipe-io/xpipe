@@ -1,8 +1,8 @@
 package io.xpipe.app.comp.storage;
 
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataFlow;
-import io.xpipe.extension.fxcomps.SimpleComp;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

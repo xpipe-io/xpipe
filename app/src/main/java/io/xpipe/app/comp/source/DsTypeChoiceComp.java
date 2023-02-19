@@ -1,14 +1,14 @@
 package io.xpipe.app.comp.source;
 
 import io.xpipe.app.comp.storage.DataSourceTypeComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.util.CustomComboBoxBuilder;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -35,7 +35,7 @@ public class DsTypeChoiceComp extends Comp<CompStructure<StackPane>> {
     }
 
     private Region createLabel(DataSourceType p) {
-        var l = new Label(I18n.get(p.name().toLowerCase()), new FontIcon(DataSourceTypeComp.ICONS.get(p)));
+        var l = new Label(AppI18n.get(p.name().toLowerCase()), new FontIcon(DataSourceTypeComp.ICONS.get(p)));
         l.setAlignment(Pos.CENTER);
         return l;
     }

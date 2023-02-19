@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 

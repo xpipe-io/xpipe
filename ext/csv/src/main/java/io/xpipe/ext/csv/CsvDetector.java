@@ -1,8 +1,8 @@
 package io.xpipe.ext.csv;
 
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.event.TrackEvent;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;

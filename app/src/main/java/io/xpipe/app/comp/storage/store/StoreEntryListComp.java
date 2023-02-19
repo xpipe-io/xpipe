@@ -1,10 +1,11 @@
 package io.xpipe.app.comp.storage.store;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.layout.Region;
@@ -23,7 +24,7 @@ public class StoreEntryListComp extends SimpleComp {
         var content = new ListBoxViewComp<>(filtered, topLevel, (StoreEntrySection e) -> {
             return e.comp(true);
         });
-        return content.styleClass("store-list-comp");
+        return content.styleClass("store-list-comp").styleClass(Styles.STRIPED);
     }
 
     @Override

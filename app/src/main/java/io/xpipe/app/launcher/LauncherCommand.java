@@ -4,14 +4,14 @@ import io.xpipe.app.core.AppLock;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.BasicErrorHandler;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.exchange.FocusExchange;
 import io.xpipe.beacon.exchange.OpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.ThreadHelper;
 import picocli.CommandLine;
 
 import java.awt.*;

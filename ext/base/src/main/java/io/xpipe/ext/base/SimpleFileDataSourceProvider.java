@@ -1,13 +1,13 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FilenameStore;
 import io.xpipe.core.store.StreamDataStore;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
-import io.xpipe.extension.I18n;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,7 +77,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
         return new FileProvider() {
             @Override
             public String getFileName() {
-                return I18n.get(getNameI18nKey());
+                return AppI18n.get(getNameI18nKey());
             }
 
             @Override

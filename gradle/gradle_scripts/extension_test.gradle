@@ -7,7 +7,6 @@ def useExtension = System.getProperty('excludeExtensionLibrary') == null
 dependencies {
     testImplementation project(':api')
     testImplementation project(':core')
-        testImplementation project(':extension')
 
     testImplementation "org.openjfx:javafx-base:19:win"
     testImplementation "org.openjfx:javafx-controls:19:win"

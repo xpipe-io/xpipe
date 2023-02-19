@@ -1,9 +1,9 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.HttpHelper;
+import io.xpipe.app.util.HttpHelper;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;

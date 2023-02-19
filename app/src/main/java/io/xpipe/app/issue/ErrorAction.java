@@ -1,8 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.sentry.Sentry;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
+import io.xpipe.app.core.AppI18n;
 
 public interface ErrorAction {
 
@@ -10,12 +9,12 @@ public interface ErrorAction {
         return new ErrorAction() {
             @Override
             public String getName() {
-                return I18n.get("reportError");
+                return AppI18n.get("reportError");
             }
 
             @Override
             public String getDescription() {
-                return I18n.get("reportErrorDescription");
+                return AppI18n.get("reportErrorDescription");
             }
 
             @Override
@@ -30,12 +29,12 @@ public interface ErrorAction {
         return new ErrorAction() {
             @Override
             public String getName() {
-                return I18n.get("ignoreError");
+                return AppI18n.get("ignoreError");
             }
 
             @Override
             public String getDescription() {
-                return I18n.get("ignoreErrorDescription");
+                return AppI18n.get("ignoreErrorDescription");
             }
 
             @Override

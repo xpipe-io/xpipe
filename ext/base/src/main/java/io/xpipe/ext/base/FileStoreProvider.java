@@ -1,15 +1,15 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DialogHelper;
+import io.xpipe.app.util.SimpleValidator;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.GuiDialog;
-import io.xpipe.extension.util.DataStoreFormatter;
-import io.xpipe.extension.util.DialogHelper;
-import io.xpipe.extension.util.SimpleValidator;
-import io.xpipe.extension.util.XPipeDaemon;
 import javafx.beans.property.Property;
 
 import java.util.List;

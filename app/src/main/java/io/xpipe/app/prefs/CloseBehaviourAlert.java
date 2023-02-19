@@ -1,9 +1,9 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
+import io.xpipe.app.ext.PrefsChoiceValue;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
@@ -22,8 +22,8 @@ public class CloseBehaviourAlert {
         Property<CloseBehaviour> prop =
                 new SimpleObjectProperty<>(AppPrefs.get().closeBehaviour().getValue());
         return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(I18n.get("closeBehaviourAlertTitle"));
-                    alert.setHeaderText(I18n.get("closeBehaviourAlertTitleHeader"));
+                    alert.setTitle(AppI18n.get("closeBehaviourAlertTitle"));
+                    alert.setHeaderText(AppI18n.get("closeBehaviourAlertTitleHeader"));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
                     ToggleGroup group = new ToggleGroup();

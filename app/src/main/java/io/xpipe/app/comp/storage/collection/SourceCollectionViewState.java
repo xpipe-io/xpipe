@@ -2,14 +2,14 @@ package io.xpipe.app.comp.storage.collection;
 
 import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.comp.storage.source.SourceEntryWrapper;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -80,7 +80,7 @@ public class SourceCollectionViewState {
 
     public void addNewCollection() {
         PlatformThread.runLaterIfNeeded(() -> {
-            var col = DataSourceCollection.createNew(I18n.get("newCollection"));
+            var col = DataSourceCollection.createNew(AppI18n.get("newCollection"));
             DataStorage.get().addCollection(col);
             allGroups.stream()
                     .filter(g -> g.getCollection().equals(col))

@@ -1,6 +1,7 @@
 package io.xpipe.ext.pdx;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.UniformDataSourceProvider;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataFlow;
@@ -8,7 +9,6 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.ext.base.SimpleFileDataSourceProvider;
 import io.xpipe.ext.pdx.parser.TextFormatParser;
-import io.xpipe.extension.util.UniformDataSourceProvider;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class PdxTextFileProvider
         implements UniformDataSourceProvider<PdxTextFileProvider.Source>,
-                SimpleFileDataSourceProvider<PdxTextFileProvider.Source> {
+                   SimpleFileDataSourceProvider<PdxTextFileProvider.Source> {
 
     @Override
     public Source createDefaultSource(DataStore input) throws Exception {

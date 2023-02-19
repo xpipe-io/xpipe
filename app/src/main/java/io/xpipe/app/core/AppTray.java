@@ -2,9 +2,8 @@ package io.xpipe.app.core;
 
 import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
 import javafx.application.Platform;
 
 import java.awt.*;
@@ -23,7 +22,7 @@ public class AppTray {
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo.png");
 
         var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url.orElse(null))
-                .menuItem(I18n.get("open"), e -> {
+                .menuItem(AppI18n.get("open"), e -> {
                     OperationMode.switchToAsync(OperationMode.GUI);
                 });
         if (AppProperties.get().isDeveloperMode()) {
@@ -41,7 +40,7 @@ public class AppTray {
                     });
         }
         this.icon = builder.separator()
-                .menuItem(I18n.get("quit"), e -> {
+                .menuItem(AppI18n.get("quit"), e -> {
                     OperationMode.close();
                 })
                 .toolTip("X-Pipe")
@@ -92,14 +91,14 @@ public class AppTray {
                 return;
             }
 
-            var title = I18n.get(event.isTerminal() ? "terminalErrorOccured" : "errorOccured");
+            var title = AppI18n.get(event.isTerminal() ? "terminalErrorOccured" : "errorOccured");
             var desc = event.getDescription();
             if (desc == null && event.getThrowable() != null) {
                 var tName = event.getThrowable().getClass().getSimpleName();
-                desc = I18n.get("errorTypeOccured", tName);
+                desc = AppI18n.get("errorTypeOccured", tName);
             }
             if (desc == null) {
-                desc = I18n.get("errorNoDetail");
+                desc = AppI18n.get("errorNoDetail");
             }
 
             String finalDesc = desc;

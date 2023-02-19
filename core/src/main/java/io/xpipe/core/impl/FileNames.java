@@ -10,7 +10,8 @@ public class FileNames {
         if (split.length == 0) {
             return "";
         }
-        return split[split.length - 1];
+        var components =  Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+        return components.get(components.size() - 1);
     }
 
     public static String join(String... parts) {
@@ -36,6 +37,10 @@ public class FileNames {
 
     public static boolean startsWith(String file, String start) {
         return normalize(file).startsWith(normalize(start));
+    }
+
+    public static String relativize(String from, String to) {
+       return normalize(to).substring(normalize(from).length());
     }
 
     public static String normalize(String file) {

@@ -6,19 +6,19 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.xpipe.extension.prefs.PrefsChoiceValue.getAll;
-import static io.xpipe.extension.prefs.PrefsChoiceValue.getSupported;
+import static io.xpipe.app.ext.PrefsChoiceValue.getAll;
+import static io.xpipe.app.ext.PrefsChoiceValue.getSupported;
 
 public class JsonStorageHandler implements StorageHandler {
 

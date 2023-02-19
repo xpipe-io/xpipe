@@ -1,7 +1,8 @@
 package io.xpipe.ext.collections;
 
-import io.xpipe.core.impl.CollectionEntryDataStore;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.core.source.CollectionReadConnection;
+import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.StreamDataStore;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -24,7 +25,7 @@ public class ArchiveReadConnection implements CollectionReadConnection {
     }
 
     @Override
-    public Stream<CollectionEntryDataStore> listEntries() throws Exception {
+    public Stream<DataSource<?>> listEntries() throws Exception {
         var ar = inputStream.getNextEntry();
         AtomicReference<ArchiveEntryStore> entry = new AtomicReference<>(
                 ar != null ? new ArchiveEntryStore(store, ar.isDirectory(), this, ar.getName()) : null);
@@ -52,7 +53,14 @@ public class ArchiveReadConnection implements CollectionReadConnection {
                 },
                 e -> {
                     return entry.get();
-                });
+                }).map(archiveEntryStore -> {
+            var preferred = DataSourceProviders.byPreferredStore(archiveEntryStore, null);
+            try {
+                return preferred.isPresent() ? preferred.get().createDefaultSource(archiveEntryStore).asNeeded() : null;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override

@@ -1,10 +1,10 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.XPipeInstance;
 import io.xpipe.core.store.ShellStore;
-import io.xpipe.extension.event.ErrorEvent;
 
 import java.io.IOException;
 import java.nio.file.Files;

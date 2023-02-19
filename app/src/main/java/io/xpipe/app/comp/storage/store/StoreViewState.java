@@ -1,12 +1,12 @@
 package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.storage.StorageFilter;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;

@@ -1,18 +1,22 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.JsonConfigHelper;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.extension.Cache;
-import io.xpipe.extension.event.ErrorEvent;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class AppCache implements Cache {
+public class AppCache {
+
+    public static <T> Optional<T> getIfPresent(String key, Class<T> type) {
+        return Optional.ofNullable(get(key, type, () -> null));
+    }
 
     public static UUID getCachedUserId() {
         var id = get("userId", UUID.class, UUID::randomUUID);
@@ -78,12 +82,10 @@ public class AppCache implements Cache {
         }
     }
 
-    @Override
     public <T> T getValue(String key, Class<?> type, Supplier<T> notPresent) {
         return get(key, type, notPresent);
     }
 
-    @Override
     public <T> void updateValue(String key, T val) {
         update(key, val);
     }

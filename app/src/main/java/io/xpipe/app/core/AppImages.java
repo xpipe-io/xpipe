@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import org.apache.commons.io.FilenameUtils;
@@ -35,17 +35,16 @@ public class AppImages {
                 Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        var relativeFileName = FilenameUtils.separatorsToUnix(basePath.relativize(file).toString());
                         try {
                             if (FilenameUtils.getExtension(file.toString()).equals("svg")) {
                                 var s = Files.readString(file);
                                 svgImages.put(
-                                        defaultPrefix
-                                                + basePath.relativize(file).toString(),
+                                        defaultPrefix + relativeFileName,
                                         s);
                             } else {
                                 images.put(
-                                        defaultPrefix
-                                                + basePath.relativize(file).toString(),
+                                        defaultPrefix + relativeFileName,
                                         loadImage(file));
                             }
                         } catch (IOException ex) {
@@ -69,8 +68,26 @@ public class AppImages {
             return svgImages.get(key);
         }
 
-        TrackEvent.warn("Image " + key + " not found");
+        TrackEvent.warn("Svg image " + key + " not found");
         return "";
+    }
+
+    public static boolean hasNormalImage(String file) {
+        if (file == null) {
+            return false;
+        }
+
+        var key = file.contains(":") ? file : "app:" + file;
+        return images.containsKey(key);
+    }
+
+    public static boolean hasSvgImage(String file) {
+        if (file == null) {
+            return false;
+        }
+
+        var key = file.contains(":") ? file : "app:" + file;
+        return svgImages.containsKey(key);
     }
 
     public static Image image(String file) {
@@ -84,7 +101,7 @@ public class AppImages {
             return images.get(key);
         }
 
-        TrackEvent.warn("Image " + key + " not found");
+        TrackEvent.warn("Normal image " + key + " not found");
         return DEFAULT_IMAGE;
     }
 

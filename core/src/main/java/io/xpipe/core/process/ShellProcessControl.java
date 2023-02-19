@@ -91,6 +91,8 @@ public interface ShellProcessControl extends ProcessControl {
 
     void executeLine(String command) throws Exception;
 
+    void cd(String directory) throws Exception;
+
     @Override
     ShellProcessControl start() throws Exception;
 

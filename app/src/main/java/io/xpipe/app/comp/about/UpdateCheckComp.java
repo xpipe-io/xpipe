@@ -1,12 +1,11 @@
 package io.xpipe.app.comp.about;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.AppUpdater;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.util.XPipeDistributionType;
+import io.xpipe.app.util.XPipeDistributionType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -56,7 +55,7 @@ public class UpdateCheckComp extends SimpleComp {
         return PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
                     if (AppUpdater.get().getDownloadedUpdate().getValue() != null) {
-                        return I18n.get("updateRestart");
+                        return AppI18n.get("updateRestart");
                     }
 
                     if (AppUpdater.get().getLastUpdateCheckResult().getValue() != null
@@ -64,7 +63,7 @@ public class UpdateCheckComp extends SimpleComp {
                                     .getLastUpdateCheckResult()
                                     .getValue()
                                     .isUpdate()) {
-                        return I18n.get(
+                        return AppI18n.get(
                                 "updateAvailable",
                                 AppUpdater.get()
                                         .getLastUpdateCheckResult()
@@ -78,7 +77,7 @@ public class UpdateCheckComp extends SimpleComp {
                                                 .getLastUpdateCheckResult()
                                                 .getValue()
                                                 .getCheckTime()),
-                                        s -> I18n.get("lastChecked") + " " + s)
+                                        s -> AppI18n.get("lastChecked") + " " + s)
                                 .get();
                     } else {
                         return null;
@@ -97,15 +96,15 @@ public class UpdateCheckComp extends SimpleComp {
                 .bind(Bindings.createStringBinding(
                         () -> {
                             if (updateReady.getValue()) {
-                                return I18n.get("updateReady");
+                                return AppI18n.get("updateReady");
                             }
 
                             if (updateAvailable.getValue()) {
                                 return XPipeDistributionType.get().supportsUpdate()
-                                        ? I18n.get("downloadUpdate")
-                                        : I18n.get("checkOutUpdate");
+                                        ? AppI18n.get("downloadUpdate")
+                                        : AppI18n.get("checkOutUpdate");
                             } else {
-                                return I18n.get("checkForUpdates");
+                                return AppI18n.get("checkForUpdates");
                             }
                         },
                         updateAvailable,

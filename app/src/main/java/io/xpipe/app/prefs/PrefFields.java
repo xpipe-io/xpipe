@@ -2,7 +2,7 @@ package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.structure.StringField;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleChooserControl;
-import io.xpipe.extension.I18n;
+import io.xpipe.app.core.AppI18n;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -31,6 +31,6 @@ public class PrefFields {
         });
         return StringField.ofStringType(stringProperty)
                 .render(() -> new SimpleChooserControl(
-                        I18n.get("browse"), fileProperty.getValue().toFile(), true));
+                        AppI18n.get("browse"), fileProperty.getValue().toFile(), true));
     }
 }

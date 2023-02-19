@@ -2,9 +2,9 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.FilterComp;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FilterComp;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

@@ -3,22 +3,22 @@ package io.xpipe.app.comp.source.store;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListViewComp;
 import io.xpipe.app.comp.storage.store.StoreViewState;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FilterComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.fxcomps.impl.StackComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.SimpleValidator;
+import io.xpipe.app.util.Validatable;
+import io.xpipe.app.util.Validator;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.FilterComp;
-import io.xpipe.extension.fxcomps.impl.LabelComp;
-import io.xpipe.extension.fxcomps.impl.StackComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.util.SimpleValidator;
-import io.xpipe.extension.util.Validatable;
-import io.xpipe.extension.util.Validator;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -57,7 +57,7 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
         this.filter = filter;
         this.selected = selected;
         this.category = category;
-        check = Validator.nonNull(validator, I18n.observable("store"), selected);
+        check = Validator.nonNull(validator, AppI18n.observable("store"), selected);
     }
 
     public static NamedStoreChoiceComp create(
@@ -139,9 +139,9 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
 
         var box = new VerticalComp(List.of(filterComp, view));
 
-        var text = new LabelComp(I18n.observable("noMatchingStoreFound"))
+        var text = new LabelComp(AppI18n.observable("noMatchingStoreFound"))
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
-        var addButton = new ButtonComp(I18n.observable("addStore"), null, () -> {
+        var addButton = new ButtonComp(AppI18n.observable("addStore"), null, () -> {
             GuiDsStoreCreator.showCreation(v -> v.getCategory().equals(category));
         });
         var notice = new VerticalComp(List.of(text, addButton))

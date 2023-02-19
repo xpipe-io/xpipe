@@ -3,9 +3,9 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateAvailableAlert;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
 

@@ -4,8 +4,6 @@ import io.sentry.Sentry;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.update.AppUpdater;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -93,13 +91,13 @@ public class TerminalErrorHandler implements ErrorHandler {
             if (rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);
-                            alert.setTitle(I18n.get("updateAvailableTitle"));
-                            alert.setHeaderText(I18n.get("updateAvailableHeader"));
+                            alert.setTitle(AppI18n.get("updateAvailableTitle"));
+                            alert.setHeaderText(AppI18n.get("updateAvailableHeader"));
                             alert.getDialogPane()
-                                    .setContent(AppWindowHelper.alertContentText(I18n.get("updateAvailableContent")));
+                                    .setContent(AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
                             alert.getButtonTypes().clear();
-                            alert.getButtonTypes().add(new ButtonType(I18n.get("install"), ButtonBar.ButtonData.YES));
-                            alert.getButtonTypes().add(new ButtonType(I18n.get("ignore"), ButtonBar.ButtonData.NO));
+                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.YES));
+                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
                         })
                         .map(buttonType -> buttonType.getButtonData().isDefaultButton())
                         .orElse(false);

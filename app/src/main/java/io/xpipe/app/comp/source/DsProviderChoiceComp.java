@@ -1,18 +1,14 @@
 package io.xpipe.app.comp.source;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.source.DataSourceType;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataSourceProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.util.CustomComboBoxBuilder;
-import io.xpipe.extension.util.SimpleValidator;
-import io.xpipe.extension.util.Validatable;
-import io.xpipe.extension.util.Validator;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -37,16 +33,16 @@ public class DsProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>>> im
             DataSourceProvider.Category type, Property<DataSourceProvider<?>> provider, DataSourceType filter) {
         this.type = type;
         this.provider = provider;
-        check = Validator.nonNull(validator, I18n.observable("provider"), provider);
+        check = Validator.nonNull(validator, AppI18n.observable("provider"), provider);
         this.filter = filter;
     }
 
     private Region createDefaultNode() {
         return switch (type) {
             case STREAM -> JfxHelper.createNamedEntry(
-                    I18n.get("anyStream"), I18n.get("anyStreamDescription"), "file_icon.png");
+                    AppI18n.get("anyStream"), AppI18n.get("anyStreamDescription"), "file_icon.png");
             case DATABASE -> JfxHelper.createNamedEntry(
-                    I18n.get("selectQueryType"), I18n.get("selectQueryTypeDescription"), "db_icon.png");
+                    AppI18n.get("selectQueryType"), AppI18n.get("selectQueryTypeDescription"), "db_icon.png");
         };
     }
 

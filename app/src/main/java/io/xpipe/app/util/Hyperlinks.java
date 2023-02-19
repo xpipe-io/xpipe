@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.App;
-import io.xpipe.extension.event.ErrorEvent;
+import io.xpipe.app.issue.ErrorEvent;
 
 import java.awt.*;
 import java.net.URI;

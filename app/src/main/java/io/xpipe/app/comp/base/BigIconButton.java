@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import com.jfoenix.controls.JFXButton;
-import io.xpipe.extension.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.CompStructure;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;

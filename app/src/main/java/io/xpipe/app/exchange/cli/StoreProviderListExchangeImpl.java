@@ -1,11 +1,11 @@
 package io.xpipe.app.exchange.cli;
 
 import io.xpipe.app.exchange.MessageExchangeImpl;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.cli.StoreProviderListExchange;
 import io.xpipe.beacon.exchange.data.ProviderEntry;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.DataStoreProviders;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

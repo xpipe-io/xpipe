@@ -7,14 +7,14 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.xpipe.app.exchange.MessageExchangeImpls;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.beacon.*;
 import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.util.Deobfuscator;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
 
 import java.io.IOException;
 import java.io.InputStream;

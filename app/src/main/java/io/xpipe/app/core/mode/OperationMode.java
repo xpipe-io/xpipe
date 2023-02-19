@@ -4,14 +4,14 @@ import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppChecks;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
 import io.xpipe.app.issue.SentryErrorHandler;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.launcher.LauncherCommand;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeSession;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.ThreadHelper;
 import org.apache.commons.lang3.function.FailableRunnable;
 
 import java.util.ArrayList;

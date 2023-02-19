@@ -34,7 +34,7 @@ public class XPipeInstallation {
     }
 
     @SneakyThrows
-    public static Path getLocalInstallationBasePath() {
+    public static Path getCurrentInstallationBasePath() {
         Path path =
                 Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
         if (!path.isAbsolute()) {
@@ -54,7 +54,7 @@ public class XPipeInstallation {
     }
 
     public static boolean isInstallationDistribution() {
-        var base = getLocalInstallationBasePath();
+        var base = getCurrentInstallationBasePath();
         if (OsType.getLocal().equals(OsType.MACOS)) {
             if (!base.toString().equals(getLocalDefaultInstallationBasePath(false))) {
                 return false;
@@ -77,7 +77,7 @@ public class XPipeInstallation {
     }
 
     public static Path getLocalDynamicLibraryDirectory() {
-        Path path = getLocalInstallationBasePath();
+        Path path = getCurrentInstallationBasePath();
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return path.resolve("app").resolve("runtime").resolve("bin");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
@@ -91,8 +91,7 @@ public class XPipeInstallation {
         }
     }
 
-    public static Path getLocalExtensionsDirectory() {
-        Path path = getLocalInstallationBasePath();
+    public static Path getLocalExtensionsDirectory(Path path) {
         return OsType.getLocal().equals(OsType.MACOS)
                 ? path.resolve("Contents").resolve("Resources").resolve("extensions")
                 : path.resolve("app").resolve("extensions");
@@ -178,7 +177,7 @@ public class XPipeInstallation {
     }
 
     public static Path getLocalDefaultInstallationIcon() {
-        Path path = getLocalInstallationBasePath();
+        Path path = getCurrentInstallationBasePath();
 
         // Check for development environment
         if (!ModuleHelper.isImage()) {

@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.actions;
 
 import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.ActionProvider;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -58,7 +58,7 @@ public class EditStoreAction implements ActionProvider {
 
             @Override
             public ObservableValue<String> getName(DataStore store) {
-                return I18n.observable("base.edit");
+                return AppI18n.observable("base.edit");
             }
 
             @Override

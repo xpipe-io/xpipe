@@ -6,23 +6,23 @@ import io.xpipe.app.comp.base.MessageComp;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DownloadModuleInstall;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ExceptionConverter;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.DownloadModuleInstall;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.ExceptionConverter;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.augment.GrowAugment;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.*;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -83,8 +83,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         });
 
         this.apply(r -> {
-            r.get().setPrefWidth(AppFont.em(30));
-            r.get().setPrefHeight(AppFont.em(35));
+            r.get().setPrefWidth(AppFont.em(32));
+            r.get().setPrefHeight(AppFont.em(38));
         });
     }
 
@@ -121,7 +121,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         var name = "addConnection";
         Platform.runLater(() -> {
             var stage = AppWindowHelper.sideWindow(
-                    I18n.get(name),
+                    AppI18n.get(name),
                     window -> {
                         return new MultiStepComp() {
 
@@ -130,7 +130,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
                             @Override
                             protected List<Entry> setup() {
-                                return List.of(new Entry(I18n.observable("a"), creator));
+                                return List.of(new Entry(AppI18n.observable("a"), creator));
                             }
 
                             @Override
@@ -150,9 +150,9 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     private static boolean showInvalidConfirmAlert() {
         return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(I18n.get("confirmInvalidStoreTitle"));
-                    alert.setHeaderText(I18n.get("confirmInvalidStoreHeader"));
-                    alert.setContentText(I18n.get("confirmInvalidStoreContent"));
+                    alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
+                    alert.setHeaderText(AppI18n.get("confirmInvalidStoreHeader"));
+                    alert.setContentText(AppI18n.get("confirmInvalidStoreContent"));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                 })
                 .map(b -> b.getButtonData().isDefaultButton())
@@ -162,8 +162,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
         return new DynamicOptionsBuilder(false)
                 .addComp((ObservableValue<String>) null, comp, input)
-                .addTitle(I18n.observable("properties"))
-                .addString(I18n.observable("name"), name, false)
+                .addTitle(AppI18n.observable("properties"))
+                .addString(AppI18n.observable("name"), name, false)
                 .nonNull(propVal)
                 .bind(
                         () -> {

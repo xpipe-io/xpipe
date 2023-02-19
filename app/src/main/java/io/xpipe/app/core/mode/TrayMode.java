@@ -4,7 +4,7 @@ import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppTray;
 import io.xpipe.app.issue.ErrorHandler;
-import io.xpipe.extension.event.TrackEvent;
+import io.xpipe.app.issue.TrackEvent;
 
 public class TrayMode extends PlatformMode {
 

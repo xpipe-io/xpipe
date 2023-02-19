@@ -1,12 +1,12 @@
 package io.xpipe.ext.base;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
-import io.xpipe.extension.util.Validators;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

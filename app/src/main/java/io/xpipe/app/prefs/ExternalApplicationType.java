@@ -1,10 +1,10 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.ShellStore;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

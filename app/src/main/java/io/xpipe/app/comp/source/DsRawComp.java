@@ -1,10 +1,10 @@
 package io.xpipe.app.comp.source;
 
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 

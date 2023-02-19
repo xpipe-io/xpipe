@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.ThreadHelper;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;

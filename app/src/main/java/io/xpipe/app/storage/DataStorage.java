@@ -1,17 +1,17 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppCharsets;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.charsetter.Charsettable;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.util.ThreadHelper;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -106,11 +106,11 @@ public abstract class DataStorage {
 
         var typeName =
                 switch (source.getType()) {
-                    case TABLE -> I18n.get("table");
-                    case STRUCTURE -> I18n.get("structure");
-                    case TEXT -> I18n.get("text");
-                    case RAW -> I18n.get("raw");
-                    case COLLECTION -> I18n.get("collection");
+                    case TABLE -> AppI18n.get("table");
+                    case STRUCTURE -> AppI18n.get("structure");
+                    case TEXT -> AppI18n.get("text");
+                    case RAW -> AppI18n.get("raw");
+                    case COLLECTION -> AppI18n.get("collection");
                 };
         return createUniqueSourceEntryName(col, typeName);
     }

@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.source;
 
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.util.CustomComboBoxBuilder;
+import io.xpipe.app.util.CustomComboBoxBuilder;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;

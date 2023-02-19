@@ -1,23 +1,23 @@
 package io.xpipe.app.comp.source;
 
 import io.xpipe.app.comp.base.ListViewComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataSourceProvider;
+import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FilterComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.fxcomps.impl.StackComp;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.SimpleValidator;
+import io.xpipe.app.util.Validatable;
+import io.xpipe.app.util.Validator;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.extension.DataSourceProvider;
-import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.FilterComp;
-import io.xpipe.extension.fxcomps.impl.LabelComp;
-import io.xpipe.extension.fxcomps.impl.StackComp;
-import io.xpipe.extension.fxcomps.impl.VerticalComp;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.util.SimpleValidator;
-import io.xpipe.extension.util.Validatable;
-import io.xpipe.extension.util.Validator;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -56,7 +56,7 @@ public class NamedSourceChoiceComp extends SimpleComp implements Validatable {
         this.filter = filter;
         this.selected = selected;
         this.category = category;
-        check = Validator.nonNull(validator, I18n.observable("source"), selected);
+        check = Validator.nonNull(validator, AppI18n.observable("source"), selected);
     }
 
     @SuppressWarnings("unchecked")
@@ -125,7 +125,7 @@ public class NamedSourceChoiceComp extends SimpleComp implements Validatable {
 
         var box = new VerticalComp(List.of(filterComp, view));
 
-        var text = new LabelComp(I18n.observable("noMatchingSourceFound"))
+        var text = new LabelComp(AppI18n.observable("noMatchingSourceFound"))
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
         var notice = new VerticalComp(List.of(text))
                 .apply(struc -> {

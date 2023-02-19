@@ -8,42 +8,25 @@ copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
 jar.dependsOn(copyRuntimeLibs)
 
 def dev = tasks.register('createDevOutput', Copy) {
-    def base = project.name.substring(0, project.name.length() - 1)
-    def isX = project.name.endsWith("x") && findProject(":$base") != null
     var source = "${project.jar.destinationDirectory.get()}"
-    if (isX) {
-        from source
-        into "${project(':' + base).jar.destinationDirectory.get()}_dev"
-    } else {
-        from source
-        into "${project.jar.destinationDirectory.get()}_dev"
-    }
+    from source
+    into "${project.rootDir}/app/build/ext_dev/$project.name"
 }
 jar.finalizedBy(dev)
 
 tasks.register('createExtOutput', Copy) {
-    def base = project.name.substring(0, project.name.length() - 1)
-    def isX = project.name.endsWith("x") && findProject(":$base") != null
-
-    doFirst {
-        if (!file("${project.jar.destinationDirectory.get()}_prod").exists()) {
-            copy {
-                from "${project.jar.destinationDirectory.get()}"
-                into "${project.jar.destinationDirectory.get()}_prod"
-            }
+    if (!file("${project.jar.destinationDirectory.get()}_prod").exists()) {
+        copy {
+            from "${project.jar.destinationDirectory.get()}"
+            into "${project.jar.destinationDirectory.get()}_prod"
         }
     }
 
     def shouldObfuscate = rootProject.obfuscate && rootProject.privateExtensions.contains(project.name)
     var source = shouldObfuscate ? "${project.jar.destinationDirectory.get()}_prod" : "${project.jar.destinationDirectory.get()}"
 
-    if (isX) {
-        from source
-        into "${project(':' + base).jar.destinationDirectory.get()}_ext"
-    } else {
-        from source
-        into "${project.jar.destinationDirectory.get()}_ext"
-    }
+    from source
+    into "${project.jar.destinationDirectory.get()}_ext"
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
@@ -53,13 +36,15 @@ apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
 
 dependencies {
     compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
-    compileOnly project(':extension')
+    compileOnly project(':core')
+    compileOnly project(':beacon')
+    compileOnly project(':app')
     compileOnly 'net.synedra:validatorfx:0.3.1'
 
     if (project != project(':base')) {
         compileOnly project(':base')
     }
 
-    testImplementation project(':extension')
+    testImplementation project(':app')
 }
 

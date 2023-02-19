@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.base;
 
 import com.jfoenix.controls.JFXTabPane;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
@@ -196,7 +196,7 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
         buttons.getStyleClass().add("buttons");
         buttons.setSpacing(5);
 
-        var helpButton = new ButtonComp(I18n.observable("help"), null, () -> {
+        var helpButton = new ButtonComp(AppI18n.observable("help"), null, () -> {
                     getValue().help.run();
                 })
                 .styleClass("help")
@@ -213,10 +213,10 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
 
         buttons.setAlignment(Pos.CENTER_RIGHT);
         var nextText = Bindings.createStringBinding(
-                () -> isLastPage() ? I18n.get("finishStep") : I18n.get("nextStep"), currentStep);
+                () -> isLastPage() ? AppI18n.get("finishStep") : AppI18n.get("nextStep"), currentStep);
         var nextButton = new ButtonComp(nextText, null, comp::next).styleClass("next");
 
-        var previousButton = new ButtonComp(I18n.observable("previousStep"), null, comp::previous)
+        var previousButton = new ButtonComp(AppI18n.observable("previousStep"), null, comp::previous)
                 .styleClass("next")
                 .apply(struc -> struc.get()
                         .disableProperty()

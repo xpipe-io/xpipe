@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.extension.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleComp;
 import javafx.beans.property.ListProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;

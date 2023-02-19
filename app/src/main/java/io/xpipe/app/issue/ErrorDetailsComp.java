@@ -2,12 +2,11 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.base.ListViewComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.TabPaneComp;
 import io.xpipe.core.util.Deobfuscator;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.TabPaneComp;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Label;
@@ -61,12 +60,12 @@ public class ErrorDetailsComp extends SimpleComp {
         var items = new ArrayList<TabPaneComp.Entry>();
         if (event.getThrowable() != null) {
             items.add(new TabPaneComp.Entry(
-                    I18n.observable("stackTrace"), "mdoal-code", Comp.of(this::createStrackTraceContent)));
+                    AppI18n.observable("stackTrace"), "mdoal-code", Comp.of(this::createStrackTraceContent)));
         }
 
         if (event.getTrackEvents().size() > 0) {
             items.add(new TabPaneComp.Entry(
-                    I18n.observable("events"), "mdi2c-clipboard-list-outline", createTrackEventHistory()));
+                    AppI18n.observable("events"), "mdi2c-clipboard-list-outline", createTrackEventHistory()));
         }
 
         var tb = new TabPaneComp(new SimpleObjectProperty<>(items.get(0)), items);

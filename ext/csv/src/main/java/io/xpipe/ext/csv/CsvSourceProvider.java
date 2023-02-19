@@ -1,5 +1,9 @@
 package io.xpipe.ext.csv;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.DialogHelper;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.NamedCharacter;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.TextSource;
@@ -8,10 +12,6 @@ import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.ext.base.SimpleFileDataSourceProvider;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.DialogHelper;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.NamedCharacter;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -57,30 +57,30 @@ public class CsvSourceProvider implements SimpleFileDataSourceProvider<CsvSource
 
         var headerState = new SimpleObjectProperty<CsvHeaderState>(s.getHeaderState());
         var headerStateNames = new LinkedHashMap<CsvHeaderState, ObservableValue<String>>();
-        headerStateNames.put(CsvHeaderState.INCLUDED, I18n.observable("csv.included"));
-        headerStateNames.put(CsvHeaderState.OMITTED, I18n.observable("csv.omitted"));
+        headerStateNames.put(CsvHeaderState.INCLUDED, AppI18n.observable("csv.included"));
+        headerStateNames.put(CsvHeaderState.OMITTED, AppI18n.observable("csv.omitted"));
 
         var delimiter = new SimpleObjectProperty<Character>(s.getDelimiter());
         var delimiterNames = new LinkedHashMap<Character, ObservableValue<String>>();
         CsvDelimiter.ALL.forEach(d -> {
             delimiterNames.put(
                     d.getNamedCharacter().getCharacter(),
-                    I18n.observable(d.getNamedCharacter().getTranslationKey()));
+                    AppI18n.observable(d.getNamedCharacter().getTranslationKey()));
         });
-        ObservableValue<String> delimiterCustom = I18n.observable("csv.custom");
+        ObservableValue<String> delimiterCustom = AppI18n.observable("csv.custom");
 
         var quote = new SimpleObjectProperty<Character>(s.getQuote());
         var quoteNames = new LinkedHashMap<Character, ObservableValue<String>>();
         CsvQuoteChar.CHARS.forEach(d -> {
-            quoteNames.put(d.getCharacter(), I18n.observable(d.getTranslationKey()));
+            quoteNames.put(d.getCharacter(), AppI18n.observable(d.getTranslationKey()));
         });
 
         return new DynamicOptionsBuilder()
                 .addCharset(charset)
                 .addNewLine(newLine)
-                .addToggle(headerState, I18n.observable("csv.header"), headerStateNames)
-                .addCharacter(delimiter, I18n.observable("csv.delimiter"), delimiterNames, delimiterCustom)
-                .addCharacter(quote, I18n.observable("csv.quote"), quoteNames)
+                .addToggle(headerState, AppI18n.observable("csv.header"), headerStateNames)
+                .addCharacter(delimiter, AppI18n.observable("csv.delimiter"), delimiterNames, delimiterCustom)
+                .addCharacter(quote, AppI18n.observable("csv.quote"), quoteNames)
                 .bind(
                         () -> {
                             return CsvSource.builder()

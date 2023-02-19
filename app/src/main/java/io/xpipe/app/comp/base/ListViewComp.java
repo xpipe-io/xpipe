@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.fxcomps.util.BindingsHelper;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.util.PrettyListView;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.PrettyListView;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.ListChangeListener;

@@ -1,15 +1,14 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.Translatable;
 import io.xpipe.core.util.ModuleHelper;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.Translatable;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.event.TrackEvent;
-import io.xpipe.extension.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.extension.prefs.PrefsChoiceValue;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.value.ObservableValue;
@@ -33,14 +32,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.UnaryOperator;
 import java.util.regex.Pattern;
 
-public class AppI18n implements I18n {
+public class AppI18n {
 
     private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
     private Map<String, String> translations;
     private PrettyTime prettyTime;
+private static AppI18n INSTANCE = new AppI18n();
 
     public static void init() {
-        var i = (AppI18n) INSTANCE;
+        var i = INSTANCE;
         if (i.translations != null) {
             return;
         }
@@ -55,12 +55,12 @@ public class AppI18n implements I18n {
         }
     }
 
-    public static AppI18n get() {
+    public static AppI18n getInstance() {
         return ((AppI18n) INSTANCE);
     }
 
     public static StringBinding readableDuration(String s, ObservableValue<Instant> instant) {
-        return readableDuration(instant, rs -> getValue(get().getLocalised(s), rs));
+        return readableDuration(instant, rs -> getValue(getInstance().getLocalised(s), rs));
     }
 
     public static StringBinding readableDuration(ObservableValue<Instant> instant, UnaryOperator<String> op) {
@@ -70,9 +70,24 @@ public class AppI18n implements I18n {
                         return "null";
                     }
 
-                    return op.apply(get().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1))));
+                    return op.apply(getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1))));
                 },
                 instant);
+    }
+
+    public static ObservableValue<String> observable(String s, Object... vars) {
+        if (s == null) {
+            return null;
+        }
+
+        var key = INSTANCE.getKey(s);
+        return Bindings.createStringBinding(() -> {
+            return get(key, vars);
+        });
+    }
+
+    public static String get(String s, Object... vars) {
+        return INSTANCE.getLocalised(s, vars);
     }
 
     private static String getValue(String s, Object... vars) {
@@ -113,7 +128,6 @@ public class AppI18n implements I18n {
             if (caller.equals(CallingClass.class)
                     || caller.equals(ModuleHelper.class)
                     || caller.equals(AppI18n.class)
-                    || caller.equals(I18n.class)
                     || caller.equals(FancyTooltipAugment.class)
                     || caller.equals(PrefsChoiceValue.class)
                     || caller.equals(Translatable.class)
@@ -126,7 +140,6 @@ public class AppI18n implements I18n {
         return "";
     }
 
-    @Override
     public String getKey(String s) {
         var key = s;
         if (!s.contains(".")) {
@@ -161,7 +174,6 @@ public class AppI18n implements I18n {
         return getValue(localisedString, vars);
     }
 
-    @Override
     public boolean isLoaded() {
         return translations != null;
     }

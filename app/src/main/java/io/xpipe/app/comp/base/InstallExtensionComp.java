@@ -1,14 +1,14 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.app.ext.DownloadModuleInstall;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.extension.DownloadModuleInstall;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.LabelComp;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
@@ -29,7 +29,7 @@ public class InstallExtensionComp extends SimpleComp {
     protected Region createSimple() {
         var builder = new DynamicOptionsBuilder(false);
         builder.addTitle("installRequired");
-        var header = new LabelComp(I18n.observable("extensionInstallDescription"))
+        var header = new LabelComp(AppI18n.observable("extensionInstallDescription"))
                 .apply(struc -> struc.get().setWrapText(true));
         builder.addComp(header);
 
@@ -45,7 +45,7 @@ public class InstallExtensionComp extends SimpleComp {
         if (install.getLicenseFile() != null) {
             builder.addTitle("license");
 
-            var changeNotice = new LabelComp(I18n.observable("extensionInstallLicenseNote"))
+            var changeNotice = new LabelComp(AppI18n.observable("extensionInstallLicenseNote"))
                     .apply(struc -> struc.get().setWrapText(true));
             builder.addComp(changeNotice);
 

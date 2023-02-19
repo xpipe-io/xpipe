@@ -1,15 +1,15 @@
 package io.xpipe.app.comp.about;
 
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.app.util.ExternalEditor;
 import io.xpipe.core.util.XPipeInstallation;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.util.DesktopHelper;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
 import javafx.scene.layout.Region;
 
 public class BrowseDirectoryComp extends SimpleComp {
@@ -19,7 +19,7 @@ public class BrowseDirectoryComp extends SimpleComp {
         return new DynamicOptionsBuilder(false)
                 .addComp(
                         "issueReporter",
-                        new ButtonComp(I18n.observable("reportIssue"), () -> {
+                        new ButtonComp(AppI18n.observable("reportIssue"), () -> {
                             var event = ErrorEvent.fromMessage("User Report");
                             if (AppLogs.get().isWriteToFile()) {
                                 event.attachment(AppLogs.get().getSessionLogsDirectory());
@@ -29,7 +29,7 @@ public class BrowseDirectoryComp extends SimpleComp {
                         null)
                 .addComp(
                         "logFile",
-                        new ButtonComp(I18n.observable("openCurrentLogFile"), () -> {
+                        new ButtonComp(AppI18n.observable("openCurrentLogFile"), () -> {
                             ExternalEditor.get()
                                     .openInEditor(AppLogs.get()
                                             .getSessionLogsDirectory()
@@ -39,14 +39,14 @@ public class BrowseDirectoryComp extends SimpleComp {
                         null)
                 .addComp(
                         "logFiles",
-                        new ButtonComp(I18n.observable("openLogsDirectory"), () -> {
+                        new ButtonComp(AppI18n.observable("openLogsDirectory"), () -> {
                             DesktopHelper.browsePath(AppLogs.get().getSessionLogsDirectory());
                         }),
                         null)
                 .addComp(
                         "installationFiles",
-                        new ButtonComp(I18n.observable("openInstallationDirectory"), () -> {
-                            DesktopHelper.browsePath(XPipeInstallation.getLocalInstallationBasePath());
+                        new ButtonComp(AppI18n.observable("openInstallationDirectory"), () -> {
+                            DesktopHelper.browsePath(XPipeInstallation.getCurrentInstallationBasePath());
                         }),
                         null)
                 .build();

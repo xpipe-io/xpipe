@@ -3,22 +3,22 @@ package io.xpipe.app.comp.source;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.ext.DataSourceTarget;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.DynamicOptionsComp;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.extension.DataSourceTarget;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleComp;
-import io.xpipe.extension.fxcomps.impl.DynamicOptionsComp;
-import io.xpipe.extension.fxcomps.impl.HorizontalComp;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.fxcomps.util.SimpleChangeListener;
-import io.xpipe.extension.util.BusyProperty;
-import io.xpipe.extension.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -63,7 +63,7 @@ public class DsDataTransferComp extends SimpleComp {
         Platform.runLater(() -> {
             var loading = new SimpleBooleanProperty();
             AppWindowHelper.sideWindow(
-                            I18n.get("pipeDataSource"),
+                            AppI18n.get("pipeDataSource"),
                             window -> {
                                 var ms = new DsDataTransferComp(new SimpleObjectProperty<>(e))
                                         .exclude(DataSourceTarget.byId("base.saveSource")
@@ -156,7 +156,7 @@ public class DsDataTransferComp extends SimpleComp {
                                 != null);
 
         var setupGuideButton = new ButtonComp(
-                        I18n.observable("setupGuide"), new FontIcon("mdoal-integration_instructions"), () -> {
+                        AppI18n.observable("setupGuide"), new FontIcon("mdoal-integration_instructions"), () -> {
                             Hyperlinks.open(selectedTarget.getValue().getSetupGuideURL());
                         })
                 .apply(s -> s.get()

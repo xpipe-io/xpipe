@@ -1,14 +1,14 @@
 package io.xpipe.app.comp.source.store;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.app.util.JfxHelper;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.DataStoreProviders;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
-import io.xpipe.extension.util.CustomComboBoxBuilder;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -29,7 +29,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
 
     private Region createDefaultNode() {
         return JfxHelper.createNamedEntry(
-                    I18n.get("selectType"), I18n.get("selectTypeDescription"), "machine_icon.png");
+                AppI18n.get("selectType"), AppI18n.get("selectTypeDescription"), "machine_icon.png");
     }
 
     private List<DataStoreProvider> getProviders() {

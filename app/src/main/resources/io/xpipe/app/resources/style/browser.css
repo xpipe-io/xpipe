@@ -1,0 +1,32 @@
+/* SPDX-License-Identifier: MIT */
+
+.browser .bookmark-list {
+    -fx-border-width: 0 0 1 1;
+}
+
+.browser .tool-bar {
+    -fx-border-width: 1 0 1 0;
+}
+
+.browser .breadcrumbs >.divider {
+    -fx-padding: 0;
+}
+
+.browser .tab-content-area { 	-fx-padding: 0; }
+
+.browser .table-directory-view .table-view {
+    -color-header-bg: -color-bg-default;
+    -color-cell-bg-selected: -color-neutral-emphasis;
+    -color-cell-fg-selected: -color-fg-emphasis;
+    -fx-border-width: 0;
+}
+
+/* setting opacity directly to the .table-cell or .table-row-cell
+   leads to incorrect table row height calculation #javafx-bug */
+.browser .table-row-cell:hidden >.table-cell > * {
+    -fx-opacity: 0.6;
+}
+
+.browser .table-row-cell:drag {
+    -fx-background-color: -color-neutral-emphasis;
+}

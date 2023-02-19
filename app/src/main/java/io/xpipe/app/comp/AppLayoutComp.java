@@ -1,24 +1,23 @@
 package io.xpipe.app.comp;
 
+import io.xpipe.app.browser.BrowserComp;
+import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.about.AboutTabComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
 import io.xpipe.app.comp.storage.collection.SourceCollectionLayoutComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
-import io.xpipe.app.core.AppActionLinkDetector;
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.fxcomps.Comp;
-import io.xpipe.extension.fxcomps.CompStructure;
-import io.xpipe.extension.fxcomps.SimpleCompStructure;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,21 +39,23 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
         });
     }
 
+    @SneakyThrows
     private List<SideMenuBarComp.Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
-                new SideMenuBarComp.Entry(I18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new SideMenuBarComp.Entry(I18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
+                new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
+                new SideMenuBarComp.Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
+                new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
-                        I18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),
-                // new SideMenuBarComp.Entry(I18n.observable("help"), "mdi2b-book-open-variant", new
+                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),
+                // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
                 // StorageLayoutComp()),
-                // new SideMenuBarComp.Entry(I18n.observable("account"), "mdi2a-account", new StorageLayoutComp()),
-                new SideMenuBarComp.Entry(I18n.observable("about"), "mdi2p-package-variant", new AboutTabComp())));
+                // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp()),
+                new SideMenuBarComp.Entry(AppI18n.observable("about"), "mdi2p-package-variant", new AboutTabComp())));
         if (AppProperties.get().isDeveloperMode()) {
-             l.add(new SideMenuBarComp.Entry(I18n.observable("developer"), "mdi2b-book-open-variant", new
+             l.add(new SideMenuBarComp.Entry(AppI18n.observable("developer"), "mdi2b-book-open-variant", new
              DeveloperTabComp()));
         }
-        //        l.add(new SideMenuBarComp.Entry(I18n.observable("abc"), "mdi2b-book-open-variant", Comp.of(() -> {
+        //        l.add(new SideMenuBarComp.Entry(AppI18n.observable("abc"), "mdi2b-book-open-variant", Comp.of(() -> {
         //            var fi = new FontIcon("mdsal-dvr");
         //            fi.setIconSize(30);
         //            fi.setIconColor(Color.valueOf("#111C"));

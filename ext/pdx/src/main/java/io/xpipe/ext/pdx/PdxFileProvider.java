@@ -1,12 +1,12 @@
 package io.xpipe.ext.pdx;
 
+import io.xpipe.app.ext.DataSourceProviders;
+import io.xpipe.app.util.UniformDataSourceProvider;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.source.*;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.ext.base.SimpleFileDataSourceProvider;
 import io.xpipe.ext.pdx.savegame.SavegameType;
-import io.xpipe.extension.DataSourceProviders;
-import io.xpipe.extension.util.UniformDataSourceProvider;
 import lombok.experimental.SuperBuilder;
 
 import java.util.LinkedHashMap;
@@ -31,7 +31,6 @@ public abstract class PdxFileProvider<T extends DataSource<?>>
         CollectionDataSource<?> ds = DataSourceProviders.byId("zip")
                 .createDefaultSource(in.getStore())
                 .asNeeded();
-        ds.annotate(d.annotateContents());
         return ds;
     }
 

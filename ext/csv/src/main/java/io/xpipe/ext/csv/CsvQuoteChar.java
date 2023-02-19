@@ -1,6 +1,6 @@
 package io.xpipe.ext.csv;
 
-import io.xpipe.extension.util.NamedCharacter;
+import io.xpipe.app.util.NamedCharacter;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;

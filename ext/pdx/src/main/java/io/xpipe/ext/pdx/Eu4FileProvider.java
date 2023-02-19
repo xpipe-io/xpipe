@@ -1,10 +1,10 @@
 package io.xpipe.ext.pdx;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.ext.DataSourceProviders;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.pdx.savegame.SavegameType;
-import io.xpipe.extension.DataSourceProviders;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

@@ -1,10 +1,10 @@
 package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.issue.ErrorEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
@@ -14,11 +14,11 @@ public class DeveloperTabComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var button = new ButtonComp(I18n.observable("Throw exception"), null, () -> {
+        var button = new ButtonComp(AppI18n.observable("Throw exception"), null, () -> {
             throw new IllegalStateException();
         });
 
-        var button2 = new ButtonComp(I18n.observable("Throw exception with file"), null, () -> {
+        var button2 = new ButtonComp(AppI18n.observable("Throw exception with file"), null, () -> {
             try {
                 throw new IllegalStateException();
             } catch (Exception ex) {
@@ -29,11 +29,11 @@ public class DeveloperTabComp extends SimpleComp {
             }
         });
 
-        var button3 = new ButtonComp(I18n.observable("Exit"), null, () -> {
+        var button3 = new ButtonComp(AppI18n.observable("Exit"), null, () -> {
             System.exit(0);
         });
 
-        var button4 = new ButtonComp(I18n.observable("Throw terminal exception"), null, () -> {
+        var button4 = new ButtonComp(AppI18n.observable("Throw terminal exception"), null, () -> {
             try {
                 throw new IllegalStateException();
             } catch (Exception ex) {
@@ -41,7 +41,7 @@ public class DeveloperTabComp extends SimpleComp {
             }
         });
 
-        var button5 = new ButtonComp(I18n.observable("Operation mode null"), null, OperationMode::close);
+        var button5 = new ButtonComp(AppI18n.observable("Operation mode null"), null, OperationMode::close);
 
         var box = new HBox(
                 button.createRegion(),

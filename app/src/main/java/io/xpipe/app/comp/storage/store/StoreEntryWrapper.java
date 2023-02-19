@@ -2,12 +2,12 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
 import io.xpipe.app.comp.storage.StorageFilter;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.extension.event.ErrorEvent;
-import io.xpipe.extension.fxcomps.util.PlatformThread;
-import io.xpipe.extension.util.ActionProvider;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;

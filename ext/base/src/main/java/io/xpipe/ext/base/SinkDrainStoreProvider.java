@@ -1,16 +1,16 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.util.DialogHelper;
+import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.SinkDrainStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.extension.DataStoreProvider;
-import io.xpipe.extension.GuiDialog;
-import io.xpipe.extension.I18n;
-import io.xpipe.extension.util.DialogHelper;
-import io.xpipe.extension.util.DynamicOptionsBuilder;
-import io.xpipe.extension.util.SimpleValidator;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -26,7 +26,7 @@ public class SinkDrainStoreProvider implements DataStoreProvider {
         var charset = new SimpleObjectProperty<StreamCharset>(st.getCharset());
         var newLine = new SimpleObjectProperty<NewLine>(st.getNewLine());
 
-        var q = new DynamicOptionsBuilder(I18n.observable("configuration"))
+        var q = new DynamicOptionsBuilder(AppI18n.observable("configuration"))
                 .addCharset(charset)
                 .addNewLine(newLine)
                 .bind(
@@ -56,19 +56,19 @@ public class SinkDrainStoreProvider implements DataStoreProvider {
         SinkDrainStore st = store.asNeeded();
         return switch (st.getState()) {
             case NONE_CONNECTED -> {
-                yield I18n.get("unconnected");
+                yield AppI18n.get("unconnected");
             }
             case PRODUCER_CONNECTED -> {
-                yield I18n.get("waitingForConsumer");
+                yield AppI18n.get("waitingForConsumer");
             }
             case CONSUMER_CONNECTED -> {
-                yield I18n.get("waitingForProducer");
+                yield AppI18n.get("waitingForProducer");
             }
             case OPEN -> {
-                yield I18n.get("open");
+                yield AppI18n.get("open");
             }
             case CLOSED -> {
-                yield I18n.get("closed");
+                yield AppI18n.get("closed");
             }
         };
     }
