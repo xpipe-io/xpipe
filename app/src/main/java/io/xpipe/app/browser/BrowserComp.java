@@ -149,7 +149,7 @@ public class BrowserComp extends SimpleComp {
                                     .getName()
                             : null;
                 },
-                model.getStore());
+                PlatformThread.sync(model.getStore()));
         var image = Bindings.createStringBinding(
                 () -> {
                     return model.getStore().getValue() != null
@@ -160,7 +160,7 @@ public class BrowserComp extends SimpleComp {
                                     .getDisplayIconFileName()
                             : null;
                 },
-                model.getStore());
+                PlatformThread.sync(model.getStore()));
         var logo = new PrettyImageComp(image, 20, 20).createRegion();
 
         var label = new Label();

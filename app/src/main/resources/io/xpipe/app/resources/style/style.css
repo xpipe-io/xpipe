@@ -1,3 +1,13 @@
+* {
+-fx-text-fill: -color-fg-default;
+-fx-highlight-text-fill:  -color-fg-default;
+-fx-highlight-fill: -color-neutral-muted;
+-fx-prompt-text-fill: -color-neutral-muted;
+-fx-text-box-border:-color-neutral-muted;
+-fx-control-inner-background: -color-neutral-muted;
+-fx-body-color: -color-neutral-muted;
+-fx-inner-border: -color-accent-fg;
+}
 
 .window-content {
 -fx-padding: 1.2em;
