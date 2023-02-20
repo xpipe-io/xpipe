@@ -127,9 +127,3 @@ As the central idea of this library is that you create your own Comps, it is des
 ````
 
 Most simple Comp definitions can be defined inline with the `Comp.of(...)` method.
-
-## Creating more complex comps
-
-For actual comp implementations, see for example
-the [X-Pipe Extension API](https://github.com/xpipe-io/xpipe/tree/master/extension/src/main/java/io/xpipe/extension/comp)
-.

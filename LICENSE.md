@@ -2,7 +2,6 @@ The following modules are licensed under the MIT license:
 - api
 - beacon
 - core
-- extension
 
 Check out the respective directories for the license texts.
 
