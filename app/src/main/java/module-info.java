@@ -8,6 +8,7 @@ import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.util.*;
 import io.xpipe.core.util.DataStateProvider;
+import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
 import io.xpipe.core.util.ProxyManagerProvider;
 import org.slf4j.spi.SLF4JServiceProvider;

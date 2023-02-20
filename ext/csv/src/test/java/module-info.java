@@ -7,6 +7,6 @@ module io.xpipe.csv.test {
     requires org.junit.jupiter.api;
     requires org.junit.jupiter.params;
     requires io.xpipe.core;
-    requires io.xpipe.extension;
+    requires io.xpipe.app;
     requires io.xpipe.api;
 }

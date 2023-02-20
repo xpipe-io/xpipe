@@ -76,15 +76,12 @@ https://user-images.githubusercontent.com/72509152/218265431-27bf34ad-03f8-43b7-
 
 The following for modules make up the X-Pipe API and a licensed under the MIT license:
 - [core](core) - Shared core classes of the X-Pipe Java API, X-Pipe extensions, and the X-Pipe daemon implementation
-- [API](api) - The API that can be used to interact with X-Pipe from any JVM-based language.
-  For setup instructions, see the [X-Pipe Java API Usage](https://xpipe-io.readthedocs.io/en/latest/dev/api/java.html) section.
 - [beacon](beacon) - The X-Pipe beacon component is responsible for handling all communications between the X-Pipe daemon
   and the client applications, for example the various programming language APIs and the CLI
-- [extension](extension) - An API to create all different kinds of extensions for the X-Pipe platform
-  For setup instructions, see the [X-Pipe extension development](https://xpipe-io.readthedocs.io/en/latest/dev/extensions/index.html) section.
 
 The other modules make up the X-Pipe implementation and are licensed under GPL:
-- [app](app) - Contains the X-Pipe daemon implementation and the X-Pipe desktop application code
+- [app](app) - Contains the X-Pipe daemon implementation, the X-Pipe desktop application, and an
+  API to create all different kinds of extensions for the X-Pipe platform
 - [dist](dist) - Tools to create a distributable package of X-Pipe
 - [ext](ext) - Available X-Pipe extensions. Essentially every feature is implemented as an extension
 
@@ -92,7 +89,7 @@ The other modules make up the X-Pipe implementation and are licensed under GPL:
 
 X-Pipe utilizes an open core model, which essentially means that
 the main application core is open source while certain other components are not.
-In this case these non open source components are planned to be future parts of a potential commercialization.
+In this case these non open source components are planned to be future parts of a potential commercialization (got to make a living somehow).
 Furthermore, some tests and especially test environments and that run on private servers
 are also not included in this repository (Don't want to leak server information).
 Finally, scripts and workflows to create signed executables and installers
@@ -118,6 +115,14 @@ Further, note that as this is a pretty complicated Java project that fully utili
 many IDEs still have problems building this project properly.
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is intellij.
+
+### Setup
+
+You need to have an up-to-date version of X-Pipe installed on your local system in order to properly
+run X-Pipe in a development environment.
+This is due to the fact that some components are only included in the release version and not in this repository.
+X-pipe is able to automatically detect your installation and fetch the required
+components from it when it is run in a development environment.
 
 ### Building and Running
 

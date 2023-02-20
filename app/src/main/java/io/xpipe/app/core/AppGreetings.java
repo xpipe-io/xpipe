@@ -66,6 +66,10 @@ public class AppGreetings {
     }
 
     public static void showIfNeeded() {
+        if (!AppProperties.get().isImage()) {
+            return;
+        }
+
         boolean set = AppCache.get("legalAccepted", Boolean.class, () -> false);
         if (set) {
             return;
@@ -95,8 +99,11 @@ public class AppGreetings {
                             .createRegion();
 
                     var layout = new BorderPane();
+                    layout.getStyleClass().add("window-content");
                     layout.setCenter(accordion);
                     layout.setBottom(acceptanceBox);
+                    layout.setPrefWidth(700);
+                    layout.setPrefHeight(600);
 
                     alert.getDialogPane().setContent(layout);
 

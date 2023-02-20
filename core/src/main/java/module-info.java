@@ -1,6 +1,9 @@
 import io.xpipe.core.process.ProcessControlProvider;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.source.WriteMode;
 import io.xpipe.core.util.CoreJacksonModule;
+import io.xpipe.core.util.ModuleLayerLoader;
 
 open module io.xpipe.core {
     exports io.xpipe.core.store;
@@ -29,6 +32,10 @@ open module io.xpipe.core {
     uses io.xpipe.core.util.ProxyManagerProvider;
     uses io.xpipe.core.util.DataStateProvider;
     uses io.xpipe.core.util.SecretProvider;
+    uses ModuleLayerLoader;
+    uses ShellDialect;
+
+    provides ModuleLayerLoader with ShellDialects.Loader;
 
     provides WriteMode with
             WriteMode.Replace,

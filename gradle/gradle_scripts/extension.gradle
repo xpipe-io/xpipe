@@ -43,6 +43,7 @@ dependencies {
 
     if (project != project(':base')) {
         compileOnly project(':base')
+        testImplementation project(':base')
     }
 
     testImplementation project(':app')

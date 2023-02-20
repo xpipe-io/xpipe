@@ -1,7 +1,7 @@
 package io.xpipe.app.ext;
 
 import com.dlsc.formsfx.model.structure.Field;
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableBooleanValue;
 
 import java.util.ServiceLoader;

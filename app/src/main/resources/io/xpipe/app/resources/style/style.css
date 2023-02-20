@@ -11,6 +11,10 @@
 -fx-border-radius: 2px;
 }
 
+.radio-button {
+-fx-background-color:transparent;
+}
+
 .icon-button-comp {
  -fx-padding: 0.05em;
 }

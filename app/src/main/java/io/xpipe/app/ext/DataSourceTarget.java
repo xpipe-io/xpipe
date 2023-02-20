@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;

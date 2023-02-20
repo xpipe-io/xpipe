@@ -1,11 +1,11 @@
 package test;
 
 import io.xpipe.api.DataSource;
+import io.xpipe.app.test.DaemonExtensionTest;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.TextSource;
-import io.xpipe.extension.test.DaemonExtensionTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

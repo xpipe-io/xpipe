@@ -1,7 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;

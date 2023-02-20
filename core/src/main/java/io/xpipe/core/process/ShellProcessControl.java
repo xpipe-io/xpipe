@@ -49,7 +49,7 @@ public interface ShellProcessControl extends ProcessControl {
         }
     }
 
-    default String executeStringSimpleCommand(ShellType type, String command) throws Exception {
+    default String executeStringSimpleCommand(ShellDialect type, String command) throws Exception {
         try (var sub = subShell(type).start()) {
             return sub.executeStringSimpleCommand(command);
         }
@@ -69,7 +69,7 @@ public interface ShellProcessControl extends ProcessControl {
 
     SecretValue getElevationPassword();
 
-    default ShellProcessControl subShell(@NonNull ShellType type) {
+    default ShellProcessControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getNormalOpenCommand(), (shellProcessControl, s) -> {
                     return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
                 })

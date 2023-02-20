@@ -1,11 +1,11 @@
 package io.xpipe.ext.csv.test;
 
+import io.xpipe.app.test.DaemonExtensionTest;
 import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.node.ValueNode;
 import io.xpipe.ext.csv.CsvDelimiter;
 import io.xpipe.ext.csv.CsvHeaderState;
 import io.xpipe.ext.csv.CsvSource;
-import io.xpipe.extension.test.DaemonExtensionTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

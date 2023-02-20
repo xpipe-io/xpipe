@@ -143,7 +143,7 @@ public interface OsType {
         @Override
         public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
             try (CommandProcessControl c =
-                    pc.subShell(ShellTypes.BASH).command("sw_vers").start()) {
+                    pc.subShell(ShellDialects.BASH).command("sw_vers").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }

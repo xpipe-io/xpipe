@@ -3,7 +3,7 @@ package io.xpipe.beacon;
 import io.xpipe.beacon.exchange.StopExchange;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -28,7 +28,7 @@ public class BeaconServer {
     public static Process tryStartCustom() throws Exception {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
-            var command = ShellTypes.getPlatformDefault()
+            var command = ShellDialects.getPlatformDefault()
                     .executeCommandListWithShell(custom
                             + (BeaconConfig.getDaemonArguments() != null
                                     ? " " + BeaconConfig.getDaemonArguments()
@@ -50,7 +50,7 @@ public class BeaconServer {
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments(), mode);
         }
 
-        var fullCommand = ShellTypes.getPlatformDefault().executeCommandListWithShell(command);
+        var fullCommand = ShellDialects.getPlatformDefault().executeCommandListWithShell(command);
         Process process = new ProcessBuilder(fullCommand).start();
         printDaemonOutput(process, fullCommand);
         return process;

@@ -23,8 +23,8 @@ import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.impl.*;
-import io.xpipe.core.process.ShellType;
-import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceReference;
 
@@ -51,7 +51,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(BusyElement.class),
                 new NamedType(HeaderElement.class));
 
-        for (ShellType t : ShellTypes.getAllShellTypes()) {
+        for (ShellDialect t : ShellDialects.ALL) {
             context.registerSubtypes(new NamedType(t.getClass()));
         }
 

@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ShellStore;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.List;
 public class ApplicationHelper {
 
     public static void executeLocalApplication(String s) throws Exception {
-        var args = ShellTypes.getPlatformDefault().executeCommandListWithShell(s);
+        var args = ShellDialects.getPlatformDefault().executeCommandListWithShell(s);
         TrackEvent.withDebug("proc", "Executing local application")
                 .elements(args)
                 .handle();
@@ -21,7 +21,7 @@ public class ApplicationHelper {
     }
 
     public static void executeLocalApplication(List<String> s) throws Exception {
-        var args = ShellTypes.getPlatformDefault().executeCommandListWithShell(s);
+        var args = ShellDialects.getPlatformDefault().executeCommandListWithShell(s);
         TrackEvent.withDebug("proc", "Executing local application")
                 .elements(args)
                 .handle();

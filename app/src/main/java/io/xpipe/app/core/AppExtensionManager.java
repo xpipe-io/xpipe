@@ -72,7 +72,12 @@ public class AppExtensionManager {
 
         if (!AppProperties.get().isFullVersion()) {
             var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
-            var extensions = XPipeInstallation.getLocalExtensionsDirectory(Path.of(localInstallation));
+            Path p = Path.of(localInstallation);
+            if (!Files.exists(p)) {
+                throw new IllegalStateException("Required local X-Pipe installation not found");
+            }
+
+            var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
             extensionBaseDirectories.add(extensions);
         }
 

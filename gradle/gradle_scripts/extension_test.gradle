@@ -2,11 +2,10 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 apply from: "$buildscript.sourceFile/../junit.gradle"
 
-def useExtension = System.getProperty('excludeExtensionLibrary') == null
-
 dependencies {
     testImplementation project(':api')
     testImplementation project(':core')
+    testImplementation project(':app')
 
     testImplementation "org.openjfx:javafx-base:19:win"
     testImplementation "org.openjfx:javafx-controls:19:win"
@@ -24,6 +23,7 @@ test {
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",
             " -Dio.xpipe.beacon.port=21723" +
+            " -Dio.xpipe.app.mode=tray" +
             " -Dio.xpipe.app.dataDir=$projectDir/local/" +
             " -Dio.xpipe.storage.persist=false" +
             " -Dio.xpipe.app.writeSysOut=true" +

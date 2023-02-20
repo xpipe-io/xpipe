@@ -1,8 +1,9 @@
 package io.xpipe.app.ext;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.ModuleLayerLoader;
+import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.JacksonMapper;
@@ -12,7 +13,9 @@ public class XPipeServiceProviders {
 
     public static void load(ModuleLayer layer) {
         var hasDaemon = XPipeDaemon.getInstanceIfPresent().isPresent();
-        ModuleLayerLoader.loadAll(layer, hasDaemon, true);
+        ModuleLayerLoader.loadAll(layer, hasDaemon, true, t -> {
+            ErrorEvent.fromThrowable(t).handle();
+        });
         ProcessControlProvider.init(layer);
 
         TrackEvent.info("Loading extension providers ...");
@@ -34,7 +37,9 @@ public class XPipeServiceProviders {
             });
         }
 
-        ModuleLayerLoader.loadAll(layer, hasDaemon, false);
+        ModuleLayerLoader.loadAll(layer, hasDaemon, false, t -> {
+            ErrorEvent.fromThrowable(t).handle();
+        });
 
         if (hasDaemon) {
             ProxyFunction.init(layer);

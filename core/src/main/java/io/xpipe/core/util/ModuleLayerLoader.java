@@ -1,13 +1,12 @@
-package io.xpipe.app.util;
+package io.xpipe.core.util;
 
-
-import io.xpipe.app.issue.ErrorEvent;
 
 import java.util.ServiceLoader;
+import java.util.function.Consumer;
 
 public interface ModuleLayerLoader {
 
-    public static void loadAll(ModuleLayer layer, boolean hasDaemon, boolean prioritization) {
+    public static void loadAll(ModuleLayer layer, boolean hasDaemon, boolean prioritization, Consumer<Throwable> errorHandler) {
         ServiceLoader.load(layer, ModuleLayerLoader.class).stream().forEach(moduleLayerLoaderProvider -> {
             var instance = moduleLayerLoaderProvider.get();
             try {
@@ -21,7 +20,7 @@ public interface ModuleLayerLoader {
 
                 instance.init(layer);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                errorHandler.accept(t);
             }
         });
     }

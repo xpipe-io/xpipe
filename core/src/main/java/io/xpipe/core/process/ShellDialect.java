@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface ShellType {
+public interface ShellDialect {
 
     default String getCdCommand(String directory){
         return "cd \"" + directory + "\"";
@@ -109,7 +109,7 @@ public interface ShellType {
 
     NewLine getNewLine();
 
-    String getName();
+    String getId();
 
     String getDisplayName();
 

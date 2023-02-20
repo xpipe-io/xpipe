@@ -9,7 +9,7 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.CommandProcessControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
@@ -151,7 +151,7 @@ public class AppInstaller {
                         shellProcessControl,
                         XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl, false));
                 var logsDir = FileNames.join(XPipeInstallation.getDataBasePath(shellProcessControl), "logs");
-                var installer = ShellTypes.getPlatformDefault()
+                var installer = ShellDialects.getPlatformDefault()
                         .flatten(List.of(
                                 "start",
                                 "/wait",
@@ -161,7 +161,7 @@ public class AppInstaller {
                                 "/l*",
                                 FileNames.join(logsDir.toString(), "installer_" + FileNames.getFileName(file) + ".log"),
                                 "/qb"));
-                var start = ShellTypes.getPlatformDefault().flatten(List.of("start", "\"\"", exec));
+                var start = ShellDialects.getPlatformDefault().flatten(List.of("start", "\"\"", exec));
                 var command = installer + "\r\n" + start;
                 var script = ScriptHelper.createExecScript(shellProcessControl, command);
                 shellProcessControl.executeSimpleCommand("start /min " + script);
@@ -178,7 +178,7 @@ public class AppInstaller {
 
             @Override
             public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
-                try (var pc = shellProcessControl.subShell(ShellTypes.BASH).start()) {
+                try (var pc = shellProcessControl.subShell(ShellDialects.BASH).start()) {
                     try (CommandProcessControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get remove -qy xpipe")
                             .elevated()
                             .start()) {
@@ -212,7 +212,7 @@ public class AppInstaller {
 
             @Override
             public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
-                try (var pc = shellProcessControl.subShell(ShellTypes.BASH).start()) {
+                try (var pc = shellProcessControl.subShell(ShellDialects.BASH).start()) {
                     try (CommandProcessControl c = pc.command("rpm -U -v --force \"" + file + "\"")
                             .elevated()
                             .start()) {
@@ -238,7 +238,7 @@ public class AppInstaller {
 
             @Override
             public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
-                try (var pc = shellProcessControl.subShell(ShellTypes.BASH).start()) {
+                try (var pc = shellProcessControl.subShell(ShellDialects.BASH).start()) {
                     try (CommandProcessControl c = pc.command(
                                     "installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /")
                             .elevated()

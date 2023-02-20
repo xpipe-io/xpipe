@@ -3,13 +3,12 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.process.ShellType;
-import io.xpipe.core.process.ShellTypes;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -106,7 +105,7 @@ public class ScriptHelper {
 
     public static String constructOpenWithInitScriptCommand(
             ShellProcessControl processControl, List<String> init, String toExecuteInShell) {
-        ShellType t = processControl.getShellType();
+        ShellDialect t = processControl.getShellType();
         if (init.size() == 0 && toExecuteInShell == null) {
             return t.getNormalOpenCommand();
         }
@@ -120,7 +119,7 @@ public class ScriptHelper {
             }
 
             // Check for special case of the command being a shell command
-            if (Arrays.stream(ShellTypes.getAllShellTypes())
+            if (ShellDialects.ALL.stream()
                     .anyMatch(shellType -> cmd.equals(shellType.getNormalOpenCommand()))) {
                 return cmd;
             }
@@ -129,7 +128,7 @@ public class ScriptHelper {
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init) + nl;
 
-        if (t.equals(ShellTypes.BASH)) {
+        if (t.equals(ShellDialects.BASH)) {
             content = "if [ -f ~/.bashrc ]; then . ~/.bashrc; fi\n" + content;
         }
 
@@ -141,7 +140,7 @@ public class ScriptHelper {
 
         var initFile = createExecScript(processControl, content);
 
-        if (t.equals(ShellTypes.ZSH)) {
+        if (t.equals(ShellDialects.ZSH)) {
             var zshiFile = createExecScript(processControl, ZSHI);
             return t.getNormalOpenCommand() + " \"" + zshiFile + "\" \"" + initFile + "\"";
         }
@@ -152,7 +151,7 @@ public class ScriptHelper {
     @SneakyThrows
     public static String createExecScript(ShellProcessControl processControl, String content) {
         var fileName = "exec-" + getScriptId();
-        ShellType type = processControl.getShellType();
+        ShellDialect type = processControl.getShellType();
         var temp = processControl.getTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
         return createExecScript(processControl, file, content);
@@ -160,7 +159,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     private static String createExecScript(ShellProcessControl processControl, String file, String content) {
-        ShellType type = processControl.getShellType();
+        ShellDialect type = processControl.getShellType();
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("proc", "Writing exec script")
@@ -176,7 +175,7 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    public static String createAskPassScript(SecretValue pass, ShellProcessControl parent, ShellType type) {
+    public static String createAskPassScript(SecretValue pass, ShellProcessControl parent, ShellDialect type) {
         var content = type.getScriptEchoCommand(pass.getSecretValue());
         var temp = parent.getTemporaryDirectory();
         var file = FileNames.join(temp, "askpass-" + getScriptId() + "." + type.getScriptFileEnding());
