@@ -6,14 +6,12 @@ import io.xpipe.app.comp.source.store.DsStreamStoreChoiceComp;
 import io.xpipe.app.comp.source.store.NamedStoreChoiceComp;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.update.AppDownloads;
-import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
@@ -23,18 +21,11 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 public class XPipeDaemonProvider implements XPipeDaemon {
-
-    @Override
-    public void withResource(String module, String file, Charsetter.FailableConsumer<Path, IOException> con) {
-        AppResources.with(module, file, con);
-    }
 
     @Override
     public List<DataStore> getNamedStores() {

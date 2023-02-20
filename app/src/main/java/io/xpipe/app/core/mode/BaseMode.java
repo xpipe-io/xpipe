@@ -33,7 +33,7 @@ public class BaseMode extends OperationMode {
     @Override
     public void initialSetup() throws Exception {
         TrackEvent.info("mode", "Initializing base mode components ...");
-        AppExtensionManager.init();
+        AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
         AppPrefs.init();
         AppCharsets.init();

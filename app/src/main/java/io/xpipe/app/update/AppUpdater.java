@@ -81,38 +81,16 @@ public class AppUpdater {
         TrackEvent.builder().category("installer").type("info").message(msg).handle();
     }
 
-    public static void executeUpdateOnStartupIfNeeded() {
-        try {
-            AppProperties.init();
-            DownloadedUpdate downloaded = AppCache.get("downloadedUpdate", DownloadedUpdate.class, () -> null);
-            if (downloaded != null) {
-                if (!downloaded.getSourceVersion().equals(AppProperties.get().getVersion())) {
-                    return;
-                }
-
-                initBare();
-                if (INSTANCE.shouldPerformUpdate()) {
-                    INSTANCE.executeUpdateAndClose();
-                }
-            }
-        } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
-        }
-    }
-
     public static AppUpdater get() {
         return INSTANCE;
     }
 
-    public static void initBare() {
+    public static void initFallback() {
         AppProperties.init();
         XPipeSession.init(AppProperties.get().getBuildUuid());
 
-        var layer = AppExtensionManager.initBare();
-        if (layer == null) {
-            return;
-        }
-        ProcessControlProvider.init(layer);
+        AppExtensionManager.init(false);
+        ProcessControlProvider.init(AppExtensionManager.getInstance().getExtendedLayer());
 
         INSTANCE = new AppUpdater();
     }

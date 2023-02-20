@@ -28,7 +28,7 @@ public class AppExtensionManager {
     private ModuleLayer baseLayer = ModuleLayer.boot();
     private ModuleLayer extendedLayer;
 
-    public static void init() throws Exception {
+    public static void init(boolean loadProviders) {
         if (INSTANCE != null) {
             return;
         }
@@ -37,7 +37,10 @@ public class AppExtensionManager {
         INSTANCE.determineExtensionDirectories();
         INSTANCE.loadBasicExtension();
         INSTANCE.loadExtensions();
-        INSTANCE.loadContent();
+
+        if (loadProviders) {
+            INSTANCE.loadContent();
+        }
     }
 
     private void loadBasicExtension() {
@@ -48,21 +51,6 @@ public class AppExtensionManager {
 
         baseLayer = baseModule.get().getModule().getLayer();
         loadedExtensions.add(baseModule.get());
-    }
-
-    public static ModuleLayer initBare() {
-        if (INSTANCE != null) {
-            return INSTANCE.extendedLayer;
-        }
-
-        INSTANCE = new AppExtensionManager();
-        INSTANCE.determineExtensionDirectories();
-        INSTANCE.loadBasicExtension();
-        var proc = INSTANCE.loadExtension("proc", INSTANCE.baseLayer).orElseThrow();
-        var procx = INSTANCE.loadExtension("procx", proc.getModule().getLayer()).orElseThrow();
-        INSTANCE.leafModuleLayers.add(procx.getModule().getLayer());
-        INSTANCE.extendedLayer = procx.getModule().getLayer();
-        return INSTANCE.extendedLayer;
     }
 
     private void determineExtensionDirectories() {
@@ -131,7 +119,7 @@ public class AppExtensionManager {
         return ext != null ? base.resolve(ext) : base;
     }
 
-    private void loadExtensions() throws IOException {
+    private void loadExtensions() {
         for (Path extensionBaseDirectory : extensionBaseDirectories) {
             loadExtensionBaseDirectory(extensionBaseDirectory);
         }
@@ -148,7 +136,7 @@ public class AppExtensionManager {
         }
     }
 
-    private void loadContent() throws IOException {
+    private void loadContent() {
         addNativeLibrariesToPath();
         XPipeServiceProviders.load(extendedLayer);
         MessageExchangeImpls.loadAll();
@@ -297,13 +285,16 @@ public class AppExtensionManager {
                 .findFirst();
     }
 
-    private void addNativeLibrariesToPath() throws IOException {
+    private void addNativeLibrariesToPath() {
         var libsDir =
                 AppProperties.get().isImage() ? XPipeInstallation.getLocalDynamicLibraryDirectory() : Path.of("lib");
-        if (Files.exists(libsDir)) {
-            // FileUtils.deleteDirectory(libsDir.toFile());
-        } else {
-            Files.createDirectories(libsDir);
+        if (!Files.exists(libsDir)) {
+            try {
+                Files.createDirectories(libsDir);
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).handle();
+                return;
+            }
         }
 
         for (var ext : loadedExtensions) {

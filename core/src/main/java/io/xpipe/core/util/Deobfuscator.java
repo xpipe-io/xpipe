@@ -3,7 +3,6 @@ package io.xpipe.core.util;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ShellStore;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -106,8 +105,6 @@ public class Deobfuscator {
         }
 
         var t = ShellDialects.getPlatformDefault();
-        return ShellStore.local()
-                .create()
-                .executeBooleanSimpleCommand(t.getWhichCommand("retrace." + t.getScriptFileEnding()));
+        return true;
     }
 }

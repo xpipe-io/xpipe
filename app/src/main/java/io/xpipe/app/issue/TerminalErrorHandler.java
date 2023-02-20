@@ -58,7 +58,7 @@ public class TerminalErrorHandler implements ErrorHandler {
 
         try {
             AppProperties.init();
-            AppExtensionManager.initBare();
+            AppExtensionManager.init(false);
             AppI18n.init();
             AppStyle.init();
             ErrorHandlerComp.showAndWait(event);
@@ -86,7 +86,7 @@ public class TerminalErrorHandler implements ErrorHandler {
 
     private static void handleProbableUpdate() {
         try {
-            AppUpdater.initBare();
+            AppUpdater.initFallback();
             var rel = AppUpdater.get().checkForUpdate(true);
             if (rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {

@@ -1,8 +1,8 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.modulefs.ModuleFileSystem;
+import org.apache.commons.lang3.function.FailableConsumer;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -39,7 +39,7 @@ public class AppResources {
         }
     }
 
-    public static void with(String module, String file, Charsetter.FailableConsumer<Path, IOException> con) {
+    public static void with(String module, String file, FailableConsumer<Path, IOException> con) {
         if (AppProperties.get() != null
                 && !AppProperties.get().isImage()
                 && AppProperties.get().isDeveloperMode()) {
@@ -53,7 +53,7 @@ public class AppResources {
     }
 
     public static void withResource(
-            String module, String file, ModuleLayer layer, Charsetter.FailableConsumer<Path, IOException> con) {
+            String module, String file, ModuleLayer layer, FailableConsumer<Path, IOException> con) {
         try (var fs = FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer))) {
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
             con.accept(f);
@@ -62,7 +62,7 @@ public class AppResources {
         }
     }
 
-    private static void withResource(String module, String file, Charsetter.FailableConsumer<Path, IOException> con) {
+    private static void withResource(String module, String file, FailableConsumer<Path, IOException> con) {
         try (var fs = openFileSystem(module)) {
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
             con.accept(f);
@@ -72,7 +72,7 @@ public class AppResources {
     }
 
     private static boolean withLocalDevResource(
-            String module, String file, Charsetter.FailableConsumer<Path, IOException> con) {
+            String module, String file, FailableConsumer<Path, IOException> con) {
         try (var fs = openFileSystem(module)) {
             var url = fs.getPath("").getWrappedPath().toUri().toURL();
             if (!url.getProtocol().equals("jar")) {
