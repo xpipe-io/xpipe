@@ -152,7 +152,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String command) throws Exception {
             var custom = AppPrefs.get().customTerminalCommand().getValue();
-            if (custom == null || custom.trim().isEmpty()) {
+            if (custom == null || custom.isBlank()) {
+                ErrorEvent.fromMessage("No custom terminal command specified").reportable(false).handle();
                 return;
             }
 

@@ -2,7 +2,6 @@ package io.xpipe.core.util;
 
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -104,7 +103,6 @@ public class Deobfuscator {
             return false;
         }
 
-        var t = ShellDialects.getPlatformDefault();
         return true;
     }
 }
