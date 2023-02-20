@@ -1,6 +1,5 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -23,8 +22,9 @@ public class DataStorageParser {
         var mapper = JacksonMapper.newMapper();
         try {
             return mapper.treeToValue(node, DataSource.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+        } catch (Throwable e) {
+            ErrorEvent.fromThrowable(e).handle();
+            return null;
         }
     }
 
@@ -33,7 +33,7 @@ public class DataStorageParser {
         var mapper = JacksonMapper.newMapper();
         try {
             return mapper.treeToValue(node, DataStore.class);
-        } catch (JsonProcessingException e) {
+        } catch (Throwable e) {
             ErrorEvent.fromThrowable(e).handle();
             return null;
         }

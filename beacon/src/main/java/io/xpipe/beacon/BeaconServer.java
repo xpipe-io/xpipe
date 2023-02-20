@@ -3,7 +3,6 @@ package io.xpipe.beacon;
 import io.xpipe.beacon.exchange.StopExchange;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -25,14 +24,19 @@ public class BeaconServer {
         }
     }
 
+    private static List<String> toProcessCommand(String toExec) {
+        var command = OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec) : List.of("sh", "-c", toExec);
+        return command;
+    }
+
     public static Process tryStartCustom() throws Exception {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
-            var command = ShellDialects.getPlatformDefault()
-                    .executeCommandListWithShell(custom
-                            + (BeaconConfig.getDaemonArguments() != null
-                                    ? " " + BeaconConfig.getDaemonArguments()
-                                    : ""));
+            var toExec = custom
+                    + (BeaconConfig.getDaemonArguments() != null
+                    ? " " + BeaconConfig.getDaemonArguments()
+                    : "");
+            var command = toProcessCommand(toExec);
             Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
             printDaemonOutput(process, command);
             return process;
@@ -50,7 +54,7 @@ public class BeaconServer {
                     getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments(), mode);
         }
 
-        var fullCommand = ShellDialects.getPlatformDefault().executeCommandListWithShell(command);
+        var fullCommand = toProcessCommand(command);
         Process process = new ProcessBuilder(fullCommand).start();
         printDaemonOutput(process, fullCommand);
         return process;
