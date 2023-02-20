@@ -78,7 +78,7 @@ public interface ShellProcessControl extends ProcessControl {
 
     default ShellProcessControl subShell(@NonNull List<String> command) {
         return subShell(
-                shellProcessControl -> shellProcessControl.getShellType().flatten(command), null);
+                shellProcessControl -> shellProcessControl.getShellDialect().flatten(command), null);
     }
 
     default ShellProcessControl subShell(@NonNull String command) {
@@ -107,7 +107,7 @@ public interface ShellProcessControl extends ProcessControl {
     }
 
     default CommandProcessControl command(List<String> command) {
-        return command(shellProcessControl -> shellProcessControl.getShellType().flatten(command));
+        return command(shellProcessControl -> shellProcessControl.getShellDialect().flatten(command));
     }
 
     void exitAndWait() throws IOException;

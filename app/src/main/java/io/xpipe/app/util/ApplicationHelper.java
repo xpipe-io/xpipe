@@ -32,7 +32,7 @@ public class ApplicationHelper {
 
     public static boolean isInPath(ShellProcessControl processControl, String executable) throws Exception {
         return processControl.executeBooleanSimpleCommand(
-                processControl.getShellType().getWhichCommand(executable));
+                processControl.getShellDialect().getWhichCommand(executable));
     }
 
     public static void checkSupport(ShellProcessControl processControl, String executable, String displayName)

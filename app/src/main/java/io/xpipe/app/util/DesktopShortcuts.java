@@ -55,15 +55,15 @@ public class DesktopShortcuts {
 
         try (var pc = ShellStore.local().create().start()) {
             pc.executeSimpleCommand(
-                    pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/MacOS")));
+                    pc.getShellDialect().flatten(pc.getShellDialect().getMkdirsCommand(base + "/Contents/MacOS")));
             pc.executeSimpleCommand(
-                    pc.getShellType().flatten(pc.getShellType().getMkdirsCommand(base + "/Contents/Resources")));
+                    pc.getShellDialect().flatten(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources")));
 
             var executable = base + "/Contents/MacOS/" + name;
-            pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand(content, executable));
+            pc.executeSimpleCommand(pc.getShellDialect().getTextFileWriteCommand(content, executable));
             pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
 
-            pc.executeSimpleCommand(pc.getShellType().getTextFileWriteCommand("APPL????", base + "/PkgInfo"));
+            pc.executeSimpleCommand(pc.getShellDialect().getTextFileWriteCommand("APPL????", base + "/PkgInfo"));
             pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/" + name + ".icns\"");
         }
     }

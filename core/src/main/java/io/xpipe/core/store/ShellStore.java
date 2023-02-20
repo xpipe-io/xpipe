@@ -37,7 +37,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
     default ShellProcessControl create() {
         var pc = createControl();
         pc.onInit(processControl -> {
-            setState("type", processControl.getShellType());
+            setState("type", processControl.getShellDialect());
             setState("os", processControl.getOsType());
             setState("charset", processControl.getCharset());
         });
@@ -60,7 +60,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
 
     public default ShellDialect determineType() throws Exception {
         try (var pc = create().start()) {
-            return pc.getShellType();
+            return pc.getShellDialect();
         }
     }
 

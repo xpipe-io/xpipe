@@ -105,7 +105,7 @@ public class ScriptHelper {
 
     public static String constructOpenWithInitScriptCommand(
             ShellProcessControl processControl, List<String> init, String toExecuteInShell) {
-        ShellDialect t = processControl.getShellType();
+        ShellDialect t = processControl.getShellDialect();
         if (init.size() == 0 && toExecuteInShell == null) {
             return t.getNormalOpenCommand();
         }
@@ -151,7 +151,7 @@ public class ScriptHelper {
     @SneakyThrows
     public static String createExecScript(ShellProcessControl processControl, String content) {
         var fileName = "exec-" + getScriptId();
-        ShellDialect type = processControl.getShellType();
+        ShellDialect type = processControl.getShellDialect();
         var temp = processControl.getTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
         return createExecScript(processControl, file, content);
@@ -159,7 +159,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     private static String createExecScript(ShellProcessControl processControl, String file, String content) {
-        ShellDialect type = processControl.getShellType();
+        ShellDialect type = processControl.getShellDialect();
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("proc", "Writing exec script")

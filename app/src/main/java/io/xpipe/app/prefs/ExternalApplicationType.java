@@ -77,7 +77,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         public boolean isAvailable() {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                return pc.executeBooleanSimpleCommand(pc.getShellType().getWhichCommand(executable));
+                return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;

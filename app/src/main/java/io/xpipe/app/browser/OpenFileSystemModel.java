@@ -167,7 +167,7 @@ final class OpenFileSystemModel {
                             .getShellProcessControl()
                             .executeStringSimpleCommand(connectionFileSystem
                                     .getShellProcessControl()
-                                    .getShellType()
+                                    .getShellDialect()
                                     .getPrintWorkingDirectoryCommand())
                     : null;
             cdSync(current);
@@ -186,7 +186,7 @@ final class OpenFileSystemModel {
                 if (store.getValue() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellProcessControl();
                     var command = s.create()
-                            .initWith(List.of(connection.getShellType().getCdCommand(directory)))
+                            .initWith(List.of(connection.getShellDialect().getCdCommand(directory)))
                             .prepareTerminalOpen();
                     TerminalHelper.open("", command);
                 }

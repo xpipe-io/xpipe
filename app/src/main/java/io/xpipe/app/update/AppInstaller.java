@@ -39,7 +39,7 @@ public class AppInstaller {
         } else {
             targetFile = FileNames.join(
                     s.getTemporaryDirectory(), localFile.getFileName().toString());
-            try (CommandProcessControl c = s.command(s.getShellType().getStreamFileWriteCommand(targetFile))
+            try (CommandProcessControl c = s.command(s.getShellDialect().getStreamFileWriteCommand(targetFile))
                     .start()) {
                 c.discardOut();
                 c.discardErr();
@@ -79,7 +79,7 @@ public class AppInstaller {
         }
 
         if (p.getOsType().equals(OsType.LINUX)) {
-            try (CommandProcessControl c = p.command(p.getShellType().getFileExistsCommand("/etc/debian_version"))
+            try (CommandProcessControl c = p.command(p.getShellDialect().getFileExistsCommand("/etc/debian_version"))
                     .start()) {
                 return c.discardAndCheckExit() ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
             }

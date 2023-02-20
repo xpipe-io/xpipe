@@ -169,7 +169,7 @@ public class XPipeInstallation {
 
     public static String getDataBasePath(ShellProcessControl p) throws Exception {
         if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("userprofile"));
+            var base = p.executeStringSimpleCommand(p.getShellDialect().getPrintVariableCommand("userprofile"));
             return FileNames.join(base, ".xpipe");
         } else {
             return FileNames.join("~", ".xpipe");
@@ -221,7 +221,7 @@ public class XPipeInstallation {
     public static String getDefaultInstallationBasePath(ShellProcessControl p, boolean acceptPortable)
             throws Exception {
         if (acceptPortable) {
-            var customHome = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("XPIPE_HOME"));
+            var customHome = p.executeStringSimpleCommand(p.getShellDialect().getPrintVariableCommand("XPIPE_HOME"));
             if (!customHome.isEmpty()) {
                 return customHome;
             }
@@ -229,7 +229,7 @@ public class XPipeInstallation {
 
         String path = null;
         if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeStringSimpleCommand(p.getShellType().getPrintVariableCommand("LOCALAPPDATA"));
+            var base = p.executeStringSimpleCommand(p.getShellDialect().getPrintVariableCommand("LOCALAPPDATA"));
             path = FileNames.join(base, "X-Pipe");
         } else if (p.getOsType().equals(OsType.LINUX)) {
             path = "/opt/xpipe";

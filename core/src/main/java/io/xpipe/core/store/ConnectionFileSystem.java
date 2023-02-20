@@ -22,7 +22,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public List<String> listRoots() throws Exception {
-        return shellProcessControl.getShellType().listRoots(shellProcessControl).toList();
+        return shellProcessControl.getShellDialect().listRoots(shellProcessControl).toList();
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public Stream<FileEntry> listFiles(String file) throws Exception {
-        return shellProcessControl.getShellType().listFiles(this, shellProcessControl, file);
+        return shellProcessControl.getShellDialect().listFiles(this, shellProcessControl, file);
     }
 
     @Override
@@ -42,20 +42,20 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public InputStream openInput(String file) throws Exception {
         return shellProcessControl.command(proc ->
-                                        proc.getShellType().getFileReadCommand(proc.getOsType().normalizeFileName(file)))
+                                        proc.getShellDialect().getFileReadCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdout();
     }
 
     @Override
     public OutputStream openOutput(String file) throws Exception {
-        return shellProcessControl.command(proc -> proc.getShellType()
+        return shellProcessControl.command(proc -> proc.getShellDialect()
                         .getStreamFileWriteCommand(proc.getOsType().normalizeFileName(file)))
                 .startExternalStdin();
     }
 
     @Override
     public boolean exists(String file) throws Exception {
-        try (var pc = shellProcessControl.command(proc -> proc.getShellType()
+        try (var pc = shellProcessControl.command(proc -> proc.getShellDialect()
                         .getFileExistsCommand(proc.getOsType().normalizeFileName(file)))
                 .start()) {
             return pc.discardAndCheckExit();
@@ -64,7 +64,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void delete(String file) throws Exception {
-        try (var pc = shellProcessControl.command(proc -> proc.getShellType()
+        try (var pc = shellProcessControl.command(proc -> proc.getShellDialect()
                         .getFileDeleteCommand(proc.getOsType().normalizeFileName(file)))
                 .start()) {
             pc.discardOrThrow();
@@ -73,7 +73,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void copy(String file, String newFile) throws Exception {
-        try (var pc = shellProcessControl.command(proc -> proc.getShellType()
+        try (var pc = shellProcessControl.command(proc -> proc.getShellDialect()
                         .getFileCopyCommand(proc.getOsType().normalizeFileName(file), proc.getOsType().normalizeFileName(newFile))).complex()
                 .start()) {
             pc.discardOrThrow();
@@ -82,7 +82,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void move(String file, String newFile) throws Exception {
-        try (var pc = shellProcessControl.command(proc -> proc.getShellType()
+        try (var pc = shellProcessControl.command(proc -> proc.getShellDialect()
                         .getFileMoveCommand(proc.getOsType().normalizeFileName(file), proc.getOsType().normalizeFileName(newFile))).complex()
                 .start()) {
             pc.discardOrThrow();
@@ -91,8 +91,8 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public boolean mkdirs(String file) throws Exception {
-        try (var pc = shellProcessControl.command(proc -> proc.getShellType()
-                        .flatten(proc.getShellType()
+        try (var pc = shellProcessControl.command(proc -> proc.getShellDialect()
+                        .flatten(proc.getShellDialect()
                                          .getMkdirsCommand(proc.getOsType().normalizeFileName(file))))
                 .start()) {
             return pc.discardAndCheckExit();
@@ -101,7 +101,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void touch(String file) throws Exception {
-        try (var pc = shellProcessControl.command(proc -> proc.getShellType()
+        try (var pc = shellProcessControl.command(proc -> proc.getShellDialect()
                         .getFileTouchCommand(proc.getOsType().normalizeFileName(file))).complex()
                 .start()) {
             pc.discardOrThrow();

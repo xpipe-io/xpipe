@@ -134,7 +134,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String command) throws Exception {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                var suffix = command.equals(pc.getShellType().getNormalOpenCommand())
+                var suffix = command.equals(pc.getShellDialect().getNormalOpenCommand())
                         ? "\"\""
                         : "\"" + command.replaceAll("\"", "\\\\\"") + "\"";
                 var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
@@ -275,7 +275,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         public boolean isAvailable() {
             try (ShellProcessControl pc = ShellStore.local().create().start()) {
-                return pc.executeBooleanSimpleCommand(pc.getShellType().getWhichCommand(executable));
+                return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;

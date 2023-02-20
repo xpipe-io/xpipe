@@ -18,7 +18,7 @@ public interface ProcessControl extends Closeable, AutoCloseable {
 
     boolean isRunning();
 
-    ShellDialect getShellType();
+    ShellDialect getShellDialect();
 
     void writeLine(String line) throws IOException;
 
