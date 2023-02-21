@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.ShellStore;
 
@@ -14,10 +15,32 @@ public class FileSystemHelper {
 
     private static OpenFileSystemModel local;
 
+    public static String normalizeDirectoryPath(OpenFileSystemModel model, String path) {
+        if (path == null) {
+            return null;
+        }
+
+        path = path.trim();
+        if (path.isBlank()) {
+            return null;
+        }
+
+        var shell = model.getFileSystem().getShell();
+        if (shell.isEmpty()) {
+            return path;
+        }
+
+        if (shell.get().getOsType().equals(OsType.WINDOWS) && path.length() == 2 && path.endsWith(":")) {
+            return path + "\\";
+        }
+
+        return FileNames.toDirectory(path);
+    }
+
     public static OpenFileSystemModel getLocal() throws Exception {
         if (local == null) {
             var model = new OpenFileSystemModel();
-            model.switchSync(ShellStore.local());
+            model.switchFileSystem(ShellStore.local());
             local = model;
         }
 

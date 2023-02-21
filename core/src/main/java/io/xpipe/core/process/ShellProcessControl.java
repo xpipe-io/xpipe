@@ -7,10 +7,13 @@ import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public interface ShellProcessControl extends ProcessControl {
+
+    Semaphore getCommandLock();
 
     void onInit(Consumer<ShellProcessControl> pc);
 
@@ -44,8 +47,7 @@ public interface ShellProcessControl extends ProcessControl {
         try (CommandProcessControl c = command(command).start()) {
             c.discardOrThrow();
         } catch (ProcessOutputException out) {
-            var message = out.getMessage();
-            throw new ProcessOutputException(message != null ? failMessage + ": " + message : failMessage);
+            throw ProcessOutputException.of(failMessage, out);
         }
     }
 

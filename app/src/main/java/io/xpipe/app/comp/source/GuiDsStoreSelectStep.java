@@ -108,13 +108,13 @@ public class GuiDsStoreSelectStep extends MultiStepComp.Step<CompStructure<? ext
                     return;
                 }
 
-                PlatformThread.runLaterBlocking(() -> {
+                PlatformThread.runLaterIfNeededBlocking(() -> {
                     baseSource.setValue(ds.asNeeded());
                     parent.next();
                 });
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).build().handle();
-                PlatformThread.runLaterBlocking(() -> {
+                PlatformThread.runLaterIfNeededBlocking(() -> {
                     baseSource.setValue(null);
                 });
             }

@@ -15,7 +15,7 @@ public class UpdateChangelogAlert {
     public static void showIfNeeded() {
         var update = AppUpdater.get().getPerformedUpdate();
 
-        if (update != null && !update.getNewVersion().equals(AppProperties.get().getVersion())) {
+        if (update != null && !AppProperties.get().getVersion().equals(update.getNewVersion())) {
             ErrorEvent.fromMessage("Update did not succeed").handle();
             return;
         }

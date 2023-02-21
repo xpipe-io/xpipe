@@ -25,14 +25,19 @@ final class NavigationHistory {
         return history.size() > 0 ? history.get(cursor.get()) : null;
     }
 
-    public void append(String s) {
+    public void cd(String s) {
         if (s == null) {
             return;
         }
-        var lastString = history.size() > 0 ? history.get(history.size() - 1) : null;
-        if (!Objects.equals(lastString, s)) {
-            history.add(s);
+        var lastString = getCurrent();
+        if (Objects.equals(lastString, s)) {
+            return;
         }
+
+        if (canGoForth.get()) {
+            history.subList(cursor.get() + 1, history.size()).clear();
+        }
+        history.add(s);
         cursor.set(history.size() - 1);
     }
 

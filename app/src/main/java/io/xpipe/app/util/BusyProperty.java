@@ -15,6 +15,10 @@ public class BusyProperty implements AutoCloseable {
 
     public BusyProperty(BooleanProperty prop) {
         this.prop = prop;
+
+        while (prop.get()) {
+            ThreadHelper.sleep(50);
+        }
         prop.setValue(true);
     }
 

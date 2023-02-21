@@ -33,7 +33,7 @@ public class EditStoreAction implements ActionProvider {
 
             @Override
             public boolean isMajor() {
-                return true;
+                return false;
             }
 
             @Override

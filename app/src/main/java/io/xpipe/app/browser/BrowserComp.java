@@ -73,7 +73,7 @@ public class BrowserComp extends SimpleComp {
         }
 
         model.getOpenFileSystems().addListener((ListChangeListener<? super OpenFileSystemModel>) c -> {
-            PlatformThread.runLaterBlocking(() -> {
+            PlatformThread.runLaterIfNeededBlocking(() -> {
                 while (c.next()) {
                     for (var r : c.getRemoved()) {
                         var t = map.remove(r);

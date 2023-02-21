@@ -5,6 +5,18 @@ import java.util.List;
 
 public class FileNames {
 
+    public static String toDirectory(String path) {
+        if (path.endsWith("/") || path.endsWith("\\")) {
+            return path;
+        }
+
+        if (path.contains("\\")) {
+            return path + "\\";
+        }
+
+        return path + "/";
+    }
+
     public static String getFileName(String file) {
         var split = file.split("[\\\\/]");
         if (split.length == 0) {

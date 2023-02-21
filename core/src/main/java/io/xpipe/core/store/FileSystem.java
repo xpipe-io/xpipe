@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.process.ShellProcessControl;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -8,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
@@ -24,6 +26,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
         boolean hidden;
         long size;
     }
+
+    Optional<ShellProcessControl> getShell();
 
     FileSystem open() throws Exception;
 

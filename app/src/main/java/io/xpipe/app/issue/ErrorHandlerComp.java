@@ -37,7 +37,10 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     public static void showAndWait(ErrorEvent event) {
-        PlatformThread.runLaterBlocking(() -> {
+        // Always run later to prevent any issues when an exception
+        // is thrown within an animation or layout processing task
+        // Otherwise, the show and wait method might fail
+        PlatformThread.alwaysRunLaterBlocking(() -> {
             synchronized (showing) {
                 if (!showing.get()) {
                     showing.set(true);

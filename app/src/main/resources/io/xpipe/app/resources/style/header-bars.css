@@ -1,7 +1,7 @@
 .bar {
 -fx-padding: 0.8em 1.0em 0.8em 1.0em;
--fx-background-color: -color-neutral-muted;
--fx-border-color: -color-neutral-emphasis;
+-fx-background-color: -color-neutral-subtle;
+-fx-border-color: -color-border-default;
 }
 
 .store-header-bar {

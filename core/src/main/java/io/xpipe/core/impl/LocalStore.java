@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @JsonTypeName("local")
@@ -26,6 +27,11 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
     public FileSystem createFileSystem() {
         if (true) return new ConnectionFileSystem(ShellStore.local().create());
         return new FileSystem() {
+            @Override
+            public Optional<ShellProcessControl> getShell() {
+                return Optional.empty();
+            }
+
             @Override
             public FileSystem open() throws Exception {
             return this;

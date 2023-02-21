@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Getter
@@ -31,6 +32,11 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public Stream<FileEntry> listFiles(String file) throws Exception {
         return shellProcessControl.getShellDialect().listFiles(this, shellProcessControl, file);
+    }
+
+    @Override
+    public Optional<ShellProcessControl> getShell() {
+        return Optional.of(shellProcessControl);
     }
 
     @Override

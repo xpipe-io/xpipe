@@ -273,7 +273,7 @@ public class PlatformThread {
         }
     }
 
-    public static void runLaterBlocking(Runnable r) {
+    public static void runLaterIfNeededBlocking(Runnable r) {
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
@@ -286,6 +286,18 @@ public class PlatformThread {
             }
         } else {
             r.run();
+        }
+    }
+
+    public static void alwaysRunLaterBlocking(Runnable r) {
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            r.run();
+            latch.countDown();
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
         }
     }
 }

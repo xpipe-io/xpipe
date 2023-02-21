@@ -2,7 +2,6 @@
 
 package io.xpipe.app.browser;
 
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
@@ -17,15 +16,15 @@ import lombok.Getter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Getter
 final class OpenFileSystemModel {
 
     private Property<FileSystemStore> store = new SimpleObjectProperty<>();
     private FileSystem fileSystem;
-    private List<String> roots;
     private final FileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final NavigationHistory history = new NavigationHistory();
@@ -51,35 +50,35 @@ final class OpenFileSystemModel {
 
     public void cd(String path) {
         ThreadHelper.runFailableAsync(() -> {
-            cdSync(path);
+            try (var ignored = new BusyProperty(busy)) {
+                cdSync(path);
+            }
         });
     }
 
     private boolean cdSync(String path) {
-        try (var ignored = new BusyProperty(busy)) {
-            if (!navigateTo(path)) {
-                return false;
-            }
+        path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
-            currentPath.set(path);
-            if (!Objects.equals(history.getCurrent(), path)) {
-                history.append(path);
-            }
-            return true;
+        if (!navigateToSync(path)) {
+            return false;
         }
+
+        currentPath.set(path);
+        history.cd(path);
+        return true;
     }
 
-    private boolean navigateTo(String dir) {
+    private boolean navigateToSync(String dir) {
         try {
             List<FileSystem.FileEntry> newList;
             if (dir != null) {
-                newList = getFileSystem().listFiles(dir).toList();
+                newList = getFileSystem().listFiles(dir).collect(Collectors.toCollection(ArrayList::new));
             } else {
                 newList = getFileSystem().listRoots().stream()
                         .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, 0))
-                        .toList();
+                        .collect(Collectors.toCollection(ArrayList::new));
             }
-            BindingsHelper.setContent(fileList.getAll(), newList);
+            fileList.setAll(newList);
             return true;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
@@ -96,7 +95,8 @@ final class OpenFileSystemModel {
         });
     }
 
-    public void dropFilesIntoAsync(FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
+    public void dropFilesIntoAsync(
+            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
                 FileSystemHelper.dropFilesInto(target, files, explicitCopy);
@@ -154,24 +154,28 @@ final class OpenFileSystemModel {
         store = null;
     }
 
-    public void switchSync(FileSystemStore fileSystem) throws Exception {
+    public void switchFileSystem(FileSystemStore fileSystem) throws Exception {
         BusyProperty.execute(busy, () -> {
-            closeSync();
-            this.store.setValue(fileSystem);
-            var fs = fileSystem.createFileSystem();
-            fs.open();
-            this.fileSystem = fs;
-
-            var current = fs instanceof ConnectionFileSystem connectionFileSystem
-                    ? connectionFileSystem
-                            .getShellProcessControl()
-                            .executeStringSimpleCommand(connectionFileSystem
-                                    .getShellProcessControl()
-                                    .getShellDialect()
-                                    .getPrintWorkingDirectoryCommand())
-                    : null;
-            cdSync(current);
+            switchSync(fileSystem);
         });
+    }
+
+    private void switchSync(FileSystemStore fileSystem) throws Exception {
+        closeSync();
+        this.store.setValue(fileSystem);
+        var fs = fileSystem.createFileSystem();
+        fs.open();
+        this.fileSystem = fs;
+
+        var current = fs instanceof ConnectionFileSystem connectionFileSystem
+                ? connectionFileSystem
+                        .getShellProcessControl()
+                        .executeStringSimpleCommand(connectionFileSystem
+                                .getShellProcessControl()
+                                .getShellDialect()
+                                .getPrintWorkingDirectoryCommand())
+                : null;
+        cdSync(current);
     }
 
     public void switchAsync(FileSystemStore fileSystem) {

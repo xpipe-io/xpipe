@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.core.impl.FileNames;
@@ -47,7 +48,9 @@ final class FileListComp extends AnchorPane {
     public FileListComp(FileListModel fileList) {
         this.fileList = fileList;
         TableView<FileSystem.FileEntry> table = createTable();
-        fileList.getComparatorProperty().bind(table.comparatorProperty());
+        SimpleChangeListener.apply(table.comparatorProperty(), (newValue) -> {
+            fileList.setComparator(newValue);
+        });
 
         getChildren().setAll(table);
         getStyleClass().addAll("table-directory-view");
@@ -118,8 +121,7 @@ final class FileListComp extends AnchorPane {
 
                 var cm = new FileContextMenu(
                         fileList.getModel(),
-                        row.getItem().getPath(),
-                        row.getItem().isDirectory(),
+                        row.getItem(),
                         editing);
                 if (t.getButton() == MouseButton.SECONDARY) {
                     cm.show(row, t.getScreenX(), t.getScreenY());
@@ -231,7 +233,10 @@ final class FileListComp extends AnchorPane {
 
             return row;
         });
-        BindingsHelper.bindContent(table.getItems(), fileList.getShown());
+
+        fileList.getShown().addListener((observable, oldValue, newValue) -> {
+            BindingsHelper.setContent(table.getItems(), newValue);
+        });
 
         return table;
     }
