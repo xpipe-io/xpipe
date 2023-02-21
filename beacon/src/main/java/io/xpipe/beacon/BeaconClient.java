@@ -314,8 +314,6 @@ public class BeaconClient implements AutoCloseable {
     @EqualsAndHashCode(callSuper = false)
     public static class CliClientInformation extends ClientInformation {
 
-        int consoleWidth;
-
         @Override
         public String toDisplayString() {
             return "X-Pipe CLI";
