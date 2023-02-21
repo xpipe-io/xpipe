@@ -82,8 +82,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public void launch(Path file) throws Exception {
             var customCommand = AppPrefs.get().customEditorCommand().getValue();
-            if (customCommand == null || customCommand.trim().isEmpty()) {
-                return;
+            if (customCommand == null || customCommand.isBlank()) {
+                throw new IllegalStateException("No custom editor command specified");
             }
 
             var format = customCommand.contains("$file") ? customCommand : customCommand + " $file";

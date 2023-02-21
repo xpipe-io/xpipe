@@ -218,7 +218,8 @@ public class AppUpdater {
 
                 var performedUpdate = new PerformedUpdate(
                         downloadedUpdate.getValue().getVersion(),
-                        downloadedUpdate.getValue().getBody());
+                        downloadedUpdate.getValue().getBody(),
+                        downloadedUpdate.getValue().getVersion());
                 AppCache.update("performedUpdate", performedUpdate);
             }
         });
@@ -290,6 +291,7 @@ public class AppUpdater {
     public static class PerformedUpdate {
         String name;
         String rawDescription;
+        String newVersion;
     }
 
     @Value

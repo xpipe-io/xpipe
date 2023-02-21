@@ -153,8 +153,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(String name, String command) throws Exception {
             var custom = AppPrefs.get().customTerminalCommand().getValue();
             if (custom == null || custom.isBlank()) {
-                ErrorEvent.fromMessage("No custom terminal command specified").reportable(false).handle();
-                return;
+                throw new IllegalStateException("No custom terminal command specified");
             }
 
             var format = custom.contains("$cmd") ? custom : custom + " $cmd";

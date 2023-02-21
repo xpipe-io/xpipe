@@ -2,7 +2,9 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.issue.ErrorEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -12,6 +14,12 @@ public class UpdateChangelogAlert {
 
     public static void showIfNeeded() {
         var update = AppUpdater.get().getPerformedUpdate();
+
+        if (update != null && !update.getNewVersion().equals(AppProperties.get().getVersion())) {
+            ErrorEvent.fromMessage("Update did not succeed").handle();
+            return;
+        }
+
         if (update == null || update.getRawDescription() == null) {
             return;
         }

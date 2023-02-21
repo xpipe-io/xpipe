@@ -10,6 +10,10 @@ public class TerminalHelper {
         }
 
         var type = AppPrefs.get().terminalType().getValue();
+        if (type == null) {
+            throw new IllegalStateException("No terminal has been configured to be used");
+        }
+
         type.launch(title, command);
     }
 }

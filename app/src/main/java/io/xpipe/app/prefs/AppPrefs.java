@@ -127,7 +127,6 @@ public class AppPrefs {
 
     // External editor
     // ===============
-
     final ObjectProperty<ExternalEditorType> externalEditor =
             typed(new SimpleObjectProperty<>(), ExternalEditorType.class);
     private final SingleSelectionField<ExternalEditorType> externalEditorControl = Field.ofSingleSelectionType(
