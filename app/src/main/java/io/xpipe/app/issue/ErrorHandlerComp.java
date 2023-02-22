@@ -37,10 +37,7 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     public static void showAndWait(ErrorEvent event) {
-        // Always run later to prevent any issues when an exception
-        // is thrown within an animation or layout processing task
-        // Otherwise, the show and wait method might fail
-        PlatformThread.alwaysRunLaterBlocking(() -> {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
             synchronized (showing) {
                 if (!showing.get()) {
                     showing.set(true);
@@ -49,7 +46,15 @@ public class ErrorHandlerComp extends SimpleComp {
                     window.setOnHidden(e -> {
                         showing.set(false);
                     });
-                    window.showAndWait();
+
+                    // An exception is thrown when show and wait is called
+                    // within an animation or layout processing task
+                    try {
+                        window.showAndWait();
+                    } catch (Throwable t) {
+                        window.show();
+                        t.printStackTrace();
+                    }
                 }
             }
         });

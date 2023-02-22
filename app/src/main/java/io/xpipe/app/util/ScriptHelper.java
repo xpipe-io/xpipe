@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
@@ -13,6 +14,14 @@ import java.util.List;
 import java.util.Random;
 
 public class ScriptHelper {
+
+    public static String createDetachCommand(ShellProcessControl pc, String command) {
+        if (pc.getOsType().equals(OsType.WINDOWS)) {
+            return "start \"\" " + command;
+        } else {
+            return "nohup " + command + " </dev/null &>/dev/null & disown";
+        }
+    }
 
     public static int getScriptId() {
         // A deterministic approach can cause permission problems when two different users execute the same command on a

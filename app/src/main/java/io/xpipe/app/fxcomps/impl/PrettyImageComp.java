@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.util.XPipeDaemon;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -73,7 +72,7 @@ public class PrettyImageComp extends SimpleComp {
                                 return null;
                             }
 
-                            return XPipeDaemon.getInstance().svgImage(value.getValue());
+                            return AppImages.svgImage(value.getValue());
                         }, value));
                 var ar = Bindings.createDoubleBinding(
                         () -> {
@@ -101,7 +100,7 @@ public class PrettyImageComp extends SimpleComp {
                                         return null;
                                     }
 
-                                    return XPipeDaemon.getInstance().image(value.getValue());
+                                    return AppImages.image(value.getValue());
                                 },
                                 PlatformThread.sync(value)));
                 var ar = Bindings.createDoubleBinding(

@@ -66,7 +66,7 @@ public class App extends Application {
         var content = new AppLayoutComp();
         content.apply(struc -> {
             struc.get().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-                AppActionLinkDetector.detectOnFocus();
+                // AppActionLinkDetector.detectOnFocus();
             });
         });
         var title =
