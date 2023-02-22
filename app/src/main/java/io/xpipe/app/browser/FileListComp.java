@@ -7,6 +7,7 @@ import atlantafx.base.theme.Tweaks;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
@@ -234,11 +235,12 @@ final class FileListComp extends AnchorPane {
         });
 
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
-            table.getItems().setAll(newValue);
-
-            if (newValue.size() > 0) {
-                table.scrollTo(0);
-            }
+            PlatformThread.runLaterIfNeededBlocking(() -> {
+                table.getItems().setAll(newValue);
+                if (newValue.size() > 0) {
+                    table.scrollTo(0);
+                }
+            });
         });
 
         return table;
