@@ -95,12 +95,12 @@ final class FileListComp extends AnchorPane {
             if (event.isControlDown()
                     && event.getCode().equals(KeyCode.C)
                     && table.getSelectionModel().getSelectedItems().size() > 0) {
-                BrowserClipboard.startCopy(table.getSelectionModel().getSelectedItems());
+                FileBrowserClipboard.startCopy(table.getSelectionModel().getSelectedItems());
                 event.consume();
             }
 
             if (event.isControlDown() && event.getCode().equals(KeyCode.V)) {
-                var clipboard = BrowserClipboard.retrieveCopy();
+                var clipboard = FileBrowserClipboard.retrieveCopy();
                 if (clipboard != null) {
                     var files = clipboard.getEntries();
                     var target = fileList.getModel().getCurrentDirectory();
@@ -155,7 +155,7 @@ final class FileListComp extends AnchorPane {
 
                 var selected = table.getSelectionModel().getSelectedItems();
                 Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                db.setContent(BrowserClipboard.startDrag(selected));
+                db.setContent(FileBrowserClipboard.startDrag(selected));
                 db.setDragView(image, 30, 60);
                 event.setDragDetect(true);
                 event.consume();
@@ -221,7 +221,7 @@ final class FileListComp extends AnchorPane {
                 // Accept drops from inside the app window
                 if (event.getGestureSource() != null) {
                     event.setDropCompleted(true);
-                    var files = BrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
+                    var files = FileBrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
                     var target = row.getItem() != null
                             ? row.getItem()
                             : fileList.getModel().getCurrentDirectory();

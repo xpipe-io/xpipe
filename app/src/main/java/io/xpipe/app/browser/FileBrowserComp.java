@@ -24,13 +24,13 @@ import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
 import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 
-public class BrowserComp extends SimpleComp {
+public class FileBrowserComp extends SimpleComp {
 
     private static final double TAB_MIN_HEIGHT = 60;
 
-    private final BrowserModel model;
+    private final FileBrowserModel model;
 
-    public BrowserComp(BrowserModel model) {
+    public FileBrowserComp(FileBrowserModel model) {
         this.model = model;
     }
 

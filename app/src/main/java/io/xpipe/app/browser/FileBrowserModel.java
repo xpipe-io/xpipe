@@ -9,9 +9,9 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 
 @Getter
-public class BrowserModel {
+public class FileBrowserModel {
 
-    public static final BrowserModel DEFAULT = new BrowserModel();
+    public static final FileBrowserModel DEFAULT = new FileBrowserModel();
 
     private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();

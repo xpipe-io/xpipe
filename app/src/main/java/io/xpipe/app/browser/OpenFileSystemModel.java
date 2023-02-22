@@ -27,7 +27,7 @@ final class OpenFileSystemModel {
     private FileSystem fileSystem;
     private final FileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
-    private final NavigationHistory history = new NavigationHistory();
+    private final FileBrowserNavigationHistory history = new FileBrowserNavigationHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
 
     public OpenFileSystemModel() {
@@ -208,7 +208,7 @@ final class OpenFileSystemModel {
         return currentPath.getReadOnlyProperty();
     }
 
-    public NavigationHistory getHistory() {
+    public FileBrowserNavigationHistory getHistory() {
         return history;
     }
 

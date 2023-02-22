@@ -10,7 +10,7 @@ import lombok.Value;
 import java.nio.file.Files;
 import java.util.*;
 
-public class BrowserClipboard {
+public class FileBrowserClipboard {
 
     @Value
     public static class Instance {

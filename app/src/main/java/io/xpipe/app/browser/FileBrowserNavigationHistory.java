@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-final class NavigationHistory {
+final class FileBrowserNavigationHistory {
 
     private final IntegerProperty cursor = new SimpleIntegerProperty(0);
     private final List<String> history = new ArrayList<>();

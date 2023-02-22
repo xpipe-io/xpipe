@@ -14,9 +14,9 @@ import javafx.scene.layout.Region;
 
 final class BookmarkList extends SimpleComp {
 
-    private final BrowserModel model;
+    private final FileBrowserModel model;
 
-    BookmarkList(BrowserModel model) {
+    BookmarkList(FileBrowserModel model) {
         this.model = model;
     }
 
