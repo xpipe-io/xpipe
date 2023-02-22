@@ -72,7 +72,7 @@ final class FileContextMenu extends ContextMenu {
                     ThreadHelper.runFailableAsync(() -> {
                         ShellProcessControl pc =
                                 model.getFileSystem().getShell().orElseThrow();
-                        pc.executeSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
+                        pc.executeBooleanSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
                         var cmd = pc.command("\"" + entry.getPath() + "\"").prepareTerminalOpen();
                         TerminalHelper.open(FilenameUtils.getBaseName(entry.getPath()), cmd);
                     });
@@ -85,7 +85,7 @@ final class FileContextMenu extends ContextMenu {
                     ThreadHelper.runFailableAsync(() -> {
                         ShellProcessControl pc =
                                 model.getFileSystem().getShell().orElseThrow();
-                        pc.executeSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
+                        pc.executeBooleanSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
                         var cmd = ScriptHelper.createDetachCommand(pc, "\"" + entry.getPath() + "\"");
                         pc.executeBooleanSimpleCommand(cmd);
                     });

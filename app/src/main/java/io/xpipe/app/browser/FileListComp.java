@@ -234,7 +234,7 @@ final class FileListComp extends AnchorPane {
             return row;
         });
 
-        fileList.getShown().addListener((observable, oldValue, newValue) -> {
+        SimpleChangeListener.apply(fileList.getShown(), (newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 table.getItems().setAll(newValue);
                 if (newValue.size() > 0) {
