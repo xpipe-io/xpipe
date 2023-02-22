@@ -235,7 +235,7 @@ final class FileListComp extends AnchorPane {
         });
 
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
-            PlatformThread.runLaterIfNeededBlocking(() -> {
+            PlatformThread.runLaterIfNeeded(() -> {
                 table.getItems().setAll(newValue);
                 if (newValue.size() > 0) {
                     table.scrollTo(0);
