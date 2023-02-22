@@ -4,11 +4,8 @@ import io.xpipe.app.core.FileWatchManager;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.function.FailableSupplier;
 
 import java.io.*;
@@ -24,14 +21,14 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
-public class ExternalEditor {
+public class FileBridge {
 
     private static final Path TEMP =
-            FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("editor");
-    private static ExternalEditor INSTANCE;
+            FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("bridge");
+    private static FileBridge INSTANCE;
     private final Set<Entry> openEntries = new CopyOnWriteArraySet<>();
 
-    public static ExternalEditor get() {
+    public static FileBridge get() {
         return INSTANCE;
     }
 
@@ -44,7 +41,7 @@ public class ExternalEditor {
     }
 
     public static void init() {
-        INSTANCE = new ExternalEditor();
+        INSTANCE = new FileBridge();
         try {
             FileUtils.forceMkdir(TEMP.toFile());
 
@@ -124,13 +121,13 @@ public class ExternalEditor {
         return Optional.empty();
     }
 
-    public void startEditing(String keyName, String fileType, Object key, String input, Consumer<String> output) {
+    public void openString(String keyName, String fileType, Object key, String input, Consumer<String> output, Consumer<String> consumer) {
         if (input == null) {
             input = "";
         }
 
         String s = input;
-        startEditing(
+        openIO(
                 keyName,
                 fileType,
                 key,
@@ -141,18 +138,20 @@ public class ExternalEditor {
                         super.close();
                         output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
                     }
-                });
+                },
+                consumer);
     }
 
-    public void startEditing(
+    public void openIO(
             String keyName,
             String fileType,
             Object key,
             FailableSupplier<InputStream, Exception> input,
-            FailableSupplier<OutputStream, Exception> output) {
+            FailableSupplier<OutputStream, Exception> output,
+            Consumer<String> consumer) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
-            openInEditor(ext.get().file.toString());
+            consumer.accept(ext.get().file.toString());
             return;
         }
 
@@ -181,31 +180,7 @@ public class ExternalEditor {
         openEntries.add(entry);
 
         ext = getForKey(key);
-        openInEditor(ext.orElseThrow().file.toString());
-    }
-
-    public void openInEditor(FileSystem fileSystem, String file) {
-        var editor = AppPrefs.get().externalEditor().getValue();
-        if (editor == null || !editor.isSelectable()) {
-            return;
-        }
-
-        startEditing(FileNames.getFileName(file), FilenameUtils.getExtension(file), file, () -> {
-            return fileSystem.openInput(file);
-        }, () -> fileSystem.openOutput(file));
-    }
-
-    public void openInEditor(String file) {
-        var editor = AppPrefs.get().externalEditor().getValue();
-        if (editor == null || !editor.isSelectable()) {
-            return;
-        }
-
-        try {
-            editor.launch(Path.of(file).toRealPath());
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
+        consumer.accept(ext.orElseThrow().file.toString());
     }
 
     @Getter

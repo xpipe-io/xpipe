@@ -54,6 +54,7 @@ public class FileSystemHelper {
                 Files.getLastModifiedTime(file).toInstant(),
                 Files.isDirectory(file),
                 Files.isHidden(file),
+                Files.isExecutable(file),
                 Files.size(file));
     }
 

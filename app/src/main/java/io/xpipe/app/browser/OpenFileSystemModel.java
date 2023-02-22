@@ -45,7 +45,7 @@ final class OpenFileSystemModel {
     }
 
     public FileSystem.FileEntry getCurrentDirectory() {
-        return new FileSystem.FileEntry(fileSystem, currentPath.get(), Instant.now(), true, false, 0);
+        return new FileSystem.FileEntry(fileSystem, currentPath.get(), Instant.now(), true, false, false, 0);
     }
 
     public void cd(String path) {
@@ -75,7 +75,7 @@ final class OpenFileSystemModel {
                 newList = getFileSystem().listFiles(dir).collect(Collectors.toCollection(ArrayList::new));
             } else {
                 newList = getFileSystem().listRoots().stream()
-                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, 0))
+                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0))
                         .collect(Collectors.toCollection(ArrayList::new));
             }
             fileList.setAll(newList);
@@ -180,7 +180,9 @@ final class OpenFileSystemModel {
 
     public void switchAsync(FileSystemStore fileSystem) {
         ThreadHelper.runFailableAsync(() -> {
-            switchSync(fileSystem);
+            BusyProperty.execute(busy, () -> {
+                switchSync(fileSystem);
+            });
         });
     }
 

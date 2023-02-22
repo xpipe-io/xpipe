@@ -3,7 +3,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.ExternalEditor;
+import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.ObjectProperty;
@@ -73,7 +73,7 @@ final class FileListModel {
         if (entry.isDirectory()) {
             model.navigate(entry.getPath(), true);
         } else {
-            ExternalEditor.get().openInEditor(entry.getFileSystem(), entry.getPath());
+            FileOpener.openInTextEditor(entry);
         }
     }
 

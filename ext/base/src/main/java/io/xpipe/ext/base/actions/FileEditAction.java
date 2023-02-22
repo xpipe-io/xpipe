@@ -2,7 +2,7 @@ package io.xpipe.ext.base.actions;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.util.ExternalEditor;
+import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.DataFlow;
@@ -24,15 +24,7 @@ public class FileEditAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             if (store.getFileSystem().equals(new LocalStore())) {
-                ExternalEditor.get().openInEditor(store.getFile());
-            } else {
-                ExternalEditor.get()
-                        .startEditing(
-                                store.getFileName(),
-                                store.getFileExtension(),
-                                store,
-                                () -> store.openInput(),
-                                () -> store.openOutput());
+                FileOpener.openInTextEditor(store.getFile());
             }
         }
     }

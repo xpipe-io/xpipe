@@ -15,6 +15,16 @@ import java.util.Random;
 
 public class ScriptHelper {
 
+    public static String createDefaultOpenCommand(ShellProcessControl pc, String file) {
+        if (pc.getOsType().equals(OsType.WINDOWS)) {
+            return "\"" + file + "\"";
+        } else if (pc.getOsType().equals(OsType.LINUX)){
+            return "xdg-open \"" + file + "\"";
+        } else {
+            return "open \"" + file + "\"";
+        }
+    }
+
     public static String createDetachCommand(ShellProcessControl pc, String command) {
         if (pc.getOsType().equals(OsType.WINDOWS)) {
             return "start \"\" " + command;

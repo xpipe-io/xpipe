@@ -2,10 +2,7 @@
 
 package io.xpipe.app.browser;
 
-import io.xpipe.app.util.ExternalEditor;
-import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.app.util.TerminalHelper;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.FileSystem;
@@ -21,9 +18,13 @@ import java.util.List;
 
 final class FileContextMenu extends ContextMenu {
 
-    public boolean isScript(FileSystem.FileEntry e) {
+    public boolean isExecutable(FileSystem.FileEntry e) {
         if (e.isDirectory()) {
             return false;
+        }
+
+        if (e.getExecutable() != null && e.getExecutable()) {
+            return true;
         }
 
         var shell = e.getFileSystem().getShell();
@@ -33,7 +34,7 @@ final class FileContextMenu extends ContextMenu {
 
         var os = shell.get().getOsType();
         var ending = FilenameUtils.getExtension(e.getPath()).toLowerCase();
-        if (os.equals(OsType.WINDOWS) && List.of("bat", "ps1", "cmd").contains(ending)) {
+        if (os.equals(OsType.WINDOWS) && List.of("exe", "bat", "ps1", "cmd").contains(ending)) {
             return true;
         }
 
@@ -65,7 +66,7 @@ final class FileContextMenu extends ContextMenu {
             });
             getItems().add(terminal);
         } else {
-            if (isScript(entry)) {
+            if (isExecutable(entry)) {
                 var execute = new MenuItem("Run in terminal");
                 execute.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
@@ -91,23 +92,21 @@ final class FileContextMenu extends ContextMenu {
                     event.consume();
                 });
                 getItems().add(executeInBackground);
-            }
-
-            var open = new MenuItem("Open default");
-            open.setOnAction(event -> {
-                ThreadHelper.runFailableAsync(() -> {
-                    ShellProcessControl pc = model.getFileSystem().getShell().orElseThrow();
-                    var cmd = "\"" + entry.getPath() + "\"";
-                    pc.executeBooleanSimpleCommand(cmd);
+            } else {
+                var open = new MenuItem("Open default");
+                open.setOnAction(event -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        FileOpener.openInDefaultApplication(entry);
+                    });
+                    event.consume();
                 });
-                event.consume();
-            });
-            getItems().add(open);
+                getItems().add(open);
+            }
 
             var edit = new MenuItem("Edit");
             edit.setOnAction(event -> {
+                FileOpener.openInTextEditor(entry);
                 event.consume();
-                ExternalEditor.get().openInEditor(model.getFileSystem(), entry.getPath());
             });
             getItems().add(edit);
         }

@@ -24,6 +24,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
         Instant date;
         boolean directory;
         boolean hidden;
+        Boolean executable;
         long size;
     }
 

@@ -8,7 +8,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DynamicOptionsBuilder;
-import io.xpipe.app.util.ExternalEditor;
+import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.scene.layout.Region;
 
@@ -30,8 +30,7 @@ public class BrowseDirectoryComp extends SimpleComp {
                 .addComp(
                         "logFile",
                         new ButtonComp(AppI18n.observable("openCurrentLogFile"), () -> {
-                            ExternalEditor.get()
-                                    .openInEditor(AppLogs.get()
+                            FileOpener.openInTextEditor(AppLogs.get()
                                             .getSessionLogsDirectory()
                                             .resolve("xpipe.log")
                                             .toString());

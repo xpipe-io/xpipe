@@ -4,7 +4,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.TextAreaComp;
-import io.xpipe.app.util.ExternalEditor;
+import io.xpipe.app.util.FileOpener;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.scene.layout.AnchorPane;
@@ -47,8 +47,8 @@ public class IntegratedTextAreaComp extends SimpleComp {
     }
 
     private Region createOpenButton(Region container) {
-        var button = new IconButtonComp("mdal-edit", () -> ExternalEditor.get()
-                        .startEditing(identifier, fileType, this, value.getValue(), (s) -> {
+        var button = new IconButtonComp("mdal-edit", () -> FileOpener
+                        .openString(identifier, fileType, this, value.getValue(), (s) -> {
                             Platform.runLater(() -> value.setValue(s));
                         }))
                 .createRegion();

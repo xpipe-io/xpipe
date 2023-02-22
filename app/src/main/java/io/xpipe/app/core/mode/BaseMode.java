@@ -9,7 +9,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppUpdater;
-import io.xpipe.app.util.ExternalEditor;
+import io.xpipe.app.util.FileBridge;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -40,7 +40,7 @@ public class BaseMode extends OperationMode {
         AppCharsetter.init();
         DataStorage.init();
         FileWatchManager.init();
-        ExternalEditor.init();
+        FileBridge.init();
         AppSocketServer.init();
         AppUpdater.init();
         TrackEvent.info("mode", "Finished base components initialization");
