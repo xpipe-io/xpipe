@@ -5,8 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutorService;
 
 public interface ProcessControl extends Closeable, AutoCloseable {
+
+    ExecutorService getStdoutReader();
+
+    ExecutorService getStderrReader();
 
     ProcessControl sensitive();
 

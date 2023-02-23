@@ -67,10 +67,13 @@ public class FileNames {
 
     public static String toUnix(String file) {
         var joined = String.join("/", split(file));
-        return file.startsWith("/") ? "/" + joined : joined;
+        var prefix =  file.startsWith("/") ? "/" : "";
+        var suffix = file.endsWith("/") || file.endsWith("\\") ? "/" : "";
+        return prefix + joined + suffix;
     }
 
     public static String toWindows(String file) {
-        return String.join("\\", split(file));
+        var suffix = file.endsWith("/") || file.endsWith("\\") ? "\\" : "";
+        return String.join("\\", split(file)) + suffix;
     }
 }

@@ -91,6 +91,8 @@ final class FileListComp extends AnchorPane {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
 
+        var draggedOverDirectory = new SimpleBooleanProperty();
+
         table.setOnKeyPressed(event -> {
             if (event.isControlDown()
                     && event.getCode().equals(KeyCode.C)
@@ -119,10 +121,7 @@ final class FileListComp extends AnchorPane {
                     return;
                 }
 
-                var cm = new FileContextMenu(
-                        fileList.getModel(),
-                        row.getItem(),
-                        editing);
+                var cm = new FileContextMenu(fileList.getModel(), row.getItem(), editing);
                 if (t.getButton() == MouseButton.SECONDARY) {
                     cm.show(row, t.getScreenX(), t.getScreenY());
                 }
@@ -134,12 +133,20 @@ final class FileListComp extends AnchorPane {
                 }
             });
 
+            draggedOverDirectory.addListener((observable, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(DRAG, newValue);
+            });
+
             row.setOnDragOver(event -> {
                 if (row.equals(event.getGestureSource())) {
                     return;
                 }
 
-                row.pseudoClassStateChanged(DRAG, true);
+                if (row.getItem() == null || !row.getItem().isDirectory()) {
+                    draggedOverDirectory.set(true);
+                } else {
+                    row.pseudoClassStateChanged(DRAG, true);
+                }
                 event.acceptTransferModes(TransferMode.ANY);
                 event.consume();
             });
@@ -162,12 +169,13 @@ final class FileListComp extends AnchorPane {
             });
 
             row.setOnDragExited(event -> {
-                row.pseudoClassStateChanged(DRAG, false);
-                event.consume();
+                if (row.getItem() != null && row.getItem().isDirectory()) {
+                    row.pseudoClassStateChanged(DRAG, false);
+                } else {
+                    draggedOverDirectory.set(false);
+                }
 
                 if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
-                    row.pseudoClassStateChanged(DRAG, false);
-                    event.consume();
                 }
 
                 //                if (event.getGestureSource() != null) {
@@ -207,28 +215,31 @@ final class FileListComp extends AnchorPane {
             //            });
 
             row.setOnDragDropped(event -> {
+                draggedOverDirectory.set(false);
+
                 // Accept drops from outside the app window
                 if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
-                    event.setDropCompleted(true);
                     Dragboard db = event.getDragboard();
                     var list = db.getFiles().stream().map(File::toPath).toList();
-                    var target = row.getItem() != null
+                    var target = row.getItem() != null && row.getItem().isDirectory()
                             ? row.getItem()
                             : fileList.getModel().getCurrentDirectory();
                     fileList.getModel().dropLocalFilesIntoAsync(target, list);
+                    event.setDropCompleted(true);
+                    event.consume();
                 }
 
                 // Accept drops from inside the app window
                 if (event.getGestureSource() != null) {
-                    event.setDropCompleted(true);
-                    var files = FileBrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
+                    var files = FileBrowserClipboard.retrieveDrag(event.getDragboard())
+                            .getEntries();
                     var target = row.getItem() != null
                             ? row.getItem()
                             : fileList.getModel().getCurrentDirectory();
                     fileList.getModel().dropFilesIntoAsync(target, files, false);
+                    event.setDropCompleted(true);
+                    event.consume();
                 }
-
-                event.consume();
             });
 
             return row;

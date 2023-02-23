@@ -190,7 +190,7 @@ public class AppInstaller {
                             .start()) {
                         c.discardOrThrow();
                     }
-                    pc.executeSimpleCommand("xpipe daemon start");
+                    pc.executeSimpleCommand("xpipe open");
                 }
             }
 
@@ -198,7 +198,7 @@ public class AppInstaller {
             public void installLocal(String file) throws Exception {
                 var command = "set -x\n" + "DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe\n"
                         + "DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy \"" + file + "\"\n"
-                        + "xpipe daemon start";
+                        + "xpipe open";
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -218,13 +218,13 @@ public class AppInstaller {
                             .start()) {
                         c.discardOrThrow();
                     }
-                    pc.executeSimpleCommand("xpipe daemon start");
+                    pc.executeSimpleCommand("xpipe open");
                 }
             }
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = "set -x\n" + "sudo rpm -U -v --force \"" + file + "\"\n" + "xpipe daemon start";
+                var command = "set -x\n" + "sudo rpm -U -v --force \"" + file + "\"\n" + "xpipe open";
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -245,14 +245,14 @@ public class AppInstaller {
                             .start()) {
                         c.discardOrThrow();
                     }
-                    pc.executeSimpleCommand("xpipe daemon start");
+                    pc.executeSimpleCommand("xpipe open");
                 }
             }
 
             @Override
             public void installLocal(String file) throws Exception {
                 var command = "set -x\n" + "sudo installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /\n"
-                        + "xpipe daemon start";
+                        + "xpipe open";
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }

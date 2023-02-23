@@ -1,9 +1,10 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.charsetter.Charsetter;
-import lombok.SneakyThrows;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
@@ -20,31 +21,9 @@ public interface CommandProcessControl extends ProcessControl {
 
     ShellProcessControl getParent();
 
-    default InputStream startExternalStdout() throws Exception {
-        start();
-        discardErr();
-        return new FilterInputStream(getStdout()) {
-            @Override
-            @SneakyThrows
-            public void close() throws IOException {
-                CommandProcessControl.this.close();
-            }
-        };
-    }
+    InputStream startExternalStdout() throws Exception;
 
-    default OutputStream startExternalStdin() throws Exception {
-        start();
-        discardOut();
-        discardErr();
-        return new FilterOutputStream(getStdin()) {
-            @Override
-            @SneakyThrows
-            public void close() throws IOException {
-                closeStdin();
-                CommandProcessControl.this.close();
-            }
-        };
-    }
+    OutputStream startExternalStdin() throws Exception;
 
     public boolean waitFor();
 

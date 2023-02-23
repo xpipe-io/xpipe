@@ -1,5 +1,6 @@
 package io.xpipe.core.store;
 
+import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellProcessControl;
 import lombok.NonNull;
 import lombok.Value;
@@ -26,6 +27,19 @@ public interface FileSystem extends Closeable, AutoCloseable {
         boolean hidden;
         Boolean executable;
         long size;
+
+        public FileEntry(
+                @NonNull FileSystem fileSystem, @NonNull String path, @NonNull Instant date, boolean directory, boolean hidden, Boolean executable,
+                long size
+        ) {
+            this.fileSystem = fileSystem;
+            this.path = directory ? FileNames.toDirectory(path) : path;
+            this.date = date;
+            this.directory = directory;
+            this.hidden = hidden;
+            this.executable = executable;
+            this.size = size;
+        }
     }
 
     Optional<ShellProcessControl> getShell();
@@ -54,6 +68,10 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     default Stream<FileEntry> listFilesRecursively(String file) throws Exception {
         return listFiles(file).flatMap(fileEntry -> {
+            if (!fileEntry.isDirectory()) {
+                return Stream.of(fileEntry);
+            }
+
             try {
                 return listFilesRecursively(fileEntry.getPath());
             } catch (Exception e) {

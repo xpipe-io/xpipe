@@ -76,7 +76,7 @@ public class FileSystemHelper {
     }
 
     public static void dropFilesInto(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
+            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) throws Exception {
         if (files.size() == 0) {
             return;
         }
@@ -91,68 +91,59 @@ public class FileSystemHelper {
     }
 
     private static void dropFileAcrossSameFileSystem(
-        FileSystem.FileEntry target, FileSystem.FileEntry file, boolean explicitCopy) {
+            FileSystem.FileEntry target, FileSystem.FileEntry source, boolean explicitCopy) throws Exception {
         // Prevent dropping directory into itself
-        if (FileNames.startsWith(file.getPath(), target.getPath())) {
+        if (FileNames.startsWith(source.getPath(), target.getPath())) {
             return;
         }
 
-        try {
-            var sourceFile = file.getPath();
-            var targetFile = FileNames.join(target.getPath(), FileNames.getFileName(sourceFile));
-            if (explicitCopy) {
-                target.getFileSystem().copy(sourceFile, targetFile);
-            } else {
-                target.getFileSystem().move(sourceFile, targetFile);
-            }
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+        var sourceFile = source.getPath();
+        var targetFile = FileNames.join(target.getPath(), FileNames.getFileName(sourceFile));
+        if (explicitCopy) {
+            target.getFileSystem().copy(sourceFile, targetFile);
+        } else {
+            target.getFileSystem().move(sourceFile, targetFile);
         }
     }
 
-    private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry file) {
+    private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry source)
+            throws Exception {
         var flatFiles = new HashMap<FileSystem.FileEntry, String>();
 
         // Prevent dropping directory into itself
-        if (file.getFileSystem().equals(target.getFileSystem())
-                && FileNames.startsWith(file.getPath(), target.getPath())) {
+        if (source.getFileSystem().equals(target.getFileSystem())
+                && FileNames.startsWith(source.getPath(), target.getPath())) {
             return;
         }
 
-        try {
-            if (file.isDirectory()) {
-                flatFiles.put(file, FileNames.getFileName(file.getPath()));
-                try (var stream = file.getFileSystem().listFilesRecursively(file.getPath())) {
-                    stream.forEach(fileEntry -> {
-                        flatFiles.put(fileEntry, FileNames.relativize(file.getPath(), fileEntry.getPath()));
-                    });
-                }
-            } else {
-                flatFiles.put(file, FileNames.getFileName(file.getPath()));
+        if (source.isDirectory()) {
+            var directoryName = FileNames.getFileName(source.getPath());
+            flatFiles.put(source, directoryName);
+
+            var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
+            try (var stream = source.getFileSystem().listFilesRecursively(source.getPath())) {
+                stream.forEach(fileEntry -> {
+                    flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
+                });
             }
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
-            return;
+        } else {
+            flatFiles.put(source, FileNames.getFileName(source.getPath()));
         }
 
         for (var e : flatFiles.entrySet()) {
             var sourceFile = e.getKey();
             var targetFile = FileNames.join(target.getPath(), e.getValue());
-            try {
-                if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
-                    throw new IllegalStateException();
-                }
+            if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
+                throw new IllegalStateException();
+            }
 
-                if (sourceFile.isDirectory()) {
-                    target.getFileSystem().mkdirs(targetFile);
-                } else {
-                    try (var in = sourceFile.getFileSystem().openInput(sourceFile.getPath());
-                            var out = target.getFileSystem().openOutput(targetFile)) {
-                        in.transferTo(out);
-                    }
+            if (sourceFile.isDirectory()) {
+                target.getFileSystem().mkdirs(targetFile);
+            } else {
+                try (var in = sourceFile.getFileSystem().openInput(sourceFile.getPath());
+                        var out = target.getFileSystem().openOutput(targetFile)) {
+                    in.transferTo(out);
                 }
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
             }
         }
     }
