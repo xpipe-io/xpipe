@@ -8,7 +8,7 @@ import io.xpipe.core.store.ShellStore;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FileSystemHelper {
@@ -108,7 +108,7 @@ public class FileSystemHelper {
 
     private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry source)
             throws Exception {
-        var flatFiles = new HashMap<FileSystem.FileEntry, String>();
+        var flatFiles = new LinkedHashMap<FileSystem.FileEntry, String>();
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())

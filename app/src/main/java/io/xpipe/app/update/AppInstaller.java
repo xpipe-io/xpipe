@@ -39,7 +39,7 @@ public class AppInstaller {
         } else {
             targetFile = FileNames.join(
                     s.getTemporaryDirectory(), localFile.getFileName().toString());
-            try (CommandProcessControl c = s.command(s.getShellDialect().getStreamFileWriteCommand(targetFile))
+            try (CommandProcessControl c = s.getShellDialect().getStreamFileWriteCommand(s, targetFile)
                     .start()) {
                 c.discardOut();
                 c.discardErr();

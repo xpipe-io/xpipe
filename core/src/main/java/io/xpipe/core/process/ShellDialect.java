@@ -93,7 +93,7 @@ public interface ShellDialect {
 
     String getFileMoveCommand(String oldFile, String newFile);
 
-    String getStreamFileWriteCommand(String file);
+    CommandProcessControl getStreamFileWriteCommand(ShellProcessControl processControl, String file);
 
     String getTextFileWriteCommand(String content, String file);
 

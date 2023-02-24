@@ -25,6 +25,7 @@ final class OpenFileSystemModel {
 
     private Property<FileSystemStore> store = new SimpleObjectProperty<>();
     private FileSystem fileSystem;
+    private final Property<String> filter = new SimpleStringProperty();
     private final FileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final FileBrowserNavigationHistory history = new FileBrowserNavigationHistory();
@@ -63,6 +64,7 @@ final class OpenFileSystemModel {
             return false;
         }
 
+        filter.setValue(null);
         currentPath.set(path);
         history.cd(path);
         return true;

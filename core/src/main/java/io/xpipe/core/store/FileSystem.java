@@ -73,7 +73,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
             }
 
             try {
-                return listFilesRecursively(fileEntry.getPath());
+                return Stream.concat(Stream.of(fileEntry), listFilesRecursively(fileEntry.getPath()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

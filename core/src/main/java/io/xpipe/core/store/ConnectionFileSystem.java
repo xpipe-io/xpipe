@@ -54,8 +54,8 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(String file) throws Exception {
-        return shellProcessControl.command(proc -> proc.getShellDialect()
-                        .getStreamFileWriteCommand(proc.getOsType().normalizeFileName(file)))
+        return shellProcessControl.getShellDialect()
+                        .getStreamFileWriteCommand(shellProcessControl, shellProcessControl.getOsType().normalizeFileName(file))
                 .startExternalStdin();
     }
 

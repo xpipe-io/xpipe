@@ -14,6 +14,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 @Getter
@@ -34,6 +35,10 @@ final class FileListModel {
 
     public FileListModel(OpenFileSystemModel model) {
         this.model = model;
+
+        model.getFilter().addListener((observable, oldValue, newValue) -> {
+            refreshShown();
+        });
     }
 
     public void setAll(List<FileSystem.FileEntry> newFiles) {
@@ -47,11 +52,17 @@ final class FileListModel {
     }
 
     private void refreshShown() {
+        List<FileSystem.FileEntry> filtered = model.getFilter().getValue() != null ? all.getValue().stream().filter(entry -> {
+            var name = FileNames.getFileName(entry.getPath()).toLowerCase(Locale.ROOT);
+            var filterString = model.getFilter().getValue().toLowerCase(Locale.ROOT);
+            return name.contains(filterString);
+        }).toList() : all.getValue();
+
         Comparator<FileSystem.FileEntry> tableComparator = comparatorProperty.getValue();
         var comparator =  tableComparator != null
                 ? FILE_TYPE_COMPARATOR.thenComparing(tableComparator)
                 : FILE_TYPE_COMPARATOR;
-        var listCopy = new ArrayList<>(all.getValue());
+        var listCopy = new ArrayList<>(filtered);
         listCopy.sort(comparator);
         shown.setValue(listCopy);
     }

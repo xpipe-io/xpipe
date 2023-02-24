@@ -57,12 +57,15 @@ public class OpenFileSystemComp extends SimpleComp {
             creatingProperty.set(true);
         });
 
+        var filter = new FileFilterComp(model.getFilter()).createRegion();
+
         var topBar = new ToolBar();
         topBar.getItems().setAll(
                 backBtn,
                 forthBtn,
                 new Spacer(10),
                 pathBar,
+                filter,
                 refreshBtn,
                 terminalBtn,
                 addBtn

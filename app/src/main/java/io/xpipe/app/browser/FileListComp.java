@@ -22,10 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 
 import java.io.File;
 import java.time.Instant;
@@ -83,6 +80,7 @@ final class FileListComp extends AnchorPane {
         // ~
 
         var table = new TableView<FileSystem.FileEntry>();
+        table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, sizeCol, mtimeCol);
         table.getSortOrder().add(filenameCol);
