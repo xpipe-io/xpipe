@@ -47,6 +47,8 @@ public interface ShellDialect {
 
     String getExitCodeVariable();
 
+    String environmentVariable(String name);
+
     default String getConcatenationOperator() {
         return ";";
     }

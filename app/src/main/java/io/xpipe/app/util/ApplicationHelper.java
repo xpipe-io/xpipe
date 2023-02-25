@@ -1,9 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.process.ShellProcessControl;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +15,7 @@ public class ApplicationHelper {
         TrackEvent.withDebug("proc", "Executing local application")
                 .elements(args)
                 .handle();
-        try (var c = ShellStore.local().create().command(s).start()) {
+        try (var c = LocalStore.getShell().command(s).start()) {
             c.discardOrThrow();
         }
     }
@@ -25,7 +25,7 @@ public class ApplicationHelper {
         TrackEvent.withDebug("proc", "Executing local application")
                 .elements(args)
                 .handle();
-        try (var c = ShellStore.local().create().command(s).start()) {
+        try (var c = LocalStore.getShell().command(s).start()) {
             c.discardOrThrow();
         }
     }

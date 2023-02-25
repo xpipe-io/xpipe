@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.ShellStore;
@@ -76,7 +77,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         public boolean isAvailable() {
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+            try (ShellProcessControl pc = LocalStore.getShell()) {
                 return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();

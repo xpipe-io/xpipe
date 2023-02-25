@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
 
 public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStore, FileSystemStore {
 
-    public static MachineStore local() {
+    public static ShellStore local() {
         return new LocalStore();
     }
 

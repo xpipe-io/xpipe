@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
@@ -53,7 +54,7 @@ public class DesktopShortcuts {
                         """,
                 target);
 
-        try (var pc = ShellStore.local().create().start()) {
+        try (var pc = LocalStore.getShell()) {
             pc.executeSimpleCommand(
                     pc.getShellDialect().flatten(pc.getShellDialect().getMkdirsCommand(base + "/Contents/MacOS")));
             pc.executeSimpleCommand(

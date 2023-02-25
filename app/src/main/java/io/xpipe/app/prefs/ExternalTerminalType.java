@@ -4,9 +4,9 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.MacOsPermissions;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.store.ShellStore;
 
 import java.util.List;
 
@@ -133,7 +133,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+            try (ShellProcessControl pc = LocalStore.getShell()) {
                 var suffix = command.equals(pc.getShellDialect().getNormalOpenCommand())
                         ? "\"\""
                         : "\"" + command.replaceAll("\"", "\\\\\"") + "\"";
@@ -157,7 +157,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             var format = custom.contains("$cmd") ? custom : custom + " $cmd";
-            try (var pc = ShellStore.local().create().start()) {
+            try (var pc = LocalStore.getShell()) {
                 var toExecute = format.replace("$cmd", command);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + name + "\" " + toExecute;
@@ -187,7 +187,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+            try (ShellProcessControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
                                 osascript - "$@" <<EOF
@@ -225,7 +225,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+            try (ShellProcessControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
                                 osascript - "$@" <<EOF
@@ -258,7 +258,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+            try (ShellProcessControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, displayName);
 
                 var toExecute = executable + " " + toCommand(name, command);
@@ -274,7 +274,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected abstract String toCommand(String name, String command);
 
         public boolean isAvailable() {
-            try (ShellProcessControl pc = ShellStore.local().create().start()) {
+            try (ShellProcessControl pc = LocalStore.getShell()) {
                 return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
