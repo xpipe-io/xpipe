@@ -1,18 +1,18 @@
 package io.xpipe.ext.base.actions;
 
+import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.StreamDataStore;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.stage.FileChooser;
 import lombok.Value;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 
 public class StreamExportAction implements ActionProvider {
 
@@ -23,25 +23,22 @@ public class StreamExportAction implements ActionProvider {
 
         @Override
         public boolean requiresPlatform() {
-            return false;
+            return true;
         }
 
         @Override
         public void execute() throws Exception {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(AppI18n.get("browseFileTitle"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "."));
-            var outputFile = fileChooser.showSaveDialog(null);
-            if (outputFile == null) {
+            var outputFile = new SimpleObjectProperty<FileStore>();
+            StandaloneFileBrowser.saveSingleFile(outputFile);
+            if (outputFile.get() == null) {
                 return;
             }
 
             ThreadHelper.runAsync(() -> {
                 try (InputStream inputStream = store.openInput()) {
-                    try (OutputStream outputStream = Files.newOutputStream(outputFile.toPath())) {
+                    try (OutputStream outputStream = outputFile.get().openOutput()) {
                         inputStream.transferTo(outputStream);
                     }
-                    DesktopHelper.browseFileInDirectory(outputFile.toPath());
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }

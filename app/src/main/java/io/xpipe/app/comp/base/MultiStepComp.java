@@ -214,7 +214,7 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
         buttons.setAlignment(Pos.CENTER_RIGHT);
         var nextText = Bindings.createStringBinding(
                 () -> isLastPage() ? AppI18n.get("finishStep") : AppI18n.get("nextStep"), currentStep);
-        var nextButton = new ButtonComp(nextText, null, comp::next).styleClass("next");
+        var nextButton = new ButtonComp(nextText, null, comp::next).apply(struc -> struc.get().setDefaultButton(true)).styleClass("next");
 
         var previousButton = new ButtonComp(AppI18n.observable("previousStep"), null, comp::previous)
                 .styleClass("next")

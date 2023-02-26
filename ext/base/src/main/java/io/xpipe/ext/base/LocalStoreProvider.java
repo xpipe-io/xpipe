@@ -17,7 +17,7 @@ public class LocalStoreProvider implements DataStoreProvider {
 
     @Override
     public String queryInformationString(DataStore store, int length) throws Exception {
-        try (var pc = ShellStore.local().create().start()) {
+        try (var pc = ShellStore.createLocal().create().start()) {
             return OsType.getLocal().determineOperatingSystemName(pc);
         }
     }

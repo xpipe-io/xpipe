@@ -17,8 +17,12 @@ public class ConnectionFileSystem implements FileSystem {
     @JsonIgnore
     private final ShellProcessControl shellProcessControl;
 
-    public ConnectionFileSystem(ShellProcessControl shellProcessControl) {
+    @JsonIgnore
+    private final ShellStore store;
+
+    public ConnectionFileSystem(ShellProcessControl shellProcessControl, ShellStore store) {
         this.shellProcessControl = shellProcessControl;
+        this.store = store;
     }
 
     @Override
@@ -32,6 +36,11 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public Stream<FileEntry> listFiles(String file) throws Exception {
         return shellProcessControl.getShellDialect().listFiles(this, shellProcessControl, file);
+    }
+
+    @Override
+    public FileSystemStore getStore() {
+        return store;
     }
 
     @Override

@@ -2,7 +2,10 @@
 
 package io.xpipe.app.browser;
 
+import io.xpipe.app.comp.source.GuiDsCreatorMultiStep;
+import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.util.*;
+import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.store.FileSystem;
@@ -102,6 +105,14 @@ final class FileContextMenu extends ContextMenu {
                 });
                 getItems().add(open);
             }
+
+            var pipe = new MenuItem("Pipe");
+            pipe.setOnAction(event -> {
+                var store = new FileStore(model.getFileSystem().getStore(), entry.getPath());
+                GuiDsCreatorMultiStep.showForStore(DataSourceProvider.Category.STREAM, store, null);
+                event.consume();
+            });
+            getItems().add(pipe);
 
             var edit = new MenuItem("Edit");
             edit.setOnAction(event -> {

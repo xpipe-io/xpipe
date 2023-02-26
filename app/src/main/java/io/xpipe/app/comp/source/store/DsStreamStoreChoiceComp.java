@@ -71,11 +71,11 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
     protected Region createSimple() {
         var isNamedStore =
                 XPipeDaemon.getInstance().getStoreName(selected.getValue()).isPresent();
-        var localStore = new SimpleObjectProperty<DataStore>(
+        var localStore = new SimpleObjectProperty<FileStore>(
                 !isNamedStore
                                 && selected.getValue() instanceof FileStore fileStore
                                 && fileStore.getFileSystem() instanceof LocalStore
-                        ? selected.getValue()
+                        ? fileStore
                         : null);
         var browseComp = new DsLocalFileBrowseComp(provider, localStore, mode).apply(GrowAugment.create(true, false));
         var dragAndDropLabel = Comp.of(() -> new Label(AppI18n.get("dragAndDropFilesHere")))

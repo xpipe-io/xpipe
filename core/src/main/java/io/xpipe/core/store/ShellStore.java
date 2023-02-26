@@ -1,23 +1,16 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellProcessControl;
 
 import java.nio.charset.Charset;
 
 public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStore, FileSystemStore {
 
-    public static ShellStore local() {
+    public static ShellStore createLocal() {
         return new LocalStore();
-    }
-
-    static void withLocal(Charsetter.FailableConsumer<ShellProcessControl, Exception> c) throws Exception {
-        try (var l = local().create().start()) {
-            c.accept(l);
-        }
     }
 
     static boolean isLocal(ShellStore s) {
@@ -26,7 +19,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
 
     @Override
     default FileSystem createFileSystem() {
-        return new ConnectionFileSystem(create());
+        return new ConnectionFileSystem(create(), this);
     }
 
     @Override

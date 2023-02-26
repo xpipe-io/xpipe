@@ -56,7 +56,7 @@ public class AppPrefs {
             !AppProperties.get().getDataDir().equals(AppProperties.DEFAULT_DATA_DIR);
     private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
     // Lets keep this at trace for now, at least for the alpha
-    private static final String DEFAULT_LOG_LEVEL = "trace";
+    private static final String DEFAULT_LOG_LEVEL = "debug";
     private static final boolean LOG_LEVEL_FIXED = System.getProperty(LOG_LEVEL_PROP) != null;
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;

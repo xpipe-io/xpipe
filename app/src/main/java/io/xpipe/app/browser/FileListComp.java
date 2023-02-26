@@ -15,6 +15,7 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -85,9 +86,18 @@ final class FileListComp extends AnchorPane {
         table.getColumns().setAll(filenameCol, sizeCol, mtimeCol);
         table.getSortOrder().add(filenameCol);
         table.setSortPolicy(param -> true);
-        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
+
+        if (fileList.getMode().equals(FileBrowserModel.Mode.SINGLE_FILE_CHOOSER) || fileList.getMode().equals(FileBrowserModel.Mode.DIRECTORY_CHOOSER)) {
+            table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        } else {
+            table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        }
+
+        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
+            fileList.getModel().getBrowserModel().getSelectedFiles().setAll(c.getList());
+        });
 
         var draggedOverDirectory = new SimpleBooleanProperty();
 
@@ -127,7 +137,7 @@ final class FileListComp extends AnchorPane {
 
             row.setOnMouseClicked(e -> {
                 if (e.getClickCount() == 2 && !row.isEmpty()) {
-                    fileList.onClick(row.getItem());
+                    fileList.onDoubleClick(row.getItem());
                 }
             });
 

@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.source.store;
 
+import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataSourceProvider;
@@ -9,34 +10,29 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.store.DataStore;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
-import javafx.stage.FileChooser;
 import lombok.AllArgsConstructor;
 
-import java.io.File;
 import java.util.concurrent.atomic.AtomicReference;
 
 @AllArgsConstructor
 public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
 
     private final ObservableValue<DataSourceProvider<?>> provider;
-    private final Property<DataStore> chosenFile;
+    private final Property<FileStore> chosenFile;
     private final DsStreamStoreChoiceComp.Mode mode;
 
     @Override
     public CompStructure<Button> createBase() {
         var button = new AtomicReference<Button>();
         button.set(new ButtonComp(null, getGraphic(), () -> {
-                    var fileChooser = createChooser();
-                    File file = mode == DsStreamStoreChoiceComp.Mode.OPEN
-                            ? fileChooser.showOpenDialog(button.get().getScene().getWindow())
-                            : fileChooser.showSaveDialog(button.get().getScene().getWindow());
-                    if (file != null && file.exists()) {
-                        chosenFile.setValue(FileStore.local(file.toPath()));
+                    if (mode == DsStreamStoreChoiceComp.Mode.OPEN) {
+                        StandaloneFileBrowser.openSingleFile(chosenFile);
+                    } else {
+                        StandaloneFileBrowser.saveSingleFile(chosenFile);
                     }
                 })
                 .createStructure()
@@ -65,36 +61,6 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
 
     private boolean hasProvider() {
         return provider != null && provider.getValue() != null;
-    }
-
-    private FileChooser createChooser() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(AppI18n.get("browseFileTitle"));
-
-        if (!hasProvider()) {
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "*"));
-            return fileChooser;
-        }
-
-        if (hasProvider()) {
-            provider.getValue().getFileProvider().getFileExtensions().forEach((key, value) -> {
-                var name = AppI18n.get(key);
-                if (value != null) {
-                    fileChooser
-                            .getExtensionFilters()
-                            .add(new FileChooser.ExtensionFilter(
-                                    name, value.stream().map(v -> "*." + v).toArray(String[]::new)));
-                } else {
-                    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(name, "*"));
-                }
-            });
-
-            if (!provider.getValue().getFileProvider().getFileExtensions().containsValue(null)) {
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "*"));
-            }
-        }
-
-        return fileChooser;
     }
 
     private Region getGraphic() {

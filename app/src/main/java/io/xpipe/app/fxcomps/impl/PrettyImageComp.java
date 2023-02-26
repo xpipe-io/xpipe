@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -51,9 +52,11 @@ public class PrettyImageComp extends SimpleComp {
                 },
                 aspectRatioProperty);
 
+        var image = new SimpleStringProperty();
         var currentNode = new SimpleObjectProperty<Node>();
         SimpleChangeListener.apply(PlatformThread.sync(value), val -> {
-            var requiresChange = value.getValue() == null || (value.getValue().endsWith(".svg") && !(currentNode.get() instanceof WebView) ||
+            image.set(val);
+            var requiresChange = val == null || (val.endsWith(".svg") && !(currentNode.get() instanceof WebView) ||
                     !(currentNode.get() instanceof ImageView));
             if (!requiresChange) {
                 return;
@@ -61,19 +64,19 @@ public class PrettyImageComp extends SimpleComp {
 
             aspectRatioProperty.unbind();
 
-            if (value.getValue() == null) {
+            if (val == null) {
                 currentNode.set(new Region());
             }
 
-            else if (value.getValue().endsWith(".svg")) {
+            else if (val.endsWith(".svg")) {
                 var storeIcon = SvgComp.create(
                         Bindings.createStringBinding(() -> {
-                            if (!AppImages.hasSvgImage(value.getValue())) {
+                            if (!AppImages.hasSvgImage(image.getValue())) {
                                 return null;
                             }
 
-                            return AppImages.svgImage(value.getValue());
-                        }, value));
+                            return AppImages.svgImage(image.getValue());
+                        }, image));
                 var ar = Bindings.createDoubleBinding(
                         () -> {
                             return storeIcon.getWidth().getValue().doubleValue()
@@ -96,13 +99,13 @@ public class PrettyImageComp extends SimpleComp {
                         .imageProperty()
                         .bind(Bindings.createObjectBinding(
                                 () -> {
-                                    if (!AppImages.hasNormalImage(value.getValue())) {
+                                    if (!AppImages.hasNormalImage(image.getValue())) {
                                         return null;
                                     }
 
-                                    return AppImages.image(value.getValue());
+                                    return AppImages.image(image.getValue());
                                 },
-                                PlatformThread.sync(value)));
+                                image));
                 var ar = Bindings.createDoubleBinding(
                         () -> {
                             if (storeIcon.getImage() == null) {

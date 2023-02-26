@@ -30,8 +30,10 @@ final class OpenFileSystemModel {
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final FileBrowserNavigationHistory history = new FileBrowserNavigationHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
+    private final FileBrowserModel browserModel;
 
-    public OpenFileSystemModel() {
+    public OpenFileSystemModel(FileBrowserModel browserModel) {
+        this.browserModel = browserModel;
         fileList = new FileListModel(this);
     }
 

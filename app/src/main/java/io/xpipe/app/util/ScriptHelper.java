@@ -42,7 +42,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static String createLocalExecScript(String content) {
-        try (var l = ShellStore.local().create().start()) {
+        try (var l = ShellStore.createLocal().create().start()) {
             return createExecScript(l, content);
         }
     }

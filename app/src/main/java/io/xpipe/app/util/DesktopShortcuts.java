@@ -21,7 +21,7 @@ public class DesktopShortcuts {
                         %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.TargetPath = '%%TARGET%%'; $S.Save()"
                         """,
                 target, name, icon.toString());
-        ShellStore.local().create().executeSimpleCommand(content);
+        ShellStore.createLocal().create().executeSimpleCommand(content);
     }
 
     private static void createLinuxShortcut(String target, String name) throws Exception {

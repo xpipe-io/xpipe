@@ -50,6 +50,10 @@ public class AppFont {
     }
 
     public static void setSize(Node node, int off) {
+        if (node.getStyle().contains("-fx-font-size: ")) {
+            return;
+        }
+
         var baseSize = AppPrefs.get() != null ? AppPrefs.get().fontSize.getValue() : 12;
         node.setStyle(node.getStyle() + "-fx-font-size: " + (baseSize + off) + "pt;");
     }

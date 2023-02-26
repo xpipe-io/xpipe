@@ -1,7 +1,7 @@
 package io.xpipe.core.charsetter;
 
 import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.store.MachineStore;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StreamDataStore;
 import lombok.Value;
 
@@ -108,7 +108,7 @@ public abstract class Charsetter {
             }
         }
 
-        if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof MachineStore m) {
+        if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof ShellStore m) {
             if (result.getNewLine() == null) {
                 result = new Result(
                         result.getCharset(),

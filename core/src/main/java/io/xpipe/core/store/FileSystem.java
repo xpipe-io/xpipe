@@ -42,6 +42,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
         }
     }
 
+    FileSystemStore getStore();
+
     Optional<ShellProcessControl> getShell();
 
     FileSystem open() throws Exception;

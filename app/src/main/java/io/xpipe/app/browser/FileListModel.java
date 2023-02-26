@@ -41,6 +41,10 @@ final class FileListModel {
         });
     }
 
+    public FileBrowserModel.Mode getMode() {
+        return model.getBrowserModel().getMode();
+    }
+
     public void setAll(List<FileSystem.FileEntry> newFiles) {
         all.setValue(newFiles);
         refreshShown();
@@ -80,7 +84,12 @@ final class FileListModel {
         }
     }
 
-    public void onClick(FileSystem.FileEntry entry) {
+    public void onDoubleClick(FileSystem.FileEntry entry) {
+        if (!entry.isDirectory() && getMode().equals(FileBrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
+            getModel().getBrowserModel().finishChooser();
+            return;
+        }
+
         if (entry.isDirectory()) {
             model.navigate(entry.getPath(), true);
         } else {

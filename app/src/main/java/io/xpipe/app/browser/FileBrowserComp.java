@@ -1,22 +1,23 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.RingProgressIndicator;
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.store.FileSystem;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 
 import java.util.HashMap;
 
@@ -25,8 +26,6 @@ import static atlantafx.base.theme.Styles.toggleStyleClass;
 import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 
 public class FileBrowserComp extends SimpleComp {
-
-    private static final double TAB_MIN_HEIGHT = 60;
 
     private final FileBrowserModel model;
 
@@ -44,7 +43,40 @@ public class FileBrowserComp extends SimpleComp {
                         // set sidebar width in pixels depending on split pane width
                         (obs, old, val) -> splitPane.setDividerPosition(0, 230 / splitPane.getWidth()));
 
-        return splitPane;
+        return addBottomBar(splitPane);
+    }
+
+    private Region addBottomBar(Region r) {
+        if (model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+            return r;
+        }
+
+        var selectedLabel = new Label("Selected: ");
+        selectedLabel.setAlignment(Pos.CENTER);
+        var selected = new HBox();
+        selected.setAlignment(Pos.CENTER_LEFT);
+        selected.setSpacing(10);
+        model.getSelectedFiles().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
+            selected.getChildren().setAll(c.getList().stream().map(s -> {
+                var field = new TextField(s.getPath());
+                field.setEditable(false);
+                field.setPrefWidth(400);
+                return field;
+            }).toList());
+        });
+        var spacer = new Spacer(Orientation.HORIZONTAL);
+        var button = new Button("Select");
+        button.setOnAction(event -> model.finishChooser());
+        button.setDefaultButton(true);
+        var bottomBar = new HBox(selectedLabel, selected, spacer, button);
+        HBox.setHgrow(selected, Priority.ALWAYS);
+        bottomBar.setAlignment(Pos.CENTER);
+        bottomBar.setPadding(new Insets(15));
+        bottomBar.getStyleClass().add("chooser-bar");
+
+        var layout = new VBox(r, bottomBar);
+        VBox.setVgrow(r, Priority.ALWAYS);
+        return layout;
     }
 
     private Node createTabs() {
@@ -54,6 +86,15 @@ public class FileBrowserComp extends SimpleComp {
 
         var map = new HashMap<OpenFileSystemModel, Tab>();
 
+        // Restore state
+        model.getOpenFileSystems().forEach(v -> {
+            var t = createTab(tabs, v);
+            map.put(v, t);
+            tabs.getTabs().add(t);
+        });
+        tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
+
+        // Handle selection from platform
         tabs.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.intValue() == -1) {
                 model.getSelected().setValue(null);
@@ -63,34 +104,29 @@ public class FileBrowserComp extends SimpleComp {
             model.getSelected().setValue(model.getOpenFileSystems().get(newValue.intValue()));
         });
 
-        model.getOpenFileSystems().forEach(v -> {
-            var t = createTab(tabs, v);
-            map.put(v, t);
-            tabs.getTabs().add(t);
-        });
-        if (model.getOpenFileSystems().size() > 0) {
-            tabs.getSelectionModel().select(0);
-        }
-
         model.getOpenFileSystems().addListener((ListChangeListener<? super OpenFileSystemModel>) c -> {
-            PlatformThread.runLaterIfNeededBlocking(() -> {
-                while (c.next()) {
-                    for (var r : c.getRemoved()) {
+            while (c.next()) {
+                for (var r : c.getRemoved()) {
+                    PlatformThread.runLaterIfNeeded(() -> {
                         var t = map.remove(r);
                         tabs.getTabs().remove(t);
-                    }
+                    });
+                }
 
-                    for (var a : c.getAddedSubList()) {
+                for (var a : c.getAddedSubList()) {
+                    PlatformThread.runLaterIfNeeded(() -> {
                         var t = createTab(tabs, a);
                         map.put(a, t);
                         tabs.getTabs().add(t);
-                    }
+                    });
                 }
-            });
+            }
         });
 
         model.getSelected().addListener((observable, oldValue, newValue) -> {
-            tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(newValue));
+            PlatformThread.runLaterIfNeeded(() -> {
+                tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(newValue));
+            });
         });
 
         tabs.getTabs().addListener((ListChangeListener<? super Tab>) c -> {
@@ -100,7 +136,13 @@ public class FileBrowserComp extends SimpleComp {
                             .filter(openFileSystemModelTabEntry ->
                                     openFileSystemModelTabEntry.getValue().equals(r))
                             .findAny()
-                            .orElseThrow();
+                            .orElse(null);
+
+                    // Only handle close events that are triggered from the platform
+                    if (source == null) {
+                        continue;
+                    }
+
                     model.closeFileSystem(source.getKey());
                 }
             }
@@ -110,21 +152,19 @@ public class FileBrowserComp extends SimpleComp {
         return stack;
     }
 
-    private Node createSingular() {
-        var stack =
-                new StackPane(new OpenFileSystemComp(model.getOpenFileSystems().get(0)).createSimple());
-        return stack;
-    }
-
     private TabPane createTabPane() {
         var tabs = new TabPane();
         tabs.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        tabs.setTabClosingPolicy(ALL_TABS);
-        Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
-        // tabs.setStyle("-fx-open-tab-animation:none;-fx-close-tab-animation:none;");
-        toggleStyleClass(tabs, DENSE);
-        tabs.setMinHeight(TAB_MIN_HEIGHT);
         tabs.setTabMinWidth(Region.USE_COMPUTED_SIZE);
+
+        if (!model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+            tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+            tabs.getStyleClass().add("singular");
+        } else {
+            tabs.setTabClosingPolicy(ALL_TABS);
+            Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
+            toggleStyleClass(tabs, DENSE);
+        }
 
         return tabs;
     }
@@ -180,6 +220,12 @@ public class FileBrowserComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
 
         tab.setGraphic(label);
+
+        if (!this.model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+            label.setManaged(false);
+            label.setVisible(false);
+        }
+
         tab.setContent(new OpenFileSystemComp(model).createSimple());
         return tab;
     }

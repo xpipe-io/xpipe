@@ -65,7 +65,7 @@ public class FileOpener {
     }
 
     public static void openInDefaultApplication(String file) {
-        try (var pc = ShellStore.local().create().start()) {
+        try (var pc = ShellStore.createLocal().create().start()) {
             if (pc.getOsType().equals(OsType.WINDOWS)) {
                 pc.executeSimpleCommand("\"" + file + "\"");
             } else if (pc.getOsType().equals(OsType.LINUX)) {

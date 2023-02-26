@@ -25,6 +25,7 @@ public class CustomComboBoxBuilder<T> {
 
     private final Property<T> selected;
     private final Function<T, Node> nodeFunction;
+    private Function<T, Node> selectedDisplayNodeFunction;
     private final Map<Node, T> nodeMap = new HashMap<>();
     private final Map<Node, Runnable> actionsMap = new HashMap<>();
     private final List<Node> nodes = new ArrayList<>();
@@ -41,8 +42,13 @@ public class CustomComboBoxBuilder<T> {
             Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
         this.selected = selected;
         this.nodeFunction = nodeFunction;
+        this.selectedDisplayNodeFunction = nodeFunction;
         this.emptyNode = emptyNode;
         this.veto = veto;
+    }
+
+    public void setSelectedDisplay(Function<T, Node> nodeFunction) {
+        selectedDisplayNodeFunction = nodeFunction;
     }
 
     public void addAction(Node node, Runnable run) {
@@ -172,7 +178,7 @@ public class CustomComboBoxBuilder<T> {
             }
 
             var val = nodeMap.get(item);
-            var newNode = nodeFunction.apply(val);
+            var newNode = selectedDisplayNodeFunction.apply(val);
             setGraphic(newNode);
         }
     }

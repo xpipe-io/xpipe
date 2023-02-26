@@ -146,7 +146,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var shellProcessControl = ShellStore.local().create().start();
+                var shellProcessControl = ShellStore.createLocal().create().start();
                 var exec = XPipeInstallation.getInstallationExecutable(
                         shellProcessControl,
                         XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl, false));

@@ -1,30 +1,28 @@
 package io.xpipe.app.fxcomps.impl;
 
-import io.xpipe.app.core.AppI18n;
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.browser.StandaloneFileBrowser;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.store.MachineStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.stage.FileChooser;
+import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.File;
 import java.util.List;
 
 public class FileStoreChoiceComp extends SimpleComp {
 
-    private final List<MachineStore> availableFileSystems;
+    private final boolean onlyLocal;
     private final Property<FileStore> selected;
 
-    public FileStoreChoiceComp(List<MachineStore> availableFileSystems, Property<FileStore> selected) {
-        this.availableFileSystems = availableFileSystems;
+    public FileStoreChoiceComp(boolean onlyLocal, Property<FileStore> selected) {
+        this.onlyLocal = onlyLocal;
         this.selected = selected;
     }
 
@@ -36,42 +34,29 @@ public class FileStoreChoiceComp extends SimpleComp {
     protected Region createSimple() {
         var fileProperty = new SimpleStringProperty(
                 selected.getValue() != null ? selected.getValue().getFile() : null);
-        var fileSystemProperty = new SimpleObjectProperty<>(
-                selected.getValue() != null ? selected.getValue().getFileSystem() : availableFileSystems.get(0));
-
         fileProperty.addListener((observable, oldValue, newValue) -> {
-            setSelected(fileSystemProperty.get(), fileProperty.get());
+            setSelected(selected.getValue().getFileSystem(), newValue);
         });
-        fileSystemProperty.addListener((observable, oldValue, newValue) -> {
-            setSelected(fileSystemProperty.get(), fileProperty.get());
+        selected.addListener((observable, oldValue, newValue) -> {
+            fileProperty.setValue(newValue.getFile());
         });
 
-        var fileSystemChoiceComp = new FileSystemStoreChoiceComp(fileSystemProperty);
-        if (availableFileSystems.size() == 1) {
+        var fileSystemChoiceComp = new FileSystemStoreChoiceComp(selected).grow(false, true).styleClass(Styles.LEFT_PILL);
+        if (onlyLocal) {
             fileSystemChoiceComp.hide(new SimpleBooleanProperty(true));
         }
 
-        var fileNameComp = new TextFieldComp(fileProperty).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
-        var fileBrowseButton = new IconButtonComp("mdi2f-folder-open-outline", () -> {
-                    if (fileSystemProperty.get() != null && fileSystemProperty.get() instanceof LocalStore) {
-                        var fileChooser = createChooser();
-                        File file = fileChooser.showOpenDialog(null);
-                        if (file != null && file.exists()) {
-                            fileProperty.setValue(file.toString());
-                        }
-                    }
-                })
-                .hide(fileSystemProperty.isNotEqualTo(new LocalStore()));
+        var fileNameComp = new TextFieldComp(fileProperty)
+                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
+                .styleClass(onlyLocal ? Styles.LEFT_PILL : Styles.CENTER_PILL);
 
-        var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton));
+        var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
+                    StandaloneFileBrowser.openSingleFile(selected);
+                })
+                .styleClass(Styles.RIGHT_PILL).grow(false, true);
+
+        var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton)).apply(struc -> struc.get().setFillHeight(true));
 
         return layout.createRegion();
-    }
-
-    private FileChooser createChooser() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(AppI18n.get("browseFileTitle"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "*"));
-        return fileChooser;
     }
 }

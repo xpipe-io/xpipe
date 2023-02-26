@@ -14,7 +14,7 @@ public class MacOsPermissions {
     public static boolean waitForAccessibilityPermissions() throws Exception {
         AtomicReference<Alert> alert = new AtomicReference<>();
         var state = new SimpleBooleanProperty(true);
-        try (var pc = ShellStore.local().create().start()) {
+        try (var pc = ShellStore.createLocal().create().start()) {
             while (state.get()) {
                 var success = pc.executeBooleanSimpleCommand(
                         "osascript -e 'tell application \"System Events\" to keystroke \"t\"'");

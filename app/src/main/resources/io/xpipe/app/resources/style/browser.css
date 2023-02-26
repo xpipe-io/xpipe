@@ -12,7 +12,22 @@
     -fx-padding: 0;
 }
 
+.chooser-bar {
+-fx-border-color: -color-neutral-emphasis;
+-fx-border-width: 0.1em 0 0 0;
+-fx-padding: 1em;
+-fx-background-color: -color-neutral-muted;
+}
+
 .browser .tab-content-area { 	-fx-padding: 0; }
+
+.browser .singular {
+    -fx-tab-max-height: 0 ;
+}
+
+.browser .singular .tab-header-area {
+                                        visibility: hidden ;
+                                    }
 
 .browser .table-directory-view .table-view {
     -color-header-bg: -color-bg-default;

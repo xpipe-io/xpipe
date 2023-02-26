@@ -2,9 +2,9 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
-import io.xpipe.core.store.ShellStore;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,8 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FileSystemHelper {
-
-    private static OpenFileSystemModel local;
 
     public static String normalizeDirectoryPath(OpenFileSystemModel model, String path) {
         if (path == null) {
@@ -37,19 +35,9 @@ public class FileSystemHelper {
         return FileNames.toDirectory(path);
     }
 
-    public static OpenFileSystemModel getLocal() throws Exception {
-        if (local == null) {
-            var model = new OpenFileSystemModel();
-            model.switchFileSystem(ShellStore.local());
-            local = model;
-        }
-
-        return local;
-    }
-
     public static FileSystem.FileEntry getLocal(Path file) throws Exception {
         return new FileSystem.FileEntry(
-                getLocal().getFileSystem(),
+                LocalStore.getFileSystem(),
                 file.toString(),
                 Files.getLastModifiedTime(file).toInstant(),
                 Files.isDirectory(file),

@@ -4,9 +4,11 @@ import io.xpipe.app.browser.FileBrowserComp;
 import io.xpipe.app.browser.FileBrowserModel;
 import io.xpipe.app.comp.about.AboutTabComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
-import io.xpipe.app.comp.storage.collection.SourceCollectionLayoutComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
-import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppActionLinkDetector;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -28,9 +30,6 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
     private final Property<SideMenuBarComp.Entry> selected;
 
     public AppLayoutComp() {
-        var firstTime = AppCache.get("firstTimeLayout", Boolean.class, () -> true);
-        AppCache.update("firstTimeLayout", false);
-
         entries = createEntryList();
         selected = new SimpleObjectProperty<>(entries.get(0));
 
@@ -44,7 +43,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
         var l = new ArrayList<>(List.of(
                 new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 new SideMenuBarComp.Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new FileBrowserComp(FileBrowserModel.DEFAULT)),
-                new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
+                //new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),
                 // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new

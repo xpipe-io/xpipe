@@ -2,11 +2,9 @@ package io.xpipe.app.comp.source.store;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FileSystemStoreChoiceComp;
 import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -26,7 +24,6 @@ public class DsRemoteFileChoiceComp extends SimpleComp {
         var machine = new SimpleObjectProperty<FileSystemStore>();
         var fileName = new SimpleStringProperty();
         return new DynamicOptionsBuilder(false)
-                .addComp(AppI18n.observable("machine"), new FileSystemStoreChoiceComp(machine), machine)
                 .addString(AppI18n.observable("file"), fileName, true)
                 .bind(
                         () -> {

@@ -13,9 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @JsonTypeName("local")
-public class LocalStore extends JacksonizedValue implements FileSystemStore, MachineStore {
+public class LocalStore extends JacksonizedValue implements ShellStore {
 
     private static ShellProcessControl local;
+    private static FileSystem localFileSystem;
 
     public static ShellProcessControl getShell() throws Exception {
         if (local == null) {
@@ -25,14 +26,22 @@ public class LocalStore extends JacksonizedValue implements FileSystemStore, Mac
         return local;
     }
 
-    @Override
-    public boolean isLocal() {
-        return true;
+    public static FileSystem getFileSystem() throws Exception {
+        if (localFileSystem == null) {
+            localFileSystem = new LocalStore().createFileSystem();
+        }
+
+        return localFileSystem;
     }
 
     @Override
     public FileSystem createFileSystem() {
-        return new ConnectionFileSystem(ShellStore.local().create()) {
+        return new ConnectionFileSystem(ShellStore.createLocal().create(), LocalStore.this) {
+
+            @Override
+            public FileSystemStore getStore() {
+                return LocalStore.this;
+            }
 
             @Override
             public InputStream openInput(String file) throws Exception {

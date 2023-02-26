@@ -52,7 +52,7 @@ public class BeaconProxyImpl extends ProxyProvider {
     public <T> T downstreamTransform(T object, ShellStore proxy) {
         var proxyNode = JacksonMapper.getDefault().valueToTree(proxy);
         var inputNode = JacksonMapper.getDefault().valueToTree(object);
-        var localNode = JacksonMapper.getDefault().valueToTree(ShellStore.local());
+        var localNode = JacksonMapper.getDefault().valueToTree(ShellStore.createLocal());
         var result = replace(inputNode, node -> node.equals(proxyNode) ? Optional.of(localNode) : Optional.empty());
         return (T) JacksonMapper.getDefault().treeToValue(result, object.getClass());
     }
