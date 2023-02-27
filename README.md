@@ -33,7 +33,7 @@ to implement custom functionality through custom extensions.
 - Share connection configurations to any other trusted party through shareable URLs
 - Create desktop shortcuts to open your connections
 
-<img src="https://user-images.githubusercontent.com/72509152/218159305-64e2ac2c-2d01-4087-89d2-907f2e3a6bed.png" alt="drawing" height="450"/>
+<img src="https://user-images.githubusercontent.com/72509152/221438232-18bc1ee3-4b3f-49dc-8fb0-df8896aa7c91.png" alt="drawing" height="450"/>
 
 ### Remote File Explorer
 
@@ -42,16 +42,14 @@ to implement custom functionality through custom extensions.
 - Run commands from the explorer interface
 - Utilize your local tools to open and edit remote files
 
+<img src="https://user-images.githubusercontent.com/72509152/221438071-e3f287ea-a6ee-49b3-a776-4b5b39b1fd92.png" alt="drawing" height="450"/>
+
 ### Integrate X-Pipe with your favorite tools and workflows
 
 - Easily import and export all kinds of data formats and technologies
 - Access data sources from the command-line with the X-Pipe CLI or
   your favorite programming languages using the X-Pipe APIs
 - Connect select third party applications directly to X-Pipe through extensions
-
-## Demo
-
-https://user-images.githubusercontent.com/72509152/218265431-27bf34ad-03f8-43b7-a8a8-2a4d16eff90a.mp4
 
 ## Repository Structure
 
