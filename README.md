@@ -2,33 +2,22 @@
 
 ### Next level remote data workflows for everyone
 
-X-Pipe is a tool in an early alpha for working with remote connections and their data.
-The focus lies on providing:
-- An easy remote connection setup and workflow
-- Organization of all your connections in one place
-- The ability to automatically launch your remote connections
-- Data intermediation capabilities to be able to work with and transfer more than just bytes and text
-
-The core idea is to utilize and integrate well with other popular tools and workflows,
+X-Pipe is a connection manager, remote file explorer, and more in an early alpha.
+The core approach is to utilize and integrate well with other tools and workflows,
 focusing on augmenting them rather than replacing them.
 X-Pipe is built around existing tools and tries to outsource tasks to them,
 such that you can always use your favorite tools to work with X-Pipe, e.g.
 text/code editors, terminals, shells, command-line tools and more.
 The X-Pipe platform is open source and designed to be extensible, allowing anyone
-to implement custom functionality through custom extensions with the help of an exhaustive API.
+to implement custom functionality through custom extensions.
 
-## Connection Explorer
-
-The connection explorer allows you to connect to, manage, and interact with all kinds of remote systems.
-It comes with the following main features:
-
-#### Flexible Connector
+### Flexible Connector
 
 - Can connect to standard servers, database servers, and more
 - Supports established protocols (e.g. SSH and more) plus any custom connection methods that work through the command-line
 - Is able to integrate any kind of proxies into the connection process, even ones with different protocols
 
-#### Instant launch for remote shells and commands
+### Instant launch for remote shells and commands
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
 - Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and database shells (e.g. PSQL Shell)
@@ -37,7 +26,7 @@ It comes with the following main features:
 - Allows you to customize the launched shell's init environment
 - Launch connections from the GUI or commandline
 
-#### All your connections in one place
+### All your connections in one place
 
 - Easily create and manage all kinds of remote connections at one location
 - Securely stores all information exclusively on your computer and encrypts all secret information
@@ -46,27 +35,19 @@ It comes with the following main features:
 
 <img src="https://user-images.githubusercontent.com/72509152/218159305-64e2ac2c-2d01-4087-89d2-907f2e3a6bed.png" alt="drawing" height="450"/>
 
-## Data Explorer
+### Remote File Explorer
 
-Building on top of the connection explorer, the data explorer
-allows you to manage and work with all kinds of data sources:
+- Access files on any remote system
+- Quickly open a terminal into any directory
+- Run commands from the explorer interface
+- Utilize your local tools to open and edit remote files
 
-#### Work with your data on a higher level
-
-- X-Pipe utilizes structures of data instead of the raw data itself, allowing for
-  a higher level workflow that is independent of the underlying data format
-- Save time when adding data sources by making use of the advanced
-  auto detection feature of X-Pipe where you don't have to worry about encodings, format configurations, and more
-- Easily convert between different data representations
-
-#### Integrate X-Pipe with your favorite tools and workflows
+### Integrate X-Pipe with your favorite tools and workflows
 
 - Easily import and export all kinds of data formats and technologies
 - Access data sources from the command-line with the X-Pipe CLI or
   your favorite programming languages using the X-Pipe APIs
 - Connect select third party applications directly to X-Pipe through extensions
-
-<img src="https://user-images.githubusercontent.com/72509152/213240736-7a27fb3c-e8c3-4c92-bcea-2a782e53dc31.png" alt="drawing" height="450"/>
 
 ## Demo
 
@@ -88,18 +69,14 @@ The other modules make up the X-Pipe implementation and are licensed under GPL:
 ### Open source model
 
 X-Pipe utilizes an open core model, which essentially means that
-the main application core is open source while certain other components are not.
-In this case these non open source components are planned to be future parts of a potential commercialization (got to make a living somehow).
-Furthermore, some tests and especially test environments and that run on private servers
+the main application is open source while certain other components are not.
+Some tests and especially test environments and that run on private servers
 are also not included in this repository (Don't want to leak server information).
 Finally, scripts and workflows to create signed executables and installers
 are also not included to prevent attackers from easily impersonating the shipping the X-Pipe application malware.
 
 The license model is chosen in such a way that you are
 able to use and integrate X-Pipe within your application through the MIT-licensed API.
-In any other case where you plan to contribute to the X-Pipe platform itself, which is GPL licensed,
-I would still have to figure out how to exactly handle these kinds of contributions.
-It is also planned to move many components to a more permissive license in the future.
 
 ## Development
 
@@ -121,7 +98,7 @@ The tested and recommended IDE is intellij.
 You need to have an up-to-date version of X-Pipe installed on your local system in order to properly
 run X-Pipe in a development environment.
 This is due to the fact that some components are only included in the release version and not in this repository.
-X-pipe is able to automatically detect your installation and fetch the required
+X-Pipe is able to automatically detect your installation and fetch the required
 components from it when it is run in a development environment.
 
 ### Building and Running

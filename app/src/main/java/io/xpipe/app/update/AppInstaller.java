@@ -196,9 +196,12 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = "set -x\n" + "DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe\n"
-                        + "DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy \"" + file + "\"\n"
-                        + "xpipe open";
+                var command = String.format("""
+                                        set -x
+                                        DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe
+                                        DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s"
+                                        xpipe open
+                                        """, file);
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -224,7 +227,11 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = "set -x\n" + "sudo rpm -U -v --force \"" + file + "\"\n" + "xpipe open";
+                var command = String.format("""
+                                        set -x
+                                        sudo rpm -U -v --force "%s"
+                                        xpipe open
+                                        """, file);
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -251,8 +258,11 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = "set -x\n" + "sudo installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /\n"
-                        + "xpipe open";
+                var command = String.format("""
+                                        set -x
+                                        sudo installer -verboseR -allowUntrusted -pkg "%s" -target /
+                                        xpipe open
+                                        """, file);
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
