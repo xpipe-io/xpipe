@@ -39,7 +39,8 @@ public class OpenFileSystemComp extends SimpleComp {
         var path = new SimpleStringProperty(model.getCurrentPath().get());
         var pathBar = new TextFieldComp(path, true).createRegion();
         path.addListener((observable, oldValue, newValue) -> {
-            model.cd(newValue);
+            var changed = model.cd(newValue);
+            changed.ifPresent(path::set);
         });
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
             path.set(newValue);

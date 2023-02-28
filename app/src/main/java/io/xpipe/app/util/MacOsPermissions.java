@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.impl.LocalStore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Alert;
@@ -14,7 +14,7 @@ public class MacOsPermissions {
     public static boolean waitForAccessibilityPermissions() throws Exception {
         AtomicReference<Alert> alert = new AtomicReference<>();
         var state = new SimpleBooleanProperty(true);
-        try (var pc = ShellStore.createLocal().create().start()) {
+        try (var pc = LocalStore.getShell().start()) {
             while (state.get()) {
                 var success = pc.executeBooleanSimpleCommand(
                         "osascript -e 'tell application \"System Events\" to keystroke \"t\"'");

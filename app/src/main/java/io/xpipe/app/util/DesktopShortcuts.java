@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.nio.file.Files;
@@ -21,7 +20,7 @@ public class DesktopShortcuts {
                         %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.TargetPath = '%%TARGET%%'; $S.Save()"
                         """,
                 target, name, icon.toString());
-        ShellStore.createLocal().create().executeSimpleCommand(content);
+        LocalStore.getShell().executeSimpleCommand(content);
     }
 
     private static void createLinuxShortcut(String target, String name) throws Exception {

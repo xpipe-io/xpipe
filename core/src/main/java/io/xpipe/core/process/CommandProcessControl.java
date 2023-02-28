@@ -49,10 +49,16 @@ public interface CommandProcessControl extends ProcessControl {
 
     public String readOrThrow() throws Exception;
 
-    public default boolean discardAndCheckExit() {
+    public default boolean discardAndCheckExit() throws ProcessOutputException {
         try {
             discardOrThrow();
             return true;
+        }  catch (ProcessOutputException ex) {
+            if (ex.isTimeOut()) {
+                throw ex;
+            }
+
+            return false;
         } catch (Exception ex) {
             return false;
         }

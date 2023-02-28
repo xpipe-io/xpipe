@@ -2,11 +2,11 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.process.ShellProcessControl;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -42,7 +42,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static String createLocalExecScript(String content) {
-        try (var l = ShellStore.createLocal().create().start()) {
+        try (var l = LocalStore.getShell().start()) {
             return createExecScript(l, content);
         }
     }
@@ -165,6 +165,19 @@ public class ScriptHelper {
         }
 
         return t.getInitFileOpenCommand(initFile);
+    }
+
+    @SneakyThrows
+    public static String getExecScriptFile(ShellProcessControl processControl) {
+        return getExecScriptFile(processControl, processControl.getShellDialect().getScriptFileEnding());
+    }
+
+    @SneakyThrows
+    public static String getExecScriptFile(ShellProcessControl processControl, String fileEnding) {
+        var fileName = "exec-" + getScriptId();
+        var temp = processControl.getTemporaryDirectory();
+        var file = FileNames.join(temp, fileName + "." + fileEnding);
+        return file;
     }
 
     @SneakyThrows

@@ -1,12 +1,12 @@
 <img src="https://user-images.githubusercontent.com/72509152/213873342-7638e830-8a95-4b5d-ad3e-5a9a0b4bf538.png" alt="drawing" width="300"/>
 
-### Next level remote data workflows for everyone
+### A smart connection manager and remote file explorer
 
-X-Pipe is a connection manager, remote file explorer, and more in an early alpha.
-The core approach is to utilize and integrate well with other tools and workflows,
+X-Pipe takes a fresh spin on the established concept of connection managers.
+The central idea is to utilize and integrate well with your existing tools and workflows,
 focusing on augmenting them rather than replacing them.
-X-Pipe is built around existing tools and tries to outsource tasks to them,
-such that you can always use your favorite tools to work with X-Pipe, e.g.
+X-Pipe outsources as many tasks as possible such
+that you can always use your favorite tools to work with X-Pipe, e.g.
 text/code editors, terminals, shells, command-line tools and more.
 The X-Pipe platform is open source and designed to be extensible, allowing anyone
 to implement custom functionality through custom extensions.

@@ -25,4 +25,8 @@ public class ProcessOutputException extends Exception {
         this.exitCode = exitCode;
         this.output = output;
     }
+
+    public boolean isTimeOut() {
+        return exitCode  == -1;
+    }
 }

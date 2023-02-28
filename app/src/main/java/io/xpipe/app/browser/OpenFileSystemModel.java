@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
@@ -18,6 +19,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -51,25 +53,27 @@ final class OpenFileSystemModel {
         return new FileSystem.FileEntry(fileSystem, currentPath.get(), Instant.now(), true, false, false, 0);
     }
 
-    public void cd(String path) {
+    public Optional<String> cd(String path) {
+        var newPath = FileSystemHelper.normalizeDirectoryPath(this, path);
+        if (!path.equals(newPath)) {
+            return Optional.of(newPath);
+        }
+
         ThreadHelper.runFailableAsync(() -> {
             try (var ignored = new BusyProperty(busy)) {
                 cdSync(path);
             }
         });
+        return Optional.empty();
     }
 
-    private boolean cdSync(String path) {
+    private void cdSync(String path) {
         path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
-        if (!navigateToSync(path)) {
-            return false;
-        }
-
+        navigateToSync(path);
         filter.setValue(null);
         currentPath.set(path);
         history.cd(path);
-        return true;
     }
 
     private boolean navigateToSync(String dir) {
@@ -85,6 +89,7 @@ final class OpenFileSystemModel {
             fileList.setAll(newList);
             return true;
         } catch (Exception e) {
+            fileList.setAll(List.of());
             ErrorEvent.fromThrowable(e).handle();
             return false;
         }
@@ -171,7 +176,7 @@ final class OpenFileSystemModel {
         fs.open();
         this.fileSystem = fs;
 
-        var current = fs instanceof ConnectionFileSystem connectionFileSystem
+        var current = !(fileSystem instanceof LocalStore) && fs instanceof ConnectionFileSystem connectionFileSystem
                 ? connectionFileSystem
                         .getShellProcessControl()
                         .executeStringSimpleCommand(connectionFileSystem

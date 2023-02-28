@@ -8,7 +8,6 @@ import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ShellStore;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,7 @@ public class LocalStoreProvider implements DataStoreProvider {
 
     @Override
     public String queryInformationString(DataStore store, int length) throws Exception {
-        try (var pc = ShellStore.createLocal().create().start()) {
+        try (var pc = LocalStore.getShell().start()) {
             return OsType.getLocal().determineOperatingSystemName(pc);
         }
     }

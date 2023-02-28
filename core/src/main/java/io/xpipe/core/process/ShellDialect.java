@@ -17,6 +17,14 @@ public interface ShellDialect {
         return "cd \"" + directory + "\"";
     }
 
+    default String getPushdCommand(String directory){
+        return "pushd \"" + directory + "\"";
+    }
+
+    default String getPopdCommand(){
+        return "popd";
+    }
+
     String getScriptFileEnding();
 
     String addInlineVariablesToCommand(Map<String, String> variables, String command);
@@ -38,8 +46,6 @@ public interface ShellDialect {
                         : s)
                 .collect(Collectors.joining(" "));
     }
-
-    void disableHistory(ShellProcessControl pc) throws Exception;
 
     default String getExitCommand() {
         return "exit";

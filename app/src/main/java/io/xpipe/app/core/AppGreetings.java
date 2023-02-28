@@ -66,7 +66,8 @@ public class AppGreetings {
     }
 
     public static void showIfNeeded() {
-        if (!AppProperties.get().isImage()) {
+        //TODO
+        if (!AppProperties.get().isImage() || true) {
             return;
         }
 

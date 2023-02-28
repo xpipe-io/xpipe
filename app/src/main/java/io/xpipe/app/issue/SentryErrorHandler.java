@@ -66,7 +66,11 @@ public class SentryErrorHandler {
 
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
-        ee.getTrackEvents().forEach(t -> s.addBreadcrumb(toBreadcrumb(t)));
+
+        /*
+        TODO: Ignore breadcrumbs for now
+         */
+        // ee.getTrackEvents().forEach(t -> s.addBreadcrumb(toBreadcrumb(t)));
 
         if (ee.getThrowable() != null) {
             if (ee.getDescription() != null

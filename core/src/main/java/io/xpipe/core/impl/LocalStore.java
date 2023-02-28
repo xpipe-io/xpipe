@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellProcessControl;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.ConnectionFileSystem;
+import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.FileSystemStore;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.JacksonizedValue;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 @JsonTypeName("local")
@@ -43,17 +43,6 @@ public class LocalStore extends JacksonizedValue implements ShellStore {
                 return LocalStore.this;
             }
 
-            @Override
-            public InputStream openInput(String file) throws Exception {
-                var p = wrap(file);
-                return Files.newInputStream(p);
-            }
-
-            @Override
-            public OutputStream openOutput(String file) throws Exception {
-                var p = wrap(file);
-                return Files.newOutputStream(p);
-            }
 
             private Path wrap(String file) {
                 for (var e : System.getenv().entrySet()) {

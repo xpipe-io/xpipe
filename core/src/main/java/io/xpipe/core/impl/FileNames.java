@@ -18,11 +18,19 @@ public class FileNames {
     }
 
     public static String getFileName(String file) {
+        if (file.isEmpty()) {
+            return "";
+        }
+
         var split = file.split("[\\\\/]");
         if (split.length == 0) {
             return "";
         }
         var components =  Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+        if (components.size() == 0) {
+            return "";
+        }
+
         return components.get(components.size() - 1);
     }
 
