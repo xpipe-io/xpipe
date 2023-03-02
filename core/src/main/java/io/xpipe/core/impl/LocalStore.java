@@ -3,7 +3,7 @@ package io.xpipe.core.impl;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
@@ -15,12 +15,12 @@ import java.nio.file.Path;
 @JsonTypeName("local")
 public class LocalStore extends JacksonizedValue implements ShellStore {
 
-    private static ShellProcessControl local;
+    private static ShellControl local;
     private static FileSystem localFileSystem;
 
-    public static ShellProcessControl getShell() throws Exception {
+    public static ShellControl getShell() throws Exception {
         if (local == null) {
-            local = new LocalStore().create().start();
+            local = ProcessControlProvider.createLocal(false).start();
         }
 
         return local;
@@ -128,7 +128,7 @@ public class LocalStore extends JacksonizedValue implements ShellStore {
     }
 
     @Override
-    public ShellProcessControl createControl() {
-        return ProcessControlProvider.createLocal();
+    public ShellControl createControl() {
+        return ProcessControlProvider.createLocal(true);
     }
 }

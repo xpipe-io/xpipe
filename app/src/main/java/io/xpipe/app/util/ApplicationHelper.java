@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,12 +30,12 @@ public class ApplicationHelper {
         }
     }
 
-    public static boolean isInPath(ShellProcessControl processControl, String executable) throws Exception {
+    public static boolean isInPath(ShellControl processControl, String executable) throws Exception {
         return processControl.executeBooleanSimpleCommand(
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 
-    public static void checkSupport(ShellProcessControl processControl, String executable, String displayName)
+    public static void checkSupport(ShellControl processControl, String executable, String displayName)
             throws Exception {
         if (!isInPath(processControl, executable)) {
             throw new IOException(displayName + " executable " + executable + " not found in PATH");

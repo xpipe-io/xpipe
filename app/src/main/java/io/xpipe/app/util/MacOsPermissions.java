@@ -38,7 +38,7 @@ public class MacOsPermissions {
                             a.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get("permissionsAlertTitleContent")));
                             a.getButtonTypes().clear();
                             alert.set(a);
-                        }, buttonType -> {
+                        }, null, buttonType -> {
                             alert.get().close();
                             if (buttonType.isEmpty() || !buttonType.get().getButtonData().isDefaultButton()) {
                                 state.set(false);

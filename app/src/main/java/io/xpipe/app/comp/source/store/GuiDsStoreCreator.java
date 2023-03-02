@@ -25,7 +25,6 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
@@ -160,10 +159,11 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     }
 
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
-        return new DynamicOptionsBuilder(false)
-                .addComp((ObservableValue<String>) null, comp, input)
-                .addTitle(AppI18n.observable("properties"))
-                .addString(AppI18n.observable("name"), name, false)
+        return new OptionsBuilder()
+                .addComp(comp, input)
+                .name("connectionName")
+                .description("connectionNameDescription")
+                .addString(name, false)
                 .nonNull(propVal)
                 .bind(
                         () -> {
@@ -216,6 +216,11 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         layout.setTop(top);
         // layout.getStyleClass().add("data-input-creation-step");
         return new LoadingOverlayComp(Comp.of(() -> layout), busy).createStructure();
+    }
+
+    @Override
+    public void onContinue() {
+        ScanAlert.showIfNeeded(entry.getValue().getStore());
     }
 
     @Override

@@ -72,7 +72,7 @@ public class AppWindowHelper {
         childStage.setY(stage.getY() + stage.getHeight() / 2 - childStage.getHeight() / 2);
     }
 
-    public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
+    public static void showAlert(Consumer<Alert> c, ObservableValue<Boolean> loading, Consumer<Optional<ButtonType>> bt) {
         ThreadHelper.runAsync(() -> {
             var r = showBlockingAlert(c);
             if (bt != null) {

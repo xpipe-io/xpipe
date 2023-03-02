@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.charsetter.Charsetter;
+import io.xpipe.core.util.FailableFunction;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,18 +9,18 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
 
-public interface CommandProcessControl extends ProcessControl {
+public interface CommandControl extends ProcessControl {
 
-    public CommandProcessControl doesNotObeyReturnValueConvention();
+    public CommandControl doesNotObeyReturnValueConvention();
 
     @Override
-    public CommandProcessControl sensitive();
+    public CommandControl sensitive();
 
-    CommandProcessControl complex();
+    CommandControl complex();
 
-    CommandProcessControl workingDirectory(String directory);
+    CommandControl workingDirectory(String directory);
 
-    ShellProcessControl getParent();
+    ShellControl getParent();
 
     InputStream startExternalStdout() throws Exception;
 
@@ -27,16 +28,20 @@ public interface CommandProcessControl extends ProcessControl {
 
     public boolean waitFor();
 
-    CommandProcessControl customCharset(Charset charset);
+    CommandControl customCharset(Charset charset);
 
     int getExitCode();
 
-    CommandProcessControl elevated();
+    default CommandControl elevated() {
+        return elevated((v) -> true);
+    }
+
+    CommandControl elevated(FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
     @Override
-    CommandProcessControl start() throws Exception;
+    CommandControl start() throws Exception;
 
-    CommandProcessControl exitTimeout(Integer timeout);
+    CommandControl exitTimeout(Integer timeout);
 
     public void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c) throws Exception;
     String readOnlyStdout() throws Exception;

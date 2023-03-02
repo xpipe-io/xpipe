@@ -6,7 +6,7 @@ import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.MacOsPermissions;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
 
@@ -133,7 +133,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalStore.getShell()) {
                 var suffix = command.equals(pc.getShellDialect().getNormalOpenCommand())
                         ? "\"\""
                         : "\"" + command.replaceAll("\"", "\\\\\"") + "\"";
@@ -187,7 +187,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
                                 osascript - "$@" <<EOF
@@ -225,7 +225,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
-            try (ShellProcessControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
                                 osascript - "$@" <<EOF
@@ -258,7 +258,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String command) throws Exception {
-            try (ShellProcessControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, displayName);
 
                 var toExecute = executable + " " + toCommand(name, command);
@@ -274,7 +274,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected abstract String toCommand(String name, String command);
 
         public boolean isAvailable() {
-            try (ShellProcessControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalStore.getShell()) {
                 return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();

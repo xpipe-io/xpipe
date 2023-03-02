@@ -117,11 +117,13 @@ open module io.xpipe.app {
     uses XPipeDaemon;
     uses ProxyFunction;
     uses ModuleLayerLoader;
+    uses ScanProvider;
 
     provides ModuleLayerLoader with
             DataSourceTarget.Loader,
             ActionProvider.Loader,
-            PrefsProvider.Loader;
+            PrefsProvider.Loader,
+            ScanProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;
     provides ProxyManagerProvider with

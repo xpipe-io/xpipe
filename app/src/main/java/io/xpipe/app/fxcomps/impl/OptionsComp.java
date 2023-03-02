@@ -1,0 +1,163 @@
+package io.xpipe.app.fxcomps.impl;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.controls.Spacer;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class OptionsComp extends Comp<CompStructure<Pane>> {
+
+    private final List<OptionsComp.Entry> entries;
+
+    public OptionsComp(List<OptionsComp.Entry> entries) {
+        this.entries = entries;
+    }
+
+    public OptionsComp.Entry queryEntry(String key) {
+        return entries.stream()
+                .filter(entry -> entry.key != null && entry.key.equals(key))
+                .findAny()
+                .orElseThrow();
+    }
+
+    @Override
+    public CompStructure<Pane> createBase() {
+        Pane pane;
+        var content = new VBox();
+        content.setSpacing(7);
+        pane = content;
+        pane.getStyleClass().add("options-comp");
+
+        var nameRegions = new ArrayList<Region>();
+        var compRegions = new ArrayList<Region>();
+
+        for (var entry : getEntries()) {
+            Region compRegion = null;
+            if (entry.comp() != null) {
+                compRegion = entry.comp().createRegion();
+            }
+
+            if (entry.name() != null && entry.description() != null) {
+                var line = new VBox();
+                line.prefWidthProperty().bind(pane.widthProperty());
+                line.setSpacing(5);
+
+                var name = new Label();
+                name.getStyleClass().add("name");
+                name.textProperty().bind(entry.name());
+                name.setMinWidth(Region.USE_PREF_SIZE);
+                name.setAlignment(Pos.CENTER_LEFT);
+                if (compRegion != null) {
+                    name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                    name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                }
+                line.getChildren().add(name);
+
+                var description = new Label();
+                description.setWrapText(true);
+                description.getStyleClass().add("description");
+                description.textProperty().bind(entry.description());
+                description.setAlignment(Pos.CENTER_LEFT);
+                if (compRegion != null) {
+                    description.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                    description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                }
+
+                if (entry.longDescription() != null) {
+                    var popover = new Popover(new Label(entry.longDescription().getValue()));
+                    popover.setCloseButtonEnabled(false);
+                    popover.setHeaderAlwaysVisible(false);
+                    popover.setDetachable(true);
+                    AppFont.small(popover.getContentNode());
+
+                    var descriptionHover = new Label("?");
+                    AppFont.header(descriptionHover);
+                    descriptionHover.setOnMouseClicked(e -> popover.show(descriptionHover));
+
+                    var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), descriptionHover);
+                    HBox.setHgrow(descriptionBox, Priority.ALWAYS);
+                    descriptionBox.setAlignment(Pos.CENTER_LEFT);
+                    line.getChildren().add(descriptionBox);
+                }else {
+                    line.getChildren().add(description);
+                }
+
+                if (compRegion != null) {
+                    line.getChildren().add(compRegion);
+                }
+
+                pane.getChildren().add(line);
+            }
+
+            else if (entry.name() != null) {
+                var line = new HBox();
+                line.setFillHeight(true);
+                line.prefWidthProperty().bind(pane.widthProperty());
+                line.setSpacing(8);
+
+                var name = new Label();
+                name.textProperty().bind(entry.name());
+                name.prefHeightProperty().bind(line.heightProperty());
+                name.setMinWidth(Region.USE_PREF_SIZE);
+                name.setAlignment(Pos.CENTER_LEFT);
+                if (compRegion != null) {
+                    name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                    name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                }
+                nameRegions.add(name);
+                line.getChildren().add(name);
+
+                if (compRegion != null) {
+                    compRegions.add(compRegion);
+                    line.getChildren().add(compRegion);
+                    HBox.setHgrow(compRegion, Priority.ALWAYS);
+                }
+
+                pane.getChildren().add(line);
+            } else {
+                if (compRegion != null) {
+                    compRegions.add(compRegion);
+                    pane.getChildren().add(compRegion);
+                }
+            }
+        }
+
+        if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
+            var nameWidthBinding = Bindings.createDoubleBinding(
+                    () -> {
+                        if (nameRegions.stream().anyMatch(r -> r.getWidth() == 0)) {
+                            return Region.USE_COMPUTED_SIZE;
+                        }
+
+                        var m = nameRegions.stream()
+                                .map(Region::getWidth)
+                                .max(Double::compareTo)
+                                .orElse(0.0);
+                        return m;
+                    },
+                    nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
+            nameRegions.forEach(r -> r.prefWidthProperty().bind(nameWidthBinding));
+        }
+
+        return new SimpleCompStructure<>(pane);
+    }
+
+    public List<OptionsComp.Entry> getEntries() {
+        return entries;
+    }
+
+    public record Entry(String key, ObservableValue<String> description,  ObservableValue<String> longDescription, ObservableValue<String> name, Comp<?> comp) {}
+}

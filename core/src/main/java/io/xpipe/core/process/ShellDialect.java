@@ -29,9 +29,9 @@ public interface ShellDialect {
 
     String addInlineVariablesToCommand(Map<String, String> variables, String command);
 
-    Stream<FileSystem.FileEntry> listFiles(FileSystem fs, ShellProcessControl control, String dir) throws Exception;
+    Stream<FileSystem.FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
 
-    Stream<String> listRoots(ShellProcessControl control) throws Exception;
+    Stream<String> listRoots(ShellControl control) throws Exception;
 
     String getPauseCommand();
 
@@ -101,7 +101,7 @@ public interface ShellDialect {
 
     String getFileMoveCommand(String oldFile, String newFile);
 
-    CommandProcessControl getStreamFileWriteCommand(ShellProcessControl processControl, String file);
+    CommandControl getStreamFileWriteCommand(ShellControl processControl, String file);
 
     String getTextFileWriteCommand(String content, String file);
 
@@ -113,7 +113,7 @@ public interface ShellDialect {
 
     String getWhichCommand(String executable);
 
-    Charset determineCharset(ShellProcessControl control) throws Exception;
+    Charset determineCharset(ShellControl control) throws Exception;
 
     NewLine getNewLine();
 

@@ -1,7 +1,7 @@
 package io.xpipe.core.store;
 
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -44,7 +44,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     FileSystemStore getStore();
 
-    Optional<ShellProcessControl> getShell();
+    Optional<ShellControl> getShell();
 
     FileSystem open() throws Exception;
 

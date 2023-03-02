@@ -7,6 +7,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.util.ModuleHelper;
 import javafx.beans.binding.Bindings;
@@ -131,6 +132,7 @@ private static AppI18n INSTANCE = new AppI18n();
                     || caller.equals(FancyTooltipAugment.class)
                     || caller.equals(PrefsChoiceValue.class)
                     || caller.equals(Translatable.class)
+                    || caller.equals(OptionsBuilder.class)
                     || caller.equals(DynamicOptionsBuilder.class)) {
                 continue;
             }

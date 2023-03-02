@@ -22,17 +22,24 @@ public interface OsType {
         }
     }
 
+    String  getHomeDirectory(ShellControl pc) throws Exception;
+
     String getName();
 
-    String getTempDirectory(ShellProcessControl pc) throws Exception;
+    String getTempDirectory(ShellControl pc) throws Exception;
 
     String normalizeFileName(String file);
 
-    Map<String, String> getProperties(ShellProcessControl pc) throws Exception;
+    Map<String, String> getProperties(ShellControl pc) throws Exception;
 
-    String determineOperatingSystemName(ShellProcessControl pc) throws Exception;
+    String determineOperatingSystemName(ShellControl pc) throws Exception;
 
     static class Windows implements OsType {
+
+        @Override
+        public String getHomeDirectory(ShellControl pc) throws Exception {
+            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
+        }
 
         @Override
         public String getName() {
@@ -40,7 +47,7 @@ public interface OsType {
         }
 
         @Override
-        public String getTempDirectory(ShellProcessControl pc) throws Exception {
+        public String getTempDirectory(ShellControl pc) throws Exception {
             return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("TEMP"));
         }
 
@@ -50,15 +57,15 @@ public interface OsType {
         }
 
         @Override
-        public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
-            try (CommandProcessControl c = pc.command("systeminfo").start()) {
+        public Map<String, String> getProperties(ShellControl pc) throws Exception {
+            try (CommandControl c = pc.command("systeminfo").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
         }
 
         @Override
-        public String determineOperatingSystemName(ShellProcessControl pc) throws Exception {
+        public String determineOperatingSystemName(ShellControl pc) throws Exception {
             var properties = getProperties(pc);
             return properties.get("OS Name") + " "
                     + properties.get("OS Version").split(" ")[0];
@@ -68,7 +75,12 @@ public interface OsType {
     static class Linux implements OsType {
 
         @Override
-        public String getTempDirectory(ShellProcessControl pc) throws Exception {
+        public String getHomeDirectory(ShellControl pc) throws Exception {
+            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+        }
+
+        @Override
+        public String getTempDirectory(ShellControl pc) throws Exception {
             return "/tmp/";
         }
 
@@ -83,20 +95,20 @@ public interface OsType {
         }
 
         @Override
-        public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
+        public Map<String, String> getProperties(ShellControl pc) throws Exception {
             return null;
         }
 
         @Override
-        public String determineOperatingSystemName(ShellProcessControl pc) throws Exception {
-            try (CommandProcessControl c = pc.command("lsb_release -a").start()) {
+        public String determineOperatingSystemName(ShellControl pc) throws Exception {
+            try (CommandControl c = pc.command("lsb_release -a").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", null);
                 }
             }
 
-            try (CommandProcessControl c = pc.command("cat /etc/*release").start()) {
+            try (CommandControl c = pc.command("cat /etc/*release").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", null);
@@ -104,7 +116,7 @@ public interface OsType {
             }
 
             String type = "Unknown";
-            try (CommandProcessControl c = pc.command("uname -o").start()) {
+            try (CommandControl c = pc.command("uname -o").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     type = text.strip();
@@ -112,7 +124,7 @@ public interface OsType {
             }
 
             String version = "?";
-            try (CommandProcessControl c = pc.command("uname -r").start()) {
+            try (CommandControl c = pc.command("uname -r").start()) {
                 var text = c.readOnlyStdout();
                 if (c.getExitCode() == 0) {
                     version = text.strip();
@@ -126,7 +138,12 @@ public interface OsType {
     static class MacOs implements OsType {
 
         @Override
-        public String getTempDirectory(ShellProcessControl pc) throws Exception {
+        public String getHomeDirectory(ShellControl pc) throws Exception {
+            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+        }
+
+        @Override
+        public String getTempDirectory(ShellControl pc) throws Exception {
             return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
         }
 
@@ -141,8 +158,8 @@ public interface OsType {
         }
 
         @Override
-        public Map<String, String> getProperties(ShellProcessControl pc) throws Exception {
-            try (CommandProcessControl c =
+        public Map<String, String> getProperties(ShellControl pc) throws Exception {
+            try (CommandControl c =
                     pc.subShell(ShellDialects.BASH).command("sw_vers").start()) {
                 var text = c.readOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
@@ -150,7 +167,7 @@ public interface OsType {
         }
 
         @Override
-        public String determineOperatingSystemName(ShellProcessControl pc) throws Exception {
+        public String determineOperatingSystemName(ShellControl pc) throws Exception {
             var properties = getProperties(pc);
             var name = pc.executeStringSimpleCommand(
                     "awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup "

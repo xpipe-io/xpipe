@@ -3,7 +3,7 @@ package io.xpipe.core.store;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 
 import java.nio.charset.Charset;
 
@@ -27,7 +27,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
         return create().prepareTerminalOpen();
     }
 
-    default ShellProcessControl create() {
+    default ShellControl create() {
         var pc = createControl();
         pc.onInit(processControl -> {
             setState("type", processControl.getShellDialect());
@@ -49,7 +49,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
         return getState("charset", Charset.class, null);
     }
 
-    ShellProcessControl createControl();
+    ShellControl createControl();
 
     public default ShellDialect determineType() throws Exception {
         try (var pc = create().start()) {
@@ -59,7 +59,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
 
     @Override
     default void validate() throws Exception {
-        try (ShellProcessControl pc = create().start()) {}
+        try (ShellControl pc = create().start()) {}
     }
 
     public default String queryMachineName() throws Exception {

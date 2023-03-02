@@ -53,6 +53,8 @@ public abstract class DataStorage {
         INSTANCE = shouldPersist() ? new StandardStorage() : new ImpersistentStorage();
         INSTANCE.load();
 
+        INSTANCE.storeEntries.forEach(entry -> entry.simpleRefresh());
+
         DataStoreProviders.getAll().forEach(dataStoreProvider -> {
             try {
                 dataStoreProvider.storageInit();
@@ -113,6 +115,21 @@ public abstract class DataStorage {
                     case COLLECTION -> AppI18n.get("collection");
                 };
         return createUniqueSourceEntryName(col, typeName);
+    }
+
+    private String createUniqueStoreEntryName(String base) {
+        if (DataStorage.get().getStoreIfPresent(base).isEmpty()) {
+            return base;
+        }
+
+        int counter = 1;
+        while (true) {
+            var name = base + counter;
+            if (DataStorage.get().getStoreIfPresent(name).isEmpty()) {
+                return name;
+            }
+            counter++;
+        }
     }
 
     private String createUniqueSourceEntryName(DataSourceCollection col, String base) {
@@ -345,7 +362,7 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry addStore(@NonNull String name, DataStore store) {
-        var e = DataStoreEntry.createNew(UUID.randomUUID(), name, store);
+        var e = DataStoreEntry.createNew(UUID.randomUUID(), createUniqueStoreEntryName(name), store);
         addStore(e);
         return e;
     }

@@ -1,10 +1,10 @@
 package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.process.CommandProcessControl;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
@@ -153,21 +153,21 @@ public class XPipeInstallation {
         return v;
     }
 
-    public static String queryInstallationVersion(ShellProcessControl p, String exec) throws Exception {
-        try (CommandProcessControl c = p.command(List.of(exec, "version")).start()) {
+    public static String queryInstallationVersion(ShellControl p, String exec) throws Exception {
+        try (CommandControl c = p.command(List.of(exec, "version")).start()) {
             return c.readOrThrow();
         } catch (ProcessOutputException ex) {
             return "?";
         }
     }
 
-    public static String getInstallationExecutable(ShellProcessControl p, String installation) throws Exception {
+    public static String getInstallationExecutable(ShellControl p, String installation) throws Exception {
         var executable = getDaemonExecutablePath(p.getOsType());
         var file = FileNames.join(installation, executable);
         return file;
     }
 
-    public static String getDataBasePath(ShellProcessControl p) throws Exception {
+    public static String getDataBasePath(ShellControl p) throws Exception {
         if (p.getOsType().equals(OsType.WINDOWS)) {
             var base = p.executeStringSimpleCommand(p.getShellDialect().getPrintVariableCommand("userprofile"));
             return FileNames.join(base, ".xpipe");
@@ -218,7 +218,7 @@ public class XPipeInstallation {
         return path;
     }
 
-    public static String getDefaultInstallationBasePath(ShellProcessControl p, boolean acceptPortable)
+    public static String getDefaultInstallationBasePath(ShellControl p, boolean acceptPortable)
             throws Exception {
         if (acceptPortable) {
             var customHome = p.executeStringSimpleCommand(p.getShellDialect().getPrintVariableCommand("XPIPE_HOME"));

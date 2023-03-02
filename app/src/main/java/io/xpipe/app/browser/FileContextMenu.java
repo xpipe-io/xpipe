@@ -7,7 +7,7 @@ import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.util.*;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.Property;
 import javafx.scene.control.ContextMenu;
@@ -73,7 +73,7 @@ final class FileContextMenu extends ContextMenu {
                 var execute = new MenuItem("Run in terminal");
                 execute.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        ShellProcessControl pc =
+                        ShellControl pc =
                                 model.getFileSystem().getShell().orElseThrow();
                         pc.executeBooleanSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
                         var cmd = pc.command("\"" + entry.getPath() + "\"").prepareTerminalOpen();
@@ -86,7 +86,7 @@ final class FileContextMenu extends ContextMenu {
                 var executeInBackground = new MenuItem("Run in background");
                 executeInBackground.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        ShellProcessControl pc =
+                        ShellControl pc =
                                 model.getFileSystem().getShell().orElseThrow();
                         pc.executeBooleanSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
                         var cmd = ScriptHelper.createDetachCommand(pc, "\"" + entry.getPath() + "\"");

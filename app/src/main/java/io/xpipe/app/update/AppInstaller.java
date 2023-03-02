@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.process.CommandProcessControl;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class AppInstaller {
 
-    public static void installOnRemoteMachine(ShellProcessControl s, String version) throws Exception {
+    public static void installOnRemoteMachine(ShellControl s, String version) throws Exception {
         var asset = getSuitablePlatformAsset(s);
         var file = AppDownloads.downloadInstaller(asset, version);
         installFile(s, asset, file);
@@ -32,14 +32,14 @@ public class AppInstaller {
         asset.installLocal(localFile.toString());
     }
 
-    public static void installFile(ShellProcessControl s, InstallerAssetType asset, Path localFile) throws Exception {
+    public static void installFile(ShellControl s, InstallerAssetType asset, Path localFile) throws Exception {
         String targetFile = null;
         if (s.isLocal()) {
             targetFile = localFile.toString();
         } else {
             targetFile = FileNames.join(
                     s.getTemporaryDirectory(), localFile.getFileName().toString());
-            try (CommandProcessControl c = s.getShellDialect().getStreamFileWriteCommand(s, targetFile)
+            try (CommandControl c = s.getShellDialect().getStreamFileWriteCommand(s, targetFile)
                     .start()) {
                 c.discardOut();
                 c.discardErr();
@@ -73,13 +73,13 @@ public class AppInstaller {
         throw new AssertionError();
     }
 
-    public static InstallerAssetType getSuitablePlatformAsset(ShellProcessControl p) throws Exception {
+    public static InstallerAssetType getSuitablePlatformAsset(ShellControl p) throws Exception {
         if (p.getOsType().equals(OsType.WINDOWS)) {
             return new InstallerAssetType.Msi();
         }
 
         if (p.getOsType().equals(OsType.LINUX)) {
-            try (CommandProcessControl c = p.command(p.getShellDialect().getFileExistsCommand("/etc/debian_version"))
+            try (CommandControl c = p.command(p.getShellDialect().getFileExistsCommand("/etc/debian_version"))
                     .start()) {
                 return c.discardAndCheckExit() ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
             }
@@ -102,7 +102,7 @@ public class AppInstaller {
     })
     public abstract static class InstallerAssetType {
 
-        public abstract void installRemote(ShellProcessControl pc, String file) throws Exception;
+        public abstract void installRemote(ShellControl pc, String file) throws Exception;
 
         public abstract void installLocal(String file) throws Exception;
 
@@ -121,11 +121,11 @@ public class AppInstaller {
             }
 
             @Override
-            public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
+            public void installRemote(ShellControl shellControl, String file) throws Exception {
                 var exec = XPipeInstallation.getInstallationExecutable(
-                        shellProcessControl,
-                        XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl, false));
-                var logsDir = FileNames.join(XPipeInstallation.getDataBasePath(shellProcessControl), "logs");
+                        shellControl,
+                        XPipeInstallation.getDefaultInstallationBasePath(shellControl, false));
+                var logsDir = FileNames.join(XPipeInstallation.getDataBasePath(shellControl), "logs");
                 var cmd = new ArrayList<>(java.util.List.of(
                         "start",
                         "/wait",
@@ -139,7 +139,7 @@ public class AppInstaller {
                         exec
                         // "/qf"
                         ));
-                try (CommandProcessControl c = shellProcessControl.command(cmd).start()) {
+                try (CommandControl c = shellControl.command(cmd).start()) {
                     c.discardOrThrow();
                 }
             }
@@ -177,14 +177,14 @@ public class AppInstaller {
             }
 
             @Override
-            public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
-                try (var pc = shellProcessControl.subShell(ShellDialects.BASH).start()) {
-                    try (CommandProcessControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get remove -qy xpipe")
+            public void installRemote(ShellControl shellControl, String file) throws Exception {
+                try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
+                    try (CommandControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get remove -qy xpipe")
                             .elevated()
                             .start()) {
                         c.discardOrThrow();
                     }
-                    try (CommandProcessControl c = pc.command(
+                    try (CommandControl c = pc.command(
                                     "DEBIAN_FRONTEND=noninteractive apt-get install -qy \"" + file + "\"")
                             .elevated()
                             .start()) {
@@ -214,9 +214,9 @@ public class AppInstaller {
             }
 
             @Override
-            public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
-                try (var pc = shellProcessControl.subShell(ShellDialects.BASH).start()) {
-                    try (CommandProcessControl c = pc.command("rpm -U -v --force \"" + file + "\"")
+            public void installRemote(ShellControl shellControl, String file) throws Exception {
+                try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
+                    try (CommandControl c = pc.command("rpm -U -v --force \"" + file + "\"")
                             .elevated()
                             .start()) {
                         c.discardOrThrow();
@@ -244,9 +244,9 @@ public class AppInstaller {
             }
 
             @Override
-            public void installRemote(ShellProcessControl shellProcessControl, String file) throws Exception {
-                try (var pc = shellProcessControl.subShell(ShellDialects.BASH).start()) {
-                    try (CommandProcessControl c = pc.command(
+            public void installRemote(ShellControl shellControl, String file) throws Exception {
+                try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
+                    try (CommandControl c = pc.command(
                                     "installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /")
                             .elevated()
                             .start()) {

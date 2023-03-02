@@ -2,7 +2,7 @@ package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -19,7 +19,7 @@ public class XPipeTempDirectory {
         }
     }
 
-    public static String get(ShellProcessControl proc) throws Exception {
+    public static String get(ShellControl proc) throws Exception {
         var base = proc.getOsType().getTempDirectory(proc);
         var dir = FileNames.join(base, "xpipe");
 
@@ -36,7 +36,7 @@ public class XPipeTempDirectory {
         return dir;
     }
 
-    public static void clear(ShellProcessControl proc) throws Exception {
+    public static void clear(ShellControl proc) throws Exception {
         var dir = get(proc);
         if (!proc.executeBooleanSimpleCommand(proc.getShellDialect().getFileDeleteCommand(dir))) {
             throw new IOException("Unable to delete temporary directory " + dir);

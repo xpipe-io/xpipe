@@ -24,6 +24,7 @@ public class ListSelectorComp<T> extends SimpleComp {
     @Override
     protected Region createSimple() {
         var vbox = new VBox();
+        vbox.setSpacing(8);
         vbox.getStyleClass().add("content");
         for (var v : values) {
             var cb = new CheckBox(null);

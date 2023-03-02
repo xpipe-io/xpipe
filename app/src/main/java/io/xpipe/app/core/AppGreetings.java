@@ -66,7 +66,7 @@ public class AppGreetings {
     }
 
     public static void showIfNeeded() {
-        //TODO
+        // TODO
         if (!AppProperties.get().isImage() || true) {
             return;
         }
@@ -113,6 +113,7 @@ public class AppGreetings {
                     var button = alert.getDialogPane().lookupButton(buttonType);
                     button.disableProperty().bind(accepted.not());
                 },
+                null,
                 r -> r.filter(b -> b.getButtonData().isDefaultButton() && accepted.get())
                         .ifPresentOrElse(
                                 t -> {

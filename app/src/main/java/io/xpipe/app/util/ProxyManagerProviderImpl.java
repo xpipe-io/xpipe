@@ -7,7 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.update.AppInstaller;
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ProxyManagerProvider;
 import io.xpipe.core.util.XPipeInstallation;
@@ -31,7 +31,7 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
     }
 
     @Override
-    public Optional<String> checkCompatibility(ShellProcessControl s) throws Exception {
+    public Optional<String> checkCompatibility(ShellControl s) throws Exception {
         var version = ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion();
 
         if (AppPrefs.get().developerDisableConnectorInstallationVersionCheck().get()) {
@@ -54,7 +54,7 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
     }
 
     @Override
-    public boolean setup(ShellProcessControl s) throws Exception {
+    public boolean setup(ShellControl s) throws Exception {
         var message = checkCompatibility(s);
         if (message.isPresent()) {
             if (showAlert()) {

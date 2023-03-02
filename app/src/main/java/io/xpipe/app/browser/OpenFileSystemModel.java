@@ -178,9 +178,9 @@ final class OpenFileSystemModel {
 
         var current = !(fileSystem instanceof LocalStore) && fs instanceof ConnectionFileSystem connectionFileSystem
                 ? connectionFileSystem
-                        .getShellProcessControl()
+                        .getShellControl()
                         .executeStringSimpleCommand(connectionFileSystem
-                                .getShellProcessControl()
+                                .getShellControl()
                                 .getShellDialect()
                                 .getPrintWorkingDirectoryCommand())
                 : null;
@@ -199,7 +199,7 @@ final class OpenFileSystemModel {
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
                 if (store.getValue() instanceof ShellStore s) {
-                    var connection = ((ConnectionFileSystem) fileSystem).getShellProcessControl();
+                    var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.create()
                             .initWith(List.of(connection.getShellDialect().getCdCommand(directory)))
                             .prepareTerminalOpen();

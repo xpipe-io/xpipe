@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ListBoxViewComp<T> extends Comp<CompStructure<VBox>> {
+public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
@@ -29,7 +30,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<VBox>> {
     }
 
     @Override
-    public CompStructure<VBox> createBase() {
+    public CompStructure<ScrollPane> createBase() {
         Map<T, Region> cache = new HashMap<>();
 
         VBox listView = new VBox();
@@ -46,7 +47,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<VBox>> {
             cache.keySet().retainAll(c.getList());
         });
 
-        return new SimpleCompStructure<>(listView);
+        var scroll = new ScrollPane(listView);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setFitToWidth(true);
+
+        return new SimpleCompStructure<>(scroll);
     }
 
     private void refresh(VBox listView, List<? extends T> c, Map<T, Region> cache, boolean asynchronous) {

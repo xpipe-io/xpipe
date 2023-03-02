@@ -1,6 +1,6 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.process.CommandProcessControl;
+import io.xpipe.core.process.CommandControl;
 
 public interface CommandExecutionStore extends DataStore, LaunchableStore {
 
@@ -9,5 +9,5 @@ public interface CommandExecutionStore extends DataStore, LaunchableStore {
         return create().prepareTerminalOpen();
     }
 
-    CommandProcessControl create() throws Exception;
+    CommandControl create() throws Exception;
 }

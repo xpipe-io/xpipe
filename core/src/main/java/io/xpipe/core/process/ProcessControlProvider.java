@@ -18,18 +18,18 @@ public abstract class ProcessControlProvider {
                 .toList();
     }
 
-    public static ShellProcessControl createLocal() {
+    public static ShellControl createLocal(boolean stoppable) {
         return INSTANCES.stream()
-                .map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl())
+                .map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl(stoppable))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElseThrow();
     }
 
-    public static ShellProcessControl createSub(
-            ShellProcessControl parent,
-            @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
-            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand) {
+    public static ShellControl createSub(
+            ShellControl parent,
+            @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
+            FailableBiFunction<ShellControl, String, String, Exception> terminalCommand) {
         return INSTANCES.stream()
                 .map(localProcessControlProvider ->
                         localProcessControlProvider.sub(parent, commandFunction, terminalCommand))
@@ -38,10 +38,10 @@ public abstract class ProcessControlProvider {
                 .orElseThrow();
     }
 
-    public static CommandProcessControl createCommand(
-            ShellProcessControl parent,
-            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
-            FailableFunction<ShellProcessControl, String, Exception> terminalCommand) {
+    public static CommandControl createCommand(
+            ShellControl parent,
+            @NonNull FailableFunction<ShellControl, String, Exception> command,
+            FailableFunction<ShellControl, String, Exception> terminalCommand) {
         return INSTANCES.stream()
                 .map(localProcessControlProvider ->
                         localProcessControlProvider.command(parent, command, terminalCommand))
@@ -50,7 +50,7 @@ public abstract class ProcessControlProvider {
                 .orElse(null);
     }
 
-    public static ShellProcessControl createSsh(Object sshStore) {
+    public static ShellControl createSsh(Object sshStore) {
         return INSTANCES.stream()
                 .map(localProcessControlProvider -> localProcessControlProvider.createSshControl(sshStore))
                 .filter(Objects::nonNull)
@@ -58,17 +58,17 @@ public abstract class ProcessControlProvider {
                 .orElseThrow();
     }
 
-    public abstract ShellProcessControl sub(
-            ShellProcessControl parent,
-            @NonNull FailableFunction<ShellProcessControl, String, Exception> commandFunction,
-            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand);
+    public abstract ShellControl sub(
+            ShellControl parent,
+            @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
+            FailableBiFunction<ShellControl, String, String, Exception> terminalCommand);
 
-    public abstract CommandProcessControl command(
-            ShellProcessControl parent,
-            @NonNull FailableFunction<ShellProcessControl, String, Exception> command,
-            FailableFunction<ShellProcessControl, String, Exception> terminalCommand);
+    public abstract CommandControl command(
+            ShellControl parent,
+            @NonNull FailableFunction<ShellControl, String, Exception> command,
+            FailableFunction<ShellControl, String, Exception> terminalCommand);
 
-    public abstract ShellProcessControl createLocalProcessControl();
+    public abstract ShellControl createLocalProcessControl(boolean stoppable);
 
-    public abstract ShellProcessControl createSshControl(Object sshStore);
+    public abstract ShellControl createSshControl(Object sshStore);
 }

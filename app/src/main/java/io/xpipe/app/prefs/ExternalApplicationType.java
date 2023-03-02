@@ -4,7 +4,7 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellProcessControl;
+import io.xpipe.core.process.ShellControl;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         protected Optional<Path> getApplicationPath() {
-            try (ShellProcessControl pc = LocalStore.getShell().start()) {
+            try (ShellControl pc = LocalStore.getShell().start()) {
                 try (var c = pc.command(String.format(
                                 "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister "
                                         + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|/Volumes/%s\" | uniq",
@@ -76,7 +76,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         public boolean isAvailable() {
-            try (ShellProcessControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalStore.getShell()) {
                 return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();

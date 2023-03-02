@@ -9,13 +9,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public interface ShellProcessControl extends ProcessControl {
+public interface ShellControl extends ProcessControl {
 
     Semaphore getCommandLock();
 
-    void onInit(Consumer<ShellProcessControl> pc);
+    void onInit(Consumer<ShellControl> pc);
 
     String prepareTerminalOpen() throws Exception;
 
@@ -26,25 +25,25 @@ public interface ShellProcessControl extends ProcessControl {
     public void checkRunning() throws Exception;
 
     default String executeStringSimpleCommand(String command) throws Exception {
-        try (CommandProcessControl c = command(command).start()) {
+        try (CommandControl c = command(command).start()) {
             return c.readOrThrow();
         }
     }
 
     default boolean executeBooleanSimpleCommand(String command) throws Exception {
-        try (CommandProcessControl c = command(command).start()) {
+        try (CommandControl c = command(command).start()) {
             return c.discardAndCheckExit();
         }
     }
 
     default void executeSimpleCommand(String command) throws Exception {
-        try (CommandProcessControl c = command(command).start()) {
+        try (CommandControl c = command(command).start()) {
             c.discardOrThrow();
         }
     }
 
     default void executeSimpleCommand(String command, String failMessage) throws Exception {
-        try (CommandProcessControl c = command(command).start()) {
+        try (CommandControl c = command(command).start()) {
             c.discardOrThrow();
         } catch (ProcessOutputException out) {
             throw ProcessOutputException.of(failMessage, out);
@@ -63,52 +62,52 @@ public interface ShellProcessControl extends ProcessControl {
 
     OsType getOsType();
 
-    ShellProcessControl elevated(Predicate<ShellProcessControl> elevationFunction);
+    ShellControl elevated(FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
-    ShellProcessControl elevation(SecretValue value);
+    ShellControl elevationPassword(SecretValue value);
 
-    ShellProcessControl initWith(List<String> cmds);
+    ShellControl initWith(List<String> cmds);
 
     SecretValue getElevationPassword();
 
-    default ShellProcessControl subShell(@NonNull ShellDialect type) {
+    default ShellControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getNormalOpenCommand(), (shellProcessControl, s) -> {
                     return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
                 })
-                .elevation(getElevationPassword());
+                .elevationPassword(getElevationPassword());
     }
 
-    default ShellProcessControl subShell(@NonNull List<String> command) {
+    default ShellControl subShell(@NonNull List<String> command) {
         return subShell(
                 shellProcessControl -> shellProcessControl.getShellDialect().flatten(command), null);
     }
 
-    default ShellProcessControl subShell(@NonNull String command) {
+    default ShellControl subShell(@NonNull String command) {
         return subShell(processControl -> command, null);
     }
 
-    ShellProcessControl subShell(
-            FailableFunction<ShellProcessControl, String, Exception> command,
-            FailableBiFunction<ShellProcessControl, String, String, Exception> terminalCommand);
+    ShellControl subShell(
+            FailableFunction<ShellControl, String, Exception> command,
+            FailableBiFunction<ShellControl, String, String, Exception> terminalCommand);
 
     void executeLine(String command) throws Exception;
 
     void cd(String directory) throws Exception;
 
     @Override
-    ShellProcessControl start() throws Exception;
+    ShellControl start() throws Exception;
 
-    CommandProcessControl command(FailableFunction<ShellProcessControl, String, Exception> command);
+    CommandControl command(FailableFunction<ShellControl, String, Exception> command);
 
-    CommandProcessControl command(
-            FailableFunction<ShellProcessControl, String, Exception> command,
-            FailableFunction<ShellProcessControl, String, Exception> terminalCommand);
+    CommandControl command(
+            FailableFunction<ShellControl, String, Exception> command,
+            FailableFunction<ShellControl, String, Exception> terminalCommand);
 
-    default CommandProcessControl command(String command) {
+    default CommandControl command(String command) {
         return command(shellProcessControl -> command);
     }
 
-    default CommandProcessControl command(List<String> command) {
+    default CommandControl command(List<String> command) {
         return command(shellProcessControl -> shellProcessControl.getShellDialect().flatten(command));
     }
 
