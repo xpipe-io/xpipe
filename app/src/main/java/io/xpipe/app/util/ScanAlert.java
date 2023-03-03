@@ -38,9 +38,12 @@ public class ScanAlert {
                     alert.setTitle(AppI18n.get("scanAlertTitle"));
                     alert.setWidth(300);
                     var content = new VerticalComp(List.of(
-                                    new LabelComp(AppI18n.get("scanAlertHeader")).apply(struc -> struc.get().setWrapText(true)),
+                                    new LabelComp(AppI18n.get("scanAlertHeader"))
+                                            .apply(struc -> struc.get().setWrapText(true)),
                                     new ListSelectorComp<>(
-                                            applicable, scanOperation -> AppI18n.get(scanOperation.getNameKey()), selected)))
+                                            applicable,
+                                            scanOperation -> AppI18n.get(scanOperation.getNameKey()),
+                                            selected)))
                             .apply(struc -> struc.get().setSpacing(15))
                             .styleClass("window-content")
                             .createRegion();
@@ -51,12 +54,12 @@ public class ScanAlert {
                 buttonType -> {
                     if (buttonType.isPresent()
                             && buttonType.get().getButtonData().isDefaultButton()) {
-                        try (var ignored = new BusyProperty(busy)) {
-                            for (var a : applicable) {
+                        for (var a : selected) {
+                            try (var ignored = new BusyProperty(busy)) {
                                 a.getScanner().run();
+                            } catch (Exception ex) {
+                                ErrorEvent.fromThrowable(ex).handle();
                             }
-                        } catch (Exception ex) {
-                            ErrorEvent.fromThrowable(ex).handle();
                         }
                     }
                 });

@@ -339,31 +339,41 @@ public abstract class DataStorage {
         });
     }
 
-    private void propagateUpdate() throws Exception {
+    private void propagateUpdate() {
         for (DataStoreEntry dataStoreEntry : getStores()) {
-            dataStoreEntry.refresh(false);
+            dataStoreEntry.simpleRefresh();
         }
 
-        for (var dataStoreEntry : sourceEntries) {
-            dataStoreEntry.refresh(false);
+        for (var e : sourceEntries) {
+            e.simpleRefresh();
         }
     }
 
-    public void addStore(@NonNull DataStoreEntry e) {
+    public void addStoreEntry(@NonNull DataStoreEntry e) {
         if (getStoreIfPresent(e.getName()).isPresent()) {
             throw new IllegalArgumentException("Store with name " + e.getName() + " already exists");
         }
 
         e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
         this.storeEntries.add(e);
+        propagateUpdate();
         save();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
     }
 
+    public void addStoreIfNotPresent(@NonNull String name, DataStore store) {
+        if (getStoreEntryIfPresent(store).isPresent()) {
+            return;
+        }
+
+        var e = DataStoreEntry.createNew(UUID.randomUUID(), createUniqueStoreEntryName(name), store);
+        addStoreEntry(e);
+    }
+
     public DataStoreEntry addStore(@NonNull String name, DataStore store) {
         var e = DataStoreEntry.createNew(UUID.randomUUID(), createUniqueStoreEntryName(name), store);
-        addStore(e);
+        addStoreEntry(e);
         return e;
     }
 

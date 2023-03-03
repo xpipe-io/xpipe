@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.issue.ErrorEvent;
 import lombok.Builder;
-import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
@@ -38,9 +38,12 @@ public abstract class StorageElement {
         return elementState;
     }
 
-    @SneakyThrows
     public void simpleRefresh() {
-        refresh(false);
+        try {
+            refresh(false);
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
     }
 
     public abstract void refresh(boolean deep) throws Exception;

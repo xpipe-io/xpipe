@@ -2,6 +2,7 @@ package io.xpipe.app.fxcomps.impl;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
@@ -10,8 +11,10 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
@@ -76,16 +79,21 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                 }
 
-                if (entry.longDescription() != null) {
-                    var popover = new Popover(new Label(entry.longDescription().getValue()));
+                if (entry.longDescriptionSource() != null) {
+                    var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s)
+                            .apply(struc -> struc.get().setMaxWidth(500))
+                            .apply(struc -> struc.get().setMaxHeight(400));
+                    var popover = new Popover(markDown.createRegion());
                     popover.setCloseButtonEnabled(false);
                     popover.setHeaderAlwaysVisible(false);
                     popover.setDetachable(true);
                     AppFont.small(popover.getContentNode());
 
-                    var descriptionHover = new Label("?");
+                    var descriptionHover = new Button("... ?");
+                    descriptionHover.setPadding(new Insets(0, 6, 0, 6));
+                    descriptionHover.getStyleClass().add("long-description");
                     AppFont.header(descriptionHover);
-                    descriptionHover.setOnMouseClicked(e -> popover.show(descriptionHover));
+                    descriptionHover.setOnAction(e -> popover.show(descriptionHover));
 
                     var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), descriptionHover);
                     HBox.setHgrow(descriptionBox, Priority.ALWAYS);
@@ -159,5 +167,5 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         return entries;
     }
 
-    public record Entry(String key, ObservableValue<String> description,  ObservableValue<String> longDescription, ObservableValue<String> name, Comp<?> comp) {}
+    public record Entry(String key, ObservableValue<String> description,  String longDescriptionSource, ObservableValue<String> name, Comp<?> comp) {}
 }

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -161,6 +162,14 @@ public class StoreEntryComp extends SimpleComp {
             });
         });
 
+
+        new PopupMenuAugment<>(false) {
+            @Override
+            protected ContextMenu createContextMenu() {
+                return StoreEntryComp.this.createContextMenu();
+            }
+        }.augment(new SimpleCompStructure<>(button));
+
         return button;
     }
 
@@ -182,9 +191,9 @@ public class StoreEntryComp extends SimpleComp {
                     });
             button.apply(new FancyTooltipAugment<>(
                     actionProvider.getName(entry.getEntry().getStore().asNeeded())));
-            if (!actionProvider.showIfDisabled()) {
+            if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 button.hide(Bindings.not(p.getValue()));
-            } else {
+            } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
                 button.disable(Bindings.not(p.getValue()));
             }
             list.add(button);
@@ -242,9 +251,10 @@ public class StoreEntryComp extends SimpleComp {
                 });
             });
             item.textProperty().bind(name);
-            item.disableProperty().bind(Bindings.not(p.getValue()));
-            if (!actionProvider.showIfDisabled()) {
+            if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 item.visibleProperty().bind(p.getValue());
+            } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
+                item.disableProperty().bind(Bindings.not(p.getValue()));
             }
             contextMenu.getItems().add(item);
         }

@@ -38,7 +38,7 @@ public class AddStoreAction implements ActionProvider {
         return new LauncherCallSite() {
             @Override
             public String getId() {
-                return "addStore";
+                return "add";
             }
 
             @Override

@@ -69,7 +69,7 @@ public abstract class LauncherInput {
 
                 if (scheme.equalsIgnoreCase("xpipe")) {
                     var action = uri.getAuthority();
-                    var args = Arrays.asList(uri.getPath().split("/"));
+                    var args = Arrays.asList(uri.getPath().substring(1).split("/"));
                     var found = ActionProvider.ALL.stream()
                             .filter(actionProvider -> actionProvider.getLauncherCallSite() != null
                                     && actionProvider

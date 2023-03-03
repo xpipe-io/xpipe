@@ -75,6 +75,12 @@ public interface ActionProvider {
 
     public static interface DataStoreCallSite<T extends DataStore> {
 
+        enum ActiveType {
+            ONLY_SHOW_IF_ENABLED,
+            ALWAYS_SHOW,
+            ALWAYS_ENABLE
+        }
+
         Action createAction(T store);
 
         Class<T> getApplicableClass();
@@ -95,8 +101,8 @@ public interface ActionProvider {
 
         String getIcon(T store);
 
-        default boolean showIfDisabled() {
-            return true;
+        default ActiveType activeType() {
+            return ActiveType.ONLY_SHOW_IF_ENABLED;
         }
     }
 

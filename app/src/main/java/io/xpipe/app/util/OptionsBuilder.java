@@ -21,7 +21,7 @@ public class OptionsBuilder {
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
-    private ObservableValue<String> longDescription;
+    private String longDescription;
     private Comp<?> comp;
 
     private void finishCurrent() {
@@ -106,7 +106,7 @@ public class OptionsBuilder {
 
     public OptionsBuilder longDescription(String descriptionKey) {
         finishCurrent();
-        longDescription = AppI18n.observable(descriptionKey);
+        longDescription = AppI18n.getInstance().getMarkdownDocumentation(descriptionKey);
         return this;
     }
 

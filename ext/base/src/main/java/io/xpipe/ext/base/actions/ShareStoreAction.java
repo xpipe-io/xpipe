@@ -44,11 +44,6 @@ public class ShareStoreAction implements ActionProvider {
         return new DataStoreCallSite<DataStore>() {
 
             @Override
-            public boolean showIfDisabled() {
-                return false;
-            }
-
-            @Override
             public ActionProvider.Action createAction(DataStore store) {
                 return new Action(store);
             }

@@ -28,6 +28,7 @@ public class ListSelectorComp<T> extends SimpleComp {
         vbox.getStyleClass().add("content");
         for (var v : values) {
             var cb = new CheckBox(null);
+            cb.setSelected(selected.contains(v));
             cb.selectedProperty().addListener((c, o, n) -> {
                 if (n) {
                     selected.add(v);
@@ -35,8 +36,8 @@ public class ListSelectorComp<T> extends SimpleComp {
                     selected.remove(v);
                 }
             });
-            cb.setSelected(selected.contains(v));
             var l = new Label(toString.apply(v), cb);
+            l.setOnMouseClicked(event -> cb.setSelected(!cb.isSelected()));
             vbox.getChildren().add(l);
         }
         var sp = new ScrollPane(vbox);

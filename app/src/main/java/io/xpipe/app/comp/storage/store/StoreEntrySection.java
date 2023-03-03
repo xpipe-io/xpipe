@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,12 +29,17 @@ public class StoreEntrySection implements StorageFilter.Filterable {
     public static ObservableList<StoreEntrySection> createTopLevels() {
         var filtered = BindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
-                storeEntryWrapper -> !storeEntryWrapper.getEntry().getState().isUsable()
-                        || storeEntryWrapper
-                                        .getEntry()
-                                        .getProvider()
-                                        .getParent(storeEntryWrapper.getEntry().getStore())
-                                == null);
+                storeEntryWrapper -> {
+                    if (!storeEntryWrapper.getEntry().getState().isUsable()) {
+                        return true;
+                    }
+
+                    var parent = storeEntryWrapper
+                            .getEntry()
+                            .getProvider()
+                            .getParent(storeEntryWrapper.getEntry().getStore());
+                    return parent == null || (DataStorage.get().getStoreEntryIfPresent(parent).isEmpty());
+                });
         var topLevel = BindingsHelper.mappedContentBinding(filtered, storeEntryWrapper -> create(storeEntryWrapper));
         var ordered = BindingsHelper.orderedContentBinding(
                 topLevel,
@@ -101,7 +107,7 @@ public class StoreEntrySection implements StorageFilter.Filterable {
                 new HorizontalComp(topEntryList),
                 new HorizontalComp(List.of(spacer, content))
                         .apply(struc -> struc.get().setFillHeight(true))
-                        .hide(Bindings.size(children).isEqualTo(0))));
+                        .hide(BindingsHelper.persist(Bindings.size(children).isEqualTo(0)))));
     }
 
     @Override

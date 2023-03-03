@@ -40,7 +40,7 @@ public class LocalStoreProvider implements DataStoreProvider {
         }
 
         var e = DataStoreEntry.createNew(UUID.randomUUID(), "Local Machine", new LocalStore());
-        DataStorage.get().addStore(e);
+        DataStorage.get().addStoreEntry(e);
         e.setConfiguration(StorageElement.Configuration.builder()
                 .deletable(false)
                 .editable(false)

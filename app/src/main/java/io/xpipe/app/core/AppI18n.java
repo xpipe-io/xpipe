@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.ocpsoft.prettytime.PrettyTime;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +38,7 @@ public class AppI18n {
 
     private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
     private Map<String, String> translations;
+    private Map<String, String> markdownDocumentations;
     private PrettyTime prettyTime;
 private static AppI18n INSTANCE = new AppI18n();
 
@@ -189,6 +191,10 @@ private static AppI18n INSTANCE = new AppI18n();
         return name.endsWith(ending);
     }
 
+    public String getMarkdownDocumentation(String name) {
+        return markdownDocumentations.getOrDefault(name, "");
+    }
+
     private void load() {
         TrackEvent.info("Loading translations ...");
 
@@ -207,6 +213,10 @@ private static AppI18n INSTANCE = new AppI18n();
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         if (!matchesLocale(file)) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (!file.getFileName().toString().endsWith(".properties")) {
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -233,6 +243,39 @@ private static AppI18n INSTANCE = new AppI18n();
                         .handle();
             });
         }
+
+        markdownDocumentations = new HashMap<>();
+        for (var module : AppExtensionManager.getInstance().getContentModules()) {
+            AppResources.with(module.getName(), "lang", basePath -> {
+                if (!Files.exists(basePath)) {
+                    return;
+                }
+
+                var moduleName = FilenameUtils.getExtension(module.getName());
+                Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (!matchesLocale(file)) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (!file.getFileName().toString().endsWith(".md")) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        var name = file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf("_"));
+                        try (var in = Files.newInputStream(file)) {
+                            var usedPrefix = moduleName + ":";
+                            markdownDocumentations.put(usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                        } catch (IOException ex) {
+                            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            });
+        }
+
         this.prettyTime = new PrettyTime(
                 AppPrefs.get() != null
                         ? AppPrefs.get().language.getValue().getLocale()

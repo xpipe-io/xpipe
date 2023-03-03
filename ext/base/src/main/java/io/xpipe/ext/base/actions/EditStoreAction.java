@@ -37,8 +37,8 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
-            public boolean showIfDisabled() {
-                return false;
+            public ActiveType activeType() {
+                return ActiveType.ALWAYS_ENABLE;
             }
 
             @Override

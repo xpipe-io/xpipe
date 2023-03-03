@@ -82,8 +82,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         });
 
         this.apply(r -> {
-            r.get().setPrefWidth(AppFont.em(32));
-            r.get().setPrefHeight(AppFont.em(38));
+            r.get().setPrefWidth(AppFont.em(36));
+            r.get().setPrefHeight(AppFont.em(42));
         });
     }
 
@@ -92,7 +92,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             ThreadHelper.runAsync(() -> {
                 e.applyChanges(newE);
                 if (!DataStorage.get().getStores().contains(e)) {
-                    DataStorage.get().addStore(e);
+                    DataStorage.get().addStoreEntry(e);
+                    ScanAlert.showIfNeeded(e.getStore());
                 }
                 DataStorage.get().refresh();
             });
@@ -102,7 +103,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     public static void showCreation(Predicate<DataStoreProvider> filter) {
         show(null, null, null, filter, e -> {
             try {
-                DataStorage.get().addStore(e);
+                DataStorage.get().addStoreEntry(e);
+                ScanAlert.showIfNeeded(e.getStore());
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
@@ -216,11 +218,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         layout.setTop(top);
         // layout.getStyleClass().add("data-input-creation-step");
         return new LoadingOverlayComp(Comp.of(() -> layout), busy).createStructure();
-    }
-
-    @Override
-    public void onContinue() {
-        ScanAlert.showIfNeeded(entry.getValue().getStore());
     }
 
     @Override
