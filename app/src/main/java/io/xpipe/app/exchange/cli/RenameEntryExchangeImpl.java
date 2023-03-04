@@ -11,7 +11,7 @@ public class RenameEntryExchangeImpl extends RenameEntryExchange
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         var e = getSourceEntry(msg.getRef(), null, true);
-        DataStorage.get().deleteEntry(e);
+        DataStorage.get().deleteSourceEntry(e);
         DataStorage.get()
                 .add(
                         e,

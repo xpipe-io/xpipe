@@ -45,7 +45,7 @@ public class StandardStorage extends DataStorage {
                         return;
                     }
 
-                    var entry = getStoreEntryByUuid(uuid);
+                    var entry = getStoreEntry(uuid);
                     if (entry.isEmpty()) {
                         TrackEvent.withTrace("storage", "Deleting leftover store directory")
                                 .tag("uuid", uuid)
@@ -77,7 +77,7 @@ public class StandardStorage extends DataStorage {
                         return;
                     }
 
-                    var entry = getSourceEntryByUuid(uuid);
+                    var entry = getSourceEntry(uuid);
                     if (entry.isEmpty()) {
                         TrackEvent.withTrace("storage", "Deleting leftover entry directory")
                                 .tag("uuid", uuid)
@@ -109,7 +109,7 @@ public class StandardStorage extends DataStorage {
                         return;
                     }
 
-                    var col = getCollectionByUuid(uuid);
+                    var col = getCollection(uuid);
                     if (col.isEmpty()) {
                         TrackEvent.withTrace("storage", "Deleting leftover collection directory")
                                 .tag("uuid", uuid)
@@ -125,7 +125,7 @@ public class StandardStorage extends DataStorage {
         }
     }
 
-    public void load() {
+    public synchronized void load() {
         var newSession = isNewSession();
         var entriesDir = getSourcesDir().resolve("entries");
         var collectionsDir = getSourcesDir().resolve("collections");
@@ -236,7 +236,7 @@ public class StandardStorage extends DataStorage {
         deleteLeftovers();
     }
 
-    public void save() {
+    public synchronized void save() {
         var entriesDir = getSourcesDir().resolve("entries");
         var collectionsDir = getSourcesDir().resolve("collections");
 

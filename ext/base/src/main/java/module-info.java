@@ -22,6 +22,7 @@ open module io.xpipe.ext.base {
     requires org.apache.commons.lang3;
 
     provides ActionProvider with
+            DeleteStoreChildrenAction,
             AddStoreAction,
             EditStoreAction,
             StreamExportAction,

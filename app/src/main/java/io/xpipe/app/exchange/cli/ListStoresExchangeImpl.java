@@ -14,7 +14,7 @@ public class ListStoresExchangeImpl extends ListStoresExchange
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         DataStorage s = DataStorage.get();
-        var e = s.getStores().stream()
+        var e = s.getStoreEntries().stream()
                 .filter(entry -> !entry.isDisabled() && entry.getProvider().shouldShow())
                 .sorted(Comparator.comparing(dataStoreEntry -> dataStoreEntry.getLastUsed()))
                 .map(col -> StoreListEntry.builder()

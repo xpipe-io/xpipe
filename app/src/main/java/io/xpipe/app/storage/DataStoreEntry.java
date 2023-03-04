@@ -93,7 +93,6 @@ public class DataStoreEntry extends StorageElement {
             Configuration configuration) {
         var entry = new DataStoreEntry(
                 directory, uuid, name, lastUsed, lastModified, information, storeNode, false, state, configuration);
-        entry.refresh(false);
         return entry;
     }
 
@@ -236,7 +235,7 @@ public class DataStoreEntry extends StorageElement {
                 information = null;
                 throw e;
             } finally {
-                listeners.forEach(l -> l.onUpdate());
+                propagateUpdate();
             }
         }
     }

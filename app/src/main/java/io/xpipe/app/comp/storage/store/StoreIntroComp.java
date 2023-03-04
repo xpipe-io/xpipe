@@ -4,8 +4,11 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.ScanAlert;
+import io.xpipe.core.impl.LocalStore;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -14,7 +17,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class StoreStorageEmptyIntroComp extends SimpleComp {
+
+public class StoreIntroComp extends SimpleComp {
 
     @Override
     public Region createSimple() {
@@ -22,29 +26,18 @@ public class StoreStorageEmptyIntroComp extends SimpleComp {
         AppFont.setSize(title, 7);
         title.getStyleClass().add("title-header");
 
-        var descFi = new FontIcon("mdi2i-information-outline");
         var introDesc = new Label(AppI18n.get("storeIntroDescription"));
-        introDesc.heightProperty().addListener((c, o, n) -> {
-            descFi.iconSizeProperty().set(n.intValue());
-        });
 
-        var mfi = new FontIcon("mdi2h-home-plus-outline");
+        var mfi = new FontIcon("mdi2m-magnify");
         var machine = new Label(AppI18n.get("storeMachineDescription"), mfi);
         machine.heightProperty().addListener((c, o, n) -> {
             mfi.iconSizeProperty().set(n.intValue());
         });
 
-        var dfi = new FontIcon("mdi2d-database-plus-outline");
-        var database = new Label(AppI18n.get("storeDatabaseDescription"), dfi);
-        database.heightProperty().addListener((c, o, n) -> {
-            dfi.iconSizeProperty().set(n.intValue());
-        });
-
-        var fi = new FontIcon("mdi2c-card-plus-outline");
-        var stream = new Label(AppI18n.get("storeStreamDescription"), fi);
-        stream.heightProperty().addListener((c, o, n) -> {
-            fi.iconSizeProperty().set(n.intValue());
-        });
+        var scanButton = new Button(AppI18n.get("detectConnections"), new FontIcon("mdi2m-magnify"));
+        scanButton.setOnAction(event -> ScanAlert.showIfNeeded(new LocalStore()));
+        var scanPane = new StackPane(scanButton);
+        scanPane.setAlignment(Pos.CENTER);
 
         var dofi = new FontIcon("mdi2b-book-open-variant");
         var documentation = new Label(AppI18n.get("introDocumentation"), dofi);
@@ -63,10 +56,7 @@ public class StoreStorageEmptyIntroComp extends SimpleComp {
                 introDesc,
                 new Separator(Orientation.HORIZONTAL),
                 machine,
-                new Separator(Orientation.HORIZONTAL),
-                database,
-                new Separator(Orientation.HORIZONTAL),
-                stream,
+                scanPane,
                 new Separator(Orientation.HORIZONTAL),
                 documentation,
                 docLinkPane);

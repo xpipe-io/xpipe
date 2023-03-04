@@ -10,8 +10,8 @@ public class RenameStoreExchangeImpl extends RenameStoreExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        var s = DataStorage.get().getStore(msg.getStoreName(), true);
-        DataStorage.get().renameStore(s, msg.getNewName());
+        var s = DataStorage.get().getStoreEntry(msg.getStoreName(), true);
+        DataStorage.get().renameStoreEntry(s, msg.getNewName());
         return Response.builder().build();
     }
 }

@@ -71,7 +71,7 @@ public class NamedSourceChoiceComp extends SimpleComp implements Validatable {
             if (!filter.getValue().test(source)) {
                 return false;
             }
-            var e = DataStorage.get().getEntryBySource(source).orElseThrow();
+            var e = DataStorage.get().getSourceEntry(source).orElseThrow();
             return filterString.get() == null
                     || e.getName().toLowerCase().contains(filterString.get().toLowerCase());
         });
@@ -109,7 +109,7 @@ public class NamedSourceChoiceComp extends SimpleComp implements Validatable {
         var filterComp = new FilterComp(filterString).hide(Bindings.greaterThan(5, Bindings.size(shown)));
 
         var view = new ListViewComp<>(shown, list, prop, (T s) -> {
-                    var e = DataStorage.get().getEntryBySource(s).orElseThrow();
+                    var e = DataStorage.get().getSourceEntry(s).orElseThrow();
                     var provider = e.getProvider();
                     var graphic = provider.getDisplayIconFileName();
                     var top = String.format("%s (%s)", e.getName(), provider.getDisplayName());

@@ -3,6 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.store.ShellStore;
@@ -52,7 +53,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
         var imgView =
                 new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName()), 16, 16).createRegion();
 
-        var name = XPipeDaemon.getInstance().getNamedStores().stream()
+        var name = DataStorage.get().getUsableStores().stream()
                 .filter(e -> e.equals(s))
                 .findAny()
                 .flatMap(store -> {
@@ -74,7 +75,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                 new CustomComboBoxBuilder<T>(selected, this::createGraphic, new Label(AppI18n.get("none")), n -> true);
         comboBox.setUnknownNode(t -> createGraphic(t));
 
-        var available = XPipeDaemon.getInstance().getNamedStores().stream()
+        var available = DataStorage.get().getUsableStores().stream()
                 .filter(s -> s != self)
                 .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
                 .map(s -> (ShellStore) s)

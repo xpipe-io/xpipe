@@ -46,7 +46,7 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
     default DataStore resolveStore(@NonNull DataStore in, boolean acceptDisabled) throws ClientException {
         try {
             if (in instanceof NamedStore n) {
-                var found = DataStorage.get().getStore(n.getName(), acceptDisabled);
+                var found = DataStorage.get().getStoreEntry(n.getName(), acceptDisabled);
                 return found.getStore();
             }
         } catch (IllegalArgumentException ex) {
@@ -57,7 +57,7 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
     }
 
     default DataStoreEntry getStoreEntryByName(@NonNull String name, boolean acceptDisabled) throws ClientException {
-        var store = DataStorage.get().getStoreIfPresent(name);
+        var store = DataStorage.get().getStoreEntryIfPresent(name);
         if (store.isEmpty()) {
             throw new ClientException("No store with name " + name + " was found");
         }

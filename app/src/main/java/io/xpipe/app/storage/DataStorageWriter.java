@@ -38,8 +38,12 @@ public class DataStorageWriter {
 
                     try {
                         var store = mapper.treeToValue(possibleReference, DataStore.class);
+                        if (store == null) {
+                            return Optional.empty();
+                        }
+
                         if (!isRoot) {
-                            var found = DataStorage.get().getEntryByStore(store);
+                            var found = DataStorage.get().getStoreEntryIfPresent(store);
                             return found.map(dataSourceEntry -> dataSourceEntry.getUuid());
                         }
                     } catch (JsonProcessingException e) {
@@ -55,7 +59,7 @@ public class DataStorageWriter {
                     try {
                         var source = mapper.treeToValue(possibleReference, DataSource.class);
                         if (!isRoot) {
-                            var found = DataStorage.get().getEntryBySource(source);
+                            var found = DataStorage.get().getSourceEntry(source);
                             return found.map(dataSourceEntry -> dataSourceEntry.getUuid());
                         }
                     } catch (JsonProcessingException e) {

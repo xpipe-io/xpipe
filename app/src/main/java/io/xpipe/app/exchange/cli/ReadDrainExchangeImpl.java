@@ -18,9 +18,9 @@ public class ReadDrainExchangeImpl extends ReadDrainExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        var ds = DataStorage.get().getStoreIfPresent(msg.getName());
+        var ds = DataStorage.get().getStoreEntryIfPresent(msg.getName());
         if (ds.isEmpty()) {
-            ds = Optional.of(DataStorage.get().addStore(msg.getName(), msg.getStore()));
+            ds = Optional.of(DataStorage.get().addStoreEntry(msg.getName(), msg.getStore()));
         }
 
         if (!(ds.get().getStore() instanceof SinkDrainStore)) {

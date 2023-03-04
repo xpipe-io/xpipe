@@ -79,7 +79,7 @@ public abstract class DataStorage {
         return INSTANCE;
     }
 
-    public DataSourceCollection getInternalCollection() {
+    public synchronized DataSourceCollection getInternalCollection() {
         var found = sourceCollections.stream()
                 .filter(o -> o.getName() != null && o.getName().equals("Internal"))
                 .findAny();
@@ -95,7 +95,28 @@ public abstract class DataStorage {
         return internalCollection;
     }
 
-    public String createUniqueSourceEntryName(DataSourceCollection col, DataSource<?> source) {
+    public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry,   boolean  deep) {
+        var children = new ArrayList<>(getStoreEntries().stream().filter(other -> {
+            if (!other.getState().isUsable()) {
+                return false;
+            }
+
+            var parent = other
+                    .getProvider()
+                    .getParent(other.getStore());
+            return entry.getStore().equals(parent);
+        }).toList());
+
+        if (deep) {
+            for (DataStoreEntry dataStoreEntry : new ArrayList<>(children)) {
+                children.addAll(getStoreChildren(dataStoreEntry, true));
+            }
+        }
+
+        return children;
+    }
+
+    public synchronized String createUniqueSourceEntryName(DataSourceCollection col, DataSource<?> source) {
         var def = source.determineDefaultName();
         if (def.isPresent()) {
             return createUniqueSourceEntryName(col, def.get());
@@ -117,22 +138,22 @@ public abstract class DataStorage {
         return createUniqueSourceEntryName(col, typeName);
     }
 
-    private String createUniqueStoreEntryName(String base) {
-        if (DataStorage.get().getStoreIfPresent(base).isEmpty()) {
+    private synchronized String createUniqueStoreEntryName(String base) {
+        if (DataStorage.get().getStoreEntryIfPresent(base).isEmpty()) {
             return base;
         }
 
         int counter = 1;
         while (true) {
             var name = base + counter;
-            if (DataStorage.get().getStoreIfPresent(name).isEmpty()) {
+            if (DataStorage.get().getStoreEntryIfPresent(name).isEmpty()) {
                 return name;
             }
             counter++;
         }
     }
 
-    private String createUniqueSourceEntryName(DataSourceCollection col, String base) {
+    private synchronized String createUniqueSourceEntryName(DataSourceCollection col, String base) {
         base = DataSourceId.cleanString(base);
         var id = DataSourceId.create(col != null ? col.getName() : null, base);
         if (DataStorage.get().getDataSource(DataSourceReference.id(id)).isEmpty()) {
@@ -149,11 +170,11 @@ public abstract class DataStorage {
         }
     }
 
-    public DataSourceEntry getLatest() {
+    public synchronized DataSourceEntry getLatest() {
         return latest;
     }
 
-    public void setLatest(DataSourceEntry latest) {
+    public synchronized void setLatest(DataSourceEntry latest) {
         this.latest = latest;
     }
 
@@ -179,7 +200,7 @@ public abstract class DataStorage {
         return dir.resolve("streams");
     }
 
-    public Optional<DataSourceCollection> getCollectionForSourceEntry(DataSourceEntry entry) {
+    public synchronized Optional<DataSourceCollection> getCollectionForSourceEntry(DataSourceEntry entry) {
         if (entry == null) {
             return Optional.of(getInternalCollection());
         }
@@ -189,7 +210,7 @@ public abstract class DataStorage {
                 .findAny();
     }
 
-    public Optional<DataSourceCollection> getCollectionForName(String name) {
+    public synchronized Optional<DataSourceCollection> getCollectionForName(String name) {
         if (name == null) {
             return Optional.ofNullable(getInternalCollection());
         }
@@ -199,21 +220,22 @@ public abstract class DataStorage {
                 .findAny();
     }
 
-    public Optional<DataStoreEntry> getStoreIfPresent(@NonNull String name) {
-        return storeEntries.stream()
-                .filter(n -> n.getName().equalsIgnoreCase(name))
-                .findFirst();
+    public synchronized List<DataStore> getUsableStores() {
+        return new ArrayList<>(getStoreEntries().stream()
+                .filter(entry -> !entry.isDisabled())
+                .map(DataStoreEntry::getStore)
+                .toList());
     }
 
-    public void renameStore(DataStoreEntry entry, String name) {
-        if (getStoreIfPresent(name).isPresent()) {
+    public synchronized void renameStoreEntry(DataStoreEntry entry, String name) {
+        if (getStoreEntryIfPresent(name).isPresent()) {
             throw new IllegalArgumentException("Store with name " + name + " already exists");
         }
 
         entry.setName(name);
     }
 
-    public DataStoreEntry getStore(@NonNull String name, boolean acceptDisabled) {
+    public synchronized DataStoreEntry getStoreEntry(@NonNull String name, boolean acceptDisabled) {
         var entry = storeEntries.stream()
                 .filter(n -> n.getName().equalsIgnoreCase(name))
                 .findFirst()
@@ -224,7 +246,7 @@ public abstract class DataStorage {
         return entry;
     }
 
-    public DataStoreEntry getStore(@NonNull DataStore store) {
+    public synchronized DataStoreEntry getStoreEntry(@NonNull DataStore store) {
         var entry = storeEntries.stream()
                 .filter(n -> store.equals(n.getStore()))
                 .findFirst()
@@ -232,13 +254,19 @@ public abstract class DataStorage {
         return entry;
     }
 
-    public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
+    public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
         var entry =
                 storeEntries.stream().filter(n -> store.equals(n.getStore())).findFirst();
         return entry;
     }
 
-    public Optional<DataSourceEntry> getDataSource(DataSourceReference ref) {
+    public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull String name) {
+        return storeEntries.stream()
+                .filter(n -> n.getName().equalsIgnoreCase(name))
+                .findFirst();
+    }
+
+    public synchronized Optional<DataSourceEntry> getDataSource(DataSourceReference ref) {
         Objects.requireNonNull(ref, "ref");
 
         switch (ref.getType()) {
@@ -275,7 +303,7 @@ public abstract class DataStorage {
         throw new AssertionError();
     }
 
-    public DataSourceId getId(DataSourceEntry entry) {
+    public synchronized DataSourceId getId(DataSourceEntry entry) {
         Objects.requireNonNull(entry, "entry");
         if (!sourceEntries.contains(entry)) {
             throw new IllegalArgumentException("Entry not in storage");
@@ -290,7 +318,7 @@ public abstract class DataStorage {
         return DataSourceId.create(col, en);
     }
 
-    public void add(DataSourceEntry e, DataSourceCollection c) {
+    public synchronized void add(DataSourceEntry e, DataSourceCollection c) {
         Objects.requireNonNull(e, "entry");
 
         if (c != null && !sourceCollections.contains(c)) {
@@ -339,8 +367,8 @@ public abstract class DataStorage {
         });
     }
 
-    private void propagateUpdate() {
-        for (DataStoreEntry dataStoreEntry : getStores()) {
+    private synchronized void propagateUpdate() {
+        for (DataStoreEntry dataStoreEntry : getStoreEntries()) {
             dataStoreEntry.simpleRefresh();
         }
 
@@ -349,8 +377,8 @@ public abstract class DataStorage {
         }
     }
 
-    public void addStoreEntry(@NonNull DataStoreEntry e) {
-        if (getStoreIfPresent(e.getName()).isPresent()) {
+    public synchronized void addStoreEntry(@NonNull DataStoreEntry e) {
+        if (getStoreEntryIfPresent(e.getName()).isPresent()) {
             throw new IllegalArgumentException("Store with name " + e.getName() + " already exists");
         }
 
@@ -362,7 +390,7 @@ public abstract class DataStorage {
         this.listeners.forEach(l -> l.onStoreAdd(e));
     }
 
-    public void addStoreIfNotPresent(@NonNull String name, DataStore store) {
+    public synchronized void addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {
         if (getStoreEntryIfPresent(store).isPresent()) {
             return;
         }
@@ -371,27 +399,29 @@ public abstract class DataStorage {
         addStoreEntry(e);
     }
 
-    public DataStoreEntry addStore(@NonNull String name, DataStore store) {
+    public synchronized DataStoreEntry addStoreEntry(@NonNull String name, DataStore store) {
         var e = DataStoreEntry.createNew(UUID.randomUUID(), createUniqueStoreEntryName(name), store);
         addStoreEntry(e);
         return e;
     }
 
-    public void deleteStoreEntry(@NonNull DataStoreEntry store) {
+    public synchronized void deleteStoreEntry(@NonNull DataStoreEntry store) {
         if (!store.getConfiguration().isDeletable()) {
             throw new UnsupportedOperationException();
         }
 
         this.storeEntries.remove(store);
+        propagateUpdate();
         save();
+
         this.listeners.forEach(l -> l.onStoreRemove(store));
     }
 
-    public void addListener(StorageListener l) {
+    public synchronized void addListener(StorageListener l) {
         this.listeners.add(l);
     }
 
-    public DataSourceCollection createOrGetCollection(String name) {
+    public synchronized DataSourceCollection createOrGetCollection(String name) {
         return getCollectionForName(name).orElseGet(() -> {
             var col = DataSourceCollection.createNew(name);
             addCollection(col);
@@ -399,7 +429,7 @@ public abstract class DataStorage {
         });
     }
 
-    public void addCollection(DataSourceCollection c) {
+    public synchronized void addCollection(DataSourceCollection c) {
         checkImmutable();
 
         c.setDirectory(
@@ -408,16 +438,16 @@ public abstract class DataStorage {
         this.listeners.forEach(l -> l.onCollectionAdd(c));
     }
 
-    public void deleteCollection(DataSourceCollection c) {
+    public synchronized void deleteCollection(DataSourceCollection c) {
         checkImmutable();
 
         this.sourceCollections.remove(c);
         this.listeners.forEach(l -> l.onCollectionRemove(c));
 
-        c.getEntries().forEach(this::deleteEntry);
+        c.getEntries().forEach(this::deleteSourceEntry);
     }
 
-    public void deleteEntry(DataSourceEntry e) {
+    public synchronized void deleteSourceEntry(DataSourceEntry e) {
         checkImmutable();
 
         this.sourceEntries.remove(e);
@@ -430,56 +460,42 @@ public abstract class DataStorage {
 
     public abstract void load();
 
-    public void refresh() {
+    public synchronized void refresh() {
         storeEntries.forEach(entry -> {
-            try {
-                entry.refresh(false);
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().reportable(false).handle();
-            }
+            entry.simpleRefresh();
         });
         save();
     }
 
     public abstract void save();
 
-    public Optional<DataStoreEntry> getStoreEntryByUuid(UUID id) {
+    public synchronized Optional<DataStoreEntry> getStoreEntry(UUID id) {
         return storeEntries.stream().filter(e -> e.getUuid().equals(id)).findAny();
     }
 
-    public Optional<DataSourceEntry> getSourceEntryByUuid(UUID id) {
+    public synchronized Optional<DataSourceEntry> getSourceEntry(UUID id) {
         return sourceEntries.stream().filter(e -> e.getUuid().equals(id)).findAny();
     }
 
-    public Optional<DataSourceEntry> getDataSourceEntryById(DataSourceId id) {
-        return sourceEntries.stream().filter(e -> getId(e).equals(id)).findAny();
-    }
-
-    public Optional<DataSourceEntry> getEntryBySource(DataSource<?> source) {
+    public synchronized Optional<DataSourceEntry> getSourceEntry(DataSource<?> source) {
         return sourceEntries.stream()
                 .filter(e -> e.getSource() != null && e.getSource().equals(source))
                 .findAny();
     }
 
-    public Optional<DataStoreEntry> getEntryByStore(DataStore store) {
-        return storeEntries.stream()
-                .filter(e -> e.getStore() != null && e.getStore().equals(store))
-                .findAny();
-    }
-
-    public Optional<DataSourceCollection> getCollectionByUuid(UUID id) {
+    public synchronized Optional<DataSourceCollection> getCollection(UUID id) {
         return sourceCollections.stream().filter(e -> e.getUuid().equals(id)).findAny();
     }
 
-    public List<DataSourceEntry> getSourceEntries() {
-        return Collections.unmodifiableList(sourceEntries);
+    public synchronized List<DataSourceEntry> getSourceEntries() {
+        return new ArrayList<>(sourceEntries);
     }
 
-    public List<DataSourceCollection> getSourceCollections() {
-        return Collections.unmodifiableList(sourceCollections);
+    public synchronized List<DataSourceCollection> getSourceCollections() {
+        return new ArrayList<>(sourceCollections);
     }
 
-    public List<DataStoreEntry> getStores() {
-        return Collections.unmodifiableList(storeEntries);
+    public synchronized List<DataStoreEntry> getStoreEntries() {
+        return new ArrayList<>(storeEntries);
     }
 }

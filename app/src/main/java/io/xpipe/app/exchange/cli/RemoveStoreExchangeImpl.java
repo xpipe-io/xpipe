@@ -11,7 +11,7 @@ public class RemoveStoreExchangeImpl extends RemoveStoreExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        var s = DataStorage.get().getStore(msg.getStoreName(), true);
+        var s = DataStorage.get().getStoreEntry(msg.getStoreName(), true);
         if (!s.getConfiguration().isDeletable()) {
             throw new ClientException("Store is not deletable");
         }

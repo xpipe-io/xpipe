@@ -60,7 +60,7 @@ public class XPipeInstanceHelper {
     }
 
     public static XPipeInstance refresh() {
-        Map<ShellStore, Optional<XPipeInstance>> map = DataStorage.get().getStores().stream()
+        Map<ShellStore, Optional<XPipeInstance>> map = DataStorage.get().getStoreEntries().stream()
                 .filter(entry -> entry.getStore() instanceof ShellStore)
                 .collect(Collectors.toMap(
                         entry -> entry.getStore().asNeeded(),

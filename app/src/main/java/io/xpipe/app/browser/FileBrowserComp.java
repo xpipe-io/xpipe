@@ -184,8 +184,7 @@ public class FileBrowserComp extends SimpleComp {
                 () -> {
                     return model.getStore().getValue() != null
                             ? DataStorage.get()
-                                    .getEntryByStore(model.getStore().getValue())
-                                    .orElseThrow()
+                                    .getStoreEntry(model.getStore().getValue())
                                     .getName()
                             : null;
                 },
@@ -194,8 +193,7 @@ public class FileBrowserComp extends SimpleComp {
                 () -> {
                     return model.getStore().getValue() != null
                             ? DataStorage.get()
-                                    .getEntryByStore(model.getStore().getValue())
-                                    .orElseThrow()
+                                    .getStoreEntry(model.getStore().getValue())
                                     .getProvider()
                                     .getDisplayIconFileName()
                             : null;

@@ -11,7 +11,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
@@ -31,7 +30,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final Property<DataStoreEntry.State> state = new SimpleObjectProperty<>();
     private final StringProperty information = new SimpleStringProperty();
     private final StringProperty summary = new SimpleStringProperty();
-    private final Map<ActionProvider, ObservableBooleanValue> actionProviders;
+    private final Map<ActionProvider, BooleanProperty> actionProviders;
     private final ObservableValue<ActionProvider> defaultActionProvider;
     private final BooleanProperty editable = new SimpleBooleanProperty();
     private final BooleanProperty renamable = new SimpleBooleanProperty();
@@ -53,31 +52,24 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
                 .forEach(dataStoreActionProvider -> {
-                    var property = Bindings.createBooleanBinding(
-                            () -> {
-                                if (!entry.getState().isUsable()) {
-                                    return false;
-                                }
-
-                                return dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .isApplicable(entry.getStore().asNeeded());
-                            },
-                            disabledProperty(),
-                            state,
-                            lastAccess);
-                    actionProviders.put(dataStoreActionProvider, property);
+                    actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
                 });
-        this.defaultActionProvider = Bindings.createObjectBinding(() -> {
-            var found = actionProviders.entrySet().stream()
-                    .filter(e -> e.getValue().get())
-                    .filter(e -> e.getKey().getDataStoreCallSite() != null
-                            && e.getKey().getDataStoreCallSite().isDefault())
-                    .findFirst();
-            return found.map(p -> p.getKey()).orElse(null);
-        }, actionProviders.values().toArray(Observable[]::new));
+        this.defaultActionProvider = Bindings.createObjectBinding(
+                () -> {
+                    var found = actionProviders.entrySet().stream()
+                            .filter(e -> e.getValue().get())
+                            .filter(e -> e.getKey().getDataStoreCallSite() != null
+                                    && e.getKey().getDataStoreCallSite().isDefault())
+                            .findFirst();
+                    return found.map(p -> p.getKey()).orElse(null);
+                },
+                actionProviders.values().toArray(Observable[]::new));
         setupListeners();
         update();
+    }
+
+    public boolean isInStorage() {
+        return DataStorage.get().getStoreEntries().contains(entry);
     }
 
     public void editDialog() {
@@ -130,6 +122,33 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
+
+        actionProviders.keySet().forEach(dataStoreActionProvider -> {
+            if (!isInStorage()) {
+                actionProviders.get(dataStoreActionProvider).set(false);
+                return;
+            }
+
+            if (!entry.getState().isUsable()
+                    && !dataStoreActionProvider
+                            .getDataStoreCallSite()
+                            .activeType()
+                            .equals(ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_ENABLE)) {
+                actionProviders.get(dataStoreActionProvider).set(false);
+                return;
+            }
+
+            try {
+                actionProviders
+                        .get(dataStoreActionProvider)
+                        .set(dataStoreActionProvider
+                                .getDataStoreCallSite()
+                                .isApplicable(entry.getStore().asNeeded()));
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).handle();
+                actionProviders.get(dataStoreActionProvider).set(false);
+            }
+        });
     }
 
     @Override

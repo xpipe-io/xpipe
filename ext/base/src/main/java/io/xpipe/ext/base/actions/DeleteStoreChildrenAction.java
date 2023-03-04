@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.actions;
 
-import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
@@ -9,7 +8,7 @@ import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
-public class EditStoreAction implements ActionProvider {
+public class DeleteStoreChildrenAction implements ActionProvider {
 
     @Value
     static class Action implements ActionProvider.Action {
@@ -18,12 +17,14 @@ public class EditStoreAction implements ActionProvider {
 
         @Override
         public boolean requiresPlatform() {
-            return true;
+            return false;
         }
 
         @Override
         public void execute() throws Exception {
-            GuiDsStoreCreator.showEdit(store);
+            DataStorage.get().getStoreChildren(store,true).forEach(entry -> {
+                DataStorage.get().deleteStoreEntry(entry);
+            });
         }
     }
 
@@ -34,11 +35,6 @@ public class EditStoreAction implements ActionProvider {
             @Override
             public boolean isMajor() {
                 return false;
-            }
-
-            @Override
-            public ActiveType activeType() {
-                return ActiveType.ALWAYS_ENABLE;
             }
 
             @Override
@@ -53,17 +49,17 @@ public class EditStoreAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStore o) throws Exception {
-                return DataStorage.get().getStoreEntry(o).getConfiguration().isEditable();
+                return DataStorage.get().getStoreChildren(DataStorage.get().getStoreEntry(o),true).size() > 1;
             }
 
             @Override
             public ObservableValue<String> getName(DataStore store) {
-                return AppI18n.observable("base.edit");
+                return AppI18n.observable("base.deleteChildren");
             }
 
             @Override
             public String getIcon(DataStore store) {
-                return "mdal-edit";
+                return "mdal-delete_outline";
             }
         };
     }

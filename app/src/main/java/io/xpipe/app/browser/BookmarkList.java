@@ -22,7 +22,7 @@ final class BookmarkList extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var list = DataStorage.get().getStores().stream().filter(entry -> entry.getStore() instanceof ShellStore).map(entry -> new Bookmark(entry)).toList();
+        var list = DataStorage.get().getStoreEntries().stream().filter(entry -> entry.getStore() instanceof ShellStore).map(entry -> new Bookmark(entry)).toList();
         return new ListBoxViewComp<>(FXCollections.observableList(list), FXCollections.observableList(list), bookmark -> {
             var imgView =
                     new PrettyImageComp(new SimpleStringProperty(bookmark.entry().getProvider().getDisplayIconFileName()), 16, 16).createRegion();

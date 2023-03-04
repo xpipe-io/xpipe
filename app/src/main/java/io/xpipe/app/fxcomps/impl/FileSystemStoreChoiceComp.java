@@ -2,6 +2,7 @@ package io.xpipe.app.fxcomps.impl;
 
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileStore;
@@ -23,7 +24,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
     }
 
     private static String getName(FileSystemStore store) {
-        var name = XPipeDaemon.getInstance().getNamedStores().stream()
+        var name = DataStorage.get().getUsableStores().stream()
                 .filter(e -> e.equals(store))
                 .findAny()
                 .map(e -> XPipeDaemon.getInstance().getStoreName(e).orElse("?"))
@@ -61,7 +62,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
         var comboBox =
                 new CustomComboBoxBuilder<FileSystemStore>(fileSystemProperty, this::createGraphic, null, v -> true);
         comboBox.setSelectedDisplay(this::createDisplayGraphic);
-        XPipeDaemon.getInstance().getNamedStores().stream()
+        DataStorage.get().getUsableStores().stream()
                 .filter(e -> e instanceof FileSystemStore)
                 .map(e -> (FileSystemStore) e)
                 .forEach(comboBox::add);

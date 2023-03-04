@@ -12,7 +12,7 @@ public class RemoveEntryExchangeImpl extends RemoveEntryExchange
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         var e = getSourceEntry(msg.getRef(), null, true);
         var id = DataStorage.get().getId(e);
-        DataStorage.get().deleteEntry(e);
+        DataStorage.get().deleteSourceEntry(e);
         return Response.builder().id(id).build();
     }
 }

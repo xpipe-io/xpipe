@@ -15,7 +15,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return;
         }
 
-        var entry = DataStorage.get().getEntryByStore(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store);
         if (entry.isEmpty()) {
             return;
         }
@@ -30,7 +30,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return def.get();
         }
 
-        var entry = DataStorage.get().getEntryByStore(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store);
         if (entry.isEmpty()) {
             return def.get();
         }

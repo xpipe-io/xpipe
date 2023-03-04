@@ -35,7 +35,7 @@ public class StoreEntryListComp extends SimpleComp {
                 BindingsHelper.persist(
                         Bindings.not(Bindings.isEmpty(StoreViewState.get().getShownEntries()))));
 
-        map.put(new StoreStorageEmptyIntroComp(), StoreViewState.get().emptyProperty());
+        map.put(new StoreIntroComp(), StoreViewState.get().emptyProperty());
         map.put(
                 new StoreNotFoundComp(),
                 BindingsHelper.persist(Bindings.and(

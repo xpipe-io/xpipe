@@ -1,11 +1,11 @@
 package io.xpipe.ext.base;
 
+import io.xpipe.app.comp.source.store.DsStreamStoreChoiceComp;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DialogHelper;
 import io.xpipe.app.util.SimpleValidator;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
@@ -24,7 +24,8 @@ public class FileStoreProvider implements DataStoreProvider {
     @Override
     public GuiDialog guiDialog(Property<DataStore> store) {
         var val = new SimpleValidator();
-        var comp = XPipeDaemon.getInstance().streamStoreChooser(store, null, false, false);
+        var comp = new DsStreamStoreChoiceComp(
+                store, null, false, false, DsStreamStoreChoiceComp.Mode.WRITE);
         return new GuiDialog(comp, val);
     }
 

@@ -54,7 +54,7 @@ public class StoreViewState {
     }
 
     private void addStorageGroupListeners() {
-        allEntries.setAll(FXCollections.observableArrayList(DataStorage.get().getStores().stream()
+        allEntries.setAll(FXCollections.observableArrayList(DataStorage.get().getStoreEntries().stream()
                 .map(StoreEntryWrapper::new)
                 .toList()));
 

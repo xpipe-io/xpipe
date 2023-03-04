@@ -51,7 +51,7 @@ public class StoreAddExchangeImpl extends StoreAddExchange
                 return;
             }
 
-            DataStorage.get().addStore(name.getValue(), store);
+            DataStorage.get().addStoreEntry(name.getValue(), store);
         });
 
         return StoreAddExchange.Response.builder().config(config).build();
@@ -81,7 +81,7 @@ public class StoreAddExchangeImpl extends StoreAddExchange
         var nameQ = Dialog.retryIf(
                         Dialog.query("Store name", true, true, false, name.getValue(), QueryConverter.STRING),
                         (String r) -> {
-                            return DataStorage.get().getStoreIfPresent(r).isPresent()
+                            return DataStorage.get().getStoreEntryIfPresent(r).isPresent()
                                     ? "Store with name " + r + " already exists"
                                     : null;
                         })

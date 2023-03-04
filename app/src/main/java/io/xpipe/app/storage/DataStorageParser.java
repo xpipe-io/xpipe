@@ -52,7 +52,7 @@ public class DataStorageParser {
                 return Optional.empty();
             }
 
-            var entry = DataStorage.get().getStoreEntryByUuid(id);
+            var entry = DataStorage.get().getStoreEntry(id);
             if (entry.isEmpty()) {
                 TrackEvent.withWarn("storage", "Encountered unknown store").tag("id", id);
                 return Optional.empty();
@@ -70,7 +70,7 @@ public class DataStorageParser {
         });
 
         node = replaceReferenceIdsForType(node, "sourceId", id -> {
-            var foundEntry = DataStorage.get().getSourceEntryByUuid(id);
+            var foundEntry = DataStorage.get().getSourceEntry(id);
             if (foundEntry.isPresent()) {
                 var sourceNode = mapper.valueToTree(foundEntry.get().getSource());
                 // return Optional.of(resolvesReferenceIds(sourceNode));

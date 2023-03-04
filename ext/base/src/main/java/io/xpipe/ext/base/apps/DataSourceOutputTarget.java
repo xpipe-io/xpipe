@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.apps;
 
 import io.xpipe.app.comp.source.GuiDsTableMappingConfirmation;
+import io.xpipe.app.comp.source.NamedSourceChoiceComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.ext.DataSourceProviders;
@@ -10,7 +11,6 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ChainedValidator;
 import io.xpipe.app.util.DynamicOptionsBuilder;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.source.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
@@ -34,8 +34,7 @@ public class DataSourceOutputTarget implements DataSourceTarget {
         var target = new SimpleObjectProperty<DataSource<?>>();
         var sourceType =
                 DataSourceProviders.byDataSourceClass(source.getClass()).getPrimaryType();
-        var chooser = XPipeDaemon.getInstance()
-                .namedSourceChooser(
+        var chooser = new NamedSourceChoiceComp(
                         new SimpleObjectProperty<>(s -> s != source
                                 && s.getFlow().hasOutput()
                                 && DataSourceProviders.byDataSourceClass(s.getClass())

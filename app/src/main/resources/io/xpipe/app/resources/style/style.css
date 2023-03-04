@@ -42,11 +42,6 @@
  -fx-padding: 0;
 }
 
-.loading-comp .spinner {
--jfx-radius: 2.15em;
--fx-background-color:transparent;
-}
-
 .loading-comp {
 -fx-background-color: #FFFFFFAA;
 }

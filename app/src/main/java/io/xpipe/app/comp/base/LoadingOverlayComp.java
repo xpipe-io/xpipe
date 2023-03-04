@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import com.jfoenix.controls.JFXSpinner;
+import atlantafx.base.controls.RingProgressIndicator;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -25,13 +25,16 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
     public CompStructure<StackPane> createBase() {
         var compStruc = comp.createStructure();
 
-        JFXSpinner loading = new JFXSpinner();
-        loading.getStyleClass().add("spinner");
+        var loading = new RingProgressIndicator(0, false);
+        loading.setProgress(-1);
+        loading.setPrefWidth(50);
+        loading.setPrefHeight(50);
+
         var loadingBg = new StackPane(loading);
         loadingBg.getStyleClass().add("loading-comp");
 
         loadingBg.setVisible(showLoading.getValue());
-        ;
+
         var listener = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean busy) {
@@ -64,7 +67,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                 }
             }
         };
-        showLoading.addListener(listener);
+        PlatformThread.sync(showLoading).addListener(listener);
 
         var stack = new StackPane(compStruc.get(), loadingBg);
         return new SimpleCompStructure<>(stack);

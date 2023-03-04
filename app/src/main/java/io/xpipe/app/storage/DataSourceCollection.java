@@ -66,7 +66,7 @@ public class DataSourceCollection extends StorageElement {
         JavaType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, UUID.class);
         var entries = new LinkedHashMap<UUID, DataSourceEntry>();
         for (var u : mapper.<List<UUID>>readValue(dir.resolve("entries.json").toFile(), listType)) {
-            var v = storage.getSourceEntryByUuid(u).orElse(null);
+            var v = storage.getSourceEntry(u).orElse(null);
             entries.put(u, v);
         }
 

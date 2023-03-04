@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ final class OpenFileSystemModel {
 
     public Optional<String> cd(String path) {
         var newPath = FileSystemHelper.normalizeDirectoryPath(this, path);
-        if (!path.equals(newPath)) {
+        if (!Objects.equals(path, newPath)) {
             return Optional.of(newPath);
         }
 

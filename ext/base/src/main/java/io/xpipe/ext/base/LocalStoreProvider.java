@@ -4,7 +4,6 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageElement;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.DataStore;
@@ -33,7 +32,7 @@ public class LocalStoreProvider implements DataStoreProvider {
 
     @Override
     public void storageInit() throws Exception {
-        var hasLocal = XPipeDaemon.getInstance().getNamedStores().stream()
+        var hasLocal = DataStorage.get().getUsableStores().stream()
                 .anyMatch(dataStore -> dataStore instanceof LocalStore);
         if (hasLocal) {
             return;

@@ -1,5 +1,7 @@
 package io.xpipe.ext.base.apps;
 
+import io.xpipe.app.comp.source.DsProviderChoiceComp;
+import io.xpipe.app.comp.source.store.DsStreamStoreChoiceComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataSourceProvider;
@@ -12,7 +14,6 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ChainedValidator;
 import io.xpipe.app.util.DynamicOptionsBuilder;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.WriteMode;
@@ -67,8 +68,7 @@ public class FileOutputTarget implements DataSourceTarget {
         });
 
         var layout = new BorderPane();
-        var providerChoice = XPipeDaemon.getInstance()
-                .sourceProviderChooser(provider, DataSourceProvider.Category.STREAM, sourceProvider.getPrimaryType());
+        var providerChoice = new DsProviderChoiceComp(DataSourceProvider.Category.STREAM, provider, sourceProvider.getPrimaryType());
         providerChoice.apply(GrowAugment.create(true, false));
         var providerChoiceRegion = providerChoice.createRegion();
         var top = new VBox(providerChoiceRegion, new Separator());
@@ -76,7 +76,7 @@ public class FileOutputTarget implements DataSourceTarget {
         layout.setTop(top);
         layout.getStyleClass().add("data-input-creation-step");
 
-        var chooser = XPipeDaemon.getInstance().streamStoreChooser(target, provider, true, true);
+        var chooser = new DsStreamStoreChoiceComp(target, provider, true, true, DsStreamStoreChoiceComp.Mode.WRITE);
         var mode = new SimpleObjectProperty<WriteMode>();
         var modeComp = new WriteModeChoiceComp(mode, availableModes);
         target.addListener((c, o, n) -> {

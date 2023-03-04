@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.apps;
 
+import io.xpipe.app.comp.source.store.NamedStoreChoiceComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataSourceTarget;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.DynamicOptionsBuilder;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.store.StreamDataStore;
@@ -25,8 +25,7 @@ public class RawFileOutputTarget implements DataSourceTarget {
     public InstructionsDisplay createRetrievalInstructions(DataSource<?> source, ObservableValue<DataSourceId> id) {
         var target = new SimpleObjectProperty<StreamDataStore>();
 
-        var storeChoice = XPipeDaemon.getInstance()
-                .namedStoreChooser(
+        var storeChoice = new NamedStoreChoiceComp(
                         new SimpleObjectProperty<>(store -> store instanceof StreamDataStore
                                 && (store.getFlow().hasOutput())),
                         target,

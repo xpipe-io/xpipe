@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.ValidationException;
@@ -22,7 +22,7 @@ public class Validators {
     }
 
     public static void namedStoreExists(DataStore store, String name) throws ValidationException {
-        if (!XPipeDaemon.getInstance().getNamedStores().contains(store) && !(store instanceof LocalStore)) {
+        if (!DataStorage.get().getUsableStores().contains(store)) {
             throw new ValidationException(AppI18n.get("app.missingStore", name));
         }
     }

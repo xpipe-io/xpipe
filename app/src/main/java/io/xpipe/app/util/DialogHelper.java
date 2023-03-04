@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
@@ -32,7 +33,7 @@ public class DialogHelper {
                         return new LocalStore();
                     }
 
-                    var stored = XPipeDaemon.getInstance().getNamedStore(name);
+                    var stored = DataStorage.get().getStoreEntryIfPresent(name).map(entry -> entry.getStore());
                     if (stored.isEmpty()) {
                         throw new IllegalArgumentException(String.format("Store not found: %s", name));
                     }
@@ -57,7 +58,7 @@ public class DialogHelper {
                         return new LocalStore();
                     }
 
-                    var stored = XPipeDaemon.getInstance().getNamedStore(name);
+                    var stored = DataStorage.get().getStoreEntryIfPresent(name).map(entry -> entry.getStore());
                     if (stored.isEmpty()) {
                         throw new IllegalArgumentException(String.format("Store not found: %s", name));
                     }
@@ -98,7 +99,7 @@ public class DialogHelper {
         var name = XPipeDaemon.getInstance().getStoreName(store).orElse(null);
         return Dialog.query("Store", false, true, false, name, QueryConverter.STRING)
                 .map((String newName) -> {
-                    var found = XPipeDaemon.getInstance().getNamedStore(newName).orElseThrow();
+                    var found = DataStorage.get().getStoreEntryIfPresent(newName).map(entry -> entry.getStore()).orElseThrow();
                     if (!filter.isAssignableFrom(found.getClass())) {
                         throw new IllegalArgumentException("Incompatible store type");
                     }

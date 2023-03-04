@@ -73,7 +73,7 @@ public class SourceCollectionWrapper implements StorageFilter.Filterable {
 
     public void clean() {
         var entries = List.copyOf(collection.getEntries());
-        entries.forEach(e -> DataStorage.get().deleteEntry(e));
+        entries.forEach(e -> DataStorage.get().deleteSourceEntry(e));
     }
 
     private void setupListeners() {

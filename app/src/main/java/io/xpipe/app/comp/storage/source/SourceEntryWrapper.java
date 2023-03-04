@@ -72,7 +72,7 @@ public class SourceEntryWrapper implements StorageFilter.Filterable {
             return;
         }
 
-        DataStorage.get().deleteEntry(entry);
+        DataStorage.get().deleteSourceEntry(entry);
     }
 
     private <T extends DataSource<?>> void update() {

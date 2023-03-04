@@ -82,7 +82,7 @@ public class GuiDsCreatorTransferStep extends MultiStepComp.Step<CompStructure<?
     @Override
     public void onBack() {
         var e = entry.getValue();
-        DataStorage.get().deleteEntry(e);
+        DataStorage.get().deleteSourceEntry(e);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class GuiDsCreatorTransferStep extends MultiStepComp.Step<CompStructure<?
         }
 
         var e = entry.getValue();
-        DataStorage.get().deleteEntry(e);
+        DataStorage.get().deleteSourceEntry(e);
     }
 
     @Override
