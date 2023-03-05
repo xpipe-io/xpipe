@@ -37,7 +37,7 @@ public class ShellDialects {
 
         @Override
         public boolean prioritizeLoading() {
-            return false;
+            return true;
         }
     }
 

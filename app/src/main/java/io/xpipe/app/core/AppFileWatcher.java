@@ -15,21 +15,21 @@ import java.util.function.BiConsumer;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-public class FileWatchManager {
+public class AppFileWatcher {
 
-    private static FileWatchManager INSTANCE;
+    private static AppFileWatcher INSTANCE;
 
     private final Set<WatchedDirectory> watchedDirectories = new CopyOnWriteArraySet<>();
     private WatchService watchService;
     private Thread watcherThread;
     private boolean active;
 
-    public static FileWatchManager getInstance() {
+    public static AppFileWatcher getInstance() {
         return INSTANCE;
     }
 
     public static void init() {
-        INSTANCE = new FileWatchManager();
+        INSTANCE = new AppFileWatcher();
         INSTANCE.startWatcher();
     }
 
@@ -55,7 +55,7 @@ public class FileWatchManager {
             while (active) {
                 WatchKey key;
                 try {
-                    key = FileWatchManager.this.watchService.poll(10, TimeUnit.MILLISECONDS);
+                    key = AppFileWatcher.this.watchService.poll(10, TimeUnit.MILLISECONDS);
                     if (key == null) {
                         continue;
                     }
@@ -113,7 +113,7 @@ public class FileWatchManager {
             }
 
             try {
-                dir.register(FileWatchManager.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+                dir.register(AppFileWatcher.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
                 Files.list(dir).filter(Files::isDirectory).forEach(this::createRecursiveWatchers);
             } catch (IOException e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
@@ -158,7 +158,7 @@ public class FileWatchManager {
             // Add new watcher for directory
             if (ev.kind().equals(ENTRY_CREATE) && Files.isDirectory(file)) {
                 try {
-                    file.register(FileWatchManager.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+                    file.register(AppFileWatcher.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
                 } catch (IOException e) {
                     ErrorEvent.fromThrowable(e).omit().handle();
                 }

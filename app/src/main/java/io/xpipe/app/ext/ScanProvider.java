@@ -45,5 +45,5 @@ public abstract class ScanProvider {
         return ALL;
     }
 
-    public  abstract ScanOperation create(DataStore store);
+    public  abstract ScanOperation create(DataStore store, boolean automatic);
 }

@@ -93,7 +93,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 e.applyChanges(newE);
                 if (!DataStorage.get().getStoreEntries().contains(e)) {
                     DataStorage.get().addStoreEntry(e);
-                    ScanAlert.showIfNeeded(e.getStore());
+                    ScanAlert.showIfNeeded(e.getStore(), true);
                 }
                 DataStorage.get().refresh();
             });
@@ -104,7 +104,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         show(null, null, null, filter, e -> {
             try {
                 DataStorage.get().addStoreEntry(e);
-                ScanAlert.showIfNeeded(e.getStore());
+                ScanAlert.showIfNeeded(e.getStore(), true);
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
@@ -183,6 +183,9 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     public CompStructure<? extends Region> createBase() {
         var layout = new BorderPane();
         var providerChoice = new DsStoreProviderChoiceComp(filter, provider);
+        if (provider.getValue() != null) {
+            providerChoice.apply(struc -> struc.get().setDisable(true));
+        }
         providerChoice.apply(GrowAugment.create(true, false));
 
         SimpleChangeListener.apply(provider, n -> {

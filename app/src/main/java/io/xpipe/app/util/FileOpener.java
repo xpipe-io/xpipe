@@ -6,7 +6,6 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
-import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -23,7 +22,6 @@ public class FileOpener {
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
-                        FilenameUtils.getExtension(file),
                         file,
                         () -> {
                             return entry.getFileSystem().openInput(file);
@@ -42,7 +40,6 @@ public class FileOpener {
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
-                        FilenameUtils.getExtension(file),
                         file,
                         () -> {
                             return entry.getFileSystem().openInput(file);
@@ -67,7 +64,7 @@ public class FileOpener {
     public static void openInDefaultApplication(String file) {
         try (var pc = LocalStore.getShell().start()) {
             if (pc.getOsType().equals(OsType.WINDOWS)) {
-                pc.executeSimpleCommand("\"" + file + "\"");
+                pc.executeSimpleCommand("start \"\" \"" + file + "\"");
             } else if (pc.getOsType().equals(OsType.LINUX)) {
                 pc.executeSimpleCommand("xdg-open \"" + file + "\"");
             } else {
@@ -78,7 +75,7 @@ public class FileOpener {
         }
     }
 
-    public static void openString(String keyName, String fileType, Object key, String input, Consumer<String> output) {
-        FileBridge.get().openString(keyName, fileType, key, input, output, file -> openInTextEditor(file));
+    public static void openString(String keyName,Object key, String input, Consumer<String> output) {
+        FileBridge.get().openString(keyName, key, input, output, file -> openInTextEditor(file));
     }
 }

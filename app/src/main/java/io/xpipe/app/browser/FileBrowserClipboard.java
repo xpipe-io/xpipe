@@ -1,14 +1,14 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.core.store.FileSystem;
-import io.xpipe.core.util.XPipeTempDirectory;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import lombok.SneakyThrows;
 import lombok.Value;
 
-import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class FileBrowserClipboard {
 
@@ -18,7 +18,6 @@ public class FileBrowserClipboard {
         List<FileSystem.FileEntry> entries;
     }
 
-    public static Map<UUID, List<FileSystem.FileEntry>> CLIPBOARD = new HashMap<>();
     public static Instance currentCopyClipboard;
     public static Instance currentDragClipboard;
 
@@ -26,17 +25,15 @@ public class FileBrowserClipboard {
     public static ClipboardContent startDrag(List<FileSystem.FileEntry> selected) {
         var content = new ClipboardContent();
         var idea = UUID.randomUUID();
-        var file = XPipeTempDirectory.getLocal().resolve(idea.toString());
-        Files.createFile(file);
         currentDragClipboard = new Instance(idea, selected);
-        content.putFiles(List.of(file.toFile()));
+        content.putString(idea.toString());
         return content;
     }
 
     @SneakyThrows
     public static void startCopy(List<FileSystem.FileEntry> selected) {
-        var idea = UUID.randomUUID();
-        currentCopyClipboard = new Instance(idea, new ArrayList<>(selected));
+        var id = UUID.randomUUID();
+        currentCopyClipboard = new Instance(id, new ArrayList<>(selected));
     }
 
     public static Instance retrieveCopy() {
@@ -45,15 +42,19 @@ public class FileBrowserClipboard {
     }
 
     public static Instance retrieveDrag(Dragboard dragboard) {
-        if (dragboard.getFiles().size() != 1) {
+        if (dragboard.getString() == null) {
             return null;
         }
 
-        var idea = UUID.fromString(dragboard.getFiles().get(0).toPath().getFileName().toString());
-        if (idea.equals(currentDragClipboard.uuid)) {
-            var current = currentDragClipboard;
-            currentDragClipboard = null;
-            return current;
+        try {
+            var idea = UUID.fromString(dragboard.getString());
+            if (idea.equals(currentDragClipboard.uuid)) {
+                var current = currentDragClipboard;
+                currentDragClipboard = null;
+                return current;
+            }
+        } catch (Exception ex) {
+            return null;
         }
 
         return null;

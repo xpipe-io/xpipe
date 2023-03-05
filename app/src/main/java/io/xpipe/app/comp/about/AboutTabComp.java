@@ -8,7 +8,7 @@ import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.app.util.Hyperlinks;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -62,10 +62,10 @@ public class AboutTabComp extends Comp<CompStructure<?>> {
                 .styleClass("information");
 
         return Comp.derive(box, boxS -> {
-                    var bp = new BorderPane();
-                    bp.setLeft(boxS);
+                    var bp = new SplitPane();
+                    bp.getItems().add(boxS);
                     var deps = createThirdPartyDeps();
-                    bp.setRight(createThirdPartyDeps());
+                    bp.getItems().add(createThirdPartyDeps());
                     deps.prefWidthProperty().bind(bp.widthProperty().divide(2));
                     boxS.prefWidthProperty().bind(bp.widthProperty().divide(2));
                     bp.getStyleClass().add("about-tab");

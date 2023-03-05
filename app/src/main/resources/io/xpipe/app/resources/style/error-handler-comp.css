@@ -25,8 +25,8 @@
 }
 
 .error-report .buttons {
--fx-border-color:-color-accent-fg;
--fx-border-width: 0.1em 0 0 0;
+-fx-border-color: -color-neutral-emphasis;
+-fx-border-width: 1px 0 0 0;
 -fx-padding: 1.0em 1.5em 1em 1.5em;
 -fx-background-color: -color-neutral-muted;
 -fx-effect: dropshadow(three-pass-box, #333, 6, 0, 0, -1);

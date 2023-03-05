@@ -13,7 +13,7 @@ public class ApplicationHelper {
     public static void executeLocalApplication(String s) throws Exception {
         var args = ShellDialects.getPlatformDefault().executeCommandListWithShell(s);
         TrackEvent.withDebug("proc", "Executing local application")
-                .elements(args)
+                .tag("command", s)
                 .handle();
         try (var c = LocalStore.getShell().command(s).start()) {
             c.discardOrThrow();
@@ -21,9 +21,8 @@ public class ApplicationHelper {
     }
 
     public static void executeLocalApplication(List<String> s) throws Exception {
-        var args = ShellDialects.getPlatformDefault().executeCommandListWithShell(s);
         TrackEvent.withDebug("proc", "Executing local application")
-                .elements(args)
+                .elements(s)
                 .handle();
         try (var c = LocalStore.getShell().command(s).start()) {
             c.discardOrThrow();

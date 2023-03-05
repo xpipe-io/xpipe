@@ -47,8 +47,9 @@ public class IntegratedTextAreaComp extends SimpleComp {
     }
 
     private Region createOpenButton(Region container) {
+        var name = identifier + (fileType != null ? "." + fileType : "");
         var button = new IconButtonComp("mdal-edit", () -> FileOpener
-                        .openString(identifier, fileType, this, value.getValue(), (s) -> {
+                        .openString(name, this, value.getValue(), (s) -> {
                             Platform.runLater(() -> value.setValue(s));
                         }))
                 .createRegion();

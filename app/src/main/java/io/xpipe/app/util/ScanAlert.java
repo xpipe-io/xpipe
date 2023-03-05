@@ -19,10 +19,10 @@ import java.util.List;
 
 public class ScanAlert {
 
-    public static void showIfNeeded(DataStore store) {
+    public static void showIfNeeded(DataStore store, boolean automatic) {
         var providers = ScanProvider.getAll();
         var applicable = providers.stream()
-                .map(scanProvider -> scanProvider.create(store))
+                .map(scanProvider -> scanProvider.create(store, automatic))
                 .filter(scanOperation -> scanOperation != null)
                 .toList();
         if (applicable.size() == 0) {

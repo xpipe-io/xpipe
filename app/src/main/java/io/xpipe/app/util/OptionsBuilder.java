@@ -5,6 +5,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -12,6 +13,7 @@ import net.synedra.validatorfx.Check;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 public class OptionsBuilder {
@@ -80,7 +82,18 @@ public class OptionsBuilder {
         props.add(prop);
         return this;
     }
-
+    public OptionsBuilder addToggle(Property<Boolean> prop) {
+        var comp = new ToggleGroupComp<>(
+                prop,
+                new SimpleObjectProperty<>(Map.of(
+                        Boolean.TRUE,
+                        AppI18n.observable("app.yes"),
+                        Boolean.FALSE,
+                        AppI18n.observable("app.no"))));
+        pushComp(comp);
+        props.add(prop);
+        return this;
+    }
     public OptionsBuilder addString(Property<String> prop) {
         return addString(prop, false);
     }

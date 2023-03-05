@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.FileWatchManager;
+import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -51,7 +51,7 @@ public class FileBridge {
             } catch (IOException ignored) {
             }
 
-            FileWatchManager.getInstance().startWatchersInDirectories(List.of(TEMP), (changed, kind) -> {
+            AppFileWatcher.getInstance().startWatchersInDirectories(List.of(TEMP), (changed, kind) -> {
                 if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                     event("Editor entry file " + changed.toString() + " has been removed");
                     INSTANCE.removeForFile(changed);
@@ -121,7 +121,7 @@ public class FileBridge {
         return Optional.empty();
     }
 
-    public void openString(String keyName, String fileType, Object key, String input, Consumer<String> output, Consumer<String> consumer) {
+    public void openString(String keyName, Object key, String input, Consumer<String> output, Consumer<String> consumer) {
         if (input == null) {
             input = "";
         }
@@ -129,7 +129,6 @@ public class FileBridge {
         String s = input;
         openIO(
                 keyName,
-                fileType,
                 key,
                 () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
                 () -> new ByteArrayOutputStream(s.length()) {
@@ -144,7 +143,6 @@ public class FileBridge {
 
     public void openIO(
             String keyName,
-            String fileType,
             Object key,
             FailableSupplier<InputStream, Exception> input,
             FailableSupplier<OutputStream, Exception> output,
@@ -155,9 +153,7 @@ public class FileBridge {
             return;
         }
 
-        var name = keyName + " - " + UUID.randomUUID().toString().substring(0, 6) + "."
-                + (fileType != null ? fileType : "txt");
-        Path file = TEMP.resolve(name);
+        Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6)).resolve(keyName);
         try {
             FileUtils.forceMkdirParent(file.toFile());
             try (var out = Files.newOutputStream(file);

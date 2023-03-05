@@ -2,6 +2,7 @@ package io.xpipe.app.fxcomps.impl;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
@@ -90,6 +91,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     AppFont.small(popover.getContentNode());
 
                     var descriptionHover = new Button("... ?");
+                    descriptionHover.getStyleClass().add(Styles.BUTTON_OUTLINED);
+                    descriptionHover.getStyleClass().add(Styles.ACCENT);
                     descriptionHover.setPadding(new Insets(0, 6, 0, 6));
                     descriptionHover.getStyleClass().add("long-description");
                     AppFont.header(descriptionHover);

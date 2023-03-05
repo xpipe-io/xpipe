@@ -4,7 +4,11 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.source.GuiDsCreatorMultiStep;
 import io.xpipe.app.ext.DataSourceProvider;
-import io.xpipe.app.util.*;
+import io.xpipe.app.util.FileOpener;
+import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -13,10 +17,11 @@ import javafx.beans.property.Property;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import org.apache.commons.io.FilenameUtils;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.List;
 
 final class FileContextMenu extends ContextMenu {
@@ -73,8 +78,7 @@ final class FileContextMenu extends ContextMenu {
                 var execute = new MenuItem("Run in terminal");
                 execute.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        ShellControl pc =
-                                model.getFileSystem().getShell().orElseThrow();
+                        ShellControl pc = model.getFileSystem().getShell().orElseThrow();
                         pc.executeBooleanSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
                         var cmd = pc.command("\"" + entry.getPath() + "\"").prepareTerminalOpen();
                         TerminalHelper.open(FilenameUtils.getBaseName(entry.getPath()), cmd);
@@ -86,8 +90,7 @@ final class FileContextMenu extends ContextMenu {
                 var executeInBackground = new MenuItem("Run in background");
                 executeInBackground.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        ShellControl pc =
-                                model.getFileSystem().getShell().orElseThrow();
+                        ShellControl pc = model.getFileSystem().getShell().orElseThrow();
                         pc.executeBooleanSimpleCommand(pc.getShellDialect().getMakeExecutableCommand(entry.getPath()));
                         var cmd = ScriptHelper.createDetachCommand(pc, "\"" + entry.getPath() + "\"");
                         pc.executeBooleanSimpleCommand(cmd);
@@ -112,30 +115,48 @@ final class FileContextMenu extends ContextMenu {
                 GuiDsCreatorMultiStep.showForStore(DataSourceProvider.Category.STREAM, store, null);
                 event.consume();
             });
-            getItems().add(pipe);
+            // getItems().add(pipe);
 
             var edit = new MenuItem("Edit");
             edit.setOnAction(event -> {
-                FileOpener.openInTextEditor(entry);
+                ThreadHelper.runAsync(() -> FileOpener.openInTextEditor(entry));
                 event.consume();
             });
             getItems().add(edit);
         }
 
-        var cut = new MenuItem("Delete");
-        cut.setOnAction(event -> {
+        getItems().add(new SeparatorMenuItem());
+
+        var copyName = new MenuItem("Copy name");
+        copyName.setOnAction(event -> {
+            var selection = new StringSelection(FileNames.getFileName(entry.getPath()));
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
+            event.consume();
+        });
+        getItems().add(copyName);
+
+        var copyPath = new MenuItem("Copy full path");
+        copyPath.setOnAction(event -> {
+            var selection = new StringSelection(entry.getPath());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
+            event.consume();
+        });
+        getItems().add(copyPath);
+
+        var delete = new MenuItem("Delete");
+        delete.setOnAction(event -> {
             event.consume();
             model.deleteAsync(entry.getPath());
         });
-        cut.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
 
         var rename = new MenuItem("Rename");
         rename.setOnAction(event -> {
             event.consume();
             editing.setValue(entry.getPath());
         });
-        rename.setAccelerator(new KeyCodeCombination(KeyCode.F2));
 
-        getItems().addAll(new SeparatorMenuItem(), cut, rename);
+        getItems().addAll(new SeparatorMenuItem(), rename, delete);
     }
 }

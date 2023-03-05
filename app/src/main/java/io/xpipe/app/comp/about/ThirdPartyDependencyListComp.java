@@ -28,7 +28,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         var sp = new StackPane(link, licenseName);
         StackPane.setAlignment(licenseName, Pos.CENTER_RIGHT);
         StackPane.setAlignment(link, Pos.CENTER_LEFT);
-        sp.prefWidthProperty().bind(tp.widthProperty().subtract(40));
+        sp.prefWidthProperty().bind(tp.widthProperty().subtract(65));
         tp.setGraphic(sp);
 
         var text = new TextArea();
@@ -36,7 +36,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         text.setText(t.licenseText());
         text.setWrapText(true);
         text.setPrefHeight(300);
-        text.prefWidthProperty().bind(tp.widthProperty());
+        text.maxWidthProperty().bind(tp.widthProperty());
         AppFont.setSize(text, -4);
         tp.setContent(text);
         AppFont.verySmall(tp);

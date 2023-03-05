@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -55,14 +56,14 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
             }
 
             if (box.getChildren().size() > 0) {
-                box.getChildren().get(0).getStyleClass().add("first");
+                box.getChildren().get(0).getStyleClass().add(Styles.LEFT_PILL);
                 for (int i = 1; i < box.getChildren().size() - 1; i++) {
-                    box.getChildren().get(i).getStyleClass().add("center");
+                    box.getChildren().get(i).getStyleClass().add(Styles.CENTER_PILL);
                 }
                 box.getChildren()
                         .get(box.getChildren().size() - 1)
                         .getStyleClass()
-                        .add("last");
+                        .add(Styles.RIGHT_PILL);
             }
         });
 

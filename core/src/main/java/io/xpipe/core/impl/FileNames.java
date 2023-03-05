@@ -34,6 +34,19 @@ public class FileNames {
         return components.get(components.size() - 1);
     }
 
+    public static String getExtension(String file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        var name = FileNames.getFileName(file);
+        var split = file.split("\\.");
+        if (split.length == 0) {
+            return null;
+        }
+        return split[split.length - 1];
+    }
+
     public static String join(String... parts) {
         var joined = String.join("/", parts);
         return normalize(joined);

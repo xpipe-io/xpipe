@@ -23,6 +23,11 @@ public class FileSystemHelper {
             return null;
         }
 
+        // Handle special case when file system creation has failed
+        if (model.getFileSystem() == null) {
+            return path;
+        }
+
         var shell = model.getFileSystem().getShell();
         if (shell.isEmpty()) {
             return path;

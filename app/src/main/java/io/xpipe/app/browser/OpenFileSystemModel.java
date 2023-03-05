@@ -13,6 +13,7 @@ import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.*;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -40,13 +41,14 @@ final class OpenFileSystemModel {
         fileList = new FileListModel(this);
     }
 
+    @SneakyThrows
     public void refresh() {
         BusyProperty.execute(busy, () -> {
             cdSync(currentPath.get());
         });
     }
 
-    private void refreshInternal() {
+    private void refreshInternal() throws Exception {
         cdSync(currentPath.get());
     }
 
@@ -68,7 +70,13 @@ final class OpenFileSystemModel {
         return Optional.empty();
     }
 
-    private void cdSync(String path) {
+    private void cdSync(String path) throws Exception {
+        if (fileSystem == null) {
+            var fs = store.getValue().createFileSystem();
+            fs.open();
+            this.fileSystem = fs;
+        }
+
         path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
         navigateToSync(path);
@@ -99,6 +107,10 @@ final class OpenFileSystemModel {
     public void dropLocalFilesIntoAsync(FileSystem.FileEntry entry, List<Path> files) {
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
                 FileSystemHelper.dropLocalFilesInto(entry, files);
                 refreshInternal();
             });
@@ -109,6 +121,10 @@ final class OpenFileSystemModel {
             FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
                 FileSystemHelper.dropFilesInto(target, files, explicitCopy);
                 refreshInternal();
             });
@@ -122,6 +138,10 @@ final class OpenFileSystemModel {
 
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
                 fileSystem.mkdirs(path);
                 refreshInternal();
             });
@@ -135,6 +155,10 @@ final class OpenFileSystemModel {
 
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
                 fileSystem.touch(path);
                 refreshInternal();
             });
@@ -144,6 +168,10 @@ final class OpenFileSystemModel {
     public void deleteAsync(String path) {
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
                 fileSystem.delete(path);
                 refreshInternal();
             });
@@ -162,12 +190,6 @@ final class OpenFileSystemModel {
         }
         fileSystem = null;
         store = null;
-    }
-
-    public void switchFileSystem(FileSystemStore fileSystem) throws Exception {
-        BusyProperty.execute(busy, () -> {
-            switchSync(fileSystem);
-        });
     }
 
     private void switchSync(FileSystemStore fileSystem) throws Exception {
@@ -198,6 +220,10 @@ final class OpenFileSystemModel {
 
     public void openTerminalAsync(String directory) {
         ThreadHelper.runFailableAsync(() -> {
+            if (fileSystem == null) {
+                return;
+            }
+
             BusyProperty.execute(busy, () -> {
                 if (store.getValue() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();

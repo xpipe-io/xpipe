@@ -103,7 +103,7 @@ public class UserReportComp extends SimpleComp {
                 .apply(struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT))
                 .createRegion();
         var spacer = new Region();
-        var buttons = new HBox(dataPolicyButton, spacer, sendButton);
+        var buttons = new HBox(spacer, sendButton);
         buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("buttons");
         HBox.setHgrow(spacer, Priority.ALWAYS);

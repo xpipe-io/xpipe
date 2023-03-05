@@ -39,7 +39,7 @@ public class BaseMode extends OperationMode {
         AppCharsets.init();
         AppCharsetter.init();
         DataStorage.init();
-        FileWatchManager.init();
+        AppFileWatcher.init();
         FileBridge.init();
         AppSocketServer.init();
         AppUpdater.init();
