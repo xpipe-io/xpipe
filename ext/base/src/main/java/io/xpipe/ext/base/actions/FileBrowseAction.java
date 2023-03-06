@@ -25,7 +25,7 @@ public class FileBrowseAction implements ActionProvider {
 
         @Override
         public void execute() throws Exception {
-            DesktopHelper.browseFileInDirectory(Path.of(store.getFile()));
+            DesktopHelper.browseFileInDirectory(Path.of(store.getPath()));
         }
     }
 
@@ -45,7 +45,7 @@ public class FileBrowseAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(FileStore o) throws Exception {
-                return o.getFileSystem().equals(new LocalStore()) && Files.exists(Path.of(o.getFile()));
+                return o.getFileSystem().equals(new LocalStore()) && Files.exists(Path.of(o.getPath()));
             }
 
             @Override

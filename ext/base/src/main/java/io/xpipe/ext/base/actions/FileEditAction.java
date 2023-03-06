@@ -24,7 +24,7 @@ public class FileEditAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             if (store.getFileSystem().equals(new LocalStore())) {
-                FileOpener.openInTextEditor(store.getFile());
+                FileOpener.openInTextEditor(store.getPath());
             }
         }
     }

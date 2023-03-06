@@ -155,7 +155,7 @@ public class StoreEntryComp extends SimpleComp {
             ThreadHelper.runFailableAsync(() -> {
                 var found = entry.getDefaultActionProvider().getValue();
                 if (found != null) {
-                    found.getDataStoreCallSite()
+                    found
                             .createAction(entry.getEntry().getStore().asNeeded())
                             .execute();
                 }

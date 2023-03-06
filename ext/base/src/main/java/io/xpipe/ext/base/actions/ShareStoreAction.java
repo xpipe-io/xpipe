@@ -26,7 +26,7 @@ public class ShareStoreAction implements ActionProvider {
         }
 
         public static String create(DataStore store) {
-            return "xpipe://add/store/" + SecretValue.encrypt(store.toString()).getEncryptedValue();
+            return "xpipe://addStore/" + SecretValue.encrypt(store.toString()).getEncryptedValue();
         }
 
         @Override

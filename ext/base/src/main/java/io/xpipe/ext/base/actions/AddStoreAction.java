@@ -38,12 +38,12 @@ public class AddStoreAction implements ActionProvider {
         return new LauncherCallSite() {
             @Override
             public String getId() {
-                return "add";
+                return "addStore";
             }
 
             @Override
             public Action createAction(List<String> args) throws Exception {
-                var storeString = SecretValue.ofSecret(args.get(1));
+                var storeString = SecretValue.ofSecret(args.get(0));
                 var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
                 return new Action(store);
             }

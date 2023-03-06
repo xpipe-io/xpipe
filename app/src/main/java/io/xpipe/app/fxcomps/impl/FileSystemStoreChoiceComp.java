@@ -51,12 +51,12 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
         fileSystemProperty.addListener((observable, oldValue, newValue) -> {
             selected.setValue(FileStore.builder()
                     .fileSystem(newValue)
-                    .file(selected.getValue() != null ? selected.getValue().getFile() : null)
+                    .path(selected.getValue() != null ? selected.getValue().getPath() : null)
                     .build());
         });
 
         selected.addListener((observable, oldValue, newValue) -> {
-            fileSystemProperty.setValue(newValue.getFileSystem());
+            fileSystemProperty.setValue(newValue != null?newValue.getFileSystem():null);
         });
 
         var comboBox =

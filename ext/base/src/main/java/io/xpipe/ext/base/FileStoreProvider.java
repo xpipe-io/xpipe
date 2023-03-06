@@ -39,10 +39,10 @@ public class FileStoreProvider implements DataStoreProvider {
         FileStore s = store.asNeeded();
         var local = s.getFileSystem() instanceof LocalStore;
         if (local) {
-            return fileNameString(s.getFile(), length);
+            return fileNameString(s.getPath(), length);
         } else {
             var machineString = DataStoreFormatter.toName(s.getFileSystem(), length / 2);
-            var fileString = fileNameString(s.getFile(), length - machineString.length() - 3);
+            var fileString = fileNameString(s.getPath(), length - machineString.length() - 3);
             return String.format("%s @ %s", fileString, machineString);
         }
     }
@@ -70,10 +70,10 @@ public class FileStoreProvider implements DataStoreProvider {
     public Dialog dialogForStore(DataStore store) {
         FileStore fileStore = store.asNeeded();
         var machineQuery = DialogHelper.machineQuery(fileStore.getFileSystem());
-        var fileQuery = DialogHelper.fileQuery(fileStore.getFile());
+        var fileQuery = DialogHelper.fileQuery(fileStore.getPath());
         return Dialog.chain(machineQuery, fileQuery).evaluateTo(() -> FileStore.builder()
                 .fileSystem(machineQuery.getResult())
-                .file(fileQuery.getResult())
+                .path(fileQuery.getResult())
                 .build());
     }
 

@@ -65,11 +65,11 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
 
     private Region getGraphic() {
         var graphic = hasProvider() ? provider.getValue().getDisplayIconFileName() : "file_icon.png";
-        if (chosenFile.getValue() == null || !(chosenFile.getValue() instanceof FileStore f) || f.getFile() == null) {
+        if (chosenFile.getValue() == null || !(chosenFile.getValue() instanceof FileStore f) || f.getPath() == null) {
             return JfxHelper.createNamedEntry(AppI18n.get("browse"), AppI18n.get("selectFileFromComputer"), graphic);
         } else {
             return JfxHelper.createNamedEntry(
-                    f.getFileName().toString(), f.getFile().toString(), graphic);
+                    f.getFileName().toString(), f.getPath().toString(), graphic);
         }
     }
 }

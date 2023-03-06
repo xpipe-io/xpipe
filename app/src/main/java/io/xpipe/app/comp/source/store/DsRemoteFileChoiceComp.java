@@ -33,7 +33,7 @@ public class DsRemoteFileChoiceComp extends SimpleComp {
 
                             return FileStore.builder()
                                     .fileSystem(machine.get())
-                                    .file(fileName.get())
+                                    .path(fileName.get())
                                     .build();
                         },
                         store)

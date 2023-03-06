@@ -367,30 +367,32 @@ public abstract class DataStorage {
         });
     }
 
-    private synchronized void propagateUpdate() {
+    private void propagateUpdate() {
         for (DataStoreEntry dataStoreEntry : getStoreEntries()) {
             dataStoreEntry.simpleRefresh();
         }
 
-        for (var e : sourceEntries) {
+        for (var e : getSourceEntries()) {
             e.simpleRefresh();
         }
     }
 
-    public synchronized void addStoreEntry(@NonNull DataStoreEntry e) {
+    public void addStoreEntry(@NonNull DataStoreEntry e) {
         if (getStoreEntryIfPresent(e.getName()).isPresent()) {
             throw new IllegalArgumentException("Store with name " + e.getName() + " already exists");
         }
 
-        e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
-        this.storeEntries.add(e);
+        synchronized (this) {
+            e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
+            this.storeEntries.add(e);
+        }
         propagateUpdate();
         save();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
     }
 
-    public synchronized void addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {
+    public void addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {
         if (getStoreEntryIfPresent(store).isPresent()) {
             return;
         }
@@ -399,21 +401,22 @@ public abstract class DataStorage {
         addStoreEntry(e);
     }
 
-    public synchronized DataStoreEntry addStoreEntry(@NonNull String name, DataStore store) {
+    public DataStoreEntry addStoreEntry(@NonNull String name, DataStore store) {
         var e = DataStoreEntry.createNew(UUID.randomUUID(), createUniqueStoreEntryName(name), store);
         addStoreEntry(e);
         return e;
     }
 
-    public synchronized void deleteStoreEntry(@NonNull DataStoreEntry store) {
+    public void deleteStoreEntry(@NonNull DataStoreEntry store) {
         if (!store.getConfiguration().isDeletable()) {
             throw new UnsupportedOperationException();
         }
 
-        this.storeEntries.remove(store);
+        synchronized (this) {
+            this.storeEntries.remove(store);
+        }
         propagateUpdate();
         save();
-
         this.listeners.forEach(l -> l.onStoreRemove(store));
     }
 
@@ -421,7 +424,7 @@ public abstract class DataStorage {
         this.listeners.add(l);
     }
 
-    public synchronized DataSourceCollection createOrGetCollection(String name) {
+    public DataSourceCollection createOrGetCollection(String name) {
         return getCollectionForName(name).orElseGet(() -> {
             var col = DataSourceCollection.createNew(name);
             addCollection(col);
@@ -460,8 +463,8 @@ public abstract class DataStorage {
 
     public abstract void load();
 
-    public synchronized void refresh() {
-        storeEntries.forEach(entry -> {
+    public void refresh() {
+        getStoreEntries().forEach(entry -> {
             entry.simpleRefresh();
         });
         save();

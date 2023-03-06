@@ -68,9 +68,24 @@ public interface ActionProvider {
     default DataStoreCallSite<?> getDataStoreCallSite() {
         return null;
     }
+    default DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
+        return null;
+    }
 
     default DataSourceCallSite<?> getDataSourceCallSite() {
         return null;
+    }
+
+
+    public static interface DefaultDataStoreCallSite<T extends DataStore> {
+
+        Action createAction(T store);
+
+        Class<T> getApplicableClass();
+
+        default boolean isApplicable(T o) {
+            return true;
+        }
     }
 
     public static interface DataStoreCallSite<T extends DataStore> {
@@ -84,10 +99,6 @@ public interface ActionProvider {
         Action createAction(T store);
 
         Class<T> getApplicableClass();
-
-        default boolean isDefault() {
-            return false;
-        }
 
         default boolean isMajor() {
             return false;

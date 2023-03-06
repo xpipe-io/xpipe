@@ -62,7 +62,7 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
                     AppI18n.get("selectStreamStore"), AppI18n.get("openStreamStoreWizard"), graphic);
         } else {
             return JfxHelper.createNamedEntry(
-                    f.getFileName().toString(), f.getFile().toString(), graphic);
+                    f.getFileName().toString(), f.getPath().toString(), graphic);
         }
     }
 }

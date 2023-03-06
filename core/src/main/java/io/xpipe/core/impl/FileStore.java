@@ -26,11 +26,11 @@ import java.util.regex.Pattern;
 public class FileStore extends JacksonizedValue implements FilenameStore, StreamDataStore {
 
     FileSystemStore fileSystem;
-    String file;
+    String path;
 
-    public FileStore(FileSystemStore fileSystem, String file) {
+    public FileStore(FileSystemStore fileSystem, String path) {
         this.fileSystem = fileSystem;
-        this.file = file;
+        this.path = path;
     }
 
     public static FileStore local(Path p) {
@@ -45,9 +45,9 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
     }
 
     public String getParent() {
-        var matcher = Pattern.compile("^(.+?)[^\\\\/]+$").matcher(file);
+        var matcher = Pattern.compile("^(.+?)[^\\\\/]+$").matcher(path);
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Unable to determine parent of " + file);
+            throw new IllegalArgumentException("Unable to determine parent of " + path);
         }
 
         return matcher.group(1);
@@ -62,17 +62,17 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
         if (fileSystem == null) {
             throw new ValidationException("File system is missing");
         }
-        if (file == null) {
+        if (path == null) {
             throw new ValidationException("File is missing");
         }
-        if (!FileNames.isAbsolute(file)) {
+        if (!FileNames.isAbsolute(path)) {
             throw new ValidationException("File path is not absolute");
         }
     }
 
     @Override
     public InputStream openInput() throws Exception {
-        return fileSystem.createFileSystem().open().openInput(file);
+        return fileSystem.createFileSystem().open().openInput(path);
     }
 
     @Override
@@ -81,17 +81,17 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
             throw new IOException("Unable to create directory: " + getParent());
         }
 
-        return fileSystem.createFileSystem().open().openOutput(file);
+        return fileSystem.createFileSystem().open().openOutput(path);
     }
 
     @Override
     public boolean canOpen() throws Exception {
-        return fileSystem.createFileSystem().open().exists(file);
+        return fileSystem.createFileSystem().open().exists(path);
     }
 
     @Override
     public String getFileName() {
-        var split = file.split("[\\\\/]");
+        var split = path.split("[\\\\/]");
         if (split.length == 0) {
             return "";
         }

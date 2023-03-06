@@ -27,6 +27,27 @@ public class EditStoreAction implements ActionProvider {
         }
     }
 
+
+    @Override
+    public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
+        return new DefaultDataStoreCallSite<DataStore>() {
+            @Override
+            public boolean isApplicable(DataStore o) {
+                return DataStorage.get().getStoreEntryIfPresent(o).orElseThrow().getState().equals(DataStoreEntry.State.INCOMPLETE);
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStore store) {
+                return new Action(DataStorage.get().getStoreEntryIfPresent(store).orElseThrow());
+            }
+
+            @Override
+            public Class<DataStore> getApplicableClass() {
+                return DataStore.class;
+            }
+        };
+    }
+
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<DataStore>() {

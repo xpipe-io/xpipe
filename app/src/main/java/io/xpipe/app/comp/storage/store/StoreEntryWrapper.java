@@ -8,10 +8,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -31,7 +28,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final StringProperty information = new SimpleStringProperty();
     private final StringProperty summary = new SimpleStringProperty();
     private final Map<ActionProvider, BooleanProperty> actionProviders;
-    private final ObservableValue<ActionProvider> defaultActionProvider;
+    private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
     private final BooleanProperty editable = new SimpleBooleanProperty();
     private final BooleanProperty renamable = new SimpleBooleanProperty();
     private final BooleanProperty refreshable = new SimpleBooleanProperty();
@@ -54,16 +51,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                 .forEach(dataStoreActionProvider -> {
                     actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
                 });
-        this.defaultActionProvider = Bindings.createObjectBinding(
-                () -> {
-                    var found = actionProviders.entrySet().stream()
-                            .filter(e -> e.getValue().get())
-                            .filter(e -> e.getKey().getDataStoreCallSite() != null
-                                    && e.getKey().getDataStoreCallSite().isDefault())
-                            .findFirst();
-                    return found.map(p -> p.getKey()).orElse(null);
-                },
-                actionProviders.values().toArray(Observable[]::new));
+        this.defaultActionProvider = new SimpleObjectProperty<>();
         setupListeners();
         update();
     }
@@ -126,6 +114,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {
                 actionProviders.get(dataStoreActionProvider).set(false);
+                defaultActionProvider.setValue(null);
                 return;
             }
 
@@ -137,6 +126,12 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                 actionProviders.get(dataStoreActionProvider).set(false);
                 return;
             }
+
+            var defaultProvider = ActionProvider.ALL.stream()
+                    .filter(e -> e.getDefaultDataStoreCallSite() != null
+                            && e.getDefaultDataStoreCallSite().isApplicable(entry.getStore().asNeeded()))
+                    .findFirst().map(ActionProvider::getDefaultDataStoreCallSite).orElse(null);
+            this.defaultActionProvider.setValue(defaultProvider);
 
             try {
                 actionProviders

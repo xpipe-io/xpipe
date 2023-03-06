@@ -33,12 +33,12 @@ public class FileStoreChoiceComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var fileProperty = new SimpleStringProperty(
-                selected.getValue() != null ? selected.getValue().getFile() : null);
+                selected.getValue() != null ? selected.getValue().getPath() : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
             setSelected(selected.getValue().getFileSystem(), newValue);
         });
         selected.addListener((observable, oldValue, newValue) -> {
-            fileProperty.setValue(newValue.getFile());
+            fileProperty.setValue(newValue.getPath());
         });
 
         var fileSystemChoiceComp = new FileSystemStoreChoiceComp(selected).grow(false, true).styleClass(Styles.LEFT_PILL);

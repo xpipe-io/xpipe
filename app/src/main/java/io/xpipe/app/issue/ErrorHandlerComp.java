@@ -7,8 +7,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
+import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -20,6 +20,8 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static atlantafx.base.theme.Styles.ACCENT;
@@ -37,27 +39,67 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     public static void showAndWait(ErrorEvent event) {
-        PlatformThread.runLaterIfNeededBlocking(() -> {
-            synchronized (showing) {
-                if (!showing.get()) {
-                    showing.set(true);
-                    var window = AppWindowHelper.sideWindow(
-                            AppI18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
-                    window.setOnHidden(e -> {
-                        showing.set(false);
-                    });
+        if (Platform.isFxApplicationThread()) {
+            showAndWaitWithPlatformThread(event);
+        } else {
+            showAndWaitWithOtherThread(event);
+        }
+    }
 
-                    // An exception is thrown when show and wait is called
-                    // within an animation or layout processing task
-                    try {
-                        window.showAndWait();
-                    } catch (Throwable t) {
-                        window.show();
-                        t.printStackTrace();
-                    }
+    public static void showAndWaitWithPlatformThread(ErrorEvent event) {
+        var finishLatch = new CountDownLatch(1);
+        if (!showing.get()) {
+            showing.set(true);
+            var window = AppWindowHelper.sideWindow(
+                    AppI18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
+            window.setOnHidden(e -> {
+                showing.set(false);
+                finishLatch.countDown();
+            });
+
+            // An exception is thrown when show and wait is called
+            // within an animation or layout processing task, so use show
+            try {
+                window.show();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+    }
+
+    public static void showAndWaitWithOtherThread(ErrorEvent event) {
+        var showLatch = new CountDownLatch(1);
+        var finishLatch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            if (!showing.get()) {
+                showing.set(true);
+                var window = AppWindowHelper.sideWindow(
+                        AppI18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
+                window.setOnHidden(e -> {
+                    showing.set(false);
+                    finishLatch.countDown();
+                });
+
+                // An exception is thrown when show and wait is called
+                // within an animation or layout processing task, so use show
+                try {
+                    showLatch.countDown();
+                    window.show();
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
             }
         });
+
+        try {
+            // Only wait for a certain time in case we somehow deadlocked the platform thread
+            if (showLatch.await(5, TimeUnit.SECONDS)) {
+                finishLatch.await();
+            } else {
+                TrackEvent.error("Platform thread in error handler was timed out");
+            }
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private Region createActionComp(ErrorAction a) {
