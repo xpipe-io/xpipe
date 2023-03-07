@@ -129,16 +129,26 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
 
             var defaultProvider = ActionProvider.ALL.stream()
                     .filter(e -> e.getDefaultDataStoreCallSite() != null
-                            && e.getDefaultDataStoreCallSite().isApplicable(entry.getStore().asNeeded()))
-                    .findFirst().map(ActionProvider::getDefaultDataStoreCallSite).orElse(null);
+                            && e.getDefaultDataStoreCallSite()
+                                    .getApplicableClass()
+                                    .isAssignableFrom(entry.getStore().getClass())
+                            && e.getDefaultDataStoreCallSite()
+                                    .isApplicable(entry.getStore().asNeeded()))
+                    .findFirst()
+                    .map(ActionProvider::getDefaultDataStoreCallSite)
+                    .orElse(null);
             this.defaultActionProvider.setValue(defaultProvider);
 
             try {
                 actionProviders
                         .get(dataStoreActionProvider)
                         .set(dataStoreActionProvider
-                                .getDataStoreCallSite()
-                                .isApplicable(entry.getStore().asNeeded()));
+                                        .getDataStoreCallSite()
+                                        .getApplicableClass()
+                                        .isAssignableFrom(entry.getStore().getClass())
+                                && dataStoreActionProvider
+                                        .getDataStoreCallSite()
+                                        .isApplicable(entry.getStore().asNeeded()));
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
                 actionProviders.get(dataStoreActionProvider).set(false);

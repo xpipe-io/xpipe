@@ -24,8 +24,12 @@ public class AppInstaller {
 
     public static void installOnRemoteMachine(ShellControl s, String version) throws Exception {
         var asset = getSuitablePlatformAsset(s);
-        var file = AppDownloads.downloadInstaller(asset, version);
-        installFile(s, asset, file);
+        var file = AppDownloads.downloadInstaller(asset, version, false);
+        if (file.isEmpty()) {
+            return;
+        }
+
+        installFile(s, asset, file.get());
     }
 
     public static void installFileLocal(InstallerAssetType asset, Path localFile) throws Exception {
@@ -196,12 +200,20 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = String.format("""
-                                        set -x
-                                        DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe
-                                        DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s"
-                                        xpipe open
-                                        """, file);
+                var command = String.format(
+                        """
+                                        #!/bin/bash
+
+                                        exec || read -rsp "Update failed ..." -n 1 key
+
+                                        function exec {
+                                            set -x
+                                            DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
+                                            DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
+                                            xpipe open || return 1
+                                        }
+                                        """,
+                        file);
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }

@@ -36,50 +36,73 @@ public class AppDownloads {
         return repository;
     }
 
-    public static Path downloadInstaller(AppInstaller.InstallerAssetType iAsset, String version) throws Exception {
-        var release = AppDownloads.getRelease(version);
-        var asset = release.orElseThrow().listAssets().toList().stream()
-                .filter(ghAsset -> iAsset.isCorrectAsset(ghAsset.getName()))
-                .findAny();
-
-        var url = new URL(asset.get().getBrowserDownloadUrl());
-        var bytes = HttpHelper.executeGet(url, aFloat -> {});
-        var downloadFile =
-                FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
-        Files.write(downloadFile, bytes);
-
-        TrackEvent.withInfo("installation", "Downloaded asset")
-                .tag("version", version)
-                .tag("url", url)
-                .tag("size", FileUtils.byteCountToDisplaySize(bytes.length))
-                .tag("target", downloadFile)
-                .handle();
-
-        return downloadFile;
-    }
-
-    public static Optional<String> downloadChangelog(String version) throws Exception {
-        var release = AppDownloads.getRelease(version);
-        var asset = release.orElseThrow().listAssets().toList().stream()
-                .filter(ghAsset -> ghAsset.getName().equals("changelog.md"))
-                .findAny();
-
-        if (asset.isEmpty()) {
+    public static Optional<Path> downloadInstaller(
+            AppInstaller.InstallerAssetType iAsset, String version, boolean omitErrors) {
+        var release = AppDownloads.getRelease(version, omitErrors);
+        if (release.isEmpty()) {
             return Optional.empty();
         }
 
-        var url = new URL(asset.get().getBrowserDownloadUrl());
-        var bytes = HttpHelper.executeGet(url, aFloat -> {});
-        return Optional.of(new String(bytes, StandardCharsets.UTF_8));
+        try {
+            var asset = release.orElseThrow().listAssets().toList().stream()
+                    .filter(ghAsset -> iAsset.isCorrectAsset(ghAsset.getName()))
+                    .findAny();
+            if (asset.isEmpty()) {
+                ErrorEvent.fromMessage("No matching asset found for " + iAsset.getExtension());
+                return Optional.empty();
+            }
+
+            var url = new URL(asset.get().getBrowserDownloadUrl());
+            var bytes = HttpHelper.executeGet(url, aFloat -> {});
+            var downloadFile =
+                    FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
+            Files.write(downloadFile, bytes);
+
+            TrackEvent.withInfo("installation", "Downloaded asset")
+                    .tag("version", version)
+                    .tag("url", url)
+                    .tag("size", FileUtils.byteCountToDisplaySize(bytes.length))
+                    .tag("target", downloadFile)
+                    .handle();
+
+            return Optional.of(downloadFile);
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+            return Optional.empty();
+        }
     }
 
-    public static String getLatestVersion() {
-        return getLatestSuitableRelease()
+    public static Optional<String> downloadChangelog(String version, boolean omitErrors) {
+        var release = AppDownloads.getRelease(version, omitErrors);
+        if (release.isEmpty()) {
+            return Optional.empty();
+        }
+
+        try {
+            var asset = release.get().listAssets().toList().stream()
+                    .filter(ghAsset -> ghAsset.getName().equals("changelog.md"))
+                    .findAny();
+
+            if (asset.isEmpty()) {
+                return Optional.empty();
+            }
+
+            var url = new URL(asset.get().getBrowserDownloadUrl());
+            var bytes = HttpHelper.executeGet(url, aFloat -> {});
+            return Optional.of(new String(bytes, StandardCharsets.UTF_8));
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+            return Optional.empty();
+        }
+    }
+
+    public static String getLatestVersion(boolean omitErrors) {
+        return getLatestSuitableRelease(omitErrors)
                 .map(ghRelease -> ghRelease.getTagName())
                 .orElse("?");
     }
 
-    public static Optional<GHRelease> getLatestSuitableRelease() {
+    public static Optional<GHRelease> getLatestSuitableRelease(boolean omitErrors) {
         try {
             var repo = getRepository();
 
@@ -90,17 +113,17 @@ public class AppDownloads {
 
             return Optional.ofNullable(repo.getLatestRelease());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEvent.fromThrowable("Unable to fetch latest release information", e).omitted(omitErrors).handle();
             return Optional.empty();
         }
     }
 
-    public static Optional<GHRelease> getRelease(String version) {
+    public static Optional<GHRelease> getRelease(String version, boolean omitErrors) {
         try {
             var repo = getRepository();
             return Optional.ofNullable(repo.getReleaseByTagName(version));
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEvent.fromThrowable(e).omitted(omitErrors).handle();
             return Optional.empty();
         }
     }

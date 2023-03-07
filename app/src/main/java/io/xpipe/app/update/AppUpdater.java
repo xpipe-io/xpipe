@@ -168,13 +168,17 @@ public class AppUpdater {
             event("Performing update download ...");
             try {
                 var downloadFile = AppDownloads.downloadInstaller(
-                        lastUpdateCheckResult.getValue().getAssetType(), lastUpdateCheckResult.getValue().version);
-                var changelogString = AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().version);
+                        lastUpdateCheckResult.getValue().getAssetType(), lastUpdateCheckResult.getValue().version, false);
+                if (downloadFile.isEmpty()) {
+                    return;
+                }
+
+                var changelogString = AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().version, false);
                 var changelog = changelogString.orElse(null);
                 var rel = new DownloadedUpdate(
                         AppProperties.get().getVersion(),
                         lastUpdateCheckResult.getValue().version,
-                        downloadFile,
+                        downloadFile.get(),
                         changelog,
                         lastUpdateCheckResult.getValue().getAssetType());
                 downloadedUpdate.setValue(rel);
@@ -249,7 +253,7 @@ public class AppUpdater {
         }
 
         try (var ignored = new BusyProperty(busy)) {
-            var rel = AppDownloads.getLatestSuitableRelease();
+            var rel = AppDownloads.getLatestSuitableRelease(!forceCheck);
             event("Determined latest suitable release "
                     + rel.map(GHRelease::getName).orElse(null));
             lastUpdateCheckResult.setValue(null);

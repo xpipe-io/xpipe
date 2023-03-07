@@ -81,7 +81,6 @@ public class Deobfuscator {
             }
         } catch (Exception ex) {
             System.err.println("Deobfuscation failed");
-            ex.printStackTrace();
             return stackTrace;
         }
 

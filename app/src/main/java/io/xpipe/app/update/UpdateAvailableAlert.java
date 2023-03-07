@@ -7,7 +7,11 @@ import javafx.scene.control.Alert;
 public class UpdateAvailableAlert {
 
     public static void showIfNeeded() {
-        if (!AppUpdater.get().isDownloadedUpdateStillLatest()) {
+        if (AppUpdater.get().getDownloadedUpdate().getValue() == null) {
+            return;
+        }
+
+        if (AppUpdater.get().getDownloadedUpdate().getValue() != null && !AppUpdater.get().isDownloadedUpdateStillLatest()) {
             AppUpdater.get().getDownloadedUpdate().setValue(null);
             return;
         }
