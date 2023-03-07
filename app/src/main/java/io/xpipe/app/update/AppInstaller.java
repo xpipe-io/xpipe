@@ -200,20 +200,19 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = String.format(
+                var command = ShellStore.createLocal().create().subShell(ShellDialects.BASH).command(String.format(
                         """
-                                        #!/bin/bash
-
-                                        exec || read -rsp "Update failed ..." -n 1 key
-
                                         function exec {
-                                            set -x
+                                            echo "+ sudo apt-get remove -qy xpipe"
                                             DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
+                                            echo "+ sudo apt-get install -qy "%s"
                                             DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
                                             xpipe open || return 1
                                         }
+
+                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
-                        file);
+                        file, file));
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -239,11 +238,17 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = String.format("""
-                                        set -x
-                                        sudo rpm -U -v --force "%s"
-                                        xpipe open
-                                        """, file);
+                var command = ShellStore.createLocal().create().subShell(ShellDialects.BASH).command(String.format(
+                        """
+                                        function exec {
+                                            echo "+ sudo rpm -U -v --force \\"%s\\""
+                                            sudo rpm -U -v --force "%s" || return 1
+                                            xpipe open || return 1
+                                        }
+
+                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                        """,
+                        file, file));
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -270,11 +275,17 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = String.format("""
-                                        set -x
-                                        sudo installer -verboseR -allowUntrusted -pkg "%s" -target /
-                                        xpipe open
-                                        """, file);
+                var command = ShellStore.createLocal().create().subShell(ShellDialects.BASH).command(String.format(
+                        """
+                                        function exec {
+                                            echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
+                                            sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
+                                            xpipe open || return 1
+                                        }
+
+                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                        """,
+                        file, file));
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
