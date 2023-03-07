@@ -71,7 +71,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected String toCommand(String name, String command) {
-            return "--new-tab -e bash -c " + command;
+            return "--new-tab -e " + command;
         }
 
         @Override

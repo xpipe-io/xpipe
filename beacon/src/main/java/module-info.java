@@ -68,6 +68,7 @@ module io.xpipe.beacon {
             WritePreparationExchange,
             ProxyReadConnectionExchange,
             WriteExecuteExchange,
+            AskpassExchange,
             SelectExchange,
             ReadExchange,
             QueryTextDataExchange,

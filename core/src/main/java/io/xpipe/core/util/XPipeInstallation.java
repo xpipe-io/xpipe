@@ -269,4 +269,14 @@ public class XPipeInstallation {
             return FileNames.join("Content", "MacOS", "xpiped");
         }
     }
+
+    public static String getRelativeCliExecutablePath(OsType type) {
+        if (type.equals(OsType.WINDOWS)) {
+            return FileNames.join("cli", "xpipe.exe");
+        } else if (type.equals(OsType.LINUX)) {
+            return FileNames.join("cli", "bin", "xpipe");
+        } else {
+            return FileNames.join("Content", "MacOS", "xpipe");
+        }
+    }
 }

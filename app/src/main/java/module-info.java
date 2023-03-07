@@ -164,6 +164,7 @@ open module io.xpipe.app {
             RemoveEntryExchangeImpl,
             RenameCollectionExchangeImpl,
             RenameEntryExchangeImpl,
+            AskpassExchangeImpl,
             SourceProviderListExchangeImpl,
             QueryStoreExchangeImpl,
             SelectExchangeImpl,
