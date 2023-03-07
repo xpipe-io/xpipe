@@ -11,6 +11,14 @@ import java.util.function.Consumer;
 
 public interface CommandControl extends ProcessControl {
 
+    static enum TerminalExitMode {
+        KEEP_OPEN,
+        KEEP_OPEN_ON_FAILURE,
+        CLOSE
+    }
+
+    CommandControl terminalExitMode(TerminalExitMode mode);
+
     public CommandControl doesNotObeyReturnValueConvention();
 
     @Override

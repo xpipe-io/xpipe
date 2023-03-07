@@ -205,7 +205,7 @@ public class AppInstaller {
                                         function exec {
                                             echo "+ sudo apt-get remove -qy xpipe"
                                             DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
-                                            echo "+ sudo apt-get install -qy "%s"
+                                            echo "+ sudo apt-get install -qy \\"%s\\""
                                             DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
                                             xpipe open || return 1
                                         }
