@@ -206,8 +206,18 @@ public class ScriptHelper {
         return file;
     }
 
-    @SneakyThrows
-    public static String createAskPassScript(SecretValue pass, ShellControl parent, ShellDialect type) {
+    public static String createAskPassScript(SecretValue pass, ShellControl parent) throws Exception {
+        var scriptType = parent.getShellDialect();
+
+        // Fix for power shell as there are permission issues when executing a powershell askpass script
+        if (parent.getShellDialect().equals(ShellDialects.POWERSHELL)) {
+            scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.BASH;
+        }
+
+        return createAskPassScript(pass, parent, scriptType);
+    }
+
+    private static String createAskPassScript(SecretValue pass, ShellControl parent, ShellDialect type) throws Exception {
         var content = type.getScriptEchoCommand(pass.getSecretValue());
         var temp = parent.getTemporaryDirectory();
         var file = FileNames.join(temp, "askpass-" + getScriptId() + "." + type.getScriptFileEnding());
