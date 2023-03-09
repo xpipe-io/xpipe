@@ -15,6 +15,7 @@ public abstract class ScanProvider {
     @Value
     public static class ScanOperation {
         String nameKey;
+        boolean defaultSelected;
         FailableRunnable<Exception> scanner;
     }
 

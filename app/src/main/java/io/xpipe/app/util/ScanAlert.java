@@ -30,7 +30,7 @@ public class ScanAlert {
         }
 
         var selected = new SimpleListProperty<ScanProvider.ScanOperation>(
-                FXCollections.observableList(new ArrayList<>(applicable)));
+                FXCollections.observableList(new ArrayList<>(applicable.stream().filter(scanOperation -> scanOperation.isDefaultSelected()).toList())));
         var busy = new SimpleBooleanProperty();
         AppWindowHelper.showAlert(
                 alert -> {

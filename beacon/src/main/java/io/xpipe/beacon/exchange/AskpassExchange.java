@@ -20,6 +20,8 @@ public class AskpassExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         String id;
+        @NonNull
+        String request;
         String prompt;
     }
 

@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,15 +22,21 @@ import java.util.List;
 
 public class StoreEntrySection implements StorageFilter.Filterable {
 
+    private static final Comparator<StoreEntrySection> COMPARATOR = Comparator.<StoreEntrySection, Instant>comparing(
+                    o -> o.entry.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
+                            ? o.entry.getEntry().getLastAccess()
+                            : Instant.EPOCH).reversed()
+            .thenComparing(
+                    storeEntrySection -> storeEntrySection.entry.getEntry().getName());
+
     public StoreEntrySection(StoreEntryWrapper entry, ObservableList<StoreEntrySection> children) {
         this.entry = entry;
         this.children = children;
     }
 
     public static ObservableList<StoreEntrySection> createTopLevels() {
-        var filtered = BindingsHelper.filteredContentBinding(
-                StoreViewState.get().getAllEntries(),
-                storeEntryWrapper -> {
+        var filtered =
+                BindingsHelper.filteredContentBinding(StoreViewState.get().getAllEntries(), storeEntryWrapper -> {
                     if (!storeEntryWrapper.getEntry().getState().isUsable()) {
                         return true;
                     }
@@ -38,14 +45,13 @@ public class StoreEntrySection implements StorageFilter.Filterable {
                             .getEntry()
                             .getProvider()
                             .getParent(storeEntryWrapper.getEntry().getStore());
-                    return parent == null || (DataStorage.get().getStoreEntryIfPresent(parent).isEmpty());
+                    return parent == null
+                            || (DataStorage.get().getStoreEntryIfPresent(parent).isEmpty());
                 });
         var topLevel = BindingsHelper.mappedContentBinding(filtered, storeEntryWrapper -> create(storeEntryWrapper));
         var ordered = BindingsHelper.orderedContentBinding(
                 topLevel,
-                Comparator.<StoreEntrySection, Instant>comparing(storeEntrySection ->
-                                storeEntrySection.entry.lastAccessProperty().getValue())
-                        .reversed());
+                COMPARATOR);
         return ordered;
     }
 
@@ -65,9 +71,7 @@ public class StoreEntrySection implements StorageFilter.Filterable {
         var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1));
         var ordered = BindingsHelper.orderedContentBinding(
                 children,
-                Comparator.<StoreEntrySection, Instant>comparing(storeEntrySection ->
-                                storeEntrySection.entry.lastAccessProperty().getValue())
-                        .reversed());
+                COMPARATOR);
         return new StoreEntrySection(e, ordered);
     }
 
