@@ -139,10 +139,7 @@ public class AppPrefs {
             externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
     private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
     private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour = typed(
-            new SimpleObjectProperty<>(
-                    ExternalStartupBehaviour.TRAY.isSelectable()
-                            ? ExternalStartupBehaviour.TRAY
-                            : ExternalStartupBehaviour.BACKGROUND),
+            new SimpleObjectProperty<>(ExternalStartupBehaviour.TRAY),
             ExternalStartupBehaviour.class);
 
     private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
