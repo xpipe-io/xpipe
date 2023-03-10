@@ -246,7 +246,7 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "scripts", "xpiped_debug.sh");
         } else {
-            return FileNames.join("Content", "Resources", "scripts", "xpiped_debug.sh");
+            return FileNames.join("Contents", "Resources", "scripts", "xpiped_debug.sh");
         }
     }
 
@@ -256,7 +256,7 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "scripts", "xpiped_debug_attach.sh");
         } else {
-            return FileNames.join("Content", "Resources", "scripts", "xpiped_debug_attach.sh");
+            return FileNames.join("Contents", "Resources", "scripts", "xpiped_debug_attach.sh");
         }
     }
 
@@ -266,7 +266,7 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("app", "bin", "xpiped");
         } else {
-            return FileNames.join("Content", "MacOS", "xpiped");
+            return FileNames.join("Contents", "MacOS", "xpiped");
         }
     }
 
@@ -276,7 +276,7 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("cli", "bin", "xpipe");
         } else {
-            return FileNames.join("Content", "MacOS", "xpipe");
+            return FileNames.join("Contents", "MacOS", "xpipe");
         }
     }
 }
