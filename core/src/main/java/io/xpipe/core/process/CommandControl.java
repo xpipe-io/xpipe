@@ -11,6 +11,10 @@ import java.util.function.Consumer;
 
 public interface CommandControl extends ProcessControl {
 
+    public static final int UNASSIGNED_EXIT_CODE = -1;
+    public static final int TIMEOUT_EXIT_CODE = -2;
+    public static final int KILLED_EXIT_CODE = -3;
+
     static enum TerminalExitMode {
         KEEP_OPEN,
         KEEP_OPEN_ON_FAILURE,

@@ -13,7 +13,7 @@ public class ProcessOutputException extends Exception {
 
     public static ProcessOutputException of(int exitCode, String output) {
         var messageSuffix = output != null && !output.isBlank()?": " + output : "";
-        var message = exitCode == -1 ? "Process timed out" + messageSuffix : "Process returned with exit code " + exitCode + messageSuffix;
+        var message = exitCode == CommandControl.TIMEOUT_EXIT_CODE ? "Process timed out" + messageSuffix : "Process returned with exit code " + exitCode + messageSuffix;
         return new ProcessOutputException(message, exitCode, output);
     }
 
@@ -27,6 +27,10 @@ public class ProcessOutputException extends Exception {
     }
 
     public boolean isTimeOut() {
-        return exitCode  == -1;
+        return exitCode  == CommandControl.TIMEOUT_EXIT_CODE;
+    }
+
+    public boolean isKill() {
+        return exitCode  == CommandControl.KILLED_EXIT_CODE;
     }
 }

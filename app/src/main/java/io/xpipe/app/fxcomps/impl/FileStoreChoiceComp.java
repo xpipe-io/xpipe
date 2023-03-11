@@ -35,10 +35,10 @@ public class FileStoreChoiceComp extends SimpleComp {
         var fileProperty = new SimpleStringProperty(
                 selected.getValue() != null ? selected.getValue().getPath() : null);
         fileProperty.addListener((observable, oldValue, newValue) -> {
-            setSelected(selected.getValue().getFileSystem(), newValue);
+            setSelected(selected.getValue() != null ? selected.getValue().getFileSystem() : null, newValue);
         });
         selected.addListener((observable, oldValue, newValue) -> {
-            fileProperty.setValue(newValue.getPath());
+            fileProperty.setValue(newValue != null ? newValue.getPath() : null);
         });
 
         var fileSystemChoiceComp = new FileSystemStoreChoiceComp(selected).grow(false, true).styleClass(Styles.LEFT_PILL);
