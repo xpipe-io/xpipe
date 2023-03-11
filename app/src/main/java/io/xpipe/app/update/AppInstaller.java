@@ -43,17 +43,9 @@ public class AppInstaller {
         } else {
             targetFile = FileNames.join(
                     s.getTemporaryDirectory(), localFile.getFileName().toString());
-            try (CommandControl c = s.getShellDialect().getStreamFileWriteCommand(s, targetFile)
-                    .start()) {
-                c.discardOut();
-                c.discardErr();
-                try (InputStream in = Files.newInputStream(localFile)) {
-                    in.transferTo(c.getStdin());
-                }
-                c.closeStdin();
+            try (InputStream in = Files.newInputStream(localFile)) {
+                in.transferTo(s.getShellDialect().createStreamFileWriteCommand(s, targetFile).startExternalStdin());
             }
-
-            s.restart();
         }
 
         asset.installRemote(s, targetFile);

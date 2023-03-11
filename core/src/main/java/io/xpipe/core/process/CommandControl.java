@@ -26,7 +26,15 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl complex();
 
+    CommandControl notComplex();
+
     CommandControl workingDirectory(String directory);
+
+    default void execute() throws Exception {
+        try (var c = start()) {
+            c.discardOrThrow();
+        }
+    }
 
     ShellControl getParent();
 

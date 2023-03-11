@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
+    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file);
+
     default String getCdCommand(String directory){
         return "cd \"" + directory + "\"";
     }
@@ -101,9 +103,7 @@ public interface ShellDialect {
 
     String getFileMoveCommand(String oldFile, String newFile);
 
-    CommandControl getStreamFileWriteCommand(ShellControl processControl, String file);
-
-    String getTextFileWriteCommand(String content, String file);
+    CommandControl createTextFileWriteCommand(ShellControl parent, String content, String file);
 
     String getFileDeleteCommand(String file);
 

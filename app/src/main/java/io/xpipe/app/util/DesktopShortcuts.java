@@ -60,10 +60,10 @@ public class DesktopShortcuts {
                     pc.getShellDialect().flatten(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources")));
 
             var executable = base + "/Contents/MacOS/" + name;
-            pc.executeSimpleCommand(pc.getShellDialect().getTextFileWriteCommand(content, executable));
+            pc.getShellDialect().createTextFileWriteCommand(pc, content, executable).execute();
             pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
 
-            pc.executeSimpleCommand(pc.getShellDialect().getTextFileWriteCommand("APPL????", base + "/PkgInfo"));
+            pc.getShellDialect().createTextFileWriteCommand(pc, "APPL????", base + "/PkgInfo").execute();
             pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/" + name + ".icns\"");
         }
     }
