@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.source.store;
 
 import io.xpipe.app.comp.base.InstallExtensionComp;
-import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.comp.base.MessageComp;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.core.AppExtensionManager;
@@ -125,6 +124,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Consumer<DataStoreEntry> con) {
         var prop = new SimpleObjectProperty<DataStoreProvider>(provider);
         var store = new SimpleObjectProperty<DataStore>(s);
+        var loading = new SimpleBooleanProperty();
         var name = "addConnection";
         Platform.runLater(() -> {
             var stage = AppWindowHelper.sideWindow(
@@ -137,6 +137,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
                             @Override
                             protected List<Entry> setup() {
+                                loading.bind(creator.busy);
                                 return List.of(new Entry(AppI18n.observable("a"), creator));
                             }
 
@@ -150,7 +151,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         };
                     },
                     false,
-                    null);
+                    loading);
             stage.show();
         });
     }
@@ -226,7 +227,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         top.getStyleClass().add("top");
         layout.setTop(top);
         // layout.getStyleClass().add("data-input-creation-step");
-        return new LoadingOverlayComp(Comp.of(() -> layout), busy).createStructure();
+        return Comp.of(() -> layout).createStructure();
     }
 
     @Override
@@ -281,8 +282,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         ThreadHelper.runAsync(() -> {
             try (var b = new BusyProperty(busy)) {
-                entry.getValue().setStore(input.getValue());
-                entry.getValue().refresh(true);
+                var e = DataStoreEntry.createNew(UUID.randomUUID(), entry.getValue().getName(), input.getValue());
+                e.refresh(true);
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);
             } catch (Exception ex) {

@@ -7,8 +7,10 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.BusyProperty;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -94,8 +96,15 @@ public class FileBrowserComp extends SimpleComp {
         });
         tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
 
+        // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
+        var modifying = new SimpleBooleanProperty();
+
         // Handle selection from platform
         tabs.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (modifying.get()) {
+                return;
+            }
+
             if (newValue.intValue() == -1) {
                 model.getSelected().setValue(null);
                 return;
@@ -104,29 +113,34 @@ public class FileBrowserComp extends SimpleComp {
             model.getSelected().setValue(model.getOpenFileSystems().get(newValue.intValue()));
         });
 
+        // Handle selection from model
+        model.getSelected().addListener((observable, oldValue, newValue) -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(newValue));
+            });
+        });
+
         model.getOpenFileSystems().addListener((ListChangeListener<? super OpenFileSystemModel>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        var t = map.remove(r);
-                        tabs.getTabs().remove(t);
+                        try (var b = new BusyProperty(modifying)) {
+                            var t = map.remove(r);
+                            tabs.getTabs().remove(t);
+                        }
                     });
                 }
 
                 for (var a : c.getAddedSubList()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        var t = createTab(tabs, a);
-                        map.put(a, t);
-                        tabs.getTabs().add(t);
+                        try (var b = new BusyProperty(modifying)) {
+                            var t = createTab(tabs, a);
+                            map.put(a, t);
+                            tabs.getTabs().add(t);
+                        }
                     });
                 }
             }
-        });
-
-        model.getSelected().addListener((observable, oldValue, newValue) -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(newValue));
-            });
         });
 
         tabs.getTabs().addListener((ListChangeListener<? super Tab>) c -> {
@@ -198,7 +212,7 @@ public class FileBrowserComp extends SimpleComp {
                                     .getDisplayIconFileName()
                             : null;
                 },
-                PlatformThread.sync(model.getStore()));
+                model.getStore());
         var logo = new PrettyImageComp(image, 20, 20).createRegion();
 
         var label = new Label();

@@ -152,12 +152,6 @@ public class DataStoreEntry extends StorageElement {
         return store;
     }
 
-    public void setStore(DataStore store) {
-        var node = DataStorageWriter.storeToNode(store);
-        this.storeNode = node;
-        simpleRefresh();
-    }
-
     public boolean matches(String filter) {
         return getName().toLowerCase().contains(filter.toLowerCase())
                 || (!isDisabled()
@@ -204,7 +198,13 @@ public class DataStoreEntry extends StorageElement {
             dirty = dirty || oldStore != null;
             listeners.forEach(l -> l.onUpdate());
         } else {
-            dirty = dirty || !Objects.equals(store, newStore);
+            var newNode = DataStorageWriter.storeToNode(newStore);
+            var nodesEqual = Objects.equals(storeNode, newNode);
+            if (!nodesEqual) {
+                storeNode = newNode;
+            }
+
+            dirty = dirty || !nodesEqual;
             store = newStore;
             var complete = newStore.isComplete();
 

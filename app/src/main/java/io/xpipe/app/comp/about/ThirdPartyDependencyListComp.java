@@ -22,7 +22,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         tp.setPadding(Insets.EMPTY);
         tp.setGraphic(link);
         tp.setAlignment(Pos.CENTER_LEFT);
-        AppFont.medium(tp);
+        AppFont.small(tp);
 
         var licenseName = new Label("(" + t.licenseName() + ")");
         var sp = new StackPane(link, licenseName);

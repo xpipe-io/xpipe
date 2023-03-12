@@ -14,7 +14,7 @@ public class EditStoreExchangeImpl extends EditStoreExchange
         var s = getStoreEntryByName(msg.getName(), false);
         var dialog = s.getProvider().dialogForStore(s.getStore());
         var reference = DialogExchangeImpl.add(dialog, (DataStore newStore) -> {
-            s.setStore(newStore);
+            // s.setStore(newStore);
         });
         return Response.builder().dialog(reference).build();
     }

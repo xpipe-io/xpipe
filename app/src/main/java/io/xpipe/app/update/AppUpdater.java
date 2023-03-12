@@ -43,6 +43,8 @@ public class AppUpdater {
         event("Was updated is " + hasUpdated);
         if (hasUpdated) {
             AppCache.clear("performedUpdate");
+            AppCache.clear("lastUpdateCheckResult");
+            AppCache.clear("downloadedUpdate");
             event("Found information about recent update");
         }
 
@@ -217,9 +219,6 @@ public class AppUpdater {
             } catch (Throwable ex) {
                 ex.printStackTrace();
             } finally {
-                AppCache.clear("lastUpdateCheckResult");
-                AppCache.clear("downloadedUpdate");
-
                 var performedUpdate = new PerformedUpdate(
                         downloadedUpdate.getValue().getVersion(),
                         downloadedUpdate.getValue().getBody(),

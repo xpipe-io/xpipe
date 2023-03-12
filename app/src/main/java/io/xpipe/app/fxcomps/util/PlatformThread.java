@@ -38,7 +38,7 @@ public class PlatformThread {
     }
 
     public static <T> ObservableValue<T> sync(ObservableValue<T> ov) {
-        return new ObservableValue<>() {
+        ObservableValue<T> obs = new ObservableValue<>() {
 
             private final Map<ChangeListener<? super T>, ChangeListener<? super T>> changeListenerMap =
                     new ConcurrentHashMap<>();
@@ -79,10 +79,12 @@ public class PlatformThread {
                 ov.removeListener(invListenerMap.getOrDefault(listener, listener));
             }
         };
+        BindingsHelper.linkPersistently(obs, ov);
+        return obs;
     }
 
     public static <T> ObservableList<T> sync(ObservableList<T> ol) {
-        return new ObservableList<>() {
+        ObservableList<T> obs = new ObservableList<>() {
 
             private final Map<ListChangeListener<? super T>, ListChangeListener<? super T>> listChangeListenerMap =
                     new ConcurrentHashMap<>();
@@ -263,6 +265,8 @@ public class PlatformThread {
                 ol.removeListener(invListenerMap.getOrDefault(listener, listener));
             }
         };
+        BindingsHelper.linkPersistently(obs, ol);
+        return obs;
     }
 
     public static void runLaterIfNeeded(Runnable r) {

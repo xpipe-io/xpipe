@@ -58,15 +58,15 @@ public class DataStorageParser {
                 return Optional.empty();
             }
 
-            var storeNode = entry.get().getResolvedNode();
-            if (storeNode == null) {
+            var testNode = entry.get().getResolvedNode();
+            if (testNode == null) {
                 TrackEvent.withWarn("storage", "Encountered disabled store").tag("id", id);
                 return Optional.empty();
             }
 
             var newSeenIds = new HashSet<>(seenIds);
             newSeenIds.add(id);
-            return Optional.of(replaceReferenceIds(storeNode, newSeenIds));
+            return Optional.of(replaceReferenceIds(entry.get().getStoreNode(), newSeenIds));
         });
 
         node = replaceReferenceIdsForType(node, "sourceId", id -> {
@@ -86,6 +86,10 @@ public class DataStorageParser {
         var value = getReferenceIdFromNode(node, replacementKeyName).orElse(null);
         if (value != null) {
             var found = function.apply(value);
+            if (found.isEmpty() || found.get().isNull()) {
+                TrackEvent.withWarn("storage", "Encountered unknown reference").tag("id", value);
+            }
+
             return found.orElseGet(NullNode::getInstance);
         }
 

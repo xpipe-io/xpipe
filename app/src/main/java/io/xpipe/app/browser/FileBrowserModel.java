@@ -83,13 +83,14 @@ public class FileBrowserModel {
             return;
         }
 
-        var found = openFileSystems.stream()
-                .filter(fileSystemModel -> fileSystemModel.getStore().getValue().equals(store))
-                .findFirst();
-        if (found.isPresent()) {
-            selected.setValue(found.get());
-            return;
-        }
+        // Duplication protection (Not needed for now)
+//        var found = openFileSystems.stream()
+//                .filter(fileSystemModel -> fileSystemModel.getStore().getValue().equals(store))
+//                .findFirst();
+//        if (found.isPresent()) {
+//            selected.setValue(found.get());
+//            return;
+//        }
 
         var model = new OpenFileSystemModel(this);
         openFileSystems.add(model);
