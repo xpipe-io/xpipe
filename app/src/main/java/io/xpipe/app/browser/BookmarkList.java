@@ -1,16 +1,14 @@
 package io.xpipe.app.browser;
 
 import com.jfoenix.controls.JFXButton;
-import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.storage.store.StoreEntryFlatMiniSection;
+import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.ShellStore;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+
+import java.util.Map;
 
 final class BookmarkList extends SimpleComp {
 
@@ -22,19 +20,23 @@ final class BookmarkList extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var list = DataStorage.get().getStoreEntries().stream().filter(entry -> entry.getStore() instanceof ShellStore).map(entry -> new Bookmark(entry)).toList();
-        return new ListBoxViewComp<>(FXCollections.observableList(list), FXCollections.observableList(list), bookmark -> {
-            var imgView =
-                    new PrettyImageComp(new SimpleStringProperty(bookmark.entry().getProvider().getDisplayIconFileName()), 16, 16).createRegion();
-            var button = new JFXButton(bookmark.entry().getName(), imgView);
-            button.setOnAction(event -> {
-                event.consume();
+        var map = StoreEntryFlatMiniSection.createMap();
+        var list = new VBox();
+        for (Map.Entry<StoreEntryWrapper, Region> e : map.entrySet()) {
+            if (!(e.getKey().getEntry().getStore() instanceof ShellStore)) {
+                continue;
+            }
 
-                var fileSystem = ((ShellStore) bookmark.entry().getStore());
+            var button = new JFXButton(null, e.getValue());
+            button.setOnAction(event -> {
+                var fileSystem = ((ShellStore) e.getKey().getEntry().getStore());
                 model.openFileSystem(fileSystem);
+                event.consume();
             });
-            button.setAlignment(Pos.CENTER_LEFT);
-            return Comp.of(() -> button).grow(true, false);
-        }).createRegion();
+            button.prefWidthProperty().bind(list.widthProperty());
+            list.getChildren().add(button);
+        }
+        list.setFillWidth(true);
+        return list;
     }
 }

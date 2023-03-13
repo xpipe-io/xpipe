@@ -1,5 +1,7 @@
 package io.xpipe.app.fxcomps.impl;
 
+import io.xpipe.app.comp.storage.store.StoreEntryFlatMiniSection;
+import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -15,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -71,17 +74,31 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
     @Override
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
-        var comboBox =
-                new CustomComboBoxBuilder<T>(selected, this::createGraphic, new Label(AppI18n.get("none")), n -> true);
+        var map = StoreEntryFlatMiniSection.createMap();
+        var comboBox = new CustomComboBoxBuilder<T>(
+                selected,
+                t -> map.entrySet().stream()
+                        .filter(e -> t.equals(e.getKey().getEntry().getStore()))
+                        .findFirst()
+                        .orElseThrow()
+                        .getValue(),
+                new Label(AppI18n.get("none")),
+                n -> true);
         comboBox.setUnknownNode(t -> createGraphic(t));
 
-        var available = DataStorage.get().getUsableStores().stream()
-                .filter(s -> s != self)
-                .filter(s -> storeClass.isAssignableFrom(s.getClass()) && applicableCheck.test((T) s))
-                .map(s -> (ShellStore) s)
-                .toList();
+        for (Map.Entry<StoreEntryWrapper, Region> e : map.entrySet()) {
+            if (e.getKey().getEntry().getStore() == self) {
+                continue;
+            }
 
-        available.forEach(s -> comboBox.add((T) s));
+            var s = e.getKey().getEntry().getStore();
+            if (!storeClass.isAssignableFrom(s.getClass()) || !applicableCheck.test((T) s)) {
+                continue;
+            }
+
+            comboBox.add((T) e.getKey().getEntry().getStore());
+        }
+
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("choice-comp");
         cb.setMaxWidth(2000);

@@ -15,14 +15,14 @@ import java.util.LinkedHashMap;
 public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
-        var topLevel = StoreEntrySection.createTopLevels();
+        var topLevel = StoreViewSection.createTopLevels();
         var filtered = BindingsHelper.filteredContentBinding(
                 topLevel,
                 StoreViewState.get()
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
-        var content = new ListBoxViewComp<>(filtered, topLevel, (StoreEntrySection e) -> {
-            return e.comp(true);
+        var content = new ListBoxViewComp<>(filtered, topLevel, (StoreViewSection e) -> {
+            return new StoreEntrySection(e, true);
         });
         return content.styleClass("store-list-comp").styleClass(Styles.STRIPED);
     }
