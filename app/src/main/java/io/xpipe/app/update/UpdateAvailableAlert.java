@@ -18,8 +18,8 @@ public class UpdateAvailableAlert {
 
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
-                    alert.setHeaderText(AppI18n.get("updateReadyAlertHeader"));
-                    alert.setContentText(AppI18n.get("updateReadyAlertContent"));
+                    alert.setHeaderText(AppI18n.get("updateReadyAlertHeader", AppUpdater.get().getDownloadedUpdate().getValue().getVersion()));
+                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get("updateReadyAlertContent")));
                     alert.setAlertType(Alert.AlertType.INFORMATION);
                 })
                 .map(buttonType -> buttonType.getButtonData().isDefaultButton())

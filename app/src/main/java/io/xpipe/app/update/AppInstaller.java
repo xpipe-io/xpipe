@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 public class AppInstaller {
 
@@ -147,20 +146,15 @@ public class AppInstaller {
                         shellProcessControl,
                         XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl, false));
                 var logsDir = FileNames.join(XPipeInstallation.getDataBasePath(shellProcessControl), "logs");
-                var installer = ShellDialects.getPlatformDefault()
-                        .flatten(List.of(
-                                "start",
-                                "/wait",
-                                "msiexec",
-                                "/i",
-                                file,
-                                "/l*",
-                                FileNames.join(logsDir.toString(), "installer_" + FileNames.getFileName(file) + ".log"),
-                                "/qb"));
-                var start = ShellDialects.getPlatformDefault().flatten(List.of("start", "\"\"", exec));
-                var command = installer + "\r\n" + start;
-                var script = ScriptHelper.createExecScript(shellProcessControl, command);
-                shellProcessControl.executeSimpleCommand("start /min " + script);
+                var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
+                var script = ScriptHelper.createExecScript(shellProcessControl, String.format(
+                        """
+                                cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
+                                start "" /wait msiexec /i "%s" /l* "%s" /qb
+                                start "" "%s"
+                                """,
+                        file, logFile, exec));
+                shellProcessControl.executeSimpleCommand("start \"\" /min \"" + script + "\"");
             }
         }
 
@@ -192,19 +186,23 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = ShellStore.createLocal().create().subShell(ShellDialects.BASH).command(String.format(
-                        """
+                var command = ShellStore.createLocal()
+                        .create()
+                        .subShell(ShellDialects.BASH)
+                        .command(String.format(
+                                """
                                         function exec {
                                             echo "+ sudo apt-get remove -qy xpipe"
-                                            DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
                                             echo "+ sudo apt-get install -qy \\"%s\\""
+                                            DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
                                             DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
                                             xpipe open || return 1
                                         }
 
+                                        cd ~
                                         exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
-                        file, file));
+                                file, file));
                 TerminalHelper.open("X-Pipe Updater", command);
             }
         }
@@ -238,6 +236,7 @@ public class AppInstaller {
                                             xpipe open || return 1
                                         }
 
+                                        cd ~
                                         exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
                         file, file));
@@ -275,6 +274,7 @@ public class AppInstaller {
                                             xpipe open || return 1
                                         }
 
+                                        cd ~
                                         exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
                         file, file));

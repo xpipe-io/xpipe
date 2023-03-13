@@ -36,6 +36,7 @@ public class AppUpdater {
     private final Property<DownloadedUpdate> downloadedUpdate = new SimpleObjectProperty<>();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final PerformedUpdate performedUpdate;
+    private final boolean updateSucceeded;
 
     private AppUpdater() {
         performedUpdate = AppCache.get("performedUpdate", PerformedUpdate.class, () -> null);
@@ -43,9 +44,12 @@ public class AppUpdater {
         event("Was updated is " + hasUpdated);
         if (hasUpdated) {
             AppCache.clear("performedUpdate");
+            updateSucceeded = AppProperties.get().getVersion().equals(performedUpdate.getNewVersion());
             AppCache.clear("lastUpdateCheckResult");
             AppCache.clear("downloadedUpdate");
             event("Found information about recent update");
+        } else {
+            updateSucceeded = false;
         }
 
         downloadedUpdate.setValue(AppCache.get("downloadedUpdate", DownloadedUpdate.class, () -> null));

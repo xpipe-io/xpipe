@@ -2,7 +2,6 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import javafx.scene.control.Alert;
@@ -15,7 +14,7 @@ public class UpdateChangelogAlert {
     public static void showIfNeeded() {
         var update = AppUpdater.get().getPerformedUpdate();
 
-        if (update != null && !AppProperties.get().getVersion().equals(update.getNewVersion())) {
+        if (update != null && !AppUpdater.get().isUpdateSucceeded()) {
             ErrorEvent.fromMessage("Update did not succeed").handle();
             return;
         }
