@@ -6,6 +6,7 @@ import io.xpipe.core.util.SecretValue;
 import lombok.NonNull;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
@@ -103,8 +104,9 @@ public interface ShellControl extends ProcessControl {
             FailableFunction<ShellControl, String, Exception> command,
             FailableFunction<ShellControl, String, Exception> terminalCommand);
 
-    default CommandControl command(String command) {
-        return command(shellProcessControl -> command);
+    default CommandControl command(String... command) {
+        var c = Arrays.stream(command).filter(s -> s != null).toArray(String[]::new);
+        return command(shellProcessControl -> String.join("\n", c));
     }
 
     default CommandControl command(List<String> command) {

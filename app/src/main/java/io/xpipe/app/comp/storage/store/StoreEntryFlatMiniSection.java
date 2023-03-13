@@ -3,6 +3,7 @@ package io.xpipe.app.comp.storage.store;
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
@@ -29,18 +30,19 @@ public class StoreEntryFlatMiniSection extends SimpleComp {
     }
 
     private static void add(int depth, StoreViewSection section, Map<StoreEntryWrapper, Region> map) {
-        map.put(section.getEntry(), new StoreEntryFlatMiniSection(depth, section.getEntry()).createRegion());
+        map.put(section.getWrapper(), new StoreEntryFlatMiniSection(depth, section.getWrapper().getEntry()).createRegion());
         for (StoreViewSection child : section.getChildren()) {
             add(depth + 1, child, map);
         }
     }
 
     int depth;
-    StoreEntryWrapper wrapper;
+    DataStoreEntry entry;
 
     @Override
     protected Region createSimple() {
-        var label = new Label(wrapper.getName(), new PrettyImageComp(new SimpleStringProperty(wrapper.getEntry().getProvider().getDisplayIconFileName()), 20, 20).createRegion());
+        var image = entry.getState() == DataStoreEntry.State.LOAD_FAILED ? "disabled_icon.png" : entry.getProvider().getDisplayIconFileName();
+        var label = new Label(entry.getName(), new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion());
         var spacer = new Spacer(depth * 10, Orientation.HORIZONTAL);
         var box = new HBox(spacer, label);
         return box;

@@ -84,6 +84,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                         .getValue(),
                 new Label(AppI18n.get("none")),
                 n -> true);
+        comboBox.setSelectedDisplay(t -> createGraphic(t));
         comboBox.setUnknownNode(t -> createGraphic(t));
 
         for (Map.Entry<StoreEntryWrapper, Region> e : map.entrySet()) {

@@ -26,7 +26,7 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = new StoreEntryComp(section.getEntry()).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+        var root = new StoreEntryComp(section.getWrapper()).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var icon = Comp.of(() -> {
             var padding = new FontIcon("mdal-arrow_forward_ios");
             padding.setIconSize(14);

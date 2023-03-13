@@ -64,7 +64,7 @@ public interface CommandControl extends ProcessControl {
     CommandControl exitTimeout(Integer timeout);
 
     public void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c) throws Exception;
-    String readOnlyStdout() throws Exception;
+    String readStdoutDiscardErr() throws Exception;
 
     public void discardOrThrow() throws Exception;
 

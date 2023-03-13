@@ -102,14 +102,14 @@ public interface OsType {
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             try (CommandControl c = pc.command("lsb_release -a").start()) {
-                var text = c.readOnlyStdout();
+                var text = c.readStdoutDiscardErr();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", null);
                 }
             }
 
             try (CommandControl c = pc.command("cat /etc/*release").start()) {
-                var text = c.readOnlyStdout();
+                var text = c.readStdoutDiscardErr();
                 if (c.getExitCode() == 0) {
                     return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", null);
                 }
@@ -117,7 +117,7 @@ public interface OsType {
 
             String type = "Unknown";
             try (CommandControl c = pc.command("uname -o").start()) {
-                var text = c.readOnlyStdout();
+                var text = c.readStdoutDiscardErr();
                 if (c.getExitCode() == 0) {
                     type = text.strip();
                 }
@@ -125,7 +125,7 @@ public interface OsType {
 
             String version = "?";
             try (CommandControl c = pc.command("uname -r").start()) {
-                var text = c.readOnlyStdout();
+                var text = c.readStdoutDiscardErr();
                 if (c.getExitCode() == 0) {
                     version = text.strip();
                 }

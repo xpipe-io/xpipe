@@ -14,15 +14,15 @@ import java.util.Comparator;
 @Value
 public class StoreViewSection implements StorageFilter.Filterable {
 
-    StoreEntryWrapper entry;
+    StoreEntryWrapper wrapper;
     ObservableList<StoreViewSection> children;
 
     private static final Comparator<StoreViewSection> COMPARATOR = Comparator.<StoreViewSection, Instant>comparing(
-                    o -> o.entry.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
-                            ? o.entry.getEntry().getLastAccess()
+                    o -> o.wrapper.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
+                            ? o.wrapper.getEntry().getLastAccess()
                             : Instant.EPOCH).reversed()
             .thenComparing(
-                    storeEntrySection -> storeEntrySection.entry.getEntry().getName());
+                    storeEntrySection -> storeEntrySection.wrapper.getEntry().getName());
 
     public static ObservableList<StoreViewSection> createTopLevels() {
         var filtered =
@@ -67,7 +67,7 @@ public class StoreViewSection implements StorageFilter.Filterable {
 
     @Override
     public boolean shouldShow(String filter) {
-        return entry.shouldShow(filter)
+        return wrapper.shouldShow(filter)
                 || children.stream().anyMatch(storeEntrySection -> storeEntrySection.shouldShow(filter));
     }
 }

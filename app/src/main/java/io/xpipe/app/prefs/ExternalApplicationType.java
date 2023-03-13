@@ -43,7 +43,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                                         + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|/Volumes/%s\" | uniq",
                                 applicationName, applicationName))
                         .start()) {
-                    var path = c.readOnlyStdout();
+                    var path = c.readStdoutDiscardErr();
                     if (c.getExitCode() != 0) {
                         return Optional.empty();
                     }
