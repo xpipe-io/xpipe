@@ -7,6 +7,7 @@ import io.xpipe.app.util.MacOsPermissions;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -57,8 +58,19 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             new SimpleType("gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
                 @Override
+                public void launch(String name, String command) throws Exception {
+                    try (ShellControl pc = LocalStore.getShell()) {
+                        ApplicationHelper.checkSupport(pc, executable, getDisplayName());
+
+                        var toExecute = executable + " " + toCommand(name, command);
+                        toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                        pc.executeSimpleCommand(toExecute);
+                    }
+                }
+
+                @Override
                 protected String toCommand(String name, String command) {
-                    return "--title \"" + name + "\" -- " + command;
+                    return "-v --title \"" + name + "\" -- " + command;
                 }
 
                 @Override
@@ -246,6 +258,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
+    @Getter
     public abstract static class SimpleType extends ExternalApplicationType.PathApplication
             implements ExternalTerminalType {
 
