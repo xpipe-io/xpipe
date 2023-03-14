@@ -55,7 +55,6 @@
 
 .list-cell:empty {
 -fx-opacity: 0;
--fx-pref-height: 1px;
 }
 
 .storage-group-list-comp .list-cell {

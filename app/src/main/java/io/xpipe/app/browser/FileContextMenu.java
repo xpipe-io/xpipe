@@ -55,9 +55,9 @@ final class FileContextMenu extends ContextMenu {
 
     private final OpenFileSystemModel model;
     private final FileSystem.FileEntry entry;
-    private final Property<String> editing;
+    private final Property<FileSystem.FileEntry> editing;
 
-    public FileContextMenu(OpenFileSystemModel model, FileSystem.FileEntry entry, Property<String> editing) {
+    public FileContextMenu(OpenFileSystemModel model, FileSystem.FileEntry entry, Property<FileSystem.FileEntry> editing) {
         super();
         this.model = model;
         this.entry = entry;
@@ -154,7 +154,7 @@ final class FileContextMenu extends ContextMenu {
         var rename = new MenuItem("Rename");
         rename.setOnAction(event -> {
             event.consume();
-            editing.setValue(entry.getPath());
+            editing.setValue(entry);
         });
 
         getItems().addAll(new SeparatorMenuItem(), rename, delete);

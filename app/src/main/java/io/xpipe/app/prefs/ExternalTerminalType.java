@@ -63,6 +63,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         ApplicationHelper.checkSupport(pc, executable, getDisplayName());
 
                         var toExecute = executable + " " + toCommand(name, command);
+                        // In order to fix this bug which also affects us: https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                         toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
                         pc.executeSimpleCommand(toExecute);
                     }

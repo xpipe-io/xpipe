@@ -8,7 +8,10 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -25,24 +28,28 @@ final class FileListModel {
     static final Predicate<FileSystem.FileEntry> PREDICATE_ANY = path -> true;
     static final Predicate<FileSystem.FileEntry> PREDICATE_NOT_HIDDEN = path -> true;
 
-    private final OpenFileSystemModel model;
+    private final OpenFileSystemModel fileSystemModel;
     private final Property<Comparator<FileSystem.FileEntry>> comparatorProperty =
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
     private final Property<List<FileSystem.FileEntry>> all = new SimpleObjectProperty<>(List.of());
     private final Property<List<FileSystem.FileEntry>> shown = new SimpleObjectProperty<>(List.of());
     private final ObjectProperty<Predicate<FileSystem.FileEntry>> predicateProperty =
             new SimpleObjectProperty<>(path -> true);
+    private final ObservableList<FileSystem.FileEntry> selected = FXCollections.observableArrayList();
 
-    public FileListModel(OpenFileSystemModel model) {
-        this.model = model;
+    private final Property<FileSystem.FileEntry> draggedOverDirectory = new SimpleObjectProperty<FileSystem.FileEntry>();
+    private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
 
-        model.getFilter().addListener((observable, oldValue, newValue) -> {
+    public FileListModel(OpenFileSystemModel fileSystemModel) {
+        this.fileSystemModel = fileSystemModel;
+
+        fileSystemModel.getFilter().addListener((observable, oldValue, newValue) -> {
             refreshShown();
         });
     }
 
     public FileBrowserModel.Mode getMode() {
-        return model.getBrowserModel().getMode();
+        return fileSystemModel.getBrowserModel().getMode();
     }
 
     public void setAll(List<FileSystem.FileEntry> newFiles) {
@@ -56,9 +63,9 @@ final class FileListModel {
     }
 
     private void refreshShown() {
-        List<FileSystem.FileEntry> filtered = model.getFilter().getValue() != null ? all.getValue().stream().filter(entry -> {
+        List<FileSystem.FileEntry> filtered = fileSystemModel.getFilter().getValue() != null ? all.getValue().stream().filter(entry -> {
             var name = FileNames.getFileName(entry.getPath()).toLowerCase(Locale.ROOT);
-            var filterString = model.getFilter().getValue().toLowerCase(Locale.ROOT);
+            var filterString = fileSystemModel.getFilter().getValue().toLowerCase(Locale.ROOT);
             return name.contains(filterString);
         }).toList() : all.getValue();
 
@@ -72,11 +79,11 @@ final class FileListModel {
     }
 
     public boolean rename(String filename, String newName) {
-        var fullPath = FileNames.join(model.getCurrentPath().get(), filename);
-        var newFullPath = FileNames.join(model.getCurrentPath().get(), newName);
+        var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), filename);
+        var newFullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), newName);
         try {
-            model.getFileSystem().move(fullPath, newFullPath);
-            model.refresh();
+            fileSystemModel.getFileSystem().move(fullPath, newFullPath);
+            fileSystemModel.refresh();
             return true;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
@@ -86,12 +93,12 @@ final class FileListModel {
 
     public void onDoubleClick(FileSystem.FileEntry entry) {
         if (!entry.isDirectory() && getMode().equals(FileBrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
-            getModel().getBrowserModel().finishChooser();
+            getFileSystemModel().getBrowserModel().finishChooser();
             return;
         }
 
         if (entry.isDirectory()) {
-            model.navigate(entry.getPath(), true);
+            fileSystemModel.navigate(entry.getPath(), true);
         } else {
             FileOpener.openInTextEditor(entry);
         }

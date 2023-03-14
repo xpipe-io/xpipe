@@ -15,6 +15,7 @@ public class FileBrowserClipboard {
     @Value
     public static class Instance {
         UUID uuid;
+        FileSystem.FileEntry baseDirectory;
         List<FileSystem.FileEntry> entries;
     }
 
@@ -22,18 +23,18 @@ public class FileBrowserClipboard {
     public static Instance currentDragClipboard;
 
     @SneakyThrows
-    public static ClipboardContent startDrag(List<FileSystem.FileEntry> selected) {
+    public static ClipboardContent startDrag(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
         var content = new ClipboardContent();
         var idea = UUID.randomUUID();
-        currentDragClipboard = new Instance(idea, selected);
+        currentDragClipboard = new Instance(idea, base, new ArrayList<>(selected));
         content.putString(idea.toString());
         return content;
     }
 
     @SneakyThrows
-    public static void startCopy(List<FileSystem.FileEntry> selected) {
+    public static void startCopy(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
         var id = UUID.randomUUID();
-        currentCopyClipboard = new Instance(id, new ArrayList<>(selected));
+        currentCopyClipboard = new Instance(id, base, new ArrayList<>(selected));
     }
 
     public static Instance retrieveCopy() {

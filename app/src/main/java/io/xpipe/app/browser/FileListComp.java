@@ -5,7 +5,6 @@ package io.xpipe.app.browser;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -13,6 +12,7 @@ import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
@@ -21,11 +21,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
-import java.io.File;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Comparator;
@@ -39,6 +39,8 @@ final class FileListComp extends AnchorPane {
     private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
     private static final PseudoClass FOLDER = PseudoClass.getPseudoClass("folder");
     private static final PseudoClass DRAG = PseudoClass.getPseudoClass("drag");
+    private static final PseudoClass DRAG_OVER = PseudoClass.getPseudoClass("drag-over");
+    private static final PseudoClass DRAG_INTO_CURRENT = PseudoClass.getPseudoClass("drag-into-current");
     private static final String UNKNOWN = "unknown";
 
     private final FileListModel fileList;
@@ -57,7 +59,7 @@ final class FileListComp extends AnchorPane {
 
     @SuppressWarnings("unchecked")
     private TableView<FileSystem.FileEntry> createTable() {
-        var editing = new SimpleObjectProperty<String>();
+        var editing = new SimpleObjectProperty<FileSystem.FileEntry>();
         var filenameCol = new TableColumn<FileSystem.FileEntry, String>("Name");
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
                 param.getValue() != null
@@ -96,16 +98,15 @@ final class FileListComp extends AnchorPane {
         }
 
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
-            fileList.getModel().getBrowserModel().getSelectedFiles().setAll(c.getList());
+            fileList.getSelected().setAll(c.getList());
+            fileList.getFileSystemModel().getBrowserModel().getSelectedFiles().setAll(c.getList());
         });
-
-        var draggedOverDirectory = new SimpleBooleanProperty();
 
         table.setOnKeyPressed(event -> {
             if (event.isControlDown()
                     && event.getCode().equals(KeyCode.C)
                     && table.getSelectionModel().getSelectedItems().size() > 0) {
-                FileBrowserClipboard.startCopy(table.getSelectionModel().getSelectedItems());
+                FileBrowserClipboard.startCopy(fileList.getFileSystemModel().getCurrentDirectory(), table.getSelectionModel().getSelectedItems());
                 event.consume();
             }
 
@@ -113,15 +114,38 @@ final class FileListComp extends AnchorPane {
                 var clipboard = FileBrowserClipboard.retrieveCopy();
                 if (clipboard != null) {
                     var files = clipboard.getEntries();
-                    var target = fileList.getModel().getCurrentDirectory();
-                    fileList.getModel().dropFilesIntoAsync(target, files, true);
+                    var target = fileList.getFileSystemModel().getCurrentDirectory();
+                    fileList.getFileSystemModel().dropFilesIntoAsync(target, files, true);
                     event.consume();
                 }
             }
         });
 
+        var emptyEntry = new FileListEntry(table, null, fileList);
+        table.setOnDragOver(event -> {
+            emptyEntry.onDragOver(event);
+        });
+        table.setOnDragEntered(event -> {
+            emptyEntry.onDragEntered(event);
+        });
+        table.setOnDragDetected(event -> {
+            emptyEntry.startDrag(event);
+        });
+        table.setOnDragExited(event -> {
+            emptyEntry.onDragExited(event);
+        });
+        table.setOnDragDropped(event -> {
+            emptyEntry.onDragDrop(event);
+        });
+
         table.setRowFactory(param -> {
             TableRow<FileSystem.FileEntry> row = new TableRow<>();
+            var listEntry = Bindings.createObjectBinding(() -> new FileListEntry(row, row.getItem(), fileList), row.itemProperty());
+
+            row.itemProperty().addListener((observable, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(DRAG, false);
+                row.pseudoClassStateChanged(DRAG_OVER, false);
+            });
 
             row.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
                 t.consume();
@@ -129,7 +153,7 @@ final class FileListComp extends AnchorPane {
                     return;
                 }
 
-                var cm = new FileContextMenu(fileList.getModel(), row.getItem(), editing);
+                var cm = new FileContextMenu(fileList.getFileSystemModel(), row.getItem(), editing);
                 if (t.getButton() == MouseButton.SECONDARY) {
                     cm.show(row, t.getScreenX(), t.getScreenY());
                 }
@@ -141,113 +165,28 @@ final class FileListComp extends AnchorPane {
                 }
             });
 
-            draggedOverDirectory.addListener((observable, oldValue, newValue) -> {
-                row.pseudoClassStateChanged(DRAG, newValue);
+            fileList.getDraggedOverDirectory().addListener((observable, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(DRAG_OVER, newValue != null && newValue == row.getItem());
             });
 
+            fileList.getDraggedOverEmpty().addListener((observable, oldValue, newValue) -> {
+                table.pseudoClassStateChanged(DRAG_INTO_CURRENT, newValue);
+            });
+
+            row.setOnDragEntered(event -> {
+                listEntry.get().onDragEntered(event);
+            });
             row.setOnDragOver(event -> {
-                if (row.equals(event.getGestureSource())) {
-                    return;
-                }
-
-                if (row.getItem() == null || !row.getItem().isDirectory()) {
-                    draggedOverDirectory.set(true);
-                } else {
-                    row.pseudoClassStateChanged(DRAG, true);
-                }
-                event.acceptTransferModes(TransferMode.ANY);
-                event.consume();
+                listEntry.get().onDragOver(event);
             });
-
             row.setOnDragDetected(event -> {
-                if (row.isEmpty()) {
-                    return;
-                }
-
-                var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/file_drag_icon.png")
-                        .orElseThrow();
-                var image = new Image(url.toString(), 80, 80, true, false);
-
-                var selected = table.getSelectionModel().getSelectedItems();
-                Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                db.setContent(FileBrowserClipboard.startDrag(selected));
-                db.setDragView(image, 30, 60);
-                event.setDragDetect(true);
-                event.consume();
+                listEntry.get().startDrag(event);
             });
-
             row.setOnDragExited(event -> {
-                if (row.getItem() != null && row.getItem().isDirectory()) {
-                    row.pseudoClassStateChanged(DRAG, false);
-                } else {
-                    draggedOverDirectory.set(false);
-                }
-
-                if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
-                }
-
-                //                if (event.getGestureSource() != null) {
-                //                    try {
-                //                        var f = Files.createTempFile(null, null);
-                //                        var cc = new ClipboardContent();
-                //                        cc.putFiles(List.of(f.toFile()));
-                //                        Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-                //                        db.setContent(cc);
-                //                    } catch (IOException e) {
-                //                        throw new RuntimeException(e);
-                //                    }
-                //                }
+                listEntry.get().onDragExited(event);
             });
-            //
-            //            row.setEventDispatcher((event, chain) -> {
-            //                if (event.getEventType().getName().equals("MOUSE_DRAGGED")) {
-            //                    MouseEvent drag = (MouseEvent) event;
-            //
-            //                    if (drag.isDragDetect()) {
-            //                        return chain.dispatchEvent(event);
-            //                    }
-            //
-            //                    Rectangle area = new Rectangle(
-            //                            App.getApp().getStage().getX(),
-            //                            App.getApp().getStage().getY(),
-            //                            App.getApp().getStage().getWidth(),
-            //                            App.getApp().getStage().getHeight()
-            //                    );
-            //                    if (!area.intersects(drag.getScreenX(), drag.getScreenY(), 20, 20)) {
-            //                        System.out.println("->Drag down");
-            //                        drag.setDragDetect(true);
-            //                    }
-            //                }
-            //
-            //                return chain.dispatchEvent(event);
-            //            });
-
             row.setOnDragDropped(event -> {
-                draggedOverDirectory.set(false);
-
-                // Accept drops from outside the app window
-                if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
-                    Dragboard db = event.getDragboard();
-                    var list = db.getFiles().stream().map(File::toPath).toList();
-                    var target = row.getItem() != null && row.getItem().isDirectory()
-                            ? row.getItem()
-                            : fileList.getModel().getCurrentDirectory();
-                    fileList.getModel().dropLocalFilesIntoAsync(target, list);
-                    event.setDropCompleted(true);
-                    event.consume();
-                }
-
-                // Accept drops from inside the app window
-                if (event.getGestureSource() != null) {
-                    var files = FileBrowserClipboard.retrieveDrag(event.getDragboard())
-                            .getEntries();
-                    var target = row.getItem() != null
-                            ? row.getItem()
-                            : fileList.getModel().getCurrentDirectory();
-                    fileList.getModel().dropFilesIntoAsync(target, files, false);
-                    event.setDropCompleted(true);
-                    event.consume();
-                }
+                listEntry.get().onDragDrop(event);
             });
 
             return row;
@@ -276,10 +215,10 @@ final class FileListComp extends AnchorPane {
                 new LazyTextFieldComp(text).createStructure().get();
         private final ChangeListener<String> listener;
 
-        public FilenameCell(Property<String> editing) {
+        public FilenameCell(Property<FileSystem.FileEntry> editing) {
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null
-                        && getTableRow().getItem().getPath().equals(newValue)) {
+                        && getTableRow().getItem().equals(newValue)) {
                     textField.requestFocus();
                 }
             });
