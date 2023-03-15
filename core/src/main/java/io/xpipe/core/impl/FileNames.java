@@ -17,6 +17,17 @@ public class FileNames {
         return path + "/";
     }
 
+    public static String removeTrailingSlash(String path) {
+        if (path.equals("/")) {
+            return path;
+        }
+
+        if (path.endsWith("/") || path.endsWith("\\")) {
+            return path.substring(0, path.length() - 1);
+        }
+        return path;
+    }
+
     public static String getFileName(String file) {
         if (file.isEmpty()) {
             return "";
