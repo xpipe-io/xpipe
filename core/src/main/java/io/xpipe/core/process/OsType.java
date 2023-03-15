@@ -144,7 +144,14 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
+            var found = pc.executeStringSimpleCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
+
+            // This variable is not defined for root users, so manually fix it. Why? ...
+            if (found.isBlank()) {
+                return "/tmp";
+            }
+
+            return found;
         }
 
         @Override

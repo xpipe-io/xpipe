@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.storage.StorageFilter;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataStorage;
@@ -30,7 +29,9 @@ public class StoreViewState {
     private final ObservableList<StoreEntryWrapper> shownEntries =
             FXCollections.observableList(new CopyOnWriteArrayList<>());
 
-    private final ObservableBooleanValue empty = BindingsHelper.persist(Bindings.equal(Bindings.size(allEntries), 1));
+    private final ObservableBooleanValue empty = Bindings.createBooleanBinding(() -> {
+        return allEntries.stream().allMatch(storeEntryWrapper -> !storeEntryWrapper.getEntry().getConfiguration().isRenameable());
+    }, allEntries);
 
     private StoreViewState() {
         try {

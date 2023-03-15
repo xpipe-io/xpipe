@@ -86,7 +86,7 @@ public class FileSystemHelper {
     private static void dropFileAcrossSameFileSystem(
             FileSystem.FileEntry target, FileSystem.FileEntry source, boolean explicitCopy) throws Exception {
         // Prevent dropping directory into itself
-        if (FileNames.startsWith(source.getPath(), target.getPath())) {
+        if (source.getPath().equals(target.getPath())) {
             return;
         }
 
