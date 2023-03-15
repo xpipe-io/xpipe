@@ -43,8 +43,11 @@
 }
 
 .browser .table-directory-view .table-view:drag-into-current {
--fx-border-color: -color-success-muted;
-    -fx-border-width: 2px;
+    -fx-background-color: -color-success-muted;
+}
+
+.browser .table-directory-view .table-view:drag-into-current .table-row-cell {
+    -fx-opacity: 0.8;
 }
 
 .browser .table-row-cell:drag-over {

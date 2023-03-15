@@ -39,6 +39,7 @@ final class FileListModel {
 
     private final Property<FileSystem.FileEntry> draggedOverDirectory = new SimpleObjectProperty<FileSystem.FileEntry>();
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
+    private final Property<FileSystem.FileEntry> editing = new SimpleObjectProperty<>();
 
     public FileListModel(OpenFileSystemModel fileSystemModel) {
         this.fileSystemModel = fileSystemModel;

@@ -21,7 +21,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
         FileSystem fileSystem;
         @NonNull
         String path;
-        @NonNull
         Instant date;
         boolean directory;
         boolean hidden;
@@ -29,7 +28,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
         long size;
 
         public FileEntry(
-                @NonNull FileSystem fileSystem, @NonNull String path, @NonNull Instant date, boolean directory, boolean hidden, Boolean executable,
+                @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean directory, boolean hidden, Boolean executable,
                 long size
         ) {
             this.fileSystem = fileSystem;

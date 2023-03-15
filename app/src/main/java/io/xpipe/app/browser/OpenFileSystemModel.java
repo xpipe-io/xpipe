@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
@@ -52,8 +53,26 @@ final class OpenFileSystemModel {
         cdSync(currentPath.get());
     }
 
+    public FileSystem.FileEntry getCurrentParentDirectory() {
+        var current = getCurrentDirectory();
+        if (current == null) {
+            return null;
+        }
+
+        var parent = FileNames.getParent(currentPath.get());
+        if (parent == null) {
+            return null;
+        }
+
+        return new FileSystem.FileEntry(fileSystem, parent, null, true, false, false, 0);
+    }
+
     public FileSystem.FileEntry getCurrentDirectory() {
-        return new FileSystem.FileEntry(fileSystem, currentPath.get(), Instant.now(), true, false, false, 0);
+        if (currentPath.get() == null) {
+            return null;
+        }
+
+        return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, true, false, false, 0);
     }
 
     public Optional<String> cd(String path) {

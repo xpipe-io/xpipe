@@ -65,6 +65,14 @@ public class FileNames {
     }
 
     public static String getParent(String file) {
+        if (split(file).size() == 0) {
+            return null;
+        }
+
+        if (split(file).size() == 1) {
+            return file.startsWith("/") && !file.equals("/") ? "/" : null;
+        }
+
         return file.substring(0, file.length() - getFileName(file).length() - 1);
     }
 

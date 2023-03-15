@@ -5,10 +5,7 @@ import io.xpipe.core.store.FileSystem;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import lombok.Getter;
 
 import java.io.File;
@@ -31,6 +28,22 @@ public class FileListEntry {
         this.row = row;
         this.item = item;
         this.model = model;
+    }
+
+    public void onMouseClick(MouseEvent t) {
+        t.consume();
+        if (item == null || isSynthetic()) {
+            return;
+        }
+
+        var cm = new FileContextMenu(model.getFileSystemModel(), item, model.getEditing());
+        if (t.getButton() == MouseButton.SECONDARY) {
+            cm.show(row, t.getScreenX(), t.getScreenY());
+        }
+    }
+
+    public boolean isSynthetic() {
+        return item != null && item.equals(model.getFileSystemModel().getCurrentParentDirectory());
     }
 
     private boolean acceptsDrop(DragEvent event) {
@@ -95,6 +108,10 @@ public class FileListEntry {
             return;
         }
 
+        if (isSynthetic()) {
+            return;
+        }
+
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/file_drag_icon.png")
                 .orElseThrow();
         var image = new Image(url.toString(), 80, 80, true, false);
@@ -116,7 +133,6 @@ public class FileListEntry {
     }
 
     private void handleHoverTimer(DragEvent event) {
-
         if (item == null || !item.isDirectory()) {
             return;
         }
