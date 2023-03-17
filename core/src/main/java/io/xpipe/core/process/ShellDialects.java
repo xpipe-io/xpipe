@@ -12,6 +12,7 @@ public class ShellDialects {
     public static ShellDialect POWERSHELL;
     public static ShellDialect CMD;
     public static ShellDialect SH;
+    public static ShellDialect DASH;
     public static ShellDialect BASH;
     public static ShellDialect ZSH;
 
@@ -26,6 +27,7 @@ public class ShellDialects {
             CMD = byName("cmd");
             POWERSHELL = byName("powershell");
             SH = byName("sh");
+            DASH = byName("dash");
             BASH = byName("bash");
             ZSH = byName("zsh");
         }

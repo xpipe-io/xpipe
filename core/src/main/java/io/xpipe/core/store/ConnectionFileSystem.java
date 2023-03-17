@@ -107,8 +107,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public boolean mkdirs(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .flatten(proc.getShellDialect()
-                                         .getMkdirsCommand(proc.getOsType().normalizeFileName(file))))
+                                         .getMkdirsCommand(proc.getOsType().normalizeFileName(file)))
                 .start()) {
             return pc.discardAndCheckExit();
         }

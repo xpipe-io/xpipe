@@ -3,12 +3,16 @@ package io.xpipe.app.comp.about;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.scene.layout.Region;
 
@@ -37,8 +41,14 @@ public class BrowseDirectoryComp extends SimpleComp {
                         }),
                         null)
                 .addComp(
-                        "logFiles",
-                        new ButtonComp(AppI18n.observable("openLogsDirectory"), () -> {
+                        "launchDebugMode",
+                        new ButtonComp(AppI18n.observable("launchDebugMode"), () -> {
+                            OperationMode.executeAfterShutdown(() -> {
+                                try (var sc = ShellStore.createLocal().create().start()) {
+                                    var script = FileNames.join(XPipeInstallation.getCurrentInstallationBasePath().toString(), XPipeInstallation.getDaemonDebugScriptPath(sc.getOsType()));
+                                    sc.executeSimpleCommand(ScriptHelper.createDetachCommand(sc, script));
+                                }
+                            });
                             DesktopHelper.browsePath(AppLogs.get().getSessionLogsDirectory());
                         }),
                         null)

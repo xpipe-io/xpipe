@@ -13,6 +13,12 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
+    String argument(String s);
+
+    default String applyRcFileCommand() {
+        return null;
+    }
+
     CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file);
 
     default String getCdCommand(String directory){
@@ -53,8 +59,6 @@ public interface ShellDialect {
         return "exit";
     }
 
-    String getExitCodeVariable();
-
     String environmentVariable(String name);
 
     default String getConcatenationOperator() {
@@ -67,7 +71,7 @@ public interface ShellDialect {
 
     String getMakeExecutableCommand(String file);
 
-    default String getScriptEchoCommand(String s) {
+    default String getSelfdeleteScriptEchoCommand(String s) {
         return getEchoCommand(s, false);
     }
 
@@ -85,15 +89,11 @@ public interface ShellDialect {
 
     String getNormalOpenCommand();
 
-    String getInitFileOpenCommand(String file);
+    String prepareInitFileOpenCommand(ShellControl parent, String file);
 
     String executeCommandWithShell(String cmd);
 
-    List<String> executeCommandListWithShell(String cmd);
-
-    List<String> executeCommandListWithShell(List<String> cmd);
-
-    List<String> getMkdirsCommand(String dirs);
+    String getMkdirsCommand(String dirs);
 
     String getFileReadCommand(String file);
 
@@ -121,7 +121,5 @@ public interface ShellDialect {
 
     String getDisplayName();
 
-    String getExecutable();
-
-    boolean doesRepeatInput();
+    boolean doesEchoInput();
 }

@@ -4,7 +4,6 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -112,8 +111,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws IOException {
-            var list = ShellDialects.getPlatformDefault().executeCommandListWithShell(executable + " \"" + file + "\"");
-            new ProcessBuilder(list).start();
+            new ProcessBuilder(List.of(executable, file.toString())).start();
         }
 
         @Override
