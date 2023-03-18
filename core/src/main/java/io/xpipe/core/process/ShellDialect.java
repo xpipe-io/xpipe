@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
-    String argument(String s);
+    String fileArgument(String s);
 
     default String applyRcFileCommand() {
         return null;
@@ -71,7 +71,7 @@ public interface ShellDialect {
 
     String getMakeExecutableCommand(String file);
 
-    default String getSelfdeleteScriptEchoCommand(String s) {
+    default String getSelfdeleteEchoScriptContent(String s) {
         return getEchoCommand(s, false);
     }
 

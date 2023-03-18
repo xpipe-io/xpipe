@@ -17,7 +17,6 @@ public interface CommandControl extends ProcessControl {
 
     static enum TerminalExitMode {
         KEEP_OPEN,
-        KEEP_OPEN_ON_FAILURE,
         CLOSE
     }
 

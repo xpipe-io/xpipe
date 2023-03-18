@@ -132,7 +132,7 @@ public class ScriptHelper {
     }
 
     private static String createAskPassScript(SecretValue pass, ShellControl parent, ShellDialect type) throws Exception {
-        var content = type.getSelfdeleteScriptEchoCommand(pass.getSecretValue());
+        var content = type.getSelfdeleteEchoScriptContent(pass.getSecretValue());
         var temp = parent.getTemporaryDirectory();
         var file = FileNames.join(temp, "askpass-" + getScriptId() + "." + type.getScriptFileEnding());
         return createExecScript(parent, file, content);
