@@ -56,7 +56,7 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
                 ? DataStoreProviders.byStoreClass(chosenStore.getValue().getClass())
                         .orElse(null)
                 : null;
-        var graphic = provider != null ? provider.getDisplayIconFileName() : "file_icon.png";
+        var graphic = provider != null ? provider.getDisplayIconFileName(chosenStore.getValue()) : "file_icon.png";
         if (chosenStore.getValue() == null || !(chosenStore.getValue() instanceof FileStore f)) {
             return JfxHelper.createNamedEntry(
                     AppI18n.get("selectStreamStore"), AppI18n.get("openStreamStoreWizard"), graphic);

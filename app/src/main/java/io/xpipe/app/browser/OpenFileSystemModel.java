@@ -7,7 +7,6 @@ import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
@@ -76,7 +75,14 @@ final class OpenFileSystemModel {
     }
 
     public Optional<String> cd(String path) {
-        var newPath = FileSystemHelper.normalizeDirectoryPath(this, path);
+        String newPath = null;
+        try {
+            newPath = FileSystemHelper.normalizeDirectoryPath(this, path);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return Optional.of(currentPath.get());
+        }
+
         if (!Objects.equals(path, newPath)) {
             return Optional.of(newPath);
         }
@@ -96,7 +102,8 @@ final class OpenFileSystemModel {
             this.fileSystem = fs;
         }
 
-        path = FileSystemHelper.normalizeDirectoryPath(this, path);
+        // Assumed that the path is normalized to improve performance!
+        // path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
         navigateToSync(path);
         filter.setValue(null);
@@ -218,14 +225,7 @@ final class OpenFileSystemModel {
         fs.open();
         this.fileSystem = fs;
 
-        var current = !(fileSystem instanceof LocalStore) && fs instanceof ConnectionFileSystem connectionFileSystem
-                ? connectionFileSystem
-                        .getShellControl()
-                        .executeStringSimpleCommand(connectionFileSystem
-                                .getShellControl()
-                                .getShellDialect()
-                                .getPrintWorkingDirectoryCommand())
-                : null;
+        var current = FileSystemHelper.getStartDirectory(this);
         cdSync(current);
     }
 

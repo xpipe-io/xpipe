@@ -43,7 +43,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
             return createDefaultNode();
         }
 
-        var graphic = provider.getDisplayIconFileName();
+        var graphic = provider.getDisplayIconFileName(null);
         return JfxHelper.createNamedEntry(provider.getDisplayName(), provider.getDisplayDescription(), graphic);
     }
 

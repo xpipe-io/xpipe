@@ -100,7 +100,7 @@ public interface DataStoreProvider {
         return i != -1 ? n.substring(i + 1) : n;
     }
 
-    default String getDisplayIconFileName() {
+    default String getDisplayIconFileName(DataStore store) {
         return getModuleName() + ":" + getId() + "_icon.png";
     }
 

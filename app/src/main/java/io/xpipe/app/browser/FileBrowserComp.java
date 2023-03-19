@@ -209,7 +209,7 @@ public class FileBrowserComp extends SimpleComp {
                             ? DataStorage.get()
                                     .getStoreEntry(model.getStore().getValue())
                                     .getProvider()
-                                    .getDisplayIconFileName()
+                                    .getDisplayIconFileName(model.getStore().getValue())
                             : null;
                 },
                 model.getStore());

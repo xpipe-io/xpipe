@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 
 import java.nio.file.Files;
@@ -13,7 +14,25 @@ import java.util.List;
 
 public class FileSystemHelper {
 
-    public static String normalizeDirectoryPath(OpenFileSystemModel model, String path) {
+    public static String getStartDirectory(OpenFileSystemModel model) throws Exception {
+        // Handle special case when file system creation has failed
+        if (model.getFileSystem() == null) {
+            return null;
+        }
+
+        ConnectionFileSystem fileSystem = (ConnectionFileSystem) model.getFileSystem();
+        var current = !(model.getStore().getValue() instanceof LocalStore)
+                ? fileSystem
+                .getShellControl()
+                .executeStringSimpleCommand(fileSystem
+                                                    .getShellControl()
+                                                    .getShellDialect()
+                                                    .getPrintWorkingDirectoryCommand())
+                : fileSystem.getShell().get().getOsType().getHomeDirectory(fileSystem.getShell().get());
+        return FileSystemHelper.normalizeDirectoryPath(model, current);
+    }
+
+    public static String normalizeDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
         if (path == null) {
             return null;
         }
@@ -37,7 +56,11 @@ public class FileSystemHelper {
             return path + "\\";
         }
 
-        return FileNames.toDirectory(path);
+        var normalized = shell.get()
+                .getShellDialect()
+                .normalizeDirectory(shell.get(), path)
+                .readOrThrow();
+        return FileNames.toDirectory(normalized);
     }
 
     public static FileSystem.FileEntry getLocal(Path file) throws Exception {

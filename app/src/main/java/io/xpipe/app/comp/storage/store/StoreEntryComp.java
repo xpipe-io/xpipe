@@ -98,7 +98,7 @@ public class StoreEntryComp extends SimpleComp {
     private Node createIcon() {
         var img = entry.isDisabled()
                 ? "disabled_icon.png"
-                : entry.getEntry().getProvider().getDisplayIconFileName();
+                : entry.getEntry().getProvider().getDisplayIconFileName(entry.getEntry().getStore());
         var imageComp = new PrettyImageComp(new SimpleStringProperty(img), 55, 45);
         var storeIcon = imageComp.createRegion();
         storeIcon.getStyleClass().add("icon");

@@ -125,7 +125,7 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
 
         var view = new ListViewComp<>(shown, list, prop, (DataStoreEntry e) -> {
                     var provider = e.getProvider();
-                    var graphic = provider.getDisplayIconFileName();
+                    var graphic = provider.getDisplayIconFileName(e.getStore());
                     var top = String.format("%s (%s)", e.getName(), provider.getDisplayName());
                     var bottom = provider.toSummaryString(e.getStore(), 50);
                     var el = JfxHelper.createNamedEntry(top, bottom, graphic);

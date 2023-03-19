@@ -2,6 +2,7 @@ package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.store.FileSystem;
 
 import java.nio.charset.Charset;
@@ -12,6 +13,12 @@ import java.util.stream.Stream;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
+
+    default StreamCharset getTextFileCharset(ShellControl sc) {
+        return StreamCharset.get(sc.getCharset(), false);
+    }
+
+    CommandControl normalizeDirectory(ShellControl shellControl,  String directory);
 
     String fileArgument(String s);
 
@@ -90,6 +97,10 @@ public interface ShellDialect {
     String getNormalOpenCommand();
 
     String prepareInitFileOpenCommand(ShellControl parent, String file);
+
+    String runScript(String file);
+
+    String sourceScript(String file);
 
     String executeCommandWithShell(String cmd);
 

@@ -3,6 +3,9 @@ package io.xpipe.core.charsetter;
 import io.xpipe.core.util.Identifiers;
 import lombok.Value;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -116,6 +119,17 @@ public class StreamCharset {
     Charset charset;
     byte[] byteOrderMark;
     List<String> names;
+
+    public Reader reader(InputStream stream) throws Exception {
+        if (hasByteOrderMark()) {
+            var bom = stream.readNBytes(getByteOrderMark().length);
+            if (bom.length != 0 && !Arrays.equals(bom, getByteOrderMark())) {
+                throw new IllegalStateException("Charset does not match: " + charset.toString());
+            }
+        }
+
+        return new InputStreamReader(stream, charset);
+    }
 
     public static StreamCharset get(Charset charset, boolean byteOrderMark) {
         return ALL.stream()

@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutorService;
 
 public interface ProcessControl extends Closeable, AutoCloseable {
 
+    void resetData();
+
     ExecutorService getStdoutReader();
 
     ExecutorService getStderrReader();

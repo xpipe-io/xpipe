@@ -54,7 +54,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
     protected Region createGraphic(T s) {
         var provider = DataStoreProviders.byStore(s);
         var imgView =
-                new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName()), 16, 16).createRegion();
+                new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16).createRegion();
 
         var name = DataStorage.get().getUsableStores().stream()
                 .filter(e -> e.equals(s))

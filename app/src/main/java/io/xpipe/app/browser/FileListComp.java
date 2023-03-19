@@ -204,9 +204,9 @@ final class FileListComp extends AnchorPane {
                 }
                 newItems.addAll(newValue);
                 table.getItems().setAll(newItems);
-                if (newValue.size() > 0) {
-                    table.scrollTo(0);
-                }
+//                if (newValue.size() > 0) {
+//                    table.scrollTo(0);
+//                }
             });
         });
 

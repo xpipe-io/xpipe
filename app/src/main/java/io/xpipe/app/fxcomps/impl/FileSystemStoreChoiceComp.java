@@ -34,13 +34,13 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
 
     private Region createGraphic(FileSystemStore s) {
         var provider = DataStoreProviders.byStore(s);
-        var img = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName()), 16, 16);
+        var img = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16);
         return new Label(getName(s), img.createRegion());
     }
 
     private Region createDisplayGraphic(FileSystemStore s) {
         var provider = DataStoreProviders.byStore(s);
-        var img = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName()), 16, 16);
+        var img = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16);
         return new Label(null, img.createRegion());
     }
 
