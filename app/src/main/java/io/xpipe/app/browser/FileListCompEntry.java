@@ -13,7 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @Getter
-public class FileListEntry {
+public class FileListCompEntry {
 
     public static final Timer DROP_TIMER = new Timer("dnd", true);
 
@@ -24,7 +24,7 @@ public class FileListEntry {
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
 
-    public FileListEntry(Node row, FileSystem.FileEntry item, FileListModel model) {
+    public FileListCompEntry(Node row, FileSystem.FileEntry item, FileListModel model) {
         this.row = row;
         this.item = item;
         this.model = model;
@@ -47,6 +47,11 @@ public class FileListEntry {
     }
 
     private boolean acceptsDrop(DragEvent event) {
+        // Accept drops from outside the app window
+        if (event.getGestureSource() == null) {
+            return true;
+        }
+
         if (FileBrowserClipboard.currentDragClipboard == null) {
             return false;
         }

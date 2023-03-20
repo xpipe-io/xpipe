@@ -17,10 +17,14 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.VirtualFlow;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -29,6 +33,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
@@ -125,7 +130,7 @@ final class FileListComp extends AnchorPane {
             }
         });
 
-        var emptyEntry = new FileListEntry(table, null, fileList);
+        var emptyEntry = new FileListCompEntry(table, null, fileList);
         table.setOnDragOver(event -> {
             emptyEntry.onDragOver(event);
         });
@@ -145,7 +150,7 @@ final class FileListComp extends AnchorPane {
         table.setRowFactory(param -> {
             TableRow<FileSystem.FileEntry> row = new TableRow<>();
             var listEntry = Bindings.createObjectBinding(
-                    () -> new FileListEntry(row, row.getItem(), fileList), row.itemProperty());
+                    () -> new FileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
 
             row.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue && listEntry.get().isSynthetic()) {
@@ -180,6 +185,7 @@ final class FileListComp extends AnchorPane {
                 listEntry.get().onDragEntered(event);
             });
             row.setOnDragOver(event -> {
+                borderScroll(table, event);
                 listEntry.get().onDragOver(event);
             });
             row.setOnDragDetected(event -> {
@@ -195,6 +201,7 @@ final class FileListComp extends AnchorPane {
             return row;
         });
 
+        var lastDir = new SimpleObjectProperty<FileSystem.FileEntry>();
         SimpleChangeListener.apply(fileList.getShown(), (newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 var newItems = new ArrayList<FileSystem.FileEntry>();
@@ -204,16 +211,36 @@ final class FileListComp extends AnchorPane {
                 }
                 newItems.addAll(newValue);
                 table.getItems().setAll(newItems);
-//                if (newValue.size() > 0) {
-//                    table.scrollTo(0);
-//                }
+
+                var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
+                if (!Objects.equals(lastDir.get(), currentDirectory)) {
+                    table.scrollTo(0);
+                }
+                lastDir.setValue(currentDirectory);
             });
         });
 
         return table;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    private void borderScroll(TableView<?> tableView, DragEvent event) {
+        TableViewSkin<?> skin = (TableViewSkin<?>) tableView.getSkin();
+        VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
+        ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
+
+        double proximity = 100;
+        Bounds tableBounds = tableView.localToScene(tableView.getBoundsInParent());
+        double dragY = event.getSceneY();
+        double topYProximity = tableBounds.getMinY() + proximity;
+        double bottomYProximity = tableBounds.getMaxY() - proximity;
+        if (dragY < topYProximity) {
+            var scrollValue = Math.min(topYProximity - dragY, 100) / 10000.0;
+            vbar.setValue(vbar.getValue() - scrollValue);
+        } else if (dragY > bottomYProximity) {
+            var scrollValue = Math.min(dragY - bottomYProximity, 100) / 10000.0;
+            vbar.setValue(vbar.getValue() + scrollValue);
+        }
+    }
 
     private class FilenameCell extends TableCell<FileSystem.FileEntry, String> {
 
@@ -265,7 +292,11 @@ final class FileListComp extends AnchorPane {
 
                 pseudoClassStateChanged(FOLDER, isDirectory);
 
-                var fileName = getTableRow().getItem().equals(fileList.getFileSystemModel().getCurrentParentDirectory()) ? ".." : FileNames.getFileName(fullPath);
+                var fileName = getTableRow()
+                                .getItem()
+                                .equals(fileList.getFileSystemModel().getCurrentParentDirectory())
+                        ? ".."
+                        : FileNames.getFileName(fullPath);
                 var hidden = getTableRow().getItem().isHidden() || fileName.startsWith(".");
                 getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                 text.set(fileName);

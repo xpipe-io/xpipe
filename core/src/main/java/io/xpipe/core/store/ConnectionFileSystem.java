@@ -71,7 +71,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public boolean exists(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileExistsCommand(proc.getOsType().normalizeFileName(file)))
+                        .getFileExistsCommand(proc.getOsType().normalizeFileName(file))).complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -80,7 +80,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void delete(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileDeleteCommand(proc.getOsType().normalizeFileName(file)))
+                        .getFileDeleteCommand(proc.getOsType().normalizeFileName(file))).complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -107,7 +107,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public boolean mkdirs(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                                         .getMkdirsCommand(proc.getOsType().normalizeFileName(file)))
+                                         .getMkdirsCommand(proc.getOsType().normalizeFileName(file))).complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }

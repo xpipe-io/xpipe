@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public abstract class TestModule<V> {
 
-    private static final Map<Class<?>, Map<String, ?>> values = new HashMap<>();
+    private static final Map<Class<?>, Map<String, ?>> values = new LinkedHashMap<>();
 
     @SuppressWarnings({"unchecked"})
     public static <T> Map<String, T> get(Class<T> c, String... classes) {
