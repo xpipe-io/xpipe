@@ -63,7 +63,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     void touch(String file) throws Exception;
 
-    boolean isDirectory(String file) throws Exception;
+    boolean directoryExists(String file) throws Exception;
 
     Stream<FileEntry> listFiles(String file) throws Exception;
 

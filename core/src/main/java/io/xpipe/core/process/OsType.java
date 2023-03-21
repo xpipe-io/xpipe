@@ -28,8 +28,6 @@ public interface OsType {
 
     String getTempDirectory(ShellControl pc) throws Exception;
 
-    String normalizeFileName(String file);
-
     Map<String, String> getProperties(ShellControl pc) throws Exception;
 
     String determineOperatingSystemName(ShellControl pc) throws Exception;
@@ -49,11 +47,6 @@ public interface OsType {
         @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
             return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("TEMP"));
-        }
-
-        @Override
-        public String normalizeFileName(String file) {
-            return String.join("\\", file.split("[\\\\/]+"));
         }
 
         @Override
@@ -82,11 +75,6 @@ public interface OsType {
         @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
             return "/tmp/";
-        }
-
-        @Override
-        public String normalizeFileName(String file) {
-            return String.join("/", file.split("[\\\\/]+"));
         }
 
         @Override
@@ -152,11 +140,6 @@ public interface OsType {
             }
 
             return found;
-        }
-
-        @Override
-        public String normalizeFileName(String file) {
-            return String.join("/", file.split("[\\\\/]+"));
         }
 
         @Override

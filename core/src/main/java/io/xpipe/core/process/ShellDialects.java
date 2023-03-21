@@ -26,10 +26,10 @@ public class ShellDialects {
 
             CMD = byName("cmd");
             POWERSHELL = byName("powershell");
-            SH = byName("sh");
             DASH = byName("dash");
             BASH = byName("bash");
             ZSH = byName("zsh");
+            SH = byName("sh");
         }
 
         @Override

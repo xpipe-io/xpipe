@@ -39,6 +39,12 @@ public interface CommandControl extends ProcessControl {
         }
     }
 
+    default boolean executeAndCheck() throws Exception {
+        try (var c = start()) {
+            return c.discardAndCheckExit();
+        }
+    }
+
     ShellControl getParent();
 
     InputStream startExternalStdout() throws Exception;

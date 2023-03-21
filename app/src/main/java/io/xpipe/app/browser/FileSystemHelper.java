@@ -60,6 +60,11 @@ public class FileSystemHelper {
                 .getShellDialect()
                 .normalizeDirectory(shell.get(), path)
                 .readOrThrow();
+
+        if (!model.getFileSystem().directoryExists(normalized)) {
+            throw new IllegalArgumentException(String.format("Directory %s does not exist", normalized));
+        }
+
         return FileNames.toDirectory(normalized);
     }
 

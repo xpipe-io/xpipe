@@ -31,7 +31,9 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean isDirectory(String file) throws Exception{return true;}
+    public boolean directoryExists(String file) throws Exception{
+        return shellControl.getShellDialect().directoryExists(shellControl, file).executeAndCheck();
+    }
 
     @Override
     public Stream<FileEntry> listFiles(String file) throws Exception {
@@ -57,21 +59,21 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public InputStream openInput(String file) throws Exception {
         return shellControl.command(proc ->
-                                        proc.getShellDialect().getFileReadCommand(proc.getOsType().normalizeFileName(file)))
+                                        proc.getShellDialect().getFileReadCommand(file))
                 .startExternalStdout();
     }
 
     @Override
     public OutputStream openOutput(String file) throws Exception {
         return shellControl.getShellDialect()
-                        .createStreamFileWriteCommand(shellControl, shellControl.getOsType().normalizeFileName(file))
+                        .createStreamFileWriteCommand(shellControl, file)
                 .startExternalStdin();
     }
 
     @Override
     public boolean exists(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileExistsCommand(proc.getOsType().normalizeFileName(file))).complex()
+                        .getFileExistsCommand(file)).complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -80,7 +82,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void delete(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileDeleteCommand(proc.getOsType().normalizeFileName(file))).complex()
+                        .getFileDeleteCommand(file)).complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -89,7 +91,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void copy(String file, String newFile) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileCopyCommand(proc.getOsType().normalizeFileName(file), proc.getOsType().normalizeFileName(newFile))).complex()
+                        .getFileCopyCommand(file, newFile)).complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -98,7 +100,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void move(String file, String newFile) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileMoveCommand(proc.getOsType().normalizeFileName(file), proc.getOsType().normalizeFileName(newFile))).complex()
+                        .getFileMoveCommand(file, newFile)).complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -107,7 +109,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public boolean mkdirs(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                                         .getMkdirsCommand(proc.getOsType().normalizeFileName(file))).complex()
+                                         .getMkdirsCommand(file)).complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -116,7 +118,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void touch(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileTouchCommand(proc.getOsType().normalizeFileName(file))).complex()
+                        .getFileTouchCommand(file)).complex()
                 .start()) {
             pc.discardOrThrow();
         }
