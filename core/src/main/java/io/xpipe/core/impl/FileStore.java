@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
@@ -77,10 +76,7 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     @Override
     public OutputStream openOutput() throws Exception {
-        if (!fileSystem.createFileSystem().open().mkdirs(getParent())) {
-            throw new IOException("Unable to create directory: " + getParent());
-        }
-
+        fileSystem.createFileSystem().open().mkdirs(getParent());
         return fileSystem.createFileSystem().open().openOutput(path);
     }
 

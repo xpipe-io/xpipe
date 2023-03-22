@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.core.process.ProcessOutputException;
 
 import java.io.FileNotFoundException;
 
@@ -14,6 +15,7 @@ public class ExceptionConverter {
         }
 
         return switch (ex) {
+            case ProcessOutputException e -> e.getOutput();
             case StackOverflowError e -> AppI18n.get("app.stackOverflow");
             case OutOfMemoryError e -> AppI18n.get("app.outOfMemory");
             case FileNotFoundException e -> AppI18n.get("app.fileNotFound", msg);

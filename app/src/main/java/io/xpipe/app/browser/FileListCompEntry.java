@@ -23,6 +23,7 @@ public class FileListCompEntry {
 
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
+    private FileContextMenu currentContextMenu;
 
     public FileListCompEntry(Node row, FileSystem.FileEntry item, FileListModel model) {
         this.row = row;
@@ -36,9 +37,15 @@ public class FileListCompEntry {
             return;
         }
 
-        var cm = new FileContextMenu(model.getFileSystemModel(), item, model.getEditing());
+        if (currentContextMenu != null) {
+            currentContextMenu.hide();
+            currentContextMenu = null;
+        }
+
         if (t.getButton() == MouseButton.SECONDARY) {
+            var cm = new FileContextMenu(model.getFileSystemModel(), item, model.getEditing());
             cm.show(row, t.getScreenX(), t.getScreenY());
+            currentContextMenu = cm;
         }
     }
 

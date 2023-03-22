@@ -4,6 +4,7 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.MacOsPermissions;
+import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -45,7 +46,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
                 @Override
                 protected String toCommand(String name, String command) {
-                    return "-w 1 nt --title \"" + name + "\" " + command;
+                    // A weird behavior in Windows Terminal causes the trailing
+                    // backslash of a filepath to escape the closing quote in the title argument
+                    // So just remove that slash
+                    var fixedName = FileNames.removeTrailingSlash(name);
+                    return "-w 1 nt --title \"" + fixedName + "\" " + command;
                 }
 
                 @Override

@@ -35,6 +35,7 @@ final class OpenFileSystemModel {
     private final FileBrowserNavigationHistory history = new FileBrowserNavigationHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final FileBrowserModel browserModel;
+    private final BooleanProperty noDirectory = new SimpleBooleanProperty();
 
     public OpenFileSystemModel(FileBrowserModel browserModel) {
         this.browserModel = browserModel;
@@ -77,7 +78,7 @@ final class OpenFileSystemModel {
     public Optional<String> cd(String path) {
         String newPath = null;
         try {
-            newPath = FileSystemHelper.normalizeDirectoryPath(this, path);
+            newPath = FileSystemHelper.resolveDirectoryPath(this, path);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.of(currentPath.get());
@@ -116,10 +117,12 @@ final class OpenFileSystemModel {
             List<FileSystem.FileEntry> newList;
             if (dir != null) {
                 newList = getFileSystem().listFiles(dir).collect(Collectors.toCollection(ArrayList::new));
+                noDirectory.set(false);
             } else {
                 newList = getFileSystem().listRoots().stream()
                         .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0))
                         .collect(Collectors.toCollection(ArrayList::new));
+                noDirectory.set(true);
             }
             fileList.setAll(newList);
             return true;
@@ -151,14 +154,25 @@ final class OpenFileSystemModel {
                     return;
                 }
 
+                var same = files.get(0).getFileSystem().equals(target.getFileSystem());
+                if (same) {
+                    if (!FileBrowserAlerts.showMoveAlert(files, target)) {
+                        return;
+                    }
+                }
+
                 FileSystemHelper.dropFilesInto(target, files, explicitCopy);
                 refreshInternal();
             });
         });
     }
 
-    public void createDirectoryAsync(String path) {
-        if (path.isBlank()) {
+    public void createDirectoryAsync(String name) {
+        if (name.isBlank()) {
+            return;
+        }
+
+        if (getCurrentDirectory() == null) {
             return;
         }
 
@@ -168,14 +182,23 @@ final class OpenFileSystemModel {
                     return;
                 }
 
-                fileSystem.mkdirs(path);
+                var abs = FileNames.join(getCurrentDirectory().getPath(), name);
+                if (fileSystem.directoryExists(abs)) {
+                    throw new IllegalStateException(String.format("Directory %s already exists", abs));
+                }
+
+                fileSystem.mkdirs(abs);
                 refreshInternal();
             });
         });
     }
 
-    public void createFileAsync(String path) {
-        if (path.isBlank()) {
+    public void createFileAsync(String name) {
+        if (name.isBlank()) {
+            return;
+        }
+
+        if (getCurrentDirectory() == null) {
             return;
         }
 
@@ -185,20 +208,25 @@ final class OpenFileSystemModel {
                     return;
                 }
 
-                fileSystem.touch(path);
+                var abs = FileNames.join(getCurrentDirectory().getPath(), name);
+                fileSystem.touch(abs);
                 refreshInternal();
             });
         });
     }
 
-    public void deleteAsync(String path) {
+    public void deleteSelectionAsync() {
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
 
-                fileSystem.delete(path);
+                if (!FileBrowserAlerts.showDeleteAlert(fileList.getSelected())) {
+                    return;
+                }
+
+                FileSystemHelper.delete(fileList.getSelected());
                 refreshInternal();
             });
         });
@@ -249,7 +277,7 @@ final class OpenFileSystemModel {
                     var command = s.create()
                             .initWith(List.of(connection.getShellDialect().getCdCommand(directory)))
                             .prepareTerminalOpen();
-                    TerminalHelper.open("", command);
+                    TerminalHelper.open(directory, command);
                 }
             });
         });

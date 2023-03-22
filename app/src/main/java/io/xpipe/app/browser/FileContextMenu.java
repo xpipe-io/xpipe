@@ -147,8 +147,8 @@ final class FileContextMenu extends ContextMenu {
 
         var delete = new MenuItem("Delete");
         delete.setOnAction(event -> {
+            model.deleteSelectionAsync();
             event.consume();
-            model.deleteAsync(entry.getPath());
         });
 
         var rename = new MenuItem("Rename");

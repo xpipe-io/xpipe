@@ -36,6 +36,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public void directoryAccessible(String file) throws Exception {
+        shellControl.executeSimpleCommand(shellControl.getShellDialect().getCdCommand(file));
+    }
+
+    @Override
     public Stream<FileEntry> listFiles(String file) throws Exception {
         return shellControl.getShellDialect().listFiles(this, shellControl, file);
     }
@@ -107,11 +112,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean mkdirs(String file) throws Exception {
+    public void mkdirs(String file) throws Exception {
         try (var pc = shellControl.command(proc -> proc.getShellDialect()
                                          .getMkdirsCommand(file)).complex()
                 .start()) {
-            return pc.discardAndCheckExit();
+            pc.discardOrThrow();
         }
     }
 

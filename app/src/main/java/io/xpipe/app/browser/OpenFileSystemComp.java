@@ -2,7 +2,9 @@ package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.impl.FileNames;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -52,11 +54,13 @@ public class OpenFileSystemComp extends SimpleComp {
 
         var terminalBtn = new Button(null, new FontIcon("mdi2c-code-greater-than"));
         terminalBtn.setOnAction(e -> model.openTerminalAsync(model.getCurrentPath().get()));
+        terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var addBtn = new Button(null, new FontIcon("mdmz-plus"));
         addBtn.setOnAction(e -> {
             creatingProperty.set(true);
         });
+        addBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var filter = new FileFilterComp(model.getFilter()).createRegion();
 
@@ -85,14 +89,14 @@ public class OpenFileSystemComp extends SimpleComp {
         pane.getChildren().add(root);
 
         var creation = createCreationWindow(creatingProperty);
-        var creationPain = new StackPane(creation);
-        creationPain.setAlignment(Pos.CENTER);
-        creationPain.setOnMouseClicked(event -> {
+        var creationPane = new StackPane(creation);
+        creationPane.setAlignment(Pos.CENTER);
+        creationPane.setOnMouseClicked(event -> {
             creatingProperty.set(false);
         });
-        pane.getChildren().add(creationPain);
-        creationPain.visibleProperty().bind(creatingProperty);
-        creationPain.managedProperty().bind(creatingProperty);
+        pane.getChildren().add(creationPane);
+        creationPane.visibleProperty().bind(creatingProperty);
+        creationPane.managedProperty().bind(creatingProperty);
 
         return pane;
     }
@@ -104,25 +108,32 @@ public class OpenFileSystemComp extends SimpleComp {
                 creationName.setText("");
             }
         });
-        var createFileButton = new Button("Create file");
+        var createFileButton = new Button("File", new PrettyImageComp(new SimpleStringProperty("file_drag_icon.png"), 20, 20).createRegion());
         createFileButton.setOnAction(event -> {
-            model.createFileAsync(FileNames.join(model.getCurrentPath().get(), creationName.getText()));
+            model.createFileAsync(creationName.getText());
             creating.set(false);
         });
-        var createDirectoryButton = new Button("Create directory");
+        var createDirectoryButton = new Button("Directory", new PrettyImageComp(new SimpleStringProperty("folder_closed.svg"), 20, 20).createRegion());
         createDirectoryButton.setOnAction(event -> {
-            model.createDirectoryAsync(FileNames.join(model.getCurrentPath().get(), creationName.getText()));
+            model.createDirectoryAsync(creationName.getText());
             creating.set(false);
         });
         var buttonBar = new ButtonBar();
         buttonBar.getButtons().addAll(createFileButton, createDirectoryButton);
         var creationContent = new VBox(creationName, buttonBar);
         creationContent.setSpacing(15);
-        var creation = new TitledPane("New", creationContent);
+        var creation = new TitledPane("New ...", creationContent);
         creation.setMaxWidth(400);
         creation.setCollapsible(false);
         creationContent.setPadding(new Insets(15));
         creation.getStyleClass().add("elevated-3");
+
+        creating.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                creationName.requestFocus();
+            }
+        });
+
         return creation;
     }
 }

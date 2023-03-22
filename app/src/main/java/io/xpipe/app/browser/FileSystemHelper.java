@@ -23,16 +23,18 @@ public class FileSystemHelper {
         ConnectionFileSystem fileSystem = (ConnectionFileSystem) model.getFileSystem();
         var current = !(model.getStore().getValue() instanceof LocalStore)
                 ? fileSystem
-                .getShellControl()
-                .executeStringSimpleCommand(fileSystem
-                                                    .getShellControl()
-                                                    .getShellDialect()
-                                                    .getPrintWorkingDirectoryCommand())
-                : fileSystem.getShell().get().getOsType().getHomeDirectory(fileSystem.getShell().get());
-        return FileSystemHelper.normalizeDirectoryPath(model, current);
+                        .getShellControl()
+                        .executeStringSimpleCommand(
+                                fileSystem.getShellControl().getShellDialect().getPrintWorkingDirectoryCommand())
+                : fileSystem
+                        .getShell()
+                        .get()
+                        .getOsType()
+                        .getHomeDirectory(fileSystem.getShell().get());
+        return FileSystemHelper.resolveDirectoryPath(model, current);
     }
 
-    public static String normalizeDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+    public static String resolveDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
         if (path == null) {
             return null;
         }
@@ -65,6 +67,8 @@ public class FileSystemHelper {
             throw new IllegalArgumentException(String.format("Directory %s does not exist", normalized));
         }
 
+        model.getFileSystem().directoryAccessible(normalized);
+
         return FileNames.toDirectory(normalized);
     }
 
@@ -93,6 +97,20 @@ public class FileSystemHelper {
             dropFilesInto(entry, entries, false);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
+        }
+    }
+
+    public static void delete(List<FileSystem.FileEntry> files) throws Exception {
+        if (files.size() == 0) {
+            return;
+        }
+
+        for (var file : files) {
+            try {
+                file.getFileSystem().delete(file.getPath());
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+            }
         }
     }
 

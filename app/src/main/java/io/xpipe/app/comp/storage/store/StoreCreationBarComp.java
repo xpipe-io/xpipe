@@ -48,7 +48,7 @@ public class StoreCreationBarComp extends SimpleComp {
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addDatabase"));
 
-        var box = new VerticalComp(List.of(newShellStore, newDbStore, newStreamStore, newOtherStore));
+        var box = new VerticalComp(List.of(newShellStore, newDbStore, newStreamStore));
         box.apply(s -> AppFont.medium(s.get()));
         var bar = box.createRegion();
         bar.getStyleClass().add("bar");

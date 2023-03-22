@@ -59,11 +59,13 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     void move(String file, String newFile) throws Exception;
 
-    boolean mkdirs(String file) throws Exception;
+    void mkdirs(String file) throws Exception;
 
     void touch(String file) throws Exception;
 
     boolean directoryExists(String file) throws Exception;
+
+    void directoryAccessible(String file) throws Exception;
 
     Stream<FileEntry> listFiles(String file) throws Exception;
 

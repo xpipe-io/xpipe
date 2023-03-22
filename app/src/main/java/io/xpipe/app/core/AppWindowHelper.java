@@ -7,6 +7,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -35,7 +36,9 @@ public class AppWindowHelper {
         var text = new Text(s);
         text.setWrappingWidth(450);
         AppFont.medium(text);
-        return new StackPane(text);
+        var sp = new StackPane(text);
+        sp.setPadding(new Insets(5));
+        return sp;
     }
 
     public static Stage sideWindow(
