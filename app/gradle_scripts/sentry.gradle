@@ -1,5 +1,5 @@
 dependencies {
-    implementation files("$buildDir/generated-modules/sentry-6.11.0.jar")
+    implementation files("$buildDir/generated-modules/sentry-6.16.0.jar")
 }
 
 addDependenciesModuleInfo {
@@ -8,7 +8,7 @@ addDependenciesModuleInfo {
     outputDirectory = file("$buildDir/generated-modules")
     modules {
         module {
-            artifact 'io.sentry:sentry:6.11.0'
+            artifact 'io.sentry:sentry:6.16.0'
             moduleInfoSource = '''
                 module io.sentry {
                     exports io.sentry;

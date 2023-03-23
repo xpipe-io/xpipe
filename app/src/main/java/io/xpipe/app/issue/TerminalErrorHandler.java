@@ -4,6 +4,7 @@ import io.sentry.Sentry;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.update.AppUpdater;
+import io.xpipe.app.util.Hyperlinks;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -86,24 +87,23 @@ public class TerminalErrorHandler implements ErrorHandler {
 
     private static void handleProbableUpdate() {
         try {
-            AppUpdater.initFallback();
+            AppUpdater.init();
             var rel = AppUpdater.get().checkForUpdate(true);
             if (rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);
                             alert.setTitle(AppI18n.get("updateAvailableTitle"));
-                            alert.setHeaderText(AppI18n.get("updateAvailableHeader"));
+                            alert.setHeaderText(AppI18n.get("updateAvailableHeader", rel.getVersion()));
                             alert.getDialogPane()
                                     .setContent(AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
                             alert.getButtonTypes().clear();
-                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.YES));
+                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
                             alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
                         })
                         .map(buttonType -> buttonType.getButtonData().isDefaultButton())
                         .orElse(false);
                 if (update) {
-                    AppUpdater.get().downloadUpdate();
-                    AppUpdater.get().executeUpdateAndClose();
+                    Hyperlinks.open(rel.getReleaseUrl());
                 }
             }
         } catch (Throwable t) {

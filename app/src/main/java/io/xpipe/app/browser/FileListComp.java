@@ -210,6 +210,17 @@ final class FileListComp extends AnchorPane {
                     newItems.add(parentEntry);
                 }
                 newItems.addAll(newValue);
+
+                var hasModifiedDate =
+                        newItems.size() == 0 || newItems.stream().anyMatch(entry -> entry.getDate() != null);
+                if (!hasModifiedDate) {
+                    table.getColumns().remove(mtimeCol);
+                } else {
+                    if (!table.getColumns().contains(mtimeCol)) {
+                        table.getColumns().add(mtimeCol);
+                    }
+                }
+
                 table.getItems().setAll(newItems);
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();

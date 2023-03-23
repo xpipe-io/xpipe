@@ -14,6 +14,7 @@ import java.util.Date;
 public class SentryErrorHandler {
 
     public static void init() {
+        AppProperties.init();
         if (AppProperties.get().getSentryUrl() != null) {
             Sentry.init(options -> {
                 options.setDsn(AppProperties.get().getSentryUrl());
@@ -24,6 +25,7 @@ public class SentryErrorHandler {
                 options.setRelease(AppProperties.get().getVersion());
                 options.setEnableShutdownHook(false);
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
+                options.setTag("os", System.getProperty("os.name"));
             });
         }
 

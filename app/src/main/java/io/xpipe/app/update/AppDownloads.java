@@ -107,7 +107,7 @@ public class AppDownloads {
             var repo = getRepository();
 
             // Always choose most up-to-date release as we assume that there are only full releases and prereleases
-            if (AppPrefs.get().updateToPrereleases().get()) {
+            if (AppPrefs.get() != null && AppPrefs.get().updateToPrereleases().get()) {
                 return Optional.ofNullable(repo.listReleases().iterator().next());
             }
 

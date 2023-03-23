@@ -1,7 +1,6 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
@@ -10,8 +9,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeDistributionType;
-import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.util.XPipeSession;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -91,16 +88,6 @@ public class AppUpdater {
         return INSTANCE;
     }
 
-    public static void initFallback() {
-        AppProperties.init();
-        XPipeSession.init(AppProperties.get().getBuildUuid());
-
-        AppExtensionManager.init(false);
-        ProcessControlProvider.init(AppExtensionManager.getInstance().getExtendedLayer());
-
-        INSTANCE = new AppUpdater();
-    }
-
     public static void init() {
         if (INSTANCE != null) {
             return;
@@ -174,7 +161,9 @@ public class AppUpdater {
             event("Performing update download ...");
             try {
                 var downloadFile = AppDownloads.downloadInstaller(
-                        lastUpdateCheckResult.getValue().getAssetType(), lastUpdateCheckResult.getValue().version, false);
+                        lastUpdateCheckResult.getValue().getAssetType(),
+                        lastUpdateCheckResult.getValue().version,
+                        false);
                 if (downloadFile.isEmpty()) {
                     return;
                 }

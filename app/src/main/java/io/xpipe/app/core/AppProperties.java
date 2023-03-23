@@ -41,7 +41,9 @@ public class AppProperties {
             }
         });
 
-        fullVersion = Optional.ofNullable(props.getProperty("io.xpipe.app.fullVersion")).map(Boolean::parseBoolean).orElse(false);
+        fullVersion = Optional.ofNullable(props.getProperty("io.xpipe.app.fullVersion"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
         version = Optional.ofNullable(props.getProperty("version")).orElse("dev");
         build = Optional.ofNullable(props.getProperty("build")).orElse("unknown");
         buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))

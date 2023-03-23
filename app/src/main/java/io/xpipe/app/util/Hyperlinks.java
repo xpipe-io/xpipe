@@ -1,10 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.App;
 import io.xpipe.app.issue.ErrorEvent;
-
-import java.awt.*;
-import java.net.URI;
 
 public class Hyperlinks {
 
@@ -16,23 +12,41 @@ public class Hyperlinks {
             "https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
     public static final String DOCS_PRIVACY = "https://xpipe.io/docs/privacy";
 
-    public static Runnable openLink(String s) {
-        return () -> open(s);
-    }
+    static final String[] browsers = {
+            "xdg-open",
+            "google-chrome",
+            "firefox",
+            "opera",
+            "konqueror",
+            "mozilla"
+    };
 
-    public static void open(String url) {
-        var t = new Thread(() -> {
-            try {
-                if (App.getApp() != null) {
-                    App.getApp().getHostServices().showDocument(url);
-                } else {
-                    Desktop.getDesktop().browse(URI.create(url));
+    @SuppressWarnings("deprecation")
+    public static void open(String uri) {
+        String osName = System.getProperty("os.name");
+        try {
+            if (osName.startsWith("Mac OS")) {
+                Runtime.getRuntime().exec(
+                        "open " + uri);
+            } else if (osName.startsWith("Windows")) {
+                Runtime.getRuntime().exec(
+                        "rundll32 url.dll,FileProtocolHandler " + uri);
+            } else { //assume Unix or Linux
+                String browser = null;
+                for (String b : browsers) {
+                    if (browser == null && Runtime.getRuntime().exec(
+                            new String[]{"which", b}).getInputStream().read() != -1) {
+                        Runtime.getRuntime().exec(new String[]{browser = b, uri});
+                    }
                 }
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).build().handle();
+                if (browser == null) {
+                    throw new Exception("No web browser found");
+                }
             }
-        });
-        t.setDaemon(true);
-        t.start();
+        } catch (Exception e) {
+            // should not happen
+            // dump stack for debug purpose
+            ErrorEvent.fromThrowable(e).handle();
+        }
     }
 }

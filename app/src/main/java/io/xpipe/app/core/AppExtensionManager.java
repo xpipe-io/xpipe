@@ -28,7 +28,7 @@ public class AppExtensionManager {
     private ModuleLayer baseLayer = ModuleLayer.boot();
     private ModuleLayer extendedLayer;
 
-    public static void init(boolean loadProviders) {
+    public static void init(boolean loadProviders) throws Exception {
         if (INSTANCE != null) {
             return;
         }
