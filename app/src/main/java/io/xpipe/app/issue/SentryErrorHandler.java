@@ -27,6 +27,10 @@ public class SentryErrorHandler {
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
                 options.setTag("os", System.getProperty("os.name"));
             });
+
+            var user = new User();
+            user.setId(AppCache.getCachedUserId().toString());
+            Sentry.setUser(user);
         }
 
         Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
@@ -35,62 +39,65 @@ public class SentryErrorHandler {
     }
 
     public static void report(ErrorEvent e, String text) {
-        Sentry.withScope(scope -> {
-            e.getAttachments().forEach(d -> {
-                try {
-                    var toUse = d;
-                    if (Files.isDirectory(d)) {
-                        toUse = AttachmentHelper.compressZipfile(
-                                d,
-                                FileUtils.getTempDirectory()
-                                        .toPath()
-                                        .resolve(d.getFileName().toString() + ".zip"));
-                    }
-                    scope.addAttachment(new Attachment(toUse.toString()));
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            });
-            var id = captureEvent(e, scope);
-
-            if (text.length() > 0) {
-                var fb = new UserFeedback(id);
-                fb.setComments(text);
-                Sentry.captureUserFeedback(fb);
-            }
-        });
+        var id = report(e);
+        if (text != null && text.length() > 0) {
+            var fb = new UserFeedback(id);
+            fb.setComments(text);
+            Sentry.captureUserFeedback(fb);
+        }
     }
 
-    public static SentryId captureEvent(ErrorEvent ee, Scope s) {
-        var user = new User();
-        user.setId(AppCache.getCachedUserId().toString());
-        Sentry.setUser(user);
-
-        s.setTag("terminal", Boolean.toString(ee.isTerminal()));
-        s.setTag("omitted", Boolean.toString(ee.isOmitted()));
-
+    public static SentryId report(ErrorEvent ee) {
         /*
         TODO: Ignore breadcrumbs for now
          */
         // ee.getTrackEvents().forEach(t -> s.addBreadcrumb(toBreadcrumb(t)));
 
         if (ee.getThrowable() != null) {
+            return Sentry.captureException(ee.getThrowable(), sc -> fillScope(ee, sc));
+        }
+
+        if (ee.getDescription() != null) {
+            return Sentry.captureMessage(ee.getDescription(), sc -> fillScope(ee, sc));
+        }
+
+        var event = new SentryEvent();
+        return Sentry.captureEvent(event, sc -> fillScope(ee, sc));
+    }
+
+    private static void fillScope(ErrorEvent ee, Scope s) {
+        var atts = ee.getAttachments().stream()
+                .map(d -> {
+                    try {
+                        var toUse = d;
+                        if (Files.isDirectory(d)) {
+                            toUse = AttachmentHelper.compressZipfile(
+                                    d,
+                                    FileUtils.getTempDirectory()
+                                            .toPath()
+                                            .resolve(d.getFileName().toString() + ".zip"));
+                        }
+                        return new Attachment(toUse.toString());
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        return null;
+                    }
+                })
+                .filter(attachment -> attachment != null)
+                .toList();
+        atts.forEach(attachment -> s.addAttachment(attachment));
+
+        s.setTag("terminal", Boolean.toString(ee.isTerminal()));
+        s.setTag("omitted", Boolean.toString(ee.isOmitted()));
+        if (ee.getThrowable() != null) {
             if (ee.getDescription() != null
                     && !ee.getDescription().equals(ee.getThrowable().getMessage())) {
                 s.setTag("message", ee.getDescription());
             }
-            return Sentry.captureException(ee.getThrowable());
         }
-
-        if (ee.getDescription() != null) {
-            return Sentry.captureMessage(ee.getDescription());
-        }
-
-        var event = new SentryEvent();
-        return Sentry.captureEvent(event);
     }
 
-    public static Breadcrumb toBreadcrumb(TrackEvent te) {
+    private static Breadcrumb toBreadcrumb(TrackEvent te) {
         var bc = new Breadcrumb(Date.from(te.getInstant()));
         bc.setLevel(
                 te.getType().equals("trace") || te.getType().equals("debug")

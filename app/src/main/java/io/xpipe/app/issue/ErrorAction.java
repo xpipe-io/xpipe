@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.sentry.Sentry;
 import io.xpipe.app.core.AppI18n;
 
 public interface ErrorAction {
@@ -40,9 +39,7 @@ public interface ErrorAction {
             @Override
             public boolean handle(ErrorEvent event) {
                 event.clearAttachments();
-                Sentry.withScope(scope -> {
-                    SentryErrorHandler.captureEvent(event, scope);
-                });
+                SentryErrorHandler.report(event);
                 return true;
             }
         };
