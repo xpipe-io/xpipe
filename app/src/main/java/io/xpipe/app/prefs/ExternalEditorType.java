@@ -43,8 +43,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    public static final LinuxPathType NOTEPADPLUSPLUS_LINUX = new LinuxPathType("app.notepad++", "notepad++");
-
     public static final LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code");
 
     public static final LinuxPathType KATE = new LinuxPathType("app.kate", "kate");
@@ -66,7 +64,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public void launch(Path file) throws Exception {
             ApplicationHelper.executeLocalApplication(
-                    List.of("open", "-a", getApplicationPath().orElseThrow().toString(), file.toString()));
+                    shellControl -> String.format(
+                            "open -a %s %s",
+                            shellControl.getShellDialect().fileArgument(getApplicationPath().orElseThrow().toString()),
+                            shellControl.getShellDialect().fileArgument(file.toString())),
+                    false);
         }
     }
 
@@ -87,7 +89,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
             var format = customCommand.contains("$file") ? customCommand : customCommand + " $file";
             var fileString = file.toString().contains(" ") ? "\"" + file + "\"" : file.toString();
-            ApplicationHelper.executeLocalApplication(format.replace("$file", fileString));
+            ApplicationHelper.executeLocalApplication(sc -> format.replace("$file", fileString), true);
         }
 
         @Override
@@ -134,13 +136,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw new IOException("Unable to find installation of " + getId());
             }
 
-            ApplicationHelper.executeLocalApplication(List.of(path.get().toString(), file.toString()));
+            ApplicationHelper.executeLocalApplication(
+                    sc -> String.format(
+                            "%s %s", sc.getShellDialect().fileArgument(path.get().toString()), sc.getShellDialect().fileArgument(file.toString())),
+                    true);
         }
     }
 
     public static final List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
     public static final List<LinuxPathType> LINUX_EDITORS =
-            List.of(VSCODE_LINUX, NOTEPADPLUSPLUS_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
+            List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
     public static final List<ExternalEditorType> MACOS_EDITORS = List.of(VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
     public static final List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {

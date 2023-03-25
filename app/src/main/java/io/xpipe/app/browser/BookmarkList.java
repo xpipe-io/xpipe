@@ -5,6 +5,7 @@ import io.xpipe.app.comp.storage.store.StoreEntryFlatMiniSection;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.store.ShellStore;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -37,6 +38,11 @@ final class BookmarkList extends SimpleComp {
             list.getChildren().add(button);
         }
         list.setFillWidth(true);
-        return list;
+
+        var sp = new ScrollPane(list);
+        sp.setFitToWidth(true);
+        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        return sp;
     }
 }

@@ -111,6 +111,10 @@ public interface ShellDialect {
 
     String getFileMoveCommand(String oldFile, String newFile);
 
+    default boolean requiresScript(String content) {
+        return content.contains("\n");
+    }
+
     CommandControl createTextFileWriteCommand(ShellControl parent, String content, String file);
 
     String getFileDeleteCommand(String file);

@@ -5,25 +5,20 @@ import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellControl;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.function.Function;
 
 public class ApplicationHelper {
 
-    public static void executeLocalApplication(String s) throws Exception {
+    public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {
         TrackEvent.withDebug("proc", "Executing local application")
                 .tag("command", s)
                 .handle();
-        try (var c = LocalStore.getShell().command(s).start()) {
-            c.discardOrThrow();
-        }
-    }
 
-    public static void executeLocalApplication(List<String> s) throws Exception {
-        TrackEvent.withDebug("proc", "Executing local application")
-                .elements(s)
-                .handle();
-        try (var c = LocalStore.getShell().command(s).start()) {
-            c.discardOrThrow();
+        try (var sc = LocalStore.getShell().start()) {
+            var cmd = detach ? ScriptHelper.createDetachCommand(sc, s.apply(sc)) : s.apply(sc);
+            try (var c = sc.command(cmd).start()) {
+                c.discardOrThrow();
+            }
         }
     }
 
