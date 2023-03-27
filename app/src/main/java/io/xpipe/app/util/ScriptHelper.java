@@ -52,13 +52,15 @@ public class ScriptHelper {
     public static String constructInitFile(
             ShellControl processControl, List<String> init, String toExecuteInShell) {
         ShellDialect t = processControl.getShellDialect();
-        if (init.size() == 0 && toExecuteInShell == null) {
-            return null;
-        }
+
+        // We always want to generate and init file
+//        if (init.size() == 0 && toExecuteInShell == null) {
+//            return null;
+//        }
 
         if (init.size() == 0) {
             // Check for special case of the command to be executed just being another shell script
-            if (toExecuteInShell.endsWith(".sh") || toExecuteInShell.endsWith(".bat")) {
+            if (toExecuteInShell != null && (toExecuteInShell.endsWith(".sh") || toExecuteInShell.endsWith(".bat"))) {
                 return toExecuteInShell;
             }
         }

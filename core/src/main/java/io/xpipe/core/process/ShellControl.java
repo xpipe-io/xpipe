@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
@@ -72,19 +73,26 @@ public interface ShellControl extends ProcessControl {
     SecretValue getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getNormalOpenCommand(), (shellProcessControl, s) -> {
-                    return s == null ? type.getNormalOpenCommand() : type.executeCommandWithShell(s);
-                })
-                .elevationPassword(getElevationPassword());
+        return subShell(p -> type.getOpenCommand(), null).elevationPassword(getElevationPassword());
     }
 
-    default ShellControl subShell(@NonNull List<String> command) {
-        return subShell(
-                shellProcessControl -> shellProcessControl.getShellDialect().flatten(command), null);
+    default ShellControl identicalSubShell() {
+        return subShell(p -> p.getShellDialect().getOpenCommand(), null)
+                .elevationPassword(getElevationPassword());
     }
 
     default ShellControl subShell(@NonNull String command) {
         return subShell(processControl -> command, null);
+    }
+
+    default <T> T enforceDialect(@NonNull ShellDialect type, Function<ShellControl, T> sc) throws Exception {
+        if (isRunning() && getShellDialect().equals(type))  {
+            return sc.apply(this);
+        } else {
+            try (var sub = subShell(type).start()) {
+                return sc.apply(sub);
+            }
+        }
     }
 
     ShellControl subShell(
@@ -110,7 +118,8 @@ public interface ShellControl extends ProcessControl {
     }
 
     default CommandControl command(List<String> command) {
-        return command(shellProcessControl -> shellProcessControl.getShellDialect().flatten(command));
+        return command(
+                shellProcessControl -> shellProcessControl.getShellDialect().flatten(command));
     }
 
     void exitAndWait() throws IOException;

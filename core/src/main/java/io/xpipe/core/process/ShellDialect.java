@@ -91,9 +91,9 @@ public interface ShellDialect {
         return getPrintVariableCommand(name);
     }
 
-    String getNormalOpenCommand();
+    String getOpenCommand();
 
-    String prepareInitFileOpenCommand(ShellControl parent, String file);
+    String prepareTerminalInitFileOpenCommand(ShellControl parent, String file) throws Exception;
 
     String runScript(String file);
 

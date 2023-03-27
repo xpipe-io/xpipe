@@ -152,7 +152,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String command) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                var suffix = command.equals(pc.getShellDialect().getNormalOpenCommand())
+                var suffix = command.equals(pc.getShellDialect().getOpenCommand())
                         ? "\"\""
                         : "\"" + command.replaceAll("\"", "\\\\\"") + "\"";
                 var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";

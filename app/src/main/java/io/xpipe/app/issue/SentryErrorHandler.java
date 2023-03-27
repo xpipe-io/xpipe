@@ -27,10 +27,6 @@ public class SentryErrorHandler {
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
                 options.setTag("os", System.getProperty("os.name"));
             });
-
-            var user = new User();
-            user.setId(AppCache.getCachedUserId().toString());
-            Sentry.setUser(user);
         }
 
         Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
@@ -95,6 +91,11 @@ public class SentryErrorHandler {
                 s.setTag("message", ee.getDescription());
             }
         }
+
+
+        var user = new User();
+        user.setId(AppCache.getCachedUserId().toString());
+        s.setUser(user);
     }
 
     private static Breadcrumb toBreadcrumb(TrackEvent te) {
