@@ -283,21 +283,9 @@ final class OpenFileSystemModel {
         });
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    // Properties                                                            //
-    ///////////////////////////////////////////////////////////////////////////
-
-    public ReadOnlyObjectProperty<String> currentPathProperty() {
-        return currentPath.getReadOnlyProperty();
-    }
-
     public FileBrowserNavigationHistory getHistory() {
         return history;
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Commands                                                              //
-    ///////////////////////////////////////////////////////////////////////////
 
     public void back() {
         history.back().ifPresent(currentPath::set);
@@ -305,9 +293,5 @@ final class OpenFileSystemModel {
 
     public void forth() {
         history.forth().ifPresent(currentPath::set);
-    }
-
-    public void navigate(String path, boolean saveInHistory) {
-        currentPath.set(path);
     }
 }

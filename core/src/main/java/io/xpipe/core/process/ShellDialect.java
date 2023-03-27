@@ -93,7 +93,7 @@ public interface ShellDialect {
 
     String getOpenCommand();
 
-    String prepareTerminalInitFileOpenCommand(ShellControl parent, String file) throws Exception;
+    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file) throws Exception;
 
     String runScript(String file);
 

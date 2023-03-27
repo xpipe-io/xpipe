@@ -99,7 +99,7 @@ final class FileListModel {
         }
 
         if (entry.isDirectory()) {
-            fileSystemModel.navigate(entry.getPath(), true);
+            fileSystemModel.cd(entry.getPath());
         } else {
             FileOpener.openInTextEditor(entry);
         }

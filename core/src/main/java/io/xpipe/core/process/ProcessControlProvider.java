@@ -1,6 +1,5 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.util.FailableBiFunction;
 import io.xpipe.core.util.FailableFunction;
 import lombok.NonNull;
 
@@ -29,7 +28,7 @@ public abstract class ProcessControlProvider {
     public static ShellControl createSub(
             ShellControl parent,
             @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
-            FailableBiFunction<ShellControl, String, String, Exception> terminalCommand) {
+            ShellControl.TerminalOpenFunction terminalCommand) {
         return INSTANCES.stream()
                 .map(localProcessControlProvider ->
                         localProcessControlProvider.sub(parent, commandFunction, terminalCommand))
@@ -61,7 +60,7 @@ public abstract class ProcessControlProvider {
     public abstract ShellControl sub(
             ShellControl parent,
             @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
-            FailableBiFunction<ShellControl, String, String, Exception> terminalCommand);
+            ShellControl.TerminalOpenFunction terminalCommand);
 
     public abstract CommandControl command(
             ShellControl parent,

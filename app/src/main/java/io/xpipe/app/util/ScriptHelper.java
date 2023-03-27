@@ -54,13 +54,13 @@ public class ScriptHelper {
         ShellDialect t = processControl.getShellDialect();
 
         // We always want to generate and init file
-//        if (init.size() == 0 && toExecuteInShell == null) {
-//            return null;
-//        }
+        if (init.size() == 0 && toExecuteInShell == null) {
+            return createExecScript(processControl, processControl.getShellDialect().getNewLine().getNewLineString());
+        }
 
         if (init.size() == 0) {
             // Check for special case of the command to be executed just being another shell script
-            if (toExecuteInShell != null && (toExecuteInShell.endsWith(".sh") || toExecuteInShell.endsWith(".bat"))) {
+            if (toExecuteInShell.endsWith(".sh") || toExecuteInShell.endsWith(".bat")) {
                 return toExecuteInShell;
             }
         }

@@ -1,6 +1,5 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.util.FailableBiFunction;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import lombok.NonNull;
@@ -73,16 +72,53 @@ public interface ShellControl extends ProcessControl {
     SecretValue getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getOpenCommand(), null).elevationPassword(getElevationPassword());
+        return subShell(p -> type.getOpenCommand(), new TerminalOpenFunction() {
+            @Override
+            public boolean changesEnvironment() {
+                return false;
+            }
+
+            @Override
+            public String prepare(ShellControl sc, String command) throws Exception {
+                return command;
+            }
+        }).elevationPassword(getElevationPassword());
+    }
+
+    interface TerminalOpenFunction {
+
+        boolean changesEnvironment();
+
+        String prepare(ShellControl sc, String command) throws Exception;
     }
 
     default ShellControl identicalSubShell() {
-        return subShell(p -> p.getShellDialect().getOpenCommand(), null)
+        return subShell(p -> p.getShellDialect().getOpenCommand(), new TerminalOpenFunction() {
+            @Override
+            public boolean changesEnvironment() {
+                return false;
+            }
+
+            @Override
+            public String prepare(ShellControl sc, String command) throws Exception {
+                return command;
+            }
+        })
                 .elevationPassword(getElevationPassword());
     }
 
     default ShellControl subShell(@NonNull String command) {
-        return subShell(processControl -> command, null);
+        return subShell(processControl -> command, new TerminalOpenFunction() {
+            @Override
+            public boolean changesEnvironment() {
+                return false;
+            }
+
+            @Override
+            public String prepare(ShellControl sc, String command) throws Exception {
+                return command;
+            }
+        });
     }
 
     default <T> T enforceDialect(@NonNull ShellDialect type, Function<ShellControl, T> sc) throws Exception {
@@ -97,7 +133,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl subShell(
             FailableFunction<ShellControl, String, Exception> command,
-            FailableBiFunction<ShellControl, String, String, Exception> terminalCommand);
+            TerminalOpenFunction terminalCommand);
 
     void executeLine(String command) throws Exception;
 
