@@ -23,6 +23,10 @@ public interface ShellDialect {
         return null;
     }
 
+    default String applyProfileFilesCommand() {
+        return null;
+    }
+
     CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file);
 
     default String getCdCommand(String directory){

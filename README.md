@@ -2,11 +2,11 @@
 
 ### A smart connection manager and remote file explorer
 
-X-Pipe is a brand new type of connection manager and remote file explorer that works by exclusively interacting with CLI tools on local and remote shell connections.
+X-Pipe is a brand-new type of connection manager and remote file explorer that works by exclusively interacting with CLI tools on local and remote shell connections.
 This approach makes it much more flexible as it doesn't have to deal with file system APIs or remote file handling protocols at all.
 
 X-Pipe integrates with your existing tools and workflows
-by outsourcing as much tasks as possible to your
+by outsourcing as many tasks as possible to your
 text/code editors, terminals, shells, command-line tools and more.
 The platform is open source and designed to be extensible, allowing anyone
 to implement custom functionality through custom extensions.
@@ -14,8 +14,6 @@ to implement custom functionality through custom extensions.
 ## Getting Started
 
 Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases) and try it out.
-
-Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like to see prioritized.
 
 There are several ways to reach out in case you encounter any issues or questions:
 - The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)

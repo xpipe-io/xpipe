@@ -50,27 +50,21 @@ public class ScriptHelper {
     }
 
     public static String constructInitFile(
-            ShellControl processControl, List<String> init, String toExecuteInShell) {
+            ShellControl processControl, List<String> init, String toExecuteInShell,boolean login) {
         ShellDialect t = processControl.getShellDialect();
-
-        // We always want to generate and init file
-        if (init.size() == 0 && toExecuteInShell == null) {
-            return createExecScript(processControl, processControl.getShellDialect().getNewLine().getNewLineString());
-        }
-
-        if (init.size() == 0) {
-            // Check for special case of the command to be executed just being another shell script
-            if (toExecuteInShell.endsWith(".sh") || toExecuteInShell.endsWith(".bat")) {
-                return toExecuteInShell;
-            }
-        }
-
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init) + nl;
 
-        var applyCommand = t.applyRcFileCommand();
-        if (applyCommand != null) {
-            content = applyCommand + "\n" + content;
+        if (login) {
+            var applyProfilesCommand = t.applyProfileFilesCommand();
+            if (applyProfilesCommand != null) {
+                content = applyProfilesCommand + "\n" + content;
+            }
+        }
+
+        var applyRcCommand = t.applyRcFileCommand();
+        if (applyRcCommand != null) {
+            content = applyRcCommand + "\n" + content;
         }
 
         if (toExecuteInShell != null) {
