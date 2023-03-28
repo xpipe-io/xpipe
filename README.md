@@ -14,12 +14,32 @@ to implement custom functionality through custom extensions.
 ## Getting Started
 
 Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases) and try it out.
+
 Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like to see prioritized.
+
 There are several ways to reach out in case you encounter any issues or questions:
 - The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)
 - The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
 
 ## Features
+
+### Remote file explorer
+
+- Access files on any remote system
+- Quickly open a terminal into any directory
+- Run commands from the explorer interface
+- Utilize your favourite local programs to open and edit remote files
+
+<img src="https://user-images.githubusercontent.com/72509152/221438071-e3f287ea-a6ee-49b3-a776-4b5b39b1fd92.png" alt="drawing" height="450"/>
+
+### Manage all your connections in one place
+
+- Easily create and manage all kinds of remote connections at one location
+- Securely stores all information exclusively on your computer and encrypts all secret information
+- Share connection configurations to any other trusted party through shareable URLs
+- Create desktop shortcuts for your connections
+
+<img src="https://user-images.githubusercontent.com/72509152/221438232-18bc1ee3-4b3f-49dc-8fb0-df8896aa7c91.png" alt="drawing" height="450"/>
 
 ### Flexible remote connector
 
@@ -34,24 +54,6 @@ There are several ways to reach out in case you encounter any issues or question
 - Comes with integrations for all commonly used terminals for all operating systems
 - Allows you to customize the launched shell's init environment
 - Supports launches from the GUI or command-line
-
-### Manage all your connections in one place
-
-- Easily create and manage all kinds of remote connections at one location
-- Securely stores all information exclusively on your computer and encrypts all secret information
-- Share connection configurations to any other trusted party through shareable URLs
-- Create desktop shortcuts for your connections
-
-<img src="https://user-images.githubusercontent.com/72509152/221438232-18bc1ee3-4b3f-49dc-8fb0-df8896aa7c91.png" alt="drawing" height="450"/>
-
-### Remote file explorer
-
-- Access files on any remote system
-- Quickly open a terminal into any directory
-- Run commands from the explorer interface
-- Utilize your favourite local programs to open and edit remote files
-
-<img src="https://user-images.githubusercontent.com/72509152/221438071-e3f287ea-a6ee-49b3-a776-4b5b39b1fd92.png" alt="drawing" height="450"/>
 
 ## Repository Structure
 
@@ -70,13 +72,11 @@ The other modules make up the X-Pipe implementation and are licensed under GPL:
 
 X-Pipe utilizes an open core model, which essentially means that
 the main application is open source while certain other components are not.
+Select parts are not open source yet, but may be added to this repository in the future.
 Some tests and especially test environments and that run on private servers
 are also not included in this repository (Don't want to leak server information).
-Finally, scripts and workflows to create signed executables and installers
-are also not included to prevent attackers from easily impersonating the shipping the X-Pipe application malware.
-
-The license model is chosen in such a way that you are
-able to use and integrate X-Pipe within your application through the MIT-licensed API.
+Finally, scripts and workflows to create (signed) executables and installers
+are also not included to prevent attackers from easily impersonating the X-Pipe application.
 
 ## Development
 
