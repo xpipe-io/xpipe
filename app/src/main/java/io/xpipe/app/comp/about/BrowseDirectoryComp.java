@@ -7,6 +7,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
@@ -18,7 +19,7 @@ public class BrowseDirectoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        return new DynamicOptionsBuilder(false)
+        var b = new DynamicOptionsBuilder(false)
                 .addComp(
                         "issueReporter",
                         new ButtonComp(AppI18n.observable("reportIssue"), () -> {
@@ -37,27 +38,29 @@ public class BrowseDirectoryComp extends SimpleComp {
                                     .resolve("xpipe.log")
                                     .toString());
                         }),
-                        null)
-                .addComp(
-                        "launchDebugMode",
-                        new ButtonComp(AppI18n.observable("launchDebugMode"), () -> {
-                            OperationMode.executeAfterShutdown(() -> {
-                                try (var sc = ShellStore.createLocal().create().start()) {
-                                    var script = FileNames.join(
-                                            XPipeInstallation.getCurrentInstallationBasePath()
-                                                    .toString(),
-                                            XPipeInstallation.getDaemonDebugScriptPath(sc.getOsType()));
-                                    if (sc.getOsType().equals(OsType.WINDOWS)) {
-                                        sc.executeSimpleCommand(ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
-                                    } else {
-                                        TerminalHelper.open("X-Pipe Debug", "\"" + script + "\"");
-                                    }
+                        null);
+        if (AppPrefs.get().developerMode().getValue()) {
+            b.addComp(
+                    "launchDebugMode",
+                    new ButtonComp(AppI18n.observable("launchDebugMode"), () -> {
+                        OperationMode.executeAfterShutdown(() -> {
+                            try (var sc = ShellStore.createLocal().create().start()) {
+                                var script = FileNames.join(
+                                        XPipeInstallation.getCurrentInstallationBasePath()
+                                                .toString(),
+                                        XPipeInstallation.getDaemonDebugScriptPath(sc.getOsType()));
+                                if (sc.getOsType().equals(OsType.WINDOWS)) {
+                                    sc.executeSimpleCommand(ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
+                                } else {
+                                    TerminalHelper.open("X-Pipe Debug", "\"" + script + "\"");
                                 }
-                            });
-                            DesktopHelper.browsePath(AppLogs.get().getSessionLogsDirectory());
-                        }),
-                        null)
-                .addComp(
+                            }
+                        });
+                        DesktopHelper.browsePath(AppLogs.get().getSessionLogsDirectory());
+                    }),
+                    null);
+        }
+        return b.addComp(
                         "installationFiles",
                         new ButtonComp(AppI18n.observable("openInstallationDirectory"), () -> {
                             DesktopHelper.browsePath(XPipeInstallation.getCurrentInstallationBasePath());

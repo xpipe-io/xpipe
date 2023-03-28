@@ -34,21 +34,28 @@ public class StoreCreationBarComp extends SimpleComp {
                 .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addCommand"));
 
-        var newShellStore = new ButtonComp(
-                        AppI18n.observable("addHost"), new FontIcon("mdi2h-home-plus-outline"), () -> {
+        var newHostStore = new ButtonComp(
+                        AppI18n.observable("addHost"), new FontIcon("mdi2h-home-plus"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.HOST));
                         })
                 .shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addHost"));
 
+        var newShellStore = new ButtonComp(
+                AppI18n.observable("addShell"), new FontIcon("mdi2t-text-box-multiple"), () -> {
+            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.SHELL));
+        })
+                .shortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN))
+                .apply(new FancyTooltipAugment<>("addShell"));
+
         var newDbStore = new ButtonComp(
-                        AppI18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus-outline"), () -> {
+                        AppI18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
                         })
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addDatabase"));
 
-        var box = new VerticalComp(List.of(newShellStore, newDbStore, newStreamStore));
+        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore));
         box.apply(s -> AppFont.medium(s.get()));
         var bar = box.createRegion();
         bar.getStyleClass().add("bar");

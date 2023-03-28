@@ -131,6 +131,7 @@ public interface DataStoreProvider {
     enum DisplayCategory {
         HOST,
         DATABASE,
+        SHELL,
         COMMAND,
         OTHER;
     }
