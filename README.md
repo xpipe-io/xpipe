@@ -2,16 +2,26 @@
 
 ### A smart connection manager and remote file explorer
 
-X-Pipe takes a fresh spin on the established concept of connection managers.
-The central idea is to utilize and integrate well with your existing tools and workflows,
-focusing on augmenting them rather than replacing them.
-X-Pipe outsources as many tasks as possible such
-that you can always use your favorite tools to work with X-Pipe, e.g.
+X-Pipe is a brand new type of connection manager and remote file explorer that works by exclusively interacting with CLI tools on local and remote shell connections.
+This approach makes it much more flexible as it doesn't have to deal with file system APIs or remote file handling protocols at all.
+
+X-Pipe integrates with your existing tools and workflows
+by outsourcing as much tasks as possible to your
 text/code editors, terminals, shells, command-line tools and more.
-The X-Pipe platform is open source and designed to be extensible, allowing anyone
+The platform is open source and designed to be extensible, allowing anyone
 to implement custom functionality through custom extensions.
 
-### Flexible Connector
+## Getting Started
+
+Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases) and try it out.
+Feel free to file tickets for bugs or feature requests. Upvote 👍 the ones you'd like to see prioritized.
+There are several ways to reach out in case you encounter any issues or questions:
+- The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)
+- The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
+
+## Features
+
+### Flexible remote connector
 
 - Can connect to standard servers, database servers, and more
 - Supports established protocols (e.g. SSH and more) plus any custom connection methods that work through the command-line
@@ -20,36 +30,28 @@ to implement custom functionality through custom extensions.
 ### Instant launch for remote shells and commands
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
-- Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and database shells (e.g. PSQL Shell)
+- Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and database shells (e.g. PostgreSQL Shell)
 - Comes with integrations for all commonly used terminals for all operating systems
-- Exclusively uses established CLI tools and therefore works out of the box on most systems and doesn't require any additional setup
 - Allows you to customize the launched shell's init environment
-- Launch connections from the GUI or commandline
+- Supports launches from the GUI or command-line
 
-### All your connections in one place
+### Manage all your connections in one place
 
 - Easily create and manage all kinds of remote connections at one location
 - Securely stores all information exclusively on your computer and encrypts all secret information
 - Share connection configurations to any other trusted party through shareable URLs
-- Create desktop shortcuts to open your connections
+- Create desktop shortcuts for your connections
 
 <img src="https://user-images.githubusercontent.com/72509152/221438232-18bc1ee3-4b3f-49dc-8fb0-df8896aa7c91.png" alt="drawing" height="450"/>
 
-### Remote File Explorer
+### Remote file explorer
 
 - Access files on any remote system
 - Quickly open a terminal into any directory
 - Run commands from the explorer interface
-- Utilize your local tools to open and edit remote files
+- Utilize your favourite local programs to open and edit remote files
 
 <img src="https://user-images.githubusercontent.com/72509152/221438071-e3f287ea-a6ee-49b3-a776-4b5b39b1fd92.png" alt="drawing" height="450"/>
-
-### Integrate X-Pipe with your favorite tools and workflows
-
-- Easily import and export all kinds of data formats and technologies
-- Access data sources from the command-line with the X-Pipe CLI or
-  your favorite programming languages using the X-Pipe APIs
-- Connect select third party applications directly to X-Pipe through extensions
 
 ## Repository Structure
 
@@ -122,10 +124,3 @@ There are several test workflows run in a private environment as they use privat
 such as remote server connections and database connections.
 Other private workflows are responsible for packaging, signing, and distributing the releases.
 So you can assume that the code is tested!
-
-## Community
-
-There are several ways to reach out in case you encounter any issues or questions:
-
-- The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)
-- The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
