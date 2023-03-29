@@ -41,7 +41,7 @@ public class AppProperties {
             }
         });
 
-        fullVersion = Optional.ofNullable(props.getProperty("io.xpipe.app.fullVersion"))
+        fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         version = Optional.ofNullable(props.getProperty("version")).orElse("dev");
