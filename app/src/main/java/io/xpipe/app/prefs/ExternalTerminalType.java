@@ -11,6 +11,7 @@ import io.xpipe.core.process.ShellControl;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
@@ -119,7 +120,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     public static final ExternalTerminalType CUSTOM = new CustomType();
 
-    public static final List<ExternalTerminalType> ALL = List.of(
+    public static final List<ExternalTerminalType> ALL = Stream.of(
                     WINDOWS_TERMINAL,
                     POWERSHELL,
                     CMD,
@@ -130,15 +131,15 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     ITERM2,
                     MACOS_TERMINAL,
                     CUSTOM)
-            .stream()
             .filter(terminalType -> terminalType.isSelectable())
             .toList();
 
     public static ExternalTerminalType getDefault() {
         return ALL.stream()
+                .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
                 .findFirst()
-                .orElse(CUSTOM);
+                .orElse(null);
     }
 
     public abstract void launch(String name, String command) throws Exception;

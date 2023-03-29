@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandControl;
 
@@ -17,7 +18,7 @@ public class TerminalHelper {
 
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
-            throw new IllegalStateException("No terminal has been configured to be used");
+            throw new IllegalStateException(AppI18n.get("noTerminalSet"));
         }
 
         type.launch(title, command);
