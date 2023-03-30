@@ -1,10 +1,11 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.core.AppResources;
 import io.xpipe.core.store.FileSystem;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.image.Image;
+import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import lombok.Getter;
 
@@ -124,13 +125,15 @@ public class FileListCompEntry {
             return;
         }
 
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/file_drag_icon.png")
-                .orElseThrow();
-        var image = new Image(url.toString(), 80, 80, true, false);
         var selected = model.getSelected();
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
         db.setContent(FileBrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
-        db.setDragView(image, 30, 60);
+
+        var r = new SelectedFileListComp(selected).createRegion();
+        new Scene(r);
+        WritableImage image = r.snapshot(new SnapshotParameters(), null);
+        db.setDragView(image, -20, 15);
+
         event.setDragDetect(true);
         event.consume();
     }

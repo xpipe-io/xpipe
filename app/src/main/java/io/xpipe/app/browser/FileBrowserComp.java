@@ -38,7 +38,11 @@ public class FileBrowserComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var bookmarksList = new BookmarkList(model).createRegion();
-        var splitPane = new SplitPane(bookmarksList, createTabs());
+        var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage()).createRegion();
+        var vertical = new VBox(bookmarksList, localDownloadStage);
+        vertical.setFillWidth(true);
+
+        var splitPane = new SplitPane(vertical, createTabs());
         splitPane
                 .widthProperty()
                 .addListener(

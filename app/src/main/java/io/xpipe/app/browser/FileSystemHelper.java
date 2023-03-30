@@ -72,9 +72,15 @@ public class FileSystemHelper {
         return FileNames.toDirectory(normalized);
     }
 
+    private static FileSystem localFileSystem;
+
     public static FileSystem.FileEntry getLocal(Path file) throws Exception {
+        if (localFileSystem == null) {
+            localFileSystem = new LocalStore().createFileSystem();
+        }
+
         return new FileSystem.FileEntry(
-                LocalStore.getFileSystem(),
+                localFileSystem,
                 file.toString(),
                 Files.getLastModifiedTime(file).toInstant(),
                 Files.isDirectory(file),

@@ -40,6 +40,7 @@ public class FileBrowserModel {
 
     private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
+    private final LocalFileTransferStage localTransfersStage = new LocalFileTransferStage();
 
     public void finishChooser() {
         if (getMode().equals(Mode.BROWSER)) {

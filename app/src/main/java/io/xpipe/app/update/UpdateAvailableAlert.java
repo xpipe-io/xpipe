@@ -2,12 +2,19 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import javafx.scene.control.Alert;
 
 public class UpdateAvailableAlert {
 
     public static void showIfNeeded() {
         if (AppUpdater.get().getDownloadedUpdate().getValue() == null) {
+            return;
+        }
+
+        // If we downloaded an update, and decided to no longer automatically update, don't remind us!
+        // You can still update manually in the about tab
+        if (!AppPrefs.get().automaticallyUpdate().get()) {
             return;
         }
 

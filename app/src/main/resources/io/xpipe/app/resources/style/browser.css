@@ -1,4 +1,17 @@
-/* SPDX-License-Identifier: MIT */
+.download-background {
+-fx-border-color: -color-neutral-emphasis;
+-fx-border-width: 1px 0 0 0;
+-fx-padding: 1em;
+-fx-background-color: -color-neutral-muted;
+}
+
+.selected-file-list {
+    -fx-padding: 10px;
+}
+
+.selected-file-list * {
+    -fx-spacing: 5px;
+}
 
 .browser .bookmark-list {
     -fx-border-width: 0 0 1 1;
@@ -26,8 +39,8 @@
 }
 
 .browser .singular .tab-header-area {
-                                        visibility: hidden ;
-                                    }
+    visibility: hidden ;
+}
 
 .browser .table-directory-view .table-view {
     -color-header-bg: -color-bg-default;
