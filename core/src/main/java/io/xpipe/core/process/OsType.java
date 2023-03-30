@@ -60,8 +60,8 @@ public interface OsType {
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             var properties = getProperties(pc);
-            return properties.get("OS Name") + " "
-                    + properties.get("OS Version").split(" ")[0];
+            return properties.getOrDefault("OS Name", "Windows") + " "
+                    + properties.getOrDefault("OS Version", "?").split(" ")[0];
         }
     }
 

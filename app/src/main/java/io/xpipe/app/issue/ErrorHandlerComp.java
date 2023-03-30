@@ -5,10 +5,13 @@ import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.JfxHelper;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -32,6 +35,7 @@ public class ErrorHandlerComp extends SimpleComp {
     private static final AtomicBoolean showing = new AtomicBoolean(false);
     private final ErrorEvent event;
     private final Stage stage;
+    private final Property<ErrorAction> takenAction = new SimpleObjectProperty<>();
 
     public ErrorHandlerComp(ErrorEvent event, Stage stage) {
         this.event = event;
@@ -46,16 +50,28 @@ public class ErrorHandlerComp extends SimpleComp {
         }
     }
 
+    private static Comp<?> setUpComp(ErrorEvent event, Stage w, CountDownLatch finishLatch) {
+        var c = new ErrorHandlerComp(event, w);
+        w.setOnHidden(e -> {
+            if (c.takenAction.getValue() == null) {
+                ErrorAction.ignore().handle(event);
+                c.takenAction.setValue(ErrorAction.ignore());
+            }
+
+            showing.set(false);
+            finishLatch.countDown();
+        });
+        return c;
+    }
+
     public static void showAndWaitWithPlatformThread(ErrorEvent event) {
         var finishLatch = new CountDownLatch(1);
         if (!showing.get()) {
             showing.set(true);
             var window = AppWindowHelper.sideWindow(
-                    AppI18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
-            window.setOnHidden(e -> {
-                showing.set(false);
-                finishLatch.countDown();
-            });
+                    AppI18n.get("errorHandler"), w -> {
+                        return setUpComp(event, w, finishLatch);
+                    }, true, null);
 
             // An exception is thrown when show and wait is called
             // within an animation or layout processing task, so use show
@@ -74,12 +90,9 @@ public class ErrorHandlerComp extends SimpleComp {
             if (!showing.get()) {
                 showing.set(true);
                 var window = AppWindowHelper.sideWindow(
-                        AppI18n.get("errorHandler"), w -> new ErrorHandlerComp(event, w), true, null);
-                window.setOnHidden(e -> {
-                    showing.set(false);
-                    finishLatch.countDown();
-                });
-
+                        AppI18n.get("errorHandler"), w -> {
+                            return setUpComp(event, w, finishLatch);
+                        }, true, null);
                 // An exception is thrown when show and wait is called
                 // within an animation or layout processing task, so use show
                 try {
@@ -105,6 +118,7 @@ public class ErrorHandlerComp extends SimpleComp {
     private Region createActionComp(ErrorAction a) {
         var r = JfxHelper.createNamedEntry(a.getName(), a.getDescription());
         var b = new ButtonComp(null, r, () -> {
+            takenAction.setValue(a);
             if (a.handle(event)) {
                 stage.close();
             }
@@ -165,9 +179,6 @@ public class ErrorHandlerComp extends SimpleComp {
         layout.setCenter(content);
         layout.setBottom(details);
         layout.getStyleClass().add("error-handler-comp");
-        layout.maxHeightProperty().addListener((c, o, n) -> {
-            int a = 0;
-        });
 
         return layout;
     }
