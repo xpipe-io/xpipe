@@ -38,7 +38,13 @@ public class FileBrowserComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var bookmarksList = new BookmarkList(model).createRegion();
-        var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage()).createRegion();
+        var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage()).hide(Bindings.createBooleanBinding(() -> {
+            if (model.getOpenFileSystems().size() == 0) {
+                return true;
+            }
+
+            return !model.getMode().equals(FileBrowserModel.Mode.BROWSER);
+        }, PlatformThread.sync(model.getOpenFileSystems()))).createRegion();
         var vertical = new VBox(bookmarksList, localDownloadStage);
         vertical.setFillWidth(true);
 

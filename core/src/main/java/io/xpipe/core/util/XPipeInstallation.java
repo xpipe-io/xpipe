@@ -272,7 +272,7 @@ public class XPipeInstallation {
 
     public static String getRelativeCliExecutablePath(OsType type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("cli", "xpipe.exe");
+            return FileNames.join("cli", "bin", "xpipe.exe");
         } else if (type.equals(OsType.LINUX)) {
             return FileNames.join("cli", "bin", "xpipe");
         } else {

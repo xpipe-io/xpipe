@@ -19,15 +19,15 @@ public final class HumanReadableFormat {
     public static final DateTimeFormatter HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String byteCount(long bytes) {
-        if (-1000 < bytes && bytes < 1000) {
+        if (-1024 < bytes && bytes < 1024) {
             return bytes + " B";
         }
         CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
+        while (bytes <= -1024 * 1024 || bytes >= 1024 * 1024) {
+            bytes /= 1024;
             ci.next();
         }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
+        return String.format("%.1f %cB", bytes / 1024.0, ci.current());
     }
 
     public static String date(LocalDateTime x) {
