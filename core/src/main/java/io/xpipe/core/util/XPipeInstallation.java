@@ -125,6 +125,8 @@ public class XPipeInstallation {
 
     public static String getLocalInstallationBasePathForCLI(String cliExecutable) throws Exception {
         var defaultInstallation = getLocalDefaultInstallationBasePath(true);
+
+        // Can be empty in development mode
         if (cliExecutable == null) {
             return defaultInstallation;
         }
@@ -133,14 +135,13 @@ public class XPipeInstallation {
             return defaultInstallation;
         }
 
-        if (FileNames.startsWith(cliExecutable, defaultInstallation)) {
-            return defaultInstallation;
-        }
-
+        var path = Path.of(cliExecutable);
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            return FileNames.getParent(FileNames.getParent(FileNames.getParent(cliExecutable)));
+            return path.getParent().getParent().getParent().toString();
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return path.getParent().getParent().getParent().toString();
         } else {
-            return FileNames.getParent(FileNames.getParent(cliExecutable));
+            return path.getParent().getParent().getParent().toString();
         }
     }
 

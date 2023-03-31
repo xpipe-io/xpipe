@@ -18,7 +18,7 @@ public class DesktopShortcuts {
                         set "SHORTCUT=%%HOMEDRIVE%%%%HOMEPATH%%\\Desktop\\%s.lnk"
                         set PWS=powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile
 
-                        %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.TargetPath = '%%TARGET%%'; $S.Arguments = '%s'; $S.Save()"
+                        %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.WindowStyle=7; $S.TargetPath = '%%TARGET%%'; $S.Arguments = 'open %s'; $S.Save()"
                         """,
                 shortcutTarget, name, icon.toString(), target);
         LocalStore.getShell().executeSimpleCommand(content);
@@ -51,7 +51,7 @@ public class DesktopShortcuts {
         var content = String.format(
                 """
                         #!/bin/bash
-                        "%s" %s
+                        "%s" open %s
                         """,
                 exec, target);
 
