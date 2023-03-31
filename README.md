@@ -13,11 +13,7 @@ to implement custom functionality through custom extensions.
 
 ## Getting Started
 
-Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases) and try it out.
-
-There are several ways to reach out in case you encounter any issues or questions:
-- The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)
-- The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
+Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/latest) and try it out.
 
 ## Features
 
