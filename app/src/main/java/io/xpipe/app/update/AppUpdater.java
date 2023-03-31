@@ -101,8 +101,9 @@ public class AppUpdater {
                         ThreadHelper.sleep(Duration.ofMinutes(10).toMillis());
                         event("Starting background updater thread");
                         while (true) {
-                            if (INSTANCE.checkForUpdate(false) != null
-                                    && AppPrefs.get().automaticallyUpdate().get()) {
+                            var rel = INSTANCE.checkForUpdate(false);
+                            if (rel != null
+                                    && AppPrefs.get().automaticallyUpdate().get() && rel.isUpdate()) {
                                 event("Performing background update");
                                 INSTANCE.downloadUpdate();
                             }
@@ -226,7 +227,15 @@ public class AppUpdater {
     }
 
     public synchronized boolean isDownloadedUpdateStillLatest() {
+        if (downloadedUpdate.getValue() == null) {
+            return false;
+        }
+
         var available = checkForUpdate(true);
+        if (available == null) {
+            return true;
+        }
+
         return downloadedUpdate.getValue() != null
                 && available.getVersion().equals(downloadedUpdate.getValue().getVersion());
     }

@@ -40,6 +40,11 @@ public class UpdateCheckComp extends SimpleComp {
     }
 
     private void restart() {
+        // Check if we're still on latest
+        if (!AppUpdater.get().isDownloadedUpdateStillLatest()) {
+            return;
+        }
+
         AppUpdater.get().executeUpdateAndClose();
     }
 

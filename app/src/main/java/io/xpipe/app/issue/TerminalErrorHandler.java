@@ -89,7 +89,7 @@ public class TerminalErrorHandler implements ErrorHandler {
         try {
             AppUpdater.init();
             var rel = AppUpdater.get().checkForUpdate(true);
-            if (rel.isUpdate()) {
+            if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);
                             alert.setTitle(AppI18n.get("updateAvailableTitle"));

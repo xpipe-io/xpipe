@@ -52,7 +52,7 @@ public class LocalFileTransferStage {
             items.add(item);
             executor.submit(() -> {
                 try {
-                    FileUtils.forceMkdirParent(TEMP.toFile());
+                    FileUtils.forceMkdir(TEMP.toFile());
                     try (var b = new BusyProperty(downloading)) {
                         FileSystemHelper.dropFilesInto(FileSystemHelper.getLocal(TEMP), List.of(entry), false);
                     }
