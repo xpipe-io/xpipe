@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -96,26 +97,41 @@ public class AppDownloads {
         }
     }
 
-    public static String getLatestVersion(boolean omitErrors) {
-        return getLatestSuitableRelease(omitErrors)
+    public static String getLatestVersion() throws IOException {
+        return getLatestSuitableRelease()
                 .map(ghRelease -> ghRelease.getTagName())
                 .orElse("?");
     }
 
-    public static Optional<GHRelease> getLatestSuitableRelease(boolean omitErrors) {
-        try {
-            var repo = getRepository();
 
-            // Always choose most up-to-date release as we assume that there are only full releases and prereleases
-            if (AppPrefs.get() != null && AppPrefs.get().updateToPrereleases().get()) {
-                return Optional.ofNullable(repo.listReleases().iterator().next());
-            }
+    public static Optional<GHRelease> getLatestIncludingPreRelease() throws IOException {
+        var repo = getRepository();
+        return Optional.ofNullable(repo.listReleases().iterator().next());
+    }
 
-            return Optional.ofNullable(repo.getLatestRelease());
-        } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to fetch latest release information", e).omitted(omitErrors).handle();
-            return Optional.empty();
+    public static Optional<GHRelease> getLatestRelease() throws IOException {
+        var repo = getRepository();
+        return Optional.ofNullable(repo.getLatestRelease());
+    }
+
+    public static Optional<GHRelease> getLatestSuitableRelease() throws IOException {
+        var preIncluding = getLatestIncludingPreRelease();
+
+        if (AppPrefs.get() != null && AppPrefs.get().updateToPrereleases().get()) {
+            return preIncluding;
         }
+
+        // If we are currently running a prerelease, always return this as the suitable release!
+        if (preIncluding.isPresent() && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
+            return preIncluding;
+        }
+
+        // If this release is not a prerelease, just return it to prevent querying another release
+        if (preIncluding.isPresent() && !preIncluding.get().isPrerelease()) {
+            return preIncluding;
+        }
+
+        return getLatestRelease();
     }
 
     public static Optional<GHRelease> getRelease(String version, boolean omitErrors) {

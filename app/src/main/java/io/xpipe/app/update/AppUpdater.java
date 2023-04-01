@@ -20,6 +20,7 @@ import lombok.With;
 import lombok.extern.jackson.Jacksonized;
 import org.kohsuke.github.GHRelease;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -50,6 +51,8 @@ public class AppUpdater {
         }
 
         downloadedUpdate.setValue(AppCache.get("downloadedUpdate", DownloadedUpdate.class, () -> null));
+
+        // Check if the original version this was downloaded from is still the same
         if (downloadedUpdate.getValue() != null
                 && !downloadedUpdate
                         .getValue()
@@ -57,6 +60,16 @@ public class AppUpdater {
                         .equals(AppProperties.get().getVersion())) {
             downloadedUpdate.setValue(null);
         }
+
+        // Check if somehow the downloaded version is equal to the current one
+        if (downloadedUpdate.getValue() != null
+                && downloadedUpdate
+                .getValue()
+                .getVersion()
+                .equals(AppProperties.get().getVersion())) {
+            downloadedUpdate.setValue(null);
+        }
+
         if (!XPipeDistributionType.get().supportsUpdate()) {
             downloadedUpdate.setValue(null);
         }
@@ -64,20 +77,10 @@ public class AppUpdater {
         downloadedUpdate.addListener((c, o, n) -> {
             AppCache.update("downloadedUpdate", n);
         });
-
-        lastUpdateCheckResult.setValue(AppCache.get("lastUpdateCheckResult", AvailableRelease.class, () -> null));
-        if (lastUpdateCheckResult.getValue() != null
-                && lastUpdateCheckResult.getValue().getSourceVersion() != null
-                && !lastUpdateCheckResult
-                        .getValue()
-                        .getSourceVersion()
-                        .equals(AppProperties.get().getVersion())) {
-            lastUpdateCheckResult.setValue(null);
-        }
-        event("Last update check result was " + lastUpdateCheckResult.getValue());
         lastUpdateCheckResult.addListener((c, o, n) -> {
-            AppCache.update("lastUpdateCheckResult", n);
+            downloadedUpdate.setValue(null);
         });
+        refreshUpdateCheckSilent();
     }
 
     private static void event(String msg) {
@@ -94,14 +97,17 @@ public class AppUpdater {
         }
 
         INSTANCE = new AppUpdater();
+        startBackgroundUpdater();
+    }
 
+    private static void startBackgroundUpdater() {
         if (XPipeDistributionType.get().supportsUpdate()
                 && XPipeDistributionType.get() != XPipeDistributionType.DEVELOPMENT) {
             ThreadHelper.create("updater", true, () -> {
                         ThreadHelper.sleep(Duration.ofMinutes(10).toMillis());
                         event("Starting background updater thread");
                         while (true) {
-                            var rel = INSTANCE.checkForUpdate(false);
+                            var rel = INSTANCE.refreshUpdateCheckSilent();
                             if (rel != null
                                     && AppPrefs.get().automaticallyUpdate().get() && rel.isUpdate()) {
                                 event("Performing background update");
@@ -115,7 +121,7 @@ public class AppUpdater {
         }
     }
 
-    private static boolean isUpdate(String currentVersion) {
+    private static boolean isUpdate(String releaseVersion) {
         if (AppPrefs.get() != null
                 && AppPrefs.get().developerMode().getValue()
                 && AppPrefs.get().developerDisableUpdateVersionCheck().get()) {
@@ -123,22 +129,12 @@ public class AppUpdater {
             return true;
         }
 
-        if (
-        //                true
-        //                ||
-        !AppProperties.get().getVersion().equals(currentVersion)) {
+        if (!AppProperties.get().getVersion().equals(releaseVersion)) {
             event("Release has a different version");
             return true;
         }
 
         return false;
-    }
-
-    public void refreshUpdateState() {
-        if (lastUpdateCheckResult.getValue() != null
-                && !isUpdate(lastUpdateCheckResult.getValue().getVersion())) {
-            lastUpdateCheckResult.setValue(lastUpdateCheckResult.getValue().withUpdate(false));
-        }
     }
 
     public void downloadUpdateAsync() {
@@ -155,6 +151,10 @@ public class AppUpdater {
         }
 
         if (!XPipeDistributionType.get().supportsUpdate()) {
+            return;
+        }
+
+        if (!lastUpdateCheckResult.getValue().isUpdate()) {
             return;
         }
 
@@ -184,20 +184,12 @@ public class AppUpdater {
         }
     }
 
-    private boolean shouldPerformUpdate() {
+    public void executeUpdateAndClose() {
         if (busy.getValue()) {
-            return false;
+            return;
         }
 
         if (downloadedUpdate.getValue() == null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public void executeUpdateAndClose() {
-        if (!shouldPerformUpdate()) {
             return;
         }
 
@@ -222,69 +214,57 @@ public class AppUpdater {
         });
     }
 
-    public void checkForUpdateAsync(boolean forceCheck) {
-        ThreadHelper.runAsync(() -> checkForUpdate(forceCheck));
+    public void checkForUpdateAsync() {
+        ThreadHelper.runAsync(() -> refreshUpdateCheckSilent());
     }
 
-    public synchronized boolean isDownloadedUpdateStillLatest() {
-        if (downloadedUpdate.getValue() == null) {
-            return false;
+    public synchronized AvailableRelease refreshUpdateCheckSilent() {
+        try {
+            return refreshUpdateCheck();
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).omit().handle();
+            return null;
         }
-
-        var available = checkForUpdate(true);
-        if (available == null) {
-            return true;
-        }
-
-        return downloadedUpdate.getValue() != null
-                && available.getVersion().equals(downloadedUpdate.getValue().getVersion());
     }
 
-    public synchronized AvailableRelease checkForUpdate(boolean forceCheck) {
+    public synchronized AvailableRelease refreshUpdateCheck() throws IOException {
         if (busy.getValue()) {
             return lastUpdateCheckResult.getValue();
         }
 
-        if (!forceCheck
-                && lastUpdateCheckResult.getValue() != null
-                && Duration.between(lastUpdateCheckResult.getValue().getCheckTime(), Instant.now())
-                                .compareTo(Duration.ofHours(1))
-                        <= 0) {
-            return lastUpdateCheckResult.getValue();
-        }
-
         try (var ignored = new BusyProperty(busy)) {
-            var rel = AppDownloads.getLatestSuitableRelease(!forceCheck);
+            var rel = AppDownloads.getLatestSuitableRelease();
             event("Determined latest suitable release "
                     + rel.map(GHRelease::getName).orElse(null));
-            lastUpdateCheckResult.setValue(null);
+
             if (rel.isEmpty()) {
+                lastUpdateCheckResult.setValue(null);
                 return null;
             }
 
-            var isUpdate = isUpdate(rel.get().getTagName());
-            try {
-                var assetType = AppInstaller.getSuitablePlatformAsset();
-                var ghAsset = rel.orElseThrow().listAssets().toList().stream()
-                        .filter(g -> assetType.isCorrectAsset(g.getName()))
-                        .findAny();
-                if (ghAsset.isEmpty()) {
-                    return null;
-                }
-
-                event("Selected asset " + ghAsset.get().getName());
-                lastUpdateCheckResult.setValue(new AvailableRelease(
-                        AppProperties.get().getVersion(),
-                        rel.get().getTagName(),
-                        rel.get().getHtmlUrl().toString(),
-                        ghAsset.get().getBrowserDownloadUrl(),
-                        assetType,
-                        Instant.now(),
-                        isUpdate));
-
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+            // Don't update value if result is the same
+            if (lastUpdateCheckResult.getValue() != null && lastUpdateCheckResult.getValue().getVersion().equals(rel.get().getTagName())) {
+                return lastUpdateCheckResult.getValue();
             }
+
+            var isUpdate = isUpdate(rel.get().getTagName());
+            var assetType = AppInstaller.getSuitablePlatformAsset();
+            var ghAsset = rel.orElseThrow().listAssets().toList().stream()
+                    .filter(g -> assetType.isCorrectAsset(g.getName()))
+                    .findAny();
+            if (ghAsset.isEmpty()) {
+                return null;
+            }
+
+            event("Selected asset " + ghAsset.get().getName());
+            lastUpdateCheckResult.setValue(new AvailableRelease(
+                    AppProperties.get().getVersion(),
+                    rel.get().getTagName(),
+                    rel.get().getHtmlUrl().toString(),
+                    ghAsset.get().getBrowserDownloadUrl(),
+                    assetType,
+                    Instant.now(),
+                    isUpdate));
         }
 
         return lastUpdateCheckResult.getValue();

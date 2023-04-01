@@ -18,11 +18,6 @@ public class UpdateAvailableAlert {
             return;
         }
 
-        if (AppUpdater.get().getDownloadedUpdate().getValue() != null && !AppUpdater.get().isDownloadedUpdateStillLatest()) {
-            AppUpdater.get().getDownloadedUpdate().setValue(null);
-            return;
-        }
-
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
                     alert.setHeaderText(AppI18n.get("updateReadyAlertHeader", AppUpdater.get().getDownloadedUpdate().getValue().getVersion()));

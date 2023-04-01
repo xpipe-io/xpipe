@@ -40,20 +40,16 @@ public class UpdateCheckComp extends SimpleComp {
     }
 
     private void restart() {
-        // Check if we're still on latest
-        if (!AppUpdater.get().isDownloadedUpdateStillLatest()) {
-            return;
-        }
-
+        AppUpdater.get().refreshUpdateCheckSilent();
         AppUpdater.get().executeUpdateAndClose();
     }
 
-    private void update() {
+    private void download() {
         AppUpdater.get().downloadUpdateAsync();
     }
 
     private void refresh() {
-        AppUpdater.get().checkForUpdateAsync(true);
+        AppUpdater.get().checkForUpdateAsync();
     }
 
     private ObservableValue<String> descriptionText() {
@@ -131,8 +127,6 @@ public class UpdateCheckComp extends SimpleComp {
                         updateReady));
         button.getStyleClass().add("button-comp");
         button.setOnAction(e -> {
-            AppUpdater.get().refreshUpdateState();
-
             if (updateReady.getValue()) {
                 restart();
                 return;
@@ -142,7 +136,7 @@ public class UpdateCheckComp extends SimpleComp {
                 Hyperlinks.open(
                         AppUpdater.get().getLastUpdateCheckResult().getValue().getReleaseUrl());
             } else if (updateAvailable.getValue()) {
-                update();
+                download();
             } else {
                 refresh();
             }

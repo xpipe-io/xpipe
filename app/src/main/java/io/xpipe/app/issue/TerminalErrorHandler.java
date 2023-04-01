@@ -88,7 +88,7 @@ public class TerminalErrorHandler implements ErrorHandler {
     private static void handleProbableUpdate() {
         try {
             AppUpdater.init();
-            var rel = AppUpdater.get().checkForUpdate(true);
+            var rel = AppUpdater.get().refreshUpdateCheck();
             if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);

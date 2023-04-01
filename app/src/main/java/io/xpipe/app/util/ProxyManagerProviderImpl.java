@@ -32,7 +32,7 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
 
     @Override
     public Optional<String> checkCompatibility(ShellControl s) throws Exception {
-        var version = ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion(true);
+        var version = ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion();
 
         if (AppPrefs.get().developerDisableConnectorInstallationVersionCheck().get()) {
             return Optional.of(AppI18n.get("versionCheckOverride"));
@@ -59,7 +59,7 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
         if (message.isPresent()) {
             if (showAlert()) {
                 var version =
-                        ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion(true);
+                        ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion();
                 AppInstaller.installOnRemoteMachine(s, version);
                 return true;
             }
