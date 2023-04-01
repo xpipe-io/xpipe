@@ -2,6 +2,7 @@ package io.xpipe.core.process;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface OsType {
 
@@ -22,7 +23,7 @@ public interface OsType {
         }
     }
 
-    String  getHomeDirectory(ShellControl pc) throws Exception;
+    String getHomeDirectory(ShellControl pc) throws Exception;
 
     String getName();
 
@@ -36,7 +37,8 @@ public interface OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
+            return pc.executeStringSimpleCommand(
+                    pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
         }
 
         @Override
@@ -59,9 +61,17 @@ public interface OsType {
 
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
-            var properties = getProperties(pc);
-            return properties.getOrDefault("OS Name", "Windows") + " "
-                    + properties.getOrDefault("OS Version", "?").split(" ")[0];
+            return pc.executeStringSimpleCommand("wmic os get Caption")
+                            .lines()
+                            .skip(1)
+                            .collect(Collectors.joining())
+                            .trim()
+                    + " "
+                    + pc.executeStringSimpleCommand("wmic os get Version")
+                            .lines()
+                            .skip(1)
+                            .collect(Collectors.joining())
+                            .trim();
         }
     }
 
