@@ -61,17 +61,22 @@ public interface OsType {
 
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand("wmic os get Caption")
-                            .lines()
-                            .skip(1)
-                            .collect(Collectors.joining())
-                            .trim()
-                    + " "
-                    + pc.executeStringSimpleCommand("wmic os get Version")
-                            .lines()
-                            .skip(1)
-                            .collect(Collectors.joining())
-                            .trim();
+            try {
+                return pc.executeStringSimpleCommand("wmic os get Caption")
+                                .lines()
+                                .skip(1)
+                                .collect(Collectors.joining())
+                                .trim()
+                        + " "
+                        + pc.executeStringSimpleCommand("wmic os get Version")
+                                .lines()
+                                .skip(1)
+                                .collect(Collectors.joining())
+                                .trim();
+            } catch (Throwable t) {
+                // Just in case this fails somehow
+                return "Windows ?";
+            }
         }
     }
 

@@ -59,7 +59,7 @@ public abstract class DataStorage {
             try {
                 dataStoreProvider.storageInit();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEvent.fromThrowable(e).omit().handle();
             }
         });
 

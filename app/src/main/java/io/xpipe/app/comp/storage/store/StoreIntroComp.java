@@ -56,10 +56,11 @@ public class StoreIntroComp extends SimpleComp {
                 introDesc,
                 new Separator(Orientation.HORIZONTAL),
                 machine,
-                scanPane,
-                new Separator(Orientation.HORIZONTAL),
-                documentation,
-                docLinkPane);
+                scanPane
+//                new Separator(Orientation.HORIZONTAL),
+//                documentation,
+//                docLinkPane
+        );
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);
