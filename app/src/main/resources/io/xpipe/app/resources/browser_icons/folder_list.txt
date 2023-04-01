@@ -1,0 +1,138 @@
+android | android | folder_type_android.svg | folder_type_android_opened.svg
+api | api, .api, apis, .apis | folder_type_api.svg | folder_type_api_opened.svg
+app | app, .app | folder_type_app.svg | folder_type_app_opened.svg
+arangodb | arangodb, arango | folder_type_arangodb.svg | folder_type_arangodb_opened.svg
+asset | assets, .assets | folder_type_asset.svg | folder_type_asset_opened.svg
+aurelia | aurelia_project | folder_type_aurelia.svg | folder_type_aurelia_opened.svg
+audio | audio, .audio, audios, .audios, sound, .sound, sounds, .sounds | folder_type_audio.svg | folder_type_audio_opened.svg
+aws | aws, .aws | folder_type_aws.svg | folder_type_aws_opened.svg
+azure | azure, .azure | folder_type_azure.svg | folder_type_azure_opened.svg
+azurepipelines | azure-pipelines, .azure-pipelines | folder_type_azurepipelines.svg | folder_type_azurepipelines_opened.svg
+binary | bin, .bin | folder_type_binary.svg | folder_type_binary_opened.svg
+bloc | blocs, bloc | folder_type_bloc.svg | folder_type_bloc_opened.svg
+blueprint | blueprint, .blueprint, blueprints, .blueprints | folder_type_blueprint.svg | folder_type_blueprint_opened.svg
+bower | bower_components | folder_type_bower.svg | folder_type_bower_opened.svg
+buildkite | .buildkite | folder_type_buildkite.svg | folder_type_buildkite_opened.svg
+cake | cake, .cake | folder_type_cake.svg | folder_type_cake_opened.svg
+certificate | certificates, .certificates, certs, certs. | folder_type_certificate.svg | folder_type_certificate_opened.svg
+chef | chef, .chef | folder_type_chef.svg | folder_type_chef_opened.svg
+circleci | .circleci | folder_type_circleci.svg | folder_type_circleci_opened.svg
+controller | controller, controllers, .controllers, handlers, .handlers | folder_type_controller.svg | folder_type_controller_opened.svg
+component | component, components, .components, gui, ui, widgets | folder_type_component.svg | folder_type_component_opened.svg
+composer | composer, .composer | folder_type_composer.svg | folder_type_composer_opened.svg
+cli | cli, cmd, command, commands, commandline, console | folder_type_cli.svg | folder_type_cli_opened.svg
+client | client, clients | folder_type_client.svg | folder_type_client_opened.svg
+cmake | .cmake, cmake | folder_type_cmake.svg | folder_type_cmake_opened.svg
+config | conf, .conf, config, .config, configs, .configs, configuration, .configuration, configurations, .configurations, setting, .setting, settings, .settings, ini, .ini, initializers, .initializers | folder_type_config.svg | folder_type_config_opened.svg
+coverage | coverage | folder_type_coverage.svg | folder_type_coverage_opened.svg
+css | css, _css | folder_type_css.svg | folder_type_css_opened.svg
+cubit | cubits, cubit | folder_type_cubit.svg | folder_type_cubit_opened.svg
+cypress | cypress | folder_type_cypress.svg | folder_type_cypress_opened.svg | folder_type_light_cypress.svg | folder_type_light_cypress_opened.svg
+dapr | .dapr, dapr | folder_type_dapr.svg | folder_type_dapr_opened.svg
+db | db, database, sql, data, repo, repository, repositories | folder_type_db.svg | folder_type_db_opened.svg
+debian | debian, deb | folder_type_debian.svg | folder_type_debian_opened.svg
+dependabot | .dependabot | folder_type_dependabot.svg | folder_type_dependabot_opened.svg
+devcontainer | .devcontainer | folder_type_devcontainer.svg | folder_type_devcontainer_opened.svg
+dist | dist, .dist, dists, out, outs, export, exports, build, .build, builds, release, releases, target, targets | folder_type_dist.svg | folder_type_dist_opened.svg
+docker | docker, .docker | folder_type_docker.svg | folder_type_docker_opened.svg
+docs | docs, doc | folder_type_docs.svg | folder_type_docs_opened.svg
+e2e | e2e | folder_type_e2e.svg | folder_type_e2e_opened.svg
+elasticbeanstalk | .elasticbeanstalk, .ebextensions | folder_type_elasticbeanstalk.svg | folder_type_elasticbeanstalk_opened.svg
+electron | electron | folder_type_electron.svg | folder_type_electron_opened.svg | folder_type_light_electron.svg | folder_type_light_electron_opened.svg
+expo | .expo, .expo-shared | folder_type_expo.svg | folder_type_expo_opened.svg | folder_type_light_expo.svg | folder_type_light_expo_opened.svg
+favicon | favicon, favicons | folder_type_favicon.svg | folder_type_favicon_opened.svg
+flow | flow, flow-typed | folder_type_flow.svg | folder_type_flow_opened.svg
+fonts | fonts, font, fnt | folder_type_fonts.svg | folder_type_fonts_opened.svg | folder_type_light_fonts.svg | folder_type_light_fonts_opened.svg
+gcp | gcp, .gcp | folder_type_gcp.svg | folder_type_gcp_opened.svg
+git | .git, submodules, .submodules | folder_type_git.svg | folder_type_git_opened.svg
+github | .github | folder_type_github.svg | folder_type_github_opened.svg
+gitlab | .gitlab | folder_type_gitlab.svg | folder_type_gitlab_opened.svg
+gradle | gradle, .gradle | folder_type_gradle.svg | folder_type_gradle_opened.svg | folder_type_light_gradle.svg | folder_type_light_gradle_opened.svg
+graphql | graphql | folder_type_graphql.svg | folder_type_graphql_opened.svg
+grunt | grunt | folder_type_grunt.svg | folder_type_grunt_opened.svg
+gulp | gulp, gulpfile.js, gulpfile.coffee, gulpfile.ts, gulpfile.babel.js, gulpfile.babel.coffee, gulpfile.babel.ts | folder_type_gulp.svg | folder_type_gulp_opened.svg
+haxelib | .haxelib, haxe_libraries | folder_type_haxelib.svg | folder_type_haxelib_opened.svg
+helper | helper, .helper, helpers, .helpers | folder_type_helper.svg | folder_type_helper_opened.svg
+hook | hook, .hook, hooks, .hooks | folder_type_hook.svg | folder_type_hook_opened.svg
+husky | .husky | folder_type_husky.svg | folder_type_husky_opened.svg
+idea | .idea | folder_type_idea.svg | folder_type_idea_opened.svg
+images | images, image, img, imgs, icons, icon, ico, screenshot, screenshots, svg | folder_type_images.svg | folder_type_images_opened.svg
+include | include, includes, incl, inc, .include, .includes, .incl, .inc, _include, _includes, _incl, _inc | folder_type_include.svg | folder_type_include_opened.svg
+interfaces | interface, interfaces | folder_type_interfaces.svg | folder_type_interfaces_opened.svg
+ios | ios | folder_type_ios.svg | folder_type_ios_opened.svg
+js | js | folder_type_js.svg | folder_type_js_opened.svg
+json | json | folder_type_json.svg | folder_type_json_opened.svg
+json_official | json | folder_type_json_official.svg | folder_type_json_official_opened.svg
+kubernetes | kubernetes, k8s, kube, kuber, .kubernetes, .k8s, .kube, .kuber | folder_type_kubernetes.svg | folder_type_kubernetes_opened.svg
+less | less, _less | folder_type_less.svg | folder_type_less_opened.svg
+library | lib, libs, .lib, .libs, library, libraries | folder_type_library.svg | folder_type_library_opened.svg
+linux | linux | folder_type_linux.svg | folder_type_linux_opened.svg
+locale | lang, language, languages, locale, locales, _locale, _locales, internationalization, globalization, localization, i18n, g11n, l10n | folder_type_locale.svg | folder_type_locale_opened.svg
+log | log, logs | folder_type_log.svg | folder_type_log_opened.svg
+macos | macos, darwin | folder_type_macos.svg | folder_type_macos_opened.svg
+mariadb | mariadb, maria | folder_type_mariadb.svg | folder_type_mariadb_opened.svg
+maven | .mvn | folder_type_maven.svg | folder_type_maven_opened.svg
+memcached | memcached, .memcached | folder_type_memcached.svg | folder_type_memcached_opened.svg
+middleware | middleware, middlewares | folder_type_middleware.svg | folder_type_middleware_opened.svg
+mjml | mjml, .mjml | folder_type_mjml.svg | folder_type_mjml_opened.svg
+minikube | minikube, minik8s, minikuber | folder_type_minikube.svg | folder_type_minikube_opened.svg
+mock | mocks, .mocks, __mocks__ | folder_type_mock.svg | folder_type_mock_opened.svg
+model | model, .model, models, .models, entities, .entities | folder_type_model.svg | folder_type_model_opened.svg
+module | modules | folder_type_module.svg | folder_type_module_opened.svg
+mongodb | mongodb, mongo | folder_type_mongodb.svg | folder_type_mongodb_opened.svg
+mysql | mysqldb, mysql | folder_type_mysql.svg | folder_type_mysql_opened.svg | folder_type_light_mysql.svg | folder_type_light_mysql_opened.svg
+next | .next | folder_type_next.svg | folder_type_next_opened.svg
+nginx | nginx, conf.d | folder_type_nginx.svg | folder_type_nginx_opened.svg
+nix | .niv, .nix, nix, niv | folder_type_nix.svg | folder_type_nix_opened.svg
+node | node_modules | folder_type_node.svg | folder_type_node_opened.svg | folder_type_light_node.svg | folder_type_light_node_opened.svg
+notification | notification, notifications, event, events | folder_type_notification.svg | folder_type_notification_opened.svg
+nuget | .nuget | folder_type_nuget.svg | folder_type_nuget_opened.svg
+package | package, packages, .package, .packages, pkg | folder_type_package.svg | folder_type_package_opened.svg
+paket | .paket | folder_type_paket.svg | folder_type_paket_opened.svg
+php | php | folder_type_php.svg | folder_type_php_opened.svg
+platformio | .pio, .pioenvs | folder_type_platformio.svg | folder_type_platformio_opened.svg
+plugin | plugin, .plugin, plugins, .plugins, extension, .extension, extensions, .extensions | folder_type_plugin.svg | folder_type_plugin_opened.svg
+prisma | prisma | folder_type_prisma.svg | folder_type_prisma_opened.svg
+private | private, .private | folder_type_private.svg | folder_type_private_opened.svg
+public | public, .public | folder_type_public.svg | folder_type_public_opened.svg
+python | .venv, .virtualenv | folder_type_python.svg | folder_type_python_opened.svg
+redis | redis | folder_type_redis.svg | folder_type_redis_opened.svg
+ravendb | ravendb | folder_type_ravendb.svg | folder_type_ravendb_opened.svg
+route | route, routes, _route, _routes, routers | folder_type_route.svg | folder_type_route_opened.svg
+redux | redux | folder_type_redux.svg | folder_type_redux_opened.svg | folder_type_light_redux.svg | folder_type_light_redux_opened.svg
+meteor | .meteor | folder_type_meteor.svg | folder_type_meteor_opened.svg | folder_type_light_meteor.svg | folder_type_light_meteor_opened.svg
+nuxt | .nuxt | folder_type_nuxt.svg | folder_type_nuxt_opened.svg
+sass | sass, scss, _sass, _scss | folder_type_sass.svg | folder_type_sass_opened.svg | folder_type_light_sass.svg | folder_type_light_sass_opened.svg
+script | script, scripts | folder_type_script.svg | folder_type_script_opened.svg
+server | server | folder_type_server.svg | folder_type_server_opened.svg
+services | service, services | folder_type_services.svg | folder_type_services_opened.svg
+src | src, source, sources | folder_type_src.svg | folder_type_src_opened.svg
+sso | sso | folder_type_sso.svg | folder_type_sso_opened.svg
+story | story, stories, __stories__, .storybook | folder_type_story.svg | folder_type_story_opened.svg
+style | style, styles | folder_type_style.svg | folder_type_style_opened.svg
+tauri | src-tauri | folder_type_tauri.svg | folder_type_tauri_opened.svg
+test | tests, .tests, test, .test, __tests__, __test__, spec, .spec, specs, .specs, integration | folder_type_test.svg | folder_type_test_opened.svg
+temp | temp, .temp, tmp, .tmp | folder_type_temp.svg | folder_type_temp_opened.svg
+template | template, .template, templates, .templates | folder_type_template.svg | folder_type_template_opened.svg
+theme | theme, themes | folder_type_theme.svg | folder_type_theme_opened.svg
+travis | .travis | folder_type_travis.svg | folder_type_travis_opened.svg
+tools | tool, tools, .tools, util, utils | folder_type_tools.svg | folder_type_tools_opened.svg
+trunk | .trunk | folder_type_trunk.svg | folder_type_trunk_opened.svg
+typescript | typescript, ts | folder_type_typescript.svg | folder_type_typescript_opened.svg
+typings | typings, @types | folder_type_typings.svg | folder_type_typings_opened.svg
+typings2 | typings, @types | folder_type_typings2.svg | folder_type_typings2_opened.svg
+vagrant | vagrant, .vagrant | folder_type_vagrant.svg | folder_type_vagrant_opened.svg
+video | video, .video, videos, .videos | folder_type_video.svg | folder_type_video_opened.svg
+view | html, view, views, layout, layouts, page, pages, _view, _views, _layout, _layouts, _page, _pages | folder_type_view.svg | folder_type_view_opened.svg
+vs | .vs | folder_type_vs.svg | folder_type_vs_opened.svg
+vs2 | .vs | folder_type_vs2.svg | folder_type_vs2_opened.svg
+vscode | .vscode, vscode | folder_type_vscode.svg | folder_type_vscode_opened.svg
+vscode2 | .vscode, vscode | folder_type_vscode2.svg | folder_type_vscode2_opened.svg
+vscode3 | .vscode, vscode | folder_type_vscode3.svg | folder_type_vscode3_opened.svg
+vscode_test | .vscode-test | folder_type_vscode_test.svg | folder_type_vscode_test_opened.svg
+vscode_test2 | .vscode-test | folder_type_vscode_test2.svg | folder_type_vscode_test2_opened.svg
+vscode_test3 | .vscode-test | folder_type_vscode_test3.svg | folder_type_vscode_test3_opened.svg
+webpack | webpack | folder_type_webpack.svg | folder_type_webpack_opened.svg
+windows | windows, win32 | folder_type_windows.svg | folder_type_windows_opened.svg
+www | www, wwwroot | folder_type_www.svg | folder_type_www_opened.svg
+yarn | .yarn | folder_type_yarn.svg | folder_type_yarn_opened.svg

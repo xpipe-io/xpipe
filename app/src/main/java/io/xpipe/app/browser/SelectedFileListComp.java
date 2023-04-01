@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.icon.FileIcons;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;

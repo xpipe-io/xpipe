@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Logo"
+   viewBox="0 0 768 600"
+   width="32"
+   height="32"
+   version="1.1"
+   sodipodi:docname="file_type_wgsl.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview63"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="25.588427"
+     inkscape:cx="8.871198"
+     inkscape:cy="17.664236"
+     inkscape:window-width="2520"
+     inkscape:window-height="1365"
+     inkscape:window-x="15"
+     inkscape:window-y="50"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Logo" />
+  <defs
+     id="defs55">
+    <style
+       id="style53">
+      .cls-1 {
+        fill: #005a9c;
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6 {
+        fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        fill: #0066b0;
+      }
+
+      .cls-3 {
+        fill: #0076cc;
+      }
+
+      .cls-4 {
+        fill: #0086e8;
+      }
+
+      .cls-5 {
+        fill: #0093ff;
+      }
+    </style>
+  </defs>
+  <path
+     id="Triangle_1"
+     data-name="Triangle 1"
+     class="cls-1"
+     d="M 293.6275,508.5 52.8725,91.5 h 481.51 z" />
+  <path
+     id="Triangle_2"
+     data-name="Triangle 2"
+     class="cls-2"
+     d="m 534.6275,91.5 -120.5,208 h 241 z" />
+  <path
+     id="Triangle_3"
+     data-name="Triangle 3"
+     class="cls-3"
+     d="m 534.6275,507.5 -120.5,-208 h 241 z" />
+  <path
+     id="Triangle_4"
+     data-name="Triangle 4"
+     class="cls-4"
+     d="m 654.6275,300.5 -60.5,-104 h 121 z" />
+  <path
+     id="Triangle_5"
+     data-name="Triangle 5"
+     class="cls-5"
+     d="m 654.6275,92.5 -60.5,104 h 121 z" />
+</svg>

@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -9,13 +8,13 @@ public interface XPipeDistributionType {
     XPipeDistributionType DEVELOPMENT = new XPipeDistributionType() {
 
         @Override
-        public boolean supportsUpdate() {
-            return true;
+        public boolean checkForUpdateOnStartup() {
+            return false;
         }
 
         @Override
-        public void performUpdateAction() {
-            TrackEvent.info("Development mode update executed");
+        public boolean supportsUpdate() {
+            return true;
         }
 
         @Override
@@ -26,12 +25,14 @@ public interface XPipeDistributionType {
     XPipeDistributionType PORTABLE = new XPipeDistributionType() {
 
         @Override
-        public boolean supportsUpdate() {
+        public boolean checkForUpdateOnStartup() {
             return false;
         }
 
         @Override
-        public void performUpdateAction() {}
+        public boolean supportsUpdate() {
+            return false;
+        }
 
         @Override
         public String getName() {
@@ -41,13 +42,13 @@ public interface XPipeDistributionType {
     XPipeDistributionType INSTALLATION = new XPipeDistributionType() {
 
         @Override
-        public boolean supportsUpdate() {
+        public boolean checkForUpdateOnStartup() {
             return true;
         }
 
         @Override
-        public void performUpdateAction() {
-            TrackEvent.info("Update action called");
+        public boolean supportsUpdate() {
+            return true;
         }
 
         @Override
@@ -68,9 +69,9 @@ public interface XPipeDistributionType {
         }
     }
 
-    boolean supportsUpdate();
+    boolean checkForUpdateOnStartup();
 
-    void performUpdateAction();
+    boolean supportsUpdate();
 
     String getName();
 }

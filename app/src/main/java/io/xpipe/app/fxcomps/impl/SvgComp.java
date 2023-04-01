@@ -9,6 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -55,22 +56,36 @@ public class SvgComp {
                 return;
             }
 
-            var regularExpression = Pattern.compile("<svg.+?width=\"([^\s]+)\"", Pattern.DOTALL);
-            var matcher = regularExpression.matcher(val);
-            if (!matcher.find()) {
+            var dim = getDimensions(val);
+            if (dim == null) {
                 return;
             }
-            var width = matcher.group(1);
-            regularExpression = Pattern.compile("<svg.+?height=\"([^\s]+)\"", Pattern.DOTALL);
-            matcher = regularExpression.matcher(val);
-            matcher.find();
-            var height = matcher.group(1);
-            var widthInteger = parseSize(width).pixels();
-            var heightInteger = parseSize(height).pixels();
-            widthProperty.set((int) Math.ceil(widthInteger));
-            heightProperty.set((int) Math.ceil(heightInteger));
+
+            widthProperty.set((int) Math.ceil(dim.getX()));
+            heightProperty.set((int) Math.ceil(dim.getY()));
         });
         return new SvgComp(widthProperty, heightProperty, content);
+    }
+
+    private static Point2D getDimensions(String val) {
+        var regularExpression = Pattern.compile("<svg[^>]+?width=\"([^\s]+)\"", Pattern.DOTALL);
+        var matcher = regularExpression.matcher(val);
+
+        if (!matcher.find()) {
+            var viewBox = Pattern.compile(
+                    "<svg.+?viewBox=\"([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\"", Pattern.DOTALL);
+            matcher = viewBox.matcher(val);
+            if (matcher.find()) {
+                return new Point2D(parseSize(matcher.group(3)).pixels(), parseSize(matcher.group(4)).pixels());
+            }
+        }
+
+        var width = matcher.group(1);
+        regularExpression = Pattern.compile("<svg.+?height=\"([^\s]+)\"", Pattern.DOTALL);
+        matcher = regularExpression.matcher(val);
+        matcher.find();
+        var height = matcher.group(1);
+        return new Point2D(parseSize(width).pixels(), parseSize(height).pixels());
     }
 
     private String getHtml(String content) {

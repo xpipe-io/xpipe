@@ -80,7 +80,10 @@ public class AppUpdater {
         lastUpdateCheckResult.addListener((c, o, n) -> {
             downloadedUpdate.setValue(null);
         });
-        refreshUpdateCheckSilent();
+
+        if (XPipeDistributionType.get().checkForUpdateOnStartup()) {
+            refreshUpdateCheckSilent();
+        }
     }
 
     private static void event(String msg) {

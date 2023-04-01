@@ -25,36 +25,37 @@ public class AppImages {
     public static void init() {
         TrackEvent.info("Loading images ...");
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            AppResources.with(module.getName(), "img", basePath -> {
-                if (!Files.exists(basePath)) {
-                    return;
-                }
-
-                var simpleName = FilenameUtils.getExtension(module.getName());
-                String defaultPrefix = simpleName + ":";
-                Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        var relativeFileName = FilenameUtils.separatorsToUnix(basePath.relativize(file).toString());
-                        try {
-                            if (FilenameUtils.getExtension(file.toString()).equals("svg")) {
-                                var s = Files.readString(file);
-                                svgImages.put(
-                                        defaultPrefix + relativeFileName,
-                                        s);
-                            } else {
-                                images.put(
-                                        defaultPrefix + relativeFileName,
-                                        loadImage(file));
-                            }
-                        } catch (IOException ex) {
-                            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
-            });
+            loadDirectory(module.getName(), "img");
         }
+    }
+
+    public static void loadDirectory(String module, String dir) {
+        AppResources.with(module, dir, basePath -> {
+            if (!Files.exists(basePath)) {
+                return;
+            }
+
+            var simpleName = FilenameUtils.getExtension(module);
+            String defaultPrefix = simpleName + ":";
+            Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    var relativeFileName = FilenameUtils.separatorsToUnix(
+                            basePath.relativize(file).toString());
+                    try {
+                        if (FilenameUtils.getExtension(file.toString()).equals("svg")) {
+                            var s = Files.readString(file);
+                            svgImages.put(defaultPrefix + relativeFileName, s);
+                        } else {
+                            images.put(defaultPrefix + relativeFileName, loadImage(file));
+                        }
+                    } catch (IOException ex) {
+                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        });
     }
 
     public static String svgImage(String file) {

@@ -4,6 +4,7 @@ package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -295,20 +296,17 @@ final class FileListComp extends AnchorPane {
                 HBox.setHgrow(textField, Priority.ALWAYS);
                 setGraphic(box);
 
-                if (!isDirectory) {
-                    img.set("file_drag_icon.png");
-                } else {
-                    img.set("folder_closed.svg");
-                }
+                var isParentLink = getTableRow()
+                        .getItem()
+                        .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
+                img.set(FileIconManager.getFileIcon(isParentLink ? fileList.getFileSystemModel().getCurrentDirectory() : getTableRow().getItem(), isParentLink));
 
                 pseudoClassStateChanged(FOLDER, isDirectory);
 
-                var fileName = getTableRow()
-                                .getItem()
-                                .equals(fileList.getFileSystemModel().getCurrentParentDirectory())
+                var fileName = isParentLink
                         ? ".."
                         : FileNames.getFileName(fullPath);
-                var hidden = getTableRow().getItem().isHidden() || fileName.startsWith(".");
+                var hidden = !isParentLink && (getTableRow().getItem().isHidden() || fileName.startsWith("."));
                 getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                 text.set(fileName);
 

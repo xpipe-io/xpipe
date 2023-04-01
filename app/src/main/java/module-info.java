@@ -34,6 +34,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.fxcomps.augment;
     exports io.xpipe.app.test;
     exports io.xpipe.app.browser;
+    exports io.xpipe.app.browser.icon;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

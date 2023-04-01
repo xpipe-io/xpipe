@@ -52,7 +52,7 @@
 /* setting opacity directly to the .table-cell or .table-row-cell
    leads to incorrect table row height calculation #javafx-bug */
 .browser .table-row-cell:hidden >.table-cell > * {
-    -fx-opacity: 0.6;
+    -fx-opacity: 0.75;
 }
 
 .browser .table-directory-view .table-view:drag-into-current {

@@ -1,0 +1,761 @@
+access | accdb, accdt, mdb, accda, accdc, accde, accdp, accdr, accdu, ade, adp, laccdb, ldb, mam, maq, mdw | file_type_access.svg
+access2 | accdb, accdt, mdb, accda, accdc, accde, accdp, accdr, accdu, ade, adp, laccdb, ldb, mam, maq, mdw | file_type_access2.svg
+actionscript | actionscript | file_type_actionscript.svg
+actionscript2 | actionscript | file_type_actionscript2.svg | file_type_light_actionscript2.svg
+ada | ada | file_type_ada.svg | file_type_light_ada.svg
+advpl | advpl | file_type_advpl.svg
+ai | ai | file_type_ai.svg
+ai2 | ai | file_type_ai2.svg
+al | al | file_type_al.svg
+allcontributors | .all-contributorsrc | file_type_allcontributors.svg
+affinitydesigner | afdesign, affinitydesigner | file_type_affinitydesigner.svg
+affinityphoto | afphoto, affinityphoto | file_type_affinityphoto.svg
+affinitypublisher | afpub, affinitypublisher | file_type_affinitypublisher.svg
+appscript | gs | file_type_appscript.svg
+fitbit | fba | file_type_fitbit.svg
+angular | .angular-cli.json, angular-cli.json, angular.json, .angular.json | file_type_angular.svg
+ng_component_dart | component.dart | file_type_ng_component_dart.svg
+ng_component_ts | component.ts | file_type_ng_component_ts.svg
+ng_component_js | component.js | file_type_ng_component_js.svg
+ng_controller_ts | controller.ts | file_type_ng_controller_ts.svg
+ng_controller_js | controller.js | file_type_ng_controller_js.svg
+ng_directive_dart | directive.dart | file_type_ng_directive_dart.svg
+ng_directive_ts | directive.ts | file_type_ng_directive_ts.svg
+ng_directive_js | directive.js | file_type_ng_directive_js.svg
+ng_guard_dart | guard.dart | file_type_ng_guard_dart.svg
+ng_guard_ts | guard.ts | file_type_ng_guard_ts.svg
+ng_guard_js | guard.js | file_type_ng_guard_js.svg
+ng_module_dart | module.dart | file_type_ng_module_dart.svg
+ng_module_ts | module.ts | file_type_ng_module_ts.svg
+ng_module_js | module.js | file_type_ng_module_js.svg
+ng_pipe_dart | pipe.dart | file_type_ng_pipe_dart.svg
+ng_pipe_ts | pipe.ts | file_type_ng_pipe_ts.svg
+ng_pipe_js | pipe.js | file_type_ng_pipe_js.svg
+ng_routing_dart | routing.dart | file_type_ng_routing_dart.svg
+ng_routing_ts | routing.ts | file_type_ng_routing_ts.svg
+ng_routing_js | routing.js | file_type_ng_routing_js.svg
+ng_routing_dart | app-routing.module.dart | file_type_ng_routing_dart.svg
+ng_routing_ts | app-routing.module.ts | file_type_ng_routing_ts.svg
+ng_routing_js | app-routing.module.js | file_type_ng_routing_js.svg
+ng_smart_component_dart | page.dart, container.dart | file_type_ng_smart_component_dart.svg
+ng_smart_component_ts | page.ts, container.ts | file_type_ng_smart_component_ts.svg
+ng_smart_component_js | page.js, container.js | file_type_ng_smart_component_js.svg
+ng_service_dart | service.dart | file_type_ng_service_dart.svg
+ng_service_ts | service.ts | file_type_ng_service_ts.svg
+ng_service_js | service.js | file_type_ng_service_js.svg
+ng_interceptor_dart | interceptor.dart | file_type_ng_interceptor_dart.svg
+ng_interceptor_ts | interceptor.ts | file_type_ng_interceptor_ts.svg
+ng_interceptor_js | interceptor.js | file_type_ng_interceptor_js.svg
+ng_component_ts2 | component.ts | file_type_ng_component_ts2.svg
+ng_component_js2 | component.js | file_type_ng_component_js2.svg
+ng_directive_ts2 | directive.ts | file_type_ng_directive_ts2.svg
+ng_directive_js2 | directive.js | file_type_ng_directive_js2.svg
+ng_module_ts2 | module.ts | file_type_ng_module_ts2.svg
+ng_module_js2 | module.js | file_type_ng_module_js2.svg
+ng_pipe_ts2 | pipe.ts | file_type_ng_pipe_ts2.svg
+ng_pipe_js2 | pipe.js | file_type_ng_pipe_js2.svg
+ng_routing_ts2 | routing.ts | file_type_ng_routing_ts2.svg
+ng_routing_js2 | routing.js | file_type_ng_routing_js2.svg
+ng_routing_ts2 | app-routing.module.ts | file_type_ng_routing_ts2.svg
+ng_routing_js2 | app-routing.module.js | file_type_ng_routing_js2.svg
+ng_smart_component_ts2 | page.ts, container.ts | file_type_ng_smart_component_ts2.svg
+ng_smart_component_js2 | page.js, container.js | file_type_ng_smart_component_js2.svg
+ng_service_ts2 | service.ts | file_type_ng_service_ts2.svg
+ng_service_js2 | service.js | file_type_ng_service_js2.svg
+ng_tailwind | ng-tailwind.js | file_type_ng_tailwind.svg
+affectscript | affectscript | file_type_affectscript.svg
+ansible | ansible | file_type_ansible.svg
+antlr | antlr | file_type_antlr.svg
+anyscript | anyscript | file_type_anyscript.svg
+apache | apacheconf | file_type_apache.svg
+apex | apex | file_type_apex.svg
+apib | apiblueprint | file_type_apib.svg
+api_extractor | api-extractor.json, api-extractor-base.json | file_type_api_extractor.svg
+apl | apl | file_type_apl.svg | file_type_light_apl.svg
+applescript | applescript | file_type_applescript.svg
+appsemble | .appsemblerc.yaml, app-definition.yaml | file_type_appsemble.svg
+appveyor | appveyor.yml, .appveyor.yml | file_type_appveyor.svg
+arduino | ino, pde | file_type_arduino.svg
+asciidoc | asciidoc | file_type_asciidoc.svg
+asp | asp, asp (html) | file_type_asp.svg
+aspx | aspx, ascx | file_type_aspx.svg
+assembly | arm, asm | file_type_assembly.svg
+astro | astro | file_type_astro.svg
+astroconfig | astro.config.js, astro.config.cjs, astro.config.mjs, astro.config.ts | file_type_astroconfig.svg
+ats | ats | file_type_ats.svg
+audio | aac, act, aiff, amr, ape, au, dct, dss, dvf, flac, gsm, iklax, ivs, m4a, m4b, m4p, mmf, mogg, mp3, mpc, msv, oga, ogg, opus, ra, raw, tta, vox, wav, wma | file_type_audio.svg
+aurelia | aurelia.json | file_type_aurelia.svg
+autohotkey | ahk | file_type_autohotkey.svg
+autoit | autoit | file_type_autoit.svg
+avif | avif | file_type_avif.svg
+avro | avro | file_type_avro.svg
+awk | awk | file_type_awk.svg
+aws | <sub></sub> | file_type_aws.svg
+azure | azcli | file_type_azure.svg
+azurepipelines | azure-pipelines.yml, .vsts-ci.yml, azure-pipelines | file_type_azurepipelines.svg
+babel | .babelrc, .babelignore, .babelrc.js, .babelrc.cjs, .babelrc.mjs, .babelrc.json, babel.config.js, babel.config.cjs, babel.config.mjs, babel.config.json | file_type_babel.svg | file_type_light_babel.svg
+babel2 | .babelrc, .babelignore, .babelrc.js, .babelrc.cjs, .babelrc.mjs, .babelrc.json, babel.config.js, babel.config.cjs, babel.config.mjs, babel.config.json | file_type_babel2.svg | file_type_light_babel2.svg
+ballerina | ballerina | file_type_ballerina.svg
+bat | bat | file_type_bat.svg
+bats | bats | file_type_bats.svg
+bazaar | .bzrignore | file_type_bazaar.svg
+bazel | BUILD.bazel, .bazelrc, bazel.rc, bazel.bazelrc, bazel, starlark | file_type_bazel.svg
+befunge | befunge, befunge98 | file_type_befunge.svg
+bicep | bicep | file_type_bicep.svg
+biml | biml | file_type_biml.svg
+binary | a, app, bin, cmo, cmx, cma, cmxa, cmi, dll, exe, hl, ilk, lib, n, ndll, o, obj, pyc, pyd, pyo, pdb, scpt, scptd, so | file_type_binary.svg
+bithound | .bithoundrc | file_type_bithound.svg
+bitbucketpipeline | bitbucket-pipelines.yml | file_type_bitbucketpipeline.svg
+blade | blade, laravel-blade | file_type_blade.svg
+blitzbasic | bb, blitzbasic | file_type_blitzbasic.svg
+bolt | bolt | file_type_bolt.svg
+bosque | bosque | file_type_bosque.svg
+bower | .bowerrc, bower.json | file_type_bower.svg
+browserslist | .browserslistrc, browserslist | file_type_browserslist.svg
+buckbuild | .buckconfig | file_type_buckbuild.svg
+bundler | gemfile, gemfile.lock | file_type_bundler.svg
+bundler | gemfile, gemfile.lock | file_type_bundler.svg
+c | c | file_type_c.svg
+c2 | c | file_type_c2.svg
+c3 | c | file_type_c3.svg
+c_al | c-al | file_type_c_al.svg
+cabal | cabal | file_type_cabal.svg
+caddy | caddyfile | file_type_caddy.svg
+cake | cake | file_type_cake.svg
+cakephp | <sub></sub> | file_type_cakephp.svg
+capacitor | capacitor.config.json | file_type_capacitor.svg
+cargo | cargo.toml, cargo.lock | file_type_cargo.svg
+casc | casc | file_type_casc.svg
+cddl | cddl | file_type_cddl.svg
+cert | csr, crt, cer, der, pfx, p12, p7b, p7r, src, crl, sst, stl | file_type_cert.svg
+ceylon | ceylon | file_type_ceylon.svg
+cf | lucee, cfml, lang-cfml | file_type_cf.svg
+cf2 | lucee, cfml, lang-cfml | file_type_cf2.svg
+cfc | cfc | file_type_cfc.svg
+cfc2 | cfc | file_type_cfc2.svg
+cfm | cfmhtml | file_type_cfm.svg
+cfm2 | cfmhtml | file_type_cfm2.svg
+cheader | h | file_type_cheader.svg
+chef | chefignore, berksfile, berksfile.lock, policyfile.rb, policyfile.lock.json | file_type_chef.svg
+class | class | file_type_class.svg
+circleci | circle.yml | file_type_circleci.svg | file_type_light_circleci.svg
+clojure | cjm, cljc, clojure | file_type_clojure.svg
+clojurescript | cljs, clojurescript | file_type_clojurescript.svg
+cloudfoundry | .cfignore, manifest-yaml | file_type_cloudfoundry.svg | file_type_light_cloudfoundry.svg
+cmake | cmake, cmake-cache | file_type_cmake.svg
+cobol | cobol | file_type_cobol.svg
+codeql | ql | file_type_codeql.svg
+codeowners | codeowners | file_type_codeowners.svg | file_type_light_codeowners.svg
+codacy | .codacy.yml, .codacy.yaml | file_type_codacy.svg | file_type_light_codacy.svg
+codeclimate | .codeclimate.yml | file_type_codeclimate.svg | file_type_light_codeclimate.svg
+codecov | codecov.yml, .codecov.yml | file_type_codecov.svg
+codekit | kit | file_type_codekit.svg
+codekit | config.codekit, config.codekit2, config.codekit3, .config.codekit, .config.codekit2, .config.codekit3 | file_type_codekit.svg
+coffeelint | coffeelint.json, .coffeelintignore | file_type_coffeelint.svg
+coffeescript | coffeescript | file_type_coffeescript.svg
+conan | conanfile.txt, conanfile.py | file_type_conan.svg
+conda | .condarc | file_type_conda.svg
+config | plist, properties, dotenv, env | file_type_config.svg | file_type_light_config.svg
+config | .tool-versions | file_type_config.svg | file_type_light_config.svg
+commitizen | .czrc, .cz.json | file_type_commitizen.svg
+commitlint | .commitlintrc | file_type_commitlint.svg
+commitlint | commitlint.config.js, commitlint.config.cjs, commitlint.config.ts, .commitlintrc.json, .commitlintrc.yaml, .commitlintrc.yml, .commitlintrc.js, .commitlintrc.cjs, .commitlintrc.ts | file_type_commitlint.svg
+compass | <sub></sub> | file_type_compass.svg
+composer | composer.json, composer.lock | file_type_composer.svg
+chef_cookbook | cookbook | file_type_chef_cookbook.svg
+confluence | confluence | file_type_confluence.svg
+coveralls | .coveralls.yml | file_type_coveralls.svg
+cpp | cpp | file_type_cpp.svg
+cpp2 | cpp | file_type_cpp2.svg
+cpp3 | cpp | file_type_cpp3.svg
+cppheader | hpp, hh, hxx, h++ | file_type_cppheader.svg
+crowdin | crowdin.yml | file_type_crowdin.svg
+crystal | crystal | file_type_crystal.svg | file_type_light_crystal.svg
+csharp | csx, csharp | file_type_csharp.svg
+csharp2 | csx, csharp | file_type_csharp2.svg
+csproj | csproj | file_type_csproj.svg
+css | css | file_type_css.svg
+csscomb | .csscomb.json | file_type_csscomb.svg
+csslint | .csslintrc | file_type_csslint.svg
+cssmap | css.map | file_type_cssmap.svg
+cucumber | feature | file_type_cucumber.svg
+cuda | cuda, cuda-cpp | file_type_cuda.svg
+cython | cython | file_type_cython.svg
+cypress | cypress.json, cypress.env.json, cypress.config.js, cypress.config.ts, cypress.config.cjs, cypress.config.mjs | file_type_cypress.svg | file_type_light_cypress.svg
+cypress_spec | cy.js, cy.mjs, cy.cjs, cy.coffee, cy.ts, cy.tsx, cy.jsx | file_type_cypress_spec.svg | file_type_light_cypress_spec.svg
+cvs | .cvsignore | file_type_cvs.svg
+dal | dal | file_type_dal.svg
+darcs | .boringignore | file_type_darcs.svg
+dartlang | dart | file_type_dartlang.svg
+dartlang_generated | g.dart, freezed.dart | file_type_dartlang_generated.svg
+dartlang_ignore | .pubignore | file_type_dartlang_ignore.svg
+db | db | file_type_db.svg | file_type_light_db.svg
+dependabot | dependabot.yml | file_type_dependabot.svg
+dependencies | dependencies.yml | file_type_dependencies.svg
+delphi | pascal, objectpascal | file_type_delphi.svg
+devcontainer | devcontainer.json, .devcontainer.json | file_type_devcontainer.svg
+dhall | dhall | file_type_dhall.svg | file_type_light_dhall.svg
+django | djt, django-html, django-txt | file_type_django.svg
+dlang | d, dscript, dml, diet | file_type_dlang.svg
+diff | diff | file_type_diff.svg
+docker | .dockerignore, compose.yaml, compose.yml, docker-compose.yaml, docker-compose.yml, docker-compose.ci-build.yaml, docker-compose.ci-build.yml, docker-compose.override.yaml, docker-compose.override.yml, docker-compose.vs.debug.yaml, docker-compose.vs.debug.yml, docker-compose.vs.release.yaml, docker-compose.vs.release.yml, docker-cloud.yaml, docker-cloud.yml, dockerfile | file_type_docker.svg
+docker2 | .dockerignore, compose.yaml, compose.yml, docker-compose.yaml, docker-compose.yml, docker-compose.ci-build.yaml, docker-compose.ci-build.yml, docker-compose.override.yaml, docker-compose.override.yml, docker-compose.vs.debug.yaml, docker-compose.vs.debug.yml, docker-compose.vs.release.yaml, docker-compose.vs.release.yml, docker-cloud.yaml, docker-cloud.yml, dockerfile | file_type_docker2.svg
+dockertest | docker-compose.test.yml | file_type_dockertest.svg
+dockertest2 | docker-compose.test.yml | file_type_dockertest2.svg
+docpad | eco | file_type_docpad.svg | file_type_light_docpad.svg
+docz | .doczrc, docz.js, docz.json, .docz.js, .docz.json, doczrc.js, doczrc.json, docz.config.js, docz.config.json | file_type_docz.svg
+dojo | .dojorc | file_type_dojo.svg
+doxygen | doxygen | file_type_doxygen.svg
+drawio | drawio, dio .drawio.png, .drawio.svg, .dio.png, .dio.svg | file_type_drawio.svg
+drone | .drone.yml, .drone.yml.sig | file_type_drone.svg | file_type_light_drone.svg
+drools | drools | file_type_drools.svg
+dotjs | dotjs | file_type_dotjs.svg
+dustjs | dustjs | file_type_dustjs.svg
+dvc | .dvc | file_type_dvc.svg
+dylan | dylan, dylan-lid | file_type_dylan.svg
+editorconfig | .editorconfig | file_type_editorconfig.svg
+earthly | .earthlyignore, Earthfile, earthfile | file_type_earthly.svg
+edge | edge | file_type_edge.svg
+edge2 | edge | file_type_edge2.svg
+eex | eex, html-eex | file_type_eex.svg
+ejs | ejs | file_type_ejs.svg
+elastic | es | file_type_elastic.svg
+elasticbeanstalk | <sub></sub> | file_type_elasticbeanstalk.svg
+elixir | elixir | file_type_elixir.svg
+elm | elm-package.json, elm | file_type_elm.svg
+elm2 | elm-package.json, elm | file_type_elm2.svg
+emacs | el, elc | file_type_emacs.svg
+ember | .ember-cli | file_type_ember.svg
+ensime | ensime | file_type_ensime.svg
+eps | eps | file_type_eps.svg
+erb | erb, html.erb | file_type_erb.svg
+erlang | emakefile, .emakerfile, erlang | file_type_erlang.svg
+erlang2 | emakefile, .emakerfile, erlang | file_type_erlang2.svg
+eslint | .eslintrc, .eslintignore, .eslintcache, .eslintrc.js, .eslintrc.mjs, .eslintrc.cjs, .eslintrc.json, .eslintrc.yaml, .eslintrc.yml | file_type_eslint.svg
+eslint2 | .eslintrc, .eslintignore, .eslintcache, .eslintrc.js, .eslintrc.mjs, .eslintrc.cjs, .eslintrc.json, .eslintrc.yaml, .eslintrc.yml | file_type_eslint2.svg
+excel | xls, xlsx, xlsm, ods, fods, xlsb | file_type_excel.svg
+excel2 | xls, xlsx, xlsm, ods, fods, xlsb | file_type_excel2.svg
+expo | app.json, app.config.js, app.config.json, app.config.json5 | file_type_expo.svg | file_type_light_expo.svg
+falcon | falcon | file_type_falcon.svg
+fauna | .faunarc, fql | file_type_fauna.svg
+favicon | favicon.ico | file_type_favicon.svg
+fbx | fbx | file_type_fbx.svg
+firebase | .firebaserc | file_type_firebase.svg
+firebasehosting | firebase.json | file_type_firebasehosting.svg | file_type_light_firebasehosting.svg
+firestore | firestore.rules, firestore.indexes.json | file_type_firestore.svg
+fla | fla | file_type_fla.svg | file_type_light_fla.svg
+flareact | flareact.config.js | file_type_flareact.svg
+flash | swf, swc | file_type_flash.svg
+floobits | .flooignore | file_type_floobits.svg
+flow | js.flow | file_type_flow.svg
+flow | .flowconfig | file_type_flow.svg
+flutter | .flutter-plugins, .metadata | file_type_flutter.svg
+flutter_package | pubspec.lock, pubspec.yaml, .packages | file_type_flutter_package.svg
+font | woff, woff2, ttf, otf, eot, pfa, pfb, sfd | file_type_font.svg | file_type_light_font.svg
+formkit | formkit.config.js, formkit.config.mjs, formkit.config.cjs, formkit.config.ts | file_type_formkit.svg
+fortran | fortran, fortran-modern, FortranFreeForm, FortranFixedForm, fortran_fixed-form | file_type_fortran.svg
+fossa | .fossaignore | file_type_fossa.svg
+fossil | ignore-glob | file_type_fossil.svg
+fsharp | fsharp | file_type_fsharp.svg
+fsproj | fsproj | file_type_fsproj.svg
+freemarker | ftl | file_type_freemarker.svg
+fthtml | fthtml | file_type_fthtml.svg
+funding | funding.yml | file_type_funding.svg
+fusebox | fuse.js | file_type_fusebox.svg
+galen | galen | file_type_galen.svg
+galen2 | galen | file_type_galen2.svg
+git | .gitattributes, .gitconfig, .gitignore, .gitmodules, .gitkeep, .mailmap, .issuetracker, git-commit, git-rebase, ignore | file_type_git.svg
+gamemaker | gmx, gml-gms | file_type_gamemaker.svg
+gamemaker2 | yy, yyp, gml-gms2 | file_type_gamemaker2.svg | file_type_light_gamemaker2.svg
+gamemaker81 | gml-gm81 | file_type_gamemaker81.svg
+gatsby | gatsby-browser.js, gatsby-browser.ts, gatsby-browser.tsx, gatsby-ssr.js, gatsby-ssr.ts, gatsby-ssr.tsx | file_type_gatsby.svg
+gatsby | gatsby-config.js, gatsby-config.ts, gatsby-node.js, gatsby-node.ts | file_type_gatsby.svg
+gcode | gcode | file_type_gcode.svg
+genstat | genstat | file_type_genstat.svg
+gitlab | .gitlab-ci.yml | file_type_gitlab.svg
+gitpod | .gitpod.yaml, .gitpod.yml, gitpod.yaml, gitpod.yml | file_type_gitpod.svg
+glide | glide.yml | file_type_glide.svg
+glitter | .glitterrc | file_type_glitter.svg
+glsl | glsl | file_type_glsl.svg
+glyphs | glyphs | file_type_glyphs.svg
+gnuplot | gnuplot | file_type_gnuplot.svg
+go | go | file_type_go.svg
+go_package | go.sum, go.mod | file_type_go_package.svg
+goctl | goctl | file_type_goctl.svg
+godot | gdscript | file_type_godot.svg
+gradle | gradle | file_type_gradle.svg | file_type_light_gradle.svg
+gradle2 | gradle | file_type_gradle2.svg
+graphql | .gqlconfig, graphql | file_type_graphql.svg
+graphql_config | .graphqlconfig, .graphqlconfig.yml, .graphqlconfig.yaml | file_type_graphql_config.svg
+graphviz | dot | file_type_graphviz.svg
+greenkeeper | greenkeeper.json | file_type_greenkeeper.svg
+gridsome | gridsome.config.js, gridsome.config.ts, gridsome.server.js, gridsome.server.ts, gridsome.client.js, gridsome.client.ts | file_type_gridsome.svg
+groovy | groovy | file_type_groovy.svg
+groovy2 | groovy | file_type_groovy2.svg
+grunt | gruntfile.js, gruntfile.coffee, gruntfile.ts, gruntfile.babel.js, gruntfile.babel.coffee, gruntfile.babel.ts | file_type_grunt.svg
+gulp | gulpfile.js, gulpfile.coffee, gulpfile.ts, gulpfile.mjs, gulpfile.esm.js, gulpfile.esm.coffee, gulpfile.esm.ts, gulpfile.esm.mjs, gulpfile.babel.js, gulpfile.babel.coffee, gulpfile.babel.ts, gulpfile.babel.mjs | file_type_gulp.svg
+haml | haml | file_type_haml.svg
+handlebars | handlebars | file_type_handlebars.svg
+handlebars2 | handlebars | file_type_handlebars2.svg
+harbour | harbour | file_type_harbour.svg
+hardhat | hardhat.config.js, hardhat.config.ts | file_type_hardhat.svg
+haskell | haskell, literate haskell | file_type_haskell.svg
+haskell2 | haskell, literate haskell | file_type_haskell2.svg
+haxe | haxelib.json, haxe, hxml, Haxe AST dump | file_type_haxe.svg
+haxecheckstyle | checkstyle.json | file_type_haxecheckstyle.svg
+haxedevelop | hxproj | file_type_haxedevelop.svg
+helix | .p4ignore | file_type_helix.svg
+helm | chart.lock, chart.yaml, helm | file_type_helm.svg
+hjson | hjson | file_type_hjson.svg | file_type_light_hjson.svg
+hlsl | hlsl | file_type_hlsl.svg
+homeassistant | home-assistant | file_type_homeassistant.svg
+horusec | horusec-config.json | file_type_horusec.svg
+host | hosts | file_type_host.svg
+html | html | file_type_html.svg
+htmlhint | .htmlhintrc | file_type_htmlhint.svg
+http | http | file_type_http.svg
+hunspell | hunspell.aff, hunspell.dic | file_type_hunspell.svg
+husky | .huskyrc, husky.config.js, .huskyrc.js, .huskyrc.json, .huskyrc.yaml, .huskyrc.yml | file_type_husky.svg
+hy | hy | file_type_hy.svg
+hygen | ejs.t | file_type_hygen.svg
+hypr | hypr | file_type_hypr.svg
+icl | icl | file_type_icl.svg
+idris | idr, lidr | file_type_idris.svg
+idrisbin | ibc | file_type_idrisbin.svg
+idrispkg | ipkg | file_type_idrispkg.svg
+image | jpeg, jpg, gif, png, bmp, tiff, ico, webp | file_type_image.svg
+imba | imba, imba2, imba | file_type_imba.svg
+inc | inc, include | file_type_inc.svg
+infopath | infopathxml, xsn, xsf, xtp2 | file_type_infopath.svg
+informix | 4GL | file_type_informix.svg
+ini | ini | file_type_ini.svg | file_type_light_ini.svg
+ink | ink | file_type_ink.svg
+innosetup | innosetup | file_type_innosetup.svg
+ionic | ionic.project, ionic.config.json | file_type_ionic.svg
+jake | jakefile, jakefile.js | file_type_jake.svg
+janet | janet | file_type_janet.svg
+jar | jar | file_type_jar.svg
+jasmine | jasmine.json | file_type_jasmine.svg
+java | java | file_type_java.svg
+jbuilder | jbuilder | file_type_jbuilder.svg
+jest | jest.config.json, jest.config.base.json, jest.config.common.json, jest.config.ts, jest.config.base.ts, jest.config.common.ts, jest.json, .jestrc, .jestrc.js, .jestrc.json, jest.config.js, jest.config.cjs, jest.config.mjs, jest.config.base.js, jest.config.base.cjs, jest.config.base.mjs, jest.config.common.js, jest.config.common.cjs, jest.config.common.mjs, jest.config.babel.js, jest.config.babel.cjs, jest.config.babel.mjs | file_type_jest.svg
+jest_snapshot | js.snap, jsx.snap, ts.snap, tsx.snap | file_type_jest_snapshot.svg
+jekyll | jekyll | file_type_jekyll.svg
+jenkins | jenkins, declarative, jenkinsfile | file_type_jenkins.svg
+jinja | jinja, jinja-html, jinja-xml, jinja-css, jinja-json, jinja-md, jinja-py, jinja-rb, jinja-js, jinja-yaml, jinja-toml, jinja-latex, jinja-lua, jinja-properties, jinja-shell, jinja-dockerfile, jinja-sql, jinja-terraform, jinja-nginx, jinja-groovy, jinja-systemd, jinja-cpp | file_type_jinja.svg
+jpm | .jpmignore | file_type_jpm.svg
+js | javascript | file_type_js.svg | file_type_light_js.svg
+js_official | javascript | file_type_js_official.svg
+jsbeautify | .jsbeautifyrc, jsbeautifyrc, .jsbeautify, jsbeautify | file_type_jsbeautify.svg
+jsconfig | jsconfig.json | file_type_jsconfig.svg | file_type_light_jsconfig.svg
+jscpd | .jscpd.json, jscpd-report.xml, jscpd-report.json, jscpd-report.html | file_type_jscpd.svg
+jshint | .jshintrc, .jshintignore | file_type_jshint.svg
+jsmap | js.map, cjs.map, mjs.map | file_type_jsmap.svg | file_type_light_jsmap.svg
+json | jsonl, ndjson, json, json-tmlanguage, jsonc | file_type_json.svg | file_type_light_json.svg
+json_official | jsonl, ndjson, json, json-tmlanguage, jsonc | file_type_json_official.svg
+json2 | jsonl, ndjson, json, json-tmlanguage, jsonc | file_type_json2.svg
+jsonnet | jsonnet | file_type_jsonnet.svg
+json5 | json5, json5 | file_type_json5.svg | file_type_light_json5.svg
+jsonld | jsonld, json-ld | file_type_jsonld.svg | file_type_light_jsonld.svg
+jsp | jsp | file_type_jsp.svg
+jss | jss | file_type_jss.svg
+julia | julia, juliamarkdown | file_type_julia.svg
+julia2 | julia, juliamarkdown | file_type_julia2.svg
+jupyter | ipynb | file_type_jupyter.svg
+io | io | file_type_io.svg | file_type_light_io.svg
+iodine | iodine | file_type_iodine.svg
+k | k | file_type_k.svg
+karma | karma.conf.js, karma.conf.coffee, karma.conf.ts | file_type_karma.svg
+key | key, pem | file_type_key.svg
+kite | .kiteignore | file_type_kite.svg | file_type_light_kite.svg
+kitchenci | .kitchen.yml, kitchen.yml | file_type_kitchenci.svg
+kivy | kivy | file_type_kivy.svg
+kos | kos | file_type_kos.svg
+kotlin | kotlin | file_type_kotlin.svg
+kusto | kusto | file_type_kusto.svg
+latino | latino | file_type_latino.svg
+layout | master, layout.html, layout.htm | file_type_layout.svg
+layout | layout.html, layout.htm | file_type_layout.svg
+lerna | lerna.json | file_type_lerna.svg | file_type_light_lerna.svg
+less | less | file_type_less.svg
+lex | lex | file_type_lex.svg
+license | enc, license, lic | file_type_license.svg
+license | license, licence, copying, copying.lesser, license-mit, license-apache, license.md, license.txt, licence.md, licence.txt, copying.md, copying.txt, copying.lesser.md, copying.lesser.txt, license-mit.md, license-mit.txt, license-apache.md, license-apache.txt | file_type_license.svg
+licensebat | .licrc | file_type_licensebat.svg
+lighthouse | .lighthouserc.js, .lighthouserc.json, .lighthouserc.yaml, .lighthouserc.yml | file_type_lighthouse.svg
+lisp | lisp, autolisp, autolispdcl | file_type_lisp.svg
+lime | hxp | file_type_lime.svg
+lime | include.xml | file_type_lime.svg
+lintstagedrc | .lintstagedrc, .lintstagedrc.json, .lintstagedrc.yaml, .lintstagedrc.yml, .lintstagedrc.mjs, .lintstagedrc.js, .lintstagedrc.cjs, lint-staged.config.mjs, lint-staged.config.js, lint-staged.config.cjs | file_type_lintstagedrc.svg
+liquid | liquid | file_type_liquid.svg
+livescript | ls | file_type_livescript.svg
+lnk | lnk | file_type_lnk.svg
+locale | <sub></sub> | file_type_locale.svg
+log | log, tlg | file_type_log.svg
+log | log, tlg, log | file_type_log.svg
+lolcode | lolcode | file_type_lolcode.svg
+lsl | lsl | file_type_lsl.svg
+lua | lua | file_type_lua.svg
+luau | luau | file_type_luau.svg
+lync | crec, ocrec | file_type_lync.svg
+makefile | makefile, makefile | file_type_makefile.svg
+manifest | manifest | file_type_manifest.svg
+manifest_skip | manifest.skip | file_type_manifest_skip.svg
+manifest_bak | manifest.bak | file_type_manifest_bak.svg
+map | map | file_type_map.svg
+markdown | md, mdown, markdown, markdown | file_type_markdown.svg
+markdownlint | .markdownlint.json | file_type_markdownlint.svg
+markdownlint_ignore | .markdownlintignore | file_type_markdownlint_ignore.svg
+marko | marko | file_type_marko.svg
+markojs | marko.js | file_type_markojs.svg
+matlab | fig, mex, mexn, mexrs6, mn, mum, mx, mx3, rwd, slx, slddc, smv, xvc, matlab | file_type_matlab.svg
+maxscript | maxscript | file_type_maxscript.svg
+maven | maven.config, pom.xml, extensions.xml, settings.xml | file_type_maven.svg
+maya | mel | file_type_maya.svg
+mdx | mdx | file_type_mdx.svg | file_type_light_mdx.svg
+mediawiki | mediawiki | file_type_mediawiki.svg
+mercurial | .hgignore | file_type_mercurial.svg
+meson | meson | file_type_meson.svg
+meteor | <sub></sub> | file_type_meteor.svg
+mjml | mjml | file_type_mjml.svg
+mlang | powerquery | file_type_mlang.svg | file_type_light_mlang.svg
+mocha | mocha.opts, .mocharc.js, .mocharc.json, .mocharc.jsonc, .mocharc.yaml, .mocharc.yml | file_type_mocha.svg
+modernizr | modernizr, modernizr.js, modernizrrc.js, .modernizr.js, .modernizrrc.js | file_type_modernizr.svg
+mojolicious | mojolicious | file_type_mojolicious.svg
+moleculer | moleculer.config.js, moleculer.config.json, moleculer.config.ts | file_type_moleculer.svg
+mongo | mongo | file_type_mongo.svg
+monotone | .mtn-ignore | file_type_monotone.svg
+mson | mson | file_type_mson.svg
+mustache | mustache, mst | file_type_mustache.svg | file_type_light_mustache.svg
+ndst | ndst.yaml, ndst.yml, ndst.json | file_type_ndst.svg
+nearly | nearley | file_type_nearly.svg
+nestjs | .nest-cli.json, nest-cli.json, nestconfig.json, .nestconfig.json | file_type_nestjs.svg
+nest_adapter_js | adapter.js | file_type_nest_adapter_js.svg
+nest_adapter_ts | adapter.ts | file_type_nest_adapter_ts.svg
+nest_controller_js | controller.js | file_type_nest_controller_js.svg
+nest_controller_ts | controller.ts | file_type_nest_controller_ts.svg
+nest_decorator_js | decorator.js | file_type_nest_decorator_js.svg
+nest_decorator_ts | decorator.ts | file_type_nest_decorator_ts.svg
+nest_filter_js | filter.js | file_type_nest_filter_js.svg
+nest_filter_ts | filter.ts | file_type_nest_filter_ts.svg
+nest_gateway_js | gateway.js | file_type_nest_gateway_js.svg
+nest_gateway_ts | gateway.ts | file_type_nest_gateway_ts.svg
+nest_guard_js | guard.js | file_type_nest_guard_js.svg
+nest_guard_ts | guard.ts | file_type_nest_guard_ts.svg
+nest_interceptor_js | interceptor.js | file_type_nest_interceptor_js.svg
+nest_interceptor_ts | interceptor.ts | file_type_nest_interceptor_ts.svg
+nest_middleware_js | middleware.js | file_type_nest_middleware_js.svg
+nest_middleware_ts | middleware.ts | file_type_nest_middleware_ts.svg
+nest_module_js | module.js | file_type_nest_module_js.svg
+nest_module_ts | module.ts | file_type_nest_module_ts.svg
+nest_pipe_js | pipe.js | file_type_nest_pipe_js.svg
+nest_pipe_ts | pipe.ts | file_type_nest_pipe_ts.svg
+nest_service_js | service.js | file_type_nest_service_js.svg
+nest_service_ts | service.ts | file_type_nest_service_ts.svg
+netlify | netlify.toml | file_type_netlify.svg
+next | next.config.js, next.config.mjs | file_type_next.svg | file_type_light_next.svg
+nginx | nginx.conf | file_type_nginx.svg
+nim | nim | file_type_nim.svg
+nimble | nimble | file_type_nimble.svg
+ninja | build.ninja | file_type_ninja.svg
+noc | noc | file_type_noc.svg
+nix | nix | file_type_nix.svg
+njsproj | njsproj | file_type_njsproj.svg
+node | .node-version, .nvmrc | file_type_node.svg
+node2 | .node-version, .nvmrc | file_type_node2.svg
+nodemon | nodemon.json | file_type_nodemon.svg
+npm | .npmignore, .npmrc, package.json, package-lock.json, npm-shrinkwrap.json | file_type_npm.svg
+nsi | nsis, nfl, nsl, bridlensis | file_type_nsi.svg
+nsri | .nsrirc, .nsriignore, nsri.config.js, .nsrirc.js, .nsrirc.json, .nsrirc.yaml, .nsrirc.yml | file_type_nsri.svg
+nsri-integrity | .integrity.json | file_type_nsri-integrity.svg
+nuget | nupkg, snupkg, nuspec, psmdcp | file_type_nuget.svg
+numpy | npy, npz | file_type_numpy.svg
+nunjucks | nunj, njs, nunjucks | file_type_nunjucks.svg
+nuxt | nuxt.config.js, nuxt.config.ts | file_type_nuxt.svg
+nyc | .nycrc, .nycrc.json | file_type_nyc.svg
+objectivec | objective-c | file_type_objectivec.svg
+objectivecpp | objective-cpp | file_type_objectivecpp.svg
+objidconfig | .objidconfig | file_type_objidconfig.svg | file_type_light_objidconfig.svg
+ocaml | .merlin, ocaml, ocamllex, menhir | file_type_ocaml.svg
+ogone | ogone | file_type_ogone.svg
+onenote | one, onepkg, onetoc, onetoc2, sig | file_type_onenote.svg
+openscad | scad | file_type_openscad.svg
+opencl | cl, opencl | file_type_opencl.svg
+openHAB | openhab | file_type_openHAB.svg | file_type_light_openHAB.svg
+org | org | file_type_org.svg
+outlook | pst, bcmx, otm, msg, oft | file_type_outlook.svg
+ovpn | ovpn | file_type_ovpn.svg
+package | pkg | file_type_package.svg
+paket | paket.dependencies, paket.lock, paket.references, paket.template, paket.local | file_type_paket.svg
+patch | patch | file_type_patch.svg
+pcl | pcd | file_type_pcl.svg | file_type_light_pcl.svg
+pddl | pddl | file_type_pddl.svg
+pddl_plan | plan | file_type_pddl_plan.svg
+pddl_happenings | happenings | file_type_pddl_happenings.svg
+pdf | pdf | file_type_pdf.svg
+pdf2 | pdf | file_type_pdf2.svg
+peeky | peeky.config.ts, peeky.config.js, peeky.config.mjs | file_type_peeky.svg
+perl | perl | file_type_perl.svg
+perl2 | perl | file_type_perl2.svg
+perl6 | perl6 | file_type_perl6.svg
+pgsql | pgsql | file_type_pgsql.svg
+photoshop | psd | file_type_photoshop.svg
+photoshop2 | psd | file_type_photoshop2.svg
+php | php1, php2, php3, php4, php5, php6, phps, phpsa, phpt, phtml, phar, php | file_type_php.svg
+php2 | php1, php2, php3, php4, php5, php6, phps, phpsa, phpt, phtml, phar, php | file_type_php2.svg
+php3 | php1, php2, php3, php4, php5, php6, phps, phpsa, phpt, phtml, phar, php | file_type_php3.svg
+phpcsfixer | .php_cs, .php_cs.dist | file_type_phpcsfixer.svg
+phpunit | phpunit, phpunit.xml, phpunit.xml.dist | file_type_phpunit.svg
+phraseapp | .phraseapp.yml | file_type_phraseapp.svg
+pine | pine, pinescript | file_type_pine.svg
+pip | pipfile, pipfile.lock, pip-requirements | file_type_pip.svg
+pipeline | pipeline | file_type_pipeline.svg
+platformio | platformio.ini, platformio-debug.disassembly, platformio-debug.memoryview, platformio-debug.asm | file_type_platformio.svg
+plantuml | pu, plantuml, iuml, puml | file_type_plantuml.svg
+playwright | playwright.config.js, playwright.config.ts | file_type_playwright.svg
+plsql | plsql, oracle | file_type_plsql.svg
+plsql_package | pck | file_type_plsql_package.svg
+plsql_package_body | pkb | file_type_plsql_package_body.svg
+plsql_package_header | pkh | file_type_plsql_package_header.svg
+plsql_package_spec | pks | file_type_plsql_package_spec.svg
+pnpm | pnpmfile.js, pnpm-lock.yaml, pnpm-workspace.yaml | file_type_pnpm.svg | file_type_light_pnpm.svg
+poedit | po, mo | file_type_poedit.svg
+polymer | polymer | file_type_polymer.svg
+pony | pony | file_type_pony.svg
+postcss | postcss | file_type_postcss.svg
+postcssconfig | .postcssrc, .postcssrc.json, .postcssrc.yaml, .postcssrc.yml, .postcssrc.ts, .postcssrc.js, .postcssrc.cjs, postcss.config.ts, postcss.config.js, postcss.config.cjs | file_type_postcssconfig.svg
+powerpoint | pot, potx, potm, pps, ppsx, ppsm, ppt, pptx, pptm, pa, ppa, ppam, sldm, sldx | file_type_powerpoint.svg
+powerpoint2 | pot, potx, potm, pps, ppsx, ppsm, ppt, pptx, pptm, pa, ppa, ppam, sldm, sldx | file_type_powerpoint2.svg
+powershell | ps1, powershell | file_type_powershell.svg
+powershell_psm | psm1 | file_type_powershell_psm.svg
+powershell_psd | psd1 | file_type_powershell_psd.svg
+powershell_format | format.ps1xml | file_type_powershell_format.svg
+powershell_types | types.ps1xml | file_type_powershell_types.svg
+powershell2 | powershell | file_type_powershell2.svg
+powershell_psm2 | psm1 | file_type_powershell_psm2.svg
+powershell_psd2 | psd1 | file_type_powershell_psd2.svg
+preact | preact.config.js | file_type_preact.svg
+precommit | .pre-commit-config.yaml | file_type_precommit.svg
+prettier | .prettierrc, .prettierignore | file_type_prettier.svg | file_type_light_prettier.svg
+prettier | prettier.config.js, prettier.config.cjs, prettier.config.ts, prettier.config.coffee | file_type_prettier.svg | file_type_light_prettier.svg
+prettier | .prettierrc.js, .prettierrc.cjs, .prettierrc.json, .prettierrc.json5, .prettierrc.yml, .prettierrc.yaml, .prettierrc.toml | file_type_prettier.svg | file_type_light_prettier.svg
+prisma | prisma | file_type_prisma.svg | file_type_light_prisma.svg
+processinglang | pde | file_type_processinglang.svg
+procfile | procfile | file_type_procfile.svg
+progress | abl | file_type_progress.svg
+prolog | pro, P, prolog | file_type_prolog.svg
+prometheus | prometheus | file_type_prometheus.svg
+protobuf | proto3, proto | file_type_protobuf.svg
+protractor | protractor.conf.js, protractor.conf.coffee, protractor.conf.ts | file_type_protractor.svg
+publisher | pub, puz | file_type_publisher.svg
+puppet | puppet | file_type_puppet.svg
+pug | .jade-lintrc, .pug-lintrc, .jade-lint.json, .pug-lintrc.js, .pug-lintrc.json, jade | file_type_pug.svg
+purescript | purescript | file_type_purescript.svg | file_type_light_purescript.svg
+pyret | pyret | file_type_pyret.svg
+python | python | file_type_python.svg
+pytyped | py.typed | file_type_pytyped.svg
+pyup | .pyup, .pyup.yml | file_type_pyup.svg
+q | q | file_type_q.svg
+qbs | qbs | file_type_qbs.svg
+qlikview | qvd, qvw, qlik | file_type_qlikview.svg
+qml | qml | file_type_qml.svg
+qmldir | qmldir | file_type_qmldir.svg
+qsharp | qsharp | file_type_qsharp.svg
+quasar | quasar.config.js, quasar.conf.js | file_type_quasar.svg | file_type_light_quasar.svg
+r | r | file_type_r.svg
+racket | racket | file_type_racket.svg
+rails | <sub></sub> | file_type_rails.svg
+rake | rake | file_type_rake.svg
+rake | rakefile | file_type_rake.svg
+raml | raml | file_type_raml.svg
+razor | razor, aspnetcorerazor | file_type_razor.svg
+razzle | razzle.config.js | file_type_razzle.svg | file_type_light_razzle.svg
+reactjs | javascriptreact | file_type_reactjs.svg
+reacttemplate | rt | file_type_reacttemplate.svg
+reactts | typescriptreact | file_type_reactts.svg
+reason | reason | file_type_reason.svg
+red | red | file_type_red.svg
+registry | reg | file_type_registry.svg
+rego | rego | file_type_rego.svg
+rehype | .rehyperc, .rehypeignore, .rehyperc.cjs, .rehyperc.js, .rehyperc.json, .rehyperc.mjs, .rehyperc.yml, .rehyperc.yaml | file_type_rehype.svg | file_type_light_rehype.svg
+remark | .remarkrc, .remarkignore, .remarkrc.cjs, .remarkrc.js, .remarkrc.json, .remarkrc.mjs, .remarkrc.yml, .remarkrc.yaml | file_type_remark.svg | file_type_light_remark.svg
+renovate | .renovaterc, renovate.json, .renovaterc.json | file_type_renovate.svg
+replit | .replit, replit.nix | file_type_replit.svg | file_type_light_replit.svg
+rescript | rescript | file_type_rescript.svg
+rest | restructuredtext | file_type_rest.svg
+retext | .retextrc, .retextignore, .retextrc.cjs, .retextrc.js, .retextrc.json, .retextrc.mjs, .retextrc.yml, .retextrc.yaml | file_type_retext.svg | file_type_light_retext.svg
+rexx | rexx | file_type_rexx.svg
+riot | riot | file_type_riot.svg
+robotframework | robot | file_type_robotframework.svg
+robots | robots.txt | file_type_robots.svg
+rollup | rollup.config.js, rollup.config.cjs, rollup.config.mjs, rollup.config.coffee, rollup.config.ts, rollup.config.common.js, rollup.config.common.cjs, rollup.config.common.mjs, rollup.config.common.coffee, rollup.config.common.ts, rollup.config.dev.js, rollup.config.dev.cjs, rollup.config.dev.mjs, rollup.config.dev.coffee, rollup.config.dev.ts, rollup.config.prod.js, rollup.config.prod.cjs, rollup.config.prod.mjs, rollup.config.prod.coffee, rollup.config.prod.ts | file_type_rollup.svg
+ron | ron | file_type_ron.svg
+rmd | rmd | file_type_rmd.svg
+rproj | rproj | file_type_rproj.svg
+rspec | .rspec | file_type_rspec.svg
+rubocop | .rubocop.yml, .rubocop_todo.yml | file_type_rubocop.svg | file_type_light_rubocop.svg
+ruby | ruby | file_type_ruby.svg
+rust | rust | file_type_rust.svg | file_type_light_rust.svg
+rust_toolchain | rust-toolchain | file_type_rust_toolchain.svg | file_type_light_rust_toolchain.svg
+sails | .sailsrc | file_type_sails.svg
+saltstack | sls | file_type_saltstack.svg
+san | san | file_type_san.svg
+sas | SAS | file_type_sas.svg
+sass | sass | file_type_sass.svg
+sbt | sbt | file_type_sbt.svg
+scala | scala | file_type_scala.svg
+script | vbscript | file_type_script.svg
+scss | scssm, scss | file_type_scss.svg
+scilab | scilab | file_type_scilab.svg
+sdlang | sdl | file_type_sdlang.svg
+sentry | .sentryclirc | file_type_sentry.svg
+serverless | serverless.yml, serverless.json, serverless.js, serverless.ts | file_type_serverless.svg
+sequelize | .sequelizerc, .sequelizerc.js, .sequelizerc.json | file_type_sequelize.svg
+shaderlab | unity, shaderlab | file_type_shaderlab.svg | file_type_light_shaderlab.svg
+shell | sh, zsh, bat, fish, shellscript | file_type_shell.svg
+siyuan | sy | file_type_siyuan.svg
+sketch | sketch | file_type_sketch.svg
+slang | slang | file_type_slang.svg
+slashup | slash-up.config.js | file_type_slashup.svg
+slice | slice | file_type_slice.svg
+slim | slim | file_type_slim.svg
+sln | sln | file_type_sln.svg
+sln2 | sln | file_type_sln2.svg
+silverstripe | silverstripe | file_type_silverstripe.svg
+skipper | eskip, eskip | file_type_skipper.svg
+smarty | smarty | file_type_smarty.svg
+snapcraft | snapcraft.yaml | file_type_snapcraft.svg
+snort | snort | file_type_snort.svg
+snyk | .snyk | file_type_snyk.svg
+solidarity | .solidarity, .solidarity.json | file_type_solidarity.svg
+solidity | solidity | file_type_solidity.svg | file_type_light_solidity.svg
+source | <sub></sub> | file_type_source.svg
+spacengine | spe | file_type_spacengine.svg
+sparql | sparql | file_type_sparql.svg
+sqf | sqf | file_type_sqf.svg
+sql | sql | file_type_sql.svg
+sqlite | sqlite, sqlite3, db3 | file_type_sqlite.svg
+squirrel | squirrel | file_type_squirrel.svg
+sss | sss | file_type_sss.svg
+stan | stan | file_type_stan.svg
+stata | dta, stata | file_type_stata.svg
+stencil | stencil, stencil-html | file_type_stencil.svg
+stryker | stryker.conf.mjs, stryker.conf.cjs, stryker.conf.js, stryker.conf.conf, stryker.conf.json, .stryker.conf.mjs, .stryker.conf.cjs, .stryker.conf.js, .stryker.conf.conf, .stryker.conf.json, stryker-config.mjs, stryker-config.cjs, stryker-config.js, stryker-config.conf, stryker-config.json, stryker4s.mjs, stryker4s.cjs, stryker4s.js, stryker4s.conf, stryker4s.json | file_type_stryker.svg
+style | <sub></sub> | file_type_style.svg
+stylelint | .stylelintrc, .stylelintignore, .stylelintcache, stylelint.config.js, stylelint.config.json, stylelint.config.yaml, stylelint.config.yml, stylelint.config.ts, stylelint.config.cjs, .stylelintrc.js, .stylelintrc.json, .stylelintrc.yaml, .stylelintrc.yml, .stylelintrc.ts, .stylelintrc.cjs | file_type_stylelint.svg | file_type_light_stylelint.svg
+stylable | stylable | file_type_stylable.svg
+styled | source.css.styled | file_type_styled.svg
+stylish_haskell | .stylish-haskell.yaml | file_type_stylish_haskell.svg
+stylus | stylus | file_type_stylus.svg | file_type_light_stylus.svg
+storyboard | storyboard | file_type_storyboard.svg
+storybook | story.js, story.jsx, story.ts, story.tsx, story.mdx, stories.js, stories.jsx, stories.ts, stories.tsx, stories.mdx | file_type_storybook.svg
+subversion | .svnignore | file_type_subversion.svg
+svelte | svelte | file_type_svelte.svg
+svg | svg | file_type_svg.svg
+swagger | Swagger, swagger | file_type_swagger.svg
+swift | package.pins, swift | file_type_swift.svg
+swig | swig | file_type_swig.svg
+symfony | symfony.lock | file_type_symfony.svg | file_type_light_symfony.svg
+systemd | systemd-unit-file | file_type_systemd.svg | file_type_light_systemd.svg
+systemverilog | systemverilog | file_type_systemverilog.svg | file_type_light_systemverilog.svg
+t4tt | t4 | file_type_t4tt.svg
+tailwind | tailwind.js, tailwind.cjs, tailwind.coffee, tailwind.ts, tailwind.json, tailwind.config.js, tailwind.config.cjs, tailwind.config.coffee, tailwind.config.ts, tailwind.config.json, .tailwind.js, .tailwind.cjs, .tailwind.coffee, .tailwind.ts, .tailwind.json, .tailwindrc.js, .tailwindrc.cjs, .tailwindrc.coffee, .tailwindrc.ts, .tailwindrc.json | file_type_tailwind.svg
+tauri | tauri.conf.json | file_type_tauri.svg
+teal | teal | file_type_teal.svg
+tt | tt2, tt | file_type_tt.svg
+tcl | tcl, exp | file_type_tcl.svg
+tera | tera | file_type_tera.svg
+terraform | tfstate, terraform | file_type_terraform.svg
+test | tst | file_type_test.svg
+testcafe | .testcaferc.json | file_type_testcafe.svg | file_type_light_testcafe.svg
+testjs | test.js, test.jsx, test.mjs, spec.js, spec.jsx, spec.mjs | file_type_testjs.svg | file_type_light_testjs.svg
+testts | test.ts, test.tsx, spec.ts, spec.tsx, e2e-test.ts, e2e-test.tsx, e2e-spec.ts, e2e-spec.tsx | file_type_testts.svg
+tex | texi, tikz, tex, latex, bibtex, doctex | file_type_tex.svg | file_type_light_tex.svg
+text | txt, csv, tsv, plaintext | file_type_text.svg
+textile | textile | file_type_textile.svg
+tiltfile | tiltfile | file_type_tiltfile.svg
+tfs | .tfignore | file_type_tfs.svg
+todo | todo | file_type_todo.svg | file_type_light_todo.svg
+toit | toit | file_type_toit.svg | file_type_light_toit.svg
+toml | toml | file_type_toml.svg | file_type_light_toml.svg
+tox | tox.ini | file_type_tox.svg
+travis | .travis.yml | file_type_travis.svg
+trunk | trunk.yaml | file_type_trunk.svg
+tsconfig | tsconfig.json, tsconfig.app.json, tsconfig.base.json, tsconfig.common.json, tsconfig.dev.json, tsconfig.development.json, tsconfig.e2e.json, tsconfig.eslint.json, tsconfig.node.json, tsconfig.prod.json, tsconfig.production.json, tsconfig.server.json, tsconfig.spec.json, tsconfig.staging.json, tsconfig.test.json, tsconfig.lib.json, tsconfig.lib.prod.json | file_type_tsconfig.svg
+tsconfig_official | tsconfig.json, tsconfig.app.json, tsconfig.base.json, tsconfig.common.json, tsconfig.dev.json, tsconfig.development.json, tsconfig.e2e.json, tsconfig.node.json, tsconfig.prod.json, tsconfig.production.json, tsconfig.server.json, tsconfig.spec.json, tsconfig.staging.json, tsconfig.test.json, tsconfig.lib.json, tsconfig.lib.prod.json | file_type_tsconfig_official.svg
+tslint | tslint.json, tslint.yaml, tslint.yml | file_type_tslint.svg
+ttcn | ttcn | file_type_ttcn.svg
+tuc | tuc | file_type_tuc.svg
+twig | twig | file_type_twig.svg
+typedoc | typedoc.js, typedoc.json | file_type_typedoc.svg
+typescript | typescript | file_type_typescript.svg
+typescript_official | typescript | file_type_typescript_official.svg
+typescriptdef | d.ts, d.cts, d.mts | file_type_typescriptdef.svg
+typescriptdef_official | d.ts, d.cts, d.mts | file_type_typescriptdef_official.svg
+typo3 | typoscript | file_type_typo3.svg
+unibeautify | .unibeautifyrc, unibeautify.config.js, .unibeautifyrc.js, .unibeautifyrc.json, .unibeautifyrc.yaml, .unibeautifyrc.yml | file_type_unibeautify.svg | file_type_light_unibeautify.svg
+unlicense | unlicense, unlicence, unlicense.md, unlicense.txt, unlicence.md, unlicence.txt | file_type_unlicense.svg
+vagrant | vagrantfile | file_type_vagrant.svg
+vala | vala | file_type_vala.svg
+vanilla_extract | css.ts | file_type_vanilla_extract.svg
+vapi | vapi | file_type_vapi.svg
+vash | vash | file_type_vash.svg | file_type_light_vash.svg
+vapor | vapor.yml | file_type_vapor.svg
+vb | vb | file_type_vb.svg
+vba | vba | file_type_vba.svg
+vbhtml | vbhtml | file_type_vbhtml.svg
+vbproj | vbproj | file_type_vbproj.svg
+vcxproj | vcxproj | file_type_vcxproj.svg
+velocity | velocity | file_type_velocity.svg
+verilog | verilog | file_type_verilog.svg
+vhdl | vhdl | file_type_vhdl.svg
+video | 3g2, 3gp, asf, amv, avi, divx, qt, f4a, f4b, f4p, f4v, flv, m2v, m4v, mkv, mk3d, mov, mp2, mp4, mpe, mpeg, mpeg2, mpg, mpv, nsv, ogv, rm, rmvb, svi, vob, webm, wmv | file_type_video.svg
+view | <sub></sub> | file_type_view.svg
+vim | .vimrc, .gvimrc, viml | file_type_vim.svg
+vite | vite.config.js, vite.config.ts | file_type_vite.svg
+vitest | vitest.config.ts, vitest.config.js, vitest.config.mjs | file_type_vitest.svg
+vlang | v | file_type_vlang.svg
+volt | volt | file_type_volt.svg
+vscode | .vscodeignore, launch.json, tasks.json, vscodeignore.json | file_type_vscode.svg
+vscode2 | .vscodeignore, launch.json, tasks.json, vscodeignore.json | file_type_vscode2.svg
+vscode3 | .vscodeignore, launch.json, tasks.json, vscodeignore.json | file_type_vscode3.svg
+vscode-insiders | .vscodeignore, launch.json, tasks.json, vscodeignore.json | file_type_vscode-insiders.svg
+vsix | vsix | file_type_vsix.svg | file_type_light_vsix.svg
+vsixmanifest | vsixmanifest | file_type_vsixmanifest.svg | file_type_light_vsixmanifest.svg
+vue | vue | file_type_vue.svg
+vueconfig | .vuerc, vue.config.js, vue.config.cjs, vue.config.mjs | file_type_vueconfig.svg
+wallaby | wallaby.json, wallaby.js, wallaby.ts, wallaby.coffee, wallaby.conf.json, wallaby.conf.js, wallaby.conf.ts, wallaby.conf.coffee, .wallaby.json, .wallaby.js, .wallaby.ts, .wallaby.coffee, .wallaby.conf.json, .wallaby.conf.js, .wallaby.conf.ts, .wallaby.conf.coffee | file_type_wallaby.svg
+watchmanconfig | .watchmanconfig | file_type_watchmanconfig.svg
+wasm | wasm, wasm, wat | file_type_wasm.svg
+webpack | webpack.base.conf.js, webpack.base.conf.coffee, webpack.base.conf.ts, webpack.common.js, webpack.common.coffee, webpack.common.ts, webpack.config.js, webpack.config.coffee, webpack.config.ts, webpack.config.base.js, webpack.config.base.coffee, webpack.config.base.ts, webpack.config.common.js, webpack.config.common.coffee, webpack.config.common.ts, webpack.config.dev.js, webpack.config.dev.coffee, webpack.config.dev.ts, webpack.config.development.js, webpack.config.development.coffee, webpack.config.development.ts, webpack.config.staging.js, webpack.config.staging.coffee, webpack.config.staging.ts, webpack.config.test.js, webpack.config.test.coffee, webpack.config.test.ts, webpack.config.prod.js, webpack.config.prod.coffee, webpack.config.prod.ts, webpack.config.production.js, webpack.config.production.coffee, webpack.config.production.ts, webpack.config.babel.js, webpack.config.babel.coffee, webpack.config.babel.ts, webpack.config.base.babel.js, webpack.config.base.babel.coffee, webpack.config.base.babel.ts, webpack.config.common.babel.js, webpack.config.common.babel.coffee, webpack.config.common.babel.ts, webpack.config.dev.babel.js, webpack.config.dev.babel.coffee, webpack.config.dev.babel.ts, webpack.config.development.babel.js, webpack.config.development.babel.coffee, webpack.config.development.babel.ts, webpack.config.staging.babel.js, webpack.config.staging.babel.coffee, webpack.config.staging.babel.ts, webpack.config.test.babel.js, webpack.config.test.babel.coffee, webpack.config.test.babel.ts, webpack.config.prod.babel.js, webpack.config.prod.babel.coffee, webpack.config.prod.babel.ts, webpack.config.production.babel.js, webpack.config.production.babel.coffee, webpack.config.production.babel.ts, webpack.dev.js, webpack.dev.coffee, webpack.dev.ts, webpack.dev.conf.js, webpack.dev.conf.coffee, webpack.dev.conf.ts, webpack.prod.js, webpack.prod.coffee, webpack.prod.ts, webpack.prod.conf.js, webpack.prod.conf.coffee, webpack.prod.conf.ts, webpack.main.config.js, webpack.main.config.coffee, webpack.main.config.ts, webpack.mix.js, webpack.mix.coffee, webpack.mix.ts, webpack.plugins.js, webpack.plugins.coffee, webpack.plugins.ts, webpack.renderer.config.js, webpack.renderer.config.coffee, webpack.renderer.config.ts, webpack.rules.js, webpack.rules.coffee, webpack.rules.ts, webpack.test.conf.js, webpack.test.conf.coffee, webpack.test.conf.ts | file_type_webpack.svg
+wenyan | wenyan | file_type_wenyan.svg
+wercker | wercker.yml | file_type_wercker.svg
+windi | windi.config.ts, windi.config.js | file_type_windi.svg
+wolfram | wolfram | file_type_wolfram.svg
+word | doc, docx, docm, dot, dotx, dotm, wll | file_type_word.svg
+word2 | doc, docx, docm, dot, dotx, dotm, wll | file_type_word2.svg
+wpml | wpml-config.xml | file_type_wpml.svg
+wurst | wurstlang, wurst | file_type_wurst.svg
+wxml | wxml | file_type_wxml.svg
+wxss | wxss | file_type_wxss.svg
+xcode | xcodeproj | file_type_xcode.svg
+xfl | xfl | file_type_xfl.svg | file_type_light_xfl.svg
+xib | xib | file_type_xib.svg
+xliff | xliff, xlf | file_type_xliff.svg
+xmake | xmake | file_type_xmake.svg
+xml | pex, tmlanguage, xml | file_type_xml.svg
+xquery | xquery | file_type_xquery.svg
+xsl | xsl | file_type_xsl.svg
+yacc | yacc | file_type_yacc.svg
+yaml | yml, yaml, yaml-tmlanguage | file_type_yaml.svg | file_type_light_yaml.svg
+yamllint | .yamllint | file_type_yamllint.svg
+yandex | .yaspellerrc, .yaspeller.json | file_type_yandex.svg
+yang | yang | file_type_yang.svg
+yarn | yarn.lock, .yarnrc, .yarnrc.yml, .yarnclean, .yarn-integrity, .yarn-metadata.json, .yarnignore | file_type_yarn.svg
+yeoman | .yo-rc.json | file_type_yeoman.svg
+zeit | now.json, .nowignore, vercel.json, .vercelignore | file_type_zeit.svg | file_type_light_zeit.svg
+zig | zig | file_type_zig.svg
+turbo | turbo.json | file_type_turbo.svg | file_type_light_turbo.svg
+doppler | doppler.yaml, doppler-template.yaml | file_type_doppler.svg
+zip | zip, rar, 7z, tar, tgz, bz, gz, bzip2, xz, bz2, zipx | file_type_zip.svg
+zip2 | zip, rar, 7z, tar, tgz, bz, gz, bzip2, xz, bz2, zipx | file_type_zip2.svg
