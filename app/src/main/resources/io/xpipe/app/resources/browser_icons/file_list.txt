@@ -389,7 +389,7 @@ lime | include.xml | file_type_lime.svg
 lintstagedrc | .lintstagedrc, .lintstagedrc.json, .lintstagedrc.yaml, .lintstagedrc.yml, .lintstagedrc.mjs, .lintstagedrc.js, .lintstagedrc.cjs, lint-staged.config.mjs, lint-staged.config.js, lint-staged.config.cjs | file_type_lintstagedrc.svg
 liquid | liquid | file_type_liquid.svg
 livescript | ls | file_type_livescript.svg
-lnk | lnk | file_type_lnk.svg
+lnk | url, lnk | file_type_lnk.svg
 locale | <sub></sub> | file_type_locale.svg
 log | log, tlg | file_type_log.svg
 log | log, tlg, log | file_type_log.svg
@@ -604,7 +604,7 @@ sas | SAS | file_type_sas.svg
 sass | sass | file_type_sass.svg
 sbt | sbt | file_type_sbt.svg
 scala | scala | file_type_scala.svg
-script | vbscript | file_type_script.svg
+script | vbs, vbscript | file_type_script.svg
 scss | scssm, scss | file_type_scss.svg
 scilab | scilab | file_type_scilab.svg
 sdlang | sdl | file_type_sdlang.svg

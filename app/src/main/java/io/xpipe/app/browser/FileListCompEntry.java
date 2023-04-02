@@ -5,6 +5,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.TableView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.*;
 import lombok.Getter;
@@ -32,21 +33,41 @@ public class FileListCompEntry {
         this.model = model;
     }
 
+    @SuppressWarnings("unchecked")
     public void onMouseClick(MouseEvent t) {
-        t.consume();
         if (item == null || isSynthetic()) {
+            return;
+        }
+
+        if (t.getClickCount() == 2 && t.getButton() == MouseButton.PRIMARY) {
+            model.onDoubleClick(item);
+            t.consume();
+            return;
+        }
+
+        if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
+            var tv = ((TableView<FileSystem.FileEntry>) row.getParent().getParent().getParent().getParent());
+            var all = tv.getItems();
+            var start = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).min().orElse(1);
+            var end = all.indexOf(item);
+            model.getSelected().setAll(all.subList(start, end + 1));
+            t.consume();
             return;
         }
 
         if (currentContextMenu != null) {
             currentContextMenu.hide();
             currentContextMenu = null;
+            t.consume();
+            return;
         }
 
         if (t.getButton() == MouseButton.SECONDARY) {
             var cm = new FileContextMenu(model.getFileSystemModel(), item, model.getEditing());
             cm.show(row, t.getScreenX(), t.getScreenY());
             currentContextMenu = cm;
+            t.consume();
+            return;
         }
     }
 

@@ -21,7 +21,7 @@ public interface FileIconFactory {
                 return null;
             }
 
-            return Arrays.stream(endings).anyMatch(ending -> entry.getPath().endsWith(ending)) ? getIcon() : null;
+            return Arrays.stream(endings).anyMatch(ending -> entry.getPath().toLowerCase().endsWith(ending.toLowerCase())) ? getIcon() : null;
         }
     }
 

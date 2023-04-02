@@ -27,7 +27,6 @@ import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.time.Instant;
@@ -172,14 +171,8 @@ final class FileListComp extends AnchorPane {
                 table.pseudoClassStateChanged(DRAG_INTO_CURRENT, newValue);
             });
 
-            row.addEventHandler(MouseEvent.MOUSE_CLICKED, t -> {
-                listEntry.get().onMouseClick(t);
-            });
-
             row.setOnMouseClicked(e -> {
-                if (e.getClickCount() == 2 && !row.isEmpty()) {
-                    fileList.onDoubleClick(row.getItem());
-                }
+                listEntry.get().onMouseClick(e);
             });
 
             row.setOnDragEntered(event -> {
