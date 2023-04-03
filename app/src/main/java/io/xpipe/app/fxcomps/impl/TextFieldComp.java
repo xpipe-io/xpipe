@@ -12,6 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+import java.util.Objects;
+
 public class TextFieldComp extends Comp<CompStructure<TextField>> {
 
     private final Property<String> lastAppliedValue;
@@ -42,6 +44,9 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         lastAppliedValue.addListener((c, o, n) -> {
             currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
+                if (Objects.equals(text.getText(),n)) {
+                    return;
+                }
                 text.setText(n);
             });
         });

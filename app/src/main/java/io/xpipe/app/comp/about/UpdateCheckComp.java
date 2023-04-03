@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.AppUpdater;
+import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.XPipeDistributionType;
 import javafx.beans.binding.Bindings;
@@ -41,7 +42,7 @@ public class UpdateCheckComp extends SimpleComp {
 
     private void restart() {
         AppUpdater.get().refreshUpdateCheckSilent();
-        AppUpdater.get().executeUpdateAndClose();
+        UpdateAvailableAlert.showIfNeeded();
     }
 
     private void download() {

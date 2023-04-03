@@ -34,6 +34,10 @@ public class AppCache {
     }
 
     public static void clear() {
+        if (!Files.exists(getBasePath())) {
+            return;
+        }
+
         try {
             FileUtils.cleanDirectory(getBasePath().toFile());
         } catch (IOException e) {

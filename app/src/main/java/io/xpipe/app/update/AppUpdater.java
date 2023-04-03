@@ -204,7 +204,7 @@ public class AppUpdater {
         event("Executing update ...");
         OperationMode.executeAfterShutdown(() -> {
             try {
-                AppInstaller.installFileLocal(lastUpdateCheckResult.getValue().getAssetType(), downloadFile);
+                AppInstaller.installFileLocal(downloadedUpdate.getValue().getAssetType(), downloadFile);
             } catch (Throwable ex) {
                 ex.printStackTrace();
             } finally {

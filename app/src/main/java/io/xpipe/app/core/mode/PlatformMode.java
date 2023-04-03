@@ -4,6 +4,7 @@ import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Application;
@@ -74,7 +75,12 @@ public abstract class PlatformMode extends OperationMode {
             ThreadHelper.sleep(100);
         }
 
-        UpdateAvailableAlert.showIfNeeded();
+
+        // If we downloaded an update, and decided to no longer automatically update, don't remind us!
+        // You can still update manually in the about tab
+        if (AppPrefs.get().automaticallyUpdate().get()) {
+            UpdateAvailableAlert.showIfNeeded();
+        }
 
         SourceCollectionViewState.init();
         StoreViewState.init();

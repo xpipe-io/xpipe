@@ -16,6 +16,7 @@ import io.xpipe.core.store.FileSystem;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
@@ -89,7 +90,29 @@ final class FileListComp extends AnchorPane {
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, sizeCol, mtimeCol);
         table.getSortOrder().add(filenameCol);
-        table.setSortPolicy(param -> true);
+        table.setSortPolicy(param -> {
+            var comp = table.getComparator();
+            if (comp == null) {
+                return true;
+            }
+
+            var parentFirst = new Comparator<FileSystem.FileEntry>() {
+                @Override
+                public int compare(FileSystem.FileEntry o1, FileSystem.FileEntry o2) {
+                    var c = fileList.getFileSystemModel().getCurrentParentDirectory();
+                    if (c == null) {
+                        return 0;
+                    }
+
+                    return o1.getPath().equals(c.getPath()) ? -1 : (o2.getPath().equals(c.getPath()) ? 1 : 0);
+                }
+            };
+            var dirsFirst = Comparator.<FileSystem.FileEntry, Boolean>comparing(path -> !path.isDirectory());
+
+            Comparator<? super FileSystem.FileEntry> us = parentFirst.thenComparing(dirsFirst).thenComparing(comp);
+            FXCollections.sort(table.getItems(), us);
+            return true;
+        });
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
 
