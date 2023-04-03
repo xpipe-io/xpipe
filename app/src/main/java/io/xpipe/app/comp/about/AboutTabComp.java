@@ -36,7 +36,7 @@ public class AboutTabComp extends Comp<CompStructure<?>> {
     private Comp<?> createLinks() {
         return new DynamicOptionsBuilder(false)
                 .addTitle("links")
-                .addComp(AppI18n.observable("documentation"), hyperlink(Hyperlinks.DOCUMENTATION), null)
+                //.addComp(AppI18n.observable("documentation"), hyperlink(Hyperlinks.DOCUMENTATION), null)
                 .addComp(AppI18n.observable("discord"), hyperlink(Hyperlinks.DISCORD), null)
                 .addComp(AppI18n.observable("slack"), hyperlink(Hyperlinks.SLACK), null)
                 .addComp(AppI18n.observable("github"), hyperlink(Hyperlinks.GITHUB), null)
