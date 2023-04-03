@@ -43,7 +43,7 @@ public class LocalFileTransferComp extends SimpleComp {
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
         var binding = BindingsHelper.mappedContentBinding(stage.getItems(), item -> item.getFileEntry());
-        var list = new SelectedFileListComp(binding).apply(struc -> struc.get().setMinHeight(200)).grow(false, true);
+        var list = new SelectedFileListComp(binding).apply(struc -> struc.get().setMinHeight(150)).grow(false, true);
         var dragNotice = new LabelComp(AppI18n.observable("dragFiles"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2e-export")))
                 .hide(BindingsHelper.persist(Bindings.isEmpty(stage.getItems())))

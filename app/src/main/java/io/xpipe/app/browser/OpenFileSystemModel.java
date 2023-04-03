@@ -76,6 +76,10 @@ final class OpenFileSystemModel {
     }
 
     public Optional<String> cd(String path) {
+        if (Objects.equals(path, currentPath.get())) {
+            return Optional.empty();
+        }
+
         String newPath = null;
         try {
             newPath = FileSystemHelper.resolveDirectoryPath(this, path);

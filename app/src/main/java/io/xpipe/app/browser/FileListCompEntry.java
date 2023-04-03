@@ -35,13 +35,17 @@ public class FileListCompEntry {
 
     @SuppressWarnings("unchecked")
     public void onMouseClick(MouseEvent t) {
-        if (item == null || isSynthetic()) {
+        if (item == null) {
             return;
         }
 
         if (t.getClickCount() == 2 && t.getButton() == MouseButton.PRIMARY) {
             model.onDoubleClick(item);
             t.consume();
+            return;
+        }
+
+        if (isSynthetic()) {
             return;
         }
 

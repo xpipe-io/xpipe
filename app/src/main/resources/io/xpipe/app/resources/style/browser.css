@@ -1,8 +1,7 @@
 .download-background {
--fx-border-color: -color-neutral-emphasis;
--fx-border-width: 1px 0 0 0;
+-fx-border-color: -color-neutral-muted;
+-fx-border-width: 4px 0 0 0;
 -fx-padding: 1em;
--fx-background-color: -color-neutral-muted;
 }
 
 .selected-file-list {

@@ -214,7 +214,7 @@ public class StoreEntryComp extends SimpleComp {
     }
 
     private Comp<?> createSettingsButton() {
-        var settingsButton = new IconButtonComp("mdi2v-view-headline");
+        var settingsButton = new IconButtonComp("mdomz-settings");
         settingsButton.styleClass("settings");
         settingsButton.apply(new PopupMenuAugment<>(true) {
             @Override
