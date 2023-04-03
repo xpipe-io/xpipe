@@ -27,6 +27,8 @@ public class SentryErrorHandler {
                 options.setEnableShutdownHook(false);
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
                 options.setTag("os", System.getProperty("os.name"));
+                options.setTag("osVersion", System.getProperty("os.version"));
+                options.setTag("arch", System.getProperty("os.arch"));
             });
         }
 
