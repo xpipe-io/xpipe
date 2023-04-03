@@ -49,6 +49,13 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 - Allows you to customize the launched shell's init environment
 - Supports launches from the GUI or command-line
 
+## Community
+
+There are several ways to reach out in case you encounter any issues or questions:
+- The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)
+- The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
+- You can also find me on [reddit](https://www.reddit.com/user/milchshakee)
+
 ## Repository Structure
 
 The following for modules make up the X-Pipe API and a licensed under the MIT license:
