@@ -32,7 +32,7 @@ public class UpdateAvailableAlert {
                     }
 
                     alert.getButtonTypes().clear();
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("update"), ButtonBar.ButtonData.OK_DONE));
+                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
                 })
                 .map(buttonType -> buttonType.getButtonData().isDefaultButton())

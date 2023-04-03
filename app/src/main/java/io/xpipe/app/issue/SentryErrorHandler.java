@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 public class SentryErrorHandler {
 
@@ -88,7 +89,7 @@ public class SentryErrorHandler {
         if (ee.getThrowable() != null) {
             if (ee.getDescription() != null
                     && !ee.getDescription().equals(ee.getThrowable().getMessage())) {
-                s.setTag("message", ee.getDescription());
+                s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
             }
         }
 
