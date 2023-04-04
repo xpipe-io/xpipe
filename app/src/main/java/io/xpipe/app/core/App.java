@@ -77,6 +77,10 @@ public class App extends Application {
                     var base = String.format(
                             "X-Pipe Desktop (%s)", AppProperties.get().getVersion());
                     var suffix = AppUpdater.get().getLastUpdateCheckResult().getValue() != null
+                                    && AppUpdater.get()
+                                            .getLastUpdateCheckResult()
+                                            .getValue()
+                                            .isUpdate()
                             ? String.format(
                                     " (Update to %s available)",
                                     AppUpdater.get()
