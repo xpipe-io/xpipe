@@ -16,6 +16,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,6 +25,8 @@ import java.time.temporal.ChronoUnit;
 public class AppMainWindow {
 
     private static AppMainWindow INSTANCE;
+
+    @Getter
     private final Stage stage;
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
     private Thread thread;
@@ -240,8 +243,7 @@ public class AppMainWindow {
         TrackEvent.debug("Set content reload listener");
     }
 
-    public void setContent(String title, Comp<?> content) {
-        stage.setTitle(title);
+    public void setContent(Comp<?> content) {
         setupContent(content);
         AppWindowHelper.setupStylesheets(stage.getScene());
     }

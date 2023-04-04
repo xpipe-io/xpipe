@@ -78,6 +78,10 @@ public class AppUpdater {
             AppCache.update("downloadedUpdate", n);
         });
         lastUpdateCheckResult.addListener((c, o, n) -> {
+            if (n != null && downloadedUpdate.getValue() != null && n.getVersion().equals(downloadedUpdate.getValue().getVersion())) {
+                return;
+            }
+
             downloadedUpdate.setValue(null);
         });
 
