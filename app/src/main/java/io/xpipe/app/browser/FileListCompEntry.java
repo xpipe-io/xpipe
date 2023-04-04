@@ -54,7 +54,7 @@ public class FileListCompEntry {
             var all = tv.getItems();
             var start = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).min().orElse(1);
             var end = all.indexOf(item);
-            model.getSelected().setAll(all.subList(start, end + 1));
+            model.getSelected().setAll(all.subList(Math.min(start, end), Math.max(start, end) + 1));
             t.consume();
             return;
         }
