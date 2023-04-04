@@ -52,8 +52,10 @@ public class FileListCompEntry {
         if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
             var tv = ((TableView<FileSystem.FileEntry>) row.getParent().getParent().getParent().getParent());
             var all = tv.getItems();
-            var start = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).min().orElse(1);
+            var min = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).min().orElse(1);
+            var max = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).max().orElse(all.size() - 1);
             var end = all.indexOf(item);
+            var start = end > min ? min : max;
             model.getSelected().setAll(all.subList(Math.min(start, end), Math.max(start, end) + 1));
             t.consume();
             return;
