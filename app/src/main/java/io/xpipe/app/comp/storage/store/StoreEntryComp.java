@@ -98,7 +98,9 @@ public class StoreEntryComp extends SimpleComp {
     private Node createIcon() {
         var img = entry.isDisabled()
                 ? "disabled_icon.png"
-                : entry.getEntry().getProvider().getDisplayIconFileName(entry.getEntry().getStore());
+                : entry.getEntry()
+                        .getProvider()
+                        .getDisplayIconFileName(entry.getEntry().getStore());
         var imageComp = new PrettyImageComp(new SimpleStringProperty(img), 55, 45);
         var storeIcon = imageComp.createRegion();
         storeIcon.getStyleClass().add("icon");
@@ -155,13 +157,11 @@ public class StoreEntryComp extends SimpleComp {
             ThreadHelper.runFailableAsync(() -> {
                 var found = entry.getDefaultActionProvider().getValue();
                 if (found != null) {
-                    found
-                            .createAction(entry.getEntry().getStore().asNeeded())
-                            .execute();
+                    entry.getEntry().updateLastUsed();
+                    found.createAction(entry.getEntry().getStore().asNeeded()).execute();
                 }
             });
         });
-
 
         new PopupMenuAugment<>(false) {
             @Override
@@ -177,7 +177,8 @@ public class StoreEntryComp extends SimpleComp {
         var list = new ArrayList<Comp<?>>();
         for (var p : entry.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
-            if (!actionProvider.isMajor() || p.getKey().equals(entry.getDefaultActionProvider().getValue())) {
+            if (!actionProvider.isMajor()
+                    || p.getKey().equals(entry.getDefaultActionProvider().getValue())) {
                 continue;
             }
 
