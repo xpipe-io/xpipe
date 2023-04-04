@@ -72,8 +72,7 @@ dependencies {
     testImplementation project(':core')
 }
 
-Arrays.stream(file("$rootDir/ext").list())
-        .map(l -> project(":$l")).forEach(p -> {
+project.allExtensions.forEach(p -> {
     dependencies {
         testCompileOnly p
     }
@@ -117,8 +116,7 @@ test {
 }
 
 
-def extensionJarDepList = Arrays.stream(file("$rootDir/ext").list())
-        .map(l -> project(":$l").getTasksByName('jar', true)).toList();
+def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList();
 
 jar {
     finalizedBy(extensionJarDepList)

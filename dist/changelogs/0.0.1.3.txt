@@ -1,2 +1,0 @@
-- Improve data store creation on the CLI
-- Fix many bugs

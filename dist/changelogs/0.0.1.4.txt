@@ -1,4 +1,0 @@
-- Fix native library loading
-- Fix automatic updater
-- Fixes for headless systems
-- Fix many bugs

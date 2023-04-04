@@ -8,9 +8,11 @@ copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
 jar.dependsOn(copyRuntimeLibs)
 
 def dev = tasks.register('createDevOutput', Copy) {
-    var source = "${project.jar.destinationDirectory.get()}"
-    from source
-    into "${project.rootDir}/app/build/ext_dev/$project.name"
+    if (project.allExtensions.contains(project)) {
+        var source = "${project.jar.destinationDirectory.get()}"
+        from source
+        into "${project.rootDir}/app/build/ext_dev/$project.name"
+    }
 }
 jar.finalizedBy(dev)
 

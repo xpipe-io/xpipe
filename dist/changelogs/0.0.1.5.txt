@@ -1,2 +1,0 @@
-- Polish CLI
-- Fix many bugs

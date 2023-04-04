@@ -22,6 +22,9 @@ def getArchName() {
 project.ext {
     ci = System.getenv('CI') != null
     os = org.gradle.internal.os.OperatingSystem.current()
+    allExtensions = Arrays.stream(file("$rootDir/ext").list())
+            .filter(s -> !s.equals('csv') && !s.equals('office') && !s.equals('pdx') && !s.equals('jackson') && !s.equals('collections'))
+            .map(l -> project(":$l")).toList()
     fullVersion = file("$rootDir/private_files.txt").exists()
     arch = getArchName()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []

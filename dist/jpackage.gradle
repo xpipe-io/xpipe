@@ -95,8 +95,7 @@ jlink {
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
-def extModules = Arrays.asList(file("$rootDir/ext").list()).stream()
-        .map(l -> project(":$l")).toList()
+def extModules = project.allExtensions.toList()
 task copyBundledExtensions(type: DefaultTask,
                            dependsOn: extModules.stream().map { it.getTasksByName('createExtOutput', true)[0] }.toList()) {
     doLast {
