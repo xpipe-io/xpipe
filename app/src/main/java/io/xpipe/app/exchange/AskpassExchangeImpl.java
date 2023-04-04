@@ -57,8 +57,11 @@ public class AskpassExchangeImpl extends AskpassExchange
                 })
                 .orElse(null);
 
-        passwords.put(msg.getId(), r);
-        requestToId.put(msg.getRequest(), msg.getId());
+        // If the result is null, assume that the operation was aborted by the user
+        if (r != null) {
+            passwords.put(msg.getId(), r);
+            requestToId.put(msg.getRequest(), msg.getId());
+        }
 
         return Response.builder().value(r != null ? r.getSecretValue() : null).build();
     }
