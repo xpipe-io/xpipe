@@ -15,11 +15,11 @@ import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
-    public static final ExternalTerminalType CMD = new SimpleType("cmd", "cmd", "cmd.exe") {
+    public static final ExternalTerminalType CMD = new SimpleType("cmd", "cmd.exe", "cmd.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
-            return "cmd.exe /C \"" + file + "\"";
+            return "/C \"" + file + "\"";
         }
 
         @Override
@@ -29,11 +29,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
 
     public static final ExternalTerminalType POWERSHELL =
-            new SimpleType("powershell", "powershell", "PowerShell") {
+            new SimpleType("powershell", "powershell.exe", "PowerShell") {
 
                 @Override
                 protected String toCommand(String name, String file) {
-                    return "powershell.exe -ExecutionPolicy Bypass -Command \"" + file + "\"";
+                    return "-ExecutionPolicy Bypass -Command \"" + file + "\"";
                 }
 
                 @Override
