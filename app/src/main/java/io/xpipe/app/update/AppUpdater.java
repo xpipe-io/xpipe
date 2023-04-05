@@ -249,11 +249,6 @@ public class AppUpdater {
                 return null;
             }
 
-            // Don't update value if result is the same
-            if (lastUpdateCheckResult.getValue() != null && lastUpdateCheckResult.getValue().getVersion().equals(rel.get().getTagName())) {
-                return lastUpdateCheckResult.getValue();
-            }
-
             var isUpdate = isUpdate(rel.get().getTagName());
             var assetType = AppInstaller.getSuitablePlatformAsset();
             var ghAsset = rel.orElseThrow().listAssets().toList().stream()
