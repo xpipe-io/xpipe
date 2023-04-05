@@ -292,10 +292,10 @@ final class OpenFileSystemModel {
     }
 
     public void back() {
-        history.back().ifPresent(currentPath::set);
+        history.back().ifPresent(s -> cd(s));
     }
 
     public void forth() {
-        history.forth().ifPresent(currentPath::set);
+        history.forth().ifPresent(s -> cd(s));
     }
 }

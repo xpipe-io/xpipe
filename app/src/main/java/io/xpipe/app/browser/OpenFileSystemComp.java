@@ -5,13 +5,15 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -51,6 +53,7 @@ public class OpenFileSystemComp extends SimpleComp {
 
         var refreshBtn = new Button(null, new FontIcon("mdmz-refresh"));
         refreshBtn.setOnAction(e -> model.refresh());
+        Shortcuts.addShortcut(refreshBtn, new KeyCodeCombination(KeyCode.F5));
 
         var terminalBtn = new Button(null, new FontIcon("mdi2c-code-greater-than"));
         terminalBtn.setOnAction(e -> model.openTerminalAsync(model.getCurrentPath().get()));
@@ -61,6 +64,7 @@ public class OpenFileSystemComp extends SimpleComp {
             creatingProperty.set(true);
         });
         addBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
+        Shortcuts.addShortcut(addBtn, new KeyCodeCombination(KeyCode.PLUS));
 
         var filter = new FileFilterComp(model.getFilter()).createRegion();
 
