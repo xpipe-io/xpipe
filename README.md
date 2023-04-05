@@ -24,7 +24,7 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 - Run commands from the explorer interface
 - Utilize your favourite local programs to open and edit remote files
 
-<img src="https://user-images.githubusercontent.com/72509152/221438071-e3f287ea-a6ee-49b3-a776-4b5b39b1fd92.png" alt="drawing" height="450"/>
+<img src="https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png" alt="drawing" height="450"/>
 
 ### Manage all your connections in one place
 
@@ -33,7 +33,7 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 - Share connection configurations to any other trusted party through shareable URLs
 - Create desktop shortcuts for your connections
 
-<img src="https://user-images.githubusercontent.com/72509152/221438232-18bc1ee3-4b3f-49dc-8fb0-df8896aa7c91.png" alt="drawing" height="450"/>
+<img src="https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png" alt="drawing" height="450"/>
 
 ### Flexible remote connector
 
