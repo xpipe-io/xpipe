@@ -125,7 +125,7 @@ public class FileListCompEntry {
         // Accept drops from inside the app window
         if (event.getGestureSource() != null) {
             var files = FileBrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
-            var target = item != null
+            var target = item != null && item.isDirectory()
                     ? item
                     : model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel().dropFilesIntoAsync(target, files, false);
