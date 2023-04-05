@@ -33,7 +33,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
                 @Override
                 protected String toCommand(String name, String file) {
-                    return "-ExecutionPolicy Bypass -Command cmd /C \"" + file + "\"";
+                    return "-ExecutionPolicy Bypass -Command cmd /C '" + file + "'";
                 }
 
                 @Override
