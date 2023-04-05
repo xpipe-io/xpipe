@@ -12,7 +12,7 @@ public class TerminalHelper {
     }
 
     public static void open(String title, String command) throws Exception {
-        if (command.contains("\n") || command.contains(" ")) {
+        if (command.contains("\n") || command.contains(" ") || command.contains("\"") || command.contains("'")) {
             command = ScriptHelper.createLocalExecScript(command);
         }
 

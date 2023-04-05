@@ -37,18 +37,6 @@ public class ScriptHelper {
         }
     }
 
-    public static String unquote(String input) {
-        if (input.startsWith("\"") && input.endsWith("\"")) {
-            return input.substring(1, input.length() - 1);
-        }
-
-        if (input.startsWith("'") && input.endsWith("'")) {
-            return input.substring(1, input.length() - 1);
-        }
-
-        return input;
-    }
-
     public static String constructInitFile(
             ShellControl processControl, List<String> init, String toExecuteInShell,boolean login) {
         ShellDialect t = processControl.getShellDialect();

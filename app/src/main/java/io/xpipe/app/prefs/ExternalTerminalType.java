@@ -18,8 +18,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     public static final ExternalTerminalType CMD = new SimpleType("cmd", "cmd", "cmd.exe") {
 
         @Override
-        protected String toCommand(String name, String command) {
-            return "cmd.exe /C " + command;
+        protected String toCommand(String name, String file) {
+            return "cmd.exe /C \"" + file + "\"";
         }
 
         @Override
@@ -32,8 +32,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             new SimpleType("powershell", "powershell", "PowerShell") {
 
                 @Override
-                protected String toCommand(String name, String command) {
-                    return "powershell.exe -Command " + command;
+                protected String toCommand(String name, String file) {
+                    return "powershell.exe -ExecutionPolicy Bypass -Command \"" + file + "\"";
                 }
 
                 @Override
@@ -46,12 +46,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             new SimpleType("windowsTerminal", "wt.exe", "Windows Terminal") {
 
                 @Override
-                protected String toCommand(String name, String command) {
+                protected String toCommand(String name, String file) {
                     // A weird behavior in Windows Terminal causes the trailing
                     // backslash of a filepath to escape the closing quote in the title argument
                     // So just remove that slash
                     var fixedName = FileNames.removeTrailingSlash(name);
-                    return "-w 1 nt --title \"" + fixedName + "\" " + command;
+                    return "-w 1 nt --title \"" + fixedName + "\" \"" + file + "\"";
                 }
 
                 @Override
@@ -64,20 +64,22 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             new SimpleType("gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
                 @Override
-                public void launch(String name, String command) throws Exception {
+                public void launch(String name, String file) throws Exception {
                     try (ShellControl pc = LocalStore.getShell()) {
                         ApplicationHelper.checkSupport(pc, executable, getDisplayName());
 
-                        var toExecute = executable + " " + toCommand(name, command);
-                        // In order to fix this bug which also affects us: https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
-                        toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                        var toExecute = executable + " " + toCommand(name, file);
+                        // In order to fix this bug which also affects us:
+                        // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
+                        toExecute =
+                                "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
                         pc.executeSimpleCommand(toExecute);
                     }
                 }
 
                 @Override
-                protected String toCommand(String name, String command) {
-                    return "-v --title \"" + name + "\" -- " + command;
+                protected String toCommand(String name, String file) {
+                    return "-v --title \"" + name + "\" -- \"" + file + "\"";
                 }
 
                 @Override
@@ -89,8 +91,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     public static final ExternalTerminalType KONSOLE = new SimpleType("konsole", "konsole", "Konsole") {
 
         @Override
-        protected String toCommand(String name, String command) {
-            return "--new-tab -e " + command;
+        protected String toCommand(String name, String file) {
+            return "--new-tab -e \"" + file + "\"";
         }
 
         @Override
@@ -102,8 +104,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     public static final ExternalTerminalType XFCE = new SimpleType("xfce", "xfce4-terminal", "Xfce") {
 
         @Override
-        protected String toCommand(String name, String command) {
-            return "--tab --title \"" + name + "\" --command " + command;
+        protected String toCommand(String name, String file) {
+            return "--tab --title \"" + name + "\" --command \"" + file + "\"";
         }
 
         @Override
@@ -142,7 +144,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 .orElse(null);
     }
 
-    public abstract void launch(String name, String command) throws Exception;
+    public abstract void launch(String name, String file) throws Exception;
 
     static class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
@@ -151,11 +153,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String command) throws Exception {
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                var suffix = command.equals(pc.getShellDialect().getOpenCommand())
+                var suffix = file.equals(pc.getShellDialect().getOpenCommand())
                         ? "\"\""
-                        : "\"" + command.replaceAll("\"", "\\\\\"") + "\"";
+                        : "\"" + file.replaceAll("\"", "\\\\\"") + "\"";
                 var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
                 pc.executeSimpleCommand(cmd);
             }
@@ -169,7 +171,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String command) throws Exception {
+        public void launch(String name, String file) throws Exception {
             var custom = AppPrefs.get().customTerminalCommand().getValue();
             if (custom == null || custom.isBlank()) {
                 throw new IllegalStateException("No custom terminal command specified");
@@ -177,7 +179,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             var format = custom.contains("$cmd") ? custom : custom + " $cmd";
             try (var pc = LocalStore.getShell()) {
-                var toExecute = format.replace("$cmd", command);
+                var toExecute = format.replace("$cmd", "\"" + file + "\"");
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + name + "\" " + toExecute;
                 } else {
@@ -205,7 +207,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String command) throws Exception {
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
@@ -226,7 +228,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                     end tell
                                 end if
                                 EOF""",
-                        command.replaceAll("\"", "\\\\\""), command.replaceAll("\"", "\\\\\""));
+                        file.replaceAll("\"", "\\\\\""), file.replaceAll("\"", "\\\\\""));
                 pc.executeSimpleCommand(cmd);
             }
         }
@@ -239,7 +241,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String command) throws Exception {
+        public void launch(String name, String file) throws Exception {
             if (!MacOsPermissions.waitForAccessibilityPermissions()) {
                 return;
             }
@@ -259,7 +261,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                 end tell
                                 EOF
                                         """,
-                        command.replaceAll("\"", "\\\\\""));
+                        file.replaceAll("\"", "\\\\\""));
                 pc.executeSimpleCommand(cmd);
             }
         }
@@ -277,11 +279,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String command) throws Exception {
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, displayName);
 
-                var toExecute = executable + " " + toCommand(name, command);
+                var toExecute = executable + " " + toCommand(name, file);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + name + "\" " + toExecute;
                 } else {
@@ -291,7 +293,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
         }
 
-        protected abstract String toCommand(String name, String command);
+        protected abstract String toCommand(String name, String file);
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalStore.getShell()) {
