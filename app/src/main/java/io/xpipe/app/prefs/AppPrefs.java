@@ -46,8 +46,6 @@ public class AppPrefs {
 
     private static final int tooltipDelayMin = 0;
     private static final int tooltipDelayMax = 1500;
-    private static final int fontSizeMin = 10;
-    private static final int fontSizeMax = 20;
     private static final int editorReloadTimeoutMin = 0;
     private static final int editorReloadTimeoutMax = 1500;
     private static final Path DEFAULT_STORAGE_DIR =
@@ -89,7 +87,7 @@ public class AppPrefs {
     public final ReadOnlyProperty<AppStyle.Theme> theme = themeInternal;
     private final SingleSelectionField<AppStyle.Theme> themeControl =
             Field.ofSingleSelectionType(themeList, themeInternal).render(() -> new TranslatableComboBoxControl<>());
-    private final BooleanProperty useSystemFontInternal = typed(new SimpleBooleanProperty(false), Boolean.class);
+    private final BooleanProperty useSystemFontInternal = typed(new SimpleBooleanProperty(true), Boolean.class);
     public final ReadOnlyBooleanProperty useSystemFont = useSystemFontInternal;
     private final IntegerProperty tooltipDelayInternal = typed(new SimpleIntegerProperty(1000), Integer.class);
 

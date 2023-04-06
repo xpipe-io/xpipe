@@ -61,13 +61,13 @@ public class AppFont {
     public static void loadFonts() {
         TrackEvent.info("Loading fonts ...");
         AppResources.with(
-                "io.xpipe.app",
+                AppResources.XPIPE_MODULE,
                 "fonts",
                 path -> Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         try (var in = Files.newInputStream(file)) {
-                            Font.loadFont(in, 20);
+                            Font.loadFont(in, 12);
                         }
                         return FileVisitResult.CONTINUE;
                     }
