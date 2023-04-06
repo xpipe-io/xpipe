@@ -42,6 +42,7 @@ public class XPipeSession {
                 : UuidHelper.parse(() -> Files.readString(sessionFile)).orElse(UUID.randomUUID());
 
         try {
+            //TODO: People might move their page file to another drive
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
                 var pf = Path.of("C:\\pagefile.sys");
                 BasicFileAttributes attr = Files.readAttributes(pf, BasicFileAttributes.class);

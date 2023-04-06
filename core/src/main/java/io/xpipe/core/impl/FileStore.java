@@ -82,7 +82,7 @@ public class FileStore extends JacksonizedValue implements FilenameStore, Stream
 
     @Override
     public boolean canOpen() throws Exception {
-        return fileSystem.createFileSystem().open().exists(path);
+        return fileSystem.createFileSystem().open().fileExists(path);
     }
 
     @Override

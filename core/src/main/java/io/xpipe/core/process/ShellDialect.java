@@ -123,7 +123,7 @@ public interface ShellDialect {
 
     String getFileDeleteCommand(String file);
 
-    String getFileExistsCommand(String file);
+    CommandControl createFileExistsCommand(ShellControl sc, String file);
 
     String getFileTouchCommand(String file);
 

@@ -74,7 +74,7 @@ public class AppInstaller {
         }
 
         if (p.getOsType().equals(OsType.LINUX)) {
-            try (CommandControl c = p.command(p.getShellDialect().getFileExistsCommand("/etc/debian_version"))
+            try (CommandControl c = p.getShellDialect().createFileExistsCommand(p, "/etc/debian_version")
                     .start()) {
                 return c.discardAndCheckExit() ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
             }

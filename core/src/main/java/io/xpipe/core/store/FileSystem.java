@@ -51,7 +51,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     OutputStream openOutput(String file) throws Exception;
 
-    public boolean exists(String file) throws Exception;
+    public boolean fileExists(String file) throws Exception;
 
     public  void delete(String file) throws Exception;
 

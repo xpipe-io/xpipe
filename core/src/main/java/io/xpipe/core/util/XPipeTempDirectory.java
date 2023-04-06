@@ -23,7 +23,7 @@ public class XPipeTempDirectory {
         var base = proc.getOsType().getTempDirectory(proc);
         var dir = FileNames.join(base, "xpipe");
 
-        if (!proc.executeBooleanSimpleCommand(proc.getShellDialect().getFileExistsCommand(dir))) {
+        if (!proc.getShellDialect().createFileExistsCommand(proc, dir).executeAndCheck()) {
             proc.executeSimpleCommand(proc.getShellDialect().getMkdirsCommand(dir),
                     "Unable to access or create temporary directory " + dir);
 

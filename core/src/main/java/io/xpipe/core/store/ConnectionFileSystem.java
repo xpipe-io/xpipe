@@ -76,9 +76,9 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean exists(String file) throws Exception {
-        try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileExistsCommand(file)).complex()
+    public boolean fileExists(String file) throws Exception {
+        try (var pc = shellControl.getShellDialect()
+                        .createFileExistsCommand(shellControl, file).complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }
