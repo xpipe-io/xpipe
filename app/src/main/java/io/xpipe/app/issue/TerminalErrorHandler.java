@@ -14,7 +14,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class TerminalErrorHandler implements ErrorHandler {
 
-    private final ErrorHandler basic = new BasicErrorHandler();
+    private final ErrorHandler basic = new LogErrorHandler();
 
     @Override
     public void handle(ErrorEvent event) {

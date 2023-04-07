@@ -3,8 +3,7 @@ package io.xpipe.app.core.mode;
 import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppTray;
-import io.xpipe.app.issue.ErrorHandler;
-import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.issue.*;
 
 public class TrayMode extends PlatformMode {
 
@@ -45,10 +44,14 @@ public class TrayMode extends PlatformMode {
 
     @Override
     public ErrorHandler getErrorHandler() {
-        if (AppTray.get() != null) {
-            return AppTray.get().getErrorHandler();
-        } else {
-            return BACKGROUND.getErrorHandler();
-        }
+        var log = new LogErrorHandler();
+        return event -> {
+            // Check if tray initialization is finished
+            if (AppTray.get() != null) {
+                AppTray.get().getErrorHandler().handle(event);
+            }
+            log.handle(event);
+            ErrorAction.ignore().handle(event);
+        };
     }
 }

@@ -10,8 +10,6 @@ import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 
-import static io.xpipe.app.core.mode.OperationMode.BACKGROUND;
-
 public class AppTray {
 
     private static AppTray INSTANCE;
@@ -28,7 +26,7 @@ public class AppTray {
         if (AppProperties.get().isDeveloperMode()) {
             builder.menuItem("Throw exception", e -> {
                         Platform.runLater(() -> {
-                            throw new RuntimeException("This is a text exception");
+                            throw new RuntimeException("This is a test exception");
                         });
                     })
                     .menuItem("Throw terminal exception", e -> {
@@ -85,8 +83,6 @@ public class AppTray {
 
         @Override
         public void handle(ErrorEvent event) {
-            BACKGROUND.getErrorHandler().handle(event);
-
             if (event.isOmitted()) {
                 return;
             }

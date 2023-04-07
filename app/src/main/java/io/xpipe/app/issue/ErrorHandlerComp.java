@@ -2,6 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
+import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
@@ -43,6 +44,11 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     public static void showAndWait(ErrorEvent event) {
+        if (!App.isPlatformRunning() || event.isOmitted()) {
+            ErrorAction.ignore().handle(event);
+            return;
+        }
+
         if (Platform.isFxApplicationThread()) {
             showAndWaitWithPlatformThread(event);
         } else {

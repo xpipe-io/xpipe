@@ -2,10 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.ErrorHandler;
-import io.xpipe.app.issue.ErrorHandlerComp;
-import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.issue.*;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import javafx.application.Platform;
 
@@ -56,11 +53,10 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public ErrorHandler getErrorHandler() {
+        var log = new LogErrorHandler();
         return event -> {
-            BACKGROUND.getErrorHandler().handle(event);
-            if (App.isPlatformRunning() && !event.isOmitted()) {
-                ErrorHandlerComp.showAndWait(event);
-            }
+            log.handle(event);
+            ErrorHandlerComp.showAndWait(event);
         };
     }
 }

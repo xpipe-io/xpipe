@@ -3,7 +3,7 @@ package io.xpipe.app.launcher;
 import io.xpipe.app.core.AppLock;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.BasicErrorHandler;
+import io.xpipe.app.issue.LogErrorHandler;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
@@ -41,14 +41,14 @@ public class LauncherCommand implements Callable<Integer> {
 
         var cmd = new CommandLine(new LauncherCommand());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-            new BasicErrorHandler()
+            new LogErrorHandler()
                     .handle(ErrorEvent.fromThrowable("Launcher command error occurred", ex)
                             .build());
             OperationMode.halt(1);
             return 1;
         });
         cmd.setParameterExceptionHandler((ex, args1) -> {
-            new BasicErrorHandler()
+            new LogErrorHandler()
                     .handle(ErrorEvent.fromThrowable("Launcher parameter error occurred", ex)
                             .build());
             OperationMode.halt(1);

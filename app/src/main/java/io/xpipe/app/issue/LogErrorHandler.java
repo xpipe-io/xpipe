@@ -3,7 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.core.util.Deobfuscator;
 
-public class BasicErrorHandler implements ErrorHandler {
+public class LogErrorHandler implements ErrorHandler {
 
     @Override
     public void handle(ErrorEvent event) {

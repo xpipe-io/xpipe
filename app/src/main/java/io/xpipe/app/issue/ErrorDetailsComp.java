@@ -63,10 +63,10 @@ public class ErrorDetailsComp extends SimpleComp {
                     AppI18n.observable("stackTrace"), "mdoal-code", Comp.of(this::createStrackTraceContent)));
         }
 
-        if (event.getTrackEvents().size() > 0) {
-            items.add(new TabPaneComp.Entry(
-                    AppI18n.observable("events"), "mdi2c-clipboard-list-outline", createTrackEventHistory()));
-        }
+//        if (event.getTrackEvents().size() > 0) {
+//            items.add(new TabPaneComp.Entry(
+//                    AppI18n.observable("events"), "mdi2c-clipboard-list-outline", createTrackEventHistory()));
+//        }
 
         var tb = new TabPaneComp(new SimpleObjectProperty<>(items.get(0)), items);
         tb.apply(r -> AppFont.small(r.get()));
