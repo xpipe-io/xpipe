@@ -5,36 +5,32 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class XPipeTempDirectory {
 
-    public static Path getLocal() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return Path.of(System.getenv("TEMP")).resolve("xpipe");
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return Path.of("/tmp/xpipe");
-        } else {
-            return Path.of(System.getenv("TMPDIR"), "xpipe");
-        }
+    public static String getSystemTempDirectory(ShellControl proc) throws Exception {
+        return proc.getOsType().getTempDirectory(proc);
     }
 
-    public static String get(ShellControl proc) throws Exception {
+    public static String getSubDirectory(ShellControl proc) throws Exception {
         var base = proc.getOsType().getTempDirectory(proc);
         var dir = FileNames.join(base, "xpipe");
 
-        proc.executeSimpleCommand(proc.getShellDialect().getMkdirsCommand(dir),
-                "Unable to access or create temporary directory " + dir);
+        if (!proc.getShellDialect().createFileExistsCommand(proc, dir).executeAndCheck()) {
+            proc.executeSimpleCommand(
+                    proc.getShellDialect().getMkdirsCommand(dir),
+                    "Unable to access or create temporary directory " + dir);
 
-        if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MACOS)) {
-            proc.executeSimpleCommand("chmod -f 777 \"" + dir + "\"");
+            if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MACOS)) {
+                proc.executeSimpleCommand("chmod -f 777 \"" + dir + "\"");
+            }
         }
 
         return dir;
     }
 
-    public static void clear(ShellControl proc) throws Exception {
-        var dir = get(proc);
+    public static void clearSubDirectory(ShellControl proc) throws Exception {
+        var dir = getSubDirectory(proc);
         if (!proc.executeBooleanSimpleCommand(proc.getShellDialect().getFileDeleteCommand(dir))) {
             throw new IOException("Unable to delete temporary directory " + dir);
         }

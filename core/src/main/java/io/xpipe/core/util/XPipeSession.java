@@ -35,7 +35,7 @@ public class XPipeSession {
             return;
         }
 
-        var sessionFile = XPipeTempDirectory.getLocal().resolve("xpipe_session");
+        var sessionFile = Path.of(System.getProperty("java.io.tmpdir")).resolve("xpipe_session");
         var isNewSystemSession = !Files.exists(sessionFile);
         var systemSessionId = isNewSystemSession
                 ? UUID.randomUUID()

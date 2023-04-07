@@ -279,7 +279,7 @@ final class OpenFileSystemModel {
                 if (store.getValue() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.create()
-                            .initWith(List.of(connection.getShellDialect().getCdCommand(directory)))
+                            .initWith(connection.getShellDialect().getCdCommand(directory))
                             .prepareTerminalOpen();
                     TerminalHelper.open(directory, command);
                 }

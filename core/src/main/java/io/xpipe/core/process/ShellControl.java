@@ -67,6 +67,8 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl elevationPassword(SecretValue value);
 
+    ShellControl initWith(String cmds);
+
     ShellControl initWith(List<String> cmds);
 
     ShellControl startTimeout(int ms);
