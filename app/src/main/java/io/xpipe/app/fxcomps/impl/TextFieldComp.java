@@ -44,9 +44,11 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         lastAppliedValue.addListener((c, o, n) -> {
             currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
-                if (Objects.equals(text.getText(),n)) {
+                // Check if control value is the same. Then don't set it as that might cause bugs
+                if (Objects.equals(text.getText(), n) || (n == null && text.getText().isEmpty())) {
                     return;
                 }
+                
                 text.setText(n);
             });
         });
