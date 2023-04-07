@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.exchange.MessageExchangeImpls;
+import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ModuleInstall;
 import io.xpipe.app.ext.XPipeServiceProviders;
 import io.xpipe.app.issue.ErrorEvent;
@@ -35,18 +36,20 @@ public class AppExtensionManager {
 
         INSTANCE = new AppExtensionManager();
         INSTANCE.determineExtensionDirectories();
-        INSTANCE.loadBasicExtension();
-        INSTANCE.loadExtensions();
+        INSTANCE.loadBaseExtension();
+        INSTANCE.loadAllExtensions();
 
         if (loadProviders) {
-            INSTANCE.loadContent();
+            INSTANCE.addNativeLibrariesToPath();
+            XPipeServiceProviders.load(INSTANCE.extendedLayer);
+            MessageExchangeImpls.loadAll();
         }
     }
 
-    private void loadBasicExtension() {
-        var baseModule = loadExtension("base", ModuleLayer.boot());
+    private void loadBaseExtension() {
+        var baseModule = findAndParseExtension("base", ModuleLayer.boot());
         if (baseModule.isEmpty()) {
-            throw new IllegalStateException("Missing base module");
+            throw new ExtensionException("Missing base module. Is the installation corrupt?");
         }
 
         baseLayer = baseModule.get().getModule().getLayer();
@@ -62,7 +65,7 @@ public class AppExtensionManager {
             var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
-                throw new IllegalStateException("Required local X-Pipe installation not found");
+                throw new IllegalStateException("Required local X-Pipe installation was not found but is required for development");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
@@ -119,9 +122,9 @@ public class AppExtensionManager {
         return ext != null ? base.resolve(ext) : base;
     }
 
-    private void loadExtensions() {
+    private void loadAllExtensions() {
         for (Path extensionBaseDirectory : extensionBaseDirectories) {
-            loadExtensionBaseDirectory(extensionBaseDirectory);
+            loadExtensionRootDirectory(extensionBaseDirectory);
         }
 
         if (leafModuleLayers.size() > 0) {
@@ -136,13 +139,7 @@ public class AppExtensionManager {
         }
     }
 
-    private void loadContent() {
-        addNativeLibrariesToPath();
-        XPipeServiceProviders.load(extendedLayer);
-        MessageExchangeImpls.loadAll();
-    }
-
-    private void loadExtensionBaseDirectory(Path dir) {
+    private void loadExtensionRootDirectory(Path dir) {
         if (!Files.exists(dir)) {
             return;
         }
@@ -150,13 +147,18 @@ public class AppExtensionManager {
         try (var s = Files.list(dir)) {
             s.forEach(sub -> {
                 if (Files.isDirectory(sub)) {
-                    var extension = loadExtensionDirectory(sub, baseLayer);
+                    // TODO: Better detection for x modules
+                    if (sub.toString().endsWith("x")) {
+                        return;
+                    }
+
+                    var extension = parseExtensionDirectory(sub, baseLayer);
                     if (extension.isEmpty()) {
                         return;
                     }
-                    loadedExtensions.add(extension.get());
 
-                    var xModule = loadExtension(
+                    loadedExtensions.add(extension.get());
+                    var xModule = findAndParseExtension(
                             extension.get().getId() + "x",
                             extension.get().getModule().getLayer());
                     if (xModule.isPresent()) {
@@ -172,9 +174,9 @@ public class AppExtensionManager {
         }
     }
 
-    private Optional<Extension> loadExtension(String name, ModuleLayer parent) {
+    private Optional<Extension> findAndParseExtension(String name, ModuleLayer parent) {
         for (Path extensionBaseDirectory : extensionBaseDirectories) {
-            var found = loadExtensionDirectory(extensionBaseDirectory.resolve(name), parent);
+            var found = parseExtensionDirectory(extensionBaseDirectory.resolve(name), parent);
             if (found.isPresent()) {
                 return found;
             }
@@ -183,7 +185,7 @@ public class AppExtensionManager {
         return Optional.empty();
     }
 
-    private Optional<Extension> loadExtensionDirectory(Path dir, ModuleLayer parent) {
+    private Optional<Extension> parseExtensionDirectory(Path dir, ModuleLayer parent) {
         if (!Files.exists(dir) || !Files.isDirectory(dir)) {
             return Optional.empty();
         }
@@ -214,11 +216,9 @@ public class AppExtensionManager {
                 var layer = ModuleLayer.defineModulesWithOneLoader(cf, List.of(parent), scl)
                         .layer();
 
-                var ext = getExtension(layer, dir);
+                var ext = getExtensionFromDir(layer, dir);
                 if (ext.isEmpty()) {
-                    TrackEvent.withWarn("Found extension directory with no extension")
-                            .tag("dir", dir.toString())
-                            .handle();
+                    throw new ExtensionException("Unable to load extension from directory " + dir + ". Is the installation corrupted?");
                 } else {
                     if (loadedExtensions.stream()
                             .anyMatch(extension -> extension.getName().equals(ext.get().name))) {
@@ -240,31 +240,13 @@ public class AppExtensionManager {
             }
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t)
-                    .description("Unable to load extension " + dir.getFileName().toString())
+                    .description("Unable to load extension from " + dir.toString() + ". Is the installation corrupted?")
                     .handle();
         }
         return Optional.empty();
     }
 
-    private ModuleLayer loadGenerated(ModuleLayer parent, Path dir) throws IOException {
-        try (var d = Files.list(dir)) {
-            var all = d.toArray(Path[]::new);
-            ModuleFinder finder = ModuleFinder.of(all);
-            var found = finder.findAll();
-
-            Configuration cf = parent.configuration()
-                    .resolve(
-                            finder,
-                            ModuleFinder.of(),
-                            found.stream().map(r -> r.descriptor().name()).collect(Collectors.toSet()));
-            ClassLoader scl = ClassLoader.getSystemClassLoader();
-            var layer = ModuleLayer.defineModulesWithOneLoader(cf, List.of(parent), scl)
-                    .layer();
-            return layer;
-        }
-    }
-
-    private Optional<Extension> getExtension(ModuleLayer l, Path dir) {
+    private Optional<Extension> getExtensionFromDir(ModuleLayer l, Path dir) {
         return l.modules().stream()
                 .map(m -> {
                     AtomicReference<Extension> ext = new AtomicReference<>();
