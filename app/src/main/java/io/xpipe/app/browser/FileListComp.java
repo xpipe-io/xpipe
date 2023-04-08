@@ -42,6 +42,8 @@ import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 final class FileListComp extends AnchorPane {
 
     private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
+    private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
+    private static final PseudoClass FILE = PseudoClass.getPseudoClass("file");
     private static final PseudoClass FOLDER = PseudoClass.getPseudoClass("folder");
     private static final PseudoClass DRAG = PseudoClass.getPseudoClass("drag");
     private static final PseudoClass DRAG_OVER = PseudoClass.getPseudoClass("drag-over");
@@ -184,6 +186,12 @@ final class FileListComp extends AnchorPane {
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(DRAG, false);
                 row.pseudoClassStateChanged(DRAG_OVER, false);
+            });
+
+            row.itemProperty().addListener((observable, oldValue, newValue) -> {
+                row.pseudoClassStateChanged(EMPTY, newValue == null);
+                row.pseudoClassStateChanged(FILE, newValue != null && !newValue.isDirectory());
+                row.pseudoClassStateChanged(FOLDER, newValue != null && newValue.isDirectory());
             });
 
             fileList.getDraggedOverDirectory().addListener((observable, oldValue, newValue) -> {

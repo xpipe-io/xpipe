@@ -166,11 +166,8 @@ public class FileListCompEntry {
     }
 
     private void acceptDrag(DragEvent event) {
-        if (item == null || !item.isDirectory()) {
-            model.getDraggedOverEmpty().setValue(true);
-        } else {
-            model.getDraggedOverDirectory().setValue(item);
-        }
+        model.getDraggedOverEmpty().setValue(item == null || !item.isDirectory());
+        model.getDraggedOverDirectory().setValue(item);
         event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
     }
 

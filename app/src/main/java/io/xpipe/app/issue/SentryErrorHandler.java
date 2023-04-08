@@ -5,6 +5,7 @@ import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.XPipeDistributionType;
 import org.apache.commons.io.FileUtils;
 
@@ -86,6 +87,7 @@ public class SentryErrorHandler {
                 .toList();
         atts.forEach(attachment -> s.addAttachment(attachment));
 
+        s.setTag("developerMode", AppPrefs.get() != null ? AppPrefs.get().developerMode().getValue().toString() : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
         if (ee.getThrowable() != null) {
