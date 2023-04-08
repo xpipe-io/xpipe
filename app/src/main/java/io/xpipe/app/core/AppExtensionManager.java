@@ -58,14 +58,18 @@ public class AppExtensionManager {
 
     private void determineExtensionDirectories() {
         if (!AppProperties.get().isImage()) {
-            extensionBaseDirectories.add(Path.of(System.getProperty("user.dir")).resolve("app").resolve("build").resolve("ext_dev"));
+            extensionBaseDirectories.add(Path.of(System.getProperty("user.dir"))
+                    .resolve("app")
+                    .resolve("build")
+                    .resolve("ext_dev"));
         }
 
         if (!AppProperties.get().isFullVersion()) {
             var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
-                throw new IllegalStateException("Required local X-Pipe installation was not found but is required for development");
+                throw new IllegalStateException(
+                        "Required local X-Pipe installation was not found but is required for development");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
@@ -218,7 +222,10 @@ public class AppExtensionManager {
 
                 var ext = getExtensionFromDir(layer, dir);
                 if (ext.isEmpty()) {
-                    throw new ExtensionException("Unable to load extension from directory " + dir + ". Is the installation corrupted?");
+                    if (AppProperties.get().isFullVersion()) {
+                        throw new ExtensionException(
+                                "Unable to load extension from directory " + dir + ". Is the installation corrupted?");
+                    }
                 } else {
                     if (loadedExtensions.stream()
                             .anyMatch(extension -> extension.getName().equals(ext.get().name))) {
@@ -258,7 +265,7 @@ public class AppExtensionManager {
                             }
                             var name = props.get("name").toString();
                             var deps = l.modules().size() - 1;
-                            ext.set(new Extension(dir, dir.getFileName().toString(),name, m, deps));
+                            ext.set(new Extension(dir, dir.getFileName().toString(), name, m, deps));
                         }
                     });
                     return Optional.ofNullable(ext.get());
