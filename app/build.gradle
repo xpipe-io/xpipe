@@ -51,7 +51,7 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
     implementation name: 'preferencesfx-core-11.15.0'
     implementation group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0'
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
     implementation 'io.xpipe:modulefs:0.1.4'
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.controlsfx:controlsfx:11.1.1'
