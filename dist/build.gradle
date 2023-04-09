@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.beryx.jlink' version '2.25.0'
+    id 'org.beryx.jlink' version '2.26.0'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
     id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'org.jreleaser' version '1.3.1'
