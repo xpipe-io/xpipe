@@ -55,7 +55,7 @@ dependencies {
     implementation 'io.xpipe:modulefs:0.1.4'
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.controlsfx:controlsfx:11.1.1'
-    implementation 'net.synedra:validatorfx:0.3.1'
+    implementation 'net.synedra:validatorfx:0.4.0'
     implementation 'io.github.mkpaz:atlantafx-base:1.2.0'
 }
 
