@@ -8,6 +8,8 @@ copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
 jar.dependsOn(copyRuntimeLibs)
 
 def dev = tasks.register('createDevOutput', Copy) {
+    mustRunAfter copyRuntimeLibs, jar
+
     if (project.allExtensions.contains(project)) {
         var source = "${project.jar.destinationDirectory.get()}"
         from source
@@ -17,6 +19,8 @@ def dev = tasks.register('createDevOutput', Copy) {
 jar.finalizedBy(dev)
 
 tasks.register('createExtOutput', Copy) {
+    mustRunAfter copyRuntimeLibs, jar
+
     if (!file("${project.jar.destinationDirectory.get()}_prod").exists()) {
         copy {
             from "${project.jar.destinationDirectory.get()}"
