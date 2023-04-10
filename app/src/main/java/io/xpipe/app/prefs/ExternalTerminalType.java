@@ -129,8 +129,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     KONSOLE,
                     XFCE,
                     GNOME_TERMINAL,
-                    WARP,
                     ITERM2,
+                    WARP,
                     MACOS_TERMINAL,
                     CUSTOM)
             .filter(terminalType -> terminalType.isSelectable())
