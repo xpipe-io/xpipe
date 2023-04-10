@@ -8,8 +8,8 @@ This approach makes it much more flexible as it doesn't have to deal with file s
 X-Pipe integrates with your existing tools and workflows
 by outsourcing as many tasks as possible to your
 text/code editors, terminals, shells, command-line tools and more.
-The platform is open source and designed to be extensible, allowing anyone
-to implement custom functionality through custom extensions.
+The platform is designed to be extensible, allowing anyone
+to implement custom functionality through extensions.
 
 ## Getting Started
 
@@ -26,20 +26,20 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 
 <img src="https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png" alt="drawing" height="450"/>
 
-### Manage all your connections in one place
-
-- Easily create and manage all kinds of remote connections at one location
-- Securely stores all information exclusively on your computer and encrypts all secret information
-- Share connection configurations to any other trusted party through shareable URLs
-- Create desktop shortcuts for your connections
-
-<img src="https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png" alt="drawing" height="450"/>
-
 ### Flexible remote connector
 
 - Can connect to standard servers, database servers, and more
-- Supports established protocols (e.g. SSH and more) plus any custom connection methods that work through the command-line
-- Is able to integrate any kind of proxies into the connection process, even ones with different protocols
+- Supports established protocols like SSH and more
+- Also works on non-protocol-based shell connections like docker, WSL, LXD, and more plus any custom connection methods that work through the command-line
+- Is able to integrate all kinds of proxies into the connection process
+
+### Manage all your connections in one place
+
+- Easily create and manage all kinds of remote connections at one location
+- Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more info
+- Create desktop shortcuts to automatically open your connections in your terminal
+
+<img src="https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png" alt="drawing" height="450"/>
 
 ### Instant launch for remote shells and commands
 
@@ -47,7 +47,7 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 - Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and database shells (e.g. PostgreSQL Shell)
 - Comes with integrations for all commonly used terminals for all operating systems
 - Allows you to customize the launched shell's init environment
-- Supports launches from the GUI or command-line
+- Launches from the GUI or command-line
 
 ## Community
 
@@ -75,7 +75,7 @@ the main application is open source while certain other components are not.
 Select parts are not open source yet, but may be added to this repository in the future.
 Some tests and especially test environments and that run on private servers
 are also not included in this repository (Don't want to leak server information).
-Finally, scripts and workflows to create (signed) executables and installers
+Finally, scripts and workflows to create and publish installers and packages
 are also not included to prevent attackers from easily impersonating the X-Pipe application.
 
 ## Development
@@ -91,14 +91,14 @@ In case a dependency is (sadly) not modularized yet, module information is manua
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
 many IDEs still have problems building this project properly.
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
-The tested and recommended IDE is intellij.
+The tested and recommended IDE is IntelliJ.
 
 ### Setup
 
 You need to have an up-to-date version of X-Pipe installed on your local system in order to properly
 run X-Pipe in a development environment.
 This is due to the fact that some components are only included in the release version and not in this repository.
-X-Pipe is able to automatically detect your installation and fetch the required
+X-Pipe is able to automatically detect your local installation and fetch the required
 components from it when it is run in a development environment.
 
 ### Building and Running
@@ -116,9 +116,7 @@ You are also able to properly debug the built production application through two
 Note that when any unit test is run using a debugger, the X-Pipe daemon process that is started will also attempt
 to connect to that debugger through [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme) as well.
 
-### Development FAQ
-
-##### Why are there no GitHub actions workflows or other continuous integration pipelines set up for this repository?
+#### Why are there no GitHub actions workflows in this repository?
 
 There are several test workflows run in a private environment as they use private test connections
 such as remote server connections and database connections.
