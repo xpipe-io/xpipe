@@ -1,6 +1,9 @@
-package io.xpipe.core.util;
+package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.util.UuidHelper;
 import lombok.Value;
 
 import java.nio.file.Files;
@@ -12,6 +15,8 @@ import java.util.UUID;
 public class XPipeSession {
 
     boolean isNewSystemSession;
+
+    boolean isNewBuildSession;
 
     /**
      * Unique identifier that resets on every X-Pipe restart.
@@ -61,7 +66,11 @@ public class XPipeSession {
         } catch (Exception ignored) {
         }
 
-        INSTANCE = new XPipeSession(isNewSystemSession, UUID.randomUUID(), buildSessionId, systemSessionId);
+        var s = AppCache.get("lastBuild", String.class, () -> buildSessionId.toString());
+        var isBuildChanged = !buildSessionId.toString().equals(s);
+        AppCache.update("lastBuild", AppProperties.get().getVersion());
+
+        INSTANCE = new XPipeSession(isNewSystemSession, isBuildChanged, UUID.randomUUID(), buildSessionId, systemSessionId);
     }
 
     public static XPipeSession get() {

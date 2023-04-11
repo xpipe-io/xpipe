@@ -3,10 +3,12 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
-import io.xpipe.app.issue.*;
+import io.xpipe.app.issue.ErrorAction;
+import io.xpipe.app.issue.ErrorHandler;
+import io.xpipe.app.issue.LogErrorHandler;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.update.AppUpdater;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -40,7 +42,6 @@ public class BaseMode extends OperationMode {
         AppFileWatcher.init();
         FileBridge.init();
         AppSocketServer.init();
-        AppUpdater.init();
         TrackEvent.info("mode", "Finished base components initialization");
     }
 

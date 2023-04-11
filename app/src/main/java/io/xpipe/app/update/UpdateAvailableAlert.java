@@ -3,42 +3,51 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class UpdateAvailableAlert {
 
     public static void showIfNeeded() {
-        if (AppUpdater.get().getDownloadedUpdate().getValue() == null) {
+        UpdateHandler uh = XPipeDistributionType.get().getUpdateHandler();
+        if (uh.getPreparedUpdate().getValue() == null) {
             return;
         }
 
-        var u = AppUpdater.get().getDownloadedUpdate().getValue();
+        var u = uh.getPreparedUpdate().getValue();
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
                     alert.setAlertType(Alert.AlertType.NONE);
 
-                    if (u.getBody() != null && !u.getBody().isBlank()) {
-                        var markdown = new MarkdownComp(u.getBody(), s -> {
-                                    var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
-                                    return header + s;
-                                })
-                                .createRegion();
-                        alert.getDialogPane().setContent(markdown);
+                    var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> {
+                                        var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
+                                        return header + s;
+                                    })
+                                    .createRegion();
+                    alert.getButtonTypes().clear();
+                    var updaterContent = uh.createInterface();
+                    if (updaterContent != null) {
+                        var stack = new StackPane(updaterContent);
+                        stack.setPadding(new Insets(18));
+                        var box = new VBox(markdown, stack);
+                        box.setFillWidth(true);
+                        box.setPadding(Insets.EMPTY);
+                        alert.getDialogPane().setContent(box);
                     } else {
-                        alert.getDialogPane()
-                                .setContent(AppWindowHelper.alertContentText(AppI18n.get("updateReadyAlertContent")));
+                        alert.getDialogPane().setContent(markdown);
+                        alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
                     }
 
-                    alert.getButtonTypes().clear();
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
                 })
                 .map(buttonType -> buttonType.getButtonData().isDefaultButton())
                 .orElse(false);
         if (update) {
-            AppUpdater.get().executeUpdateAndClose();
+            uh.executeUpdateAndClose();
         }
     }
 }

@@ -6,7 +6,7 @@ import io.sentry.protocol.User;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.XPipeDistributionType;
+import io.xpipe.app.update.XPipeDistributionType;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
