@@ -42,8 +42,11 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
     private List<SideMenuBarComp.Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
                 new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new SideMenuBarComp.Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new FileBrowserComp(FileBrowserModel.DEFAULT)),
-                //new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
+                new SideMenuBarComp.Entry(
+                        AppI18n.observable("browser"),
+                        "mdi2f-file-cabinet",
+                        new FileBrowserComp(FileBrowserModel.DEFAULT)),
+                // new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),
                 // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
@@ -51,9 +54,10 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
                 // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp()),
                 new SideMenuBarComp.Entry(AppI18n.observable("about"), "mdi2p-package-variant", new AboutTabComp())));
         if (AppProperties.get().isDeveloperMode()) {
-             l.add(new SideMenuBarComp.Entry(AppI18n.observable("developer"), "mdi2b-book-open-variant", new
-             DeveloperTabComp()));
+            l.add(new SideMenuBarComp.Entry(
+                    AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
         }
+
         //        l.add(new SideMenuBarComp.Entry(AppI18n.observable("abc"), "mdi2b-book-open-variant", Comp.of(() -> {
         //            var fi = new FontIcon("mdsal-dvr");
         //            fi.setIconSize(30);

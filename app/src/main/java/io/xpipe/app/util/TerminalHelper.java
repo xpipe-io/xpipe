@@ -21,6 +21,6 @@ public class TerminalHelper {
             throw new IllegalStateException(AppI18n.get("noTerminalSet"));
         }
 
-        type.launch(title, command);
+        type.launch(title, command, false);
     }
 }

@@ -3,8 +3,8 @@ package io.xpipe.app.issue;
 import io.sentry.Sentry;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.update.AppUpdater;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.update.XPipeDistributionType;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -87,8 +87,7 @@ public class TerminalErrorHandler implements ErrorHandler {
 
     private static void handleProbableUpdate() {
         try {
-            AppUpdater.init();
-            var rel = AppUpdater.get().refreshUpdateCheck();
+            var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
             if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
                             alert.setAlertType(Alert.AlertType.INFORMATION);

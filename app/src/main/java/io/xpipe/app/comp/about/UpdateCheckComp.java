@@ -3,13 +3,11 @@ package io.xpipe.app.comp.about;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.update.AppUpdater;
 import io.xpipe.app.update.UpdateAvailableAlert;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.XPipeDistributionType;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.update.XPipeDistributionType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -20,62 +18,51 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class UpdateCheckComp extends SimpleComp {
 
-    private final ObservableBooleanValue updateAvailable;
     private final ObservableValue<Boolean> updateReady;
 
     public UpdateCheckComp() {
-        updateAvailable = Bindings.createBooleanBinding(
+        updateReady = PlatformThread.sync(Bindings.createBooleanBinding(
                 () -> {
-                    return AppUpdater.get().getLastUpdateCheckResult().getValue() != null
-                            && AppUpdater.get()
-                                    .getLastUpdateCheckResult()
-                                    .getValue()
-                                    .isUpdate();
+                    return XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null;
                 },
-                PlatformThread.sync(AppUpdater.get().getLastUpdateCheckResult()));
-        updateReady = Bindings.createBooleanBinding(
-                () -> {
-                    return AppUpdater.get().getDownloadedUpdate().getValue() != null;
-                },
-                PlatformThread.sync(AppUpdater.get().getDownloadedUpdate()));
+                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
     }
 
     private void restart() {
-        AppUpdater.get().refreshUpdateCheckSilent();
+        XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent();
         UpdateAvailableAlert.showIfNeeded();
     }
 
-    private void download() {
-        AppUpdater.get().downloadUpdateAsync();
-    }
-
     private void refresh() {
-        AppUpdater.get().checkForUpdateAsync();
+        ThreadHelper.runFailableAsync(() -> {
+            XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
+            XPipeDistributionType.get().getUpdateHandler().prepareUpdate();
+        });
     }
 
     private ObservableValue<String> descriptionText() {
         return PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
-                    if (AppUpdater.get().getDownloadedUpdate().getValue() != null) {
-                        return AppI18n.get("updateRestart");
+                    if (XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null) {
+                        return null;
                     }
 
-                    if (AppUpdater.get().getLastUpdateCheckResult().getValue() != null
-                            && AppUpdater.get()
+                    if (XPipeDistributionType.get().getUpdateHandler().getLastUpdateCheckResult().getValue() != null
+                            && XPipeDistributionType.get().getUpdateHandler()
                                     .getLastUpdateCheckResult()
                                     .getValue()
                                     .isUpdate()) {
                         return AppI18n.get(
                                 "updateAvailable",
-                                AppUpdater.get()
+                                XPipeDistributionType.get().getUpdateHandler()
                                         .getLastUpdateCheckResult()
                                         .getValue()
                                         .getVersion());
                     }
 
-                    if (AppUpdater.get().getLastUpdateCheckResult().getValue() != null) {
+                    if (XPipeDistributionType.get().getUpdateHandler().getLastUpdateCheckResult().getValue() != null) {
                         return AppI18n.readableDuration(
-                                        new SimpleObjectProperty<>(AppUpdater.get()
+                                        new SimpleObjectProperty<>(XPipeDistributionType.get().getUpdateHandler()
                                                 .getLastUpdateCheckResult()
                                                 .getValue()
                                                 .getCheckTime()),
@@ -85,15 +72,15 @@ public class UpdateCheckComp extends SimpleComp {
                         return null;
                     }
                 },
-                AppUpdater.get().getLastUpdateCheckResult(),
-                AppUpdater.get().getDownloadedUpdate(),
-                AppUpdater.get().getBusy()));
+                XPipeDistributionType.get().getUpdateHandler().getLastUpdateCheckResult(),
+                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate(),
+                XPipeDistributionType.get().getUpdateHandler().getBusy()));
     }
 
     @Override
     protected Region createSimple() {
         var button = new Button();
-        button.disableProperty().bind(PlatformThread.sync(AppUpdater.get().getBusy()));
+        button.disableProperty().bind(PlatformThread.sync(XPipeDistributionType.get().getUpdateHandler().getBusy()));
         button.textProperty()
                 .bind(Bindings.createStringBinding(
                         () -> {
@@ -101,30 +88,18 @@ public class UpdateCheckComp extends SimpleComp {
                                 return AppI18n.get("updateReady");
                             }
 
-                            if (updateAvailable.getValue()) {
-                                return XPipeDistributionType.get().supportsUpdate()
-                                        ? AppI18n.get("downloadUpdate")
-                                        : AppI18n.get("checkOutUpdate");
-                            } else {
-                                return AppI18n.get("checkForUpdates");
-                            }
+                            return AppI18n.get("checkForUpdates");
                         },
-                        updateAvailable,
                         updateReady));
         button.graphicProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
                             if (updateReady.getValue()) {
-                                return new FontIcon("mdi2r-restart");
+                                return new FontIcon("mdi2a-apple-airplay");
                             }
 
-                            if (updateAvailable.getValue()) {
-                                return new FontIcon("mdi2d-download");
-                            } else {
-                                return new FontIcon("mdi2r-refresh");
-                            }
+                            return new FontIcon("mdi2r-refresh");
                         },
-                        updateAvailable,
                         updateReady));
         button.getStyleClass().add("button-comp");
         button.setOnAction(e -> {
@@ -133,14 +108,7 @@ public class UpdateCheckComp extends SimpleComp {
                 return;
             }
 
-            if (updateAvailable.getValue() && !XPipeDistributionType.get().supportsUpdate()) {
-                Hyperlinks.open(
-                        AppUpdater.get().getLastUpdateCheckResult().getValue().getReleaseUrl());
-            } else if (updateAvailable.getValue()) {
-                download();
-            } else {
-                refresh();
-            }
+            refresh();
         });
 
         var checked = new Label();

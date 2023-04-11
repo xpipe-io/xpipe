@@ -5,7 +5,7 @@ import io.xpipe.app.comp.AppLayoutComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.update.AppUpdater;
+import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.core.process.OsType;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -76,21 +76,17 @@ public class App extends Application {
                 () -> {
                     var base = String.format(
                             "X-Pipe Desktop (%s)", AppProperties.get().getVersion());
-                    var suffix = AppUpdater.get().getLastUpdateCheckResult().getValue() != null
-                                    && AppUpdater.get()
-                                            .getLastUpdateCheckResult()
-                                            .getValue()
-                                            .isUpdate()
+                    var suffix = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null
                             ? String.format(
-                                    " (Update to %s available)",
-                                    AppUpdater.get()
-                                            .getLastUpdateCheckResult()
+                            " (Update to %s ready)",
+                            XPipeDistributionType.get().getUpdateHandler()
+                                            .getPreparedUpdate()
                                             .getValue()
                                             .getVersion())
                             : "";
                     return base + suffix;
                 },
-                AppUpdater.get().getLastUpdateCheckResult());
+                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate());
 
         var appWindow = new AppMainWindow(stage);
         appWindow.getStage().titleProperty().bind(PlatformThread.sync(titleBinding));

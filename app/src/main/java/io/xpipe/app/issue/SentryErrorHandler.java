@@ -6,7 +6,7 @@ import io.sentry.protocol.User;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.XPipeDistributionType;
+import io.xpipe.app.update.XPipeDistributionType;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
@@ -23,7 +23,7 @@ public class SentryErrorHandler {
                 options.setEnableUncaughtExceptionHandler(false);
                 options.setAttachServerName(false);
                 // options.setDebug(true);
-                options.setDist(XPipeDistributionType.get().getName());
+                options.setDist(XPipeDistributionType.get().getId());
                 options.setRelease(AppProperties.get().getVersion());
                 options.setEnableShutdownHook(false);
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());

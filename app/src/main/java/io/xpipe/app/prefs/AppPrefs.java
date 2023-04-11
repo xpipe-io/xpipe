@@ -14,7 +14,6 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.XPipeDistributionType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -146,13 +145,14 @@ public class AppPrefs {
 
     // Automatically update
     // ====================
-    private final BooleanProperty automaticallyUpdate =
-            typed(new SimpleBooleanProperty(XPipeDistributionType.get().supportsUpdate()), Boolean.class);
-    private final BooleanField automaticallyUpdateField =
-            BooleanField.ofBooleanType(automaticallyUpdate).render(() -> new CustomToggleControl());
-    private final BooleanProperty updateToPrereleases = typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField updateToPrereleasesField =
-            BooleanField.ofBooleanType(updateToPrereleases).render(() -> new CustomToggleControl());
+    private final BooleanProperty automaticallyCheckForUpdates =
+            typed(new SimpleBooleanProperty(true), Boolean.class);
+    private final BooleanField automaticallyCheckForUpdatesField =
+            BooleanField.ofBooleanType(automaticallyCheckForUpdates).render(() -> new CustomToggleControl());
+
+    private final BooleanProperty checkForPrereleases = typed(new SimpleBooleanProperty(false), Boolean.class);
+    private final BooleanField checkForPrereleasesField =
+            BooleanField.ofBooleanType(checkForPrereleases).render(() -> new CustomToggleControl());
 
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
 
@@ -236,11 +236,11 @@ public class AppPrefs {
     }
 
     public ReadOnlyBooleanProperty automaticallyUpdate() {
-        return automaticallyUpdate;
+        return automaticallyCheckForUpdates;
     }
 
     public ReadOnlyBooleanProperty updateToPrereleases() {
-        return updateToPrereleases;
+        return checkForPrereleases;
     }
 
     public ReadOnlyBooleanProperty confirmDeletions() {
@@ -431,12 +431,8 @@ public class AppPrefs {
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
                         Group.of(
                                 "updates",
-                                Setting.of("automaticallyUpdate", automaticallyUpdateField, automaticallyUpdate)
-                                        .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
-                                                XPipeDistributionType.get().supportsUpdate()))),
-                                Setting.of("updateToPrereleases", updateToPrereleasesField, updateToPrereleases)
-                                        .applyVisibility(VisibilityProperty.of(new SimpleBooleanProperty(
-                                                XPipeDistributionType.get().supportsUpdate())))),
+                                Setting.of("automaticallyUpdate", automaticallyCheckForUpdatesField, automaticallyCheckForUpdates),
+                                Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
                         Group.of(
                                 "advanced",
                                 Setting.of("storageDirectory", storageDirectoryControl, internalStorageDirectory),

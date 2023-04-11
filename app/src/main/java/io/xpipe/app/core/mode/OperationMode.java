@@ -11,7 +11,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.core.util.XPipeSession;
+import io.xpipe.app.util.XPipeSession;
 import org.apache.commons.lang3.function.FailableRunnable;
 
 import java.util.ArrayList;

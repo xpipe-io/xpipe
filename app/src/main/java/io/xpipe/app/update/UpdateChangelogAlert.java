@@ -12,9 +12,8 @@ import javafx.stage.Modality;
 public class UpdateChangelogAlert {
 
     public static void showIfNeeded() {
-        var update = AppUpdater.get().getPerformedUpdate();
-
-        if (update != null && !AppUpdater.get().isUpdateSucceeded()) {
+        var update = XPipeDistributionType.get().getUpdateHandler().getPerformedUpdate();
+        if (update != null && !XPipeDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
             ErrorEvent.fromMessage("Update did not succeed").handle();
             return;
         }

@@ -68,7 +68,7 @@ public class ErrorDetailsComp extends SimpleComp {
 //                    AppI18n.observable("events"), "mdi2c-clipboard-list-outline", createTrackEventHistory()));
 //        }
 
-        var tb = new TabPaneComp(new SimpleObjectProperty<>(items.get(0)), items);
+        var tb = new TabPaneComp(new SimpleObjectProperty<>(items.size() > 0 ? items.get(0) : null), items);
         tb.apply(r -> AppFont.small(r.get()));
         return tb.createRegion();
     }

@@ -1,9 +1,14 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.update.UpdateAvailableAlert;
+import io.xpipe.app.update.XPipeDistributionType;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
@@ -40,6 +45,18 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             });
             vbox.getChildren().add(b.createRegion());
         });
+
+        {
+            // vbox.getChildren().add(new Spacer(Orientation.VERTICAL));
+            var fi = new FontIcon("mdi2u-update");
+            var b = new BigIconButton(AppI18n.observable("update"), fi, () -> UpdateAvailableAlert.showIfNeeded());
+            b.apply(GrowAugment.create(true, false));
+            b.hide(PlatformThread.sync(Bindings.createBooleanBinding(() -> {
+                return XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() == null;
+            }, XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+            vbox.getChildren().add(b.createRegion());
+        }
+
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);
     }

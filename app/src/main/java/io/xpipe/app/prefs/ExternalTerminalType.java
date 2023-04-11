@@ -8,6 +8,7 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import lombok.Getter;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             new SimpleType("gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
                 @Override
-                public void launch(String name, String file) throws Exception {
+                public void launch(String name, String file, boolean elevated) throws Exception {
                     try (ShellControl pc = LocalStore.getShell()) {
                         ApplicationHelper.checkSupport(pc, executable, getDisplayName());
 
@@ -144,7 +145,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 .orElse(null);
     }
 
-    public abstract void launch(String name, String file) throws Exception;
+    public abstract void launch(String name, String file, boolean elevated) throws Exception;
 
     static class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
@@ -153,7 +154,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file) throws Exception {
+        public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 var suffix = file.equals(pc.getShellDialect().getOpenCommand())
                         ? "\"\""
@@ -171,7 +172,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file) throws Exception {
+        public void launch(String name, String file, boolean elevated) throws Exception {
             var custom = AppPrefs.get().customTerminalCommand().getValue();
             if (custom == null || custom.isBlank()) {
                 throw new IllegalStateException("No custom terminal command specified");
@@ -207,7 +208,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file) throws Exception {
+        public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
@@ -241,7 +242,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file) throws Exception {
+        public void launch(String name, String file, boolean elevated) throws Exception {
             if (!MacOsPermissions.waitForAccessibilityPermissions()) {
                 return;
             }
@@ -279,7 +280,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file) throws Exception {
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            if (elevated) {
+                if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                    try (ShellControl pc = LocalStore.getShell().subShell(ShellDialects.POWERSHELL).start()) {
+                        ApplicationHelper.checkSupport(pc, executable, displayName);
+                            var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \"" + toCommand(name, file).replaceAll("\"", "`\"") + "\"";
+                        pc.executeSimpleCommand(toExecute);
+                    }
+                    return;
+                }
+            }
+
             try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, displayName);
 
