@@ -43,6 +43,7 @@ public class PortableUpdater extends UpdateHandler {
         var isUpdate = isUpdate(rel.get().getTagName());
         lastUpdateCheckResult.setValue(new AvailableRelease(
                 AppProperties.get().getVersion(),
+                XPipeDistributionType.get().getId(),
                 rel.get().getTagName(),
                 rel.get().getHtmlUrl().toString(),
                 null,

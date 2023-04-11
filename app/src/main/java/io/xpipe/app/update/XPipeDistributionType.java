@@ -4,42 +4,16 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.impl.LocalStore;
-import io.xpipe.core.util.ModuleHelper;
-import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
 
 public enum XPipeDistributionType {
-    DEVELOPMENT("development", () -> new GitHubUpdater(false)) {
-
-        @Override
-        public String getName() {
-            return "development";
-        }
-    },
-    PORTABLE("portable", () -> new PortableUpdater()) {
-
-        @Override
-        public String getName() {
-            return "portable";
-        }
-    },
-    INSTALLATION("install", () -> new GitHubUpdater(true)) {
-
-        @Override
-        public String getName() {
-            return "install";
-        }
-    },
-    CHOCO("choco", () -> new ChocoUpdater()) {
-
-        @Override
-        public String getName() {
-            return "choco";
-        }
-    };
+    DEVELOPMENT("development", () -> new GitHubUpdater(false)),
+    PORTABLE("portable", () -> new PortableUpdater()),
+    INSTALLATION("install", () -> new GitHubUpdater(true)),
+    CHOCO("choco", () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
 
@@ -53,9 +27,6 @@ public enum XPipeDistributionType {
             return type;
         }
 
-        if (!ModuleHelper.isImage()) {
-            return (type = DEVELOPMENT);
-        }
 
         if (!XPipeSession.get().isNewBuildSession()) {
             var cached = AppCache.get("dist", String.class, () -> null);
@@ -75,10 +46,6 @@ public enum XPipeDistributionType {
     }
 
     public static XPipeDistributionType determine() {
-        if (!XPipeInstallation.isInstallationDistribution()) {
-            return (type = PORTABLE);
-        }
-
         try (var sc = LocalStore.getShell()) {
             try (var chocoOut = sc.command("choco search --local-only -r xpipe").start()) {
                 var out = chocoOut.readStdoutDiscardErr();
@@ -107,6 +74,4 @@ public enum XPipeDistributionType {
         }
         return updateHandler;
     }
-
-    public abstract String getName();
 }

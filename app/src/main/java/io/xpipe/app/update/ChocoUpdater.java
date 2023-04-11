@@ -24,7 +24,7 @@ public class ChocoUpdater extends UpdateHandler {
                 .space()
                 .string("xpipe")
                 .space()
-                .keyword("--version=" + getLastUpdateCheckResult().getValue().getVersion())
+                .keyword("--version=" + getPreparedUpdate().getValue().getVersion())
                 .build();
         return new CodeSnippetComp(false, new SimpleObjectProperty<>(snippet)).createRegion();
     }
@@ -36,6 +36,7 @@ public class ChocoUpdater extends UpdateHandler {
             var isUpdate = isUpdate(latest);
             var rel = new AvailableRelease(
                     AppProperties.get().getVersion(),
+                    XPipeDistributionType.get().getId(),
                     latest,
                     "https://community.chocolatey.org/packages/xpipe/" + latest,
                     null,

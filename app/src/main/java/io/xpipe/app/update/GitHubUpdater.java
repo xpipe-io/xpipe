@@ -32,6 +32,7 @@ public class GitHubUpdater extends UpdateHandler {
         var changelog = changelogString.orElse(null);
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
+                XPipeDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 downloadFile.get(),
@@ -71,6 +72,7 @@ public class GitHubUpdater extends UpdateHandler {
         event("Selected asset " + ghAsset.get().getName());
         lastUpdateCheckResult.setValue(new AvailableRelease(
                 AppProperties.get().getVersion(),
+                XPipeDistributionType.get().getId(),
                 rel.get().getTagName(),
                 rel.get().getHtmlUrl().toString(),
                 ghAsset.get().getBrowserDownloadUrl(),

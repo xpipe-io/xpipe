@@ -40,7 +40,6 @@ public abstract class UpdateHandler {
         if (hasUpdated) {
             AppCache.clear("performedUpdate");
             updateSucceeded = AppProperties.get().getVersion().equals(performedUpdate.getNewVersion());
-            AppCache.clear("lastUpdateCheckResult");
             AppCache.clear("preparedUpdate");
             event("Found information about recent update");
         } else {
@@ -51,10 +50,13 @@ public abstract class UpdateHandler {
 
         // Check if the original version this was downloaded from is still the same
         if (preparedUpdate.getValue() != null
-                && !preparedUpdate
-                        .getValue()
-                        .getSourceVersion()
-                        .equals(AppProperties.get().getVersion())) {
+                && (!preparedUpdate
+                                .getValue()
+                                .getSourceVersion()
+                                .equals(AppProperties.get().getVersion())
+                        || !XPipeDistributionType.get()
+                                .getId()
+                                .equals(preparedUpdate.getValue().getSourceDist()))) {
             preparedUpdate.setValue(null);
         }
 
@@ -168,6 +170,7 @@ public abstract class UpdateHandler {
 
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),
+                XPipeDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
@@ -237,6 +240,7 @@ public abstract class UpdateHandler {
     @With
     public static class AvailableRelease {
         String sourceVersion;
+        String sourceDist;
         String version;
         String releaseUrl;
         String downloadUrl;
@@ -250,6 +254,7 @@ public abstract class UpdateHandler {
     @Jacksonized
     public static class PreparedUpdate {
         String sourceVersion;
+        String sourceDist;
         String version;
         String releaseUrl;
         Path file;

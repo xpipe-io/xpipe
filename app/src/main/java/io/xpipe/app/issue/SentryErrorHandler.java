@@ -23,7 +23,7 @@ public class SentryErrorHandler {
                 options.setEnableUncaughtExceptionHandler(false);
                 options.setAttachServerName(false);
                 // options.setDebug(true);
-                options.setDist(XPipeDistributionType.get().getName());
+                options.setDist(XPipeDistributionType.get().getId());
                 options.setRelease(AppProperties.get().getVersion());
                 options.setEnableShutdownHook(false);
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
