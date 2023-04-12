@@ -15,7 +15,9 @@ public interface ShellControl extends ProcessControl {
 
     Semaphore getCommandLock();
 
-    void onInit(Consumer<ShellControl> pc);
+    ShellControl onInit(Consumer<ShellControl> pc);
+
+    ShellControl onExit(Consumer<ShellControl> pc);
 
     String prepareTerminalOpen() throws Exception;
 

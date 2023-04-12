@@ -97,6 +97,10 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                 continue;
             }
 
+            if (!((ShellStore) s).canHaveSubs()) {
+                continue;
+            }
+
             comboBox.add((T) e.getKey().getEntry().getStore());
         }
 

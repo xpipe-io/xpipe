@@ -17,6 +17,10 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
         return s instanceof LocalStore;
     }
 
+    default boolean canHaveSubs() {
+        return true;
+    }
+
     @Override
     default FileSystem createFileSystem() {
         return new ConnectionFileSystem(create(), this);

@@ -6,7 +6,6 @@ import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -106,12 +105,6 @@ public class ScriptHelper {
 
     public static String createAskPassScript(SecretValue pass, ShellControl parent) throws Exception {
         var scriptType = parent.getShellDialect();
-
-        // Fix for power shell as there are permission issues when executing a powershell askpass script
-        if (parent.getShellDialect().equals(ShellDialects.POWERSHELL)) {
-            scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.BASH;
-        }
-
         return createAskPassScript(pass, parent, scriptType);
     }
 

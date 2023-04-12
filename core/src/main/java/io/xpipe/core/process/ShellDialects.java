@@ -10,6 +10,7 @@ public class ShellDialects {
 
     public static final List<ShellDialect> ALL = new ArrayList<>();
     public static ShellDialect POWERSHELL;
+    public static ShellDialect POWERSHELL_CORE;
     public static ShellDialect CMD;
     public static ShellDialect SH;
     public static ShellDialect DASH;
@@ -26,6 +27,7 @@ public class ShellDialects {
 
             CMD = byName("cmd");
             POWERSHELL = byName("powershell");
+            POWERSHELL_CORE = byName("pwsh");
             DASH = byName("dash");
             BASH = byName("bash");
             ZSH = byName("zsh");
