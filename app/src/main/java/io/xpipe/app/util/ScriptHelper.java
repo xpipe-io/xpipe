@@ -98,8 +98,10 @@ public class ScriptHelper {
 
         // processControl.executeSimpleCommand(type.getFileTouchCommand(file), "Failed to create script " + file);
         processControl.getShellDialect().createTextFileWriteCommand(processControl, content, file).execute();
-        processControl.executeSimpleCommand(
-                type.getMakeExecutableCommand(file), "Failed to make script " + file + " executable");
+        var e = type.getMakeExecutableCommand(file);
+        if (e != null) {
+            processControl.executeSimpleCommand(e, "Failed to make script " + file + " executable");
+        }
         return file;
     }
 

@@ -23,6 +23,10 @@ public class DeleteStoreChildrenAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             DataStorage.get().getStoreChildren(store,true).forEach(entry -> {
+                if (!entry.getConfiguration().isDeletable()) {
+                    return;
+                }
+
                 DataStorage.get().deleteStoreEntry(entry);
             });
         }

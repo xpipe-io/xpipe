@@ -15,8 +15,7 @@ import java.util.function.Consumer;
 public class JacksonMapper {
 
     private static final ObjectMapper BASE = new ObjectMapper();
-    private static final ObjectMapper DEFAULT;
-    private static ObjectMapper INSTANCE = new ObjectMapper();
+    private static final ObjectMapper INSTANCE;
     private static boolean init = false;
 
     public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
@@ -40,11 +39,7 @@ public class JacksonMapper {
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
 
-        var modules = findModules(ModuleLayer.boot());
-        objectMapper.registerModules(modules);
-
         INSTANCE = BASE.copy();
-        DEFAULT = BASE.copy();
     }
 
     public static synchronized void configure(Consumer<ObjectMapper> mapper) {
@@ -76,15 +71,17 @@ public class JacksonMapper {
      */
     public static ObjectMapper newMapper() {
         if (!JacksonMapper.isInit()) {
-            return DEFAULT;
+            return BASE;
         }
+
         return INSTANCE.copy();
     }
 
     public static ObjectMapper getDefault() {
         if (!JacksonMapper.isInit()) {
-            return DEFAULT;
+            return BASE;
         }
+        
         return INSTANCE;
     }
 

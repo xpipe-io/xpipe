@@ -23,7 +23,6 @@ public class SentryErrorHandler {
                 options.setEnableUncaughtExceptionHandler(false);
                 options.setAttachServerName(false);
                 // options.setDebug(true);
-                options.setDist(XPipeDistributionType.get().getId());
                 options.setRelease(AppProperties.get().getVersion());
                 options.setEnableShutdownHook(false);
                 options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
@@ -87,6 +86,7 @@ public class SentryErrorHandler {
                 .toList();
         atts.forEach(attachment -> s.addAttachment(attachment));
 
+        s.setTag("dist", XPipeDistributionType.get().getId());
         s.setTag("developerMode", AppPrefs.get() != null ? AppPrefs.get().developerMode().getValue().toString() : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
