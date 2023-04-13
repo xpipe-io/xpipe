@@ -4,6 +4,8 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -27,6 +29,9 @@ public enum XPipeDistributionType {
             return type;
         }
 
+        if (!ModuleHelper.isImage()) {
+            return (type = DEVELOPMENT);
+        }
 
         if (!XPipeSession.get().isNewBuildSession()) {
             var cached = AppCache.get("dist", String.class, () -> null);
@@ -46,6 +51,10 @@ public enum XPipeDistributionType {
     }
 
     public static XPipeDistributionType determine() {
+        if (!XPipeInstallation.isInstallationDistribution()) {
+            return (type = PORTABLE);
+        }
+
         try (var sc = LocalStore.getShell()) {
             try (var chocoOut = sc.command("choco search --local-only -r xpipe").start()) {
                 var out = chocoOut.readStdoutDiscardErr();
