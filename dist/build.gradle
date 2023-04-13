@@ -42,6 +42,7 @@ if (rootProject.fullVersion) {
     apply from: 'proguard.gradle'
     apply from: 'jreleaser.gradle'
     apply from: 'choco.gradle'
+    apply from: 'homebrew.gradle'
 
     if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
         apply from: 'linux_packages.gradle'

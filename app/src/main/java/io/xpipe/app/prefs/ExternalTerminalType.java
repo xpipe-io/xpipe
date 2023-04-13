@@ -30,7 +30,21 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
 
     public static final ExternalTerminalType POWERSHELL =
-            new SimpleType("powershell", "powershell.exe", "PowerShell") {
+            new SimpleType("powershell", "powershell", "PowerShell") {
+
+                @Override
+                protected String toCommand(String name, String file) {
+                    return "-ExecutionPolicy Bypass -Command cmd /C '" + file + "'";
+                }
+
+                @Override
+                public boolean isSelectable() {
+                    return OsType.getLocal().equals(OsType.WINDOWS);
+                }
+            };
+
+    public static final ExternalTerminalType PWSH =
+            new SimpleType("pwsh", "pwsh", "PowerShell Core") {
 
                 @Override
                 protected String toCommand(String name, String file) {
@@ -125,6 +139,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     public static final List<ExternalTerminalType> ALL = Stream.of(
                     WINDOWS_TERMINAL,
+                    PWSH,
                     POWERSHELL,
                     CMD,
                     KONSOLE,
