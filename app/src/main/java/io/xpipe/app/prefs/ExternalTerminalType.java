@@ -4,6 +4,7 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.MacOsPermissions;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
@@ -43,19 +44,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType PWSH =
-            new SimpleType("pwsh", "pwsh", "PowerShell Core") {
+    public static final ExternalTerminalType PWSH = new SimpleType("pwsh", "pwsh", "PowerShell Core") {
 
-                @Override
-                protected String toCommand(String name, String file) {
-                    return "-ExecutionPolicy Bypass -Command cmd /C '" + file + "'";
-                }
+        @Override
+        protected String toCommand(String name, String file) {
+            // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
+            var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
+            return "-ExecutionPolicy Bypass -Command cmd /C '" +script + "'";
+        }
 
-                @Override
-                public boolean isSelectable() {
-                    return OsType.getLocal().equals(OsType.WINDOWS);
-                }
-            };
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
+        }
+    };
 
     public static final ExternalTerminalType WINDOWS_TERMINAL =
             new SimpleType("windowsTerminal", "wt.exe", "Windows Terminal") {

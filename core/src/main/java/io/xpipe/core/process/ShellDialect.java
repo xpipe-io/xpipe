@@ -79,9 +79,7 @@ public interface ShellDialect {
 
     String getMakeExecutableCommand(String file);
 
-    default String getSelfdeleteEchoScriptContent(String s) {
-        return getEchoCommand(s, false);
-    }
+    String prepareAskpassContent(ShellControl sc, String fileName, List<String> s) throws Exception;
 
     String getSetEnvironmentVariableCommand(String variable, String value);
 

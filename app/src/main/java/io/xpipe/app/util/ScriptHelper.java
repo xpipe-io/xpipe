@@ -6,9 +6,11 @@ import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -105,15 +107,32 @@ public class ScriptHelper {
         return file;
     }
 
-    public static String createAskPassScript(SecretValue pass, ShellControl parent) throws Exception {
+    public static String createAskPassScript(SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
         var scriptType = parent.getShellDialect();
+
+        // Fix for powershell as there are permission issues when executing a powershell askpass script
+        if (forceExecutable && parent.getShellDialect().equals(ShellDialects.POWERSHELL)) {
+            scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
+        }
+
         return createAskPassScript(pass, parent, scriptType);
     }
 
     private static String createAskPassScript(SecretValue pass, ShellControl parent, ShellDialect type) throws Exception {
-        var content = type.getSelfdeleteEchoScriptContent(pass.getSecretValue());
+        var fileName = "askpass-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getTemporaryDirectory();
-        var file = FileNames.join(temp, "askpass-" + getScriptId() + "." + type.getScriptFileEnding());
-        return createExecScript(parent, file, content);
+        var file = FileNames.join(temp, fileName);
+        if (type != parent.getShellDialect()) {
+            try (var sub = parent.subShell(type)) {
+                var content = sub.getShellDialect().prepareAskpassContent(sub, file, Collections.singletonList(pass.getSecretValue()));
+                var exec = createExecScript(sub, file, content);
+                return exec;
+            }
+        } else {
+            var content = parent.getShellDialect().prepareAskpassContent(parent, file, Collections.singletonList(pass.getSecretValue()));
+            var exec = createExecScript(parent, file, content);
+            return exec;
+        }
+
     }
 }
