@@ -39,7 +39,7 @@ public interface ErrorAction {
             @Override
             public boolean handle(ErrorEvent event) {
                 event.clearAttachments();
-                SentryErrorHandler.report(event);
+                SentryErrorHandler.getInstance().handle(event);
                 return true;
             }
         };

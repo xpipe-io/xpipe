@@ -5,6 +5,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -23,7 +24,7 @@ public class TerminalErrorHandler implements ErrorHandler {
 
         if (!OperationMode.GUI.isSupported()) {
             event.clearAttachments();
-            SentryErrorHandler.report(event, null);
+            SentryErrorHandler.getInstance().handle(event);
             OperationMode.halt(1);
         }
 
@@ -31,20 +32,20 @@ public class TerminalErrorHandler implements ErrorHandler {
     }
 
     private void handleSentry(ErrorEvent event) {
-        SentryErrorHandler.init();
         if (OperationMode.isInStartup()) {
             Sentry.setExtra("initError", "true");
         }
     }
 
     private void handleGui(ErrorEvent event) {
-        if (!App.isPlatformRunning()) {
+        if (PlatformState.getCurrent() == PlatformState.NOT_INITIALIZED) {
             try {
                 CountDownLatch latch = new CountDownLatch(1);
                 Platform.setImplicitExit(false);
                 Platform.startup(latch::countDown);
                 try {
                     latch.await();
+                    PlatformState.setCurrent(PlatformState.RUNNING);
                 } catch (InterruptedException ignored) {
                 }
             } catch (Throwable r) {
@@ -78,8 +79,8 @@ public class TerminalErrorHandler implements ErrorHandler {
     }
 
     private static void handleSecondaryException(ErrorEvent event, Throwable t) {
-        SentryErrorHandler.report(event, null);
-        SentryErrorHandler.report(ErrorEvent.fromThrowable(t).build(), null);
+        SentryErrorHandler.getInstance().handle(event);
+        SentryErrorHandler.getInstance().handle(ErrorEvent.fromThrowable(t).build());
         Sentry.flush(5000);
         t.printStackTrace();
         OperationMode.halt(1);
@@ -106,7 +107,7 @@ public class TerminalErrorHandler implements ErrorHandler {
                 }
             }
         } catch (Throwable t) {
-            SentryErrorHandler.report(ErrorEvent.fromThrowable(t).build(), null);
+            SentryErrorHandler.getInstance().handle(ErrorEvent.fromThrowable(t).build());
             Sentry.flush(5000);
             t.printStackTrace();
             OperationMode.halt(1);

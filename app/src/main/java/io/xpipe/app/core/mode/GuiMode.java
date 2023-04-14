@@ -4,6 +4,7 @@ import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.update.UpdateChangelogAlert;
+import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
 
 import java.util.concurrent.CountDownLatch;
@@ -17,7 +18,7 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void onSwitchTo() {
-        if (!App.isPlatformRunning()) {
+        if (PlatformState.getCurrent() == PlatformState.NOT_INITIALIZED) {
             super.platformSetup();
         }
 
@@ -44,7 +45,7 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void onSwitchFrom() {
-        if (App.isPlatformRunning()) {
+        if (PlatformState.getCurrent() == PlatformState.RUNNING) {
             TrackEvent.info("mode", "Closing window");
             App.getApp().close();
             waitForPlatform();
@@ -54,9 +55,9 @@ public class GuiMode extends PlatformMode {
     @Override
     public ErrorHandler getErrorHandler() {
         var log = new LogErrorHandler();
-        return event -> {
+        return new SyncErrorHandler(event -> {
             log.handle(event);
             ErrorHandlerComp.showAndWait(event);
-        };
+        });
     }
 }

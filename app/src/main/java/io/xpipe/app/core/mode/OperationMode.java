@@ -6,12 +6,11 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
-import io.xpipe.app.issue.SentryErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.app.util.XPipeSession;
+import io.xpipe.core.util.XPipeDaemonMode;
 import org.apache.commons.lang3.function.FailableRunnable;
 
 import java.util.ArrayList;
@@ -77,6 +76,11 @@ public abstract class OperationMode {
                 OperationMode.shutdown(true, false);
             }));
 
+            // Handle uncaught exceptions
+            Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
+                ErrorEvent.fromThrowable(ex).build().handle();
+            });
+
             //            if (true) {
             //                throw new OutOfMemoryError();
             //            }
@@ -84,7 +88,6 @@ public abstract class OperationMode {
             TrackEvent.info("mode", "Initial setup");
             AppProperties.init();
             XPipeSession.init(AppProperties.get().getBuildUuid());
-            SentryErrorHandler.init();
             AppChecks.checkDirectoryPermissions();
             AppLogs.init();
             AppProperties.logArguments(args);

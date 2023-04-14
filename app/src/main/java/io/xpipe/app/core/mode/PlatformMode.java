@@ -6,6 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.UpdateAvailableAlert;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -89,7 +90,7 @@ public abstract class PlatformMode extends OperationMode {
     protected void waitForPlatform() {
         // The platform thread waits for the shutdown hook to finish in case SIGTERM is sent.
         // Therefore, we do not wait for the platform when being in a shutdown hook.
-        if (App.isPlatformRunning() && !Platform.isFxApplicationThread() && !OperationMode.isInShutdownHook()) {
+        if (PlatformState.getCurrent() == PlatformState.RUNNING && !Platform.isFxApplicationThread() && !OperationMode.isInShutdownHook()) {
             TrackEvent.info("mode", "Waiting for platform thread ...");
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(latch::countDown);
@@ -116,6 +117,7 @@ public abstract class PlatformMode extends OperationMode {
         TrackEvent.info("mode", "Shutting down platform components");
         onSwitchFrom();
         Platform.exit();
+        PlatformState.setCurrent(PlatformState.EXITED);
         TrackEvent.info("mode", "Platform shutdown finished");
         BACKGROUND.finalTeardown();
     }

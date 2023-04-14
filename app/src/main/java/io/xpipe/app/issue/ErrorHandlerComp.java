@@ -2,7 +2,6 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
-import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
@@ -10,6 +9,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,7 +44,7 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     public static void showAndWait(ErrorEvent event) {
-        if (!App.isPlatformRunning() || event.isOmitted()) {
+        if (PlatformState.getCurrent() != PlatformState.RUNNING || event.isOmitted()) {
             ErrorAction.ignore().handle(event);
             return;
         }

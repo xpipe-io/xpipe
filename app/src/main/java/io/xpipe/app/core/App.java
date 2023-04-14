@@ -6,6 +6,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.core.process.OsType;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -23,10 +24,6 @@ public class App extends Application {
     private Stage stage;
     private Image icon;
 
-    public static boolean isPlatformRunning() {
-        return APP != null;
-    }
-
     public static App getApp() {
         return APP;
     }
@@ -35,6 +32,7 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         TrackEvent.info("Application launched");
         APP = this;
+        PlatformState.setCurrent(PlatformState.RUNNING);
         stage = primaryStage;
         icon = AppImages.image("logo.png");
 

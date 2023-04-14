@@ -13,32 +13,40 @@ import java.nio.file.Files;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-public class SentryErrorHandler {
+public class SentryErrorHandler implements ErrorHandler {
 
-    public static void init() {
-        AppProperties.init();
-        if (AppProperties.get().getSentryUrl() != null) {
-            Sentry.init(options -> {
-                options.setDsn(AppProperties.get().getSentryUrl());
-                options.setEnableUncaughtExceptionHandler(false);
-                options.setAttachServerName(false);
-                // options.setDebug(true);
-                options.setRelease(AppProperties.get().getVersion());
-                options.setEnableShutdownHook(false);
-                options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
-                options.setTag("os", System.getProperty("os.name"));
-                options.setTag("osVersion", System.getProperty("os.version"));
-                options.setTag("arch", System.getProperty("os.arch"));
-            });
-        }
+    private static final ErrorHandler INSTANCE = new SyncErrorHandler(new SentryErrorHandler());
 
-        Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
-            ErrorEvent.fromThrowable(ex).build().handle();
-        });
+    public static ErrorHandler getInstance() {
+        return INSTANCE;
     }
 
-    public static void report(ErrorEvent e, String text) {
-        var id = report(e);
+    private boolean init;
+
+    public void handle(ErrorEvent ee) {
+        // Assume that this object is wrapped by a synchronous error handler
+        if (!init) {
+            AppProperties.init();
+            if (AppProperties.get().getSentryUrl() != null) {
+                Sentry.init(options -> {
+                    options.setDsn(AppProperties.get().getSentryUrl());
+                    options.setEnableUncaughtExceptionHandler(false);
+                    options.setAttachServerName(false);
+                    // options.setDebug(true);
+                    options.setRelease(AppProperties.get().getVersion());
+                    options.setEnableShutdownHook(false);
+                    options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
+                    options.setTag("os", System.getProperty("os.name"));
+                    options.setTag("osVersion", System.getProperty("os.version"));
+                    options.setTag("arch", System.getProperty("os.arch"));
+                    options.setDist(XPipeDistributionType.get().getId());
+                });
+            }
+            init = true;
+        }
+
+        var id = createReport(ee);
+        var text = ee.getUserReport();
         if (text != null && text.length() > 0) {
             var fb = new UserFeedback(id);
             fb.setComments(text);
@@ -46,7 +54,7 @@ public class SentryErrorHandler {
         }
     }
 
-    public static SentryId report(ErrorEvent ee) {
+    private static SentryId createReport(ErrorEvent ee) {
         /*
         TODO: Ignore breadcrumbs for now
          */
@@ -86,7 +94,6 @@ public class SentryErrorHandler {
                 .toList();
         atts.forEach(attachment -> s.addAttachment(attachment));
 
-        s.setTag("dist", XPipeDistributionType.get().getId());
         s.setTag("developerMode", AppPrefs.get() != null ? AppPrefs.get().developerMode().getValue().toString() : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
@@ -96,7 +103,6 @@ public class SentryErrorHandler {
                 s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
             }
         }
-
 
         var user = new User();
         user.setId(AppCache.getCachedUserId().toString());

@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.sentry.Sentry;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
@@ -112,12 +111,10 @@ public class UserReportComp extends SimpleComp {
     }
 
     private void send() {
-        Sentry.withScope(scope -> {
-            event.clearAttachments();
-            includedDiagnostics.forEach(event::addAttachment);
-            SentryErrorHandler.report(event, text.get());
-        });
-
+        event.clearAttachments();
+        includedDiagnostics.forEach(event::addAttachment);
+        event.attachUserReport(text.get());
+        SentryErrorHandler.getInstance().handle(event);
         stage.close();
     }
 }

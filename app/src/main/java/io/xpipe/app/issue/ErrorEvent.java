@@ -27,6 +27,12 @@ public class ErrorEvent {
     @Singular
     private List<Path> attachments;
 
+    private String userReport;
+
+    public void attachUserReport(String text) {
+        userReport = text;
+    }
+
     public static ErrorEventBuilder fromThrowable(Throwable t) {
         return builder().throwable(t).description(ExceptionConverter.convertMessage(t));
     }
