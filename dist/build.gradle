@@ -43,6 +43,7 @@ if (rootProject.fullVersion) {
     apply from: 'jreleaser.gradle'
     apply from: 'choco.gradle'
     apply from: 'homebrew.gradle'
+    apply from: 'flatpak.gradle'
 
     if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
         apply from: 'linux_packages.gradle'
