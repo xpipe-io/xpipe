@@ -43,7 +43,7 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
   the [security page](/SECURITY.md) for more info
 - Create desktop shortcuts to automatically open your connections in your terminal
 
-<img src="https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png" alt="Connection manager" height="500"/>
+![Connection manager](https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png)
 
 ### Instant launch for remote shells and commands
 
