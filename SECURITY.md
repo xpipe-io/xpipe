@@ -77,6 +77,12 @@ other information stored by X-Pipe that is not explicitly sent to that host.
 During development, a lot of focus lies on preventing all
 sorts of attacks like injection attacks from the remote host
 
+## Issue reports
+
+Whenever an error occurs within X-Pipe or you choose to open the error reporter dialog,
+you have the option to automatically send an error report with optional feedback and attachments.
+This error report does not contain any sensitive information
+
 ## Reporting a security vulnerability
 
 If you believe that there is a security vulnerability in X-Pipe,
