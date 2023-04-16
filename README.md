@@ -34,7 +34,7 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 - Run commands from the explorer interface
 - Utilize your favourite local programs to open and edit remote files
 
-<img src="https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png" alt="Remote file explorer" height="500"/>
+![Remote file explorer](https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png)
 
 ### Connection manager
 
