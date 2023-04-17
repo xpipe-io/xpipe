@@ -2,7 +2,7 @@
 
 ### A flexible connection manager and remote file explorer
 
-X-Pipe is a brand-new type of connection manager and remote file explorer that works by only interacting with established command-line
+X-Pipe is a brand-new type of connection manager and remote file explorer that works by only interacting with command-line
 tools on local and remote shell connections.
 This approach makes it much more flexible as it doesn't have to deal with file system APIs or remote file handling
 protocols at all.
