@@ -1,6 +1,7 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.impl.LocalStore;
@@ -61,7 +62,10 @@ public enum XPipeDistributionType {
                 if (chocoOut.getExitCode() == 0) {
                     var split = out.split("\\|");
                     if (split.length == 2) {
-                        return CHOCO;
+                        var version = split[1];
+                        if (AppProperties.get().getVersion().equals(version)) {
+                            return CHOCO;
+                        }
                     }
                 }
             }
