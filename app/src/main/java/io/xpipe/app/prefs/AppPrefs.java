@@ -119,7 +119,7 @@ public class AppPrefs {
     // ====
 
     private final Property<SecretValue> lockPassword = new SimpleObjectProperty<SecretValue>();
-    private final StringProperty lockCrypt = typed(new SimpleStringProperty(null), String.class);
+    private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
     private final StringField lockCryptControl = StringField.ofStringType(lockCrypt).render(() -> new SimpleControl<StringField, StackPane>() {
 
                 private Region button;

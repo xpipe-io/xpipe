@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import com.dlsc.preferencesfx.util.StorageHandler;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -50,7 +51,7 @@ public class JsonStorageHandler implements StorageHandler {
         var id = getSaveId(breadcrumb);
         var tree = object instanceof PrefsChoiceValue prefsChoiceValue
                 ? new TextNode(prefsChoiceValue.getId())
-                : JacksonMapper.newMapper().valueToTree(object);
+                : (object != null ? JacksonMapper.newMapper().valueToTree(object) : NullNode.getInstance());
         setContent(id, tree);
     }
 
