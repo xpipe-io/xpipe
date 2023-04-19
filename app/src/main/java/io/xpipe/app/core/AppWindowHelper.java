@@ -4,13 +4,11 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -157,10 +155,7 @@ public class AppWindowHelper {
         var content = loading != null ? new LoadingOverlayComp(baseComp, loading) : baseComp;
         var contentR = content.createRegion();
         AppFont.small(contentR);
-        var aa = Platform.isSupported(ConditionalFeature.SCENE3D)
-                ? SceneAntialiasing.BALANCED
-                : SceneAntialiasing.DISABLED;
-        var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false, aa);
+        var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
         stage.setScene(scene);
         contentR.requestFocus();
         if (bindSize) {

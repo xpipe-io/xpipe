@@ -5,13 +5,10 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
@@ -220,10 +217,7 @@ public class AppMainWindow {
 
     private void setupContent(Comp<?> content) {
         var contentR = content.createRegion();
-        var aa = Platform.isSupported(ConditionalFeature.SCENE3D)
-                ? SceneAntialiasing.BALANCED
-                : SceneAntialiasing.DISABLED;
-        var scene = new Scene(contentR, -1, -1, false, aa);
+        var scene = new Scene(contentR, -1, -1, false);
         stage.setScene(scene);
         contentR.requestFocus();
         TrackEvent.debug("Set content scene");

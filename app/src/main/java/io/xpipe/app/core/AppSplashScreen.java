@@ -1,10 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -20,10 +17,7 @@ public class AppSplashScreen {
         stage.initStyle(StageStyle.TRANSPARENT);
 
         var content = new ImageView(Main.class.getResource("resources/img/loading.gif").toString());
-        var aa = Platform.isSupported(ConditionalFeature.SCENE3D)
-                ? SceneAntialiasing.BALANCED
-                : SceneAntialiasing.DISABLED;
-        var scene = new Scene(new Pane(content), -1, -1, false, aa);
+        var scene = new Scene(new Pane(content), -1, -1, false);
         stage.setScene(scene);
         stage.show();
     }
