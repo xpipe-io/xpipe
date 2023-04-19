@@ -67,9 +67,6 @@ public class CoreJacksonModule extends SimpleModule {
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
 
-        addSerializer(SecretValue.class, new SecretSerializer());
-        addDeserializer(SecretValue.class, new SecretDeserializer());
-
         addSerializer(DataSourceReference.class, new DataSourceReferenceSerializer());
         addDeserializer(DataSourceReference.class, new DataSourceReferenceDeserializer());
 
@@ -176,22 +173,6 @@ public class CoreJacksonModule extends SimpleModule {
         @Override
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return Path.of(p.getValueAsString());
-        }
-    }
-
-    public static class SecretSerializer extends JsonSerializer<SecretValue> {
-
-        @Override
-        public void serialize(SecretValue value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeString(value.getEncryptedValue());
-        }
-    }
-
-    public static class SecretDeserializer extends JsonDeserializer<SecretValue> {
-
-        @Override
-        public SecretValue deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return new SecretValue(p.getValueAsString());
         }
     }
 

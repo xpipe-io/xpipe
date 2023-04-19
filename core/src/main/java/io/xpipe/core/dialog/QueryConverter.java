@@ -50,12 +50,13 @@ public abstract class QueryConverter<T> {
     public static final QueryConverter<SecretValue> SECRET = new QueryConverter<SecretValue>() {
         @Override
         protected SecretValue fromString(String s) {
-            return new SecretValue(s);
+            //TODO
+            return null;
         }
 
         @Override
         protected String toString(SecretValue value) {
-            return value.getEncryptedValue();
+            return value.getSecretValue();
         }
     };
 

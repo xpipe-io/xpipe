@@ -43,14 +43,14 @@ public class ErrorHandlerComp extends SimpleComp {
         this.stage = stage;
     }
 
-    public static void showAndWait(ErrorEvent event) {
+    public static void showAndTryWait(ErrorEvent event, boolean forceWait) {
         if (PlatformState.getCurrent() != PlatformState.RUNNING || event.isOmitted()) {
             ErrorAction.ignore().handle(event);
             return;
         }
 
         if (Platform.isFxApplicationThread()) {
-            showAndWaitWithPlatformThread(event);
+            showAndWaitWithPlatformThread(event, forceWait);
         } else {
             showAndWaitWithOtherThread(event);
         }
@@ -70,7 +70,7 @@ public class ErrorHandlerComp extends SimpleComp {
         return c;
     }
 
-    public static void showAndWaitWithPlatformThread(ErrorEvent event) {
+    public static void showAndWaitWithPlatformThread(ErrorEvent event, boolean forceWait) {
         var finishLatch = new CountDownLatch(1);
         if (!showing.get()) {
             showing.set(true);
@@ -82,7 +82,11 @@ public class ErrorHandlerComp extends SimpleComp {
             // An exception is thrown when show and wait is called
             // within an animation or layout processing task, so use show
             try {
-                window.show();
+                if (forceWait) {
+                    window.showAndWait();
+                } else {
+                    window.show();
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }

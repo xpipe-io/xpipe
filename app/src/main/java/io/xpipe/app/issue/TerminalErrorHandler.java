@@ -20,21 +20,14 @@ public class TerminalErrorHandler implements ErrorHandler {
     @Override
     public void handle(ErrorEvent event) {
         basic.handle(event);
-        handleSentry(event);
 
-        if (!OperationMode.GUI.isSupported()) {
+        if (!OperationMode.GUI.isSupported() || event.isOmitted()) {
             event.clearAttachments();
             SentryErrorHandler.getInstance().handle(event);
             OperationMode.halt(1);
         }
 
         handleGui(event);
-    }
-
-    private void handleSentry(ErrorEvent event) {
-        if (OperationMode.isInStartup()) {
-            Sentry.setExtra("initError", "true");
-        }
     }
 
     private void handleGui(ErrorEvent event) {
@@ -63,7 +56,7 @@ public class TerminalErrorHandler implements ErrorHandler {
             AppExtensionManager.init(false);
             AppI18n.init();
             AppStyle.init();
-            ErrorHandlerComp.showAndWait(event);
+            ErrorHandlerComp.showAndTryWait(event, true);
             Sentry.flush(5000);
         } catch (Throwable r) {
             event.clearAttachments();

@@ -2,11 +2,14 @@ package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.structure.*;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleComboBoxControl;
+import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import com.dlsc.preferencesfx.util.VisibilityProperty;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.ext.PrefsChoiceValue;
@@ -14,11 +17,17 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.LockChangeAlert;
+import io.xpipe.app.util.LockedSecretValue;
+import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -98,12 +107,38 @@ public class AppPrefs {
 
     // External terminal
     // =================
-    private final ObjectProperty<ExternalTerminalType> terminalType = typed(new SimpleObjectProperty<>(), ExternalTerminalType.class);
+    private final ObjectProperty<ExternalTerminalType> terminalType =
+            typed(new SimpleObjectProperty<>(), ExternalTerminalType.class);
     private final SimpleListProperty<ExternalTerminalType> terminalTypeList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class)));
     private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(
                     terminalTypeList, terminalType)
             .render(() -> new TranslatableComboBoxControl<>());
+
+    // Lock
+    // ====
+
+    private final Property<SecretValue> lockPassword = new SimpleObjectProperty<SecretValue>();
+    private final StringProperty lockCrypt = typed(new SimpleStringProperty(null), String.class);
+    private final StringField lockCryptControl = StringField.ofStringType(lockCrypt).render(() -> new SimpleControl<StringField, StackPane>() {
+
+                private Region button;
+
+                @Override
+                public void initializeParts() {
+                    super.initializeParts();
+                    this.node = new StackPane();
+                    button = new ButtonComp(Bindings.createStringBinding(() -> {
+                        return lockCrypt.getValue() != null? AppI18n.get("changeLock"):AppI18n.get("createLock");
+                    }), () -> LockChangeAlert.show()).createRegion();
+                }
+
+                @Override
+                public void layoutParts() {
+                    ((StackPane)this.node).getChildren().addAll(this.button);
+                    ((StackPane)this.node).setAlignment(Pos.CENTER_LEFT);
+                }
+            });
 
     // Custom terminal
     // ===============
@@ -112,10 +147,8 @@ public class AppPrefs {
             StringField.ofStringType(customTerminalCommand).render(() -> new SimpleTextControl()),
             terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
 
-
     // Close behaviour
     // ===============
-
     private final ObjectProperty<CloseBehaviour> closeBehaviour =
             typed(new SimpleObjectProperty<>(CloseBehaviour.QUIT), CloseBehaviour.class);
     private final SingleSelectionField<CloseBehaviour> closeBehaviourControl = Field.ofSingleSelectionType(
@@ -135,9 +168,8 @@ public class AppPrefs {
             StringField.ofStringType(customEditorCommand).render(() -> new SimpleTextControl()),
             externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
     private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
-    private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour = typed(
-            new SimpleObjectProperty<>(ExternalStartupBehaviour.TRAY),
-            ExternalStartupBehaviour.class);
+    private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour =
+            typed(new SimpleObjectProperty<>(ExternalStartupBehaviour.TRAY), ExternalStartupBehaviour.class);
 
     private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
             Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
@@ -225,6 +257,36 @@ public class AppPrefs {
 
     public ObservableValue<String> customEditorCommand() {
         return customEditorCommand;
+    }
+
+    public void changeLock(SecretValue newLockPw) {
+        if (newLockPw == null) {
+            lockCrypt.setValue("");
+            lockPassword.setValue(null);
+            return;
+        }
+
+        lockPassword.setValue(newLockPw);
+        lockCrypt.setValue(new LockedSecretValue("xpipe".toCharArray()).getEncryptedValue());
+    }
+
+    public boolean checkLock(SecretValue lockPw) {
+        lockPassword.setValue(lockPw);
+        var check = new LockedSecretValue("xpipe".toCharArray()).getEncryptedValue();
+        lockPassword.setValue(null);
+        return check.equals(lockCrypt.get());
+    }
+
+    public StringProperty getLockCrypt() {
+        return lockCrypt;
+    }
+
+    public Property<SecretValue> getLockPassword() {
+        return lockPassword;
+    }
+
+    public StringProperty lockCryptProperty() {
+        return lockCrypt;
     }
 
     public final ReadOnlyIntegerProperty editorReloadTimeout() {
@@ -430,6 +492,9 @@ public class AppPrefs {
                                         externalStartupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
                         Group.of(
+                                "security",
+                                Setting.of("workspaceLock", lockCryptControl, lockCrypt)),
+                        Group.of(
                                 "updates",
                                 Setting.of("automaticallyUpdate", automaticallyCheckForUpdatesField, automaticallyCheckForUpdates),
                                 Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
@@ -460,12 +525,12 @@ public class AppPrefs {
                                         editorReloadTimeout,
                                         editorReloadTimeoutMin,
                                         editorReloadTimeoutMax)),
-                Group.of(
-                        "terminal",
-                        Setting.of("terminalProgram", terminalTypeControl, terminalType),
-                        Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
-                                .applyVisibility(VisibilityProperty.of(
-                                        terminalType.isEqualTo(ExternalTerminalType.CUSTOM))))),
+                        Group.of(
+                                "terminal",
+                                Setting.of("terminalProgram", terminalTypeControl, terminalType),
+                                Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
+                                        .applyVisibility(VisibilityProperty.of(
+                                                terminalType.isEqualTo(ExternalTerminalType.CUSTOM))))),
                 Category.of(
                         "developer",
                         Setting.of(

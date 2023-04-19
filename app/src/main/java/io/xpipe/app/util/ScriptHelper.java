@@ -124,12 +124,12 @@ public class ScriptHelper {
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type)) {
-                var content = sub.getShellDialect().prepareAskpassContent(sub, file, Collections.singletonList(pass.getSecretValue()));
+                var content = sub.getShellDialect().prepareAskpassContent(sub, file,pass != null? Collections.singletonList(pass.getSecretValue()) : List.of());
                 var exec = createExecScript(sub, file, content);
                 return exec;
             }
         } else {
-            var content = parent.getShellDialect().prepareAskpassContent(parent, file, Collections.singletonList(pass.getSecretValue()));
+            var content = parent.getShellDialect().prepareAskpassContent(parent, file, pass != null?Collections.singletonList(pass.getSecretValue()) : List.of());
             var exec = createExecScript(parent, file, content);
             return exec;
         }

@@ -6,7 +6,9 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.DefaultSecretValue;
 import io.xpipe.app.util.FileBridge;
+import io.xpipe.app.util.LockedSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -32,6 +34,9 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("mode", "Initializing base mode components ...");
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
+        JacksonMapper.configure(objectMapper -> {
+            objectMapper.registerSubtypes(LockedSecretValue.class, DefaultSecretValue.class);
+        });
         AppPrefs.init();
         AppCharsets.init();
         AppCharsetter.init();
