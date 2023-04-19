@@ -3,11 +3,13 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -37,6 +39,10 @@ public class FileBrowserComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        ThreadHelper.runAsync( () -> {
+            FileIconManager.loadIfNecessary();
+        });
+
         var bookmarksList = new BookmarkList(model).createRegion();
         VBox.setVgrow(bookmarksList, Priority.ALWAYS);
         var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage()).hide(Bindings.createBooleanBinding(() -> {

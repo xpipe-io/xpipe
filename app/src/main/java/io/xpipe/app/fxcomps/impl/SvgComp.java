@@ -96,6 +96,7 @@ public class SvgComp {
         var wv = new WebView();
         wv.setPageFill(Color.TRANSPARENT);
         wv.setDisable(true);
+        wv.getEngine().setJavaScriptEnabled(false);
 
         wv.getEngine().loadContent(getHtml(svgContent.getValue()));
         svgContent.addListener((c, o, n) -> {

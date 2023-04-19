@@ -2,23 +2,24 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.app.fxcomps.impl.SvgCache;
 import io.xpipe.core.store.FileSystem;
+import javafx.scene.image.Image;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class FileIconManager {
 
     private static final List<FileIconFactory> factories = new ArrayList<>();
     private static final List<FolderIconFactory> folderFactories = new ArrayList<>();
+    private static SvgCache svgCache;
     private static boolean loaded;
 
-    static {
+    private static void loadDefinitions() {
         AppResources.with(AppResources.XPIPE_MODULE, "browser_icons/file_list.txt", path -> {
             try (var reader =
                     new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
@@ -87,8 +88,27 @@ public class FileIconManager {
         });
     }
 
-    private static void loadIfNecessary() {
+    private static void createCache() {
+        svgCache = new SvgCache() {
+
+            private final Map<String, Integer> hits = new HashMap<>();
+            private final Map<String, Image> images = new HashMap<>();
+
+            @Override
+            public Optional<Image> getCached(String image) {
+                var hitCount = hits.computeIfAbsent(image, s -> 1);
+                if (hitCount > 5) {
+                    //images.computeIfAbsent(image, s -> AppImages.image())
+                }
+
+                return Optional.empty();
+            }
+        };
+    }
+
+    public static synchronized void loadIfNecessary() {
         if (!loaded) {
+            loadDefinitions();
             AppImages.loadDirectory(AppResources.XPIPE_MODULE, "browser_icons");
             loaded = true;
         }

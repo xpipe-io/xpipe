@@ -250,7 +250,12 @@ final class FileListComp extends AnchorPane {
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
                 if (!Objects.equals(lastDir.get(), currentDirectory)) {
-                    table.scrollTo(0);
+                    TableViewSkin<?> skin = (TableViewSkin<?>) table.getSkin();
+                    VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
+                    ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
+                    if (vbar.getValue() != 0.0) {
+                        table.scrollTo(0);
+                    }
                 }
                 lastDir.setValue(currentDirectory);
             });
@@ -310,7 +315,9 @@ final class FileListComp extends AnchorPane {
             text.setValue(fullPath);
 
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                img.set(null);
+                // Don't set image as that would trigger image comp update
+                // and cells are emptied on each change, leading to unnecessary changes
+                // img.set(null);
                 setGraphic(null);
             } else {
                 var isDirectory = getTableRow().getItem().isDirectory();
