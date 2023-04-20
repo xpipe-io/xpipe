@@ -176,7 +176,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 var suffix = file.equals(pc.getShellDialect().getOpenCommand())
                         ? "\"\""
                         : "\"" + file.replaceAll("\"", "\\\\\"") + "\"";
-                var cmd = "osascript -e 'tell app \"" + "Terminal" + "\" to do script " + suffix + "'";
+                var cmd = String.format(
+                        """
+                                osascript - "$@" <<EOF
+                                activate application "Terminal"
+                                tell app "Terminal" to do script %s
+                                EOF""",
+                        suffix);
                 pc.executeSimpleCommand(cmd);
             }
         }
