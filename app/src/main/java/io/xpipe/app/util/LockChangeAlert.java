@@ -7,9 +7,13 @@ import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.SecretValue;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
+
+import java.util.Objects;
 
 public class LockChangeAlert {
 
@@ -42,8 +46,13 @@ public class LockChangeAlert {
                     var content = new VBox(label1, p1, new Spacer(15), label2, p2);
                     content.setSpacing(5);
                     alert.getDialogPane().setContent(content);
+
+                    var button = alert.getDialogPane().lookupButton(ButtonType.OK);
+                    button.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+                        return !Objects.equals(prop1.getValue(), prop2.getValue());
+                    }, prop1, prop2));
                 })
-                .filter(b -> b.getButtonData().isDefaultButton() && ((prop1.getValue() != null && prop2.getValue() != null && prop1.getValue().equals(prop2.getValue())) || (prop1.getValue() == null && prop2.getValue() == null)))
+                .filter(b -> b.getButtonData().isDefaultButton())
                 .ifPresent(t -> {
                     AppPrefs.get().changeLock(prop1.getValue());
                 });

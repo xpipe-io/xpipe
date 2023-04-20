@@ -1,5 +1,9 @@
 # Security
 
+Due to its nature, X-Pipe has to handle a lot of sensitive information.
+This can range from passwords for all kinds of servers, to SSH keys, and more.
+Therefore, you should definitely be interested in the security model of X-Pipe.
+
 This document summarizes the approach of X-Pipe when it comes to the security of your sensitive information.
 If any of your questions are left unanswered by this document, feel free to file an
 issue report so your question can be answered individually and can also potentially be included in this document.

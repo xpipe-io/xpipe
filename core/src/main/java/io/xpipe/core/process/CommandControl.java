@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface CommandControl extends ProcessControl {
 
@@ -19,6 +20,8 @@ public interface CommandControl extends ProcessControl {
         KEEP_OPEN,
         CLOSE
     }
+
+    CommandControl withMessageFormatter(Function<String, String> formatter);
 
     CommandControl terminalExitMode(TerminalExitMode mode);
 
