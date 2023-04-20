@@ -18,6 +18,7 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -261,7 +262,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         }
 
         if (messageProp.getValue() != null && !changedSinceError.get()) {
-            if (showInvalidConfirmAlert()) {
+            if (AppPrefs.get().developerMode().getValue() && showInvalidConfirmAlert()) {
                 return true;
             }
         }
@@ -282,8 +283,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         ThreadHelper.runAsync(() -> {
             try (var b = new BusyProperty(busy)) {
-                var e = DataStoreEntry.createNew(UUID.randomUUID(), entry.getValue().getName(), input.getValue());
-                e.refresh(true);
+                entry.getValue().refresh(true);
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);
             } catch (Exception ex) {
