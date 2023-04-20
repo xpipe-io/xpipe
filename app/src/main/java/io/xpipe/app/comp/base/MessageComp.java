@@ -7,7 +7,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.AccessLevel;
@@ -43,10 +43,11 @@ public class MessageComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var l = new Label();
+        var l = new TextArea();
         l.textProperty().bind(text);
         l.setWrapText(true);
         l.getStyleClass().add("message");
+        l.setEditable(false);
 
         var sp = new StackPane(l);
         sp.getStyleClass().add("message-comp");
