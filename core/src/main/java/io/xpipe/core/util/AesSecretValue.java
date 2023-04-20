@@ -11,8 +11,8 @@ import javax.crypto.spec.GCMParameterSpec;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Random;
 
 @SuperBuilder
 @Jacksonized
@@ -31,7 +31,7 @@ public class AesSecretValue extends EncryptedSecretValue {
 
     private static byte[] getFixedNonce(int numBytes) {
         byte[] nonce = new byte[numBytes];
-        new SecureRandom(new byte[] {1, -28, 123}).nextBytes(nonce);
+        new Random(1 - 28 + 213213).nextBytes(nonce);
         return nonce;
     }
 

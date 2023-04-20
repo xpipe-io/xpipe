@@ -9,9 +9,14 @@ import java.util.function.Consumer;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface SecretValue {
 
-    public static String base64e(byte[] b) {
+    public static String toBase64e(byte[] b) {
         var base64 = Base64.getEncoder().encodeToString(b);
         return base64.replace("/", "-");
+    }
+
+    public static byte[] fromBase64e(String s) {
+        var bytes = Base64.getDecoder().decode(s.replace("-", "/"));
+        return bytes;
     }
 
     public default void withSecretValue(Consumer<char[]> con) {

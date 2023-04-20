@@ -3,7 +3,7 @@ package io.xpipe.ext.base.actions;
 import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.SecretHelper;
+import io.xpipe.app.util.DefaultSecretValue;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Value;
@@ -43,7 +43,7 @@ public class AddStoreAction implements ActionProvider {
 
             @Override
             public Action createAction(List<String> args) throws Exception {
-                var storeString = SecretHelper.encryptInPlace(args.get(0));
+                var storeString = DefaultSecretValue.builder().encryptedValue(args.get(0)).build();
                 var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
                 return new Action(store);
             }

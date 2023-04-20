@@ -8,7 +8,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 @SuperBuilder
 @Jacksonized
@@ -22,7 +21,7 @@ public class EncryptedSecretValue implements SecretValue {
         var utf8 = StandardCharsets.UTF_8.encode(CharBuffer.wrap(c));
         var bytes = new byte[utf8.limit()];
         utf8.get(bytes);
-        encryptedValue = SecretValue.base64e(encrypt(bytes));
+        encryptedValue = SecretValue.toBase64e(encrypt(bytes));
     }
 
     @Override
@@ -33,14 +32,14 @@ public class EncryptedSecretValue implements SecretValue {
     @Override
     public char[] getSecret() {
         try {
-            var bytes = Base64.getDecoder().decode(encryptedValue.replace("-", "/"));
+            var bytes = SecretValue.fromBase64e(getEncryptedValue());
             bytes = decrypt(bytes);
             var charBuffer = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(bytes));
             var chars = new char[charBuffer.limit()];
             charBuffer.get(chars);
             return chars;
         } catch (Exception ex) {
-            throw new IllegalStateException("Unable to decrypt secret");
+            return new char[0];
         }
     }
 
