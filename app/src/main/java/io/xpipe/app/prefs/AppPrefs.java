@@ -270,11 +270,15 @@ public class AppPrefs {
         lockCrypt.setValue(new LockedSecretValue("xpipe".toCharArray()).getEncryptedValue());
     }
 
-    public boolean checkLock(SecretValue lockPw) {
+    public boolean unlock(SecretValue lockPw) {
         lockPassword.setValue(lockPw);
         var check = new LockedSecretValue("xpipe".toCharArray()).getEncryptedValue();
-        lockPassword.setValue(null);
-        return check.equals(lockCrypt.get());
+        if (!check.equals(lockCrypt.get())) {
+            lockPassword.setValue(null);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public StringProperty getLockCrypt() {

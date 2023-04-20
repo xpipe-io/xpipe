@@ -1,5 +1,6 @@
 package io.xpipe.core.util;
 
+import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -15,6 +16,7 @@ import java.security.spec.InvalidKeySpecException;
 
 @SuperBuilder
 @Jacksonized
+@EqualsAndHashCode(callSuper = true)
 public class AesSecretValue extends EncryptedSecretValue {
 
     private static final String ENCRYPT_ALGO = "AES/GCM/NoPadding";

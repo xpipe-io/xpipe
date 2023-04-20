@@ -15,7 +15,13 @@ public class ExceptionConverter {
         }
 
         return switch (ex) {
-            case ProcessOutputException e -> e.getOutput();
+            case ProcessOutputException e -> {
+                if (e.getOutput().isBlank()) {
+                    yield e.getMessage();
+                } else {
+                    yield e.getOutput();
+                }
+            }
             case StackOverflowError e -> AppI18n.get("app.stackOverflow");
             case OutOfMemoryError e -> AppI18n.get("app.outOfMemory");
             case FileNotFoundException e -> AppI18n.get("app.fileNotFound", msg);

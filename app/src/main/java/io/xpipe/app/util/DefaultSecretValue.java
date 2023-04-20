@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.util.AesSecretValue;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -18,6 +19,7 @@ import java.util.Random;
 @JsonTypeName("default")
 @SuperBuilder
 @Jacksonized
+@EqualsAndHashCode(callSuper = true)
 public class DefaultSecretValue extends AesSecretValue {
 
     public DefaultSecretValue(char[] secret) {

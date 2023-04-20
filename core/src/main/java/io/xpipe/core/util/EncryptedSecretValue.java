@@ -1,5 +1,6 @@
 package io.xpipe.core.util;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -11,6 +12,7 @@ import java.util.Base64;
 
 @SuperBuilder
 @Jacksonized
+@EqualsAndHashCode
 public class EncryptedSecretValue implements SecretValue {
 
     @Getter
@@ -38,7 +40,7 @@ public class EncryptedSecretValue implements SecretValue {
             charBuffer.get(chars);
             return chars;
         } catch (Exception ex) {
-            return new char[0];
+            throw new IllegalStateException("Unable to decrypt secret");
         }
     }
 

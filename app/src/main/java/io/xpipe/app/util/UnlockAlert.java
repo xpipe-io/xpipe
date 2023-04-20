@@ -42,7 +42,7 @@ public class UnlockAlert {
                 return;
             }
 
-            if (AppPrefs.get().checkLock(pw.get())) {
+            if (AppPrefs.get().unlock(pw.get())) {
                 return;
             }
         }
