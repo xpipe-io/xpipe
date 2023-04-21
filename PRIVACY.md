@@ -1,6 +1,6 @@
-**PRIVACY NOTICE**
+**PRIVACY NOTICE (Created with termly.io)**
 
-**Last updated September 19, 2022**
+**Last updated April 21, 2023**
 
 This privacy notice for X-Pipe, in which ("**we**," "**us**," or "**our**") refers to Christopher Schnick, describes how
 and why we
@@ -12,41 +12,6 @@ such as when you:
 **Questions or concerns?** Reading this privacy notice will help you understand your privacy rights and choices. If you
 do not agree with our policies and practices, please do not use our Services. If you still have any questions or
 concerns, please contact us at hello@xpipe.io.
-
-**SUMMARY OF KEY POINTS**
-
-**_This summary provides key points from our privacy notice, but you can find out more details about any of these topics
-by clicking the link following each key point or by using our table of contents below to find the section you are
-looking for. You can also click_** [**_here_**](#toc) **_to go directly to our table of contents._**
-
-**What personal information do we process?** When you visit, use, or navigate our Services, we may process personal
-information depending on how you interact with X-Pipe and the Services, the choices you make, and the
-products and features you use. Click [here](#infocollect) to learn more.
-
-**Do we process any sensitive personal information?** We do not process sensitive personal information.
-
-**Do we receive any information from third parties?** We do not receive any information from third parties.
-
-**How do we process your information?** We process your information to provide, monitor, improve, and administer our
-Services,
-for security and exploit prevention, and to comply with law. We may also process your information
-for other purposes with your consent. We process your information only when we have a valid legal reason to do so.
-Click [here](#infouse) to learn more.
-
-**In what situations and with which parties do we share personal information?** We may share information in specific
-situations and with specific third parties. Click [here](#whoshare) to learn more.
-
-**How do we keep your information safe?** We have organizational and technical processes and procedures in place to
-protect your personal information. However, no electronic transmission over the internet or information storage
-technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other
-unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your
-information. Click [here](#infosafe) to learn more.
-
-**What are your rights?** Depending on where you are located geographically, the applicable privacy law may mean you
-have certain rights regarding your personal information. Click [here](#privacyrights) to learn more.
-
-**How do you exercise your rights?** The easiest way to exercise your rights is by contacting us. We will
-consider and act upon any request in accordance with applicable data protection laws.
 
 <a name="toc"></a> **TABLE OF CONTENTS**
 
@@ -86,49 +51,26 @@ us.
 
 **Sensitive Information.** We do not process sensitive information.
 
-**Application Data.** If you use our application(s), we also may collect the following information if you choose to
+**Error reports.** If you encounter and report application errors using the issue reporter,
+we also may collect the following information if you choose to
 provide us with access or permission:
 
 * _Device Data._ We automatically collect device information (such as your device ID, model, and
   manufacturer), operating system, version information and system configuration information, device and application
-  identification numbers, browser type and version, hardware model, and
-  Internet Protocol (IP) address (or proxy server).
+  identification numbers, hardware model.
 
-This information is primarily needed to maintain the security and operation of our application(s), for troubleshooting,
-and for our internal analytics and reporting purposes.
-
-All personal information that you provide to us must be true, complete, and accurate, and you must notify us of any
-changes to such personal information.
-
-**Information automatically collected**
-
-**_In Short:_** _Some information — such as your Internet Protocol (IP) address and/or browser and device
-characteristics — is collected automatically when you visit our Services._
-
-We automatically collect certain information when you visit, use, or navigate the Services. This information does not
-reveal your specific identity (like your name or contact information) but may include device and usage information, such
-as your IP address, browser and device characteristics, operating system, language preferences, referring URLs, device
-name, country, location, information about how and when you use our Services, and other technical information. This
-information is primarily needed to prevent errors and exploits, maintain the security and operation of our Services, and
-for our internal analytics
-and reporting purposes.
-
-The information we collect includes:
-
-* _Log and Usage Data._ Log and usage data is service-related, diagnostic, usage, and performance information our
+* _Log and Usage Data. (Optional)_ Log and usage data is service-related, diagnostic, usage, and performance information our
   servers automatically collect when you access or use our Services and which we record in log files. Depending on how
   you interact with us, this log data may include your IP address, device information, and settings and
   information about your activity in the Services (such as the date/time stamps associated with your usage, pages and
   files viewed, searches, and other actions you take such as which features you use), device event information (such as
   system activity, error reports (sometimes called "crash dumps"), and hardware settings).
 
-* _Device Data._ We collect device data such as information about your computer, phone, tablet, or other device you use
-  to access the Services. Depending on the device used, this device data may include information such as your IP
-  address (or proxy server), device and application identification numbers, hardware model,
-  operating system, and system configuration information.
+* _Error Diagnostics Information. (Optional)_ Information relating to a specific error that occurred in the application. This may
+  include application logs, event data, and any other kind of data that is used to diagnose the error.
 
-* __Error Diagnostics Information__. Information relating to a specific error that occurred in the application. This may
-  include application logs, event data, and any other kind of data that is used to diagnose the error.1
+This information is primarily needed to maintain the security and operation of our application(s), for troubleshooting,
+and for our internal analytics and reporting purposes.
 
 <a name="infouse"></a> **2\. HOW DO WE PROCESS YOUR INFORMATION?**
 

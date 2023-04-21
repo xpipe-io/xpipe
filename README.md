@@ -60,6 +60,8 @@ In case you're interested in development, check out the [development page](/DEVE
 
 For information about the security model of X-Pipe, see the [security page](/SECURITY.md).
 
+For information about the privacy policy of X-Pipe, see the [privacy page](/PRIVACY.md).
+
 If you want to talk you can also join:
 
 - The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)

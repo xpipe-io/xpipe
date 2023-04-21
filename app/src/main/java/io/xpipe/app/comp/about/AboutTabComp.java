@@ -28,7 +28,7 @@ public class AboutTabComp extends Comp<CompStructure<?>> {
             hl.setOnAction(e -> {
                 Hyperlinks.open(link);
             });
-            hl.setMaxWidth(250);
+            hl.setMaxWidth(450);
             return hl;
         });
     }
@@ -37,6 +37,8 @@ public class AboutTabComp extends Comp<CompStructure<?>> {
         return new DynamicOptionsBuilder(false)
                 .addTitle("links")
                 //.addComp(AppI18n.observable("documentation"), hyperlink(Hyperlinks.DOCUMENTATION), null)
+                .addComp(AppI18n.observable("security"), hyperlink(Hyperlinks.SECURITY), null)
+                .addComp(AppI18n.observable("privacy"), hyperlink(Hyperlinks.PRIVACY), null)
                 .addComp(AppI18n.observable("discord"), hyperlink(Hyperlinks.DISCORD), null)
                 .addComp(AppI18n.observable("slack"), hyperlink(Hyperlinks.SLACK), null)
                 .addComp(AppI18n.observable("github"), hyperlink(Hyperlinks.GITHUB), null)

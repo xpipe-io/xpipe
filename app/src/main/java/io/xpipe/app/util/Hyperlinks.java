@@ -6,7 +6,9 @@ public class Hyperlinks {
 
     public static final String WEBSITE = "https://xpipe.io";
     public static final String DOCUMENTATION = "https://xpipe.io/docs";
-    public static final String GITHUB = "https://github.com/xpipe-io";
+    public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
+    public static final String PRIVACY = "https://github.com/xpipe-io/xpipe/blob/master/PRIVACY.md";
+    public static final String SECURITY = "https://github.com/xpipe-io/xpipe/blob/master/SECURITY.md";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String SLACK =
             "https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
