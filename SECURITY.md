@@ -2,67 +2,84 @@
 
 Due to its nature, X-Pipe has to handle a lot of sensitive information.
 This can range from passwords for all kinds of servers, to SSH keys, and more.
-Therefore, you should definitely be interested in the security model of X-Pipe.
+Therefore, the security model of X-Pipe plays a very important role.
 
 This document summarizes the approach of X-Pipe when it comes to the security of your sensitive information.
 If any of your questions are left unanswered by this document, feel free to file an
 issue report so your question can be answered individually and can also potentially be included in this document.
 
-## Goals
+## Reporting a security vulnerability
 
-The main goals of the security approach of X-Pipe can be summarized as follows:
-- Any sensitive information should be kept as secure as possible exclusively on your local machine,
-  both while X-Pipe is running and also not running
-- When sensitive information is required on another remote system that is connected through X-Pipe, that information should
-  remain there as briefly and securely as possible
-- Any infected remote system should be isolated enough such that any infection can't spread through X-Pipe
+If you believe that you found a security vulnerability in X-Pipe,
+you can make use of
+the [private security report feature](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)
+of GitHub.
 
-## Assumptions
+### Assumptions
 
-The general assumption is that the system on which X-Pipe runs on is not infected.
-This refers to your local system on which you installed X-Pipe, not any remote systems that you then connect too.
-If your local system is infected, then there is no
-technical way of preventing malicious programs to also infect X-Pipe and the connected systems as well.
+The general assumption is that the system on which X-Pipe runs on is not badly infected.
+This refers to your local system on which you installed X-Pipe, not any remote systems that you then connect to.
+If your local system is infected to an extent where malicious programs can modify the
+file system and other installed programs like X-Pipe,
+then there is no technical way of preventing malicious programs to also infect X-Pipe and the connected systems as well.
 
-Any underlying remote connection command-line tool should be secure.
+Any underlying remote connection command-line program should be secure.
 If for example your SSH connection is susceptible to MITM attacks, or
 vulnerable in any other way, there is no way for X-Pipe to keep the sensitive information secure.
 As X-Pipe completely outsources any connection handling to your command-line tools,
 it is your responsibility to keep them up to date with security patches and more.
 X-Pipe can only be as secure as your underlying command-line tools itself.
 
-## Storage of sensitive information
+## Data security and privacy
+
+The general approach of X-Pipe can be summarized as follows:
+
+- Any sensitive information should be kept as secure as possible exclusively on your local machine,
+  both while X-Pipe is running and also not running
+- When sensitive information is required on another remote system that is connected through X-Pipe, that information
+  should be transferred and
+  remain there as briefly and securely as possible
+- No sensitive information should be sent to any other server outside your network of trusted connections
+
+### Storage of sensitive information
+
+All X-Pipe data is exclusively stored on your local machine at `~/.xpipe/storage`.
+You can choose to change this storage location in the settings menu.
 
 All sensitive information is encrypted when it is saved to disk on your local machine using AES
 with either:
-- A custom master key that can be set by you (This option is only as secure as the password you choose)
+
+- A custom master lock key that can be set by you in the settings menu
+  (This option is only as secure as the password you choose)
 - A somewhat dynamically generated key (This option can be reverse
-  engineered though, there is no way of perfectly securing your data without any custom user input)
+  engineered though, there is no way of perfectly securing your data without any custom key)
 
-## Passing of sensitive information
+It is also planned that you will be able to
+source passwords and more directly from other external sources such as password managers in the future.
 
-When any kind of login information is required by a command-line tool, it has to be passed somehow to it.
-If this commandline tool runs on your local system, the data does not leave your local system.
-If login information is required on a remote system, then that data is transferred to that remote system.
+### Passing of sensitive information
 
-In case a tool accepts password input via stdin, this process is relatively straightforward.
-Then the passed sensitive information does not show up in any history or file system.
+When any kind of login information is required by a command-line program, it has to be passed to it somehow.
+If the program runs on your local system, the data does not leave your local system.
+If login information is required on a remote system, then that data must be transferred to that remote system.
+
+In case a program accepts password input via stdin, this process is relatively straightforward.
+Then the passed sensitive information is just written into the stdin of the program and does not show up in any history or file system.
 
 When a program only accepts password input via an environment variable or an askpass program,
 a self deleting password supplier script file is generated by X-Pipe.
 This script contains the encrypted password and will supply
-to password to the target program exactly once and immediately deletes itself.
+the password to the target program exactly once when invoked and immediately deletes itself afterwards.
 This behavior ensures that there is no leftover password script after an operation is performed.
 As a secondary measure, for cases in which the calling program crashes
-and is not able to execute and therefore delete the password script,
+and is not able to execute the script and therefore doesn't delete the password script,
 the generated script directory is also frequently cleaned.
-
 As a result, no sensitive information of yours should show
-up in any kind of shell history or on any file system in plaintext and also in general.
+up in any kind of shell history or on any file system.
 
 ## The purpose of shell scripts
 
-Whenever you open any remote connection in a terminal from X-Pipe, you will notice that your terminal shows
+Whenever you open a remote connection in a terminal from X-Pipe, you will notice that your terminal shows
 the name of a script located in your temp directory in the title bar to indicate that you're currently executing it.
 The naming scheme of these scripts is usually something like `xpipe/exec-<id>.(bat|sh|ps1)`
 This is intended as these scripts contain all commands that are required
@@ -70,24 +87,42 @@ to realize the functionality of connecting and initializing the shell environmen
 These scripts do not contain any sensitive information,
 you are free to inspect them yourselves in the temp directory.
 
-## Isolation of remote systems
+In case a script connects to a remote system and passes login information to a program via variables or askpass
+programs,
+it automatically becomes useless after being invoked once (See [above](#passing-of-sensitive-information)).
+As the script is run immediately after it is created initially, e.g.
+when using the `Open in terminal` functionality, it becomes useless pretty much
+instantly so any attacker doesn't obtain any sensitive information from it.
 
-When you add remote system as a host, it is implicitly assumed that you trust this system.
-Any required login information is sent to and handled on that remote host when required,
-so it would be possible for malicious programs to obtain any information send to that host.
+### Logging
 
-It should however not be possible for any malicious program on the remote host to obtain
-other information stored by X-Pipe that is not explicitly sent to that host.
-During development, a lot of focus lies on preventing all
-sorts of attacks like injection attacks from the remote host
+By default, X-Pipe creates log files located in `~/.xpipe/logs`.
+Under normal conditions these log files do not contain any sensitive information.
+If you choose to alter the log level in the settings menu or launch X-Pipe in debug mode,
+these log files will contain a lot more and finer grained information, some of which might be sensitive.
 
-## Issue reports
+### Issue reports
 
 Whenever an error occurs within X-Pipe or you choose to open the error reporter dialog,
 you have the option to automatically send an error report with optional feedback and attachments.
-This error report does not contain any sensitive information
+This error report does not contain any sensitive information unless
+you explicitly choose to attach debug mode log files (See above).
 
-## Reporting a security vulnerability
+## Isolation
 
-If you believe that there is a security vulnerability in X-Pipe,
-you can make use of the [private security report feature](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability) of GitHub.
+Any infected remote system should be isolated enough such that any infection can't spread through X-Pipe.
+
+### User isolation
+
+All relevant files like configuration files and other required temporary files
+are only accessible by the current user.
+Any other user on a system can't read or write them unless they have root/Administrator privileges.
+
+### Isolation of remote systems
+
+When you add a remote system as a host within X-Pipe, it is implicitly assumed that you trust this system.
+Any required login information is sent to and handled on that remote host when required,
+so it would be possible for malicious program with sufficient privileges to obtain any information sent to that host.
+This would require an attacker to be able to access files of the user that is used to log into the remote system.
+It should however not be possible for any malicious program on the remote host to obtain
+other information stored by X-Pipe that is not explicitly sent to that host.
