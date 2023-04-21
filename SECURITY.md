@@ -15,7 +15,7 @@ you can make use of
 the [private security report feature](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)
 of GitHub.
 
-### Assumptions
+## Security assumptions
 
 The general assumption is that the system on which X-Pipe runs on is not badly infected.
 This refers to your local system on which you installed X-Pipe, not any remote systems that you then connect to.
