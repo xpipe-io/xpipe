@@ -16,7 +16,7 @@ public class ExceptionConverter {
 
         return switch (ex) {
             case ProcessOutputException e -> {
-                if (e.getOutput().isBlank()) {
+                if (e.getOutput() == null || e.getOutput().isBlank()) {
                     yield e.getMessage();
                 } else {
                     yield e.getOutput();
