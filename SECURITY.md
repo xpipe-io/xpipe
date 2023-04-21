@@ -77,7 +77,7 @@ the generated script directory is also frequently cleaned.
 As a result, no sensitive information of yours should show
 up in any kind of shell history or on any file system.
 
-## The purpose of shell scripts
+### The purpose of shell scripts
 
 Whenever you open a remote connection in a terminal from X-Pipe, you will notice that your terminal shows
 the name of a script located in your temp directory in the title bar to indicate that you're currently executing it.
