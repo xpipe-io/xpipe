@@ -40,11 +40,11 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             try (ShellControl pc = LocalStore.getShell().start()) {
                 try (var c = pc.command(String.format(
                                 "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister "
-                                        + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|/Volumes/%s\" | uniq",
+                                        + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|.Trash|/Volumes/%s\" | uniq",
                                 applicationName, applicationName))
                         .start()) {
                     var path = c.readStdoutDiscardErr();
-                    if (c.getExitCode() != 0) {
+                    if (c.getExitCode() != 0 || path.isBlank()) {
                         return Optional.empty();
                     }
                     return Optional.of(Path.of(path));

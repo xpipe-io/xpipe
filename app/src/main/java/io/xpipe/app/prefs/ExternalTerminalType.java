@@ -227,7 +227,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static class ITerm2Type extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public ITerm2Type() {
-            super("iterm2", "iTerm2");
+            super("iterm2", "iTerm");
         }
 
         @Override
