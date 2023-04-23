@@ -99,7 +99,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 e.applyChanges(newE);
                 if (!DataStorage.get().getStoreEntries().contains(e)) {
                     DataStorage.get().addStoreEntry(e);
-                    ScanAlert.showIfNeeded(e.getStore(), true);
                 }
                 DataStorage.get().refresh();
             });

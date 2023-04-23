@@ -12,6 +12,7 @@ import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedHierarchyStore;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -93,6 +94,36 @@ public abstract class DataStorage {
                 .resolve(internalCollection.getUuid().toString()));
         this.sourceCollections.add(internalCollection);
         return internalCollection;
+    }
+
+    public synchronized void refreshChildren(DataStoreEntry e) {
+        if (!(e.getStore() instanceof FixedHierarchyStore)) {
+            return;
+        }
+
+        try {
+            var newChildren = ((FixedHierarchyStore) e.getStore()).listChildren();
+            deleteChildren(e, true);
+            newChildren.forEach((key, value) -> {
+                try {
+                    addStoreEntry(key, value);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+        }
+    }
+
+    public synchronized void deleteChildren(DataStoreEntry e, boolean  deep) {
+        getStoreChildren(e,deep).forEach(entry -> {
+            if (!entry.getConfiguration().isDeletable()) {
+                return;
+            }
+
+            deleteStoreEntry(entry);
+        });
     }
 
     public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry,   boolean  deep) {

@@ -11,10 +11,14 @@ public class ProcessOutputException extends Exception {
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
 
-    public static ProcessOutputException of(int exitCode, String output) {
-        var messageSuffix = output != null && !output.isBlank()?": " + output : "";
-        var message = exitCode == CommandControl.TIMEOUT_EXIT_CODE ? "Process timed out" + messageSuffix : "Process returned with exit code " + exitCode + messageSuffix;
-        return new ProcessOutputException(message, exitCode, output);
+    public static ProcessOutputException of(int exitCode, String output, String accumulatedError) {
+        var combinedError = (accumulatedError != null ? accumulatedError.trim() + "\n" : "") + (output != null ? output.trim() : "");
+        var message = switch (exitCode) {
+            case CommandControl.KILLED_EXIT_CODE -> "Process timed out" + combinedError;
+            case CommandControl.TIMEOUT_EXIT_CODE -> "Process timed out" + combinedError;
+            default -> "Process returned with exit code " + combinedError;
+        };
+        return new ProcessOutputException(message, exitCode, combinedError);
     }
 
     private final int exitCode;

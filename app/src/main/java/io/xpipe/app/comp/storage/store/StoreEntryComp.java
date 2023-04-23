@@ -19,6 +19,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
@@ -156,6 +157,10 @@ public class StoreEntryComp extends SimpleComp {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
                 var found = entry.getDefaultActionProvider().getValue();
+                if (entry.getState().getValue().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || found == null) {
+                    entry.getEntry().refresh(true);
+                }
+
                 if (found != null) {
                     entry.getEntry().updateLastUsed();
                     found.createAction(entry.getEntry().getStore().asNeeded()).execute();

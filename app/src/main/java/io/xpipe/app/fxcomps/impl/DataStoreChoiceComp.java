@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.app.util.XPipeDaemon;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,27 +23,33 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @AllArgsConstructor
-public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
+public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
-    public static ShellStoreChoiceComp<ShellStore> proxy(Property<ShellStore> selected) {
-        return new ShellStoreChoiceComp<>(Mode.PROXY_CHOICE, null, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> proxy(Property<ShellStore> selected) {
+        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, shellStore -> true);
     }
 
-    public static ShellStoreChoiceComp<ShellStore> host(Property<ShellStore> selected) {
-        return new ShellStoreChoiceComp<>(Mode.HOST_CHOICE, null, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> host(Property<ShellStore> selected) {
+        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, shellStore -> true);
     }
 
-    public static ShellStoreChoiceComp<ShellStore> proxy(ShellStore self, Property<ShellStore> selected) {
-        return new ShellStoreChoiceComp<>(Mode.PROXY_CHOICE, self, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> environment(ShellStore self, Property<ShellStore> selected) {
+        return new DataStoreChoiceComp<>(Mode.ENVIRONMENT, self, selected, ShellStore.class, shellStore -> true);
     }
 
-    public static ShellStoreChoiceComp<ShellStore> host(ShellStore self, Property<ShellStore> selected) {
-        return new ShellStoreChoiceComp<>(Mode.HOST_CHOICE, self, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> proxy(ShellStore self, Property<ShellStore> selected) {
+        return new DataStoreChoiceComp<>(Mode.PROXY, self, selected, ShellStore.class, shellStore -> true);
+    }
+
+    public static DataStoreChoiceComp<ShellStore> host(ShellStore self, Property<ShellStore> selected) {
+        return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, shellStore -> true);
     }
 
     public static enum Mode {
-        HOST_CHOICE,
-        PROXY_CHOICE
+        HOST,
+        ENVIRONMENT,
+        OTHER,
+        PROXY
     }
 
     private final Mode mode;
@@ -60,7 +67,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                 .filter(e -> e.equals(s))
                 .findAny()
                 .flatMap(store -> {
-                    if (ShellStore.isLocal(store.asNeeded()) && mode == Mode.PROXY_CHOICE) {
+                    if (ShellStore.isLocal(store.asNeeded()) && mode == Mode.PROXY) {
                         return Optional.of(AppI18n.get("none"));
                     }
 
@@ -97,7 +104,7 @@ public class ShellStoreChoiceComp<T extends ShellStore> extends SimpleComp {
                 continue;
             }
 
-            if (!((ShellStore) s).canHaveSubs()) {
+            if (!(mode == Mode.ENVIRONMENT) && !((ShellStore) s).canHaveSubs()) {
                 continue;
             }
 

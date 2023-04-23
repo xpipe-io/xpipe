@@ -65,6 +65,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     }
 
     public void delete() {
+        DataStorage.get().deleteChildren(this.entry, true);
         DataStorage.get().deleteStoreEntry(this.entry);
     }
 

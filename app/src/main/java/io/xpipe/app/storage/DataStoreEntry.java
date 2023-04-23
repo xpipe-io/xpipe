@@ -10,6 +10,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedHierarchyStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -218,6 +219,11 @@ public class DataStoreEntry extends StorageElement {
                     state = State.VALIDATING;
                     listeners.forEach(l -> l.onUpdate());
                     store.validate();
+
+                    if (store instanceof FixedHierarchyStore) {
+                        DataStorage.get().refreshChildren(this);
+                    }
+
                     state = State.COMPLETE_AND_VALID;
                     information = getProvider().queryInformationString(getStore(), 50);
                     dirty = true;
