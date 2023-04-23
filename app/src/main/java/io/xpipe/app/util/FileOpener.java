@@ -57,7 +57,10 @@ public class FileOpener {
         try {
             editor.launch(Path.of(file).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEvent.fromThrowable(e)
+                    .description("Unable to launch editor " + editor.toTranslatedString()
+                            + ". Maybe try to use a different one in the settings.")
+                    .handle();
         }
     }
 
@@ -71,11 +74,12 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + file + "\"");
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEvent.fromThrowable(e)
+                    .description("Unable to open file " + file).handle();
         }
     }
 
-    public static void openString(String keyName,Object key, String input, Consumer<String> output) {
+    public static void openString(String keyName, Object key, String input, Consumer<String> output) {
         FileBridge.get().openString(keyName, key, input, output, file -> openInTextEditor(file));
     }
 }
