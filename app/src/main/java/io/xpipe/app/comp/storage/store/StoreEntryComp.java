@@ -159,6 +159,7 @@ public class StoreEntryComp extends SimpleComp {
                 var found = entry.getDefaultActionProvider().getValue();
                 if (entry.getState().getValue().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || found == null) {
                     entry.getEntry().refresh(true);
+                    entry.getExpanded().set(true);
                 }
 
                 if (found != null) {

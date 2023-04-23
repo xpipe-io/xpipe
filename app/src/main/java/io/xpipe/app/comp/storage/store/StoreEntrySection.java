@@ -5,12 +5,12 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -27,15 +27,21 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
     @Override
     public CompStructure<VBox> createBase() {
         var root = new StoreEntryComp(section.getWrapper()).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
-        var icon = Comp.of(() -> {
-            var padding = new FontIcon("mdi2c-circle-double");
-            padding.setIconSize(14);
-            var pain = new StackPane(padding);
-            pain.setMinWidth(20);
-            pain.setMaxHeight(20);
-            return pain;
-        });
-        List<Comp<?>> topEntryList = top ? List.of(root) : List.of(icon, root);
+        var button = new IconButtonComp(
+                        Bindings.createStringBinding(
+                                () -> section.getWrapper().getExpanded().get()
+                                                && section.getChildren().size() > 0
+                                        ? "mdal-keyboard_arrow_down"
+                                        : "mdal-keyboard_arrow_right",
+                                section.getWrapper().getExpanded()),
+                        () -> {
+                            section.getWrapper().toggleExpanded();
+                        })
+                .apply(struc -> struc.get().setPrefWidth(40))
+                .disable(BindingsHelper.persist(
+                        Bindings.size(section.getChildren()).isEqualTo(0)))
+                .grow(false, true);
+        List<Comp<?>> topEntryList = List.of(button, root);
 
         var all = section.getChildren();
         var shown = BindingsHelper.filteredContentBinding(
@@ -58,8 +64,9 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
                         new HorizontalComp(topEntryList),
                         new HorizontalComp(List.of(spacer, content))
                                 .apply(struc -> struc.get().setFillHeight(true))
-                                .hide(BindingsHelper.persist(
-                                        Bindings.size(section.getChildren()).isEqualTo(0)))))
+                                .hide(BindingsHelper.persist(Bindings.or(
+                                        Bindings.not(section.getWrapper().getExpanded()),
+                                        Bindings.size(section.getChildren()).isEqualTo(0))))))
                 .createStructure();
     }
 }

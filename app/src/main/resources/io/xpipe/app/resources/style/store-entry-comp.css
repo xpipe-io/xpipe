@@ -23,7 +23,7 @@
 -fx-opacity: 0.5;
 }
 .store-entry-comp {
--fx-padding: 6px;
+-fx-padding: 6px 6px 6px 0;
 }
 
 

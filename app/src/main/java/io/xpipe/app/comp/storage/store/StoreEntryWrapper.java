@@ -33,6 +33,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final BooleanProperty renamable = new SimpleBooleanProperty();
     private final BooleanProperty refreshable = new SimpleBooleanProperty();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
+    private final BooleanProperty expanded = new SimpleBooleanProperty(true);
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -155,6 +156,10 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                 actionProviders.get(dataStoreActionProvider).set(false);
             }
         });
+    }
+
+    public void toggleExpanded() {
+        this.expanded.set(!expanded.getValue());
     }
 
     @Override
