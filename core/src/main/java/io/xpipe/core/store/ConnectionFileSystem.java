@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 public class ConnectionFileSystem implements FileSystem {
 
     @JsonIgnore
-    private final ShellControl shellControl;
+    protected final ShellControl shellControl;
 
     @JsonIgnore
-    private final ShellStore store;
+    protected final ShellStore store;
 
     public ConnectionFileSystem(ShellControl shellControl, ShellStore store) {
         this.shellControl = shellControl;
