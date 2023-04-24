@@ -33,7 +33,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final BooleanProperty renamable = new SimpleBooleanProperty();
     private final BooleanProperty refreshable = new SimpleBooleanProperty();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
-    private final BooleanProperty expanded = new SimpleBooleanProperty(true);
+    private final BooleanProperty expanded = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -75,6 +75,10 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
             entry.setName(n);
         });
 
+        expanded.addListener((c, o, n) -> {
+            entry.setExpanded(n);
+        });
+
         entry.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
             update();
         }));
@@ -89,6 +93,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         lastAccess.setValue(entry.getLastAccess());
         disabled.setValue(entry.isDisabled());
         state.setValue(entry.getState());
+        expanded.setValue(entry.isExpanded());
         information.setValue(
                 entry.getInformation() != null
                         ? entry.getInformation()

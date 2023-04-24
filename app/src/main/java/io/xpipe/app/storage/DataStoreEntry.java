@@ -44,6 +44,9 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     Configuration configuration;
 
+    @NonFinal
+    boolean expanded;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -54,7 +57,8 @@ public class DataStoreEntry extends StorageElement {
             JsonNode storeNode,
             boolean dirty,
             State state,
-            Configuration configuration)
+            Configuration configuration,
+            boolean expanded)
             throws Exception {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.information = information;
@@ -62,6 +66,7 @@ public class DataStoreEntry extends StorageElement {
         this.storeNode = storeNode;
         this.state = state;
         this.configuration = configuration;
+        this.expanded = expanded;
     }
 
     @SneakyThrows
@@ -76,7 +81,8 @@ public class DataStoreEntry extends StorageElement {
                 DataStorageWriter.storeToNode(store),
                 true,
                 State.LOAD_FAILED,
-                Configuration.defaultConfiguration());
+                Configuration.defaultConfiguration(),
+                true);
         entry.refresh(false);
         return entry;
     }
@@ -91,9 +97,10 @@ public class DataStoreEntry extends StorageElement {
             String information,
             JsonNode storeNode,
             State state,
-            Configuration configuration) {
+            Configuration configuration,
+            boolean expanded) {
         var entry = new DataStoreEntry(
-                directory, uuid, name, lastUsed, lastModified, information, storeNode, false, state, configuration);
+                directory, uuid, name, lastUsed, lastModified, information, storeNode, false, state, configuration, expanded);
         return entry;
     }
 
@@ -133,6 +140,7 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(Configuration.defaultConfiguration());
+        var expanded = Optional.ofNullable(json.get("expanded")).map(jsonNode -> jsonNode.booleanValue()).orElse(true);
 
         // Store loading is prone to errors.
         JsonNode storeNode = null;
@@ -141,12 +149,17 @@ public class DataStoreEntry extends StorageElement {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }
-        return createExisting(dir, uuid, name, lastUsed, lastModified, information, storeNode, state, configuration);
+        return createExisting(dir, uuid, name, lastUsed, lastModified, information, storeNode, state, configuration, expanded);
     }
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         simpleRefresh();
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.dirty = true;
+        this.expanded = expanded;
     }
 
     public DataStore getStore() {
@@ -269,6 +282,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("lastModified", lastModified.toString());
         obj.set("state", mapper.valueToTree(state));
         obj.set("configuration", mapper.valueToTree(configuration));
+        obj.put("expanded", expanded);
 
         var entryString = mapper.writeValueAsString(obj);
         var storeString = mapper.writeValueAsString(storeNode);
