@@ -39,7 +39,7 @@ public class ScriptHelper {
     }
 
     public static String constructInitFile(
-            ShellControl processControl, List<String> init, String toExecuteInShell,boolean login) {
+            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login) {
         ShellDialect t = processControl.getShellDialect();
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init) + nl;
@@ -68,7 +68,8 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static String getExecScriptFile(ShellControl processControl) {
-        return getExecScriptFile(processControl, processControl.getShellDialect().getScriptFileEnding());
+        return getExecScriptFile(
+                processControl, processControl.getShellDialect().getScriptFileEnding());
     }
 
     @SneakyThrows
@@ -99,7 +100,10 @@ public class ScriptHelper {
                 .handle();
 
         // processControl.executeSimpleCommand(type.getFileTouchCommand(file), "Failed to create script " + file);
-        processControl.getShellDialect().createTextFileWriteCommand(processControl, content, file).execute();
+        processControl
+                .getShellDialect()
+                .createTextFileWriteCommand(processControl, content, file)
+                .execute();
         var e = type.getMakeExecutableCommand(file);
         if (e != null) {
             processControl.executeSimpleCommand(e, "Failed to make script " + file + " executable");
@@ -107,7 +111,8 @@ public class ScriptHelper {
         return file;
     }
 
-    public static String createAskPassScript(SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
+    public static String createAskPassScript(SecretValue pass, ShellControl parent, boolean forceExecutable)
+            throws Exception {
         var scriptType = parent.getShellDialect();
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
@@ -118,21 +123,25 @@ public class ScriptHelper {
         return createAskPassScript(pass, parent, scriptType);
     }
 
-    private static String createAskPassScript(SecretValue pass, ShellControl parent, ShellDialect type) throws Exception {
+    private static String createAskPassScript(SecretValue pass, ShellControl parent, ShellDialect type)
+            throws Exception {
         var fileName = "askpass-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getTemporaryDirectory();
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
-            try (var sub = parent.subShell(type)) {
-                var content = sub.getShellDialect().prepareAskpassContent(sub, file,pass != null? Collections.singletonList(pass.getSecretValue()) : List.of());
+            try (var sub = parent.subShell(type).start()) {
+                var content = sub.getShellDialect()
+                        .prepareAskpassContent(
+                                sub, file, pass != null ? Collections.singletonList(pass.getSecretValue()) : List.of());
                 var exec = createExecScript(sub, file, content);
                 return exec;
             }
         } else {
-            var content = parent.getShellDialect().prepareAskpassContent(parent, file, pass != null?Collections.singletonList(pass.getSecretValue()) : List.of());
+            var content = parent.getShellDialect()
+                    .prepareAskpassContent(
+                            parent, file, pass != null ? Collections.singletonList(pass.getSecretValue()) : List.of());
             var exec = createExecScript(parent, file, content);
             return exec;
         }
-
     }
 }
