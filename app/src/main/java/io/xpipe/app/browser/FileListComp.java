@@ -251,10 +251,14 @@ final class FileListComp extends AnchorPane {
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
                 if (!Objects.equals(lastDir.get(), currentDirectory)) {
                     TableViewSkin<?> skin = (TableViewSkin<?>) table.getSkin();
-                    VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
-                    ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
-                    if (vbar.getValue() != 0.0) {
-                        table.scrollTo(0);
+                    if (skin != null) {
+                        VirtualFlow<?> flow =
+                                (VirtualFlow<?>) skin.getChildren().get(1);
+                        ScrollBar vbar =
+                                (ScrollBar) flow.getChildrenUnmodifiable().get(2);
+                        if (vbar.getValue() != 0.0) {
+                            table.scrollTo(0);
+                        }
                     }
                 }
                 lastDir.setValue(currentDirectory);
@@ -266,6 +270,10 @@ final class FileListComp extends AnchorPane {
 
     private void borderScroll(TableView<?> tableView, DragEvent event) {
         TableViewSkin<?> skin = (TableViewSkin<?>) tableView.getSkin();
+        if (skin == null) {
+            return;
+        }
+
         VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
         ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
 
