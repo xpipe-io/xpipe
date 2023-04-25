@@ -43,11 +43,8 @@ concerns, please contact us at hello@xpipe.io.
 
 **Personal information you disclose to us**
 
-**_In Short:_** _We collect personal information that you provide to us._
-
 We collect personal information that you voluntarily provide to us when you express an interest in obtaining information
-about us or our products and Services, when you participate in activities on the Services, or otherwise when you contact
-us.
+about us or our products and Services, or otherwise when you contact us, for example by emailing us.
 
 **Sensitive Information.** We do not process sensitive information.
 
@@ -55,28 +52,23 @@ us.
 we also may collect the following information if you choose to
 provide us with access or permission:
 
-* _Device Data._ We automatically collect device information (such as your device ID, model, and
-  manufacturer), operating system, version information and system configuration information, device and application
-  identification numbers, hardware model.
+* _Device Data._ Device information (such as your device ID, model, and
+  manufacturer), operating system, version information, and application identification numbers.
 
-* _Log and Usage Data. (Optional)_ Log and usage data is service-related, diagnostic, usage, and performance information our
+* _Log and Usage Data. (Optional choice)_ Log and usage data is service-related, diagnostic, usage, and performance information our
   servers automatically collect when you access or use our Services and which we record in log files. Depending on how
   you interact with us, this log data may include your IP address, device information, and settings and
   information about your activity in the Services (such as the date/time stamps associated with your usage, pages and
   files viewed, searches, and other actions you take such as which features you use), device event information (such as
   system activity, error reports (sometimes called "crash dumps"), and hardware settings).
 
-* _Error Diagnostics Information. (Optional)_ Information relating to a specific error that occurred in the application. This may
+* _Error Diagnostics Information. (Optional choice)_ Information relating to a specific error that occurred in the application. This may
   include application logs, event data, and any other kind of data that is used to diagnose the error.
 
 This information is primarily needed to maintain the security and operation of our application(s), for troubleshooting,
 and for our internal analytics and reporting purposes.
 
 <a name="infouse"></a> **2\. HOW DO WE PROCESS YOUR INFORMATION?**
-
-**_In Short:_** _We process your information to provide, monitor, improve, and administer our Services, for
-security and fraud prevention, and to comply with law. We may also process your information for other purposes with your
-consent._
 
 **We process your personal information for a variety of reasons, depending on how you interact with our Services,
 including:**
