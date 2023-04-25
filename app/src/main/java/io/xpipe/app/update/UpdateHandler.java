@@ -155,6 +155,15 @@ public abstract class UpdateHandler {
             return;
         }
 
+        if (preparedUpdate.getValue() != null) {
+            if (lastUpdateCheckResult
+                    .getValue()
+                    .getVersion()
+                    .equals(preparedUpdate.getValue().getVersion())) {
+                return;
+            }
+        }
+
         try (var ignored = new BusyProperty(busy)) {
             event("Performing update download ...");
             prepareUpdateImpl();
