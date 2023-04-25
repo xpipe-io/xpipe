@@ -160,6 +160,7 @@ public abstract class UpdateHandler {
                     .getValue()
                     .getVersion()
                     .equals(preparedUpdate.getValue().getVersion())) {
+                event("Update is already prepared ...");
                 return;
             }
         }
