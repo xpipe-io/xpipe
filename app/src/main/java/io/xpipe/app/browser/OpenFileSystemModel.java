@@ -64,7 +64,7 @@ final class OpenFileSystemModel {
             return null;
         }
 
-        return new FileSystem.FileEntry(fileSystem, parent, null, true, false, false, 0);
+        return new FileSystem.FileEntry(fileSystem, parent, null, true, false, false, 0, null);
     }
 
     public FileSystem.FileEntry getCurrentDirectory() {
@@ -72,7 +72,7 @@ final class OpenFileSystemModel {
             return null;
         }
 
-        return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, true, false, false, 0);
+        return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, true, false, false, 0, null);
     }
 
     public Optional<String> cd(String path) {
@@ -124,7 +124,7 @@ final class OpenFileSystemModel {
                 noDirectory.set(false);
             } else {
                 newList = getFileSystem().listRoots().stream()
-                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0))
+                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0, null))
                         .collect(Collectors.toCollection(ArrayList::new));
                 noDirectory.set(true);
             }

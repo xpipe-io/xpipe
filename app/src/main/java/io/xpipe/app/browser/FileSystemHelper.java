@@ -86,7 +86,9 @@ public class FileSystemHelper {
                 Files.isDirectory(file),
                 Files.isHidden(file),
                 Files.isExecutable(file),
-                Files.size(file));
+                Files.size(file),
+                null
+        );
     }
 
     public static void dropLocalFilesInto(FileSystem.FileEntry entry, List<Path> files) {

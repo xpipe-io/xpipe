@@ -12,6 +12,7 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -85,12 +86,16 @@ final class FileListComp extends AnchorPane {
         mtimeCol.setCellFactory(col -> new FileTimeCell());
         mtimeCol.getStyleClass().add(Tweaks.ALIGN_RIGHT);
 
-        // ~
+
+        var modeCol = new TableColumn<FileSystem.FileEntry, String>("Attributes");
+        modeCol.setCellValueFactory(
+                param -> new SimpleObjectProperty<>(param.getValue().getMode()));
+        modeCol.setCellFactory(col -> new FileModeCell());
 
         var table = new TableView<FileSystem.FileEntry>();
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
-        table.getColumns().setAll(filenameCol, sizeCol, mtimeCol);
+        table.getColumns().setAll(filenameCol, sizeCol, modeCol, mtimeCol);
         table.getSortOrder().add(filenameCol);
         table.setSortPolicy(param -> {
             var comp = table.getComparator();
@@ -246,6 +251,15 @@ final class FileListComp extends AnchorPane {
                     }
                 }
 
+                var hasAttributes = fileList.getFileSystemModel().getFileSystem() != null && !fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
+                if (!hasAttributes) {
+                    table.getColumns().remove(modeCol);
+                } else {
+                    if (!table.getColumns().contains(modeCol)) {
+                        table.getColumns().add(modeCol);
+                    }
+                }
+
                 table.getItems().setAll(newItems);
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
@@ -368,6 +382,19 @@ final class FileListComp extends AnchorPane {
                 } else {
                     setText(byteCount(fileSize.longValue()));
                 }
+            }
+        }
+    }
+
+    private class FileModeCell extends TableCell<FileSystem.FileEntry, String> {
+
+        @Override
+        protected void updateItem(String mode, boolean empty) {
+            super.updateItem(mode, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+            } else {
+                setText(mode);
             }
         }
     }

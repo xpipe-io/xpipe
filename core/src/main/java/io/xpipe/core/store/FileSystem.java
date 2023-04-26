@@ -26,12 +26,15 @@ public interface FileSystem extends Closeable, AutoCloseable {
         boolean hidden;
         Boolean executable;
         long size;
+        String mode;
 
         public FileEntry(
                 @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean directory, boolean hidden, Boolean executable,
-                long size
+                long size,
+                String mode
         ) {
             this.fileSystem = fileSystem;
+            this.mode = mode;
             this.path = directory ? FileNames.toDirectory(path) : path;
             this.date = date;
             this.directory = directory;
