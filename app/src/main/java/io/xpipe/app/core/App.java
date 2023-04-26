@@ -74,6 +74,7 @@ public class App extends Application {
                 () -> {
                     var base = String.format(
                             "X-Pipe Desktop (%s)", AppProperties.get().getVersion());
+                    var prefix = AppProperties.get().isStaging() ? "[STAGE] " : "";
                     var suffix = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null
                             ? String.format(
                             " (Update to %s ready)",
@@ -82,7 +83,7 @@ public class App extends Application {
                                             .getValue()
                                             .getVersion())
                             : "";
-                    return base + suffix;
+                    return prefix + base + suffix;
                 },
                 XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate());
 
