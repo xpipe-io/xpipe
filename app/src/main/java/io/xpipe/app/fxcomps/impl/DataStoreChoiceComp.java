@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.LeafShellStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -104,7 +105,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                 continue;
             }
 
-            if (!(mode == Mode.ENVIRONMENT) && !((ShellStore) s).canHaveSubs()) {
+            if (!(mode == Mode.ENVIRONMENT) && s instanceof LeafShellStore) {
                 continue;
             }
 
