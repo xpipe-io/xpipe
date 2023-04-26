@@ -42,7 +42,7 @@ public class ScriptHelper {
             ShellControl processControl, List<String> init, String toExecuteInShell, boolean login) {
         ShellDialect t = processControl.getShellDialect();
         String nl = t.getNewLine().getNewLineString();
-        var content = String.join(nl, init) + nl;
+        var content = String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
 
         if (login) {
             var applyProfilesCommand = t.applyProfileFilesCommand();

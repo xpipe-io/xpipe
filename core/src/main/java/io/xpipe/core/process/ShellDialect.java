@@ -19,6 +19,10 @@ public interface ShellDialect {
 
     String fileArgument(String s);
 
+    void prepareDumbTerminalCommands(ShellControl sc) throws Exception;
+
+    String prepareProperTerminalCommands();
+
     default String applyRcFileCommand() {
         return null;
     }
