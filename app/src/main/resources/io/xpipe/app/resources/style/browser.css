@@ -5,11 +5,20 @@
 }
 
 .selected-file-list {
-    -fx-padding: 10px;
+    -fx-spacing: 5px;
+    -fx-padding: 8px;
 }
 
 .selected-file-list * {
     -fx-spacing: 5px;
+}
+
+.selected-file-list.drag {
+-fx-border-width: 1px;
+-fx-border-color: -color-neutral-emphasis;
+-fx-background-color: -color-neutral-muted;
+-fx-background-radius: 1px;
+-fx-border-radius: 1px;
 }
 
 .browser .bookmark-list {
@@ -56,6 +65,14 @@
 
 .browser .table-directory-view .table-view:drag-into-current .table-row-cell {
     -fx-opacity: 0.8;
+}
+
+.browser .table-row-cell:hover {
+    -fx-background-color: -color-accent-subtle;
+}
+
+.browser .table-row-cell:selected {
+    -fx-background-color: -color-success-subtle;
 }
 
 .browser .table-row-cell:folder:drag-over {

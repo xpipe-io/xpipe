@@ -7,12 +7,16 @@ import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SvgCacheComp extends SimpleComp {
 
@@ -45,7 +49,21 @@ public class SvgCacheComp extends SimpleComp {
 
         var webViewContent = new SimpleStringProperty();
         var back = SvgView.create(webViewContent).createWebview();
+        back.prefWidthProperty().bind(width);
+        back.prefHeightProperty().bind(height);
+        var animation = new AtomicReference<PauseTransition>();
         svgFile.addListener((observable, oldValue, newValue) -> {
+            var cached = cache.getCached(newValue);
+            webViewContent.setValue(newValue != null || cached.isEmpty() ? AppImages.svgImage(newValue) : null);
+            frontContent.setValue(cached.orElse(null));
+            back.setVisible(cached.isEmpty());
+            front.setVisible(cached.isPresent());
+
+            if (animation.get() != null) {
+                animation.get().stop();
+                animation.set(null);
+            }
+
             var pt = new PauseTransition();
             pt.setDuration(Duration.millis(1000));
             pt.setOnFinished(actionEvent -> {
@@ -57,7 +75,9 @@ public class SvgCacheComp extends SimpleComp {
                     return;
                 }
 
-                WritableImage image = back.snapshot(null, null);
+                SnapshotParameters parameters = new SnapshotParameters();
+                parameters.setFill(Color.TRANSPARENT);
+                WritableImage image = back.snapshot(parameters, null);
                 if (image.getWidth() < 10) {
                     return;
                 }
@@ -65,16 +85,7 @@ public class SvgCacheComp extends SimpleComp {
                 cache.put(newValue, image);
             });
             pt.play();
-        });
-        back.prefWidthProperty().bind(width);
-        back.prefHeightProperty().bind(height);
-
-        svgFile.addListener((observable, oldValue, newValue) -> {
-            var cached = cache.getCached(newValue);
-            webViewContent.setValue(newValue != null || cached.isEmpty() ? AppImages.svgImage(newValue) : null);
-            frontContent.setValue(cached.orElse(null));
-            back.setVisible(cached.isEmpty());
-            front.setVisible(cached.isPresent());
+            animation.set(pt);
         });
 
         var stack = new StackPane(back, front);

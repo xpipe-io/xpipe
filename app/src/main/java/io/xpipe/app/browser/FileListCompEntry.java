@@ -3,10 +3,8 @@ package io.xpipe.app.browser;
 import io.xpipe.core.store.FileSystem;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.TableView;
-import javafx.scene.image.WritableImage;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import lombok.Getter;
 
@@ -156,9 +154,7 @@ public class FileListCompEntry {
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
         db.setContent(FileBrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
 
-        var r = new SelectedFileListComp(selected).createRegion();
-        new Scene(r);
-        WritableImage image = r.snapshot(new SnapshotParameters(), null);
+        Image image = SelectedFileListComp.snapshot(selected);
         db.setDragView(image, -20, 15);
 
         event.setDragDetect(true);
