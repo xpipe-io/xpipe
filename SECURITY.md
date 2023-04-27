@@ -15,38 +15,6 @@ you can make use of
 the [private security report feature](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)
 of GitHub.
 
-## Antivirus programs
-
-### Windows
-
-It may occasionally happen that Windows Defender warns and
-even sometimes deletes X-Pipe due to it identifying the application as malware.
-The reason for this is simple: The application is not signed with an EV code signing
-certificate as this would require a company for X-Pipe to be set up and would also cost around 600$+ per year.
-If X-Pipe was signed with such a certificate, as are most Windows applications distributed by companies, all warnings
-would go away automatically.
-The Windows Defender / Windows SmartScreen system is essentially pay-to-win here.
-Just paying the appropriate amount will automatically whitelist your application (even it is unsafe / essentially
-malware)
-while not paying will often blacklist it, bullying you into buying it.
-You can read more about this system in [this StackExchange post](https://security.stackexchange.com/a/139520).
-The manual whitelisting process without an EV certificate is purposely made difficult and essentially useless.
-The Windows Defender detection rules are garbage and not deterministic, i.e.
-an identical application can be flagged on one system but not the other, even though both are connected to the internet
-and the Microsoft services.
-In summary, don't rely on Windows Defender to be accurate when it comes to false-positives.
-
-All artifacts of every release are automatically analyzed on VirusTotal
-and you can find the results linked at the bottom of every release.
-From there you should be able to get a better overview over the actual
-threat level of X-Pipe instead of purely relying on Windows Defender.
-
-### macOS
-
-On macOS the application bundle is signed and notarized and will therefore not emit any warnings.
-For macOS this process does not require a company to be
-set up and also only costs 125$ per year and is therefore much easier to accomplish.
-
 ## Security assumptions
 
 The general assumption is that the system on which X-Pipe runs on is not badly infected.
@@ -173,3 +141,35 @@ so it would be possible for malicious program with sufficient privileges to obta
 This would require an attacker to be able to access files of the user that is used to log into the remote system.
 It should however not be possible for any malicious program on the remote host to obtain
 other information stored by X-Pipe that is not explicitly sent to that host.
+
+## Antivirus programs
+
+### Windows
+
+It may occasionally happen that Windows Defender warns and
+even sometimes deletes X-Pipe due to it identifying the application as malware.
+The reason for this is simple: The application is not signed with an EV code signing
+certificate as this would require a company for X-Pipe to be set up and would also cost around 600$+ per year.
+If X-Pipe was signed with such a certificate, as are most Windows applications distributed by companies, all warnings
+would go away automatically.
+The Windows Defender / Windows SmartScreen system is essentially pay-to-win here.
+Just paying the appropriate amount will automatically whitelist your application (even it is unsafe / essentially
+malware)
+while not paying will often blacklist it, bullying you into buying it.
+You can read more about this system in [this StackExchange post](https://security.stackexchange.com/a/139520).
+The manual whitelisting process without an EV certificate is purposely made difficult and essentially useless.
+The Windows Defender detection rules are garbage and not deterministic, i.e.
+an identical application can be flagged on one system but not the other, even though both are connected to the internet
+and the Microsoft services.
+In summary, don't rely on Windows Defender to be accurate when it comes to false-positives.
+
+All artifacts of every release are automatically analyzed on VirusTotal
+and you can find the results linked at the bottom of every release.
+From there you should be able to get a better overview over the actual
+threat level of X-Pipe instead of purely relying on Windows Defender.
+
+### macOS
+
+On macOS the application bundle is signed and notarized and will therefore not emit any warnings.
+For macOS this process does not require a company to be
+set up and also only costs 125$ per year and is therefore much easier to accomplish.
