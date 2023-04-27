@@ -6,9 +6,10 @@ import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.SvgCacheComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.core.impl.FileNames;
@@ -309,10 +310,12 @@ final class FileListComp extends AnchorPane {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
-        private final Node imageView = new PrettyImageComp(img, 24, 24).createRegion();
+        private final Node imageView = new SvgCacheComp(new SimpleDoubleProperty(24), new SimpleDoubleProperty(24), img, FileIconManager.getSvgCache()).createRegion();
         private final StackPane textField =
                 new LazyTextFieldComp(text).createStructure().get();
         private final ChangeListener<String> listener;
+
+        private final BooleanProperty updating = new SimpleBooleanProperty();
 
         public FilenameCell(Property<FileSystem.FileEntry> editing) {
             editing.addListener((observable, oldValue, newValue) -> {
@@ -322,48 +325,57 @@ final class FileListComp extends AnchorPane {
             });
 
             listener = (observable, oldValue, newValue) -> {
+                if (updating.get()) {
+                    return;
+                }
+
                 fileList.rename(oldValue, newValue);
                 textField.getScene().getRoot().requestFocus();
                 editing.setValue(null);
                 updateItem(getItem(), isEmpty());
             };
+            text.addListener(listener);
         }
 
         @Override
         protected void updateItem(String fullPath, boolean empty) {
-            super.updateItem(fullPath, empty);
+            if (updating.get()) {
+                super.updateItem(fullPath, empty);
+                return;
+            }
 
-            text.removeListener(listener);
-            text.setValue(fullPath);
+            try (var b = new BusyProperty(updating)) {
+                super.updateItem(fullPath, empty);
+                setText(null);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    // Don't set image as that would trigger image comp update
+                    // and cells are emptied on each change, leading to unnecessary changes
+                    // img.set(null);
+                    setGraphic(null);
+                } else {
+                    var box = new HBox(imageView, textField);
+                    box.setSpacing(10);
+                    box.setAlignment(Pos.CENTER_LEFT);
+                    HBox.setHgrow(textField, Priority.ALWAYS);
+                    setGraphic(box);
 
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                // Don't set image as that would trigger image comp update
-                // and cells are emptied on each change, leading to unnecessary changes
-                // img.set(null);
-                setGraphic(null);
-            } else {
-                var isDirectory = getTableRow().getItem().isDirectory();
-                var box = new HBox(imageView, textField);
-                box.setSpacing(10);
-                box.setAlignment(Pos.CENTER_LEFT);
-                HBox.setHgrow(textField, Priority.ALWAYS);
-                setGraphic(box);
+                    var isParentLink = getTableRow()
+                            .getItem()
+                            .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
+                    img.set(FileIconManager.getFileIcon(
+                            isParentLink
+                                    ? fileList.getFileSystemModel().getCurrentDirectory()
+                                    : getTableRow().getItem(),
+                            isParentLink));
 
-                var isParentLink = getTableRow()
-                        .getItem()
-                        .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
-                img.set(FileIconManager.getFileIcon(isParentLink ? fileList.getFileSystemModel().getCurrentDirectory() : getTableRow().getItem(), isParentLink));
+                    var isDirectory = getTableRow().getItem().isDirectory();
+                    pseudoClassStateChanged(FOLDER, isDirectory);
 
-                pseudoClassStateChanged(FOLDER, isDirectory);
-
-                var fileName = isParentLink
-                        ? ".."
-                        : FileNames.getFileName(fullPath);
-                var hidden = !isParentLink && (getTableRow().getItem().isHidden() || fileName.startsWith("."));
-                getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
-                text.set(fileName);
-
-                text.addListener(listener);
+                    var fileName = isParentLink ? ".." : FileNames.getFileName(fullPath);
+                    var hidden = !isParentLink && (getTableRow().getItem().isHidden() || fileName.startsWith("."));
+                    getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
+                    text.set(fileName);
+                }
             }
         }
     }

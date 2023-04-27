@@ -14,9 +14,9 @@ public class ProcessOutputException extends Exception {
     public static ProcessOutputException of(int exitCode, String output, String accumulatedError) {
         var combinedError = (accumulatedError != null ? accumulatedError.trim() + "\n" : "") + (output != null ? output.trim() : "");
         var message = switch (exitCode) {
-            case CommandControl.KILLED_EXIT_CODE -> "Process timed out" + combinedError;
-            case CommandControl.TIMEOUT_EXIT_CODE -> "Process timed out" + combinedError;
-            default -> "Process returned with exit code " + combinedError;
+            case CommandControl.KILLED_EXIT_CODE -> "Process timed out (exit code " + exitCode + ") " + combinedError;
+            case CommandControl.TIMEOUT_EXIT_CODE -> "Process timed out (exit code " + exitCode + ") " + combinedError;
+            default -> "Process returned with exit code " + exitCode + ": " + combinedError;
         };
         return new ProcessOutputException(message, exitCode, combinedError);
     }

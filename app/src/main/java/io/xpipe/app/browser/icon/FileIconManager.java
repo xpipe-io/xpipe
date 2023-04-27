@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.impl.SvgCache;
 import io.xpipe.core.store.FileSystem;
 import javafx.scene.image.Image;
+import lombok.Getter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,7 +17,8 @@ public class FileIconManager {
 
     private static final List<FileIconFactory> factories = new ArrayList<>();
     private static final List<FolderIconFactory> folderFactories = new ArrayList<>();
-    private static SvgCache svgCache;
+    @Getter
+    private static SvgCache svgCache = createCache();
     private static boolean loaded;
 
     private static void loadDefinitions() {
@@ -88,20 +90,19 @@ public class FileIconManager {
         });
     }
 
-    private static void createCache() {
-        svgCache = new SvgCache() {
+    private static SvgCache createCache() {
+        return new SvgCache() {
 
-            private final Map<String, Integer> hits = new HashMap<>();
             private final Map<String, Image> images = new HashMap<>();
 
             @Override
-            public Optional<Image> getCached(String image) {
-                var hitCount = hits.computeIfAbsent(image, s -> 1);
-                if (hitCount > 5) {
-                    //images.computeIfAbsent(image, s -> AppImages.image())
-                }
+            public synchronized void put(String image, Image value) {
+                images.put(image, value);
+            }
 
-                return Optional.empty();
+            @Override
+            public synchronized Optional<Image> getCached(String image) {
+                return Optional.ofNullable(images.get(image));
             }
         };
     }
@@ -138,11 +139,6 @@ public class FileIconManager {
         }
 
         return entry.isDirectory() ? (open ? "default_folder_opened.svg" : "default_folder.svg") : "default_file.svg";
-    }
-
-    public static String getParentLinkIcon() {
-        loadIfNecessary();
-        return "default_folder_opened.svg";
     }
 
     private static String getIconPath(String name) {

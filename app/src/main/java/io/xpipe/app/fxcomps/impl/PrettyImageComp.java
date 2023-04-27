@@ -69,7 +69,7 @@ public class PrettyImageComp extends SimpleComp {
             }
 
             else if (val.endsWith(".svg")) {
-                var storeIcon = SvgComp.create(
+                var storeIcon = SvgView.create(
                         Bindings.createStringBinding(() -> {
                             if (!AppImages.hasSvgImage(image.getValue())) {
                                 return null;
