@@ -19,9 +19,11 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
@@ -71,6 +73,9 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
 
     @Override
     public CompStructure<BorderPane> createBase() {
+        var map = new HashMap<SideMenuBarComp.Entry, Region>();
+        entries.forEach(entry -> map.put(entry, entry.comp().createRegion()));
+
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(selected, entries);
         pane.setCenter(selected.getValue().comp().createRegion());
@@ -80,10 +85,9 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
                 AppPrefs.get().save();
             }
 
-            var r = selected.getValue().comp().createRegion();
-            pane.setCenter(r);
+            pane.setCenter(map.get(n));
         });
-        pane.setCenter(selected.getValue().comp().createRegion());
+        pane.setCenter(map.get(selected.getValue()));
         pane.setPrefWidth(1280);
         pane.setPrefHeight(720);
         AppFont.normal(pane);

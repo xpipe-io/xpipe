@@ -1,6 +1,6 @@
 .download-background {
 -fx-border-color: -color-neutral-muted;
--fx-border-width: 4px 0 0 0;
+-fx-border-width: 2px 0 0 0;
 -fx-padding: 1em;
 }
 
@@ -19,6 +19,21 @@
 -fx-background-color: -color-neutral-muted;
 -fx-background-radius: 1px;
 -fx-border-radius: 1px;
+}
+
+.bookmark-list .button {
+-fx-border-width: 0;
+-fx-border-radius: 0;
+-fx-background-radius: 0;
+-fx-background-insets: 1px 2px 1px 0;
+}
+
+*:drag-over .download-background {
+    -fx-background-color: -color-success-muted;
+}
+
+.bookmark-list .button:drag-over {
+    -fx-background-color: -color-success-muted;
 }
 
 .browser .bookmark-list {

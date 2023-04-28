@@ -29,14 +29,14 @@ public class FileFilterComp extends SimpleComp {
     protected Region createSimple() {
         var expanded = new SimpleBooleanProperty();
         var text = new TextFieldComp(filterString, false).createRegion();
+        var button = new Button();
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
-                expanded.set(false);
-                return;
-            }
+                if (button.isFocused()) {
+                    return;
+                }
 
-            if (newValue) {
-                expanded.set(true);
+                expanded.set(false);
             }
         });
         filterString.addListener((observable, oldValue, newValue) -> {
@@ -56,21 +56,26 @@ public class FileFilterComp extends SimpleComp {
         });
 
         var fi = new FontIcon("mdi2m-magnify");
-        var button = new Button();
         GrowAugment.create(false, true).augment(new SimpleCompStructure<>(button));
         Shortcuts.addShortcut(button, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
         button.setGraphic(fi);
         button.setOnAction(event -> {
-            if (expanded.get() && filterString.getValue() == null) {
-                expanded.set(false);
-                return;
+            if (expanded.get()) {
+                if (filterString.getValue() == null) {
+                    expanded.set(false);
+                }
+                event.consume();
+            } else {
+                expanded.set(true);
+                text.requestFocus();
+                event.consume();
             }
-
-            text.requestFocus();
-            event.consume();
         });
 
-        SimpleChangeListener.apply(expanded, val -> {
+        text.setPrefWidth(0);
+        button.getStyleClass().add(Styles.FLAT);
+        expanded.addListener((observable, oldValue, val) -> {
+            System.out.println(val);
             if (val) {
                 text.setPrefWidth(250);
                 button.getStyleClass().add(Styles.RIGHT_PILL);

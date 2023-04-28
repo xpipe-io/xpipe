@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.augment.DragPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
@@ -13,9 +14,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -63,7 +61,7 @@ public class LocalFileTransferComp extends SimpleComp {
 
         var listBox = new VerticalComp(List.of(list, dragNotice));
         var stack = new LoadingOverlayComp(
-                new StackComp(List.of(backgroundStack, listBox, clearPane)).apply(struc -> {
+                new StackComp(List.of(backgroundStack, listBox, clearPane)).apply(DragPseudoClassAugment.create()).apply(struc -> {
                     struc.get().setOnDragOver(event -> {
                         // Accept drops from inside the app window
                         if (event.getGestureSource() != null && event.getGestureSource() != struc.get()) {
@@ -99,12 +97,9 @@ public class LocalFileTransferComp extends SimpleComp {
                         cc.putFiles(files);
                         db.setContent(cc);
 
-                        var r = new SelectedFileListComp(FXCollections.observableList(stage.getItems().stream()
+                        var image = SelectedFileListComp.snapshot(FXCollections.observableList(stage.getItems().stream()
                                         .map(item -> item.getFileEntry())
-                                        .toList()))
-                                .createRegion();
-                        new Scene(r);
-                        WritableImage image = r.snapshot(new SnapshotParameters(), null);
+                                        .toList()));
                         db.setDragView(image, -20, 15);
 
                         event.setDragDetect(true);

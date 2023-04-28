@@ -89,6 +89,10 @@ public class FileListCompEntry {
             return false;
         }
 
+        if (model.getFileSystemModel().getCurrentDirectory() == null) {
+            return false;
+        }
+
         // Prevent drag and drops of files into the current directory
         if (FileBrowserClipboard.currentDragClipboard
                 .getBaseDirectory().getPath()

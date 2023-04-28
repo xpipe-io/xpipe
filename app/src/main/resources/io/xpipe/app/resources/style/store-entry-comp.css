@@ -22,9 +22,19 @@
 .store-entry-grid:incomplete .icon {
 -fx-opacity: 0.5;
 }
+
 .store-entry-comp {
 -fx-padding: 6px 6px 6px 0;
 }
+
+.store-entry-comp:hover {
+-fx-background-color: -color-neutral-muted;
+}
+
+.expand-button:hover {
+-fx-background-color: -color-neutral-muted;
+}
+
 
 
 

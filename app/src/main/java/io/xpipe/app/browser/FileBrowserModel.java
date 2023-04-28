@@ -66,6 +66,15 @@ public class FileBrowserModel {
         });
     }
 
+    public void openExistingFileSystemIfPresent(ShellStore store) {
+        var found = openFileSystems.stream().filter(model -> Objects.equals(model.getStore().getValue(), store)).findFirst();
+        if (found.isPresent()) {
+            selected.setValue(found.get());
+        } else {
+            openFileSystem(store);
+        }
+    }
+
     public void openFileSystem(ShellStore store) {
         // Prevent multiple tabs in non browser modes
         if (!mode.equals(Mode.BROWSER)) {

@@ -6,6 +6,10 @@
 -fx-padding: 0;
 }
 
+.sidebar-comp .button:hover {
+-fx-background-color: -color-neutral-muted;
+}
+
 .sidebar-comp .big-icon-button-comp {
 -fx-background-radius: 0;
 }

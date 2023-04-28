@@ -65,7 +65,7 @@ public class SvgCacheComp extends SimpleComp {
             }
 
             var pt = new PauseTransition();
-            pt.setDuration(Duration.millis(1000));
+            pt.setDuration(Duration.millis(500));
             pt.setOnFinished(actionEvent -> {
                 if (newValue == null || cache.getCached(newValue).isPresent()) {
                     return;

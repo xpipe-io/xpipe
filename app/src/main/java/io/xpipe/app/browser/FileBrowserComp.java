@@ -5,12 +5,15 @@ import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystem;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -237,7 +240,7 @@ public class FileBrowserComp extends SimpleComp {
         label.addEventHandler(DragEvent.DRAG_ENTERED, new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent mouseEvent) {
-                tabs.getSelectionModel().select(tab);
+                Platform.runLater(() -> tabs.getSelectionModel().select(tab));
             }
         });
 
@@ -249,6 +252,7 @@ public class FileBrowserComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
 
         tab.setGraphic(label);
+        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
 
         if (!this.model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
             label.setManaged(false);

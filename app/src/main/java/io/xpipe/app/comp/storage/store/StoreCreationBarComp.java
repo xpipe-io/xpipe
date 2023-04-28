@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppFont;
@@ -20,24 +21,19 @@ public class StoreCreationBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var newOtherStore = new ButtonComp(
-                AppI18n.observable("addOther"), new FontIcon("mdi2c-card-plus-outline"), () -> {
-            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.OTHER));
-        })
-                .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
-                .apply(new FancyTooltipAugment<>("addOther"));
-
         var newStreamStore = new ButtonComp(
                         AppI18n.observable("addCommand"), new FontIcon("mdi2c-code-greater-than"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.COMMAND));
                         })
+                .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addCommand"));
 
-        var newHostStore = new ButtonComp(
-                        AppI18n.observable("addHost"), new FontIcon("mdi2h-home-plus"), () -> {
-                            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.HOST));
-                        })
+        var newHostStore = new ButtonComp(AppI18n.observable("addHost"), new FontIcon("mdi2h-home-plus"), () -> {
+                    GuiDsStoreCreator.showCreation(
+                            v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.HOST));
+                })
+                .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addHost"));
 
@@ -45,6 +41,7 @@ public class StoreCreationBarComp extends SimpleComp {
                 AppI18n.observable("addShell"), new FontIcon("mdi2t-text-box-multiple"), () -> {
             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.SHELL));
         })
+                .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addShell"));
 
@@ -52,10 +49,11 @@ public class StoreCreationBarComp extends SimpleComp {
                         AppI18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus"), () -> {
                             GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
                         })
+                .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addDatabase"));
 
-        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore));
+        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore)).apply(struc -> struc.get().setFillWidth(true));
         box.apply(s -> AppFont.medium(s.get()));
         var bar = box.createRegion();
         bar.getStyleClass().add("bar");
