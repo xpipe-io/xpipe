@@ -3,7 +3,7 @@ plugins {
     id 'org.beryx.jlink' version '2.26.0'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
     id "org.asciidoctor.jvm.convert" version "3.3.2"
-    id 'org.jreleaser' version '1.5.1'
+    id 'org.jreleaser' version '1.6.0'
     id("com.netflix.nebula.ospackage") version "11.2.0"
 }
 
