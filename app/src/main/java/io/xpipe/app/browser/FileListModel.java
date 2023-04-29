@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Getter
 final class FileListModel {
@@ -31,8 +32,8 @@ final class FileListModel {
     private final OpenFileSystemModel fileSystemModel;
     private final Property<Comparator<FileSystem.FileEntry>> comparatorProperty =
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
-    private final Property<List<FileSystem.FileEntry>> all = new SimpleObjectProperty<>(List.of());
-    private final Property<List<FileSystem.FileEntry>> shown = new SimpleObjectProperty<>(List.of());
+    private final Property<List<FileSystem.FileEntry>> all = new SimpleObjectProperty<>(new ArrayList<>());
+    private final Property<List<FileSystem.FileEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
     private final ObjectProperty<Predicate<FileSystem.FileEntry>> predicateProperty =
             new SimpleObjectProperty<>(path -> true);
     private final ObservableList<FileSystem.FileEntry> selected = FXCollections.observableArrayList();
@@ -56,6 +57,14 @@ final class FileListModel {
     public void setAll(List<FileSystem.FileEntry> newFiles) {
         all.setValue(newFiles);
         refreshShown();
+    }
+
+    public void setAll(Stream<FileSystem.FileEntry> newFiles) {
+        try (var s = newFiles) {
+            var l = s.limit(5000).toList();
+            all.setValue(l);
+            refreshShown();
+        }
     }
 
     public void setComparator(Comparator<FileSystem.FileEntry> comparator) {

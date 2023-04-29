@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-final class FileBrowserNavigationHistory {
+final class FileBrowserHistory {
 
     private final IntegerProperty cursor = new SimpleIntegerProperty(0);
     private final List<String> history = new ArrayList<>();
@@ -25,7 +25,7 @@ final class FileBrowserNavigationHistory {
         return history.size() > 0 ? history.get(cursor.get()) : null;
     }
 
-    public void cd(String s) {
+    public void updateCurrent(String s) {
         if (s == null) {
             return;
         }

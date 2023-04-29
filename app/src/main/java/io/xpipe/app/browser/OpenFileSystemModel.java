@@ -18,11 +18,9 @@ import lombok.SneakyThrows;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 final class OpenFileSystemModel {
@@ -32,7 +30,7 @@ final class OpenFileSystemModel {
     private final Property<String> filter = new SimpleStringProperty();
     private final FileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
-    private final FileBrowserNavigationHistory history = new FileBrowserNavigationHistory();
+    private final FileBrowserHistory history = new FileBrowserHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final FileBrowserModel browserModel;
     private final BooleanProperty noDirectory = new SimpleBooleanProperty();
@@ -76,28 +74,28 @@ final class OpenFileSystemModel {
     }
 
     public Optional<String> cd(String path) {
-        if (Objects.equals(path, currentPath.get())) {
-            return Optional.empty();
-        }
-
-        String newPath = null;
-        try {
-            newPath = FileSystemHelper.resolveDirectoryPath(this, path);
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
-            return Optional.of(currentPath.get());
-        }
-
-        if (!Objects.equals(path, newPath)) {
-            return Optional.of(newPath);
-        }
-
-        ThreadHelper.runFailableAsync(() -> {
-            try (var ignored = new BusyProperty(busy)) {
-                cdSync(path);
+            if (Objects.equals(path, currentPath.get())) {
+                return Optional.empty();
             }
-        });
-        return Optional.empty();
+
+            String newPath = null;
+            try {
+                newPath = FileSystemHelper.resolveDirectoryPath(this, path);
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).handle();
+                return Optional.of(currentPath.get());
+            }
+
+            if (!Objects.equals(path, newPath)) {
+                return Optional.of(newPath);
+            }
+
+            ThreadHelper.runFailableAsync(() -> {
+                try (var ignored = new BusyProperty(busy)) {
+                    cdSync(path);
+                }
+            });
+            return Optional.empty();
     }
 
     private void cdSync(String path) throws Exception {
@@ -107,28 +105,27 @@ final class OpenFileSystemModel {
             this.fileSystem = fs;
         }
 
-        // Assumed that the path is normalized to improve performance!
+        // Assume that the path is normalized to improve performance!
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
-        navigateToSync(path);
         filter.setValue(null);
         currentPath.set(path);
-        history.cd(path);
+        history.updateCurrent(path);
+        loadFilesSync(path);
     }
 
-    private boolean navigateToSync(String dir) {
+    private boolean loadFilesSync(String dir) {
         try {
-            List<FileSystem.FileEntry> newList;
             if (dir != null) {
-                newList = getFileSystem().listFiles(dir).collect(Collectors.toCollection(ArrayList::new));
+                var stream = getFileSystem().listFiles(dir);
                 noDirectory.set(false);
+                fileList.setAll(stream);
             } else {
-                newList = getFileSystem().listRoots().stream()
-                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0, null))
-                        .collect(Collectors.toCollection(ArrayList::new));
+                var stream = getFileSystem().listRoots().stream()
+                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0, null));
                 noDirectory.set(true);
+                fileList.setAll(stream);
             }
-            fileList.setAll(newList);
             return true;
         } catch (Exception e) {
             fileList.setAll(List.of());
@@ -287,15 +284,19 @@ final class OpenFileSystemModel {
         });
     }
 
-    public FileBrowserNavigationHistory getHistory() {
+    public FileBrowserHistory getHistory() {
         return history;
     }
 
     public void back() {
-        history.back().ifPresent(s -> cd(s));
+        try (var ignored = new BusyProperty(busy)) {
+            history.back().ifPresent(s -> cd(s));
+        }
     }
 
     public void forth() {
-        history.forth().ifPresent(s -> cd(s));
+        try (var ignored = new BusyProperty(busy)) {
+            history.forth().ifPresent(s -> cd(s));
+        }
     }
 }

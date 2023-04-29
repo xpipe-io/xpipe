@@ -1,6 +1,6 @@
 .download-background {
 -fx-border-color: -color-neutral-muted;
--fx-border-width: 2px 0 0 0;
+-fx-border-width: 3px 0 0 0;
 -fx-padding: 1em;
 }
 
@@ -25,7 +25,11 @@
 -fx-border-width: 0;
 -fx-border-radius: 0;
 -fx-background-radius: 0;
--fx-background-insets: 1px 2px 1px 0;
+-fx-background-insets: 0;
+}
+
+.bookmark-list .button:hover {
+    -fx-background-color: -color-accent-muted;
 }
 
 *:drag-over .download-background {
@@ -82,7 +86,7 @@
     -fx-opacity: 0.8;
 }
 
-.browser .table-row-cell:hover {
+.browser .table-row-cell:file:hover,.table-row-cell:folder:hover {
     -fx-background-color: -color-accent-subtle;
 }
 
