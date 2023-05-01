@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
@@ -15,7 +16,8 @@ import java.util.function.Supplier;
 public enum XPipeDistributionType {
     DEVELOPMENT("development", () -> new GitHubUpdater(false)),
     PORTABLE("portable", () -> new PortableUpdater()),
-    INSTALLATION("install", () -> new GitHubUpdater(true)),
+    NATIVE_INSTALLATION("install", () -> new GitHubUpdater(true)),
+    HOMEBREW("homebrew", () -> new HomebrewUpdater()),
     CHOCO("choco", () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
@@ -53,7 +55,7 @@ public enum XPipeDistributionType {
 
     public static XPipeDistributionType determine() {
         if (!XPipeInstallation.isInstallationDistribution()) {
-            return (type = PORTABLE);
+            return PORTABLE;
         }
 
         try (var sc = LocalStore.getShell()) {
@@ -69,11 +71,26 @@ public enum XPipeDistributionType {
                     }
                 }
             }
+
+            if (OsType.getLocal().equals(OsType.MACOS)) {
+                try (var brewOut = sc.command("brew info xpipe").start()) {
+                    var out = brewOut.readStdoutDiscardErr();
+                    if (brewOut.getExitCode() == 0) {
+                        var split = out.split("\\|");
+                        if (split.length == 2) {
+                            var version = split[1];
+                            if (AppProperties.get().getVersion().equals(version)) {
+                                return HOMEBREW;
+                            }
+                        }
+                    }
+                }
+            }
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
         }
 
-        return XPipeDistributionType.INSTALLATION;
+        return XPipeDistributionType.NATIVE_INSTALLATION;
     }
 
     @Getter
