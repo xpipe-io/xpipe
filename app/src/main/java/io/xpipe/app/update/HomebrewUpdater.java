@@ -9,7 +9,7 @@ import javafx.scene.layout.Region;
 
 import java.time.Instant;
 
-public class HomebrewUpdater extends UpdateHandler {
+public class HomebrewUpdater extends GitHubUpdater {
 
     public HomebrewUpdater() {
         super(true);
@@ -20,31 +20,29 @@ public class HomebrewUpdater extends UpdateHandler {
         var snippet = CodeSnippet.builder()
                 .keyword("brew")
                 .space()
-                .keyword("install")
+                .keyword("upgrade")
+                .space()
+                .identifier("--cask")
                 .space()
                 .string("xpipe")
-                .identifier("@")
-                .type(getPreparedUpdate().getValue().getVersion())
                 .build();
         return new CodeSnippetComp(false, new SimpleObjectProperty<>(snippet)).createRegion();
     }
 
-    public AvailableRelease refreshUpdateCheckImpl() throws Exception {
-        try (var sc = ShellStore.createLocal().create().start()) {
-            var latest = sc.executeStringSimpleCommand(
-                    "choco outdated -r --nocolor").lines().filter(s -> s.startsWith("xpipe")).findAny().orElseThrow().split("\\|")[2];
-            var isUpdate = isUpdate(latest);
-            var rel = new AvailableRelease(
-                    AppProperties.get().getVersion(),
-                    XPipeDistributionType.get().getId(),
-                    latest,
-                    "https://community.chocolatey.org/packages/xpipe/" + latest,
-                    null,
-                    null,
-                    Instant.now(),
-                    isUpdate);
-            lastUpdateCheckResult.setValue(rel);
-            return lastUpdateCheckResult.getValue();
-        }
+    @Override
+    public void prepareUpdateImpl() {
+        var changelogString =
+                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
+        var changelog = changelogString.orElse(null);
+
+        var rel = new PreparedUpdate(
+                AppProperties.get().getVersion(),
+                XPipeDistributionType.get().getId(),
+                lastUpdateCheckResult.getValue().getVersion(),
+                lastUpdateCheckResult.getValue().getReleaseUrl(),
+                null,
+                changelog,
+                lastUpdateCheckResult.getValue().getAssetType());
+        preparedUpdate.setValue(rel);
     }
 }

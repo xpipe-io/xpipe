@@ -73,15 +73,14 @@ public enum XPipeDistributionType {
             }
 
             if (OsType.getLocal().equals(OsType.MACOS)) {
-                try (var brewOut = sc.command("brew info xpipe").start()) {
+                try (var brewOut = sc.command("brew list --casks --versions").start()) {
                     var out = brewOut.readStdoutDiscardErr();
                     if (brewOut.getExitCode() == 0) {
-                        var split = out.split("\\|");
-                        if (split.length == 2) {
-                            var version = split[1];
-                            if (AppProperties.get().getVersion().equals(version)) {
-                                return HOMEBREW;
-                            }
+                        if (out.lines().anyMatch(s -> {
+                            var split = s.split(" ");
+                            return split.length == 2 && split[0].equals("xpipe") && split[1].equals(AppProperties.get().getVersion());
+                        })) {
+                            return HOMEBREW;
                         }
                     }
                 }
