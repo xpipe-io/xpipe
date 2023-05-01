@@ -61,7 +61,7 @@ final class FileListModel {
 
     public void setAll(Stream<FileSystem.FileEntry> newFiles) {
         try (var s = newFiles) {
-            var l = s.limit(5000).toList();
+            var l = s.filter(entry -> entry != null).limit(5000).toList();
             all.setValue(l);
             refreshShown();
         }

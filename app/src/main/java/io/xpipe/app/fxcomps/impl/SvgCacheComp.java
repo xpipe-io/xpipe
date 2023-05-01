@@ -45,46 +45,83 @@ public class SvgCacheComp extends SimpleComp {
             front.setImage(newValue);
         });
 
+        var active = new SimpleObjectProperty<AnimationTimer>();
         var webViewContent = new SimpleStringProperty();
         var back = SvgView.create(webViewContent).createWebview();
         back.prefWidthProperty().bind(width);
         back.prefHeightProperty().bind(height);
         svgFile.addListener((observable, oldValue, newValue) -> {
-            var cached = cache.getCached(newValue);
-            webViewContent.setValue(newValue != null || cached.isEmpty() ? AppImages.svgImage(newValue) : null);
-            frontContent.setValue(cached.orElse(null));
-            back.setVisible(cached.isEmpty());
-            front.setVisible(cached.isPresent());
-
-            if (cached.isPresent()) {
+            if (newValue == null) {
+                back.setVisible(false);
+                front.setVisible(false);
                 return;
             }
 
-            Platform.runLater(() -> new AnimationTimer() {
+            var cached = cache.getCached(newValue);
+            if (cached.isPresent()) {
+                frontContent.setValue(cached.get());
+                back.setVisible(false);
+                front.setVisible(true);
+                return;
+            }
+
+            webViewContent.setValue(AppImages.svgImage(newValue));
+            back.setVisible(true);
+            front.setVisible(false);
+
+            AnimationTimer timer = new AnimationTimer() {
                 int frames = 0;
+                final AnimationTimer instance = this;
 
                 @Override
                 public void handle(long l) {
-                    if (++frames == 2) {
+                    if (++frames == 30) {
+                        stop();
                         SnapshotParameters parameters = new SnapshotParameters();
                         parameters.setFill(Color.TRANSPARENT);
-                        back.snapshot(snapshotResult -> {
-                            WritableImage image = snapshotResult.getImage();
+                            if (!instance.equals(active.get())) {
+                                active.set(null);
+                                return;
+                            }
+                            active.set(null);
+
+                            WritableImage image = back.snapshot(parameters, null);
                             if (image.getWidth() < 10) {
-                                return null;
+                                return;
                             }
 
                             if (cache.getCached(newValue).isPresent()) {
-                                return null;
+                                return;
                             }
 
+                            if (!newValue.equals(svgFile.getValue())) {
+                                return;
+                            }
+
+                            var found = false;
+                            out:
+                            for (int x = 0; x < image.getWidth(); x++) {
+                                for (int y = 0; y < image.getHeight(); y++) {
+                                    if (image.getPixelReader().getArgb(x, y) != 0x00000000) {
+                                        found = true;
+                                        break out;
+                                    }
+                                }
+                            }
+                            if (!found) {
+                                return;
+                            }
+
+                            System.out.println("cache " + newValue);
                             cache.put(newValue, image);
-                            return null;
-                        }, parameters, null);
-                        stop();
+                            return;
                     }
                 }
-            }.start());
+            };
+            Platform.runLater(() -> {
+//                timer.start();
+//                active.set(timer);
+            });
         });
 
         var stack = new StackPane(back, front);
