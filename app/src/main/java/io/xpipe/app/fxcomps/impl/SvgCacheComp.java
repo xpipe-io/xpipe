@@ -3,7 +3,8 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import javafx.animation.PauseTransition;
+import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -14,9 +15,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SvgCacheComp extends SimpleComp {
 
@@ -51,8 +49,6 @@ public class SvgCacheComp extends SimpleComp {
         var back = SvgView.create(webViewContent).createWebview();
         back.prefWidthProperty().bind(width);
         back.prefHeightProperty().bind(height);
-        var animation = new AtomicReference<PauseTransition>();
-        var active = new SimpleObjectProperty<PauseTransition>();
         svgFile.addListener((observable, oldValue, newValue) -> {
             var cached = cache.getCached(newValue);
             webViewContent.setValue(newValue != null || cached.isEmpty() ? AppImages.svgImage(newValue) : null);
@@ -60,34 +56,35 @@ public class SvgCacheComp extends SimpleComp {
             back.setVisible(cached.isEmpty());
             front.setVisible(cached.isPresent());
 
-            if (animation.get() != null) {
-                animation.get().stop();
-                animation.set(null);
+            if (cached.isPresent()) {
+                return;
             }
 
-            var pt = new PauseTransition();
-            active.set(pt);
-            pt.setDuration(Duration.millis(500));
-            pt.setOnFinished(actionEvent -> {
-                if (newValue == null || cache.getCached(newValue).isPresent()) {
-                    return;
-                }
+            Platform.runLater(() -> new AnimationTimer() {
+                int frames = 0;
 
-                if (!active.get().equals(pt)) {
-                    return;
-                }
+                @Override
+                public void handle(long l) {
+                    if (++frames == 2) {
+                        SnapshotParameters parameters = new SnapshotParameters();
+                        parameters.setFill(Color.TRANSPARENT);
+                        back.snapshot(snapshotResult -> {
+                            WritableImage image = snapshotResult.getImage();
+                            if (image.getWidth() < 10) {
+                                return null;
+                            }
 
-                SnapshotParameters parameters = new SnapshotParameters();
-                parameters.setFill(Color.TRANSPARENT);
-                WritableImage image = back.snapshot(parameters, null);
-                if (image.getWidth() < 10) {
-                    return;
-                }
+                            if (cache.getCached(newValue).isPresent()) {
+                                return null;
+                            }
 
-                cache.put(newValue, image);
-            });
-            pt.play();
-            animation.set(pt);
+                            cache.put(newValue, image);
+                            return null;
+                        }, parameters, null);
+                        stop();
+                    }
+                }
+            }.start());
         });
 
         var stack = new StackPane(back, front);

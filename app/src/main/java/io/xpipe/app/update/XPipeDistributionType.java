@@ -59,14 +59,17 @@ public enum XPipeDistributionType {
         }
 
         try (var sc = LocalStore.getShell()) {
-            try (var chocoOut = sc.command("choco search --local-only -r xpipe").start()) {
-                var out = chocoOut.readStdoutDiscardErr();
-                if (chocoOut.getExitCode() == 0) {
-                    var split = out.split("\\|");
-                    if (split.length == 2) {
-                        var version = split[1];
-                        if (AppProperties.get().getVersion().equals(version)) {
-                            return CHOCO;
+            if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                try (var chocoOut =
+                        sc.command("choco search --local-only -r xpipe").start()) {
+                    var out = chocoOut.readStdoutDiscardErr();
+                    if (chocoOut.getExitCode() == 0) {
+                        var split = out.split("\\|");
+                        if (split.length == 2) {
+                            var version = split[1];
+                            if (AppProperties.get().getVersion().equals(version)) {
+                                return CHOCO;
+                            }
                         }
                     }
                 }
