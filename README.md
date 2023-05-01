@@ -12,6 +12,7 @@ It currently supports:
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl) instances located on any host
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
+- [Kubernetes](https://kubernetes.io/) clusters and pods
 - Any other custom remote connection methods that works through the command-line
 - Arbitrary types of proxies to establish connections
 
@@ -20,6 +21,8 @@ by outsourcing as many tasks as possible to your favourite
 text/code editors, terminals, shells, command-line tools and more.
 The platform is designed to be extensible, allowing anyone
 to implement custom functionality through extensions.
+
+You have more questions? Then check out the new [FAQ](/FAQ.md).
 
 ## Getting Started
 
