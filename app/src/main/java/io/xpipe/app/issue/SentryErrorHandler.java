@@ -41,6 +41,9 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setTag("osVersion", System.getProperty("os.version"));
                     options.setTag("arch", System.getProperty("os.arch"));
                     options.setDist(XPipeDistributionType.get().getId());
+                    if (AppProperties.get().isStaging()) {
+                        options.setTag("staging", "true");
+                    }
                 });
             }
             init = true;

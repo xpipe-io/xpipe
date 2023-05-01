@@ -52,6 +52,7 @@ public class SvgCacheComp extends SimpleComp {
         back.prefWidthProperty().bind(width);
         back.prefHeightProperty().bind(height);
         var animation = new AtomicReference<PauseTransition>();
+        var active = new SimpleObjectProperty<PauseTransition>();
         svgFile.addListener((observable, oldValue, newValue) -> {
             var cached = cache.getCached(newValue);
             webViewContent.setValue(newValue != null || cached.isEmpty() ? AppImages.svgImage(newValue) : null);
@@ -65,13 +66,14 @@ public class SvgCacheComp extends SimpleComp {
             }
 
             var pt = new PauseTransition();
+            active.set(pt);
             pt.setDuration(Duration.millis(500));
             pt.setOnFinished(actionEvent -> {
                 if (newValue == null || cache.getCached(newValue).isPresent()) {
                     return;
                 }
 
-                if (!newValue.equals(svgFile.getValue())) {
+                if (!active.get().equals(pt)) {
                     return;
                 }
 
