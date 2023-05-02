@@ -16,7 +16,7 @@ public class DeleteStoreChildrenAction implements ActionProvider {
         DataStoreEntry store;
 
         @Override
-        public boolean requiresPlatform() {
+        public boolean requiresJavaFXPlatform() {
             return false;
         }
 

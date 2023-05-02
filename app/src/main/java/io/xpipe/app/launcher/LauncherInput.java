@@ -31,14 +31,14 @@ public abstract class LauncherInput {
             }
         });
 
-        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresPlatform());
+        var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
         if (requiresPlatform) {
             OperationMode.switchTo(OperationMode.GUI);
         }
         var hasGui = OperationMode.get() == OperationMode.GUI;
 
         all.forEach(launcherInput -> {
-            if (!hasGui && launcherInput.requiresPlatform()) {
+            if (!hasGui && launcherInput.requiresJavaFXPlatform()) {
                 return;
             }
 
@@ -118,7 +118,7 @@ public abstract class LauncherInput {
         }
 
         @Override
-        public boolean requiresPlatform() {
+        public boolean requiresJavaFXPlatform() {
             return true;
         }
     }

@@ -141,7 +141,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var shellProcessControl = ShellStore.createLocal().create().start();
+                var shellProcessControl = ShellStore.createLocal().control().start();
                 var exec = XPipeInstallation.getInstallationExecutable(
                         shellProcessControl,
                         XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl, false));
@@ -187,7 +187,7 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var command = ShellStore.createLocal()
-                        .create()
+                        .control()
                         .subShell(ShellDialects.BASH)
                         .command(String.format(
                                 """
@@ -228,7 +228,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = ShellStore.createLocal().create().subShell(ShellDialects.BASH).command(String.format(
+                var command = ShellStore.createLocal().control().subShell(ShellDialects.BASH).command(String.format(
                         """
                                         function exec {
                                             echo "+ sudo rpm -U -v --force \\"%s\\""
@@ -266,7 +266,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = ShellStore.createLocal().create().subShell(ShellDialects.BASH).command(String.format(
+                var command = ShellStore.createLocal().control().subShell(ShellDialects.BASH).command(String.format(
                         """
                                         function exec {
                                             echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"

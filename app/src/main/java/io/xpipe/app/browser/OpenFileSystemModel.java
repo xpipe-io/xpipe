@@ -275,7 +275,7 @@ final class OpenFileSystemModel {
             BusyProperty.execute(busy, () -> {
                 if (store.getValue() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
-                    var command = s.create()
+                    var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
                             .prepareTerminalOpen();
                     TerminalHelper.open(directory, command);

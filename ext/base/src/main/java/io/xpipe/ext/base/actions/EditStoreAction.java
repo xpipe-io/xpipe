@@ -17,7 +17,7 @@ public class EditStoreAction implements ActionProvider {
         DataStoreEntry store;
 
         @Override
-        public boolean requiresPlatform() {
+        public boolean requiresJavaFXPlatform() {
             return true;
         }
 

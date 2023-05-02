@@ -332,7 +332,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalStore.getShell()) {
-                return pc.executeBooleanSimpleCommand(pc.getShellDialect().getWhichCommand(executable));
+                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
                 return false;

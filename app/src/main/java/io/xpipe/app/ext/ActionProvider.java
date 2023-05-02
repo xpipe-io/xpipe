@@ -45,7 +45,7 @@ public interface ActionProvider {
 
     interface Action {
 
-        boolean requiresPlatform();
+        boolean requiresJavaFXPlatform();
 
         void execute() throws Exception;
     }

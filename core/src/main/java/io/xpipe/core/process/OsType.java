@@ -37,7 +37,7 @@ public interface OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(
+            return pc.executeSimpleStringCommand(
                     pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
         }
 
@@ -48,7 +48,7 @@ public interface OsType {
 
         @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("TEMP"));
+            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("TEMP"));
         }
 
         @Override
@@ -62,13 +62,13 @@ public interface OsType {
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             try {
-                return pc.executeStringSimpleCommand("wmic os get Caption")
+                return pc.executeSimpleStringCommand("wmic os get Caption")
                                 .lines()
                                 .skip(1)
                                 .collect(Collectors.joining())
                                 .trim()
                         + " "
-                        + pc.executeStringSimpleCommand("wmic os get Version")
+                        + pc.executeSimpleStringCommand("wmic os get Version")
                                 .lines()
                                 .skip(1)
                                 .collect(Collectors.joining())
@@ -84,7 +84,7 @@ public interface OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
         }
 
         @Override
@@ -142,12 +142,12 @@ public interface OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeStringSimpleCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
         }
 
         @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
-            var found = pc.executeStringSimpleCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
+            var found = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
 
             // This variable is not defined for root users, so manually fix it. Why? ...
             if (found.isBlank()) {
@@ -174,7 +174,7 @@ public interface OsType {
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             var properties = getProperties(pc);
-            var name = pc.executeStringSimpleCommand(
+            var name = pc.executeSimpleStringCommand(
                     "awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup "
                             + "Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | "
                             + "awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}'");

@@ -22,7 +22,7 @@ public class XPipeTempDirectory {
                     "Unable to access or create temporary directory " + dir);
 
             if (proc.getOsType().equals(OsType.LINUX) || proc.getOsType().equals(OsType.MACOS)) {
-                proc.executeBooleanSimpleCommand("chmod 777 \"" + dir + "\"");
+                proc.executeSimpleBooleanCommand("chmod 777 \"" + dir + "\"");
             }
         }
 
@@ -31,7 +31,7 @@ public class XPipeTempDirectory {
 
     public static void clearSubDirectory(ShellControl proc) throws Exception {
         var dir = getSubDirectory(proc);
-        if (!proc.executeBooleanSimpleCommand(proc.getShellDialect().getFileDeleteCommand(dir))) {
+        if (!proc.executeSimpleBooleanCommand(proc.getShellDialect().getFileDeleteCommand(dir))) {
             throw new IOException("Unable to delete temporary directory " + dir);
         }
     }

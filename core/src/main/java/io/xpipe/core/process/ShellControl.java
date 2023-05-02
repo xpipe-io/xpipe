@@ -29,13 +29,13 @@ public interface ShellControl extends ProcessControl {
 
     public void checkRunning() throws Exception;
 
-    default String executeStringSimpleCommand(String command) throws Exception {
+    default String executeSimpleStringCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.readOrThrow();
         }
     }
 
-    default boolean executeBooleanSimpleCommand(String command) throws Exception {
+    default boolean executeSimpleBooleanCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.discardAndCheckExit();
         }
@@ -55,9 +55,9 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    default String executeStringSimpleCommand(ShellDialect type, String command) throws Exception {
+    default String executeSimpleStringCommand(ShellDialect type, String command) throws Exception {
         try (var sub = subShell(type).start()) {
-            return sub.executeStringSimpleCommand(command);
+            return sub.executeSimpleStringCommand(command);
         }
     }
 

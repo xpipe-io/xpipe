@@ -23,7 +23,7 @@ public class ApplicationHelper {
     }
 
     public static boolean isInPath(ShellControl processControl, String executable) throws Exception {
-        return processControl.executeBooleanSimpleCommand(
+        return processControl.executeSimpleBooleanCommand(
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 

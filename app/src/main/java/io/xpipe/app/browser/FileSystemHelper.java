@@ -24,7 +24,7 @@ public class FileSystemHelper {
         var current = !(model.getStore().getValue() instanceof LocalStore)
                 ? fileSystem
                         .getShellControl()
-                        .executeStringSimpleCommand(
+                        .executeSimpleStringCommand(
                                 fileSystem.getShellControl().getShellDialect().getPrintWorkingDirectoryCommand())
                 : fileSystem
                         .getShell()

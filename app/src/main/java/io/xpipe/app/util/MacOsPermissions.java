@@ -17,7 +17,7 @@ public class MacOsPermissions {
         var state = new SimpleBooleanProperty(true);
         try (var pc = LocalStore.getShell().start()) {
             while (state.get()) {
-                var success = pc.executeBooleanSimpleCommand(
+                var success = pc.executeSimpleBooleanCommand(
                         "osascript -e 'tell application \"System Events\" to keystroke \"t\"'");
                 if (success) {
                     Platform.runLater(() -> {

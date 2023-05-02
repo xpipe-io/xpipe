@@ -21,7 +21,7 @@ public class ShareStoreAction implements ActionProvider {
         DataStore store;
 
         @Override
-        public boolean requiresPlatform() {
+        public boolean requiresJavaFXPlatform() {
             return false;
         }
 

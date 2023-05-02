@@ -53,7 +53,7 @@ public class BeaconClient implements AutoCloseable {
     }
 
     public static BeaconClient connectProxy(ShellStore proxy) throws Exception {
-        var control = proxy.create().start();
+        var control = proxy.control().start();
         if (!ProxyManagerProvider.get().setup(control)) {
             throw new IOException("X-Pipe connector required to perform operation");
         }

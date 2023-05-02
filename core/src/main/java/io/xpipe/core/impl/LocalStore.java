@@ -36,7 +36,7 @@ public class LocalStore extends JacksonizedValue implements ShellStore {
 
     @Override
     public FileSystem createFileSystem() {
-        return new ConnectionFileSystem(ShellStore.createLocal().create(), LocalStore.this) {
+        return new ConnectionFileSystem(ShellStore.createLocal().control(), LocalStore.this) {
 
             @Override
             public FileSystemStore getStore() {
@@ -128,7 +128,7 @@ public class LocalStore extends JacksonizedValue implements ShellStore {
     }
 
     @Override
-    public ShellControl createControl() {
+    public ShellControl createBasicControl() {
         return ProcessControlProvider.createLocal(true);
     }
 }

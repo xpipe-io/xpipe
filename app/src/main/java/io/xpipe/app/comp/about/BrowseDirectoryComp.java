@@ -44,7 +44,7 @@ public class BrowseDirectoryComp extends SimpleComp {
                     "launchDebugMode",
                     new ButtonComp(AppI18n.observable("launchDebugMode"), () -> {
                         OperationMode.executeAfterShutdown(() -> {
-                            try (var sc = ShellStore.createLocal().create().start()) {
+                            try (var sc = ShellStore.createLocal().control().start()) {
                                 var script = FileNames.join(
                                         XPipeInstallation.getCurrentInstallationBasePath()
                                                 .toString(),

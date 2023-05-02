@@ -17,7 +17,7 @@ public class FileEditAction implements ActionProvider {
         FileStore store;
 
         @Override
-        public boolean requiresPlatform() {
+        public boolean requiresJavaFXPlatform() {
             return false;
         }
 

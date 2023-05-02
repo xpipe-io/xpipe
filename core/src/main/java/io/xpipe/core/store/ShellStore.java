@@ -19,16 +19,16 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
 
     @Override
     default FileSystem createFileSystem() {
-        return new ConnectionFileSystem(create(), this);
+        return new ConnectionFileSystem(control(), this);
     }
 
     @Override
     default String prepareLaunchCommand() throws Exception {
-        return create().prepareTerminalOpen();
+        return control().prepareTerminalOpen();
     }
 
-    default ShellControl create() {
-        var pc = createControl();
+    default ShellControl control() {
+        var pc = createBasicControl();
         pc.onInit(processControl -> {
             setState("type", processControl.getShellDialect());
             setState("os", processControl.getOsType());
@@ -49,21 +49,21 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
         return getState("charset", Charset.class, null);
     }
 
-    ShellControl createControl();
+    ShellControl createBasicControl();
 
     public default ShellDialect determineType() throws Exception {
-        try (var pc = create().start()) {
+        try (var pc = control().start()) {
             return pc.getShellDialect();
         }
     }
 
     @Override
     default void validate() throws Exception {
-        try (ShellControl pc = create().start()) {}
+        try (ShellControl pc = control().start()) {}
     }
 
     public default String queryMachineName() throws Exception {
-        try (var pc = create().start()) {
+        try (var pc = control().start()) {
             var operatingSystem = pc.getOsType();
             return operatingSystem.determineOperatingSystemName(pc);
         }

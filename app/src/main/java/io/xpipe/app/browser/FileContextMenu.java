@@ -81,7 +81,7 @@ final class FileContextMenu extends ContextMenu {
                         ShellControl pc = model.getFileSystem().getShell().orElseThrow();
                         var e = pc.getShellDialect().getMakeExecutableCommand(entry.getPath());
                         if (e != null) {
-                            pc.executeBooleanSimpleCommand(e);
+                            pc.executeSimpleBooleanCommand(e);
                         }
                         var cmd = pc.command("\"" + entry.getPath() + "\"").prepareTerminalOpen();
                         TerminalHelper.open(FilenameUtils.getBaseName(entry.getPath()), cmd);
@@ -96,10 +96,10 @@ final class FileContextMenu extends ContextMenu {
                         ShellControl pc = model.getFileSystem().getShell().orElseThrow();
                         var e = pc.getShellDialect().getMakeExecutableCommand(entry.getPath());
                         if (e != null) {
-                            pc.executeBooleanSimpleCommand(e);
+                            pc.executeSimpleBooleanCommand(e);
                         }
                         var cmd = ScriptHelper.createDetachCommand(pc, "\"" + entry.getPath() + "\"");
-                        pc.executeBooleanSimpleCommand(cmd);
+                        pc.executeSimpleBooleanCommand(cmd);
                     });
                     event.consume();
                 });
