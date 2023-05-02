@@ -3,6 +3,7 @@ package io.xpipe.core.process;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.util.SecretValue;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -86,6 +87,8 @@ public interface ShellDialect {
     String prepareAskpassContent(ShellControl sc, String fileName, List<String> s) throws Exception;
 
     String getSetEnvironmentVariableCommand(String variable, String value);
+
+    String setSecretEnvironmentVariableCommand(ShellControl sc, String variable, SecretValue value) throws Exception;
 
     String getEchoCommand(String s, boolean toErrorStream);
 
