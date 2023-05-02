@@ -5,15 +5,10 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 ## Repository Structure
 
-The following for modules make up the X-Pipe API and a licensed under the MIT license:
-
 - [core](core) - Shared core classes of the X-Pipe Java API, X-Pipe extensions, and the X-Pipe daemon implementation
 - [beacon](beacon) - The X-Pipe beacon component is responsible for handling all communications between the X-Pipe
   daemon
   and the client applications, for example the various programming language APIs and the CLI
-
-The other modules make up the X-Pipe implementation and are licensed under GPL:
-
 - [app](app) - Contains the X-Pipe daemon implementation, the X-Pipe desktop application, and an
   API to create all different kinds of extensions for the X-Pipe platform
 - [dist](dist) - Tools to create a distributable package of X-Pipe
