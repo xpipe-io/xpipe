@@ -37,6 +37,7 @@ public class ListSelectorComp<T> extends SimpleComp {
                 }
             });
             var l = new Label(toString.apply(v), cb);
+            l.setGraphicTextGap(9);
             l.setOnMouseClicked(event -> cb.setSelected(!cb.isSelected()));
             vbox.getChildren().add(l);
         }

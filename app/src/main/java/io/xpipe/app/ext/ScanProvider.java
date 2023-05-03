@@ -1,6 +1,8 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.ModuleLayerLoader;
 import lombok.Value;
 import org.apache.commons.lang3.function.FailableRunnable;
@@ -27,7 +29,8 @@ public abstract class ScanProvider {
         public void init(ModuleLayer layer) {
             ALL = ServiceLoader.load(layer, ScanProvider.class).stream()
                     .map(ServiceLoader.Provider::get)
-                    .sorted(Comparator.comparing(scanProvider -> scanProvider.getClass().getName()))
+                    .sorted(Comparator.comparing(
+                            scanProvider -> scanProvider.getClass().getName()))
                     .collect(Collectors.toList());
         }
 
@@ -46,5 +49,11 @@ public abstract class ScanProvider {
         return ALL;
     }
 
-    public  abstract ScanOperation create(DataStore store, boolean automatic);
+    public ScanOperation create(DataStore store, boolean automatic) {
+        return null;
+    }
+
+    public ScanOperation create(ShellStore store, ShellControl sc, boolean automatic) throws Exception {
+        return null;
+    }
 }

@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
@@ -19,24 +20,53 @@ import java.util.List;
 
 public class ScanAlert {
 
-    public static void showIfNeeded(DataStore store, boolean automatic) {
+    public static void show(DataStore store, boolean automatic) {
+        if (store instanceof ShellStore) {
+            showForShellStore(store.asNeeded(), automatic);
+        } else {
+            showForOtherStore(store, automatic);
+        }
+    }
+
+    private  static void showForOtherStore(DataStore store, boolean automatic) {
         var providers = ScanProvider.getAll();
         var applicable = providers.stream()
                 .map(scanProvider -> scanProvider.create(store, automatic))
                 .filter(scanOperation -> scanOperation != null)
                 .toList();
+        showIfNeeded(applicable);
+    }
+
+    private  static void showForShellStore(ShellStore store, boolean automatic) {
+        try (var sc = store.control().start()) {
+            var providers = ScanProvider.getAll();
+            var applicable = new ArrayList<ScanProvider.ScanOperation>();
+            for (ScanProvider scanProvider : providers) {
+                ScanProvider.ScanOperation operation = scanProvider.create(store, sc, automatic);
+                if (operation != null) {
+                    applicable.add(operation);
+                }
+            }
+            showIfNeeded(applicable);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex);
+        }
+    }
+
+    private  static void showIfNeeded(List<ScanProvider.ScanOperation> applicable) {
         if (applicable.size() == 0) {
             return;
         }
 
         var selected = new SimpleListProperty<ScanProvider.ScanOperation>(
-                FXCollections.observableList(new ArrayList<>(applicable.stream().filter(scanOperation -> scanOperation.isDefaultSelected()).toList())));
+                FXCollections.observableList(new ArrayList<>(applicable.stream()
+                        .filter(scanOperation -> scanOperation.isDefaultSelected())
+                        .toList())));
         var busy = new SimpleBooleanProperty();
         AppWindowHelper.showAlert(
                 alert -> {
                     alert.setAlertType(Alert.AlertType.NONE);
                     alert.setTitle(AppI18n.get("scanAlertTitle"));
-                    alert.setWidth(300);
                     var content = new VerticalComp(List.of(
                                     new LabelComp(AppI18n.get("scanAlertHeader"))
                                             .apply(struc -> struc.get().setWrapText(true)),
@@ -47,6 +77,7 @@ public class ScanAlert {
                             .apply(struc -> struc.get().setSpacing(15))
                             .styleClass("window-content")
                             .createRegion();
+                    content.setPrefWidth(500);
                     alert.getButtonTypes().add(ButtonType.OK);
                     alert.getDialogPane().setContent(content);
                 },

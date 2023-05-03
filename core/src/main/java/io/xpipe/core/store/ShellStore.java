@@ -42,7 +42,13 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
     }
 
     default OsType getOsType() {
-        return getState("os", OsType.class, null);
+        return getOrComputeState("os", OsType.class, () -> {
+            try (var sc = control().start()) {
+                return sc.getOsType();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     default Charset getCharset() {

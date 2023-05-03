@@ -35,7 +35,7 @@ public class StoreIntroComp extends SimpleComp {
         });
 
         var scanButton = new Button(AppI18n.get("detectConnections"), new FontIcon("mdi2m-magnify"));
-        scanButton.setOnAction(event -> ScanAlert.showIfNeeded(new LocalStore(), false));
+        scanButton.setOnAction(event -> ScanAlert.show(new LocalStore(), false));
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
