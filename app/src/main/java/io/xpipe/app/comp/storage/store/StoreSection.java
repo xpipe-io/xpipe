@@ -6,18 +6,16 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 
 import java.time.Instant;
 import java.util.Comparator;
 
-@AllArgsConstructor
-@Getter
+@Value
 public class StoreSection implements StorageFilter.Filterable {
 
-    private final StoreEntryWrapper wrapper;
-    private final ObservableList<StoreSection> children;
+    StoreEntryWrapper wrapper;
+    ObservableList<StoreSection> children;
 
     private static final Comparator<StoreSection> COMPARATOR = Comparator.<StoreSection, Instant>comparing(
                     o -> o.wrapper.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
@@ -26,7 +24,7 @@ public class StoreSection implements StorageFilter.Filterable {
             .thenComparing(
                     storeEntrySection -> storeEntrySection.wrapper.getEntry().getName());
 
-    public static ObservableList<StoreSection> createTopLevels() {
+    public static StoreSection createTopLevel() {
         var topLevel = BindingsHelper.mappedContentBinding(StoreViewState.get().getAllEntries(), storeEntryWrapper -> create(storeEntryWrapper));
         var filtered =
                 BindingsHelper.filteredContentBinding(topLevel, section -> {
@@ -44,7 +42,7 @@ public class StoreSection implements StorageFilter.Filterable {
         var ordered = BindingsHelper.orderedContentBinding(
                 filtered,
                 COMPARATOR);
-        return ordered;
+        return new StoreSection(null, ordered);
     }
 
     private static StoreSection create(StoreEntryWrapper e) {

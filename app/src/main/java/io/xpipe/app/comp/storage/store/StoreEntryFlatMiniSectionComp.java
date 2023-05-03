@@ -22,19 +22,20 @@ public class StoreEntryFlatMiniSectionComp extends SimpleComp {
     public static final ObservableList<StoreEntryFlatMiniSectionComp> ALL = FXCollections.observableArrayList();
 
     static {
-        var topLevel = StoreSection.createTopLevels();
+        var topLevel = StoreSection.createTopLevel();
 
-        topLevel.addListener((ListChangeListener<? super StoreSection>) c -> {
+        // Listen for any entry list change, not only top level changes
+        StoreViewState.get().getAllEntries().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
             ALL.clear();
             var depth = 0;
-            for (StoreSection v : topLevel) {
+            for (StoreSection v : topLevel.getChildren()) {
                 System.out.println(v.getWrapper().getEntry().getName() + " " + v.getChildren().size());
                 add(depth, v);
             }
         });
 
         var depth = 0;
-        for (StoreSection v : topLevel) {
+        for (StoreSection v : topLevel.getChildren()) {
             add(depth, v);
         }
     }
