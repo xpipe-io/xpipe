@@ -96,6 +96,7 @@ List<String> jvmRunArgs = [
         "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
         "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
         "-Xmx8g",
+        "-Dio.xpipe.app.arch=$rootProject.arch",
         "--enable-preview",
         //  "-XX:+ExitOnOutOfMemoryError",
         "-Dfile.encoding=UTF-8",

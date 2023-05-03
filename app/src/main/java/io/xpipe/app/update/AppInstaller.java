@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.core.impl.FileNames;
@@ -102,7 +103,7 @@ public class AppInstaller {
         public abstract void installLocal(String file) throws Exception;
 
         public boolean isCorrectAsset(String name) {
-            return name.endsWith(getExtension());
+            return name.endsWith(getExtension()) && name.contains(AppProperties.get().getArch());
         }
 
         public abstract String getExtension();

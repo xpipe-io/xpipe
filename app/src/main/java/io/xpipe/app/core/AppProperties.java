@@ -24,6 +24,7 @@ public class AppProperties {
     String build;
     UUID buildUuid;
     String sentryUrl;
+    String arch;
     boolean image;
     boolean staging;
     Path dataDir;
@@ -51,6 +52,7 @@ public class AppProperties {
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
+        arch = System.getProperty("io.xpipe.app.arch");
         dataDir = parseDataDir();
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
