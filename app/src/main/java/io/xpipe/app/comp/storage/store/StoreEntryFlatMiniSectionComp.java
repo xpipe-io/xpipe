@@ -5,6 +5,9 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -12,27 +15,34 @@ import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class StoreEntryFlatMiniSection extends SimpleComp {
+public class StoreEntryFlatMiniSectionComp extends SimpleComp {
 
-    public static Map<StoreEntryWrapper, Region> createMap() {
-        var map = new LinkedHashMap<StoreEntryWrapper, Region>();
-        var topLevel = StoreViewSection.createTopLevels();
+    public static final ObservableList<StoreEntryFlatMiniSectionComp> ALL = FXCollections.observableArrayList();
+
+    static {
+        var topLevel = StoreSection.createTopLevels();
+
+        topLevel.addListener((ListChangeListener<? super StoreSection>) c -> {
+            ALL.clear();
+            var depth = 0;
+            for (StoreSection v : topLevel) {
+                System.out.println(v.getWrapper().getEntry().getName() + " " + v.getChildren().size());
+                add(depth, v);
+            }
+        });
+
         var depth = 0;
-        for (StoreViewSection v : topLevel) {
-            add(depth, v, map);
+        for (StoreSection v : topLevel) {
+            add(depth, v);
         }
-        return map;
     }
 
-    private static void add(int depth, StoreViewSection section, Map<StoreEntryWrapper, Region> map) {
-        map.put(section.getWrapper(), new StoreEntryFlatMiniSection(depth, section.getWrapper().getEntry()).createRegion());
-        for (StoreViewSection child : section.getChildren()) {
-            add(depth + 1, child, map);
+    private static void add(int depth, StoreSection section) {
+        ALL.add(new StoreEntryFlatMiniSectionComp(depth, section.getWrapper().getEntry()));
+        for (StoreSection child : section.getChildren()) {
+            add(depth + 1, child);
         }
     }
 

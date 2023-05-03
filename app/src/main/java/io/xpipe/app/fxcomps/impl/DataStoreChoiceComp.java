@@ -1,7 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
-import io.xpipe.app.comp.storage.store.StoreEntryFlatMiniSection;
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
+import io.xpipe.app.comp.storage.store.StoreEntryFlatMiniSectionComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -19,7 +18,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -82,25 +80,25 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
     @Override
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
-        var map = StoreEntryFlatMiniSection.createMap();
+        var list = StoreEntryFlatMiniSectionComp.ALL;
         var comboBox = new CustomComboBoxBuilder<T>(
                 selected,
-                t -> map.entrySet().stream()
-                        .filter(e -> t.equals(e.getKey().getEntry().getStore()))
+                t -> list.stream()
+                        .filter(e -> t.equals(e.getEntry().getStore()))
                         .findFirst()
                         .orElseThrow()
-                        .getValue(),
+                        .createRegion(),
                 new Label(AppI18n.get("none")),
                 n -> true);
         comboBox.setSelectedDisplay(t -> createGraphic(t));
         comboBox.setUnknownNode(t -> createGraphic(t));
 
-        for (Map.Entry<StoreEntryWrapper, Region> e : map.entrySet()) {
-            if (e.getKey().getEntry().getStore() == self) {
+        for (var e : list) {
+            if (e.getEntry().getStore() == self) {
                 continue;
             }
 
-            var s = e.getKey().getEntry().getStore();
+            var s = e.getEntry().getStore();
             if (!storeClass.isAssignableFrom(s.getClass()) || !applicableCheck.test((T) s)) {
                 continue;
             }
@@ -109,7 +107,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                 continue;
             }
 
-            comboBox.add((T) e.getKey().getEntry().getStore());
+            comboBox.add((T) e.getEntry().getStore());
         }
 
         ComboBox<Node> cb = comboBox.build();

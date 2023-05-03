@@ -12,42 +12,42 @@ import java.time.Instant;
 import java.util.Comparator;
 
 @Value
-public class StoreViewSection implements StorageFilter.Filterable {
+public class StoreSection implements StorageFilter.Filterable {
 
     StoreEntryWrapper wrapper;
-    ObservableList<StoreViewSection> children;
+    ObservableList<StoreSection> children;
 
-    private static final Comparator<StoreViewSection> COMPARATOR = Comparator.<StoreViewSection, Instant>comparing(
+    private static final Comparator<StoreSection> COMPARATOR = Comparator.<StoreSection, Instant>comparing(
                     o -> o.wrapper.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
                             ? o.wrapper.getEntry().getLastAccess()
                             : Instant.EPOCH).reversed()
             .thenComparing(
                     storeEntrySection -> storeEntrySection.wrapper.getEntry().getName());
 
-    public static ObservableList<StoreViewSection> createTopLevels() {
+    public static ObservableList<StoreSection> createTopLevels() {
+        var topLevel = BindingsHelper.mappedContentBinding(StoreViewState.get().getAllEntries(), storeEntryWrapper -> create(storeEntryWrapper));
         var filtered =
-                BindingsHelper.filteredContentBinding(StoreViewState.get().getAllEntries(), storeEntryWrapper -> {
-                    if (!storeEntryWrapper.getEntry().getState().isUsable()) {
+                BindingsHelper.filteredContentBinding(topLevel, section -> {
+                    if (!section.getWrapper().getEntry().getState().isUsable()) {
                         return true;
                     }
 
-                    var parent = storeEntryWrapper
+                    var parent = section.getWrapper()
                             .getEntry()
                             .getProvider()
-                            .getParent(storeEntryWrapper.getEntry().getStore());
+                            .getParent(section.getWrapper().getEntry().getStore());
                     return parent == null
                             || (DataStorage.get().getStoreEntryIfPresent(parent).isEmpty());
                 });
-        var topLevel = BindingsHelper.mappedContentBinding(filtered, storeEntryWrapper -> create(storeEntryWrapper));
         var ordered = BindingsHelper.orderedContentBinding(
-                topLevel,
+                filtered,
                 COMPARATOR);
         return ordered;
     }
 
-    public static StoreViewSection create(StoreEntryWrapper e) {
+    private static StoreSection create(StoreEntryWrapper e) {
         if (!e.getEntry().getState().isUsable()) {
-            return new StoreViewSection(e, FXCollections.observableArrayList());
+            return new StoreSection(e, FXCollections.observableArrayList());
         }
 
         var filtered = BindingsHelper.filteredContentBinding(
@@ -62,7 +62,7 @@ public class StoreViewSection implements StorageFilter.Filterable {
         var ordered = BindingsHelper.orderedContentBinding(
                 children,
                 COMPARATOR);
-        return new StoreViewSection(e, ordered);
+        return new StoreSection(e, ordered);
     }
 
     @Override

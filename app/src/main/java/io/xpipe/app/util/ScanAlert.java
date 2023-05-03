@@ -20,12 +20,14 @@ import java.util.List;
 
 public class ScanAlert {
 
-    public static void show(DataStore store, boolean automatic) {
-        if (store instanceof ShellStore) {
-            showForShellStore(store.asNeeded(), automatic);
-        } else {
-            showForOtherStore(store, automatic);
-        }
+    public static void showAsync(DataStore store, boolean automatic) {
+        ThreadHelper.runAsync(() -> {
+            if (store instanceof ShellStore) {
+                showForShellStore(store.asNeeded(), automatic);
+            } else {
+                showForOtherStore(store, automatic);
+            }
+        });
     }
 
     private  static void showForOtherStore(DataStore store, boolean automatic) {

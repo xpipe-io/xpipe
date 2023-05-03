@@ -16,12 +16,10 @@ import java.util.List;
 
 public class StoreEntrySection extends Comp<CompStructure<VBox>> {
 
-    private final StoreViewSection section;
-    private final boolean top;
+    private final StoreSection section;
 
-    public StoreEntrySection(StoreViewSection section, boolean top) {
+    public StoreEntrySection(StoreSection section) {
         this.section = section;
-        this.top = top;
     }
 
     @Override
@@ -49,8 +47,8 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
                 StoreViewState.get()
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
-        var content = new ListBoxViewComp<>(shown, all, (StoreViewSection e) -> {
-                    return new StoreEntrySection(e, false).apply(GrowAugment.create(true, false));
+        var content = new ListBoxViewComp<>(shown, all, (StoreSection e) -> {
+                    return new StoreEntrySection(e).apply(GrowAugment.create(true, false));
                 })
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .apply(struc -> struc.get().backgroundProperty().set(Background.fill(Color.color(0, 0, 0, 0.01))));
