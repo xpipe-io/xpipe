@@ -6,16 +6,18 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.Comparator;
 
-@Value
+@AllArgsConstructor
+@Getter
 public class StoreSection implements StorageFilter.Filterable {
 
-    StoreEntryWrapper wrapper;
-    ObservableList<StoreSection> children;
+    private final StoreEntryWrapper wrapper;
+    private final ObservableList<StoreSection> children;
 
     private static final Comparator<StoreSection> COMPARATOR = Comparator.<StoreSection, Instant>comparing(
                     o -> o.wrapper.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
