@@ -30,7 +30,7 @@ public class PropertiesComp extends SimpleComp {
                 .addComp(title, null)
                 .addComp(
                         AppI18n.observable("version"),
-                        new LabelComp(AppProperties.get().getVersion() + " (x64)"),
+                        new LabelComp(AppProperties.get().getVersion() + " (" + AppProperties.get().getArch() + ")"),
                         null)
                 .addComp(
                         AppI18n.observable("build"),
