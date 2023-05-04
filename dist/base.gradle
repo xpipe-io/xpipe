@@ -170,7 +170,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             }
 
             copy {
-                from "$projectDir/PkgInstaller/macOS-x64/darwin/Resources/uninstall.sh"
+                from "$projectDir/PkgInstaller/darwin/Resources/uninstall.sh"
                 into "$distDir/X-Pipe.app/Contents/Resources/scripts/"
             }
             file("$distDir/X-Pipe.app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/X-Pipe.app/Contents/Resources/scripts/uninstall.sh").text
@@ -192,9 +192,8 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             file("$distDir/X-Pipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh").executable = true
 
             if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
-                10
                 exec {
-                    commandLine "$projectDir/misc/mac/notarize.sh", "$projectDir"
+                    commandLine "$projectDir/misc/mac/notarize.sh", "$projectDir", rootProject.arch.toString()
                 }
             }
         }
