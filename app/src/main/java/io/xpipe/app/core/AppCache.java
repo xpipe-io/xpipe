@@ -9,19 +9,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class AppCache {
 
     public static <T> Optional<T> getIfPresent(String key, Class<T> type) {
         return Optional.ofNullable(get(key, type, () -> null));
-    }
-
-    public static UUID getCachedUserId() {
-        var id = get("userId", UUID.class, UUID::randomUUID);
-        update("userId", id);
-        return id;
     }
 
     private static Path getBasePath() {
@@ -68,7 +61,7 @@ public class AppCache {
                 FileUtils.deleteQuietly(path.toFile());
             }
         }
-        return notPresent.get();
+        return notPresent != null ? notPresent.get() : null;
     }
 
     public static <T> void update(String key, T val) {

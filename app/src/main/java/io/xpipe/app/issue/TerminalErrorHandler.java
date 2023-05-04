@@ -53,6 +53,7 @@ public class TerminalErrorHandler implements ErrorHandler {
 
         try {
             AppProperties.init();
+            AppState.init();
             AppExtensionManager.init(false);
             AppI18n.init();
             AppStyle.init();

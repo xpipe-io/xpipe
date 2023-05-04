@@ -6,6 +6,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.impl.LocalStore;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -70,8 +71,9 @@ public class StoreIntroComp extends SimpleComp {
         v.getStyleClass().add("intro");
 
         var sp = new StackPane(v);
-        sp.setAlignment(Pos.CENTER);
+        sp.setAlignment(Pos.BOTTOM_CENTER);
         sp.setPickOnBounds(false);
+        sp.setPadding(new Insets(0, 0, 40, 0));
         return sp;
     }
 }

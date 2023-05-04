@@ -1,9 +1,6 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.core.App;
-import io.xpipe.app.core.AppChecks;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
@@ -87,6 +84,7 @@ public abstract class OperationMode {
 
             TrackEvent.info("mode", "Initial setup");
             AppProperties.init();
+            AppState.init();
             XPipeSession.init(AppProperties.get().getBuildUuid());
             AppChecks.checkDirectoryPermissions();
             AppLogs.init();

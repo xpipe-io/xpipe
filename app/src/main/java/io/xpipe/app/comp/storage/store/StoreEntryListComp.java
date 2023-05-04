@@ -3,6 +3,7 @@ package io.xpipe.app.comp.storage.store;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.core.AppState;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
@@ -29,13 +30,17 @@ public class StoreEntryListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var initialCount = StoreViewState.get().getAllEntries().size();
+        var showIntro = Bindings.createBooleanBinding(() -> {
+            return initialCount == StoreViewState.get().getAllEntries().size() && AppState.get().isInitialLaunch();
+        }, StoreViewState.get().getAllEntries());
         var map = new LinkedHashMap<Comp<?>, ObservableBooleanValue>();
         map.put(
                 createList(),
                 BindingsHelper.persist(
                         Bindings.not(Bindings.isEmpty(StoreViewState.get().getShownEntries()))));
 
-        map.put(new StoreIntroComp(), StoreViewState.get().emptyProperty());
+        map.put(new StoreIntroComp(), showIntro);
         map.put(
                 new StoreNotFoundComp(),
                 BindingsHelper.persist(Bindings.and(

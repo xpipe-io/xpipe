@@ -3,8 +3,8 @@ package io.xpipe.app.issue;
 import io.sentry.*;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
@@ -28,6 +28,7 @@ public class SentryErrorHandler implements ErrorHandler {
         // Assume that this object is wrapped by a synchronous error handler
         if (!init) {
             AppProperties.init();
+            AppState.init();
             if (AppProperties.get().getSentryUrl() != null) {
                 Sentry.init(options -> {
                     options.setDsn(AppProperties.get().getSentryUrl());
@@ -110,7 +111,7 @@ public class SentryErrorHandler implements ErrorHandler {
         }
 
         var user = new User();
-        user.setId(AppCache.getCachedUserId().toString());
+        user.setId(AppState.get().getUserId().toString());
         s.setUser(user);
     }
 

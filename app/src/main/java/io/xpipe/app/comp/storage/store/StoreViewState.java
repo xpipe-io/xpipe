@@ -7,9 +7,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,10 +26,6 @@ public class StoreViewState {
             FXCollections.observableList(new CopyOnWriteArrayList<>());
     private final ObservableList<StoreEntryWrapper> shownEntries =
             FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    private final ObservableBooleanValue empty = Bindings.createBooleanBinding(() -> {
-        return allEntries.stream().allMatch(storeEntryWrapper -> !storeEntryWrapper.getEntry().getConfiguration().isRenameable());
-    }, allEntries);
 
     private StoreViewState() {
         try {
@@ -106,13 +100,5 @@ public class StoreViewState {
 
     public ObservableList<StoreEntryWrapper> getShownEntries() {
         return shownEntries;
-    }
-
-    public boolean isEmpty() {
-        return empty.get();
-    }
-
-    public ObservableBooleanValue emptyProperty() {
-        return empty;
     }
 }
