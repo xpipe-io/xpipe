@@ -4,8 +4,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
@@ -28,12 +30,20 @@ public class SampleAction implements ActionProvider {
 
         @Override
         public void execute() throws Exception {
-            // Start a shell control from the shell connection store
-            try (ShellControl sc = ((ShellStore) entry.getStore()).control().start()) {
+            var docker = new LocalStore();
+            // Start a shell control from the docker connection store
+            try (ShellControl sc = docker.control().start()) {
+                // Once we are here, the shell connection is initialized and we can query all kinds of information
+
+                // Query the detected shell dialect, e.g. cmd, powershell, sh, bash, etc.
+                System.out.println(sc.getShellDialect());
+
+                // Query the os type
+                System.out.println(sc.getOsType());
+
                 // Simple commands can be executed in one line
-                // The shell dialects also provide the proper command syntax for common commands like echo
-                String echoOut =
-                        sc.executeSimpleStringCommand(sc.getShellDialect().getEchoCommand("hello!", false));
+                // The shell dialects also provide the appropriate commands for common operations like echo for all supported shells
+                String echoOut = sc.executeSimpleStringCommand(sc.getShellDialect().getEchoCommand("hello!", false));
 
                 // You can also implement custom handling for more complex commands
                 try (CommandControl cc = sc.command("ls").start()) {
@@ -42,7 +52,8 @@ public class SampleAction implements ActionProvider {
 
                     // Read the stdout lines as a stream
                     BufferedReader reader = new BufferedReader(new InputStreamReader(cc.getStdout(), cc.getCharset()));
-                    reader.lines().filter(s -> s != null).forEach(s -> {
+                    // We don't have to close this stream here, that will be automatically done by the command control after the try-with block
+                    reader.lines().filter(s -> !s.isBlank()).forEach(s -> {
                         System.out.println(s);
                     });
 
@@ -55,26 +66,34 @@ public class SampleAction implements ActionProvider {
                 // Commands can also be more complex and span multiple lines.
                 // In this case, X-Pipe will internally write a command to a script file and then execute the script
                 try (CommandControl cc = sc.command(
-                    """
-                    VAR = "value"
-                    echo "$VAR"
-                    """
-                    ).start()) {
+                        """
+                        VAR="value"
+                        echo "$VAR"
+                        """
+                ).start()) {
+                    // Reads stdout, stashes stderr. If the exit code is not 0, it will throw an exception with the stderr contents.
                     var output = cc.readOrThrow();
                 }
 
                 // More customization options
                 // If the command should be run as root, the command will be executed with
-                // sudo and the optional sudo password automatically provided by X-Pipe.
-                // You can also set a custom working directory
+                // sudo and the optional sudo password automatically provided by X-Pipe
+                // by using the information from the connection store.
+                // You can also set a custom working directory.
                 try (CommandControl cc = sc.command("kill <pid>").elevated().workingDirectory("/").start()) {
-                    // Discard any output but throw an exception the exit code is not 0
+                    // Discard any output but throw an exception with the stderr contents if the exit code is not 0
                     cc.discardOrThrow();
                 }
 
                 // Start a bash sub shell. Useful if the login shell is different
-                try (ShellControl bash = sc.subShell("bash").start()) {
-                    // ...
+                try (ShellControl bash = sc.subShell(ShellDialects.BASH).start()) {
+                    // Let's write to a file
+                    try (CommandControl cc = bash.command("cat > myfile.txt").start()) {
+                        // Writing into stdin can also easily be done
+                        cc.getStdin().write("my file content".getBytes(cc.getCharset()));
+                        // Close stdin to send EOF. It will be reopened by the shell control after the command is done
+                        cc.closeStdin();
+                    }
                 }
             }
         }

@@ -15,6 +15,7 @@ import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -87,7 +88,6 @@ final class FileListComp extends AnchorPane {
         mtimeCol.setCellFactory(col -> new FileTimeCell());
         mtimeCol.getStyleClass().add(Tweaks.ALIGN_RIGHT);
 
-
         var modeCol = new TableColumn<FileSystem.FileEntry, String>("Attributes");
         modeCol.setCellValueFactory(
                 param -> new SimpleObjectProperty<>(param.getValue().getMode()));
@@ -117,7 +117,8 @@ final class FileListComp extends AnchorPane {
             };
             var dirsFirst = Comparator.<FileSystem.FileEntry, Boolean>comparing(path -> !path.isDirectory());
 
-            Comparator<? super FileSystem.FileEntry> us = parentFirst.thenComparing(dirsFirst).thenComparing(comp);
+            Comparator<? super FileSystem.FileEntry> us =
+                    parentFirst.thenComparing(dirsFirst).thenComparing(comp);
             FXCollections.sort(table.getItems(), us);
             return true;
         });
@@ -133,11 +134,27 @@ final class FileListComp extends AnchorPane {
 
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super FileSystem.FileEntry>)
                 c -> {
-                    fileList.getSelected().setAll(c.getList());
+            // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in JavaFX
+                    var toSelect = c.getList().stream()
+                            .filter(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() == null
+                                    || !entry.getPath()
+                                            .equals(fileList.getFileSystemModel()
+                                                    .getCurrentParentDirectory()
+                                                    .getPath()))
+                            .toList();
+                    fileList.getSelected().setAll(toSelect);
                     fileList.getFileSystemModel()
                             .getBrowserModel()
                             .getSelectedFiles()
-                            .setAll(c.getList());
+                            .setAll(toSelect);
+
+                    Platform.runLater(() -> {
+                        var toUnselect = table.getSelectionModel().getSelectedItems().stream()
+                                .filter(entry -> !toSelect.contains(entry))
+                                .toList();
+                        toUnselect.forEach(entry -> table.getSelectionModel()
+                                .clearSelection(table.getItems().indexOf(entry)));
+                    });
                 });
 
         table.setOnKeyPressed(event -> {
@@ -182,12 +199,6 @@ final class FileListComp extends AnchorPane {
             TableRow<FileSystem.FileEntry> row = new TableRow<>();
             var listEntry = Bindings.createObjectBinding(
                     () -> new FileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
-
-            row.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue && listEntry.get().isSynthetic()) {
-                    row.updateSelected(false);
-                }
-            });
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(DRAG, false);
@@ -252,7 +263,13 @@ final class FileListComp extends AnchorPane {
                     }
                 }
 
-                var hasAttributes = fileList.getFileSystemModel().getFileSystem() != null && !fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
+                var hasAttributes = fileList.getFileSystemModel().getFileSystem() != null
+                        && !fileList.getFileSystemModel()
+                                .getFileSystem()
+                                .getShell()
+                                .orElseThrow()
+                                .getOsType()
+                                .equals(OsType.WINDOWS);
                 if (!hasAttributes) {
                     table.getColumns().remove(modeCol);
                 } else {
@@ -310,7 +327,9 @@ final class FileListComp extends AnchorPane {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
-        private final Node imageView = new SvgCacheComp(new SimpleDoubleProperty(24), new SimpleDoubleProperty(24), img, FileIconManager.getSvgCache()).createRegion();
+        private final Node imageView = new SvgCacheComp(
+                        new SimpleDoubleProperty(24), new SimpleDoubleProperty(24), img, FileIconManager.getSvgCache())
+                .createRegion();
         private final StackPane textField =
                 new LazyTextFieldComp(text).createStructure().get();
         private final ChangeListener<String> listener;

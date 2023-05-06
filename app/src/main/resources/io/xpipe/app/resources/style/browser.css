@@ -46,6 +46,12 @@
 
 .browser .tool-bar {
     -fx-border-width: 1 0 1 0;
+    -fx-padding: 5px 10px ;
+}
+
+.browser .status-bar {
+    -fx-border-width: 1 0 1 0;
+-fx-border-color: -color-neutral-muted;
 }
 
 .browser .breadcrumbs >.divider {

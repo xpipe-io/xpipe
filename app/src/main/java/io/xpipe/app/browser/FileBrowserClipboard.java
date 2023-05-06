@@ -1,6 +1,8 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.core.store.FileSystem;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import lombok.SneakyThrows;
@@ -19,7 +21,7 @@ public class FileBrowserClipboard {
         List<FileSystem.FileEntry> entries;
     }
 
-    public static Instance currentCopyClipboard;
+    public static Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
     public static Instance currentDragClipboard;
 
     @SneakyThrows
@@ -34,12 +36,12 @@ public class FileBrowserClipboard {
     @SneakyThrows
     public static void startCopy(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
         var id = UUID.randomUUID();
-        currentCopyClipboard = new Instance(id, base, new ArrayList<>(selected));
+        currentCopyClipboard.setValue(new Instance(id, base, new ArrayList<>(selected)));
     }
 
     public static Instance retrieveCopy() {
         var current = currentCopyClipboard;
-        return current;
+        return current.getValue();
     }
 
     public static Instance retrieveDrag(Dragboard dragboard) {

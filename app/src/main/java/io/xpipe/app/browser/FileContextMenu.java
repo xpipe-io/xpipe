@@ -133,6 +133,31 @@ final class FileContextMenu extends ContextMenu {
 
         getItems().add(new SeparatorMenuItem());
 
+        {
+
+            var copy = new MenuItem("Copy");
+            copy.setOnAction(event -> {
+                FileBrowserClipboard.startCopy(
+                        model.getCurrentDirectory(), model.getFileList().getSelected());
+                event.consume();
+            });
+            getItems().add(copy);
+
+            var paste = new MenuItem("Paste");
+            paste.setOnAction(event -> {
+                var clipboard = FileBrowserClipboard.retrieveCopy();
+                if (clipboard != null) {
+                    var files = clipboard.getEntries();
+                    var target = model.getCurrentDirectory();
+                    model.dropFilesIntoAsync(target, files, true);
+                }
+                event.consume();
+            });
+            getItems().add(paste);
+        }
+
+        getItems().add(new SeparatorMenuItem());
+
         var copyName = new MenuItem("Copy name");
         copyName.setOnAction(event -> {
             var selection = new StringSelection(FileNames.getFileName(entry.getPath()));
