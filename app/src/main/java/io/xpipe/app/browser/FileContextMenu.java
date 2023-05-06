@@ -148,7 +148,7 @@ final class FileContextMenu extends ContextMenu {
                 var clipboard = FileBrowserClipboard.retrieveCopy();
                 if (clipboard != null) {
                     var files = clipboard.getEntries();
-                    var target = model.getCurrentDirectory();
+                    var target = entry.isDirectory() ? entry : model.getCurrentDirectory();
                     model.dropFilesIntoAsync(target, files, true);
                 }
                 event.consume();

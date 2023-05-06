@@ -42,7 +42,7 @@ and instead delegates this to your existing command-line tools.
 For this approach to work however, you need to have the required tools installed.
 
 For example, if you want to connect to a remote system via SSH with X-Pipe,
-you need to have an `SSH` client installed and added to your PATH.
+you need to have an `ssh` client installed and added to your PATH.
 The exact vendor and version of this `ssh` command-line
 tool doesn't matter as long as the standard options are supported.
 
