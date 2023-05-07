@@ -23,8 +23,8 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
     }
 
     @Override
-    default String prepareLaunchCommand() throws Exception {
-        return control().prepareTerminalOpen();
+    default String prepareLaunchCommand(String displayName) throws Exception {
+        return control().prepareTerminalOpen(displayName);
     }
 
     default ShellControl control() {

@@ -39,10 +39,14 @@ public class ScriptHelper {
     }
 
     public static String constructInitFile(
-            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login) {
+            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName) {
         ShellDialect t = processControl.getShellDialect();
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
+
+        if (displayName != null) {
+            content = t.changeTitleCommand(displayName) + "\n" + content;
+        }
 
         if (login) {
             var applyProfilesCommand = t.applyProfileFilesCommand();

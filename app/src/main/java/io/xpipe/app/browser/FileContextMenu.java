@@ -83,7 +83,7 @@ final class FileContextMenu extends ContextMenu {
                         if (e != null) {
                             pc.executeSimpleBooleanCommand(e);
                         }
-                        var cmd = pc.command("\"" + entry.getPath() + "\"").prepareTerminalOpen();
+                        var cmd = pc.command("\"" + entry.getPath() + "\"").prepareTerminalOpen("?");
                         TerminalHelper.open(FilenameUtils.getBaseName(entry.getPath()), cmd);
                     });
                     event.consume();

@@ -14,7 +14,7 @@ public class LaunchExchangeImpl extends LaunchExchange
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         var store = getStoreEntryByName(msg.getName(), false);
         if (store.getStore() instanceof LaunchableStore s) {
-            var command = s.prepareLaunchCommand();
+            var command = s.prepareLaunchCommand(store.getName());
             var split = CommandLine.parse(command);
             return Response.builder().command(List.of(split.toStrings())).build();
         }

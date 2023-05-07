@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
@@ -277,7 +278,7 @@ final class OpenFileSystemModel {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
-                            .prepareTerminalOpen();
+                            .prepareTerminalOpen(directory + " - " + XPipeDaemon.getInstance().getStoreName(store.getValue()).orElse("?"));
                     TerminalHelper.open(directory, command);
                 }
             });

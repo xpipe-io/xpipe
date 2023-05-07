@@ -28,6 +28,8 @@ public interface ShellDialect {
         return null;
     }
 
+    String changeTitleCommand(String newTitle);
+
     default String applyProfileFilesCommand() {
         return null;
     }

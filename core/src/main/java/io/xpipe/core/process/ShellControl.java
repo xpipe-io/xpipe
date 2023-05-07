@@ -21,9 +21,9 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withMessageFormatter(Function<String, String> formatter);
 
-    String prepareTerminalOpen() throws Exception;
+    String prepareTerminalOpen(String displayName) throws Exception;
 
-    String prepareIntermediateTerminalOpen(String content) throws Exception;
+    String prepareIntermediateTerminalOpen(String content, String displayName) throws Exception;
 
     String getTemporaryDirectory() throws Exception;
 

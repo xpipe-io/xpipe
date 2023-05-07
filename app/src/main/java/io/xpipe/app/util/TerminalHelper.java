@@ -9,7 +9,7 @@ import java.io.IOException;
 public class TerminalHelper {
 
     public static void open(String title, CommandControl cc) throws Exception {
-        var command = cc.prepareTerminalOpen();
+        var command = cc.prepareTerminalOpen(title);
         open(title, command);
     }
 
