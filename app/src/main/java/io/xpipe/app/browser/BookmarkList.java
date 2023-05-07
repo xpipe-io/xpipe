@@ -33,10 +33,15 @@ final class BookmarkList extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var observableList = BindingsHelper.filteredContentBinding(StoreEntryFlatMiniSectionComp.ALL, e -> e.getEntry().getStore() instanceof ShellStore);
+        var observableList = BindingsHelper.filteredContentBinding(StoreEntryFlatMiniSectionComp.ALL, e -> e.getEntry().getState().isUsable());
         var list = new ListBoxViewComp<>(observableList, observableList, e -> {
             return Comp.of(() -> {
                 var button = new Button(null, e.createRegion());
+
+                if (!(e.getEntry().getStore() instanceof ShellStore)) {
+                    button.setDisable(true);
+                }
+
                 button.setOnAction(event -> {
                     var fileSystem = ((ShellStore) e.getEntry().getStore());
                     model.openFileSystem(fileSystem);

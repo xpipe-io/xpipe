@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
 import com.jfoenix.controls.JFXButton;
-import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -11,10 +10,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.augment.PopupMenuAugment;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.IconButtonComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
@@ -26,12 +22,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -89,9 +83,10 @@ public class StoreEntryComp extends SimpleComp {
         });
     }
 
-    private LazyTextFieldComp createName() {
-        var name = new LazyTextFieldComp(entry.nameProperty());
-        name.apply(struc -> struc.getTextField().editableProperty().bind(entry.getRenamable()));
+    private Comp<?> createName() {
+        var name = new LabelComp(entry.nameProperty())
+                .apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
+                .apply(struc -> struc.get().setPadding(new Insets(5, 5, 5, 0)));
         name.apply(s -> AppFont.header(s.get()));
         return name;
     }

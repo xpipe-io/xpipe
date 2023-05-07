@@ -56,6 +56,10 @@ public class CustomComboBoxBuilder<T> {
         actionsMap.put(node, run);
     }
 
+    public void disable(Node node) {
+        disabledNodes.add(node);
+    }
+
     public void setUnknownNode(Function<T, Node> node) {
         unknownNode = node;
     }

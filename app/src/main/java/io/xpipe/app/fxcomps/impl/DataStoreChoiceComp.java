@@ -99,15 +99,14 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             }
 
             var s = e.getEntry().getStore();
-            if (!storeClass.isAssignableFrom(s.getClass()) || !applicableCheck.test((T) s)) {
-                continue;
-            }
-
             if (!(mode == Mode.ENVIRONMENT) && s instanceof LeafShellStore) {
                 continue;
             }
 
-            comboBox.add((T) e.getEntry().getStore());
+            var node = comboBox.add((T) e.getEntry().getStore());
+            if (!storeClass.isAssignableFrom(s.getClass()) || !applicableCheck.test((T) s)) {
+                comboBox.disable(node);
+            }
         }
 
         ComboBox<Node> cb = comboBox.build();

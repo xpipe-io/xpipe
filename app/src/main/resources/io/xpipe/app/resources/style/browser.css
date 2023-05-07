@@ -40,6 +40,14 @@
     -fx-background-color: -color-success-muted;
 }
 
+.bookmark-list .button:disabled {
+    -fx-opacity: 1.0;
+}
+
+.bookmark-list .button:disabled * {
+    -fx-opacity: 0.9;
+}
+
 .browser .bookmark-list {
     -fx-border-width: 0 0 1 1;
 }
