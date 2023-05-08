@@ -178,6 +178,13 @@ final class FileListComp extends AnchorPane {
             }
         });
 
+        prepareTableEntries(table);
+        prepareTableChanges(table, mtimeCol, modeCol);
+
+        return table;
+    }
+
+    private void prepareTableEntries(TableView<FileSystem.FileEntry> table) {
         var emptyEntry = new FileListCompEntry(table, null, fileList);
         table.setOnDragOver(event -> {
             emptyEntry.onDragOver(event);
@@ -242,16 +249,17 @@ final class FileListComp extends AnchorPane {
 
             return row;
         });
-
+    }
+    private void prepareTableChanges(TableView<FileSystem.FileEntry> table, TableColumn<FileSystem.FileEntry, Instant> mtimeCol, TableColumn<FileSystem.FileEntry, String> modeCol) {
         var lastDir = new SimpleObjectProperty<FileSystem.FileEntry>();
-        SimpleChangeListener.apply(fileList.getShown(), (newValue) -> {
+        Runnable updateHandler = () -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 var newItems = new ArrayList<FileSystem.FileEntry>();
                 var parentEntry = fileList.getFileSystemModel().getCurrentParentDirectory();
                 if (parentEntry != null) {
                     newItems.add(parentEntry);
                 }
-                newItems.addAll(newValue);
+                newItems.addAll(fileList.getShown().getValue());
 
                 var hasModifiedDate =
                         newItems.size() == 0 || newItems.stream().anyMatch(entry -> entry.getDate() != null);
@@ -278,7 +286,9 @@ final class FileListComp extends AnchorPane {
                     }
                 }
 
-                table.getItems().setAll(newItems);
+                if (!table.getItems().equals(newItems)) {
+                    table.getItems().setAll(newItems);
+                }
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
                 if (!Objects.equals(lastDir.get(), currentDirectory)) {
@@ -295,9 +305,16 @@ final class FileListComp extends AnchorPane {
                 }
                 lastDir.setValue(currentDirectory);
             });
+        };
+        updateHandler.run();
+        fileList.getShown().addListener((observable, oldValue, newValue) -> {
+            updateHandler.run();
         });
-
-        return table;
+        fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
+            if (oldValue == null) {
+                updateHandler.run();
+            }
+        });
     }
 
     private void borderScroll(TableView<?> tableView, DragEvent event) {

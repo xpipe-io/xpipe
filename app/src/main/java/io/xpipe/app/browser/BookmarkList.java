@@ -44,7 +44,7 @@ final class BookmarkList extends SimpleComp {
 
                 button.setOnAction(event -> {
                     var fileSystem = ((ShellStore) e.getEntry().getStore());
-                    model.openFileSystem(fileSystem);
+                    model.openFileSystemAsync(fileSystem);
                     event.consume();
                 });
                 GrowAugment.create(true, false).augment(new SimpleCompStructure<>(button));

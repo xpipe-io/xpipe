@@ -71,14 +71,14 @@ public class FileBrowserModel {
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
-            openFileSystem(store);
+            openFileSystemAsync(store);
         }
     }
 
-    public void openFileSystem(ShellStore store) {
+    public void openFileSystemAsync(ShellStore store) {
         // Prevent multiple tabs in non browser modes
         if (!mode.equals(Mode.BROWSER)) {
-            ThreadHelper.runAsync(() -> {
+            ThreadHelper.runFailableAsync(() -> {
                 var open = openFileSystems.size() > 0 ? openFileSystems.get(0) : null;
                 if (open != null) {
                     open.closeSync();
@@ -88,23 +88,16 @@ public class FileBrowserModel {
                 var model = new OpenFileSystemModel(this);
                 openFileSystems.add(model);
                 selected.setValue(model);
-                model.switchAsync(store);
+                model.switchSync(store);
             });
             return;
         }
 
-        // Duplication protection (Not needed for now)
-//        var found = openFileSystems.stream()
-//                .filter(fileSystemModel -> fileSystemModel.getStore().getValue().equals(store))
-//                .findFirst();
-//        if (found.isPresent()) {
-//            selected.setValue(found.get());
-//            return;
-//        }
-
-        var model = new OpenFileSystemModel(this);
-        openFileSystems.add(model);
-        selected.setValue(model);
-        model.switchAsync(store);
+        ThreadHelper.runFailableAsync(() -> {
+            var model = new OpenFileSystemModel(this);
+            openFileSystems.add(model);
+            selected.setValue(model);
+            model.switchSync(store);
+        });
     }
 }

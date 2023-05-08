@@ -66,7 +66,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                 .filter(e -> e.equals(s))
                 .findAny()
                 .flatMap(store -> {
-                    if (ShellStore.isLocal(store.asNeeded()) && mode == Mode.PROXY) {
+                    if (mode == Mode.PROXY && ShellStore.isLocal(store.asNeeded())) {
                         return Optional.of(AppI18n.get("none"));
                     }
 

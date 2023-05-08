@@ -8,9 +8,11 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
+@EqualsAndHashCode(callSuper = true)
 public class FileBrowserStatusBarComp extends SimpleComp {
 
     OpenFileSystemModel model;
@@ -20,7 +22,7 @@ public class FileBrowserStatusBarComp extends SimpleComp {
         var cc = PlatformThread.sync(FileBrowserClipboard.currentCopyClipboard);
         var ccCount = Bindings.createStringBinding(() -> {
             if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
-                return String.valueOf(cc.getValue().getEntries().size()) + " file" + (cc.getValue().getEntries().size() > 1 ? "s" : "") + " in clipboard";
+                return cc.getValue().getEntries().size() + " file" + (cc.getValue().getEntries().size() > 1 ? "s" : "") + " in clipboard";
             } else {
                 return null;
             }

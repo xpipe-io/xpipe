@@ -75,28 +75,28 @@ final class OpenFileSystemModel {
     }
 
     public Optional<String> cd(String path) {
-            if (Objects.equals(path, currentPath.get())) {
-                return Optional.empty();
-            }
-
-            String newPath = null;
-            try {
-                newPath = FileSystemHelper.resolveDirectoryPath(this, path);
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
-                return Optional.of(currentPath.get());
-            }
-
-            if (!Objects.equals(path, newPath)) {
-                return Optional.of(newPath);
-            }
-
-            ThreadHelper.runFailableAsync(() -> {
-                try (var ignored = new BusyProperty(busy)) {
-                    cdSync(path);
-                }
-            });
+        if (Objects.equals(path, currentPath.get())) {
             return Optional.empty();
+        }
+
+        String newPath = null;
+        try {
+            newPath = FileSystemHelper.resolveDirectoryPath(this, path);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return Optional.of(currentPath.get());
+        }
+
+        if (!Objects.equals(path, newPath)) {
+            return Optional.of(newPath);
+        }
+
+        ThreadHelper.runFailableAsync(() -> {
+            try (var ignored = new BusyProperty(busy)) {
+                cdSync(path);
+            }
+        });
+        return Optional.empty();
     }
 
     private void cdSync(String path) throws Exception {
@@ -123,7 +123,8 @@ final class OpenFileSystemModel {
                 fileList.setAll(stream);
             } else {
                 var stream = getFileSystem().listRoots().stream()
-                        .map(s -> new FileSystem.FileEntry(getFileSystem(), s, Instant.now(), true, false, false, 0, null));
+                        .map(s -> new FileSystem.FileEntry(
+                                getFileSystem(), s, Instant.now(), true, false, false, 0, null));
                 noDirectory.set(true);
                 fileList.setAll(stream);
             }
@@ -248,22 +249,16 @@ final class OpenFileSystemModel {
         store = null;
     }
 
-    private void switchSync(FileSystemStore fileSystem) throws Exception {
-        closeSync();
-        this.store.setValue(fileSystem);
-        var fs = fileSystem.createFileSystem();
-        fs.open();
-        this.fileSystem = fs;
+    public void switchSync(FileSystemStore fileSystem) throws Exception {
+        BusyProperty.execute(busy, () -> {
+            closeSync();
+            this.store.setValue(fileSystem);
+            var fs = fileSystem.createFileSystem();
+            fs.open();
+            this.fileSystem = fs;
 
-        var current = FileSystemHelper.getStartDirectory(this);
-        cdSync(current);
-    }
-
-    public void switchAsync(FileSystemStore fileSystem) {
-        ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
-                switchSync(fileSystem);
-            });
+            var current = FileSystemHelper.getStartDirectory(this);
+            cdSync(current);
         });
     }
 
@@ -278,7 +273,10 @@ final class OpenFileSystemModel {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
-                            .prepareTerminalOpen(directory + " - " + XPipeDaemon.getInstance().getStoreName(store.getValue()).orElse("?"));
+                            .prepareTerminalOpen(directory + " - "
+                                    + XPipeDaemon.getInstance()
+                                            .getStoreName(store.getValue())
+                                            .orElse("?"));
                     TerminalHelper.open(directory, command);
                 }
             });

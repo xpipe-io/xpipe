@@ -84,7 +84,10 @@ public class OpenFileSystemComp extends SimpleComp {
 
         FileListComp directoryView = new FileListComp(model.getFileList());
 
-        var root = new VBox(topBar, directoryView, new FileBrowserStatusBarComp(model).createRegion());
+        var root = new VBox(topBar, directoryView);
+        if (model.getBrowserModel().getMode() == FileBrowserModel.Mode.BROWSER) {
+            root.getChildren().add(new FileBrowserStatusBarComp(model).createRegion());
+        }
         VBox.setVgrow(directoryView, Priority.ALWAYS);
         root.setPadding(Insets.EMPTY);
         model.getFileList().predicateProperty().set(PREDICATE_NOT_HIDDEN);
