@@ -26,8 +26,9 @@ download_release_from_repo() {
   local os_info="$1"
   local tmpdir="$2"
   local ending=$(get_file_ending)
+  local arch="$(uname -m)"
 
-  local filename="xpipe-installer-$os_info-x86_64.$ending"
+  local filename="xpipe-installer-$os_info-$arch.$ending"
   local download_file="$tmpdir/$filename"
   local archive_url="$(release_url)/$filename"
 
@@ -154,7 +155,7 @@ check_architecture() {
       ;;
   esac
 
-  error "Sorry! X-Pipe currently only provides pre-built binaries for x86_64 architectures."
+  error "Sorry! X-Pipe currently does not provide your processor architecture."
   return 1
 }
 
