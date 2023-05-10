@@ -7,18 +7,19 @@ release_url() {
 get_file_ending() {
   local uname_str="$(uname -s)"
   case "$uname_str" in
-    Linux)
-      if [ -f "/etc/debian_version" ]; then
-        echo "deb"
-      else
-        echo "rpm"
-      fi
-      ;;
-    Darwin)
-      echo "pkg"
-      ;;
-    *)
-      exit 1
+  Linux)
+    if [ -f "/etc/debian_version" ]; then
+      echo "deb"
+    else
+      echo "rpm"
+    fi
+    ;;
+  Darwin)
+    echo "pkg"
+    ;;
+  *)
+    exit 1
+    ;;
   esac
 }
 
@@ -68,17 +69,18 @@ parse_os_name() {
   local arch="$(uname -m)"
 
   case "$uname_str" in
-    Linux)
-      echo "linux"
-      ;;
-    FreeBSD)
-      echo "linux"
-      ;;
-    Darwin)
-      echo "macos"
-      ;;
-    *)
-      return 1
+  Linux)
+    echo "linux"
+    ;;
+  FreeBSD)
+    echo "linux"
+    ;;
+  Darwin)
+    echo "macos"
+    ;;
+  *)
+    return 1
+    ;;
   esac
   return 0
 }
@@ -86,18 +88,25 @@ parse_os_name() {
 uninstall() {
   local uname_str="$(uname -s)"
   case "$uname_str" in
-    Linux)
+  Linux)
+    if [ -d "/opt/xpipe" ]; then
+      info "Uninstalling previous version"
       if [ -f "/etc/debian_version" ]; then
         DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe
       else
         sudo rpm -e xpipe
       fi
-      ;;
-    Darwin)
+    fi
+    ;;
+  Darwin)
+    if [ -d "/Applications/X-Pipe.app" ]; then
+      info "Uninstalling previous version"
       sudo /Applications/X-Pipe.app/Contents/Resources/scripts/uninstall.sh
-      ;;
-    *)
-      exit 1
+    fi
+    ;;
+  *)
+    exit 1
+    ;;
   esac
 }
 
@@ -106,18 +115,19 @@ install() {
   local file="$1"
 
   case "$uname_str" in
-    Linux)
-      if [ -f "/etc/debian_version" ]; then
-        DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "$file"
-      else
-        sudo rpm -i "$file"
-      fi
-      ;;
-    Darwin)
-      sudo installer -verboseR -allowUntrusted -pkg "$file" -target /
-      ;;
-    *)
-      exit 1
+  Linux)
+    if [ -f "/etc/debian_version" ]; then
+      DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "$file"
+    else
+      sudo rpm -i "$file"
+    fi
+    ;;
+  Darwin)
+    sudo installer -verboseR -allowUntrusted -pkg "$file" -target /
+    ;;
+  *)
+    exit 1
+    ;;
   esac
 }
 
@@ -142,33 +152,34 @@ download_release() {
 check_architecture() {
   local arch="$1"
   case "$arch" in
-    x86_64)
+  x86_64)
+    return 0
+    ;;
+  amd64)
+    return 0
+    ;;
+  arm64)
+    if [ "$(uname -s)" = "Darwin" ]; then
       return 0
-      ;;
-    amd64)
-      return 0
-      ;;
-    arm64)
-      if [ "$(uname -s)" = "Darwin" ]; then
-        return 0
-      fi
-      ;;
+    fi
+    ;;
   esac
 
   error "Sorry! X-Pipe currently does not provide your processor architecture."
   return 1
 }
 
-
 # return if sourced (for testing the functions above)
 return 0 2>/dev/null
 
 check_architecture "$(uname -m)" || exit 1
 
-download_archive="$(download_release; exit "$?")"
+download_archive="$(
+  download_release
+  exit "$?"
+)"
 exit_status="$?"
-if [ "$exit_status" != 0 ]
-then
+if [ "$exit_status" != 0 ]; then
   error "Could not download X-Pipe release."
   exit "$exit_status"
 fi
