@@ -109,8 +109,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected String toCommand(String name, String file) {
-            // We would like to use --new-tab but that fails to open when no existing window is open.
-            return "-e \"" + file + "\"";
+            // Note for later: When debugging konsole launches, it will always open as a child process of IntelliJ/X-Pipe even though we try to detach it.
+            // This is not the case for production where it works as expected
+            return "--new-tab -e \"" + file + "\"";
         }
 
         @Override
