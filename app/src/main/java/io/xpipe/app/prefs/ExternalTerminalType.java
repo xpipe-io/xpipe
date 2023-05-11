@@ -109,7 +109,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected String toCommand(String name, String file) {
-            return "--new-tab -e \"" + file + "\"";
+            // We would like to use --new-tab but that fails to open when no existing window is open.
+            return "-e \"" + file + "\"";
         }
 
         @Override
