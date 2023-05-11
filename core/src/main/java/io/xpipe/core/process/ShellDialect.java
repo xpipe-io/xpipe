@@ -20,6 +20,8 @@ public interface ShellDialect {
 
     String fileArgument(String s);
 
+    String executeWithNoInitFiles(ShellDialect parentDialect, String file);
+
     void prepareDumbTerminalCommands(ShellControl sc) throws Exception;
 
     String prepareProperTerminalCommands();

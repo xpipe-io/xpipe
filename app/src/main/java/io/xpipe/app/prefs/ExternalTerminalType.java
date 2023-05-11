@@ -30,12 +30,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType POWERSHELL =
+    public static final ExternalTerminalType POWERSHELL_WINDOWS =
             new SimpleType("powershell", "powershell", "PowerShell") {
 
                 @Override
                 protected String toCommand(String name, String file) {
-                    return "-ExecutionPolicy Bypass -Command cmd /C '" + file + "'";
+                    return "-ExecutionPolicy Bypass -NoProfile -Command " + noInit(file);
                 }
 
                 @Override
@@ -44,13 +44,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType PWSH = new SimpleType("pwsh", "pwsh", "PowerShell Core") {
+    public static final ExternalTerminalType PWSH_WINDOWS = new SimpleType("pwsh", "pwsh", "PowerShell Core") {
 
         @Override
         protected String toCommand(String name, String file) {
             // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-            var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
-            return "-ExecutionPolicy Bypass -Command cmd /C '" +script + "'";
+            var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + noInit(file) + "\"\npause");
+            return "-ExecutionPolicy Bypass -NoProfile -Command " + noInit(script);
         }
 
         @Override
@@ -68,7 +68,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     // backslash of a filepath to escape the closing quote in the title argument
                     // So just remove that slash
                     var fixedName = FileNames.removeTrailingSlash(name);
-                    return "-w 1 nt --title \"" + fixedName + "\" \"" + file + "\"";
+                    return "-w 1 nt --title \"" + fixedName + "\" " + noInit(file);
                 }
 
                 @Override
@@ -89,7 +89,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         // In order to fix this bug which also affects us:
                         // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                         toExecute =
-                                "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                                "GNOME_TERMINAL_SCREEN=\"\" nohup " + noInit(file) + " </dev/null &>/dev/null & disown";
                         pc.executeSimpleCommand(toExecute);
                     }
                 }
@@ -109,7 +109,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected String toCommand(String name, String file) {
-            return "--new-tab -e \"" + file + "\"";
+            return "--new-tab -e " + noInit(file);
         }
 
         @Override
@@ -122,7 +122,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected String toCommand(String name, String file) {
-            return "--tab --title \"" + name + "\" --command \"" + file + "\"";
+            return "--tab --title \"" + name + "\" --command " + noInit(file);
         }
 
         @Override
@@ -141,8 +141,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     public static final List<ExternalTerminalType> ALL = Stream.of(
                     WINDOWS_TERMINAL,
-                    PWSH,
-                    POWERSHELL,
+                    PWSH_WINDOWS,
+                    POWERSHELL_WINDOWS,
                     CMD,
                     KONSOLE,
                     XFCE,
@@ -163,6 +163,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     public abstract void launch(String name, String file, boolean elevated) throws Exception;
+
+    default String noInit(String file) {
+        return ShellDialects.getPlatformDefault().executeWithNoInitFiles(ShellDialects.getPlatformDefault(), file);
+    }
 
     static class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
@@ -232,6 +236,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
+            var toExecute = noInit(file).replaceAll("\"", "\\\\\"");
             try (ShellControl pc = LocalStore.getShell()) {
                 var cmd = String.format(
                         """
@@ -252,7 +257,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                     end tell
                                 end if
                                 EOF""",
-                        file.replaceAll("\"", "\\\\\""), file.replaceAll("\"", "\\\\\""));
+                        toExecute, toExecute);
                 pc.executeSimpleCommand(cmd);
             }
         }
