@@ -53,11 +53,11 @@ public class ScriptHelper {
             if (applyProfilesCommand != null) {
                 content = applyProfilesCommand + "\n" + content;
             }
-        }
-
-        var applyRcCommand = t.applyRcFileCommand();
-        if (applyRcCommand != null) {
-            content = applyRcCommand + "\n" + content;
+        } else {
+            var applyRcCommand = t.applyRcFileCommand();
+            if (applyRcCommand != null) {
+                content = applyRcCommand + "\n" + content;
+            }
         }
 
         if (toExecuteInShell != null) {
