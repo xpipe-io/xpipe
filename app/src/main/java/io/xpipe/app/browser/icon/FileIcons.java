@@ -6,6 +6,10 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class FileIcons {
 
+    public static PrettyImageComp createIcon(FileType type) {
+        return new PrettyImageComp(new SimpleStringProperty(type.getIcon()), 22, 22);
+    }
+
     public static PrettyImageComp createIcon(FileSystem.FileEntry entry) {
         return new PrettyImageComp(new SimpleStringProperty(FileIconManager.getFileIcon(entry, false)), 22, 22);
     }

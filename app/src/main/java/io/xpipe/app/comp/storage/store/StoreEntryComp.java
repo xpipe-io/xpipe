@@ -9,7 +9,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.augment.PopupMenuAugment;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -164,12 +164,7 @@ public class StoreEntryComp extends SimpleComp {
             });
         });
 
-        new PopupMenuAugment<>(false) {
-            @Override
-            protected ContextMenu createContextMenu() {
-                return StoreEntryComp.this.createContextMenu();
-            }
-        }.augment(new SimpleCompStructure<>(button));
+        new ContextMenuAugment<>(false, () -> StoreEntryComp.this.createContextMenu()).augment(new SimpleCompStructure<>(button));
 
         return button;
     }
@@ -218,12 +213,7 @@ public class StoreEntryComp extends SimpleComp {
     private Comp<?> createSettingsButton() {
         var settingsButton = new IconButtonComp("mdomz-settings");
         settingsButton.styleClass("settings");
-        settingsButton.apply(new PopupMenuAugment<>(true) {
-            @Override
-            protected ContextMenu createContextMenu() {
-                return StoreEntryComp.this.createContextMenu();
-            }
-        });
+        settingsButton.apply(new ContextMenuAugment<>(true, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(GrowAugment.create(false, true));
         settingsButton.apply(s -> {
             s.get().prefWidthProperty().bind(Bindings.divide(s.get().heightProperty(), 1.35));

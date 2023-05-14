@@ -66,6 +66,35 @@
     -fx-padding: 0;
 }
 
+.browser .context-menu > * > * {
+-fx-padding: 3px 10px 3px 10px;
+-fx-background-radius: 1px;
+-fx-spacing: 20px;
+}
+
+.browser .context-menu .separator {
+-fx-padding: 0;
+}
+
+.browser .context-menu .separator .line {
+-fx-padding: 0;
+-fx-border-insets: 0px;
+}
+
+.browser .context-menu .accelerator-text {
+-fx-padding: 3px 0px 3px 50px;
+}
+
+.browser .context-menu > * {
+-fx-padding: 0;
+}
+
+.browser .context-menu {
+-fx-padding: 0;
+-fx-background-radius: 1px;
+-fx-border-color: -color-neutral-muted;
+}
+
 .chooser-bar {
 -fx-border-color: -color-neutral-emphasis;
 -fx-border-width: 0.1em 0 0 0;

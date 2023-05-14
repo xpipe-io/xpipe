@@ -3,7 +3,9 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.browser.icon.DirectoryType;
 import io.xpipe.app.browser.icon.FileIconManager;
+import io.xpipe.app.browser.icon.FileType;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
@@ -12,7 +14,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileSystem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -42,6 +43,8 @@ public class FileBrowserComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        FileType.loadDefinitions();
+        DirectoryType.loadDefinitions();
         ThreadHelper.runAsync( () -> {
             FileIconManager.loadIfNecessary();
         });
@@ -78,14 +81,14 @@ public class FileBrowserComp extends SimpleComp {
         var selected = new HBox();
         selected.setAlignment(Pos.CENTER_LEFT);
         selected.setSpacing(10);
-        model.getSelectedFiles().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
-            selected.getChildren().setAll(c.getList().stream().map(s -> {
-                var field = new TextField(s.getPath());
-                field.setEditable(false);
-                field.setPrefWidth(400);
-                return field;
-            }).toList());
-        });
+//        model.getSelected().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
+//            selected.getChildren().setAll(c.getList().stream().map(s -> {
+//                var field = new TextField(s.getPath());
+//                field.setEditable(false);
+//                field.setPrefWidth(400);
+//                return field;
+//            }).toList());
+//        });
         var spacer = new Spacer(Orientation.HORIZONTAL);
         var button = new Button("Select");
         button.setOnAction(event -> model.finishChooser());

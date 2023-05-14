@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
-    public static final ExternalTerminalType CMD = new SimpleType("cmd", "cmd.exe", "cmd.exe") {
+    public static final ExternalTerminalType CMD = new SimpleType("app.cmd", "cmd.exe", "cmd.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -31,7 +31,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
 
     public static final ExternalTerminalType POWERSHELL_WINDOWS =
-            new SimpleType("powershell", "powershell", "PowerShell") {
+            new SimpleType("app.powershell", "powershell", "PowerShell") {
 
                 @Override
                 protected String toCommand(String name, String file) {
@@ -44,7 +44,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType PWSH_WINDOWS = new SimpleType("pwsh", "pwsh", "PowerShell Core") {
+    public static final ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh", "PowerShell Core") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -60,7 +60,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
 
     public static final ExternalTerminalType WINDOWS_TERMINAL =
-            new SimpleType("windowsTerminal", "wt.exe", "Windows Terminal") {
+            new SimpleType("app.windowsTerminal", "wt.exe", "Windows Terminal") {
 
                 @Override
                 protected String toCommand(String name, String file) {
@@ -78,7 +78,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             };
 
     public static final ExternalTerminalType GNOME_TERMINAL =
-            new SimpleType("gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
+            new SimpleType("app.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
                 @Override
                 public void launch(String name, String file, boolean elevated) throws Exception {
@@ -105,7 +105,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType KONSOLE = new SimpleType("konsole", "konsole", "Konsole") {
+    public static final ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole", "Konsole") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -120,7 +120,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType XFCE = new SimpleType("xfce", "xfce4-terminal", "Xfce") {
+    public static final ExternalTerminalType XFCE = new SimpleType("app.xfce", "xfce4-terminal", "Xfce") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -169,7 +169,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public MacOsTerminalType() {
-            super("macosTerminal", "Terminal");
+            super("app.macosTerminal", "Terminal");
         }
 
         @Override
@@ -193,7 +193,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static class CustomType extends ExternalApplicationType implements ExternalTerminalType {
 
         public CustomType() {
-            super("custom");
+            super("app.custom");
         }
 
         @Override
@@ -229,7 +229,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static class ITerm2Type extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public ITerm2Type() {
-            super("iterm2", "iTerm");
+            super("app.iterm2", "iTerm");
         }
 
         @Override
@@ -263,7 +263,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public WarpType() {
-            super("warp", "Warp");
+            super("app.warp", "Warp");
         }
 
         @Override

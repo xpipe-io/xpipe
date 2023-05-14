@@ -1,32 +1,23 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
-import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class FileFilterComp extends SimpleComp {
-
-    private final Property<String> filterString;
-
-    public FileFilterComp(Property<String> filterString) {
-        this.filterString = filterString;
-    }
+public class FileFilterComp extends Comp<FileFilterComp.Structure> {
 
     @Override
-    protected Region createSimple() {
+    public Structure createBase() {
         var expanded = new SimpleBooleanProperty();
         var text = new TextFieldComp(filterString, false).createRegion();
         var button = new Button();
@@ -57,7 +48,6 @@ public class FileFilterComp extends SimpleComp {
 
         var fi = new FontIcon("mdi2m-magnify");
         GrowAugment.create(false, true).augment(new SimpleCompStructure<>(button));
-        Shortcuts.addShortcut(button, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
         button.setGraphic(fi);
         button.setOnAction(event -> {
             if (expanded.get()) {
@@ -75,7 +65,6 @@ public class FileFilterComp extends SimpleComp {
         text.setPrefWidth(0);
         button.getStyleClass().add(Styles.FLAT);
         expanded.addListener((observable, oldValue, val) -> {
-            System.out.println(val);
             if (val) {
                 text.setPrefWidth(250);
                 button.getStyleClass().add(Styles.RIGHT_PILL);
@@ -89,6 +78,20 @@ public class FileFilterComp extends SimpleComp {
 
         var box = new HBox(text, button);
         box.setFillHeight(true);
-        return box;
+        return new Structure(box, (TextField) text, button);
+    }
+
+    public record Structure(HBox box, TextField textField, Button toggleButton) implements CompStructure<HBox> {
+
+        @Override
+        public HBox get() {
+            return box;
+        }
+    }
+
+    private final Property<String> filterString;
+
+    public FileFilterComp(Property<String> filterString) {
+        this.filterString = filterString;
     }
 }

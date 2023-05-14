@@ -78,7 +78,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(selected, entries);
-        pane.setCenter(selected.getValue().comp().createRegion());
+        pane.setCenter(map.get(selected.getValue()));
         pane.setRight(sidebar.createRegion());
         selected.addListener((c, o, n) -> {
             if (o != null && o.equals(entries.get(2))) {

@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -66,7 +67,8 @@ public class OpenFileSystemComp extends SimpleComp {
         addBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
         Shortcuts.addShortcut(addBtn, new KeyCodeCombination(KeyCode.PLUS));
 
-        var filter = new FileFilterComp(model.getFilter()).createRegion();
+        var filter = new FileFilterComp(model.getFilter()).createStructure();
+        Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new ToolBar();
         topBar.getItems().setAll(
@@ -74,7 +76,7 @@ public class OpenFileSystemComp extends SimpleComp {
                 forthBtn,
                 new Spacer(10),
                 pathBar,
-                filter,
+                filter.get(),
                 refreshBtn,
                 terminalBtn,
                 addBtn

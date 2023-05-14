@@ -4,14 +4,18 @@ package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
 import atlantafx.base.theme.Tweaks;
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.SvgCacheComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
@@ -30,7 +34,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.DragEvent;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 
 import java.time.Instant;
@@ -56,7 +59,7 @@ final class FileListComp extends AnchorPane {
 
     public FileListComp(FileListModel fileList) {
         this.fileList = fileList;
-        TableView<FileSystem.FileEntry> table = createTable();
+        TableView<FileBrowserEntry> table = createTable();
         SimpleChangeListener.apply(table.comparatorProperty(), (newValue) -> {
             fileList.setComparator(newValue);
         });
@@ -67,64 +70,67 @@ final class FileListComp extends AnchorPane {
     }
 
     @SuppressWarnings("unchecked")
-    private TableView<FileSystem.FileEntry> createTable() {
-        var filenameCol = new TableColumn<FileSystem.FileEntry, String>("Name");
+    private TableView<FileBrowserEntry> createTable() {
+        var filenameCol = new TableColumn<FileBrowserEntry, String>("Name");
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
                 param.getValue() != null
-                        ? FileNames.getFileName(param.getValue().getPath())
+                        ? FileNames.getFileName(
+                                param.getValue().getRawFileEntry().getPath())
                         : null));
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing()));
 
-        var sizeCol = new TableColumn<FileSystem.FileEntry, Number>("Size");
-        sizeCol.setCellValueFactory(
-                param -> new SimpleLongProperty(param.getValue().getSize()));
+        var sizeCol = new TableColumn<FileBrowserEntry, Number>("Size");
+        sizeCol.setCellValueFactory(param ->
+                new SimpleLongProperty(param.getValue().getRawFileEntry().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
 
-        var mtimeCol = new TableColumn<FileSystem.FileEntry, Instant>("Modified");
-        mtimeCol.setCellValueFactory(
-                param -> new SimpleObjectProperty<>(param.getValue().getDate()));
+        var mtimeCol = new TableColumn<FileBrowserEntry, Instant>("Modified");
+        mtimeCol.setCellValueFactory(param ->
+                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
         mtimeCol.getStyleClass().add(Tweaks.ALIGN_RIGHT);
 
-        var modeCol = new TableColumn<FileSystem.FileEntry, String>("Attributes");
-        modeCol.setCellValueFactory(
-                param -> new SimpleObjectProperty<>(param.getValue().getMode()));
+        var modeCol = new TableColumn<FileBrowserEntry, String>("Attributes");
+        modeCol.setCellValueFactory(param ->
+                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
 
-        var table = new TableView<FileSystem.FileEntry>();
+        var table = new TableView<FileBrowserEntry>();
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, sizeCol, modeCol, mtimeCol);
-        table.getSortOrder().add(filenameCol);
         table.setSortPolicy(param -> {
             var comp = table.getComparator();
             if (comp == null) {
                 return true;
             }
 
-            var parentFirst = new Comparator<FileSystem.FileEntry>() {
-                @Override
-                public int compare(FileSystem.FileEntry o1, FileSystem.FileEntry o2) {
-                    var c = fileList.getFileSystemModel().getCurrentParentDirectory();
-                    if (c == null) {
-                        return 0;
-                    }
+            var syntheticFirst = Comparator.<FileBrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
+            var dirsFirst = Comparator.<FileBrowserEntry, Boolean>comparing(
+                    path -> !path.getRawFileEntry().isDirectory());
 
-                    return o1.getPath().equals(c.getPath()) ? -1 : (o2.getPath().equals(c.getPath()) ? 1 : 0);
-                }
-            };
-            var dirsFirst = Comparator.<FileSystem.FileEntry, Boolean>comparing(path -> !path.isDirectory());
-
-            Comparator<? super FileSystem.FileEntry> us =
-                    parentFirst.thenComparing(dirsFirst).thenComparing(comp);
-            FXCollections.sort(table.getItems(), us);
+            Comparator<? super FileBrowserEntry> us =
+                    syntheticFirst.thenComparing(dirsFirst).thenComparing(comp);
+            FXCollections.sort(param.getItems(), us);
             return true;
         });
+        table.getSortOrder().add(filenameCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
 
+        table.setFixedCellSize(34.0);
+
+        prepareTableSelectionModel(table);
+        prepareTableShortcuts(table);
+        prepareTableEntries(table);
+        prepareTableChanges(table, mtimeCol, modeCol);
+
+        return table;
+    }
+
+    private void prepareTableSelectionModel(TableView<FileBrowserEntry> table) {
         if (fileList.getMode().equals(FileBrowserModel.Mode.SINGLE_FILE_CHOOSER)
                 || fileList.getMode().equals(FileBrowserModel.Mode.DIRECTORY_CHOOSER)) {
             table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -132,59 +138,68 @@ final class FileListComp extends AnchorPane {
             table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         }
 
-        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super FileSystem.FileEntry>)
-                c -> {
-            // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in JavaFX
-                    var toSelect = c.getList().stream()
-                            .filter(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() == null
-                                    || !entry.getPath()
-                                            .equals(fileList.getFileSystemModel()
-                                                    .getCurrentParentDirectory()
-                                                    .getPath()))
-                            .toList();
-                    fileList.getSelected().setAll(toSelect);
-                    fileList.getFileSystemModel()
-                            .getBrowserModel()
-                            .getSelectedFiles()
-                            .setAll(toSelect);
+        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super FileBrowserEntry>) c -> {
+            // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in
+            // JavaFX
+            var toSelect = c.getList().stream()
+                    .filter(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() == null
+                            || !entry.getRawFileEntry()
+                                    .getPath()
+                                    .equals(fileList.getFileSystemModel()
+                                            .getCurrentParentDirectory()
+                                            .getPath()))
+                    .toList();
+            fileList.getSelected().setAll(toSelect);
+            fileList.getFileSystemModel().getBrowserModel().getSelectedFiles().setAll(toSelect);
 
-                    Platform.runLater(() -> {
-                        var toUnselect = table.getSelectionModel().getSelectedItems().stream()
-                                .filter(entry -> !toSelect.contains(entry))
-                                .toList();
-                        toUnselect.forEach(entry -> table.getSelectionModel()
-                                .clearSelection(table.getItems().indexOf(entry)));
-                    });
-                });
-
-        table.setOnKeyPressed(event -> {
-            if (event.isControlDown()
-                    && event.getCode().equals(KeyCode.C)
-                    && table.getSelectionModel().getSelectedItems().size() > 0) {
-                FileBrowserClipboard.startCopy(
-                        fileList.getFileSystemModel().getCurrentDirectory(),
-                        table.getSelectionModel().getSelectedItems());
-                event.consume();
-            }
-
-            if (event.isControlDown() && event.getCode().equals(KeyCode.V)) {
-                var clipboard = FileBrowserClipboard.retrieveCopy();
-                if (clipboard != null) {
-                    var files = clipboard.getEntries();
-                    var target = fileList.getFileSystemModel().getCurrentDirectory();
-                    fileList.getFileSystemModel().dropFilesIntoAsync(target, files, true);
-                    event.consume();
-                }
-            }
+            Platform.runLater(() -> {
+                var toUnselect = table.getSelectionModel().getSelectedItems().stream()
+                        .filter(entry -> !toSelect.contains(entry))
+                        .toList();
+                toUnselect.forEach(entry -> table.getSelectionModel()
+                        .clearSelection(table.getItems().indexOf(entry)));
+            });
         });
 
-        prepareTableEntries(table);
-        prepareTableChanges(table, mtimeCol, modeCol);
+        fileList.getSelected().addListener((ListChangeListener<? super FileBrowserEntry>) c -> {
+            if (c.getList().equals(table.getSelectionModel().getSelectedItems())) {
+                return;
+            }
 
-        return table;
+            Platform.runLater(() -> {
+                if (c.getList().isEmpty()) {
+                    table.getSelectionModel().clearSelection();
+                    return;
+                }
+
+                var indices = c.getList().stream()
+                        .skip(1)
+                        .mapToInt(entry -> table.getItems().indexOf(entry))
+                        .toArray();
+                table.getSelectionModel()
+                        .selectIndices(table.getItems().indexOf(c.getList().get(0)), indices);
+            });
+        });
     }
 
-    private void prepareTableEntries(TableView<FileSystem.FileEntry> table) {
+    private void prepareTableShortcuts(TableView<FileBrowserEntry> table) {
+        table.setOnKeyPressed(event -> {
+            var selected = fileList.getSelected();
+            BrowserAction.getFlattened().stream()
+                    .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
+                            && browserAction.isActive(fileList.getFileSystemModel(), selected))
+                    .filter(browserAction -> browserAction.getShortcut() != null)
+                    .filter(browserAction -> browserAction.getShortcut().match(event))
+                    .findAny()
+                    .ifPresent(browserAction -> {
+                        ThreadHelper.runFailableAsync(() -> {
+                            browserAction.execute(fileList.getFileSystemModel(), selected);
+                        });
+                    });
+        });
+    }
+
+    private void prepareTableEntries(TableView<FileBrowserEntry> table) {
         var emptyEntry = new FileListCompEntry(table, null, fileList);
         table.setOnDragOver(event -> {
             emptyEntry.onDragOver(event);
@@ -203,7 +218,15 @@ final class FileListComp extends AnchorPane {
         });
 
         table.setRowFactory(param -> {
-            TableRow<FileSystem.FileEntry> row = new TableRow<>();
+            TableRow<FileBrowserEntry> row = new TableRow<>();
+            new ContextMenuAugment<>(false, () -> {
+                        if (row.getItem() != null && row.getItem().isSynthetic()) {
+                            return null;
+                        }
+
+                        return new FileContextMenu(fileList.getFileSystemModel(), row.getItem() == null);
+                    })
+                    .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
                     () -> new FileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
 
@@ -214,8 +237,10 @@ final class FileListComp extends AnchorPane {
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(EMPTY, newValue == null);
-                row.pseudoClassStateChanged(FILE, newValue != null && !newValue.isDirectory());
-                row.pseudoClassStateChanged(FOLDER, newValue != null && newValue.isDirectory());
+                row.pseudoClassStateChanged(
+                        FILE, newValue != null && !newValue.getRawFileEntry().isDirectory());
+                row.pseudoClassStateChanged(
+                        FOLDER, newValue != null && newValue.getRawFileEntry().isDirectory());
             });
 
             fileList.getDraggedOverDirectory().addListener((observable, oldValue, newValue) -> {
@@ -250,19 +275,19 @@ final class FileListComp extends AnchorPane {
             return row;
         });
     }
-    private void prepareTableChanges(TableView<FileSystem.FileEntry> table, TableColumn<FileSystem.FileEntry, Instant> mtimeCol, TableColumn<FileSystem.FileEntry, String> modeCol) {
+
+    private void prepareTableChanges(
+            TableView<FileBrowserEntry> table,
+            TableColumn<FileBrowserEntry, Instant> mtimeCol,
+            TableColumn<FileBrowserEntry, String> modeCol) {
         var lastDir = new SimpleObjectProperty<FileSystem.FileEntry>();
         Runnable updateHandler = () -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                var newItems = new ArrayList<FileSystem.FileEntry>();
-                var parentEntry = fileList.getFileSystemModel().getCurrentParentDirectory();
-                if (parentEntry != null) {
-                    newItems.add(parentEntry);
-                }
-                newItems.addAll(fileList.getShown().getValue());
+                var newItems = new ArrayList<>(fileList.getShown().getValue());
 
-                var hasModifiedDate =
-                        newItems.size() == 0 || newItems.stream().anyMatch(entry -> entry.getDate() != null);
+                var hasModifiedDate = newItems.size() == 0
+                        || newItems.stream()
+                                .anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
                 if (!hasModifiedDate) {
                     table.getColumns().remove(mtimeCol);
                 } else {
@@ -340,7 +365,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private class FilenameCell extends TableCell<FileSystem.FileEntry, String> {
+    private class FilenameCell extends TableCell<FileBrowserEntry, String> {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
@@ -349,18 +374,17 @@ final class FileListComp extends AnchorPane {
                 .createRegion();
         private final StackPane textField =
                 new LazyTextFieldComp(text).createStructure().get();
-        private final ChangeListener<String> listener;
 
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
-        public FilenameCell(Property<FileSystem.FileEntry> editing) {
+        public FilenameCell(Property<FileBrowserEntry> editing) {
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
                     textField.requestFocus();
                 }
             });
 
-            listener = (observable, oldValue, newValue) -> {
+            ChangeListener<String> listener = (observable, oldValue, newValue) -> {
                 if (updating.get()) {
                     return;
                 }
@@ -380,7 +404,7 @@ final class FileListComp extends AnchorPane {
                 return;
             }
 
-            try (var b = new BusyProperty(updating)) {
+            try (var ignored = new BusyProperty(updating)) {
                 super.updateItem(fullPath, empty);
                 setText(null);
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
@@ -397,18 +421,20 @@ final class FileListComp extends AnchorPane {
 
                     var isParentLink = getTableRow()
                             .getItem()
+                            .getRawFileEntry()
                             .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
                     img.set(FileIconManager.getFileIcon(
                             isParentLink
                                     ? fileList.getFileSystemModel().getCurrentDirectory()
-                                    : getTableRow().getItem(),
+                                    : getTableRow().getItem().getRawFileEntry(),
                             isParentLink));
 
-                    var isDirectory = getTableRow().getItem().isDirectory();
+                    var isDirectory = getTableRow().getItem().getRawFileEntry().isDirectory();
                     pseudoClassStateChanged(FOLDER, isDirectory);
 
                     var fileName = isParentLink ? ".." : FileNames.getFileName(fullPath);
-                    var hidden = !isParentLink && (getTableRow().getItem().isHidden() || fileName.startsWith("."));
+                    var hidden = !isParentLink
+                            && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
                 }
@@ -416,7 +442,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private class FileSizeCell extends TableCell<FileSystem.FileEntry, Number> {
+    private static class FileSizeCell extends TableCell<FileBrowserEntry, Number> {
 
         @Override
         protected void updateItem(Number fileSize, boolean empty) {
@@ -425,7 +451,7 @@ final class FileListComp extends AnchorPane {
                 setText(null);
             } else {
                 var path = getTableRow().getItem();
-                if (path.isDirectory()) {
+                if (path.getRawFileEntry().isDirectory()) {
                     setText("");
                 } else {
                     setText(byteCount(fileSize.longValue()));
@@ -434,7 +460,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private class FileModeCell extends TableCell<FileSystem.FileEntry, String> {
+    private static class FileModeCell extends TableCell<FileBrowserEntry, String> {
 
         @Override
         protected void updateItem(String mode, boolean empty) {
@@ -447,7 +473,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private static class FileTimeCell extends TableCell<FileSystem.FileEntry, Instant> {
+    private static class FileTimeCell extends TableCell<FileBrowserEntry, Instant> {
 
         @Override
         protected void updateItem(Instant fileTime, boolean empty) {

@@ -2,7 +2,6 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,7 +32,7 @@ public class FileBrowserModel {
     public static final FileBrowserModel DEFAULT = new FileBrowserModel(Mode.BROWSER);
 
     private final Mode mode;
-    private final ObservableList<FileSystem.FileEntry> selectedFiles = FXCollections.observableArrayList();
+    private final ObservableList<FileBrowserEntry> selectedFiles = FXCollections.observableArrayList();
 
     @Setter
     private Consumer<List<FileStore>> onFinish;
@@ -52,7 +51,11 @@ public class FileBrowserModel {
         if (selectedFiles.size() == 0) {
             return;
         }
-        var stores = selectedFiles.stream().map(entry -> new FileStore(entry.getFileSystem().getStore(), entry.getPath())).toList();
+        var stores = selectedFiles.stream()
+                .map(entry -> new FileStore(
+                        entry.getRawFileEntry().getFileSystem().getStore(),
+                        entry.getRawFileEntry().getPath()))
+                .toList();
         onFinish.accept(stores);
     }
 
@@ -67,12 +70,22 @@ public class FileBrowserModel {
     }
 
     public void openExistingFileSystemIfPresent(ShellStore store) {
-        var found = openFileSystems.stream().filter(model -> Objects.equals(model.getStore().getValue(), store)).findFirst();
+        var found = openFileSystems.stream()
+                .filter(model -> Objects.equals(model.getStore().getValue(), store))
+                .findFirst();
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
             openFileSystemAsync(store);
         }
+    }
+
+    public void openFileSystemSync(ShellStore store, String path) throws Exception {
+        var model = new OpenFileSystemModel(this);
+        openFileSystems.add(model);
+        selected.setValue(model);
+        model.switchSync(store);
+        model.cd(path);
     }
 
     public void openFileSystemAsync(ShellStore store) {

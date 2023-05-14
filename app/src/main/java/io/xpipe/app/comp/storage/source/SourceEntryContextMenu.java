@@ -3,7 +3,7 @@ package io.xpipe.app.comp.storage.source;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.augment.PopupMenuAugment;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataSourceEntry;
@@ -16,19 +16,14 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class SourceEntryContextMenu<S extends CompStructure<?>> extends PopupMenuAugment<S> {
+public class SourceEntryContextMenu<S extends CompStructure<?>> extends ContextMenuAugment<S> {
 
-    private final SourceEntryWrapper entry;
-    private final Region renameTextField;
 
     public SourceEntryContextMenu(boolean showOnPrimaryButton, SourceEntryWrapper entry, Region renameTextField) {
-        super(showOnPrimaryButton);
-        this.entry = entry;
-        this.renameTextField = renameTextField;
+        super(showOnPrimaryButton, () -> createContextMenu(entry, renameTextField));
     }
 
-    @Override
-    protected ContextMenu createContextMenu() {
+    protected static ContextMenu createContextMenu(SourceEntryWrapper entry, Region renameTextField) {
         var cm = new ContextMenu();
         AppFont.normal(cm.getStyleableNode());
 

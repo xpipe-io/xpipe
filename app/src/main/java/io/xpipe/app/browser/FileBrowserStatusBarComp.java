@@ -33,7 +33,7 @@ public class FileBrowserStatusBarComp extends SimpleComp {
         }, model.getFileList().getSelected()));
 
         var allCount = PlatformThread.sync(Bindings.createIntegerBinding(() -> {
-            return model.getFileList().getAll().getValue().size();
+            return (int) model.getFileList().getAll().getValue().stream().filter(entry -> !entry.isSynthetic()).count();
         }, model.getFileList().getAll()));
 
         var selectedComp = new LabelComp(Bindings.createStringBinding(() -> {
@@ -52,6 +52,13 @@ public class FileBrowserStatusBarComp extends SimpleComp {
         );
         bar.getStyleClass().add("status-bar");
         AppFont.small(bar);
+
+        // Use status bar as an extension of file list
+        bar.setOnMouseClicked(event -> {
+            model.getFileList().getSelected().clear();
+            event.consume();
+        });
+
         return bar;
     }
 }

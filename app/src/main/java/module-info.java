@@ -1,3 +1,4 @@
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.api.*;
@@ -33,6 +34,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.fxcomps.util;
     exports io.xpipe.app.fxcomps.augment;
     exports io.xpipe.app.test;
+    exports io.xpipe.app.browser.action;
     exports io.xpipe.app.browser;
     exports io.xpipe.app.browser.icon;
 
@@ -119,11 +121,13 @@ open module io.xpipe.app {
     uses ProxyFunction;
     uses ModuleLayerLoader;
     uses ScanProvider;
+    uses BrowserAction;
 
     provides ModuleLayerLoader with
             DataSourceTarget.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
+            BrowserAction.Loader,
             ScanProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;

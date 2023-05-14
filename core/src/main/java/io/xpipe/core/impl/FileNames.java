@@ -5,6 +5,10 @@ import java.util.List;
 
 public class FileNames {
 
+    public static String quoteIfNecessary(String n) {
+        return n.contains(" ") ? "\"" + n + "\"" : n;
+    }
+
     public static String toDirectory(String path) {
         if (path.endsWith("/") || path.endsWith("\\")) {
             return path;
@@ -43,6 +47,19 @@ public class FileNames {
         }
 
         return components.get(components.size() - 1);
+    }
+
+    public static String getBaseName(String file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        var name = FileNames.getFileName(file);
+        var split = file.lastIndexOf("\\.");
+        if (split == -1) {
+            return name;
+        }
+        return name.substring(0, split);
     }
 
     public static String getExtension(String file) {
