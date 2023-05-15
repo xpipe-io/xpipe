@@ -25,6 +25,8 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
 
     String getHomeDirectory(ShellControl pc) throws Exception;
 
+    String getFileSystemSeparator();
+
     String getName();
 
     String getTempDirectory(ShellControl pc) throws Exception;
@@ -39,6 +41,11 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         public String getHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(
                     pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "\\";
         }
 
         @Override
@@ -85,6 +92,11 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "/";
         }
 
         @Override
@@ -155,6 +167,11 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
             }
 
             return found;
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "/";
         }
 
         @Override

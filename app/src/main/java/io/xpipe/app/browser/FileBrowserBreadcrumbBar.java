@@ -1,7 +1,6 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Breadcrumbs;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -9,6 +8,7 @@ import io.xpipe.core.impl.FileNames;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
@@ -24,7 +24,6 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
     protected Region createSimple() {
         Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory = crumb -> {
             var btn = new Button(FileNames.getFileName(crumb.getValue()), null);
-            btn.getStyleClass().add(Styles.FLAT);
             btn.setFocusTraversable(false);
             return btn;
         };
@@ -40,6 +39,13 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
             if (val == null) {
                 breadcrumbs.setSelectedCrumb(null);
                 return;
+            }
+
+            var sc = model.getFileSystem().getShell();
+            if (sc.isEmpty()) {
+                breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label("/") : null);
+            } else {
+                breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label(sc.get().getOsType().getFileSystemSeparator()) : null);
             }
 
             var elements = FileNames.splitHierarchy(val);

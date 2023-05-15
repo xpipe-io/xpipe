@@ -54,17 +54,6 @@ public class OpenFileSystemComp extends SimpleComp {
         forthBtn.setOnAction(e -> model.forth());
         forthBtn.disableProperty().bind(model.getHistory().canGoForthProperty().not());
 
-        var path = new SimpleStringProperty(model.getCurrentPath().get());
-        var pathBar = new TextFieldComp(path, true).createRegion();
-        path.addListener((observable, oldValue, newValue) -> {
-            var changed = model.cd(newValue);
-            changed.ifPresent(path::set);
-        });
-        model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
-            path.set(newValue);
-        });
-        HBox.setHgrow(pathBar, Priority.ALWAYS);
-
         var refreshBtn = new Button(null, new FontIcon("mdmz-refresh"));
         refreshBtn.setOnAction(e -> model.refresh());
         Shortcuts.addShortcut(refreshBtn, new KeyCodeCombination(KeyCode.F5));
@@ -86,7 +75,7 @@ public class OpenFileSystemComp extends SimpleComp {
 
         var topBar = new ToolBar();
         topBar.getItems()
-                .setAll(backBtn, forthBtn, new Spacer(10), new FileBrowserBreadcrumbBar(model).createRegion(), filter.get(), refreshBtn, terminalBtn, addBtn);
+                .setAll(backBtn, forthBtn, new Spacer(10), new BrowserNavBar(model).createRegion(), filter.get(), refreshBtn, terminalBtn, addBtn);
 
         // ~
 
