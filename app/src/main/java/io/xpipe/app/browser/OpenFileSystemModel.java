@@ -2,6 +2,7 @@
 
 package io.xpipe.app.browser;
 
+import io.xpipe.app.comp.base.AlertOverlayComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
@@ -43,6 +44,7 @@ public final class OpenFileSystemModel {
     private final BooleanProperty noDirectory = new SimpleBooleanProperty();
     private final Property<OpenFileSystemSavedState> savedState = new SimpleObjectProperty<>();
     private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
+    private final Property<AlertOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
 
     public OpenFileSystemModel(FileBrowserModel browserModel) {
         this.browserModel = browserModel;
@@ -239,7 +241,7 @@ public final class OpenFileSystemModel {
     }
 
     public void createFileAsync(String name) {
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             return;
         }
 

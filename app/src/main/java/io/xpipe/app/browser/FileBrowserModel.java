@@ -32,7 +32,6 @@ public class FileBrowserModel {
     public static final FileBrowserModel DEFAULT = new FileBrowserModel(Mode.BROWSER);
 
     private final Mode mode;
-    private final ObservableList<FileBrowserEntry> selectedFiles = FXCollections.observableArrayList();
 
     @Setter
     private Consumer<List<FileStore>> onFinish;
@@ -46,6 +45,7 @@ public class FileBrowserModel {
             throw new IllegalStateException();
         }
 
+        var selectedFiles = openFileSystems.get(0).getFileList().getSelected();
         closeFileSystem(openFileSystems.get(0));
 
         if (selectedFiles.size() == 0) {

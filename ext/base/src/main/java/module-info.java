@@ -38,6 +38,7 @@ open module io.xpipe.ext.base {
             CopyPathAction,
             PasteAction,
             NewItemAction,
+            RenameAction,
             DeleteAction,
             UnzipAction,
             JarAction;

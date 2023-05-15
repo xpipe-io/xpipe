@@ -3,6 +3,8 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.binding.Bindings;
@@ -54,10 +56,7 @@ public class FileBrowserStatusBarComp extends SimpleComp {
         AppFont.small(bar);
 
         // Use status bar as an extension of file list
-        bar.setOnMouseClicked(event -> {
-            model.getFileList().getSelected().clear();
-            event.consume();
-        });
+        new ContextMenuAugment<>(false, () -> new FileContextMenu(model,true)).augment(new SimpleCompStructure<>(bar));
 
         return bar;
     }

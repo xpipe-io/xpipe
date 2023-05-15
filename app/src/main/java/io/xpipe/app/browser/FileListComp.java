@@ -150,7 +150,6 @@ final class FileListComp extends AnchorPane {
                                             .getPath()))
                     .toList();
             fileList.getSelected().setAll(toSelect);
-            fileList.getFileSystemModel().getBrowserModel().getSelectedFiles().setAll(toSelect);
 
             Platform.runLater(() -> {
                 var toUnselect = table.getSelectionModel().getSelectedItems().stream()
@@ -380,7 +379,7 @@ final class FileListComp extends AnchorPane {
         public FilenameCell(Property<FileBrowserEntry> editing) {
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
-                    textField.requestFocus();
+                    PlatformThread.runLaterIfNeeded(() -> textField.requestFocus());
                 }
             });
 

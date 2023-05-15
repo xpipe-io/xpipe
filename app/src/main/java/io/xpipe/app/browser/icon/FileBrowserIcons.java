@@ -4,8 +4,13 @@ import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.SimpleStringProperty;
 
-public class FileIcons {
-
+public class FileBrowserIcons {
+    public static PrettyImageComp createDefaultFileIcon() {
+        return new PrettyImageComp(new SimpleStringProperty("default_file.svg"), 22, 22);
+    }
+    public static PrettyImageComp createDefaultDirectoryIcon() {
+        return new PrettyImageComp(new SimpleStringProperty("default_folder.svg"), 22, 22);
+    }
     public static PrettyImageComp createIcon(FileType type) {
         return new PrettyImageComp(new SimpleStringProperty(type.getIcon()), 22, 22);
     }

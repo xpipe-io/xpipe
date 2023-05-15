@@ -81,6 +81,10 @@
 -fx-border-insets: 0px;
 }
 
+.browser .breadcrumbs .button {
+-fx-padding: 0;
+}
+
 .browser .context-menu .accelerator-text {
 -fx-padding: 3px 0px 3px 50px;
 }
