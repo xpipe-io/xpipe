@@ -24,6 +24,7 @@ apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 apply from: "$projectDir/gradle_scripts/github-api.gradle"
 apply from: "$projectDir/gradle_scripts/flexmark.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/picocli.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/versioncompare.gradle"
 
 configurations {
     implementation.extendsFrom(dep)
@@ -38,8 +39,8 @@ dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.0'
 
-    implementation 'net.java.dev.jna:jna-jpms:5.12.1'
-    implementation 'net.java.dev.jna:jna-platform-jpms:5.12.1'
+    implementation 'net.java.dev.jna:jna-jpms:5.13.0'
+    implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
     implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.13.0"
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.13.0"
@@ -56,7 +57,14 @@ dependencies {
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.controlsfx:controlsfx:11.1.1'
     implementation 'net.synedra:validatorfx:0.3.1'
-    implementation 'io.github.mkpaz:atlantafx-base:1.2.0'
+    implementation name: 'atlantafx-base-1.2.1'
+    implementation name: 'atlantafx-styles-1.2.1'
+    implementation name: 'jSystemThemeDetector-3.8'
+    implementation group: 'com.github.oshi', name: 'oshi-core-java11', version: '6.4.2'
+    implementation 'org.jetbrains:annotations:24.0.1'
+    implementation ('de.jangassen:jfa:1.2.0') {
+        exclude group: 'net.java.dev.jna', module: 'jna'
+    }
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"

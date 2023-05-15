@@ -11,7 +11,7 @@ import com.dlsc.preferencesfx.util.VisibilityProperty;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppStyle;
+import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
@@ -68,8 +68,8 @@ public class AppPrefs {
     private static AppPrefs INSTANCE;
     private final SimpleListProperty<SupportedLocale> languageList =
             new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(SupportedLocale.values())));
-    private final SimpleListProperty<AppStyle.Theme> themeList =
-            new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(AppStyle.Theme.values())));
+    private final SimpleListProperty<AppTheme.Theme> themeList =
+            new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(AppTheme.Theme.values())));
     private final SimpleListProperty<CloseBehaviour> closeBehaviourList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(CloseBehaviour.class)));
     private final SimpleListProperty<ExternalEditorType> externalEditorList = new SimpleListProperty<>(
@@ -90,11 +90,10 @@ public class AppPrefs {
                     languageList, languageInternal)
             .render(() -> new TranslatableComboBoxControl<>());
 
-    private final ObjectProperty<AppStyle.Theme> themeInternal =
-            typed(new SimpleObjectProperty<>(AppStyle.Theme.LIGHT), AppStyle.Theme.class);
-    public final ReadOnlyProperty<AppStyle.Theme> theme = themeInternal;
-    private final SingleSelectionField<AppStyle.Theme> themeControl =
-            Field.ofSingleSelectionType(themeList, themeInternal).render(() -> new TranslatableComboBoxControl<>());
+    public final ObjectProperty<AppTheme.Theme> theme =
+            typed(new SimpleObjectProperty<>(), AppTheme.Theme.class);
+    private final SingleSelectionField<AppTheme.Theme> themeControl =
+            Field.ofSingleSelectionType(themeList, theme).render(() -> new TranslatableComboBoxControl<>());
     private final BooleanProperty useSystemFontInternal = typed(new SimpleBooleanProperty(true), Boolean.class);
     public final ReadOnlyBooleanProperty useSystemFont = useSystemFontInternal;
     private final IntegerProperty tooltipDelayInternal = typed(new SimpleIntegerProperty(1000), Integer.class);
@@ -512,7 +511,7 @@ public class AppPrefs {
                         Group.of(
                                 "uiOptions",
                                 Setting.of("language", languageControl, languageInternal),
-                                Setting.of("theme", themeControl, themeInternal),
+                                Setting.of("theme", themeControl, theme),
                                 Setting.of("useSystemFont", useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax)),
                         Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),

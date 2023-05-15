@@ -1,17 +1,9 @@
 package io.xpipe.app.core;
 
-import atlantafx.base.theme.NordDark;
-import atlantafx.base.theme.NordLight;
-import atlantafx.base.theme.PrimerDark;
-import atlantafx.base.theme.PrimerLight;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import javafx.application.Application;
 import javafx.scene.Scene;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -36,9 +28,6 @@ public class AppStyle {
         loadStylesheets();
 
         if (AppPrefs.get() != null) {
-            AppPrefs.get().theme.addListener((c, o, n) -> {
-                changeTheme(o, n);
-            });
             AppPrefs.get().useSystemFont.addListener((c, o, n) -> {
                 changeFontUsage(n);
             });
@@ -78,12 +67,6 @@ public class AppStyle {
         }
     }
 
-    private static void changeTheme(Theme oldTheme, Theme newTheme) {
-        scenes.forEach(scene -> {
-            Application.setUserAgentStylesheet(newTheme.getTheme().getUserAgentStylesheet());
-        });
-    }
-
     private static void changeFontUsage(boolean use) {
         if (!use) {
             scenes.forEach(scene -> {
@@ -106,10 +89,6 @@ public class AppStyle {
     }
 
     public static void addStylesheets(Scene scene) {
-        var t = AppPrefs.get() != null ? AppPrefs.get().theme.getValue() : Theme.LIGHT;
-        Application.setUserAgentStylesheet(t.getTheme().getUserAgentStylesheet());
-        TrackEvent.debug("Set theme " + t.getId() + " for scene");
-
         if (AppPrefs.get() != null && !AppPrefs.get().useSystemFont.get()) {
             scene.getStylesheets().add(FONT_CONTENTS);
         }
@@ -122,21 +101,4 @@ public class AppStyle {
         scenes.add(scene);
     }
 
-    @AllArgsConstructor
-    @Getter
-    public enum Theme implements PrefsChoiceValue {
-        LIGHT("light", new PrimerLight()),
-        DARK("dark", new PrimerDark()),
-        NORD_LIGHT("nordLight", new NordLight()),
-        NORD_DARK("nordDark", new NordDark());
-        // DARK("dark");
-
-        private final String id;
-        private final atlantafx.base.theme.Theme theme;
-
-        @Override
-        public String toTranslatedString() {
-            return theme.getName();
-        }
-    }
 }
