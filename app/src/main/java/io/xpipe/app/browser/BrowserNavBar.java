@@ -42,6 +42,7 @@ public class BrowserNavBar extends SimpleComp {
                 .createRegion();
 
         var stack = new StackPane(pathBar, breadcrumbs);
+        breadcrumbs.prefHeightProperty().bind(pathBar.heightProperty());
         HBox.setHgrow(stack, Priority.ALWAYS);
         stack.setAlignment(Pos.CENTER_LEFT);
 

@@ -8,6 +8,7 @@ import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.util.XPipeSystemId;
 import org.apache.commons.lang3.function.FailableRunnable;
 
 import java.util.ArrayList;
@@ -91,6 +92,7 @@ public abstract class OperationMode {
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
+            XPipeSystemId.init();
             TrackEvent.info("mode", "Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();

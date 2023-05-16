@@ -2,16 +2,24 @@ package io.xpipe.core.process;
 
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.XPipeSystemId;
 import lombok.NonNull;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
+
+    default boolean isLocal() {
+        return getSystemId().equals(XPipeSystemId.getLocal());
+    }
+
+    UUID getSystemId();
 
     Semaphore getCommandLock();
 
@@ -62,8 +70,6 @@ public interface ShellControl extends ProcessControl {
     }
 
     void restart() throws Exception;
-
-    boolean isLocal();
 
     OsType getOsType();
 

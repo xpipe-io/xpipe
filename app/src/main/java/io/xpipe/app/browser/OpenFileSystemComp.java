@@ -3,13 +3,11 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.comp.base.AlertOverlayComp;
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -17,7 +15,6 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -39,7 +36,7 @@ public class OpenFileSystemComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var alertOverlay = new AlertOverlayComp(
+        var alertOverlay = new ModalOverlayComp(
                 Comp.of(() -> createContent()),
                 model.getOverlay());
         return alertOverlay.createRegion();

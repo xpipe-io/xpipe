@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
@@ -58,6 +59,14 @@ public class FileBrowserComp extends SimpleComp {
 
             return !model.getMode().equals(FileBrowserModel.Mode.BROWSER);
         }, PlatformThread.sync(model.getOpenFileSystems()))).createRegion();
+        SimpleChangeListener.apply(model.getSelected(), val -> {
+            localDownloadStage.visibleProperty().unbind();
+            if (val == null) {
+                return;
+            }
+
+            localDownloadStage.visibleProperty().bind(PlatformThread.sync(val.getLocal().not()));
+        });
         var vertical = new VBox(bookmarksList, localDownloadStage);
         vertical.setFillWidth(true);
 
@@ -68,7 +77,9 @@ public class FileBrowserComp extends SimpleComp {
                         // set sidebar width in pixels depending on split pane width
                         (obs, old, val) -> splitPane.setDividerPosition(0, 230 / splitPane.getWidth()));
 
-        return addBottomBar(splitPane);
+        var r = addBottomBar(splitPane);
+        // AppFont.small(r);
+        return r;
     }
 
     private Region addBottomBar(Region r) {

@@ -3,12 +3,11 @@ package io.xpipe.app.browser;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -47,7 +46,6 @@ public class FileFilterComp extends Comp<FileFilterComp.Structure> {
         });
 
         var fi = new FontIcon("mdi2m-magnify");
-        GrowAugment.create(false, true).augment(new SimpleCompStructure<>(button));
         button.setGraphic(fi);
         button.setOnAction(event -> {
             if (expanded.get()) {
@@ -75,9 +73,10 @@ public class FileFilterComp extends Comp<FileFilterComp.Structure> {
                 button.getStyleClass().add(Styles.FLAT);
             }
         });
+        button.prefHeightProperty().bind(text.heightProperty());
 
         var box = new HBox(text, button);
-        box.setFillHeight(true);
+        box.setAlignment(Pos.CENTER);
         return new Structure(box, (TextField) text, button);
     }
 

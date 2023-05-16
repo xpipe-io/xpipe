@@ -1,5 +1,7 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.impl.FileNames;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +23,14 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         } else {
             throw new UnsupportedOperationException("Unknown operating system");
         }
+    }
+
+    default String getXPipeHomeDirectory(ShellControl pc) throws Exception {
+        return FileNames.join(getHomeDirectory(pc), ".xpipe");
+    }
+
+    default String getSystemIdFile(ShellControl pc) throws Exception {
+        return FileNames.join(getXPipeHomeDirectory(pc), "system_id");
     }
 
     String getHomeDirectory(ShellControl pc) throws Exception;

@@ -106,7 +106,7 @@ public class FileNames {
             return false;
         }
 
-        if (!file.startsWith("/") && !file.startsWith("~") && !file.matches("^\\w:.*")) {
+        if (!file.startsWith("\\") && !file.startsWith("/") && !file.startsWith("~") && !file.matches("^\\w:.*")) {
             return false;
         }
 

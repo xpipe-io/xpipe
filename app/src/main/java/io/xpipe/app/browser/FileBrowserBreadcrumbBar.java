@@ -12,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
+import java.util.ArrayList;
+
 public class FileBrowserBreadcrumbBar extends SimpleComp {
 
     private final OpenFileSystemModel model;
@@ -23,7 +25,8 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory = crumb -> {
-            var btn = new Button(FileNames.getFileName(crumb.getValue()), null);
+            var btn = new Button(crumb.getValue().equals("/") ? "/" : FileNames.getFileName(crumb.getValue()), null);
+            btn.setMnemonicParsing(false);
             btn.setFocusTraversable(false);
             return btn;
         };
@@ -45,11 +48,25 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
             if (sc.isEmpty()) {
                 breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label("/") : null);
             } else {
-                breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label(sc.get().getOsType().getFileSystemSeparator()) : null);
+                breadcrumbs.setDividerFactory(item -> {
+                    if (item == null) {
+                        return null;
+                    }
+
+                    if (item.isFirst() && item.getValue().equals("/")) {
+                        return new Label("");
+                    }
+
+                    return !item.isLast() ? new Label(sc.get().getOsType().getFileSystemSeparator()) : null;
+                });
             }
 
             var elements = FileNames.splitHierarchy(val);
-            Breadcrumbs.BreadCrumbItem<String> items = Breadcrumbs.buildTreeModel(elements.toArray(String[]::new));
+            var modifiedElements = new ArrayList<>(elements);
+            if (val.startsWith("/")) {
+                modifiedElements.add(0, "/");
+            }
+            Breadcrumbs.BreadCrumbItem<String> items = Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
             breadcrumbs.setSelectedCrumb(items);
         });
 

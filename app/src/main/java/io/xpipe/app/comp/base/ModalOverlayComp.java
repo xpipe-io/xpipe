@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.ModalPane;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -21,10 +22,10 @@ import javafx.scene.layout.VBox;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class AlertOverlayComp extends SimpleComp {
+public class ModalOverlayComp extends SimpleComp {
 
 
-    public AlertOverlayComp(Comp<?> background, Property<OverlayContent> overlayContent) {
+    public ModalOverlayComp(Comp<?> background, Property<OverlayContent> overlayContent) {
         this.background = background;
         this.overlayContent = overlayContent;
     }
@@ -43,11 +44,12 @@ public class AlertOverlayComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var bgRegion = background.createRegion();
-        var pane = new StackPane(bgRegion);
+        var modal = new ModalPane();
+        var pane = new StackPane(bgRegion, modal);
         pane.setPickOnBounds(false);
         PlatformThread.sync(overlayContent).addListener((observable, oldValue, newValue) -> {
             if (oldValue != null) {
-                pane.getChildren().remove(1);
+                modal.hide(true);
             }
 
             if (newValue != null) {
@@ -91,7 +93,7 @@ public class AlertOverlayComp extends SimpleComp {
                 close.maxWidthProperty().bind(tp.widthProperty());
                 close.maxHeightProperty().bind(tp.heightProperty());
 
-                pane.getChildren().add(stack);
+                modal.show(stack);
             }
         });
         return pane;
