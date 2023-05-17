@@ -53,6 +53,10 @@ public class FileBrowserStatusBarComp extends SimpleComp {
                 selectedComp.createRegion()
         );
         bar.getStyleClass().add("status-bar");
+        bar.setOnDragDetected(event -> {
+            event.consume();
+            bar.startFullDrag();
+        });
         AppFont.small(bar);
 
         // Use status bar as an extension of file list

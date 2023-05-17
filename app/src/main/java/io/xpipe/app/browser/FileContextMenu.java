@@ -26,20 +26,26 @@ final class FileContextMenu extends ContextMenu {
     private void createMenu() {
         AppFont.normal(this.getStyleableNode());
 
-        var selected = empty ? FXCollections.<FileBrowserEntry>observableArrayList() : model.getFileList().getSelected();
+        var selected = empty || model.getFileList().getSelected().isEmpty()
+                ? FXCollections.observableArrayList(
+                        new FileBrowserEntry(model.getCurrentDirectory(), model.getFileList(), false))
+                : model.getFileList().getSelected();
 
         for (BrowserAction.Category cat : BrowserAction.Category.values()) {
-            var all = BrowserAction.ALL.stream().filter(browserAction -> browserAction.getCategory() == cat).filter(browserAction -> {
-                if (!browserAction.isApplicable(model, selected)) {
-                    return false;
-                }
+            var all = BrowserAction.ALL.stream()
+                    .filter(browserAction -> browserAction.getCategory() == cat)
+                    .filter(browserAction -> {
+                        if (!browserAction.isApplicable(model, selected)) {
+                            return false;
+                        }
 
-                if (!browserAction.acceptsEmptySelection() && selected.isEmpty()) {
-                    return false;
-                }
+                        if (!browserAction.acceptsEmptySelection() && empty) {
+                            return false;
+                        }
 
-                return true;
-            }).toList();
+                        return true;
+                    })
+                    .toList();
             if (all.size() == 0) {
                 continue;
             }

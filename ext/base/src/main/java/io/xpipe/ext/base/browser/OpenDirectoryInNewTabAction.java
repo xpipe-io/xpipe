@@ -35,6 +35,11 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     }
 
     @Override
+    public boolean acceptsEmptySelection() {
+        return true;
+    }
+
+    @Override
     public KeyCombination getShortcut() {
         return new KeyCodeCombination(KeyCode.ENTER);
     }

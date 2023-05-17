@@ -3,7 +3,6 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
-import atlantafx.base.theme.Tweaks;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
@@ -90,7 +89,6 @@ final class FileListComp extends AnchorPane {
         mtimeCol.setCellValueFactory(param ->
                 new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
-        mtimeCol.getStyleClass().add(Tweaks.ALIGN_RIGHT);
 
         var modeCol = new TableColumn<FileBrowserEntry, String>("Attributes");
         modeCol.setCellValueFactory(param ->
@@ -116,7 +114,6 @@ final class FileListComp extends AnchorPane {
             FXCollections.sort(param.getItems(), us);
             return true;
         });
-        table.getSortOrder().add(filenameCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
 
@@ -253,7 +250,9 @@ final class FileListComp extends AnchorPane {
             row.setOnMouseClicked(e -> {
                 listEntry.get().onMouseClick(e);
             });
-
+            row.setOnMouseDragEntered(event -> {
+                listEntry.get().onMouseDragEntered(event);
+            });
             row.setOnDragEntered(event -> {
                 listEntry.get().onDragEntered(event);
             });

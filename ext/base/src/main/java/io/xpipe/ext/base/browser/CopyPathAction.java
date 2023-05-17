@@ -26,6 +26,11 @@ public class CopyPathAction implements BrowserAction, BranchAction {
     }
 
     @Override
+    public boolean acceptsEmptySelection() {
+        return true;
+    }
+
+    @Override
     public List<LeafAction> getBranchingActions() {
         return List.of(
                 new LeafAction() {

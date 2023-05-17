@@ -131,6 +131,7 @@ public class FileListCompEntry {
 
     public void startDrag(MouseEvent event) {
         if (item == null) {
+            row.startFullDrag();
             return;
         }
 
@@ -189,6 +190,22 @@ public class FileListCompEntry {
         }
 
         acceptDrag(event);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void onMouseDragEntered(MouseDragEvent event) {
+        event.consume();
+
+        if (model.getFileSystemModel().getCurrentDirectory() == null) {
+            return;
+        }
+
+        if (item == null || item.isSynthetic()) {
+            return;
+        }
+
+        var tv = ((TableView<FileBrowserEntry>) row.getParent().getParent().getParent().getParent());
+        tv.getSelectionModel().select(item);
     }
 
     public void onDragOver(DragEvent event) {

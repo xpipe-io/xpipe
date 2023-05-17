@@ -32,6 +32,8 @@ open module io.xpipe.ext.base {
             OpenDirectoryAction,
             OpenDirectoryInNewTabAction,
             OpenTerminalAction,
+            OpenNativeFileDetailsAction,
+            OpenInNativeManagerAction,
             EditFileAction,
             RunAction,
             CopyAction,

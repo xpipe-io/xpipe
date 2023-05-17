@@ -21,6 +21,11 @@ public class CopyAction implements LeafAction {
     }
 
     @Override
+    public boolean acceptsEmptySelection() {
+        return true;
+    }
+
+    @Override
     public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
         return new FontIcon("mdi2c-content-copy");
     }

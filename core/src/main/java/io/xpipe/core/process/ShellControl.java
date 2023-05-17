@@ -135,6 +135,15 @@ public interface ShellControl extends ProcessControl {
         });
     }
 
+    default ShellControl enforcedDialect(ShellDialect type) throws Exception {
+        start();
+        if (getShellDialect().equals(type))  {
+            return this;
+        } else {
+            return subShell(type).start();
+        }
+    }
+
     default <T> T enforceDialect(@NonNull ShellDialect type, Function<ShellControl, T> sc) throws Exception {
         if (isRunning() && getShellDialect().equals(type))  {
             return sc.apply(this);

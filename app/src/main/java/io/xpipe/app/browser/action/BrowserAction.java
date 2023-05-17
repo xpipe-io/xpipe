@@ -16,6 +16,7 @@ public interface BrowserAction {
     static enum Category {
         CUSTOM,
         OPEN,
+        NATIVE,
         COPY_PASTE,
         MUTATION
     }

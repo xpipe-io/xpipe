@@ -1,11 +1,11 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
-import io.xpipe.app.browser.action.BranchAction;
-import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.geometry.Insets;
@@ -20,8 +20,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.function.UnaryOperator;
 
 import static io.xpipe.app.browser.FileListModel.PREDICATE_NOT_HIDDEN;
 import static io.xpipe.app.util.Controls.iconButton;
@@ -60,19 +58,15 @@ public class OpenFileSystemComp extends SimpleComp {
                 e -> model.openTerminalAsync(model.getCurrentPath().get()));
         terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
-        var addBtn = new MenuButton(null, new FontIcon("mdmz-plus"));
-        var s = model.getFileList().getSelected();
-        var action = (BranchAction) BrowserAction.ALL.stream().filter(browserAction -> browserAction.getName(model, s).equals("New")).findFirst().orElseThrow();
-        action.getBranchingActions().forEach(action1 -> {
-            addBtn.getItems().add(action1.toItem(model, s, UnaryOperator.identity()));
-        });
+        var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
+        new ContextMenuAugment<>(true, () -> new FileContextMenu(model, true)).augment(new SimpleCompStructure<>(menuButton));
 
         var filter = new FileFilterComp(model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new ToolBar();
         topBar.getItems()
-                .setAll(backBtn, forthBtn, new Spacer(10), new BrowserNavBar(model).createRegion(), filter.get(), refreshBtn, terminalBtn, addBtn);
+                .setAll(backBtn, forthBtn, new Spacer(10), new BrowserNavBar(model).createRegion(), filter.get(), refreshBtn, terminalBtn, menuButton);
 
         // ~
 

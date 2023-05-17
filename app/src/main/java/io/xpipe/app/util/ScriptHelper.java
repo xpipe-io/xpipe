@@ -17,6 +17,11 @@ import java.util.Random;
 public class ScriptHelper {
 
     public static String createDetachCommand(ShellControl pc, String command) {
+        if (pc.getShellDialect().equals(ShellDialects.POWERSHELL)) {
+            var script = ScriptHelper.createExecScript(pc, command);
+            return String.format("Start-Process -WindowStyle Minimized -FilePath powershell.exe -ArgumentList \"-NoProfile\", \"-File\", %s", ShellDialects.POWERSHELL.fileArgument(script));
+        }
+
         if (pc.getOsType().equals(OsType.WINDOWS)) {
             return "start \"\" /MIN " + command;
         } else {

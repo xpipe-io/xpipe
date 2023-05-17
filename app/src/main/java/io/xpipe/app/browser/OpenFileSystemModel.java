@@ -12,6 +12,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
@@ -124,8 +125,34 @@ public final class OpenFileSystemModel {
         }
 
         // Handle commands typed into navigation bar
-        if (!FileNames.isAbsolute(path)) {
-
+        if (!FileNames.isAbsolute(path) && fileSystem.getShell().isPresent()) {
+            var directory = currentPath.get();
+            var name = path + " - "
+                    + XPipeDaemon.getInstance().getStoreName(store.getValue()).orElse("?");
+            ThreadHelper.runFailableAsync(() -> {
+                if (ShellDialects.ALL.stream().anyMatch(dialect -> path.startsWith(dialect.getOpenCommand()))) {
+                    var cmd = fileSystem
+                            .getShell()
+                            .get()
+                            .subShell(path)
+                            .initWith(fileSystem
+                                    .getShell()
+                                    .get()
+                                    .getShellDialect()
+                                    .getCdCommand(currentPath.get()))
+                            .prepareTerminalOpen(name);
+                    TerminalHelper.open(path, cmd);
+                } else {
+                    var cmd = fileSystem
+                            .getShell()
+                            .get()
+                            .command(path)
+                            .workingDirectory(directory)
+                            .prepareTerminalOpen(name);
+                    TerminalHelper.open(path, cmd);
+                }
+            });
+            return Optional.of(currentPath.get());
         }
 
         String newPath = null;
@@ -306,7 +333,8 @@ public final class OpenFileSystemModel {
             var fs = fileSystem.createFileSystem();
             fs.open();
             this.fileSystem = fs;
-            this.local.set(fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false));
+            this.local.set(
+                    fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false));
 
             var storageEntry = DataStorage.get()
                     .getStoreEntryIfPresent(fileSystem)

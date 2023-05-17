@@ -27,11 +27,6 @@ public class OpenTerminalAction implements LeafAction {
     }
 
     @Override
-    public boolean acceptsEmptySelection() {
-        return true;
-    }
-
-    @Override
     public Category getCategory() {
         return Category.OPEN;
     }
