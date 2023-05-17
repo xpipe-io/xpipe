@@ -7,7 +7,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.icon.FileBrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlayComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
@@ -55,11 +54,11 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     @Override
                     public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
                         var name = new SimpleStringProperty();
-                        model.getOverlay().setValue(new ModalOverlayComp.OverlayContent(AppI18n.observable("newFile"), Comp.of(() -> {
+                        model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newFile", Comp.of(() -> {
                             var creationName = new TextField();
                             creationName.textProperty().bindBidirectional(name);
                             return creationName;
-                        }), () -> {
+                        }), "finish", () -> {
                             model.createFileAsync(name.getValue());
                         }));
                     }
@@ -78,11 +77,11 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     @Override
                     public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
                         var name = new SimpleStringProperty();
-                        model.getOverlay().setValue(new ModalOverlayComp.OverlayContent(AppI18n.observable("newDirectory"), Comp.of(() -> {
+                        model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newDirectory", Comp.of(() -> {
                             var creationName = new TextField();
                             creationName.textProperty().bindBidirectional(name);
                             return creationName;
-                        }), () -> {
+                        }), "finish", () -> {
                             model.createDirectoryAsync(name.getValue());
                         }));
                     }

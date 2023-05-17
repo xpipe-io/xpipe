@@ -2,12 +2,12 @@ package io.xpipe.app.comp.base;
 
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.beans.property.Property;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -33,8 +33,9 @@ public class ModalOverlayComp extends SimpleComp {
     @Value
     public static class OverlayContent {
 
-        ObservableValue<String> title;
+        String titleKey;
         Comp<?> content;
+        String finishKey;
         Runnable onFinish;
     }
 
@@ -45,6 +46,7 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
+        modal.getStyleClass().add("modal-overlay-comp");
         var pane = new StackPane(bgRegion, modal);
         pane.setPickOnBounds(false);
         PlatformThread.sync(overlayContent).addListener((observable, oldValue, newValue) -> {
@@ -54,23 +56,26 @@ public class ModalOverlayComp extends SimpleComp {
 
             if (newValue != null) {
                 var r = newValue.content.createRegion();
-
-                var finishButton = new Button("Finish");
-                Styles.toggleStyleClass(finishButton, Styles.FLAT);
-                finishButton.setOnAction(event -> {
-                    newValue.onFinish.run();
-                    overlayContent.setValue(null);
-                });
-
-                var buttonBar = new ButtonBar();
-                buttonBar.getButtons().addAll(finishButton);
-                var box = new VBox(r, buttonBar);
+                var box = new VBox(r);
                 box.setSpacing(15);
                 box.setPadding(new Insets(15));
-                var tp = new TitledPane(newValue.title.getValue(), box);
+
+                if (newValue.finishKey != null) {
+                    var finishButton = new Button(AppI18n.get(newValue.finishKey));
+                    Styles.toggleStyleClass(finishButton, Styles.FLAT);
+                    finishButton.setOnAction(event -> {
+                        newValue.onFinish.run();
+                        overlayContent.setValue(null);
+                    });
+
+                    var buttonBar = new ButtonBar();
+                    buttonBar.getButtons().addAll(finishButton);
+                    box.getChildren().add(buttonBar);
+                }
+
+                var tp = new TitledPane(AppI18n.get(newValue.titleKey), box);
                 tp.setMaxWidth(400);
                 tp.setCollapsible(false);
-                tp.getStyleClass().add("elevated-3");
 
                 var closeButton = new Button(null, new FontIcon("mdi2w-window-close"));
                 closeButton.setOnAction(event -> {
@@ -84,6 +89,7 @@ public class ModalOverlayComp extends SimpleComp {
                 AnchorPane.setRightAnchor(closeButton, 10.0);
 
                 var stack = new StackPane(tp, close);
+                stack.setPadding(new Insets(10));
                 stack.setOnMouseClicked(event -> {
                     if (overlayContent.getValue() != null) {
                         overlayContent.setValue(null);
