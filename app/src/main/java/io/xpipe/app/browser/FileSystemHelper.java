@@ -21,7 +21,7 @@ public class FileSystemHelper {
         }
 
         ConnectionFileSystem fileSystem = (ConnectionFileSystem) model.getFileSystem();
-        var current = !(model.getStore().getValue() instanceof LocalStore)
+        var current = !model.isLocal()
                 ? fileSystem
                         .getShellControl()
                         .executeSimpleStringCommand(

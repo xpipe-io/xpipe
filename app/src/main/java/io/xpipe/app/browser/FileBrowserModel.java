@@ -71,46 +71,43 @@ public class FileBrowserModel {
 
     public void openExistingFileSystemIfPresent(ShellStore store) {
         var found = openFileSystems.stream()
-                .filter(model -> Objects.equals(model.getStore().getValue(), store))
+                .filter(model -> Objects.equals(model.getStore(), store))
                 .findFirst();
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
-            openFileSystemAsync(store);
+            openFileSystemAsync(store, null);
         }
     }
 
-    public void openFileSystemSync(ShellStore store, String path) throws Exception {
-        var model = new OpenFileSystemModel(this);
-        openFileSystems.add(model);
-        selected.setValue(model);
-        model.switchSync(store);
-        model.cd(path);
-    }
-
-    public void openFileSystemAsync(ShellStore store) {
-        // Prevent multiple tabs in non browser modes
-        if (!mode.equals(Mode.BROWSER)) {
-            ThreadHelper.runFailableAsync(() -> {
-                var open = openFileSystems.size() > 0 ? openFileSystems.get(0) : null;
-                if (open != null) {
-                    open.closeSync();
-                    openFileSystems.remove(open);
-                }
-
-                var model = new OpenFileSystemModel(this);
-                openFileSystems.add(model);
-                selected.setValue(model);
-                model.switchSync(store);
-            });
-            return;
-        }
+    public void openFileSystemAsync(ShellStore store, String path) {
+        //        // Prevent multiple tabs in non browser modes
+        //        if (!mode.equals(Mode.BROWSER)) {
+        //            ThreadHelper.runFailableAsync(() -> {
+        //                var open = openFileSystems.size() > 0 ? openFileSystems.get(0) : null;
+        //                if (open != null) {
+        //                    open.closeSync();
+        //                    openFileSystems.remove(open);
+        //                }
+        //
+        //                var model = new OpenFileSystemModel(this, store);
+        //                openFileSystems.add(model);
+        //                selected.setValue(model);
+        //                model.switchSync(store);
+        //            });
+        //            return;
+        //        }
 
         ThreadHelper.runFailableAsync(() -> {
-            var model = new OpenFileSystemModel(this);
+            var model = new OpenFileSystemModel(this, store);
+            model.initFileSystem();
             openFileSystems.add(model);
             selected.setValue(model);
-            model.switchSync(store);
+            if (path != null) {
+                model.cd(path);
+            } else {
+                model.initDirectory();
+            }
         });
     }
 }

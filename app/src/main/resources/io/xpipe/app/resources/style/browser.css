@@ -49,7 +49,22 @@
 }
 
 .browser .bookmark-list {
-    -fx-border-width: 0 0 1 1;
+    -fx-border-width: 0;
+}
+
+.browser .bookmark-list *.scroll-bar:horizontal,
+.browser .bookmark-list *.scroll-bar:horizontal *.track,
+.browser .bookmark-list *.scroll-bar:horizontal *.track-background,
+.browser .bookmark-list *.scroll-bar:horizontal *.thumb,
+.browser .bookmark-list *.scroll-bar:horizontal *.increment-button,
+.browser .bookmark-list *.scroll-bar:horizontal *.decrement-button,
+.browser .bookmark-list *.scroll-bar:horizontal *.increment-arrow, 
+.browser .bookmark-list *.scroll-bar:horizontal *.decrement-arrow {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-shape: null;
 }
 
 .browser .tool-bar {

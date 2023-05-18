@@ -11,13 +11,13 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -46,27 +46,32 @@ public class FileBrowserComp extends SimpleComp {
     protected Region createSimple() {
         FileType.loadDefinitions();
         DirectoryType.loadDefinitions();
-        ThreadHelper.runAsync( () -> {
+        ThreadHelper.runAsync(() -> {
             FileIconManager.loadIfNecessary();
         });
 
         var bookmarksList = new BookmarkList(model).createRegion();
         VBox.setVgrow(bookmarksList, Priority.ALWAYS);
-        var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage()).hide(Bindings.createBooleanBinding(() -> {
-            if (model.getOpenFileSystems().size() == 0) {
-                return true;
-            }
+        var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage())
+                .hide(PlatformThread.sync(Bindings.createBooleanBinding(
+                        () -> {
+                            if (model.getOpenFileSystems().size() == 0) {
+                                return true;
+                            }
 
-            return !model.getMode().equals(FileBrowserModel.Mode.BROWSER);
-        }, PlatformThread.sync(model.getOpenFileSystems()))).createRegion();
-        SimpleChangeListener.apply(model.getSelected(), val -> {
-            localDownloadStage.visibleProperty().unbind();
-            if (val == null) {
-                return;
-            }
+                            if (!model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+                                return true;
+                            }
 
-            localDownloadStage.visibleProperty().bind(PlatformThread.sync(val.getLocal().not()));
-        });
+                            if (model.getSelected().getValue() != null) {
+                                return model.getSelected().getValue().isLocal();
+                            }
+
+                            return false;
+                        },
+                        model.getOpenFileSystems(),
+                        model.getSelected())))
+                .createRegion();
         var vertical = new VBox(bookmarksList, localDownloadStage);
         vertical.setFillWidth(true);
 
@@ -75,9 +80,10 @@ public class FileBrowserComp extends SimpleComp {
                 .widthProperty()
                 .addListener(
                         // set sidebar width in pixels depending on split pane width
-                        (obs, old, val) -> splitPane.setDividerPosition(0, 230 / splitPane.getWidth()));
+                        (obs, old, val) -> splitPane.setDividerPosition(0, 280 / splitPane.getWidth()));
 
         var r = addBottomBar(splitPane);
+        r.getStyleClass().add("browser");
         // AppFont.small(r);
         return r;
     }
@@ -92,14 +98,14 @@ public class FileBrowserComp extends SimpleComp {
         var selected = new HBox();
         selected.setAlignment(Pos.CENTER_LEFT);
         selected.setSpacing(10);
-//        model.getSelected().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
-//            selected.getChildren().setAll(c.getList().stream().map(s -> {
-//                var field = new TextField(s.getPath());
-//                field.setEditable(false);
-//                field.setPrefWidth(400);
-//                return field;
-//            }).toList());
-//        });
+        //        model.getSelected().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
+        //            selected.getChildren().setAll(c.getList().stream().map(s -> {
+        //                var field = new TextField(s.getPath());
+        //                field.setEditable(false);
+        //                field.setPrefWidth(400);
+        //                return field;
+        //            }).toList());
+        //        });
         var spacer = new Spacer(Orientation.HORIZONTAL);
         var button = new Button("Select");
         button.setOnAction(event -> model.finishChooser());
@@ -128,7 +134,8 @@ public class FileBrowserComp extends SimpleComp {
             map.put(v, t);
             tabs.getTabs().add(t);
         });
-        tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
+        tabs.getSelectionModel()
+                .select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
         var modifying = new SimpleBooleanProperty();
@@ -195,8 +202,6 @@ public class FileBrowserComp extends SimpleComp {
                 }
             }
         });
-
-        stack.getStyleClass().add("browser");
         return stack;
     }
 
@@ -228,29 +233,14 @@ public class FileBrowserComp extends SimpleComp {
                 .bind(Bindings.createDoubleBinding(
                         () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
 
-        var name = Bindings.createStringBinding(
-                () -> {
-                    return model.getStore().getValue() != null
-                            ? DataStorage.get()
-                                    .getStoreEntry(model.getStore().getValue())
-                                    .getName()
-                            : null;
-                },
-                PlatformThread.sync(model.getStore()));
-        var image = Bindings.createStringBinding(
-                () -> {
-                    return model.getStore().getValue() != null
-                            ? DataStorage.get()
-                                    .getStoreEntry(model.getStore().getValue())
-                                    .getProvider()
-                                    .getDisplayIconFileName(model.getStore().getValue())
-                            : null;
-                },
-                model.getStore());
-        var logo = new PrettyImageComp(image, 20, 20).createRegion();
+        var name = DataStorage.get().getStoreEntry(model.getStore()).getName();
+        var image = DataStorage.get()
+                .getStoreEntry(model.getStore())
+                .getProvider()
+                .getDisplayIconFileName(model.getStore());
+        var logo = new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion();
 
-        var label = new Label();
-        label.textProperty().bind(name);
+        var label = new Label(name);
         label.addEventHandler(DragEvent.DRAG_ENTERED, new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent mouseEvent) {

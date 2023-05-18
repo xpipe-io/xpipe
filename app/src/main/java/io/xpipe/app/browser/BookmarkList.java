@@ -1,19 +1,23 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.comp.storage.store.StoreEntryFlatMiniSectionComp;
-import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.comp.storage.store.StoreEntryTree;
+import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
+import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.DragPseudoClassAugment;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
 import java.util.Timer;
@@ -33,34 +37,101 @@ final class BookmarkList extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var observableList = BindingsHelper.filteredContentBinding(StoreEntryFlatMiniSectionComp.ALL, e -> e.getEntry().getState().isUsable());
-        var list = new ListBoxViewComp<>(observableList, observableList, e -> {
-            return Comp.of(() -> {
-                var button = new Button(null, e.createRegion());
+        var root = StoreEntryTree.createTree();
+        var view = new TreeView<StoreEntryWrapper>(root);
+        view.setShowRoot(false);
+        view.getStyleClass().add("bookmark-list");
+        view.setCellFactory(param -> {
+            return new StoreCell();
+        });
 
-                if (!(e.getEntry().getStore() instanceof ShellStore)) {
-                    button.setDisable(true);
+        model.getSelected().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                view.getSelectionModel().clearSelection();
+                return;
+            }
+
+            view.getSelectionModel()
+                    .select(getTreeViewItem(
+                            root,
+                            StoreViewState.get().getAllEntries().stream()
+                                    .filter(storeEntryWrapper -> storeEntryWrapper
+                                                    .getState()
+                                                    .getValue()
+                                                    .isUsable()
+                                            && storeEntryWrapper
+                                                    .getEntry()
+                                                    .getStore()
+                                                    .equals(newValue.getStore()))
+                                    .findAny()
+                                    .orElse(null)));
+        });
+
+        return view;
+    }
+
+    private static TreeItem<StoreEntryWrapper> getTreeViewItem(
+            TreeItem<StoreEntryWrapper> item, StoreEntryWrapper value) {
+        if (item.getValue() != null && item.getValue().equals(value)) {
+            return item;
+        }
+
+        for (TreeItem<StoreEntryWrapper> child : item.getChildren()) {
+            TreeItem<StoreEntryWrapper> s = getTreeViewItem(child, value);
+            if (s != null) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    private final class StoreCell extends TreeCell<StoreEntryWrapper> {
+
+        private final StringProperty img = new SimpleStringProperty();
+        private final Node imageView = new PrettyImageComp(img, 20, 20).createRegion();
+
+        private StoreCell() {
+            setGraphic(imageView);
+            addEventHandler(DragEvent.DRAG_OVER, mouseEvent -> {
+                if (getItem() == null) {
+                    return;
                 }
 
-                button.setOnAction(event -> {
-                    var fileSystem = ((ShellStore) e.getEntry().getStore());
-                    model.openFileSystemAsync(fileSystem);
-                    event.consume();
-                });
-                GrowAugment.create(true, false).augment(new SimpleCompStructure<>(button));
-                DragPseudoClassAugment.create().augment(new SimpleCompStructure<>(button));
-
-                button.addEventHandler(
-                        DragEvent.DRAG_OVER,
-                        mouseEvent -> handleHoverTimer(e.getEntry().getStore(), mouseEvent));
-                button.addEventHandler(
-                        DragEvent.DRAG_EXITED,
-                        mouseEvent -> activeTask = null);
-
-                return button;
+                handleHoverTimer(getItem().getEntry().getStore(), mouseEvent);
+                mouseEvent.consume();
             });
-        }).styleClass("bookmark-list").createRegion();
-        return list;
+            addEventHandler(DragEvent.DRAG_EXITED, mouseEvent -> {
+                activeTask = null;
+                mouseEvent.consume();
+            });
+            addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                if (getItem() == null || event.getButton() != MouseButton.PRIMARY) {
+                    return;
+                }
+
+                var fileSystem = ((ShellStore) getItem().getEntry().getStore());
+                model.openFileSystemAsync(fileSystem, null);
+                event.consume();
+            });
+        }
+
+        @Override
+        public void updateItem(StoreEntryWrapper item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+                setText(null);
+                // Don't set image as that would trigger image comp update
+                // and cells are emptied on each change, leading to unnecessary changes
+                // img.set(null);
+                setGraphic(null);
+            } else {
+                setText(item.getName());
+                img.set(item.getEntry()
+                        .getProvider()
+                        .getDisplayIconFileName(item.getEntry().getStore()));
+                setGraphic(imageView);
+            }
+        }
     }
 
     private void handleHoverTimer(DataStore store, DragEvent event) {

@@ -8,11 +8,29 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.css.PseudoClass;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Window;
+import javafx.util.Duration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class AppTheme {
+
+    public record AccentColor(Color primaryColor, PseudoClass pseudoClass) {
+
+        public static AccentColor xpipeBlue() {
+            return new AccentColor(Color.web("#11B4B4"), PseudoClass.getPseudoClass("accent-primer-purple"));
+        }
+    }
 
     public static void init() {
         if (AppPrefs.get() == null) {
@@ -60,6 +78,23 @@ public class AppTheme {
 
     private static void changeTheme(Theme newTheme) {
         PlatformThread.runLaterIfNeeded(() -> {
+            for (Window window : Window.getWindows()) {
+                var scene = window.getScene();
+                Image snapshot = scene.snapshot(null);
+                Pane root = (Pane) scene.getRoot();
+
+                ImageView imageView = new ImageView(snapshot);
+                root.getChildren().add(imageView);
+
+                // Animate!
+                var transition = new Timeline(
+                        new KeyFrame(Duration.ZERO, new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
+                        new KeyFrame(
+                                Duration.millis(1250), new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
+                transition.setOnFinished(e -> root.getChildren().remove(imageView));
+                transition.play();
+            }
+
             Application.setUserAgentStylesheet(newTheme.getTheme().getUserAgentStylesheet());
             TrackEvent.debug("Set theme " + newTheme.getId() + " for scene");
         });

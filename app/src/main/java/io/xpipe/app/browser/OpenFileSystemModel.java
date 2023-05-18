@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 @Getter
 public final class OpenFileSystemModel {
 
-    private Property<FileSystemStore> store = new SimpleObjectProperty<>();
+    private final FileSystemStore store;
     private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
     private final FileListModel fileList;
@@ -46,10 +46,11 @@ public final class OpenFileSystemModel {
     private final Property<OpenFileSystemSavedState> savedState = new SimpleObjectProperty<>();
     private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
-    private final BooleanProperty local = new SimpleBooleanProperty();
+    private boolean local;
 
-    public OpenFileSystemModel(FileBrowserModel browserModel) {
+    public OpenFileSystemModel(FileBrowserModel browserModel, FileSystemStore store) {
         this.browserModel = browserModel;
+        this.store = store;
         fileList = new FileListModel(this);
         addListeners();
     }
@@ -61,7 +62,7 @@ public final class OpenFileSystemModel {
             }
 
             BusyProperty.execute(busy, () -> {
-                if (store.getValue() instanceof ShellStore s) {
+                if (store instanceof ShellStore s) {
                     c.accept(fileSystem.getShell().orElseThrow());
                     if (refresh) {
                         refreshSync();
@@ -73,11 +74,11 @@ public final class OpenFileSystemModel {
 
     private void addListeners() {
         savedState.addListener((observable, oldValue, newValue) -> {
-            if (store.getValue() == null) {
+            if (store == null) {
                 return;
             }
 
-            var storageEntry = DataStorage.get().getStoreEntryIfPresent(store.getValue());
+            var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
             storageEntry.ifPresent(entry -> AppCache.update("browser-state-" + entry.getUuid(), newValue));
         });
 
@@ -128,7 +129,7 @@ public final class OpenFileSystemModel {
         if (!FileNames.isAbsolute(path) && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = path + " - "
-                    + XPipeDaemon.getInstance().getStoreName(store.getValue()).orElse("?");
+                    + XPipeDaemon.getInstance().getStoreName(store).orElse("?");
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.ALL.stream().anyMatch(dialect -> path.startsWith(dialect.getOpenCommand()))) {
                     var cmd = fileSystem
@@ -177,7 +178,7 @@ public final class OpenFileSystemModel {
 
     private void cdSyncWithoutCheck(String path) throws Exception {
         if (fileSystem == null) {
-            var fs = store.getValue().createFileSystem();
+            var fs = store.createFileSystem();
             fs.open();
             this.fileSystem = fs;
         }
@@ -323,21 +324,21 @@ public final class OpenFileSystemModel {
             ErrorEvent.fromThrowable(e).handle();
         }
         fileSystem = null;
-        store = null;
     }
 
-    public void switchSync(FileSystemStore fileSystem) throws Exception {
+    public void initFileSystem() throws Exception {
         BusyProperty.execute(busy, () -> {
-            closeSync();
-            this.store.setValue(fileSystem);
-            var fs = fileSystem.createFileSystem();
+            var fs = store.createFileSystem();
             fs.open();
             this.fileSystem = fs;
-            this.local.set(
-                    fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false));
+            this.local = fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
+        });
+    }
 
+    public void initDirectory() throws Exception {
+        BusyProperty.execute(busy, () -> {
             var storageEntry = DataStorage.get()
-                    .getStoreEntryIfPresent(fileSystem)
+                    .getStoreEntryIfPresent(store)
                     .map(entry -> entry.getUuid())
                     .orElse(UUID.randomUUID());
             this.savedState.setValue(
@@ -362,13 +363,13 @@ public final class OpenFileSystemModel {
             }
 
             BusyProperty.execute(busy, () -> {
-                if (store.getValue() instanceof ShellStore s) {
+                if (store instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
                             .prepareTerminalOpen(directory + " - "
                                     + XPipeDaemon.getInstance()
-                                            .getStoreName(store.getValue())
+                                            .getStoreName(store)
                                             .orElse("?"));
                     TerminalHelper.open(directory, command);
                 }

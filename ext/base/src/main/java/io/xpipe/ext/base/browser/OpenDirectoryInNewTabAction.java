@@ -16,7 +16,7 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
-        model.getBrowserModel().openFileSystemSync(model.getStore().getValue().asNeeded(), entries.get(0).getRawFileEntry().getPath());
+        model.getBrowserModel().openFileSystemAsync(model.getStore().asNeeded(), entries.get(0).getRawFileEntry().getPath());
     }
 
     @Override
