@@ -37,6 +37,15 @@ public interface ShellControl extends ProcessControl {
 
     public void checkRunning() throws Exception;
 
+    default CommandControl osaScript(String script) {
+        return command(String.format(
+                """
+                osascript - "$@" <<EOF
+                %s
+                EOF
+                """, script));
+    }
+
     default String executeSimpleStringCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.readOrThrow();
@@ -87,16 +96,17 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getOpenCommand(), new TerminalOpenFunction() {
-            @Override
-            public boolean changesEnvironment() {
-                return false;
-            }
+                    @Override
+                    public boolean changesEnvironment() {
+                        return false;
+                    }
 
-            @Override
-            public String prepare(ShellControl sc, String command) throws Exception {
-                return command;
-            }
-        }).elevationPassword(getElevationPassword());
+                    @Override
+                    public String prepare(ShellControl sc, String command) throws Exception {
+                        return command;
+                    }
+                })
+                .elevationPassword(getElevationPassword());
     }
 
     interface TerminalOpenFunction {
@@ -108,16 +118,16 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl identicalSubShell() {
         return subShell(p -> p.getShellDialect().getOpenCommand(), new TerminalOpenFunction() {
-            @Override
-            public boolean changesEnvironment() {
-                return false;
-            }
+                    @Override
+                    public boolean changesEnvironment() {
+                        return false;
+                    }
 
-            @Override
-            public String prepare(ShellControl sc, String command) throws Exception {
-                return command;
-            }
-        })
+                    @Override
+                    public String prepare(ShellControl sc, String command) throws Exception {
+                        return command;
+                    }
+                })
                 .elevationPassword(getElevationPassword());
     }
 
@@ -137,7 +147,7 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl enforcedDialect(ShellDialect type) throws Exception {
         start();
-        if (getShellDialect().equals(type))  {
+        if (getShellDialect().equals(type)) {
             return this;
         } else {
             return subShell(type).start();
@@ -145,7 +155,7 @@ public interface ShellControl extends ProcessControl {
     }
 
     default <T> T enforceDialect(@NonNull ShellDialect type, Function<ShellControl, T> sc) throws Exception {
-        if (isRunning() && getShellDialect().equals(type))  {
+        if (isRunning() && getShellDialect().equals(type)) {
             return sc.apply(this);
         } else {
             try (var sub = subShell(type).start()) {
@@ -155,8 +165,7 @@ public interface ShellControl extends ProcessControl {
     }
 
     ShellControl subShell(
-            FailableFunction<ShellControl, String, Exception> command,
-            TerminalOpenFunction terminalCommand);
+            FailableFunction<ShellControl, String, Exception> command, TerminalOpenFunction terminalCommand);
 
     void executeLine(String command) throws Exception;
 
