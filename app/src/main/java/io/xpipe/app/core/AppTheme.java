@@ -77,6 +77,10 @@ public class AppTheme {
     }
 
     private static void changeTheme(Theme newTheme) {
+        if (newTheme == null) {
+            return;
+        }
+
         PlatformThread.runLaterIfNeeded(() -> {
             for (Window window : Window.getWindows()) {
                 var scene = window.getScene();

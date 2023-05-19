@@ -104,9 +104,9 @@ public class FileBrowserModel {
             openFileSystems.add(model);
             selected.setValue(model);
             if (path != null) {
-                model.cd(path);
+                model.initWithGivenDirectory(path);
             } else {
-                model.initDirectory();
+                model.initWithDefaultDirectory();
             }
         });
     }

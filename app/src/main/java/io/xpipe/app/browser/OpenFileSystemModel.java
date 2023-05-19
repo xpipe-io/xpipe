@@ -335,25 +335,33 @@ public final class OpenFileSystemModel {
         });
     }
 
-    public void initDirectory() throws Exception {
-        BusyProperty.execute(busy, () -> {
-            var storageEntry = DataStorage.get()
-                    .getStoreEntryIfPresent(store)
-                    .map(entry -> entry.getUuid())
-                    .orElse(UUID.randomUUID());
-            this.savedState.setValue(
-                    AppCache.get("browser-state-" + storageEntry, OpenFileSystemSavedState.class, () -> {
-                        try {
-                            return OpenFileSystemSavedState.builder()
-                                    .lastDirectory(FileSystemHelper.getStartDirectory(this))
-                                    .build();
-                        } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).handle();
-                            return null;
-                        }
-                    }));
-            cdSyncWithoutCheck(this.savedState.getValue().getLastDirectory());
-        });
+    public void initWithGivenDirectory(String dir) throws Exception {
+        initSavedState(dir);
+        cdSyncWithoutCheck(dir);
+    }
+
+    public void initWithDefaultDirectory() throws Exception {
+        var dir = FileSystemHelper.getStartDirectory(this);
+        initSavedState(dir);
+        cdSyncWithoutCheck(dir);
+    }
+
+    private void initSavedState(String path) {
+        var storageEntry = DataStorage.get()
+                .getStoreEntryIfPresent(store)
+                .map(entry -> entry.getUuid())
+                .orElse(UUID.randomUUID());
+        this.savedState.setValue(
+                AppCache.get("browser-state-" + storageEntry, OpenFileSystemSavedState.class, () -> {
+                    try {
+                        return OpenFileSystemSavedState.builder()
+                                .lastDirectory(path)
+                                .build();
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                        return null;
+                    }
+                }));
     }
 
     public void openTerminalAsync(String directory) {
