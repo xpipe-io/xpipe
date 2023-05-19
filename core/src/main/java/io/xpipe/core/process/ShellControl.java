@@ -37,7 +37,7 @@ public interface ShellControl extends ProcessControl {
 
     public void checkRunning() throws Exception;
 
-    default CommandControl osaScript(String script) {
+    default CommandControl osascriptCommand(String script) {
         return command(String.format(
                 """
                 osascript - "$@" <<EOF

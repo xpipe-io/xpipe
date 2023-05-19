@@ -24,13 +24,16 @@ public class OpenFileWithAction implements LeafAction {
                         null,
                         "open",
                         "rundll32.exe",
-                        "shell32.dll,OpenAs_RunDLL " + entries.get(0).getRawFileEntry().getPath(),
+                        "shell32.dll,OpenAs_RunDLL "
+                                + entries.get(0).getRawFileEntry().getPath(),
                         null,
                         WinUser.SW_SHOWNORMAL);
             }
             case OsType.Linux linux -> {
+                throw new UnsupportedOperationException();
             }
             case OsType.MacOs macOs -> {
+                throw new UnsupportedOperationException();
             }
         }
     }
@@ -47,7 +50,11 @@ public class OpenFileWithAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        return entries.size() == 1 && entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
+        var os = model.getFileSystem().getShell();
+        return os.isPresent()
+                && os.get().getOsType().equals(OsType.WINDOWS)
+                && entries.size() == 1
+                && entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
     }
 
     @Override

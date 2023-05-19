@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
-    public static final ExternalTerminalType CMD = new SimpleType("app.cmd", "cmd.exe", "cmd.exe") {
+    ExternalTerminalType CMD = new SimpleType("app.cmd", "cmd.exe", "cmd.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -30,7 +30,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType POWERSHELL_WINDOWS =
+    ExternalTerminalType POWERSHELL_WINDOWS =
             new SimpleType("app.powershell", "powershell", "PowerShell") {
 
                 @Override
@@ -44,13 +44,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh", "PowerShell Core") {
+    ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh", "PowerShell Core") {
 
         @Override
         protected String toCommand(String name, String file) {
             // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
             var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
-            return "-ExecutionPolicy Bypass -NoProfile -Command cmd /C '" +script + "'";
+            return "-ExecutionPolicy Bypass -NoProfile -Command cmd /C '" + script + "'";
         }
 
         @Override
@@ -59,7 +59,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType WINDOWS_TERMINAL =
+    ExternalTerminalType WINDOWS_TERMINAL =
             new SimpleType("app.windowsTerminal", "wt.exe", "Windows Terminal") {
 
                 @Override
@@ -77,7 +77,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType GNOME_TERMINAL =
+    ExternalTerminalType GNOME_TERMINAL =
             new SimpleType("app.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
                 @Override
@@ -105,11 +105,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             };
 
-    public static final ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole", "Konsole") {
+    ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole", "Konsole") {
 
         @Override
         protected String toCommand(String name, String file) {
-            // Note for later: When debugging konsole launches, it will always open as a child process of IntelliJ/X-Pipe even though we try to detach it.
+            // Note for later: When debugging konsole launches, it will always open as a child process of
+            // IntelliJ/X-Pipe even though we try to detach it.
             // This is not the case for production where it works as expected
             return "--new-tab -e \"" + file + "\"";
         }
@@ -120,7 +121,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType XFCE = new SimpleType("app.xfce", "xfce4-terminal", "Xfce") {
+    ExternalTerminalType XFCE = new SimpleType("app.xfce", "xfce4-terminal", "Xfce") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -133,15 +134,15 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
+    ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
 
-    public static final ExternalTerminalType ITERM2 = new ITerm2Type();
+    ExternalTerminalType ITERM2 = new ITerm2Type();
 
-    public static final ExternalTerminalType WARP = new WarpType();
+    ExternalTerminalType WARP = new WarpType();
 
-    public static final ExternalTerminalType CUSTOM = new CustomType();
+    ExternalTerminalType CUSTOM = new CustomType();
 
-    public static final List<ExternalTerminalType> ALL = Stream.of(
+    List<ExternalTerminalType> ALL = Stream.of(
                     WINDOWS_TERMINAL,
                     PWSH_WINDOWS,
                     POWERSHELL_WINDOWS,
@@ -156,7 +157,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             .filter(terminalType -> terminalType.isSelectable())
             .toList();
 
-    public static ExternalTerminalType getDefault() {
+    static ExternalTerminalType getDefault() {
         return ALL.stream()
                 .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
@@ -164,9 +165,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 .orElse(null);
     }
 
-    public abstract void launch(String name, String file, boolean elevated) throws Exception;
+    void launch(String name, String file, boolean elevated) throws Exception;
 
-    static class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public MacOsTerminalType() {
             super("app.macosTerminal", "Terminal");
@@ -178,19 +179,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 var suffix = file.equals(pc.getShellDialect().getOpenCommand())
                         ? "\"\""
                         : "\"" + file.replaceAll("\"", "\\\\\"") + "\"";
-                var cmd = String.format(
-                        """
-                                osascript - "$@" <<EOF
+                pc.osascriptCommand(String.format(
+                                """
                                 activate application "Terminal"
                                 tell app "Terminal" to do script %s
-                                EOF""",
-                        suffix);
-                pc.executeSimpleCommand(cmd);
+                                """,
+                                suffix))
+                        .execute();
             }
         }
     }
 
-    static class CustomType extends ExternalApplicationType implements ExternalTerminalType {
+    class CustomType extends ExternalApplicationType implements ExternalTerminalType {
 
         public CustomType() {
             super("app.custom");
@@ -226,7 +226,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    static class ITerm2Type extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    class ITerm2Type extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public ITerm2Type() {
             super("app.iterm2", "iTerm");
@@ -235,9 +235,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                var cmd = String.format(
-                        """
-                                osascript - "$@" <<EOF
+                pc.osascriptCommand(String.format(
+                                """
                                 if application "iTerm" is running then
                                     tell application "iTerm"
                                     create window with profile "Default" command "%s"
@@ -253,14 +252,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                         end tell
                                     end tell
                                 end if
-                                EOF""",
-                        file.replaceAll("\"", "\\\\\""), file.replaceAll("\"", "\\\\\""));
-                pc.executeSimpleCommand(cmd);
+                                """,
+                                file.replaceAll("\"", "\\\\\""), file.replaceAll("\"", "\\\\\"")))
+                        .execute();
             }
         }
     }
 
-    static class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public WarpType() {
             super("app.warp", "Warp");
@@ -273,28 +272,26 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             try (ShellControl pc = LocalStore.getShell()) {
-                var cmd = String.format(
-                        """
-                                osascript - "$@" <<EOF
-                                tell application "Warp" to activate
-                                tell application "System Events" to tell process "Warp" to keystroke "t" using command down
-                                delay 1
-                                tell application "System Events"
-                                    tell process "Warp"
-                                        keystroke "%s"
-                                        key code 36
-                                    end tell
-                                end tell
-                                EOF
-                                        """,
-                        file.replaceAll("\"", "\\\\\""));
-                pc.executeSimpleCommand(cmd);
+                pc.osascriptCommand(String.format(
+                                """
+                        tell application "Warp" to activate
+                        tell application "System Events" to tell process "Warp" to keystroke "t" using command down
+                        delay 1
+                        tell application "System Events"
+                            tell process "Warp"
+                                keystroke "%s"
+                                key code 36
+                            end tell
+                        end tell
+                        """,
+                                file.replaceAll("\"", "\\\\\"")))
+                        .execute();
             }
         }
     }
 
     @Getter
-    public abstract static class SimpleType extends ExternalApplicationType.PathApplication
+    abstract class SimpleType extends ExternalApplicationType.PathApplication
             implements ExternalTerminalType {
 
         private final String displayName;
@@ -308,9 +305,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(String name, String file, boolean elevated) throws Exception {
             if (elevated) {
                 if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                    try (ShellControl pc = LocalStore.getShell().subShell(ShellDialects.POWERSHELL).start()) {
+                    try (ShellControl pc = LocalStore.getShell()
+                            .subShell(ShellDialects.POWERSHELL)
+                            .start()) {
                         ApplicationHelper.checkSupport(pc, executable, displayName);
-                            var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \"" + toCommand(name, file).replaceAll("\"", "`\"") + "\"";
+                        var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \""
+                                + toCommand(name, file).replaceAll("\"", "`\"") + "\"";
                         pc.executeSimpleCommand(toExecute);
                     }
                     return;

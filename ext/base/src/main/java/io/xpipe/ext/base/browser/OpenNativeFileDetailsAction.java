@@ -30,7 +30,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                 }
                 case OsType.Linux linux -> {}
                 case OsType.MacOs macOs -> {
-                    sc.osaScript(String.format(
+                    sc.osascriptCommand(String.format(
                             """
                              set fileEntry to (POSIX file "%s") as text
                              tell application "Finder" to open information window of file fileEntry
