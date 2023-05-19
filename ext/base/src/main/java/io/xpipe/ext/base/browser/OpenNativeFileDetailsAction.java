@@ -35,7 +35,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                              set fileEntry to (POSIX file "%s") as text
                              tell application "Finder" to open information window of file fileEntry
                              """,
-                            entry.getRawFileEntry().getPath()));
+                            entry.getRawFileEntry().getPath())).execute();
                 }
             }
         }
