@@ -125,47 +125,53 @@ public final class OpenFileSystemModel {
             return Optional.empty();
         }
 
+        // Fix common issues with paths
+        var normalizedPath = FileSystemHelper.resolvePath(this, path);
+        if (!Objects.equals(path, normalizedPath)) {
+            return Optional.of(normalizedPath);
+        }
+
         // Handle commands typed into navigation bar
-        if (!FileNames.isAbsolute(path) && fileSystem.getShell().isPresent()) {
+        if (normalizedPath != null && !FileNames.isAbsolute(normalizedPath) && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
-            var name = path + " - "
+            var name = normalizedPath + " - "
                     + XPipeDaemon.getInstance().getStoreName(store).orElse("?");
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.ALL.stream().anyMatch(dialect -> path.startsWith(dialect.getOpenCommand()))) {
+                if (ShellDialects.ALL.stream().anyMatch(dialect -> normalizedPath.startsWith(dialect.getOpenCommand()))) {
                     var cmd = fileSystem
                             .getShell()
                             .get()
-                            .subShell(path)
+                            .subShell(normalizedPath)
                             .initWith(fileSystem
                                     .getShell()
                                     .get()
                                     .getShellDialect()
                                     .getCdCommand(currentPath.get()))
                             .prepareTerminalOpen(name);
-                    TerminalHelper.open(path, cmd);
+                    TerminalHelper.open(normalizedPath, cmd);
                 } else {
                     var cmd = fileSystem
                             .getShell()
                             .get()
-                            .command(path)
+                            .command(normalizedPath)
                             .workingDirectory(directory)
                             .prepareTerminalOpen(name);
-                    TerminalHelper.open(path, cmd);
+                    TerminalHelper.open(normalizedPath, cmd);
                 }
             });
             return Optional.of(currentPath.get());
         }
 
-        String newPath = null;
+        String dirPath = null;
         try {
-            newPath = FileSystemHelper.resolveDirectoryPath(this, path);
+            dirPath = FileSystemHelper.validateDirectoryPath(this, normalizedPath);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.of(currentPath.get());
         }
 
-        if (!Objects.equals(path, newPath)) {
-            return Optional.of(newPath);
+        if (!Objects.equals(path, dirPath)) {
+            return Optional.of(dirPath);
         }
 
         ThreadHelper.runFailableAsync(() -> {

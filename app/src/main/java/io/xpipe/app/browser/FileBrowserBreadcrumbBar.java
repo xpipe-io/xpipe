@@ -25,7 +25,10 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory = crumb -> {
-            var btn = new Button(crumb.getValue().equals("/") ? "/" : FileNames.getFileName(crumb.getValue()), null);
+            var name = crumb.getValue().equals("/")
+                    ? "/"
+                    : FileNames.getFileName(crumb.getValue());
+            var btn = new Button(name, null);
             btn.setMnemonicParsing(false);
             btn.setFocusTraversable(false);
             return btn;
@@ -57,7 +60,7 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
                         return new Label("");
                     }
 
-                    return !item.isLast() ? new Label(sc.get().getOsType().getFileSystemSeparator()) : null;
+                    return new Label(sc.get().getOsType().getFileSystemSeparator());
                 });
             }
 
@@ -66,7 +69,8 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
             if (val.startsWith("/")) {
                 modifiedElements.add(0, "/");
             }
-            Breadcrumbs.BreadCrumbItem<String> items = Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
+            Breadcrumbs.BreadCrumbItem<String> items =
+                    Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
             breadcrumbs.setSelectedCrumb(items);
         });
 
@@ -78,7 +82,7 @@ public class FileBrowserBreadcrumbBar extends SimpleComp {
         }
 
         breadcrumbs.selectedCrumbProperty().addListener((obs, old, val) -> {
-            model.cd(val.getValue()).ifPresent(s -> {
+            model.cd(val != null ? val.getValue() : null).ifPresent(s -> {
                 model.cd(s);
             });
         });

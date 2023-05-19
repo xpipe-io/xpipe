@@ -31,10 +31,10 @@ public class FileSystemHelper {
                         .get()
                         .getOsType()
                         .getHomeDirectory(fileSystem.getShell().get());
-        return FileSystemHelper.resolveDirectoryPath(model, current);
+        return validateDirectoryPath(model, resolvePath(model, current));
     }
 
-    public static String resolveDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+    public static String resolvePath(OpenFileSystemModel model, String path) {
         if (path == null) {
             return null;
         }
@@ -58,6 +58,19 @@ public class FileSystemHelper {
             return path + "\\";
         }
 
+        return path;
+    }
+
+    public static String validateDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+        if (path == null) {
+            return null;
+        }
+
+        var shell = model.getFileSystem().getShell();
+        if (shell.isEmpty()) {
+            return path;
+        }
+
         var normalized = shell.get()
                 .getShellDialect()
                 .normalizeDirectory(shell.get(), path)
@@ -68,7 +81,6 @@ public class FileSystemHelper {
         }
 
         model.getFileSystem().directoryAccessible(normalized);
-
         return FileNames.toDirectory(normalized);
     }
 

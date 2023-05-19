@@ -23,10 +23,8 @@ public class OpenInNativeManagerAction implements LeafAction {
                 }
                 case OsType.Linux linux -> {
                     var dbus = String.format("""
-                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"%s" string:""
+                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://%s" string:""
                                                 """, entry.getRawFileEntry().getPath());
-//                    sc.executeSimpleCommand(
-//                            "xdg-open " + d.fileArgument(entry.getRawFileEntry().getPath()));
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
@@ -49,7 +47,7 @@ public class OpenInNativeManagerAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        return true;
+        return model.isLocal();
     }
 
     @Override

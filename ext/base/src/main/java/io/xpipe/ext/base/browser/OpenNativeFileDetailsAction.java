@@ -28,7 +28,9 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                         sub.command(content).notComplex().execute();
                     }
                 }
-                case OsType.Linux linux -> {}
+                case OsType.Linux linux -> {
+                    throw new UnsupportedOperationException();
+                }
                 case OsType.MacOs macOs -> {
                     sc.osascriptCommand(String.format(
                             """
@@ -53,11 +55,12 @@ public class OpenNativeFileDetailsAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        return true;
+        var os = model.getFileSystem().getShell();
+        return os.isPresent() && !os.get().getOsType().equals(OsType.LINUX);
     }
 
     @Override
     public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        return "Details";
+        return "Show details";
     }
 }
