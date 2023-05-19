@@ -29,7 +29,10 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                     }
                 }
                 case OsType.Linux linux -> {
-                    throw new UnsupportedOperationException();
+                    var dbus = String.format("""
+                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
+                                                """, entry.getRawFileEntry().getPath());
+                    sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
                     sc.osascriptCommand(String.format(
@@ -56,7 +59,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
         var os = model.getFileSystem().getShell();
-        return os.isPresent() && !os.get().getOsType().equals(OsType.LINUX);
+        return os.isPresent();
     }
 
     @Override

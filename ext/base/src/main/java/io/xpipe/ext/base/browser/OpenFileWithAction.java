@@ -6,6 +6,8 @@ import io.xpipe.app.browser.FileBrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -30,7 +32,9 @@ public class OpenFileWithAction implements LeafAction {
                         WinUser.SW_SHOWNORMAL);
             }
             case OsType.Linux linux -> {
-                throw new UnsupportedOperationException();
+                ShellControl sc = model.getFileSystem().getShell().get();
+                ShellDialect d = sc.getShellDialect();
+                sc.executeSimpleCommand("mimeopen -a " + d.fileArgument(entries.get(0).getRawFileEntry().getPath()));
             }
             case OsType.MacOs macOs -> {
                 throw new UnsupportedOperationException();
@@ -52,7 +56,7 @@ public class OpenFileWithAction implements LeafAction {
     public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
         var os = model.getFileSystem().getShell();
         return os.isPresent()
-                && os.get().getOsType().equals(OsType.WINDOWS)
+                && !os.get().getOsType().equals(OsType.MACOS)
                 && entries.size() == 1
                 && entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
     }

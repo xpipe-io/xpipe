@@ -22,9 +22,10 @@ public class OpenInNativeManagerAction implements LeafAction {
                     sc.executeSimpleCommand("explorer " + d.fileArgument(e));
                 }
                 case OsType.Linux linux -> {
+                    var action = entry.getRawFileEntry().isDirectory() ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowFiles";
                     var dbus = String.format("""
-                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file://%s" string:""
-                                                """, entry.getRawFileEntry().getPath());
+                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
+                                                """, action, entry.getRawFileEntry().getPath());
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
