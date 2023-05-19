@@ -1,5 +1,4 @@
 .modal-overlay-comp .titled-pane {
--fx-font-size: 1.6em;
 -fx-padding: 0;
 -fx-border-radius: 0;
 }
@@ -10,7 +9,6 @@
 }
 
 .modal-overlay-comp .titled-pane > * {
--fx-font-size: 1.0em;
 -fx-border-radius: 0;
 }
 

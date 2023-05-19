@@ -66,9 +66,7 @@ public class OpenFileSystemComp extends SimpleComp {
         topBar.getItems()
                 .setAll(backBtn, forthBtn, new Spacer(10), new BrowserNavBar(model).createRegion(), filter.get(), refreshBtn, terminalBtn, menuButton);
 
-        // ~
-
-        BrowserFileListComp directoryView = new BrowserFileListComp(model.getFileList());
+        var directoryView = new BrowserFileListComp(model.getFileList()).createRegion();
 
         var root = new VBox(topBar, directoryView);
         if (model.getBrowserModel().getMode() == BrowserModel.Mode.BROWSER) {

@@ -148,7 +148,7 @@
     visibility: hidden ;
 }
 
-.browser .table-directory-view .table-view {
+.browser .table-view {
     -color-header-bg: -color-bg-default;
     -color-cell-bg-selected: -color-neutral-emphasis;
     -color-cell-fg-selected: -color-fg-emphasis;
@@ -161,7 +161,7 @@
     -fx-opacity: 0.75;
 }
 
-.browser .table-directory-view .table-view:drag-into-current .table-row-cell {
+.browser .table-view:drag-into-current .table-row-cell {
     -fx-opacity: 0.8;
 }
 

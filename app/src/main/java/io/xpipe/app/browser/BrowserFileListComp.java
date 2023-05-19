@@ -4,13 +4,13 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
+import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.SvgCacheComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.BusyProperty;
-import io.xpipe.app.util.Containers;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
@@ -24,7 +24,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -42,7 +41,7 @@ import java.util.Objects;
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 
-final class BrowserFileListComp extends AnchorPane {
+final class BrowserFileListComp extends SimpleComp {
 
     private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
@@ -56,14 +55,15 @@ final class BrowserFileListComp extends AnchorPane {
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
+    }
+
+    @Override
+    protected Region createSimple() {
         TableView<BrowserEntry> table = createTable();
         SimpleChangeListener.apply(table.comparatorProperty(), (newValue) -> {
             fileList.setComparator(newValue);
         });
-
-        getChildren().setAll(table);
-        getStyleClass().addAll("table-directory-view");
-        Containers.setAnchors(table, Insets.EMPTY);
+        return table;
     }
 
     @SuppressWarnings("unchecked")
