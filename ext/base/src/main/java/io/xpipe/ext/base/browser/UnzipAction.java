@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.ExecuteApplicationAction;
 import io.xpipe.core.impl.FileNames;
@@ -16,12 +16,12 @@ public class UnzipAction extends ExecuteApplicationAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, FileBrowserEntry entry) {
+    public boolean isApplicable(OpenFileSystemModel model, BrowserEntry entry) {
         return entry.getRawFileEntry().getPath().endsWith(".zip") && !OsType.getLocal().equals(OsType.WINDOWS);
     }
 
     @Override
-    protected String createCommand(OpenFileSystemModel model, FileBrowserEntry entry) {
+    protected String createCommand(OpenFileSystemModel model, BrowserEntry entry) {
         return "unzip -o " + entry.getOptionallyQuotedFileName() + " -d " + FileNames.quoteIfNecessary(FileNames.getBaseName(entry.getFileName()));
     }
 
@@ -31,7 +31,7 @@ public class UnzipAction extends ExecuteApplicationAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "unzip [...]";
     }
 }

@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.prefs.AppPrefs;
@@ -13,8 +13,8 @@ import java.util.List;
 public class EditFileAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
-        for (FileBrowserEntry entry : entries) {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+        for (BrowserEntry entry : entries) {
             FileOpener.openInTextEditor(entry.getRawFileEntry());
         }
     }
@@ -25,17 +25,17 @@ public class EditFileAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2p-pencil");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Edit with " + AppPrefs.get().externalEditor().getValue().toTranslatedString();
     }
 }

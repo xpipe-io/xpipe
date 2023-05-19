@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.action;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.ModuleLayerLoader;
@@ -32,7 +32,7 @@ public interface BrowserAction {
                 .toList();
     }
 
-    default Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return null;
     }
 
@@ -48,13 +48,13 @@ public interface BrowserAction {
         return false;
     }
 
-    public abstract String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries);
+    public abstract String getName(OpenFileSystemModel model, List<BrowserEntry> entries);
 
-    public default boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;
     }
 
-    public default boolean isActive(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;
     }
 

@@ -7,15 +7,15 @@ import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 
 @Getter
-public class FileBrowserEntry {
+public class BrowserEntry {
 
-    private final FileListModel model;
+    private final BrowserFileListModel model;
     private final FileSystem.FileEntry rawFileEntry;
     private final boolean synthetic;
     private final FileType fileType;
     private final DirectoryType directoryType;
 
-    public FileBrowserEntry(FileSystem.FileEntry rawFileEntry, FileListModel model, boolean synthetic) {
+    public BrowserEntry(FileSystem.FileEntry rawFileEntry, BrowserFileListModel model, boolean synthetic) {
         this.rawFileEntry = rawFileEntry;
         this.model = model;
         this.synthetic = synthetic;

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserAlerts;
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserAlerts;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.FileSystemHelper;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
@@ -16,9 +16,9 @@ import java.util.List;
 public class DeleteAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         var toDelete = entries.stream().map(entry -> entry.getRawFileEntry()).toList();
-        if (!FileBrowserAlerts.showDeleteAlert(toDelete)) {
+        if (!BrowserAlerts.showDeleteAlert(toDelete)) {
             return;
         }
 
@@ -32,7 +32,7 @@ public class DeleteAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2d-delete");
     }
 
@@ -42,7 +42,7 @@ public class DeleteAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Delete";
     }
 }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FileBrowserClipboard {
+public class BrowserClipboard {
 
     @Value
     public static class Instance {

@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.browser;
 
 import javafx.beans.binding.Bindings;
@@ -12,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-final class FileBrowserHistory {
+final class BrowserHistory {
 
     private final IntegerProperty cursor = new SimpleIntegerProperty(0);
     private final List<String> history = new ArrayList<>();

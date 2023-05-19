@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
-import io.xpipe.app.browser.FileBrowserModel;
+import io.xpipe.app.browser.BrowserEntry;
+import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
@@ -15,7 +15,7 @@ import java.util.List;
 public class OpenDirectoryInNewTabAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         model.getBrowserModel().openFileSystemAsync(model.getStore().asNeeded(), entries.get(0).getRawFileEntry().getPath());
     }
 
@@ -25,13 +25,13 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2f-folder-open-outline");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        return entries.size() == 1 && entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory()) && model.getBrowserModel().getMode() == FileBrowserModel.Mode.BROWSER;
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1 && entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory()) && model.getBrowserModel().getMode() == BrowserModel.Mode.BROWSER;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Open in new tab";
     }
 }

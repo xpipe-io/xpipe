@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
@@ -44,7 +42,7 @@ import java.util.Objects;
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 
-final class FileListComp extends AnchorPane {
+final class BrowserFileListComp extends AnchorPane {
 
     private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
@@ -54,11 +52,11 @@ final class FileListComp extends AnchorPane {
     private static final PseudoClass DRAG_OVER = PseudoClass.getPseudoClass("drag-over");
     private static final PseudoClass DRAG_INTO_CURRENT = PseudoClass.getPseudoClass("drag-into-current");
 
-    private final FileListModel fileList;
+    private final BrowserFileListModel fileList;
 
-    public FileListComp(FileListModel fileList) {
+    public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
-        TableView<FileBrowserEntry> table = createTable();
+        TableView<BrowserEntry> table = createTable();
         SimpleChangeListener.apply(table.comparatorProperty(), (newValue) -> {
             fileList.setComparator(newValue);
         });
@@ -69,8 +67,8 @@ final class FileListComp extends AnchorPane {
     }
 
     @SuppressWarnings("unchecked")
-    private TableView<FileBrowserEntry> createTable() {
-        var filenameCol = new TableColumn<FileBrowserEntry, String>("Name");
+    private TableView<BrowserEntry> createTable() {
+        var filenameCol = new TableColumn<BrowserEntry, String>("Name");
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
                 param.getValue() != null
                         ? FileNames.getFileName(
@@ -80,22 +78,22 @@ final class FileListComp extends AnchorPane {
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing()));
 
-        var sizeCol = new TableColumn<FileBrowserEntry, Number>("Size");
+        var sizeCol = new TableColumn<BrowserEntry, Number>("Size");
         sizeCol.setCellValueFactory(param ->
                 new SimpleLongProperty(param.getValue().getRawFileEntry().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
 
-        var mtimeCol = new TableColumn<FileBrowserEntry, Instant>("Modified");
+        var mtimeCol = new TableColumn<BrowserEntry, Instant>("Modified");
         mtimeCol.setCellValueFactory(param ->
                 new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
 
-        var modeCol = new TableColumn<FileBrowserEntry, String>("Attributes");
+        var modeCol = new TableColumn<BrowserEntry, String>("Attributes");
         modeCol.setCellValueFactory(param ->
                 new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
 
-        var table = new TableView<FileBrowserEntry>();
+        var table = new TableView<BrowserEntry>();
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, sizeCol, modeCol, mtimeCol);
@@ -105,11 +103,11 @@ final class FileListComp extends AnchorPane {
                 return true;
             }
 
-            var syntheticFirst = Comparator.<FileBrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
-            var dirsFirst = Comparator.<FileBrowserEntry, Boolean>comparing(
+            var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
+            var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
                     path -> !path.getRawFileEntry().isDirectory());
 
-            Comparator<? super FileBrowserEntry> us =
+            Comparator<? super BrowserEntry> us =
                     syntheticFirst.thenComparing(dirsFirst).thenComparing(comp);
             FXCollections.sort(param.getItems(), us);
             return true;
@@ -127,15 +125,15 @@ final class FileListComp extends AnchorPane {
         return table;
     }
 
-    private void prepareTableSelectionModel(TableView<FileBrowserEntry> table) {
-        if (fileList.getMode().equals(FileBrowserModel.Mode.SINGLE_FILE_CHOOSER)
-                || fileList.getMode().equals(FileBrowserModel.Mode.DIRECTORY_CHOOSER)) {
+    private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
+        if (fileList.getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)
+                || fileList.getMode().equals(BrowserModel.Mode.DIRECTORY_CHOOSER)) {
             table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         } else {
             table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         }
 
-        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super FileBrowserEntry>) c -> {
+        table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in
             // JavaFX
             var toSelect = c.getList().stream()
@@ -157,7 +155,7 @@ final class FileListComp extends AnchorPane {
             });
         });
 
-        fileList.getSelected().addListener((ListChangeListener<? super FileBrowserEntry>) c -> {
+        fileList.getSelected().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             if (c.getList().equals(table.getSelectionModel().getSelectedItems())) {
                 return;
             }
@@ -178,7 +176,7 @@ final class FileListComp extends AnchorPane {
         });
     }
 
-    private void prepareTableShortcuts(TableView<FileBrowserEntry> table) {
+    private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.setOnKeyPressed(event -> {
             var selected = fileList.getSelected();
             BrowserAction.getFlattened().stream()
@@ -195,8 +193,8 @@ final class FileListComp extends AnchorPane {
         });
     }
 
-    private void prepareTableEntries(TableView<FileBrowserEntry> table) {
-        var emptyEntry = new FileListCompEntry(table, null, fileList);
+    private void prepareTableEntries(TableView<BrowserEntry> table) {
+        var emptyEntry = new BrowserFileListCompEntry(table, null, fileList);
         table.setOnDragOver(event -> {
             emptyEntry.onDragOver(event);
         });
@@ -214,17 +212,17 @@ final class FileListComp extends AnchorPane {
         });
 
         table.setRowFactory(param -> {
-            TableRow<FileBrowserEntry> row = new TableRow<>();
+            TableRow<BrowserEntry> row = new TableRow<>();
             new ContextMenuAugment<>(false, () -> {
                         if (row.getItem() != null && row.getItem().isSynthetic()) {
                             return null;
                         }
 
-                        return new FileContextMenu(fileList.getFileSystemModel(), row.getItem() == null);
+                        return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem() == null);
                     })
                     .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
-                    () -> new FileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
+                    () -> new BrowserFileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(DRAG, false);
@@ -275,9 +273,9 @@ final class FileListComp extends AnchorPane {
     }
 
     private void prepareTableChanges(
-            TableView<FileBrowserEntry> table,
-            TableColumn<FileBrowserEntry, Instant> mtimeCol,
-            TableColumn<FileBrowserEntry, String> modeCol) {
+            TableView<BrowserEntry> table,
+            TableColumn<BrowserEntry, Instant> mtimeCol,
+            TableColumn<BrowserEntry, String> modeCol) {
         var lastDir = new SimpleObjectProperty<FileSystem.FileEntry>();
         Runnable updateHandler = () -> {
             PlatformThread.runLaterIfNeeded(() -> {
@@ -363,7 +361,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private class FilenameCell extends TableCell<FileBrowserEntry, String> {
+    private class FilenameCell extends TableCell<BrowserEntry, String> {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
@@ -375,7 +373,7 @@ final class FileListComp extends AnchorPane {
 
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
-        public FilenameCell(Property<FileBrowserEntry> editing) {
+        public FilenameCell(Property<BrowserEntry> editing) {
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
                     PlatformThread.runLaterIfNeeded(() -> textField.requestFocus());
@@ -440,7 +438,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private static class FileSizeCell extends TableCell<FileBrowserEntry, Number> {
+    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
 
         @Override
         protected void updateItem(Number fileSize, boolean empty) {
@@ -458,7 +456,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private static class FileModeCell extends TableCell<FileBrowserEntry, String> {
+    private static class FileModeCell extends TableCell<BrowserEntry, String> {
 
         @Override
         protected void updateItem(String mode, boolean empty) {
@@ -471,7 +469,7 @@ final class FileListComp extends AnchorPane {
         }
     }
 
-    private static class FileTimeCell extends TableCell<FileBrowserEntry, Instant> {
+    private static class FileTimeCell extends TableCell<BrowserEntry, Instant> {
 
         @Override
         protected void updateItem(Instant fileTime, boolean empty) {

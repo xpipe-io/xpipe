@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserClipboard;
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserClipboard;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
@@ -15,8 +15,8 @@ import java.util.List;
 public class CopyAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
-        FileBrowserClipboard.startCopy(
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+        BrowserClipboard.startCopy(
                 model.getCurrentDirectory(), entries.stream().map(entry -> entry.getRawFileEntry()).toList());
     }
 
@@ -26,7 +26,7 @@ public class CopyAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2c-content-copy");
     }
 
@@ -41,7 +41,7 @@ public class CopyAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Copy";
     }
 }

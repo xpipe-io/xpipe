@@ -43,7 +43,7 @@ public class BrowserNavBar extends SimpleComp {
             }
         });
 
-        var breadcrumbs = new FileBrowserBreadcrumbBar(model)
+        var breadcrumbs = new BrowserBreadcrumbBar(model)
                 .hide(pathBar.focusedProperty())
                 .createRegion();
 

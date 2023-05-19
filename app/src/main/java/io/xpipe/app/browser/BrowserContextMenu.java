@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.action.BranchAction;
@@ -11,12 +9,12 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SeparatorMenuItem;
 
-final class FileContextMenu extends ContextMenu {
+final class BrowserContextMenu extends ContextMenu {
 
     private final OpenFileSystemModel model;
     private final boolean empty;
 
-    public FileContextMenu(OpenFileSystemModel model, boolean empty) {
+    public BrowserContextMenu(OpenFileSystemModel model, boolean empty) {
         super();
         this.model = model;
         this.empty = empty;
@@ -28,7 +26,7 @@ final class FileContextMenu extends ContextMenu {
 
         var selected = empty || model.getFileList().getSelected().isEmpty()
                 ? FXCollections.observableArrayList(
-                        new FileBrowserEntry(model.getCurrentDirectory(), model.getFileList(), false))
+                        new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false))
                 : model.getFileList().getSelected();
 
         for (BrowserAction.Category cat : BrowserAction.Category.values()) {

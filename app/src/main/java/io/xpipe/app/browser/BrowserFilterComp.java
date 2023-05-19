@@ -13,7 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class FileFilterComp extends Comp<FileFilterComp.Structure> {
+public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
 
     @Override
     public Structure createBase() {
@@ -90,7 +90,7 @@ public class FileFilterComp extends Comp<FileFilterComp.Structure> {
 
     private final Property<String> filterString;
 
-    public FileFilterComp(Property<String> filterString) {
+    public BrowserFilterComp(Property<String> filterString) {
         this.filterString = filterString;
     }
 }

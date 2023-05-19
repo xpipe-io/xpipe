@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.impl.FileNames;
@@ -13,9 +13,9 @@ import java.util.List;
 public class OpenNativeFileDetailsAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         ShellControl sc = model.getFileSystem().getShell().get();
-        for (FileBrowserEntry entry : entries) {
+        for (BrowserEntry entry : entries) {
             var e = entry.getRawFileEntry().getPath();
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
@@ -57,13 +57,13 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        var os = model.getFileSystem().getShell();
-        return os.isPresent();
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        var sc = model.getFileSystem().getShell();
+        return sc.isPresent() && !sc.get().getOsType().equals(OsType.WINDOWS);
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Show details";
     }
 }

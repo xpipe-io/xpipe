@@ -15,9 +15,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 @Getter
-public class FileBrowserModel {
+public class BrowserModel {
 
-    public FileBrowserModel(Mode mode) {
+    public BrowserModel(Mode mode) {
         this.mode = mode;
     }
 
@@ -29,7 +29,7 @@ public class FileBrowserModel {
         DIRECTORY_CHOOSER
     }
 
-    public static final FileBrowserModel DEFAULT = new FileBrowserModel(Mode.BROWSER);
+    public static final BrowserModel DEFAULT = new BrowserModel(Mode.BROWSER);
 
     private final Mode mode;
 
@@ -38,7 +38,7 @@ public class FileBrowserModel {
 
     private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
-    private final LocalFileTransferStage localTransfersStage = new LocalFileTransferStage();
+    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel();
 
     public void finishChooser() {
         if (getMode().equals(Mode.BROWSER)) {

@@ -34,11 +34,11 @@ import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
 import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 
-public class FileBrowserComp extends SimpleComp {
+public class BrowserComp extends SimpleComp {
 
-    private final FileBrowserModel model;
+    private final BrowserModel model;
 
-    public FileBrowserComp(FileBrowserModel model) {
+    public BrowserComp(BrowserModel model) {
         this.model = model;
     }
 
@@ -50,16 +50,16 @@ public class FileBrowserComp extends SimpleComp {
             FileIconManager.loadIfNecessary();
         });
 
-        var bookmarksList = new BookmarkList(model).createRegion();
+        var bookmarksList = new BrowserBookmarkList(model).createRegion();
         VBox.setVgrow(bookmarksList, Priority.ALWAYS);
-        var localDownloadStage = new LocalFileTransferComp(model.getLocalTransfersStage())
+        var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
                 .hide(PlatformThread.sync(Bindings.createBooleanBinding(
                         () -> {
                             if (model.getOpenFileSystems().size() == 0) {
                                 return true;
                             }
 
-                            if (!model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+                            if (!model.getMode().equals(BrowserModel.Mode.BROWSER)) {
                                 return true;
                             }
 
@@ -89,7 +89,7 @@ public class FileBrowserComp extends SimpleComp {
     }
 
     private Region addBottomBar(Region r) {
-        if (model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+        if (model.getMode().equals(BrowserModel.Mode.BROWSER)) {
             return r;
         }
 
@@ -210,7 +210,7 @@ public class FileBrowserComp extends SimpleComp {
         tabs.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
         tabs.setTabMinWidth(Region.USE_COMPUTED_SIZE);
 
-        if (!model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+        if (!model.getMode().equals(BrowserModel.Mode.BROWSER)) {
             tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
             tabs.getStyleClass().add("singular");
         } else {
@@ -258,7 +258,7 @@ public class FileBrowserComp extends SimpleComp {
         tab.setGraphic(label);
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
 
-        if (!this.model.getMode().equals(FileBrowserModel.Mode.BROWSER)) {
+        if (!this.model.getMode().equals(BrowserModel.Mode.BROWSER)) {
             label.setManaged(false);
             label.setVisible(false);
         }

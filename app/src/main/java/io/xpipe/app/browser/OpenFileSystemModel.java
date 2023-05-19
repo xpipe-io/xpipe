@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.base.ModalOverlayComp;
@@ -37,21 +35,21 @@ public final class OpenFileSystemModel {
     private final FileSystemStore store;
     private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
-    private final FileListModel fileList;
+    private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
-    private final FileBrowserHistory history = new FileBrowserHistory();
+    private final BrowserHistory history = new BrowserHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
-    private final FileBrowserModel browserModel;
+    private final BrowserModel browserModel;
     private final BooleanProperty noDirectory = new SimpleBooleanProperty();
     private final Property<OpenFileSystemSavedState> savedState = new SimpleObjectProperty<>();
     private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private boolean local;
 
-    public OpenFileSystemModel(FileBrowserModel browserModel, FileSystemStore store) {
+    public OpenFileSystemModel(BrowserModel browserModel, FileSystemStore store) {
         this.browserModel = browserModel;
         this.store = store;
-        fileList = new FileListModel(this);
+        fileList = new BrowserFileListModel(this);
         addListeners();
     }
 
@@ -243,7 +241,7 @@ public final class OpenFileSystemModel {
 
                 var same = files.get(0).getFileSystem().equals(target.getFileSystem());
                 if (same) {
-                    if (!FileBrowserAlerts.showMoveAlert(files, target)) {
+                    if (!BrowserAlerts.showMoveAlert(files, target)) {
                         return;
                     }
                 }
@@ -309,7 +307,7 @@ public final class OpenFileSystemModel {
                     return;
                 }
 
-                if (!FileBrowserAlerts.showDeleteAlert(fileList.getSelectedRaw())) {
+                if (!BrowserAlerts.showDeleteAlert(fileList.getSelectedRaw())) {
                     return;
                 }
 
@@ -391,7 +389,7 @@ public final class OpenFileSystemModel {
         });
     }
 
-    public FileBrowserHistory getHistory() {
+    public BrowserHistory getHistory() {
         return history;
     }
 

@@ -18,11 +18,9 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.feather.Feather;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import static io.xpipe.app.browser.FileListModel.PREDICATE_NOT_HIDDEN;
-import static io.xpipe.app.util.Controls.iconButton;
+import static io.xpipe.app.browser.BrowserFileListModel.PREDICATE_NOT_HIDDEN;
 
 public class OpenFileSystemComp extends SimpleComp {
 
@@ -41,11 +39,11 @@ public class OpenFileSystemComp extends SimpleComp {
     }
 
     private Region createContent() {
-        var backBtn = iconButton(Feather.ARROW_LEFT, false);
+        var backBtn = new Button(null, new FontIcon("fth-arrow-left"));
         backBtn.setOnAction(e -> model.back());
         backBtn.disableProperty().bind(model.getHistory().canGoBackProperty().not());
 
-        var forthBtn = iconButton(Feather.ARROW_RIGHT, false);
+        var forthBtn = new Button(null, new FontIcon("fth-arrow-right"));
         forthBtn.setOnAction(e -> model.forth());
         forthBtn.disableProperty().bind(model.getHistory().canGoForthProperty().not());
 
@@ -59,9 +57,9 @@ public class OpenFileSystemComp extends SimpleComp {
         terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(true, () -> new FileContextMenu(model, true)).augment(new SimpleCompStructure<>(menuButton));
+        new ContextMenuAugment<>(true, () -> new BrowserContextMenu(model, true)).augment(new SimpleCompStructure<>(menuButton));
 
-        var filter = new FileFilterComp(model.getFilter()).createStructure();
+        var filter = new BrowserFilterComp(model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new ToolBar();
@@ -70,11 +68,11 @@ public class OpenFileSystemComp extends SimpleComp {
 
         // ~
 
-        FileListComp directoryView = new FileListComp(model.getFileList());
+        BrowserFileListComp directoryView = new BrowserFileListComp(model.getFileList());
 
         var root = new VBox(topBar, directoryView);
-        if (model.getBrowserModel().getMode() == FileBrowserModel.Mode.BROWSER) {
-            root.getChildren().add(new FileBrowserStatusBarComp(model).createRegion());
+        if (model.getBrowserModel().getMode() == BrowserModel.Mode.BROWSER) {
+            root.getChildren().add(new BrowserStatusBarComp(model).createRegion());
         }
         VBox.setVgrow(directoryView, Priority.ALWAYS);
         root.setPadding(Insets.EMPTY);

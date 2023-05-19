@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Value
-public class LocalFileTransferStage {
+public class BrowserTransferModel {
 
     private static final Path TEMP =
             FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("download");

@@ -1,11 +1,11 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
-import io.xpipe.app.browser.icon.FileBrowserIcons;
+import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,12 +18,12 @@ import java.util.List;
 public class NewItemAction implements BrowserAction, BranchAction {
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2p-plus-box-outline");
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "New";
     }
 
@@ -33,7 +33,7 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return entries.size() == 1 && entries.get(0).getRawFileEntry().getPath().equals(model.getCurrentPath().get());
     }
 
@@ -47,12 +47,12 @@ public class NewItemAction implements BrowserAction, BranchAction {
         return List.of(
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return "File";
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
                         var name = new SimpleStringProperty();
                         model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newFile", Comp.of(() -> {
                             var creationName = new TextField();
@@ -64,18 +64,18 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-                        return FileBrowserIcons.createDefaultFileIcon().createRegion();
+                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return BrowserIcons.createDefaultFileIcon().createRegion();
                     }
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return "Directory";
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
                         var name = new SimpleStringProperty();
                         model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newDirectory", Comp.of(() -> {
                             var creationName = new TextField();
@@ -86,8 +86,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
                         }));
                     }
                     @Override
-                    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-                        return FileBrowserIcons.createDefaultDirectoryIcon().createRegion();
+                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return BrowserIcons.createDefaultDirectoryIcon().createRegion();
                     }
                 });
     }

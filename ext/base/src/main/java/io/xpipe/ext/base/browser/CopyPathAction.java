@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class CopyPathAction implements BrowserAction, BranchAction {
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Copy location";
     }
 
@@ -35,12 +35,12 @@ public class CopyPathAction implements BrowserAction, BranchAction {
         return List.of(
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return "Absolute Path";
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
                         var s = entries.stream()
                                 .map(entry -> entry.getRawFileEntry().getPath())
                                 .collect(Collectors.joining("\n"));
@@ -51,17 +51,17 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return "Absolute Path (Quoted)";
                     }
 
                     @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return entries.stream().anyMatch(entry -> entry.getRawFileEntry().getPath().contains(" "));
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
                         var s = entries.stream()
                                 .map(entry -> "\"" + entry.getRawFileEntry().getPath() + "\"")
                                 .collect(Collectors.joining("\n"));
@@ -72,12 +72,12 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return "File Name";
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
                         var s = entries.stream()
                                 .map(entry ->
                                         FileNames.getFileName(entry.getRawFileEntry().getPath()))
@@ -89,17 +89,17 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
-                    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return "File Name (Quoted)";
                     }
 
                     @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return entries.stream().anyMatch(entry -> FileNames.getFileName(entry.getRawFileEntry().getPath()).contains(" "));
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
                         var s = entries.stream()
                                 .map(entry ->
                                              "\"" + FileNames.getFileName(entry.getRawFileEntry().getPath()) + "\"")

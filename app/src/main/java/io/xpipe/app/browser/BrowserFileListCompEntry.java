@@ -12,18 +12,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @Getter
-public class FileListCompEntry {
+public class BrowserFileListCompEntry {
 
     public static final Timer DROP_TIMER = new Timer("dnd", true);
 
     private final Node row;
-    private final FileBrowserEntry item;
-    private final FileListModel model;
+    private final BrowserEntry item;
+    private final BrowserFileListModel model;
 
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
 
-    public FileListCompEntry(Node row, FileBrowserEntry item, FileListModel model) {
+    public BrowserFileListCompEntry(Node row, BrowserEntry item, BrowserFileListModel model) {
         this.row = row;
         this.item = item;
         this.model = model;
@@ -47,7 +47,7 @@ public class FileListCompEntry {
         }
 
         if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
-            var tv = ((TableView<FileBrowserEntry>) row.getParent().getParent().getParent().getParent());
+            var tv = ((TableView<BrowserEntry>) row.getParent().getParent().getParent().getParent());
             var all = tv.getItems();
             var min = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).min().orElse(1);
             var max = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).max().orElse(all.size() - 1);
@@ -69,7 +69,7 @@ public class FileListCompEntry {
             return true;
         }
 
-        if (FileBrowserClipboard.currentDragClipboard == null) {
+        if (BrowserClipboard.currentDragClipboard == null) {
             return false;
         }
 
@@ -78,14 +78,14 @@ public class FileListCompEntry {
         }
 
         // Prevent drag and drops of files into the current directory
-        if (FileBrowserClipboard.currentDragClipboard
+        if (BrowserClipboard.currentDragClipboard
                 .getBaseDirectory().getPath()
                 .equals(model.getFileSystemModel().getCurrentDirectory().getPath()) && (item == null || !item.getRawFileEntry().isDirectory())) {
             return false;
         }
 
         // Prevent dropping items onto themselves
-        if (item != null && FileBrowserClipboard.currentDragClipboard.getEntries().contains(item)) {
+        if (item != null && BrowserClipboard.currentDragClipboard.getEntries().contains(item)) {
             return false;
         }
 
@@ -110,7 +110,7 @@ public class FileListCompEntry {
 
         // Accept drops from inside the app window
         if (event.getGestureSource() != null) {
-            var files = FileBrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
+            var files = BrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
             var target = item != null && item.getRawFileEntry().isDirectory()
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
@@ -141,9 +141,9 @@ public class FileListCompEntry {
 
         var selected = model.getSelectedRaw();
         Dragboard db = row.startDragAndDrop(TransferMode.COPY);
-        db.setContent(FileBrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
+        db.setContent(BrowserClipboard.startDrag(model.getFileSystemModel().getCurrentDirectory(), selected));
 
-        Image image = SelectedFileListComp.snapshot(selected);
+        Image image = BrowserSelectionListComp.snapshot(selected);
         db.setDragView(image, -20, 15);
 
         event.setDragDetect(true);
@@ -204,7 +204,7 @@ public class FileListCompEntry {
             return;
         }
 
-        var tv = ((TableView<FileBrowserEntry>) row.getParent().getParent().getParent().getParent());
+        var tv = ((TableView<BrowserEntry>) row.getParent().getParent().getParent().getParent());
         tv.getSelectionModel().select(item);
     }
 

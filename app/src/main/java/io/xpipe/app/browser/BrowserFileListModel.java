@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
@@ -23,29 +21,29 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Getter
-public final class FileListModel {
+public final class BrowserFileListModel {
 
-    static final Comparator<FileBrowserEntry> FILE_TYPE_COMPARATOR =
+    static final Comparator<BrowserEntry> FILE_TYPE_COMPARATOR =
             Comparator.comparing(path -> !path.getRawFileEntry().isDirectory());
-    static final Predicate<FileBrowserEntry> PREDICATE_ANY = path -> true;
-    static final Predicate<FileBrowserEntry> PREDICATE_NOT_HIDDEN = path -> true;
+    static final Predicate<BrowserEntry> PREDICATE_ANY = path -> true;
+    static final Predicate<BrowserEntry> PREDICATE_NOT_HIDDEN = path -> true;
 
     private final OpenFileSystemModel fileSystemModel;
-    private final Property<Comparator<FileBrowserEntry>> comparatorProperty =
+    private final Property<Comparator<BrowserEntry>> comparatorProperty =
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
-    private final Property<List<FileBrowserEntry>> all = new SimpleObjectProperty<>(new ArrayList<>());
-    private final Property<List<FileBrowserEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
-    private final ObjectProperty<Predicate<FileBrowserEntry>> predicateProperty =
+    private final Property<List<BrowserEntry>> all = new SimpleObjectProperty<>(new ArrayList<>());
+    private final Property<List<BrowserEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
+    private final ObjectProperty<Predicate<BrowserEntry>> predicateProperty =
             new SimpleObjectProperty<>(path -> true);
-    private final ObservableList<FileBrowserEntry> selected = FXCollections.observableArrayList();
+    private final ObservableList<BrowserEntry> selected = FXCollections.observableArrayList();
     private final ObservableList<FileSystem.FileEntry> selectedRaw =
             BindingsHelper.mappedContentBinding(selected, entry -> entry.getRawFileEntry());
 
-    private final Property<FileBrowserEntry> draggedOverDirectory = new SimpleObjectProperty<FileBrowserEntry>();
+    private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<BrowserEntry>();
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
-    private final Property<FileBrowserEntry> editing = new SimpleObjectProperty<>();
+    private final Property<BrowserEntry> editing = new SimpleObjectProperty<>();
 
-    public FileListModel(OpenFileSystemModel fileSystemModel) {
+    public BrowserFileListModel(OpenFileSystemModel fileSystemModel) {
         this.fileSystemModel = fileSystemModel;
 
         fileSystemModel.getFilter().addListener((observable, oldValue, newValue) -> {
@@ -53,7 +51,7 @@ public final class FileListModel {
         });
     }
 
-    public FileBrowserModel.Mode getMode() {
+    public BrowserModel.Mode getMode() {
         return fileSystemModel.getBrowserModel().getMode();
     }
 
@@ -61,23 +59,23 @@ public final class FileListModel {
         try (var s = newFiles) {
             var parent = fileSystemModel.getCurrentParentDirectory();
             var l = Stream.concat(
-                            parent != null ? Stream.of(new FileBrowserEntry(parent, this, true)) : Stream.of(),
+                            parent != null ? Stream.of(new BrowserEntry(parent, this, true)) : Stream.of(),
                             s.filter(entry -> entry != null)
                                     .limit(5000)
-                                    .map(entry -> new FileBrowserEntry(entry, this, false)))
+                                    .map(entry -> new BrowserEntry(entry, this, false)))
                     .toList();
             all.setValue(l);
             refreshShown();
         }
     }
 
-    public void setComparator(Comparator<FileBrowserEntry> comparator) {
+    public void setComparator(Comparator<BrowserEntry> comparator) {
         comparatorProperty.setValue(comparator);
         refreshShown();
     }
 
     private void refreshShown() {
-        List<FileBrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
+        List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {
                             var name = FileNames.getFileName(
@@ -90,7 +88,7 @@ public final class FileListModel {
                         .toList()
                 : all.getValue();
 
-        Comparator<FileBrowserEntry> tableComparator = comparatorProperty.getValue();
+        Comparator<BrowserEntry> tableComparator = comparatorProperty.getValue();
         var comparator =
                 tableComparator != null ? FILE_TYPE_COMPARATOR.thenComparing(tableComparator) : FILE_TYPE_COMPARATOR;
         var listCopy = new ArrayList<>(filtered);
@@ -111,8 +109,8 @@ public final class FileListModel {
         }
     }
 
-    public void onDoubleClick(FileBrowserEntry entry) {
-        if (!entry.getRawFileEntry().isDirectory() && getMode().equals(FileBrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
+    public void onDoubleClick(BrowserEntry entry) {
+        if (!entry.getRawFileEntry().isDirectory() && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
             getFileSystemModel().getBrowserModel().finishChooser();
             return;
         }
@@ -127,7 +125,7 @@ public final class FileListModel {
         }
     }
 
-    public ObjectProperty<Predicate<FileBrowserEntry>> predicateProperty() {
+    public ObjectProperty<Predicate<BrowserEntry>> predicateProperty() {
         return predicateProperty;
     }
 }

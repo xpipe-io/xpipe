@@ -14,11 +14,11 @@ import javafx.util.Callback;
 
 import java.util.ArrayList;
 
-public class FileBrowserBreadcrumbBar extends SimpleComp {
+public class BrowserBreadcrumbBar extends SimpleComp {
 
     private final OpenFileSystemModel model;
 
-    public FileBrowserBreadcrumbBar(OpenFileSystemModel model) {
+    public BrowserBreadcrumbBar(OpenFileSystemModel model) {
         this.model = model;
     }
 

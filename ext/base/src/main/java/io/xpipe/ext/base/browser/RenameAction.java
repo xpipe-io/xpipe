@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
@@ -14,7 +14,7 @@ import java.util.List;
 public class RenameAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         model.getFileList().getEditing().setValue(entries.get(0));
     }
 
@@ -24,12 +24,12 @@ public class RenameAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2r-rename-box");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return entries.size() == 1;
     }
 
@@ -39,7 +39,7 @@ public class RenameAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Rename";
     }
 }

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserClipboard;
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserClipboard;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
@@ -15,8 +15,8 @@ import java.util.List;
 public class PasteAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
-        var clipboard = FileBrowserClipboard.retrieveCopy();
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+        var clipboard = BrowserClipboard.retrieveCopy();
         if (clipboard == null) {
             return;
         }
@@ -32,18 +32,18 @@ public class PasteAction implements LeafAction {
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2c-content-paste");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return entries.size() < 2 && entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory());
     }
 
     @Override
-    public boolean isActive(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
-        return FileBrowserClipboard.retrieveCopy() != null;
+    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return BrowserClipboard.retrieveCopy() != null;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PasteAction implements LeafAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Paste";
     }
 }

@@ -23,15 +23,15 @@ import javafx.scene.layout.Region;
 import java.util.Timer;
 import java.util.TimerTask;
 
-final class BookmarkList extends SimpleComp {
+final class BrowserBookmarkList extends SimpleComp {
 
     public static final Timer DROP_TIMER = new Timer("dnd", true);
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
 
-    private final FileBrowserModel model;
+    private final BrowserModel model;
 
-    BookmarkList(FileBrowserModel model) {
+    BrowserBookmarkList(BrowserModel model) {
         this.model = model;
     }
 

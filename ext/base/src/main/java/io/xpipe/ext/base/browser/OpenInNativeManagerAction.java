@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.process.OsType;
@@ -12,17 +12,17 @@ import java.util.List;
 public class OpenInNativeManagerAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<FileBrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         ShellControl sc = model.getFileSystem().getShell().get();
         ShellDialect d = sc.getShellDialect();
-        for (FileBrowserEntry entry : entries) {
+        for (BrowserEntry entry : entries) {
             var e = entry.getRawFileEntry().getPath();
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
                     sc.executeSimpleCommand("explorer " + d.fileArgument(e));
                 }
                 case OsType.Linux linux -> {
-                    var action = entry.getRawFileEntry().isDirectory() ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowFiles";
+                    var action = entry.getRawFileEntry().isDirectory() ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowItems";
                     var dbus = String.format("""
                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
                                                 """, action, entry.getRawFileEntry().getPath());
@@ -47,12 +47,12 @@ public class OpenInNativeManagerAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return model.isLocal();
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return switch (OsType.getLocal()) {
             case OsType.Windows windows -> "Browse in Windows Explorer";
             case OsType.Linux linux -> "Browse in default file manager";

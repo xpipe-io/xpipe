@@ -8,7 +8,7 @@ import javafx.scene.control.Alert;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FileBrowserAlerts {
+public class BrowserAlerts {
 
     public static boolean showMoveAlert(List<FileSystem.FileEntry> source, FileSystem.FileEntry target) {
         if (source.stream().noneMatch(entry -> entry.isDirectory())) {

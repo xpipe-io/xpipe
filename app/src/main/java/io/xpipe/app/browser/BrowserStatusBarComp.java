@@ -15,13 +15,13 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class FileBrowserStatusBarComp extends SimpleComp {
+public class BrowserStatusBarComp extends SimpleComp {
 
     OpenFileSystemModel model;
 
     @Override
     protected Region createSimple() {
-        var cc = PlatformThread.sync(FileBrowserClipboard.currentCopyClipboard);
+        var cc = PlatformThread.sync(BrowserClipboard.currentCopyClipboard);
         var ccCount = Bindings.createStringBinding(() -> {
             if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
                 return cc.getValue().getEntries().size() + " file" + (cc.getValue().getEntries().size() > 1 ? "s" : "") + " in clipboard";
@@ -60,7 +60,7 @@ public class FileBrowserStatusBarComp extends SimpleComp {
         AppFont.small(bar);
 
         // Use status bar as an extension of file list
-        new ContextMenuAugment<>(false, () -> new FileContextMenu(model,true)).augment(new SimpleCompStructure<>(bar));
+        new ContextMenuAugment<>(false, () -> new BrowserContextMenu(model, true)).augment(new SimpleCompStructure<>(bar));
 
         return bar;
     }

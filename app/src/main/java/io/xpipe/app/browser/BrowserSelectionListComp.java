@@ -22,10 +22,10 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class SelectedFileListComp extends SimpleComp {
+public class BrowserSelectionListComp extends SimpleComp {
 
     public static Image snapshot(ObservableList<FileSystem.FileEntry> list) {
-        var r = new SelectedFileListComp(list).styleClass("drag").createRegion();
+        var r = new BrowserSelectionListComp(list).styleClass("drag").createRegion();
         var scene = new Scene(r);
         AppWindowHelper.setupStylesheets(scene);
         AppStyle.addStylesheets(scene);

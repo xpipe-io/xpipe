@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.browser;
 
-import io.xpipe.app.browser.FileBrowserEntry;
+import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.icon.FileType;
 import io.xpipe.core.process.ShellControl;
@@ -15,22 +15,22 @@ public class JarAction extends JavaAction implements FileTypeAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return super.isApplicable(model, entries) && FileTypeAction.super.isApplicable(model, entries);
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, FileBrowserEntry entry) {
+    public boolean isApplicable(OpenFileSystemModel model, BrowserEntry entry) {
         return entry.getFileName().endsWith(".jar");
     }
 
     @Override
-    protected String createCommand(ShellControl sc, OpenFileSystemModel model, FileBrowserEntry entry) {
+    protected String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
         return "java -jar " + entry.getOptionallyQuotedFileName();
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<FileBrowserEntry> entries) {
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "java -jar " + filesArgument(entries);
     }
 
