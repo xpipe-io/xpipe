@@ -4,30 +4,34 @@ import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.core.AppFont;
-import javafx.collections.FXCollections;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SeparatorMenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 final class BrowserContextMenu extends ContextMenu {
 
     private final OpenFileSystemModel model;
-    private final boolean empty;
+    private final BrowserEntry source;
 
-    public BrowserContextMenu(OpenFileSystemModel model, boolean empty) {
-        super();
+    public BrowserContextMenu(OpenFileSystemModel model, BrowserEntry source) {
         this.model = model;
-        this.empty = empty;
+        this.source = source;
         createMenu();
     }
 
     private void createMenu() {
         AppFont.normal(this.getStyleableNode());
 
-        var selected = empty || model.getFileList().getSelected().isEmpty()
-                ? FXCollections.observableArrayList(
-                        new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false))
-                : model.getFileList().getSelected();
+        var empty = source == null;
+        var selected = new ArrayList<>(empty ? List.of() : model.getFileList().getSelection());
+        if (source != null && !selected.contains(source)) {
+            selected.add(source);
+        } else if (source == null && model.getFileList().getSelection().isEmpty()) {
+            selected.add(new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false));
+        }
 
         for (BrowserAction.Category cat : BrowserAction.Category.values()) {
             var all = BrowserAction.ALL.stream()

@@ -32,7 +32,7 @@ public class BrowserFileListCompEntry {
     @SuppressWarnings("unchecked")
     public void onMouseClick(MouseEvent t) {
         if (item == null) {
-            model.getSelected().clear();
+            model.getSelection().clear();
             return;
         }
 
@@ -53,7 +53,7 @@ public class BrowserFileListCompEntry {
             var max = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).max().orElse(all.size() - 1);
             var end = all.indexOf(item);
             var start = end > min ? min : max;
-            model.getSelected().setAll(all.subList(Math.min(start, end), Math.max(start, end) + 1));
+            model.getSelection().setAll(all.subList(Math.min(start, end), Math.max(start, end) + 1));
             t.consume();
             return;
         }

@@ -57,7 +57,7 @@ public class OpenFileSystemComp extends SimpleComp {
         terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(true, () -> new BrowserContextMenu(model, true)).augment(new SimpleCompStructure<>(menuButton));
+        new ContextMenuAugment<>(true, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(menuButton));
 
         var filter = new BrowserFilterComp(model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
@@ -69,9 +69,7 @@ public class OpenFileSystemComp extends SimpleComp {
         var directoryView = new BrowserFileListComp(model.getFileList()).createRegion();
 
         var root = new VBox(topBar, directoryView);
-        if (model.getBrowserModel().getMode() == BrowserModel.Mode.BROWSER) {
-            root.getChildren().add(new BrowserStatusBarComp(model).createRegion());
-        }
+        root.getChildren().add(new BrowserStatusBarComp(model).createRegion());
         VBox.setVgrow(directoryView, Priority.ALWAYS);
         root.setPadding(Insets.EMPTY);
         model.getFileList().predicateProperty().set(PREDICATE_NOT_HIDDEN);

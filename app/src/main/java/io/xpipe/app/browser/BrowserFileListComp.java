@@ -30,7 +30,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -126,25 +129,28 @@ final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
-        if (fileList.getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)
-                || fileList.getMode().equals(BrowserModel.Mode.DIRECTORY_CHOOSER)) {
+        if (!fileList.getMode().isMultiple()) {
             table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         } else {
             table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         }
 
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+            var toSelect = new ArrayList<>(c.getList());
             // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in
             // JavaFX
-            var toSelect = c.getList().stream()
-                    .filter(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() == null
-                            || !entry.getRawFileEntry()
-                                    .getPath()
-                                    .equals(fileList.getFileSystemModel()
-                                            .getCurrentParentDirectory()
-                                            .getPath()))
-                    .toList();
-            fileList.getSelected().setAll(toSelect);
+            toSelect.removeIf(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() != null
+                    && entry.getRawFileEntry()
+                            .getPath()
+                            .equals(fileList.getFileSystemModel()
+                                    .getCurrentParentDirectory()
+                                    .getPath()));
+            // Remove unsuitable selection
+            toSelect.removeIf(browserEntry -> (browserEntry.getRawFileEntry().isDirectory()
+                            && !fileList.getMode().isAcceptsDirectories())
+                    || (!browserEntry.getRawFileEntry().isDirectory()
+                            && !fileList.getMode().isAcceptsFiles()));
+            fileList.getSelection().setAll(toSelect);
 
             Platform.runLater(() -> {
                 var toUnselect = table.getSelectionModel().getSelectedItems().stream()
@@ -155,7 +161,7 @@ final class BrowserFileListComp extends SimpleComp {
             });
         });
 
-        fileList.getSelected().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+        fileList.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             if (c.getList().equals(table.getSelectionModel().getSelectedItems())) {
                 return;
             }
@@ -178,7 +184,7 @@ final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.setOnKeyPressed(event -> {
-            var selected = fileList.getSelected();
+            var selected = fileList.getSelection();
             BrowserAction.getFlattened().stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
                             && browserAction.isActive(fileList.getFileSystemModel(), selected))
@@ -218,7 +224,7 @@ final class BrowserFileListComp extends SimpleComp {
                             return null;
                         }
 
-                        return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem() == null);
+                        return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
                     })
                     .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(

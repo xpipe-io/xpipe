@@ -59,7 +59,7 @@ public class BrowserComp extends SimpleComp {
                                 return true;
                             }
 
-                            if (!model.getMode().equals(BrowserModel.Mode.BROWSER)) {
+                            if (model.getMode().isChooser()) {
                                 return true;
                             }
 
@@ -89,7 +89,7 @@ public class BrowserComp extends SimpleComp {
     }
 
     private Region addBottomBar(Region r) {
-        if (model.getMode().equals(BrowserModel.Mode.BROWSER)) {
+        if (!model.getMode().isChooser()) {
             return r;
         }
 
@@ -98,14 +98,19 @@ public class BrowserComp extends SimpleComp {
         var selected = new HBox();
         selected.setAlignment(Pos.CENTER_LEFT);
         selected.setSpacing(10);
-        //        model.getSelected().addListener((ListChangeListener<? super FileSystem.FileEntry>) c -> {
-        //            selected.getChildren().setAll(c.getList().stream().map(s -> {
-        //                var field = new TextField(s.getPath());
-        //                field.setEditable(false);
-        //                field.setPrefWidth(400);
-        //                return field;
-        //            }).toList());
-        //        });
+        model.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                selected.getChildren()
+                        .setAll(c.getList().stream()
+                                        .map(s -> {
+                                            var field = new TextField(s.getRawFileEntry().getPath());
+                                            field.setEditable(false);
+                                            field.setPrefWidth(400);
+                                            return field;
+                                        })
+                                        .toList());
+            });
+        });
         var spacer = new Spacer(Orientation.HORIZONTAL);
         var button = new Button("Select");
         button.setOnAction(event -> model.finishChooser());
@@ -198,7 +203,7 @@ public class BrowserComp extends SimpleComp {
                         continue;
                     }
 
-                    model.closeFileSystem(source.getKey());
+                    model.closeFileSystemAsync(source.getKey());
                 }
             }
         });
@@ -209,16 +214,9 @@ public class BrowserComp extends SimpleComp {
         var tabs = new TabPane();
         tabs.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
         tabs.setTabMinWidth(Region.USE_COMPUTED_SIZE);
-
-        if (!model.getMode().equals(BrowserModel.Mode.BROWSER)) {
-            tabs.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-            tabs.getStyleClass().add("singular");
-        } else {
-            tabs.setTabClosingPolicy(ALL_TABS);
-            Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
-            toggleStyleClass(tabs, DENSE);
-        }
-
+        tabs.setTabClosingPolicy(ALL_TABS);
+        Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
+        toggleStyleClass(tabs, DENSE);
         return tabs;
     }
 
@@ -257,12 +255,6 @@ public class BrowserComp extends SimpleComp {
 
         tab.setGraphic(label);
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
-
-        if (!this.model.getMode().equals(BrowserModel.Mode.BROWSER)) {
-            label.setManaged(false);
-            label.setVisible(false);
-        }
-
         tab.setContent(new OpenFileSystemComp(model).createSimple());
         return tab;
     }

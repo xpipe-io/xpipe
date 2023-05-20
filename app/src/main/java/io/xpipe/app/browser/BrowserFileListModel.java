@@ -35,9 +35,9 @@ public final class BrowserFileListModel {
     private final Property<List<BrowserEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
     private final ObjectProperty<Predicate<BrowserEntry>> predicateProperty =
             new SimpleObjectProperty<>(path -> true);
-    private final ObservableList<BrowserEntry> selected = FXCollections.observableArrayList();
+    private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
     private final ObservableList<FileSystem.FileEntry> selectedRaw =
-            BindingsHelper.mappedContentBinding(selected, entry -> entry.getRawFileEntry());
+            BindingsHelper.mappedContentBinding(selection, entry -> entry.getRawFileEntry());
 
     private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<BrowserEntry>();
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();

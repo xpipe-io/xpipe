@@ -31,8 +31,8 @@ public class BrowserStatusBarComp extends SimpleComp {
         }, cc);
 
         var selectedCount = PlatformThread.sync(Bindings.createIntegerBinding(() -> {
-            return model.getFileList().getSelected().size();
-        }, model.getFileList().getSelected()));
+            return model.getFileList().getSelection().size();
+        }, model.getFileList().getSelection()));
 
         var allCount = PlatformThread.sync(Bindings.createIntegerBinding(() -> {
             return (int) model.getFileList().getAll().getValue().stream().filter(entry -> !entry.isSynthetic()).count();
@@ -60,7 +60,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         AppFont.small(bar);
 
         // Use status bar as an extension of file list
-        new ContextMenuAugment<>(false, () -> new BrowserContextMenu(model, true)).augment(new SimpleCompStructure<>(bar));
+        new ContextMenuAugment<>(false, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(bar));
 
         return bar;
     }

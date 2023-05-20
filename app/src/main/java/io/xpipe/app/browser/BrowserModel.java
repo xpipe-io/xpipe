@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.ShellStore;
@@ -10,6 +11,7 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -19,14 +21,36 @@ public class BrowserModel {
 
     public BrowserModel(Mode mode) {
         this.mode = mode;
+
+        selected.addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+
+            BindingsHelper.bindContent(selection, newValue.getFileList().getSelection());
+        });
     }
 
+    @Getter
     public static enum Mode {
-        BROWSER,
-        SINGLE_FILE_CHOOSER,
-        SINGLE_FILE_SAVE,
-        MULTIPLE_FILE_CHOOSER,
-        DIRECTORY_CHOOSER
+        BROWSER(false, true, true, true),
+        SINGLE_FILE_CHOOSER(true, false, true, false),
+        SINGLE_FILE_SAVE(true, false, true, false),
+        MULTIPLE_FILE_CHOOSER(true, true, true, false),
+        SINGLE_DIRECTORY_CHOOSER(true, false, false, true),
+        MULTIPLE_DIRECTORY_CHOOSER(true, true, false, true);
+
+        private final boolean chooser;
+        private final boolean multiple;
+        private final boolean acceptsFiles;
+        private final boolean acceptsDirectories;
+
+        Mode(boolean chooser, boolean multiple, boolean acceptsFiles, boolean acceptsDirectories) {
+            this.chooser = chooser;
+            this.multiple = multiple;
+            this.acceptsFiles = acceptsFiles;
+            this.acceptsDirectories = acceptsDirectories;
+        }
     }
 
     public static final BrowserModel DEFAULT = new BrowserModel(Mode.BROWSER);
@@ -39,19 +63,23 @@ public class BrowserModel {
     private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel();
+    private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
 
     public void finishChooser() {
-        if (getMode().equals(Mode.BROWSER)) {
+        if (!getMode().isChooser()) {
             throw new IllegalStateException();
         }
 
-        var selectedFiles = openFileSystems.get(0).getFileList().getSelected();
-        closeFileSystem(openFileSystems.get(0));
+        var chosen = new ArrayList<>(selection);
+        for (OpenFileSystemModel openFileSystem : openFileSystems) {
+            closeFileSystemAsync(openFileSystem);
+        }
 
-        if (selectedFiles.size() == 0) {
+        if (chosen.size() == 0) {
             return;
         }
-        var stores = selectedFiles.stream()
+
+        var stores = chosen.stream()
                 .map(entry -> new FileStore(
                         entry.getRawFileEntry().getFileSystem().getStore(),
                         entry.getRawFileEntry().getPath()))
@@ -59,7 +87,7 @@ public class BrowserModel {
         onFinish.accept(stores);
     }
 
-    public void closeFileSystem(OpenFileSystemModel open) {
+    public void closeFileSystemAsync(OpenFileSystemModel open) {
         ThreadHelper.runAsync(() -> {
             if (Objects.equals(selected.getValue(), open)) {
                 selected.setValue(null);

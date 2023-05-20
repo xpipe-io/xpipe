@@ -9,7 +9,7 @@ import io.xpipe.core.process.ShellDialect;
 
 import java.util.List;
 
-public class OpenInNativeManagerAction implements LeafAction {
+public class BrowseInNativeManagerAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
@@ -19,7 +19,11 @@ public class OpenInNativeManagerAction implements LeafAction {
             var e = entry.getRawFileEntry().getPath();
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
-                    sc.executeSimpleCommand("explorer " + d.fileArgument(e));
+                    if (entry.getRawFileEntry().isDirectory()) {
+                        sc.executeSimpleCommand("explorer " + d.fileArgument(e));
+                    } else {
+                        sc.executeSimpleCommand("explorer /select," + d.fileArgument(e));
+                    }
                 }
                 case OsType.Linux linux -> {
                     var action = entry.getRawFileEntry().isDirectory() ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowItems";

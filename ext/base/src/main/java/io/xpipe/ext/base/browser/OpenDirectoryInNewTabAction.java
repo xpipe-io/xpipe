@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.browser;
 
 import io.xpipe.app.browser.BrowserEntry;
-import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
@@ -31,7 +30,7 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory()) && model.getBrowserModel().getMode() == BrowserModel.Mode.BROWSER;
+        return entries.size() == 1 && entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory());
     }
 
     @Override
