@@ -99,9 +99,9 @@ uninstall() {
     fi
     ;;
   Darwin)
-    if [ -d "/Applications/X-Pipe.app" ]; then
+    if [ -d "/Applications/XPipe.app" ]; then
       info "Uninstalling previous version"
-      sudo /Applications/X-Pipe.app/Contents/Resources/scripts/uninstall.sh
+      sudo /Applications/XPipe.app/Contents/Resources/scripts/uninstall.sh
     fi
     ;;
   *)
@@ -165,7 +165,7 @@ check_architecture() {
     ;;
   esac
 
-  error "Sorry! X-Pipe currently does not provide your processor architecture."
+  error "Sorry! XPipe currently does not provide your processor architecture."
   return 1
 }
 
@@ -180,7 +180,7 @@ download_archive="$(
 )"
 exit_status="$?"
 if [ "$exit_status" != 0 ]; then
-  error "Could not download X-Pipe release."
+  error "Could not download XPipe release."
   exit "$exit_status"
 fi
 

@@ -52,7 +52,7 @@ public class BrowseDirectoryComp extends SimpleComp {
                                 if (sc.getOsType().equals(OsType.WINDOWS)) {
                                     sc.executeSimpleCommand(ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
                                 } else {
-                                    TerminalHelper.open("X-Pipe Debug", "\"" + script + "\"");
+                                    TerminalHelper.open("XPipe Debug", "\"" + script + "\"");
                                 }
                             }
                         });

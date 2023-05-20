@@ -19,12 +19,12 @@ public class XPipeSession {
     boolean isNewBuildSession;
 
     /**
-     * Unique identifier that resets on every X-Pipe restart.
+     * Unique identifier that resets on every XPipe restart.
      */
     UUID sessionId;
 
     /**
-     * Unique identifier that resets on every X-Pipe update.
+     * Unique identifier that resets on every XPipe update.
      */
     UUID buildSessionId;
 

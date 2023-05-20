@@ -41,7 +41,7 @@ public class AppTray {
                 .menuItem(AppI18n.get("quit"), e -> {
                     OperationMode.close();
                 })
-                .toolTip("X-Pipe")
+                .toolTip("XPipe")
                 .build();
         this.errorHandler = new TrayErrorHandler();
     }

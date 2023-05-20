@@ -32,7 +32,7 @@ public class DesktopShortcuts {
                         [Desktop Entry]
                         Type=Application
                         Name=%s
-                        Comment=Open with X-Pipe
+                        Comment=Open with XPipe
                         Exec="%s" open %s
                         Icon=%s
                         Terminal=false

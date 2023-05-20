@@ -69,7 +69,7 @@ public class AppExtensionManager {
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
-                        "Required local X-Pipe installation was not found but is required for development");
+                        "Required local XPipe installation was not found but is required for development");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);

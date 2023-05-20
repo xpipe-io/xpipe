@@ -37,7 +37,7 @@ public class App extends Application {
         icon = AppImages.image("logo.png");
 
         // Set dock icon explicitly on mac
-        // This is necessary in case X-Pipe was started through a script as it will have no icon otherwise
+        // This is necessary in case XPipe was started through a script as it will have no icon otherwise
         if (OsType.getLocal().equals(OsType.MACOS)) {
             try {
                 var iconUrl = Main.class.getResourceAsStream("resources/img/logo.png");

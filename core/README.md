@@ -1,17 +1,17 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-core)
 [![javadoc](https://javadoc.io/badge2/io.xpipe/xpipe-core/javadoc.svg)](https://javadoc.io/doc/io.xpipe/xpipe-core)
 
-## X-Pipe Core
+## XPipe Core
 
-The X-Pipe core module contains all the shared core classes used by the API, beacon, and daemon implementation.
+The XPipe core module contains all the shared core classes used by the API, beacon, and daemon implementation.
 It contains the following packages:
 
 - [charsetter](src/main/java/io/xpipe/core/charsetter): Classes for handling all things charset 
   related such as detection and handling of data streams with BOMs.
 
 - [data](src/main/java/io/xpipe/core/data): Contains all definitions of the
-  internal X-Pipe data model and all the IO functionality to read and write these data structures.
-  For more information, see [X-Pipe data model](https://xpipe-io.readthedocs.io/en/latest/dev/model.html)
+  internal XPipe data model and all the IO functionality to read and write these data structures.
+  For more information, see [XPipe data model](https://xpipe-io.readthedocs.io/en/latest/dev/model.html)
 
 - [dialog](src/main/java/io/xpipe/core/dialog): In API to create server/daemon side CLI dialogs.
   These are used by extensions for data source and data store configuration from the command line.

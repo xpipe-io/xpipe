@@ -7,11 +7,11 @@ import lombok.Value;
 import java.util.Objects;
 
 /**
- * Represents a reference to an X-Pipe data source.
+ * Represents a reference to an XPipe data source.
  * Using {@link DataSourceReference} instances instead of {@link DataSourceId}
  * instances is mainly done for user convenience purposes.
  * <p>
- * While a {@link DataSourceId} represents a unique and canonical identifier for an X-Pipe data source,
+ * While a {@link DataSourceId} represents a unique and canonical identifier for an XPipe data source,
  * there also exist easier and shorter ways to address a data source.
  * This convenience comes at the price of ambiguity and instability for other types of references.
  */

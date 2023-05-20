@@ -209,11 +209,11 @@ public class XPipeInstallation {
         String path = null;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             var base = System.getenv("LOCALAPPDATA");
-            path = FileNames.join(base, "X-Pipe");
+            path = FileNames.join(base, "XPipe");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             path = "/opt/xpipe";
         } else {
-            path = "/Applications/X-Pipe.app";
+            path = "/Applications/XPipe.app";
         }
 
         return path;
@@ -231,11 +231,11 @@ public class XPipeInstallation {
         String path = null;
         if (p.getOsType().equals(OsType.WINDOWS)) {
             var base = p.executeSimpleStringCommand(p.getShellDialect().getPrintVariableCommand("LOCALAPPDATA"));
-            path = FileNames.join(base, "X-Pipe");
+            path = FileNames.join(base, "XPipe");
         } else if (p.getOsType().equals(OsType.LINUX)) {
             path = "/opt/xpipe";
         } else {
-            path = "/Applications/X-Pipe.app";
+            path = "/Applications/XPipe.app";
         }
 
         return path;

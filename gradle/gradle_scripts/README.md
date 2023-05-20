@@ -1,6 +1,6 @@
 ## Gradle Scripts
 
-This directory contains helper scripts and Java module generation rules for dependencies used by various X-Pipe gradle projects.
+This directory contains helper scripts and Java module generation rules for dependencies used by various XPipe gradle projects.
 It also contains various other types of shared build script components that are useful.
 
 As the [jlink](https://docs.oracle.com/en/java/javase/17/docs/specs/man/jlink.html) tool

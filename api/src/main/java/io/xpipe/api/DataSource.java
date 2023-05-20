@@ -14,13 +14,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Represents a reference to a data source that is managed by X-Pipe.
+ * Represents a reference to a data source that is managed by XPipe.
  * <p>
  * The actual data is only queried when required and is not cached.
  * Therefore, the queried data is always up-to-date at the point of calling a method that queries the data.
  * <p>
  * As soon a data source reference is created, the data source is locked
- * within X-Pipe to prevent concurrent modification and the problems that can arise from it.
+ * within XPipe to prevent concurrent modification and the problems that can arise from it.
  * By default, the lock is held until the calling program terminates and prevents
  * other applications from modifying the data source in any way.
  * To unlock the data source earlier, you can make use the {@link #unlock()} method.

@@ -1,9 +1,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-api/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-api)
 [![javadoc](https://javadoc.io/badge2/io.xpipe/xpipe-api/javadoc.svg)](https://javadoc.io/doc/io.xpipe/xpipe-api)
 
-## X-Pipe Java API
+## XPipe Java API
 
-The X-Pipe API for Java allows you to use most of the X-Pipe functionality from Java applications:
+The XPipe API for Java allows you to use most of the XPipe functionality from Java applications:
 
 - Create data stores and data sources
 - Query and work with the contents of data sources

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(
-        header = "Launches the X-Pipe daemon.",
+        header = "Launches the XPipe daemon.",
         sortOptions = false,
         showEndOfOptionsDelimiterInUsageHelp = true)
 public class LauncherCommand implements Callable<Integer> {

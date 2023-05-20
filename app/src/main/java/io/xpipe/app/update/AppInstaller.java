@@ -204,7 +204,7 @@ public class AppInstaller {
                                         exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
                                 file, file));
-                TerminalHelper.open("X-Pipe Updater", command);
+                TerminalHelper.open("XPipe Updater", command);
             }
         }
 
@@ -241,7 +241,7 @@ public class AppInstaller {
                                         exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
                         file, file));
-                TerminalHelper.open("X-Pipe Updater", command);
+                TerminalHelper.open("XPipe Updater", command);
             }
         }
 
@@ -279,7 +279,7 @@ public class AppInstaller {
                                         exec || read -rsp "Update failed ..."$'\\n' -n 1 key
                                         """,
                         file, file));
-                TerminalHelper.open("X-Pipe Updater", command);
+                TerminalHelper.open("XPipe Updater", command);
             }
         }
     }

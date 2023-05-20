@@ -2,7 +2,7 @@
 
 ### A flexible connection manager and remote file explorer
 
-X-Pipe is a brand-new type of connection manager and remote file explorer that works by only interacting with command-line
+XPipe is a brand-new type of connection manager and remote file explorer that works by only interacting with command-line
 tools on local and remote shell connections.
 This approach makes it much more flexible as it doesn't have to deal with file system APIs or remote file handling
 protocols at all.
@@ -16,7 +16,7 @@ It currently supports:
 - Any other custom remote connection methods that works through the command-line
 - Arbitrary types of proxies to establish connections
 
-Furthermore, X-Pipe integrates with your existing tools and workflows
+Furthermore, XPipe integrates with your existing tools and workflows
 by outsourcing as many tasks as possible to your favourite
 text/code editors, terminals, shells, command-line tools and more.
 The platform is designed to be extensible, allowing anyone
@@ -61,11 +61,11 @@ Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/late
 
 In case you're interested in development, check out the [development page](/DEVELOPMENT.md).
 
-For information about the security model of X-Pipe, see the [security page](/SECURITY.md).
+For information about the security model of XPipe, see the [security page](/SECURITY.md).
 
-For information about the privacy policy of X-Pipe, see the [privacy page](/PRIVACY.md).
+For information about the privacy policy of XPipe, see the [privacy page](/PRIVACY.md).
 
 If you want to talk you can also join:
 
-- The [X-Pipe Discord Server](https://discord.gg/8y89vS8cRb)
-- The [X-Pipe Slack Server](https://join.slack.com/t/x-pipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
+- The [XPipe Discord Server](https://discord.gg/8y89vS8cRb)
+- The [XPipe Slack Server](https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)

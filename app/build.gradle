@@ -108,7 +108,7 @@ List<String> jvmRunArgs = [
         "--enable-preview",
         //  "-XX:+ExitOnOutOfMemoryError",
         "-Dfile.encoding=UTF-8",
-        "-Dvisualvm.display.name=X-Pipe"
+        "-Dvisualvm.display.name=XPipe"
 ]
 
 

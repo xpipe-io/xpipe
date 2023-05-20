@@ -67,7 +67,7 @@ public class JacksonMapper {
     }
 
     /**
-     * Constructs a new ObjectMapper that is able to map all required X-Pipe classes and also possible extensions.
+     * Constructs a new ObjectMapper that is able to map all required XPipe classes and also possible extensions.
      */
     public static ObjectMapper newMapper() {
         if (!JacksonMapper.isInit()) {

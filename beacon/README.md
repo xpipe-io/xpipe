@@ -1,9 +1,9 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-beacon/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.xpipe/xpipe-beacon)
 [![javadoc](https://javadoc.io/badge2/io.xpipe/xpipe-beacon/javadoc.svg)](https://javadoc.io/doc/io.xpipe/xpipe-beacon)
 
-## X-Pipe Beacon
+## XPipe Beacon
 
-The X-Pipe beacon component is responsible for handling all communications between the X-Pipe daemon
+The XPipe beacon component is responsible for handling all communications between the XPipe daemon
 and the various programming language APIs and the CLI. It provides an API that supports all kinds
 of different operations.
 
@@ -15,7 +15,7 @@ of different operations.
 - The data structures and exchange protocols are specified in the
   [io.xpipe.beacon.exchange package](src/main/java/io/xpipe/beacon/exchange).
 
-- Every exchange is initiated from the outside by sending a request message to the X-Pipe daemon.
+- Every exchange is initiated from the outside by sending a request message to the XPipe daemon.
   The daemon then always sends a response message.
 
 - The header information of a message is formatted in the json format.
@@ -39,7 +39,7 @@ Note that if both sides do not have the same port setting, they won't be able to
 #### Custom launch command
 
 The beacon API also supports launching the daemon automatically in case it is not started yet.
-By default, it launches the daemon of the local X-Pipe installation.
+By default, it launches the daemon of the local XPipe installation.
 It is possible to pass a custom launch command with the property `io.xpipe.beacon.customDaemonCommand=<cmd>`
 and pass arguments to it using the property `io.xpipe.beacon.daemonArgs=<args>`.
 This allows for a custom launch behaviour in a testing/development environment.

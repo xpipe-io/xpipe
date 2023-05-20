@@ -6,8 +6,8 @@ publishing {
             from components.java
 
             pom {
-                name = 'X-Pipe Core'
-                description = 'Core classes used by all X-Pipe components.'
+                name = 'XPipe Core'
+                description = 'Core classes used by all XPipe components.'
                 url = 'https://github.com/xpipe-io/xpipe/core'
                 licenses {
                     license {

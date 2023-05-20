@@ -1,63 +1,63 @@
 # Security
 
-Due to its nature, X-Pipe has to handle a lot of sensitive information.
+Due to its nature, XPipe has to handle a lot of sensitive information.
 This can range from passwords for all kinds of servers, to SSH keys, and more.
-Therefore, the security model of X-Pipe plays a very important role.
+Therefore, the security model of XPipe plays a very important role.
 
-This document summarizes the approach of X-Pipe when it comes to the security of your sensitive information.
+This document summarizes the approach of XPipe when it comes to the security of your sensitive information.
 If any of your questions are left unanswered by this document, feel free to file an
 issue report so your question can be answered individually and can also potentially be included in this document.
 
 ## Reporting a security vulnerability
 
-If you believe that you found a security vulnerability in X-Pipe,
+If you believe that you found a security vulnerability in XPipe,
 you can make use of
 the [private security report feature](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability)
 of GitHub.
 
 ## Security assumptions
 
-The general assumption is that the system on which X-Pipe runs on is not badly infected.
-This refers to your local system on which you installed X-Pipe, not any remote systems that you then connect to.
+The general assumption is that the system on which XPipe runs on is not badly infected.
+This refers to your local system on which you installed XPipe, not any remote systems that you then connect to.
 If your local system is infected to an extent where malicious programs can modify the
-file system and other installed programs like X-Pipe,
-then there is no technical way of preventing malicious programs to also infect X-Pipe and the connected systems as well.
+file system and other installed programs like XPipe,
+then there is no technical way of preventing malicious programs to also infect XPipe and the connected systems as well.
 
 ## Reliance on other programs
 
-X-Pipe essentially outsources any form of connection and shell handling to your existing command-line tools.
+XPipe essentially outsources any form of connection and shell handling to your existing command-line tools.
 It does not come with any remote handling capabilities of its own.
 Therefore, any used command-line program should be secure.
 If for example your `ssh` command-line program or its connections are susceptible to MITM attacks or
-vulnerable in any other way, there is no way for X-Pipe to keep the sensitive information secure.
+vulnerable in any other way, there is no way for XPipe to keep the sensitive information secure.
 It is your responsibility to use the programs in a secure environment and keep them up to date with security patches and
 more.
-X-Pipe can only be as secure as your underlying command-line tools itself.
+XPipe can only be as secure as your underlying command-line tools itself.
 
-X-Pipe calls these programs almost exactly as you would do manually in your terminal
+XPipe calls these programs almost exactly as you would do manually in your terminal
 with some a few additional parameters to automatically pass login information
 and adapt the environment to make it work properly.
 The called program therefore automatically uses your
 system configuration for it, e.g. your system SSH configs.
 
-X-Pipe does not perform any validation or version checking for the programs it calls.
-For example, when establishing an ssh connection through X-Pipe, it will straight up call `ssh user@host <options>`.
+XPipe does not perform any validation or version checking for the programs it calls.
+For example, when establishing an ssh connection through XPipe, it will straight up call `ssh user@host <options>`.
 It is assumed that this `ssh` executable is secure and the one that you actually want to use.
 
 ## Data security and privacy
 
-The general approach of X-Pipe can be summarized as follows:
+The general approach of XPipe can be summarized as follows:
 
 - Any sensitive information should be kept as secure as possible exclusively on your local machine,
-  both while X-Pipe is running and also not running
-- When sensitive information is required on another remote system that is connected through X-Pipe, that information
+  both while XPipe is running and also not running
+- When sensitive information is required on another remote system that is connected through XPipe, that information
   should be transferred and
   remain there as briefly and securely as possible
 - No sensitive information should be sent to any other server outside your network of trusted connections
 
 ### Storage of sensitive information
 
-All X-Pipe data is exclusively stored on your local machine at `~/.xpipe/storage`.
+All XPipe data is exclusively stored on your local machine at `~/.xpipe/storage`.
 You can choose to change this storage location in the settings menu.
 
 All sensitive information is encrypted when it is saved to disk on your local machine using AES
@@ -82,7 +82,7 @@ Then the passed sensitive information is just written into the stdin of the prog
 or file system.
 
 When a program only accepts password input via an environment variable or an askpass program,
-a self deleting password supplier script file is generated by X-Pipe.
+a self deleting password supplier script file is generated by XPipe.
 This script contains the encrypted password and will supply
 the password to the target program exactly once when invoked and immediately deletes itself afterwards.
 This behavior ensures that there is no leftover password script after an operation is performed.
@@ -94,7 +94,7 @@ up in any kind of shell history or on any file system.
 
 ### The purpose of shell scripts
 
-Whenever you open a remote connection in a terminal from X-Pipe, you will notice that your terminal shows
+Whenever you open a remote connection in a terminal from XPipe, you will notice that your terminal shows
 the name of a script located in your temp directory in the title bar to indicate that you're currently executing it.
 The naming scheme of these scripts is usually something like `xpipe/exec-<id>.(bat|sh|ps1)`
 This is intended as these scripts contain all commands that are required
@@ -111,21 +111,21 @@ instantly so any attacker doesn't obtain any sensitive information from it.
 
 ### Logging
 
-By default, X-Pipe creates log files located in `~/.xpipe/logs`.
+By default, XPipe creates log files located in `~/.xpipe/logs`.
 Under normal conditions these log files do not contain any sensitive information.
-If you choose to alter the log level in the settings menu or launch X-Pipe in debug mode,
+If you choose to alter the log level in the settings menu or launch XPipe in debug mode,
 these log files will contain a lot more and finer grained information, some of which might be sensitive.
 
 ### Issue reports
 
-Whenever an error occurs within X-Pipe or you choose to open the error reporter dialog,
+Whenever an error occurs within XPipe or you choose to open the error reporter dialog,
 you have the option to automatically send an error report with optional feedback and attachments.
 This error report does not contain any sensitive information unless
 you explicitly choose to attach debug mode log files (See above).
 
 ## Isolation
 
-Any infected remote system should be isolated enough such that any infection can't spread through X-Pipe.
+Any infected remote system should be isolated enough such that any infection can't spread through XPipe.
 
 ### User isolation
 
@@ -135,22 +135,22 @@ Any other user on a system can't read or write them unless they have root/Admini
 
 ### Isolation of remote systems
 
-When you add a remote system as a host within X-Pipe, it is implicitly assumed that you trust this system.
+When you add a remote system as a host within XPipe, it is implicitly assumed that you trust this system.
 Any required login information is sent to and handled on that remote host when required,
 so it would be possible for malicious program with sufficient privileges to obtain any information sent to that host.
 This would require an attacker to be able to access files of the user that is used to log into the remote system.
 It should however not be possible for any malicious program on the remote host to obtain
-other information stored by X-Pipe that is not explicitly sent to that host.
+other information stored by XPipe that is not explicitly sent to that host.
 
 ## Antivirus programs
 
 ### Windows
 
 It may occasionally happen that Windows Defender warns and
-even sometimes deletes X-Pipe due to it identifying the application as malware.
+even sometimes deletes XPipe due to it identifying the application as malware.
 The reason for this is simple: The application is not signed with an EV code signing
-certificate as this would require a company for X-Pipe to be set up and would also cost around 600$+ per year.
-If X-Pipe was signed with such a certificate, as are most Windows applications distributed by companies, all warnings
+certificate as this would require a company for XPipe to be set up and would also cost around 600$+ per year.
+If XPipe was signed with such a certificate, as are most Windows applications distributed by companies, all warnings
 would go away automatically.
 The Windows Defender / Windows SmartScreen system is essentially pay-to-win here.
 Just paying the appropriate amount will automatically whitelist your application (even it is unsafe / essentially
@@ -166,7 +166,7 @@ In summary, don't rely on Windows Defender to be accurate when it comes to false
 All artifacts of every release are automatically analyzed on VirusTotal
 and you can find the results linked at the bottom of every release.
 From there you should be able to get a better overview over the actual
-threat level of X-Pipe instead of purely relying on Windows Defender.
+threat level of XPipe instead of purely relying on Windows Defender.
 
 ### macOS
 

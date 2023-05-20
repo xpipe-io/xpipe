@@ -13,8 +13,8 @@ publishing {
             }
 
             pom {
-                name = 'X-Pipe Java API'
-                description = 'Contains everything necessary to interact with X-Pipe from Java applications.'
+                name = 'XPipe Java API'
+                description = 'Contains everything necessary to interact with XPipe from Java applications.'
                 url = 'https://github.com/xpipe-io/xpipe/api'
                 licenses {
                     license {

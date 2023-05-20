@@ -64,7 +64,7 @@ public class SampleAction implements ActionProvider {
                 }
 
                 // Commands can also be more complex and span multiple lines.
-                // In this case, X-Pipe will internally write a command to a script file and then execute the script
+                // In this case, XPipe will internally write a command to a script file and then execute the script
                 try (CommandControl cc = sc.command(
                         """
                         VAR="value"
@@ -77,7 +77,7 @@ public class SampleAction implements ActionProvider {
 
                 // More customization options
                 // If the command should be run as root, the command will be executed with
-                // sudo and the optional sudo password automatically provided by X-Pipe
+                // sudo and the optional sudo password automatically provided by XPipe
                 // by using the information from the connection store.
                 // You can also set a custom working directory.
                 try (CommandControl cc = sc.command("kill <pid>").elevated().workingDirectory("/").start()) {

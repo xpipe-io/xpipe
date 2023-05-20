@@ -2,12 +2,12 @@
 
 **Last updated April 21, 2023**
 
-This privacy notice for X-Pipe, in which ("**we**," "**us**," or "**our**") refers to Christopher Schnick, describes how
+This privacy notice for XPipe, in which ("**we**," "**us**," or "**our**") refers to Christopher Schnick, describes how
 and why we
 might collect, store, use, and/or share ("**process**") your information when you use our services ("**Services**"),
 such as when you:
 
-* Download and use our application (X-Pipe), or any other application of ours that links to this privacy notice
+* Download and use our application (XPipe), or any other application of ours that links to this privacy notice
 
 **Questions or concerns?** Reading this privacy notice will help you understand your privacy rights and choices. If you
 do not agree with our policies and practices, please do not use our Services. If you still have any questions or

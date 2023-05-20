@@ -142,54 +142,54 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         doLast {
             copy {
                 from "$distDir/jpackage/xpiped.app/Contents"
-                into "$distDir/X-Pipe.app/Contents/"
+                into "$distDir/XPipe.app/Contents/"
             }
             copy {
                 from "$projectDir/logo/logo.icns"
-                into "$distDir/X-Pipe.app/Contents/Resources/"
+                into "$distDir/XPipe.app/Contents/Resources/"
             }
             copy {
                 from "$distDir/cli/xpipe"
-                into "$distDir/X-Pipe.app/Contents/MacOS/"
+                into "$distDir/XPipe.app/Contents/MacOS/"
             }
             copy {
                 from "$distDir/licenses"
-                into "$distDir/X-Pipe.app/Contents/Resources/licenses"
+                into "$distDir/XPipe.app/Contents/Resources/licenses"
             }
             copy {
                 from "$distDir/docs/html5"
-                into "$distDir/X-Pipe.app/Contents/Resources/cli/docs"
+                into "$distDir/XPipe.app/Contents/Resources/cli/docs"
             }
             copy {
                 from "$distDir/docs/manpage"
-                into "$distDir/X-Pipe.app/Contents/Resources/cli/man"
+                into "$distDir/XPipe.app/Contents/Resources/cli/man"
             }
             copy {
                 from "$distDir/cli/xpipe_completion"
-                into "$distDir/X-Pipe.app/Contents/Resources/cli/"
+                into "$distDir/XPipe.app/Contents/Resources/cli/"
             }
 
             copy {
                 from "$projectDir/PkgInstaller/darwin/Resources/uninstall.sh"
-                into "$distDir/X-Pipe.app/Contents/Resources/scripts/"
+                into "$distDir/XPipe.app/Contents/Resources/scripts/"
             }
-            file("$distDir/X-Pipe.app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/X-Pipe.app/Contents/Resources/scripts/uninstall.sh").text
-                    .replaceAll("__PRODUCT__", "X-Pipe")
+            file("$distDir/XPipe.app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/XPipe.app/Contents/Resources/scripts/uninstall.sh").text
+                    .replaceAll("__PRODUCT__", "XPipe")
                     .replaceAll("__VERSION__", version.toString())
 
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))
             def debugAttachArguments = file("$projectDir/debug/mac/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
                     Collectors.joining(' '))
-            file("$distDir/X-Pipe.app/Contents/Resources/scripts").mkdirs()
-            file("$distDir/X-Pipe.app/Contents/Resources/scripts/xpiped_debug.sh").text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
+            file("$distDir/XPipe.app/Contents/Resources/scripts").mkdirs()
+            file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug.sh").text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
-            file("$distDir/X-Pipe.app/Contents/Resources/scripts/xpiped_debug.sh").executable = true
-            file("$distDir/X-Pipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh").text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
+            file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug.sh").executable = true
+            file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh").text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
-            file("$distDir/X-Pipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh").executable = true
+            file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh").executable = true
 
             if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
                 exec {

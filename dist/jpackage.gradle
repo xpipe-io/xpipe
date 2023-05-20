@@ -13,7 +13,7 @@ def releaseArguments = distJvmArgs + [
 ]
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    releaseArguments += '-Xdock:name=X-Pipe'
+    releaseArguments += '-Xdock:name=XPipe'
 }
 
 // To remove warnings, the plugin probably does not expect the JPackage tasks to be in a separate project
@@ -74,7 +74,7 @@ jlink {
             imageOptions += [
                     '--mac-sign',
                     '--mac-package-signing-prefix', 'io.xpipe.app',
-                    '--mac-package-name', "X-Pipe Desktop",
+                    '--mac-package-name', "XPipe Desktop",
                     '--mac-app-category', 'productivity',
                     // '--mac-entitlements', "$projectDir/misc/mac/Entitlements.plist"
             ]
@@ -89,7 +89,7 @@ jlink {
             appVersion = modifiedVersion
         }
         skipInstaller = true
-        applicationName = 'X-Pipe'
+        applicationName = 'XPipe'
     }
 }
 

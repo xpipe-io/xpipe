@@ -91,7 +91,7 @@ public interface TableReadConnection extends DataSourceReadConnection {
     }
 
     /**
-     * Writes the rows to an OutputStream in the X-Pipe binary format.
+     * Writes the rows to an OutputStream in the XPipe binary format.
      */
     default void forwardRows(OutputStream out, int maxLines) throws Exception {
         if (maxLines == 0) {
