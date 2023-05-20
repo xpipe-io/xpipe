@@ -95,11 +95,13 @@ final class BrowserFileListComp extends SimpleComp {
         modeCol.setCellValueFactory(param ->
                 new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
+        modeCol.setSortable(false);
 
         var table = new TableView<BrowserEntry>();
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, sizeCol, modeCol, mtimeCol);
+        table.getSortOrder().add(filenameCol);
         table.setSortPolicy(param -> {
             var comp = table.getComparator();
             if (comp == null) {
@@ -315,6 +317,7 @@ final class BrowserFileListComp extends SimpleComp {
 
                 if (!table.getItems().equals(newItems)) {
                     table.getItems().setAll(newItems);
+                    table.sort();
                 }
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
