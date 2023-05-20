@@ -221,7 +221,7 @@ final class BrowserFileListComp extends SimpleComp {
 
         table.setRowFactory(param -> {
             TableRow<BrowserEntry> row = new TableRow<>();
-            new ContextMenuAugment<>(false, () -> {
+            new ContextMenuAugment<>(true, true, () -> {
                         if (row.getItem() != null && row.getItem().isSynthetic()) {
                             return null;
                         }

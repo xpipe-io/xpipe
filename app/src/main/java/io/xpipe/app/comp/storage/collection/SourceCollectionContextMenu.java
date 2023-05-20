@@ -17,7 +17,7 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Con
 
     public SourceCollectionContextMenu(
             boolean showOnPrimaryButton, SourceCollectionWrapper group, Region renameTextField) {
-        super(showOnPrimaryButton, () -> createContextMenu(group, renameTextField));
+        super(showOnPrimaryButton, true, () -> createContextMenu(group, renameTextField));
     }
 
     private static void onDelete(SourceCollectionWrapper group) {

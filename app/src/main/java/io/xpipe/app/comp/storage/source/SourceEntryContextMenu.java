@@ -20,7 +20,7 @@ public class SourceEntryContextMenu<S extends CompStructure<?>> extends ContextM
 
 
     public SourceEntryContextMenu(boolean showOnPrimaryButton, SourceEntryWrapper entry, Region renameTextField) {
-        super(showOnPrimaryButton, () -> createContextMenu(entry, renameTextField));
+        super(showOnPrimaryButton, true, () -> createContextMenu(entry, renameTextField));
     }
 
     protected static ContextMenu createContextMenu(SourceEntryWrapper entry, Region renameTextField) {

@@ -57,7 +57,7 @@ public class OpenFileSystemComp extends SimpleComp {
         terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(true, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(menuButton));
+        new ContextMenuAugment<>(true, false, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(menuButton));
 
         var filter = new BrowserFilterComp(model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));

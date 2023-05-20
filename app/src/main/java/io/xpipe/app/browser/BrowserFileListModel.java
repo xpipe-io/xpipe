@@ -2,7 +2,6 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.ObjectProperty;
@@ -121,7 +120,7 @@ public final class BrowserFileListModel {
                 fileSystemModel.cd(dir.get());
             }
         } else {
-            FileOpener.openInTextEditor(entry.getRawFileEntry());
+            // FileOpener.openInTextEditor(entry.getRawFileEntry());
         }
     }
 

@@ -9,10 +9,12 @@ import java.util.function.Supplier;
 public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S> {
 
     private final boolean showOnPrimaryButton;
+    private final boolean showOnSecondaryButton;
     private final Supplier<ContextMenu> contextMenu;
 
-    public ContextMenuAugment(boolean showOnPrimaryButton, Supplier<ContextMenu> contextMenu) {
+    public ContextMenuAugment(boolean showOnPrimaryButton, boolean showOnSecondaryButton, Supplier<ContextMenu> contextMenu) {
         this.showOnPrimaryButton = showOnPrimaryButton;
+        this.showOnSecondaryButton = showOnSecondaryButton;
         this.contextMenu = contextMenu;
     }
 
@@ -28,7 +30,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
             }
 
             if ((showOnPrimaryButton && event.getButton() == MouseButton.PRIMARY)
-                    || (!showOnPrimaryButton && event.getButton() == MouseButton.SECONDARY)) {
+                    || (showOnSecondaryButton && event.getButton() == MouseButton.SECONDARY)) {
                 var cm = contextMenu.get();
                 if (cm != null) {
                     cm.setAutoHide(true);

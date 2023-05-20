@@ -164,7 +164,7 @@ public class StoreEntryComp extends SimpleComp {
             });
         });
 
-        new ContextMenuAugment<>(false, () -> StoreEntryComp.this.createContextMenu()).augment(new SimpleCompStructure<>(button));
+        new ContextMenuAugment<>(false, true, () -> StoreEntryComp.this.createContextMenu()).augment(new SimpleCompStructure<>(button));
 
         return button;
     }
@@ -213,7 +213,7 @@ public class StoreEntryComp extends SimpleComp {
     private Comp<?> createSettingsButton() {
         var settingsButton = new IconButtonComp("mdomz-settings");
         settingsButton.styleClass("settings");
-        settingsButton.apply(new ContextMenuAugment<>(true, () -> StoreEntryComp.this.createContextMenu()));
+        settingsButton.apply(new ContextMenuAugment<>(true, false, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(GrowAugment.create(false, true));
         settingsButton.apply(s -> {
             s.get().prefWidthProperty().bind(Bindings.divide(s.get().heightProperty(), 1.35));
