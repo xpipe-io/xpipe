@@ -73,7 +73,7 @@ public class App extends Application {
         var titleBinding = Bindings.createStringBinding(
                 () -> {
                     var base = String.format(
-                            "X-Pipe Desktop (%s)", AppProperties.get().getVersion());
+                            "XPipe Desktop (%s)", AppProperties.get().getVersion());
                     var prefix = AppProperties.get().isStaging() ? "[STAGE] " : "";
                     var suffix = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null
                             ? String.format(

@@ -52,7 +52,7 @@ public class SvgView {
         var widthProperty = new SimpleIntegerProperty();
         var heightProperty = new SimpleIntegerProperty();
         SimpleChangeListener.apply(content, val -> {
-            if (val == null) {
+            if (val == null || val.isBlank()) {
                 return;
             }
 

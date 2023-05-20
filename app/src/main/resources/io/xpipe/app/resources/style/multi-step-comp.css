@@ -80,3 +80,7 @@
 -fx-pref-height: 0;
 }
 
+.multi-step-comp > .jfx-tab-pane .tab-content-area {
+-fx-padding: 0;
+}
+

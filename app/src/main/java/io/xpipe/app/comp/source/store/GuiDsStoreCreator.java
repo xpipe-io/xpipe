@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.source.store;
 
-import io.xpipe.app.comp.base.InstallExtensionComp;
-import io.xpipe.app.comp.base.MessageComp;
+import io.xpipe.app.comp.base.ErrorOverlayComp;
 import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppFont;
@@ -9,7 +8,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DownloadModuleInstall;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
@@ -25,6 +23,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
@@ -48,7 +47,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
     Property<String> messageProp = new SimpleStringProperty();
-    MessageComp message = new MessageComp(messageProp, 10000);
     BooleanProperty finished = new SimpleBooleanProperty();
     Property<DataStoreEntry> entry = new SimpleObjectProperty<>();
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
@@ -188,7 +186,14 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     @Override
     public CompStructure<? extends Region> createBase() {
+        var back = Comp.of(this::createLayout);
+        var message = new ErrorOverlayComp(back, messageProp);
+        return message.createStructure();
+    }
+
+    private Region createLayout() {
         var layout = new BorderPane();
+        layout.setPadding(new Insets(20));
         var providerChoice = new DsStoreProviderChoiceComp(filter, provider);
         if (provider.getValue() != null) {
             providerChoice.apply(struc -> struc.get().setDisable(true));
@@ -197,37 +202,33 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         SimpleChangeListener.apply(provider, n -> {
             if (n != null) {
-                var install = n.getRequiredAdditionalInstallation();
-                if (install != null && AppExtensionManager.getInstance().isInstalled(install)) {
-                    layout.setCenter(new InstallExtensionComp((DownloadModuleInstall) install).createRegion());
-                    validator.setValue(new SimpleValidator());
-                    return;
-                }
+                //                var install = n.getRequiredAdditionalInstallation();
+                //                if (install != null && AppExtensionManager.getInstance().isInstalled(install)) {
+                //                    layout.setCenter(new InstallExtensionComp((DownloadModuleInstall)
+                // install).createRegion());
+                //                    validator.setValue(new SimpleValidator());
+                //                    return;
+                //                }
 
                 var d = n.guiDialog(input);
                 var propVal = new SimpleValidator();
                 var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
-                var box = new VBox(propR);
-                box.setSpacing(7);
+                layout.setCenter(propR);
 
-                layout.setCenter(box);
-
-                validator.setValue(new ChainedValidator(List.of(d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));
+                validator.setValue(new ChainedValidator(List.of(
+                        d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));
             } else {
                 layout.setCenter(null);
                 validator.setValue(new SimpleValidator());
             }
         });
 
-        layout.setBottom(message.createRegion());
-
         var sep = new Separator();
         sep.getStyleClass().add("spacer");
         var top = new VBox(providerChoice.createRegion(), sep);
         top.getStyleClass().add("top");
         layout.setTop(top);
-        // layout.getStyleClass().add("data-input-creation-step");
-        return Comp.of(() -> layout).createStructure();
+        return layout;
     }
 
     @Override
@@ -275,7 +276,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     .getText();
             TrackEvent.info(msg);
             messageProp.setValue(msg);
-            message.show();
             changedSinceError.setValue(false);
             return false;
         }
@@ -287,7 +287,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 PlatformThread.runLaterIfNeeded(parent::next);
             } catch (Exception ex) {
                 messageProp.setValue(ExceptionConverter.convertMessage(ex));
-                message.show();
                 changedSinceError.setValue(false);
                 ErrorEvent.fromThrowable(ex).omit().reportable(false).handle();
             }

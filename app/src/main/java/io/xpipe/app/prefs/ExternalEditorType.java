@@ -24,6 +24,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     public static final ExternalEditorType VSCODE_WINDOWS = new WindowsFullPathType("app.vscode") {
 
         @Override
+        public boolean canOpenDirectory() {
+            return true;
+        }
+
+        @Override
         protected Optional<Path> determinePath() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                     .resolve("Programs")
@@ -48,7 +53,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    public static final LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code");
+    public static final LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
+
+        @Override
+        public boolean canOpenDirectory() {
+            return true;
+        }
+    };
 
     public static final LinuxPathType KATE = new LinuxPathType("app.kate", "kate");
 
@@ -81,7 +92,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     public static final ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
 
-    public static final ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
+    public static final ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
+
+        @Override
+        public boolean canOpenDirectory() {
+            return true;
+        }
+    };
 
     public static final ExternalEditorType CUSTOM = new ExternalEditorType() {
 
@@ -109,6 +126,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     public void launch(Path file) throws Exception;
+
+    default boolean canOpenDirectory() {
+        return false;
+    }
 
     public static class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 

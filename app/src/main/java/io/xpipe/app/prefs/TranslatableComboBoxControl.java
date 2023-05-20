@@ -42,7 +42,7 @@ public class TranslatableComboBoxControl<V extends Translatable>
         readOnlyLabel.getStyleClass().add("read-only-label");
 
         comboBox.setMaxWidth(Double.MAX_VALUE);
-        comboBox.setVisibleRowCount(4);
+        comboBox.setVisibleRowCount(10);
 
         node.setAlignment(Pos.CENTER_LEFT);
         node.getChildren().addAll(comboBox, readOnlyLabel);

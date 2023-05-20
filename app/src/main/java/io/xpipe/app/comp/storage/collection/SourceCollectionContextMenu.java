@@ -3,7 +3,7 @@ package io.xpipe.app.comp.storage.collection;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.augment.PopupMenuAugment;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.DesktopHelper;
 import javafx.scene.control.Alert;
@@ -13,19 +13,14 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class SourceCollectionContextMenu<S extends CompStructure<?>> extends PopupMenuAugment<S> {
-
-    private final SourceCollectionWrapper group;
-    private final Region renameTextField;
+public class SourceCollectionContextMenu<S extends CompStructure<?>> extends ContextMenuAugment<S> {
 
     public SourceCollectionContextMenu(
             boolean showOnPrimaryButton, SourceCollectionWrapper group, Region renameTextField) {
-        super(showOnPrimaryButton);
-        this.group = group;
-        this.renameTextField = renameTextField;
+        super(showOnPrimaryButton, () -> createContextMenu(group, renameTextField));
     }
 
-    private void onDelete() {
+    private static void onDelete(SourceCollectionWrapper group) {
         if (group.getEntries().size() > 0) {
             AppWindowHelper.showBlockingAlert(alert -> {
                         alert.setTitle(AppI18n.get("confirmCollectionDeletionTitle"));
@@ -44,7 +39,7 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         }
     }
 
-    private void onClean() {
+    private static void onClean(SourceCollectionWrapper group) {
         if (group.getEntries().size() > 0) {
             AppWindowHelper.showBlockingAlert(alert -> {
                         alert.setTitle(AppI18n.get("confirmCollectionDeletionTitle"));
@@ -63,8 +58,7 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         }
     }
 
-    @Override
-    protected ContextMenu createContextMenu() {
+    protected static ContextMenu createContextMenu(SourceCollectionWrapper group, Region renameTextField) {
         var cm = new ContextMenu();
         var name = new MenuItem(group.getName());
         name.setDisable(true);
@@ -96,13 +90,13 @@ public class SourceCollectionContextMenu<S extends CompStructure<?>> extends Pop
         if (group.isDeleteable()) {
             var del = new MenuItem(AppI18n.get("delete"), new FontIcon("mdal-delete_outline"));
             del.setOnAction(e -> {
-                onDelete();
+                onDelete(group);
             });
             cm.getItems().add(del);
         } else {
             var del = new MenuItem(AppI18n.get("clean"), new FontIcon("mdal-delete_outline"));
             del.setOnAction(e -> {
-                onClean();
+                onClean(group);
             });
             cm.getItems().add(del);
         }

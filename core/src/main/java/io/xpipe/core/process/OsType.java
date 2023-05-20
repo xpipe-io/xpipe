@@ -1,10 +1,12 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.impl.FileNames;
+
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public interface OsType {
+public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacOs {
 
     Windows WINDOWS = new Windows();
     Linux LINUX = new Linux();
@@ -23,7 +25,17 @@ public interface OsType {
         }
     }
 
+    default String getXPipeHomeDirectory(ShellControl pc) throws Exception {
+        return FileNames.join(getHomeDirectory(pc), ".xpipe");
+    }
+
+    default String getSystemIdFile(ShellControl pc) throws Exception {
+        return FileNames.join(getXPipeHomeDirectory(pc), "system_id");
+    }
+
     String getHomeDirectory(ShellControl pc) throws Exception;
+
+    String getFileSystemSeparator();
 
     String getName();
 
@@ -33,12 +45,17 @@ public interface OsType {
 
     String determineOperatingSystemName(ShellControl pc) throws Exception;
 
-    static class Windows implements OsType {
+    static final class Windows implements OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(
                     pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "\\";
         }
 
         @Override
@@ -80,11 +97,16 @@ public interface OsType {
         }
     }
 
-    static class Linux implements OsType {
+    static final class Linux implements OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "/";
         }
 
         @Override
@@ -138,7 +160,7 @@ public interface OsType {
         }
     }
 
-    static class MacOs implements OsType {
+    static final class MacOs implements OsType {
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
@@ -155,6 +177,11 @@ public interface OsType {
             }
 
             return found;
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "/";
         }
 
         @Override

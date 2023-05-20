@@ -1,5 +1,3 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.util;
 
 import java.text.CharacterIterator;

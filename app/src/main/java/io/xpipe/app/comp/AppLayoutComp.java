@@ -1,7 +1,7 @@
 package io.xpipe.app.comp;
 
-import io.xpipe.app.browser.FileBrowserComp;
-import io.xpipe.app.browser.FileBrowserModel;
+import io.xpipe.app.browser.BrowserComp;
+import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.about.AboutTabComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
@@ -47,7 +47,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("browser"),
                         "mdi2f-file-cabinet",
-                        new FileBrowserComp(FileBrowserModel.DEFAULT)),
+                        new BrowserComp(BrowserModel.DEFAULT)),
                 // new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),
@@ -78,7 +78,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(selected, entries);
-        pane.setCenter(selected.getValue().comp().createRegion());
+        pane.setCenter(map.get(selected.getValue()));
         pane.setRight(sidebar.createRegion());
         selected.addListener((c, o, n) -> {
             if (o != null && o.equals(entries.get(2))) {

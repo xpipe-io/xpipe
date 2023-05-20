@@ -49,7 +49,22 @@
 }
 
 .browser .bookmark-list {
-    -fx-border-width: 0 0 1 1;
+    -fx-border-width: 0;
+}
+
+.browser .bookmark-list *.scroll-bar:horizontal,
+.browser .bookmark-list *.scroll-bar:horizontal *.track,
+.browser .bookmark-list *.scroll-bar:horizontal *.track-background,
+.browser .bookmark-list *.scroll-bar:horizontal *.thumb,
+.browser .bookmark-list *.scroll-bar:horizontal *.increment-button,
+.browser .bookmark-list *.scroll-bar:horizontal *.decrement-button,
+.browser .bookmark-list *.scroll-bar:horizontal *.increment-arrow, 
+.browser .bookmark-list *.scroll-bar:horizontal *.decrement-arrow {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-shape: null;
 }
 
 .browser .tool-bar {
@@ -58,12 +73,62 @@
 }
 
 .browser .status-bar {
-    -fx-border-width: 1 0 1 0;
+    -fx-border-width: 1 0 0 0;
 -fx-border-color: -color-neutral-muted;
 }
 
 .browser .breadcrumbs >.divider {
     -fx-padding: 0;
+}
+
+.browser .context-menu > * > * {
+-fx-padding: 3px 10px 3px 10px;
+-fx-background-radius: 1px;
+-fx-spacing: 20px;
+}
+
+.browser .context-menu .separator {
+-fx-padding: 0;
+}
+
+.browser .breadcrumbs {
+-fx-padding: 2px 10px 2px 10px;
+}
+
+.browser .context-menu .separator .line {
+-fx-padding: 0;
+-fx-border-insets: 0px;
+}
+
+.browser .breadcrumbs .button {
+-fx-padding: 3px 1px 3px 1px;
+-fx-background-color: transparent;
+}
+
+.browser .breadcrumbs .button:hover {
+-fx-background-color: -color-neutral-muted;
+}
+.browser .path-text:invisible {
+-fx-text-fill: transparent;
+}
+
+.browser .context-menu .accelerator-text {
+-fx-padding: 3px 0px 3px 50px;
+}
+
+.browser .context-menu > * {
+-fx-padding: 0;
+}
+
+.browser .context-menu {
+-fx-padding: 0;
+-fx-background-radius: 1px;
+-fx-border-color: -color-neutral-muted;
+}
+
+.browser .tab-pane {
+ -fx-border-width: 0 0 0 1px;
+-fx-border-color: -color-neutral-emphasis;
 }
 
 .chooser-bar {
@@ -83,7 +148,7 @@
     visibility: hidden ;
 }
 
-.browser .table-directory-view .table-view {
+.browser .table-view {
     -color-header-bg: -color-bg-default;
     -color-cell-bg-selected: -color-neutral-emphasis;
     -color-cell-fg-selected: -color-fg-emphasis;
@@ -96,7 +161,7 @@
     -fx-opacity: 0.75;
 }
 
-.browser .table-directory-view .table-view:drag-into-current .table-row-cell {
+.browser .table-view:drag-into-current .table-row-cell {
     -fx-opacity: 0.8;
 }
 

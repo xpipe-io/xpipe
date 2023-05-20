@@ -9,6 +9,7 @@ import javafx.scene.layout.Region;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -21,7 +22,6 @@ public class Shortcuts {
     }
 
     public static <T extends Region> void addShortcut(T region, KeyCombination comb, Consumer<T> exec) {
-        AtomicReference<Scene> scene = new AtomicReference<>(region.getScene());
         var filter = new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
                 if (comb.match(ke)) {
@@ -30,21 +30,23 @@ public class Shortcuts {
                 }
             }
         };
-        SHORTCUTS.put(region, comb);
 
+        AtomicReference<Scene> scene = new AtomicReference<>();
         SimpleChangeListener.apply(region.sceneProperty(), s -> {
+            if (Objects.equals(s, scene.get())) {
+                return;
+            }
+
+            if (scene.get() != null) {
+                scene.get().removeEventHandler(KeyEvent.KEY_PRESSED, filter);
+                SHORTCUTS.remove(region);
+                scene.set(null);
+            }
+
             if (s != null) {
                 scene.set(s);
                 s.addEventHandler(KeyEvent.KEY_PRESSED, filter);
                 SHORTCUTS.put(region, comb);
-            } else {
-                if (scene.get() == null) {
-                    return;
-                }
-
-                scene.get().removeEventHandler(KeyEvent.KEY_PRESSED, filter);
-                SHORTCUTS.remove(region);
-                scene.set(null);
             }
         });
     }

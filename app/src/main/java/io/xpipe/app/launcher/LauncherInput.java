@@ -1,9 +1,11 @@
 package io.xpipe.app.launcher;
 
+import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.core.store.ShellStore;
 import lombok.Getter;
 import lombok.Value;
 
@@ -114,7 +116,8 @@ public abstract class LauncherInput {
                 return;
             }
 
-            // GuiDsCreatorMultiStep.showForStore(DataSourceProvider.Category.STREAM, FileStore.local(file), null);
+            var dir = Files.isDirectory(file) ? file : file.getParent();
+            BrowserModel.DEFAULT.openFileSystemAsync(ShellStore.createLocal(), dir.toString());
         }
 
         @Override

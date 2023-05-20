@@ -1,13 +1,16 @@
-/* SPDX-License-Identifier: MIT */
-
 package io.xpipe.app.browser;
 
+import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
@@ -15,6 +18,7 @@ import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.function.FailableConsumer;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -22,34 +26,74 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 @Getter
-final class OpenFileSystemModel {
+public final class OpenFileSystemModel {
 
-    private Property<FileSystemStore> store = new SimpleObjectProperty<>();
+    private final FileSystemStore store;
     private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
-    private final FileListModel fileList;
+    private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
-    private final FileBrowserHistory history = new FileBrowserHistory();
+    private final BrowserHistory history = new BrowserHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
-    private final FileBrowserModel browserModel;
+    private final BrowserModel browserModel;
     private final BooleanProperty noDirectory = new SimpleBooleanProperty();
+    private final Property<OpenFileSystemSavedState> savedState = new SimpleObjectProperty<>();
+    private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
+    private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
+    private boolean local;
 
-    public OpenFileSystemModel(FileBrowserModel browserModel) {
+    public OpenFileSystemModel(BrowserModel browserModel, FileSystemStore store) {
         this.browserModel = browserModel;
-        fileList = new FileListModel(this);
+        this.store = store;
+        fileList = new BrowserFileListModel(this);
+        addListeners();
+    }
+
+    public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
+        ThreadHelper.runFailableAsync(() -> {
+            if (fileSystem == null) {
+                return;
+            }
+
+            BusyProperty.execute(busy, () -> {
+                if (store instanceof ShellStore s) {
+                    c.accept(fileSystem.getShell().orElseThrow());
+                    if (refresh) {
+                        refreshSync();
+                    }
+                }
+            });
+        });
+    }
+
+    private void addListeners() {
+        savedState.addListener((observable, oldValue, newValue) -> {
+            if (store == null) {
+                return;
+            }
+
+            var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
+            storageEntry.ifPresent(entry -> AppCache.update("browser-state-" + entry.getUuid(), newValue));
+        });
+
+        currentPath.addListener((observable, oldValue, newValue) -> {
+            savedState.setValue(savedState.getValue().withLastDirectory(newValue));
+        });
     }
 
     @SneakyThrows
     public void refresh() {
         BusyProperty.execute(busy, () -> {
-            cdSync(currentPath.get());
+            cdSyncWithoutCheck(currentPath.get());
         });
     }
 
-    private void refreshInternal() throws Exception {
-        cdSync(currentPath.get());
+    public void refreshSync() throws Exception {
+        cdSyncWithoutCheck(currentPath.get());
     }
 
     public FileSystem.FileEntry getCurrentParentDirectory() {
@@ -79,29 +123,66 @@ final class OpenFileSystemModel {
             return Optional.empty();
         }
 
-        String newPath = null;
+        // Fix common issues with paths
+        var normalizedPath = FileSystemHelper.resolvePath(this, path);
+        if (!Objects.equals(path, normalizedPath)) {
+            return Optional.of(normalizedPath);
+        }
+
+        // Handle commands typed into navigation bar
+        if (normalizedPath != null && !FileNames.isAbsolute(normalizedPath) && fileSystem.getShell().isPresent()) {
+            var directory = currentPath.get();
+            var name = normalizedPath + " - "
+                    + XPipeDaemon.getInstance().getStoreName(store).orElse("?");
+            ThreadHelper.runFailableAsync(() -> {
+                if (ShellDialects.ALL.stream().anyMatch(dialect -> normalizedPath.startsWith(dialect.getOpenCommand()))) {
+                    var cmd = fileSystem
+                            .getShell()
+                            .get()
+                            .subShell(normalizedPath)
+                            .initWith(fileSystem
+                                    .getShell()
+                                    .get()
+                                    .getShellDialect()
+                                    .getCdCommand(currentPath.get()))
+                            .prepareTerminalOpen(name);
+                    TerminalHelper.open(normalizedPath, cmd);
+                } else {
+                    var cmd = fileSystem
+                            .getShell()
+                            .get()
+                            .command(normalizedPath)
+                            .workingDirectory(directory)
+                            .prepareTerminalOpen(name);
+                    TerminalHelper.open(normalizedPath, cmd);
+                }
+            });
+            return Optional.of(currentPath.get());
+        }
+
+        String dirPath = null;
         try {
-            newPath = FileSystemHelper.resolveDirectoryPath(this, path);
+            dirPath = FileSystemHelper.validateDirectoryPath(this, normalizedPath);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.of(currentPath.get());
         }
 
-        if (!Objects.equals(path, newPath)) {
-            return Optional.of(newPath);
+        if (!Objects.equals(path, dirPath)) {
+            return Optional.of(dirPath);
         }
 
         ThreadHelper.runFailableAsync(() -> {
             try (var ignored = new BusyProperty(busy)) {
-                cdSync(path);
+                cdSyncWithoutCheck(path);
             }
         });
         return Optional.empty();
     }
 
-    private void cdSync(String path) throws Exception {
+    private void cdSyncWithoutCheck(String path) throws Exception {
         if (fileSystem == null) {
-            var fs = store.getValue().createFileSystem();
+            var fs = store.createFileSystem();
             fs.open();
             this.fileSystem = fs;
         }
@@ -111,6 +192,7 @@ final class OpenFileSystemModel {
 
         filter.setValue(null);
         currentPath.set(path);
+        savedState.setValue(savedState.getValue().withLastDirectory(path));
         history.updateCurrent(path);
         loadFilesSync(path);
     }
@@ -130,7 +212,7 @@ final class OpenFileSystemModel {
             }
             return true;
         } catch (Exception e) {
-            fileList.setAll(List.of());
+            fileList.setAll(Stream.of());
             ErrorEvent.fromThrowable(e).handle();
             return false;
         }
@@ -144,7 +226,7 @@ final class OpenFileSystemModel {
                 }
 
                 FileSystemHelper.dropLocalFilesInto(entry, files);
-                refreshInternal();
+                refreshSync();
             });
         });
     }
@@ -159,13 +241,13 @@ final class OpenFileSystemModel {
 
                 var same = files.get(0).getFileSystem().equals(target.getFileSystem());
                 if (same) {
-                    if (!FileBrowserAlerts.showMoveAlert(files, target)) {
+                    if (!BrowserAlerts.showMoveAlert(files, target)) {
                         return;
                     }
                 }
 
                 FileSystemHelper.dropFilesInto(target, files, explicitCopy);
-                refreshInternal();
+                refreshSync();
             });
         });
     }
@@ -191,13 +273,13 @@ final class OpenFileSystemModel {
                 }
 
                 fileSystem.mkdirs(abs);
-                refreshInternal();
+                refreshSync();
             });
         });
     }
 
     public void createFileAsync(String name) {
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             return;
         }
 
@@ -213,7 +295,7 @@ final class OpenFileSystemModel {
 
                 var abs = FileNames.join(getCurrentDirectory().getPath(), name);
                 fileSystem.touch(abs);
-                refreshInternal();
+                refreshSync();
             });
         });
     }
@@ -225,12 +307,12 @@ final class OpenFileSystemModel {
                     return;
                 }
 
-                if (!FileBrowserAlerts.showDeleteAlert(fileList.getSelected())) {
+                if (!BrowserAlerts.showDeleteAlert(fileList.getSelectedRaw())) {
                     return;
                 }
 
-                FileSystemHelper.delete(fileList.getSelected());
-                refreshInternal();
+                FileSystemHelper.delete(fileList.getSelectedRaw());
+                refreshSync();
             });
         });
     }
@@ -246,20 +328,44 @@ final class OpenFileSystemModel {
             ErrorEvent.fromThrowable(e).handle();
         }
         fileSystem = null;
-        store = null;
     }
 
-    public void switchSync(FileSystemStore fileSystem) throws Exception {
+    public void initFileSystem() throws Exception {
         BusyProperty.execute(busy, () -> {
-            closeSync();
-            this.store.setValue(fileSystem);
-            var fs = fileSystem.createFileSystem();
+            var fs = store.createFileSystem();
             fs.open();
             this.fileSystem = fs;
-
-            var current = FileSystemHelper.getStartDirectory(this);
-            cdSync(current);
+            this.local = fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
         });
+    }
+
+    public void initWithGivenDirectory(String dir) throws Exception {
+        initSavedState(dir);
+        cdSyncWithoutCheck(dir);
+    }
+
+    public void initWithDefaultDirectory() throws Exception {
+        var dir = FileSystemHelper.getStartDirectory(this);
+        initSavedState(dir);
+        cdSyncWithoutCheck(dir);
+    }
+
+    private void initSavedState(String path) {
+        var storageEntry = DataStorage.get()
+                .getStoreEntryIfPresent(store)
+                .map(entry -> entry.getUuid())
+                .orElse(UUID.randomUUID());
+        this.savedState.setValue(
+                AppCache.get("browser-state-" + storageEntry, OpenFileSystemSavedState.class, () -> {
+                    try {
+                        return OpenFileSystemSavedState.builder()
+                                .lastDirectory(path)
+                                .build();
+                    } catch (Exception e) {
+                        ErrorEvent.fromThrowable(e).handle();
+                        return null;
+                    }
+                }));
     }
 
     public void openTerminalAsync(String directory) {
@@ -269,13 +375,13 @@ final class OpenFileSystemModel {
             }
 
             BusyProperty.execute(busy, () -> {
-                if (store.getValue() instanceof ShellStore s) {
+                if (store instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
                             .prepareTerminalOpen(directory + " - "
                                     + XPipeDaemon.getInstance()
-                                            .getStoreName(store.getValue())
+                                            .getStoreName(store)
                                             .orElse("?"));
                     TerminalHelper.open(directory, command);
                 }
@@ -283,7 +389,7 @@ final class OpenFileSystemModel {
         });
     }
 
-    public FileBrowserHistory getHistory() {
+    public BrowserHistory getHistory() {
         return history;
     }
 

@@ -27,6 +27,11 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
     public abstract boolean isAvailable();
 
+    @Override
+    public String toString() {
+        return getId();
+    }
+
     public static class MacApplication extends ExternalApplicationType {
 
         protected final String applicationName;

@@ -1,9 +1,14 @@
 package io.xpipe.core.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class FileNames {
+
+    public static String quoteIfNecessary(String n) {
+        return n.contains(" ") ? "\"" + n + "\"" : n;
+    }
 
     public static String toDirectory(String path) {
         if (path.endsWith("/") || path.endsWith("\\")) {
@@ -45,6 +50,39 @@ public class FileNames {
         return components.get(components.size() - 1);
     }
 
+    public static List<String> splitHierarchy(String file) {
+        if (file.isEmpty()) {
+            return List.of();
+        }
+
+        file = file + "/";
+        var list = new ArrayList<String>();
+        int lastElementStart = 0;
+        for (int i = 0; i < file.length(); i++) {
+            if (file.charAt(i) == '\\' || file.charAt(i) == '/') {
+                if (i - lastElementStart > 0) {
+                    list.add(file.substring(0, i));
+                }
+
+                lastElementStart = i + 1;
+            }
+        }
+        return list;
+    }
+
+    public static String getBaseName(String file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        var name = FileNames.getFileName(file);
+        var split = file.lastIndexOf("\\.");
+        if (split == -1) {
+            return name;
+        }
+        return name.substring(0, split);
+    }
+
     public static String getExtension(String file) {
         if (file == null || file.isEmpty()) {
             return null;
@@ -68,7 +106,7 @@ public class FileNames {
             return false;
         }
 
-        if (!file.startsWith("/") && !file.startsWith("~") && !file.matches("^\\w:.*")) {
+        if (!file.startsWith("\\") && !file.startsWith("/") && !file.startsWith("~") && !file.matches("^\\w:.*")) {
             return false;
         }
 

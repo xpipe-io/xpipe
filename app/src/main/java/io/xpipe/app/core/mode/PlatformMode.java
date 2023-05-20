@@ -60,6 +60,7 @@ public abstract class PlatformMode extends OperationMode {
         TrackEvent.info("mode", "Platform mode initial setup");
         AppI18n.init();
         AppFont.loadFonts();
+        AppTheme.init();
         AppStyle.init();
         AppImages.init();
         TrackEvent.info("mode", "Finished essential component initialization before platform");
