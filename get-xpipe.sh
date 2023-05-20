@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 release_url() {
-  echo "https://github.com/xpipe-io/xpipe/releases/latest/download"
+  if [[ $# -eq 0 ]] ; then
+    echo "https://github.com/xpipe-io/xpipe/releases/latest/download"
+  else
+    local version="$1"
+    echo "https://github.com/xpipe-io/xpipe/releases/download/$version"
+  fi
 }
 
 get_file_ending() {
@@ -28,10 +33,17 @@ download_release_from_repo() {
   local tmpdir="$2"
   local ending=$(get_file_ending)
   local arch="$(uname -m)"
+  local release_url
+
+  if [[ $# -eq 3 ]] ; then
+    release_url=$(release_url "$3")
+  else
+    release_url=$(release_url)
+  fi
 
   local filename="xpipe-installer-$os_info-$arch.$ending"
   local download_file="$tmpdir/$filename"
-  local archive_url="$(release_url)/$filename"
+  local archive_url="$release_url/$filename"
 
   info "Downloading file $archive_url"
   curl --progress-bar --show-error --location --fail "$archive_url" --output "$download_file" --write-out "$download_file"
@@ -146,7 +158,11 @@ download_release() {
 
   # store the downloaded archive in a temporary directory
   local download_dir="$(mktemp -d)"
-  download_release_from_repo "$os_info" "$download_dir"
+  if [[ $# -eq 1 ]] ; then
+    download_release_from_repo "$os_info" "$download_dir" "$1"
+  else
+    download_release_from_repo "$os_info" "$download_dir"
+  fi
 }
 
 check_architecture() {
@@ -175,7 +191,11 @@ return 0 2>/dev/null
 check_architecture "$(uname -m)" || exit 1
 
 download_archive="$(
-  download_release
+  if [[ $# -eq 1 ]] ; then
+    download_release "$1"
+  else
+    download_release
+  fi
   exit "$?"
 )"
 exit_status="$?"
