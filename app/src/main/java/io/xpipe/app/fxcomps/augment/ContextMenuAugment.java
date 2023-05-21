@@ -3,22 +3,27 @@ package io.xpipe.app.fxcomps.augment;
 import io.xpipe.app.fxcomps.CompStructure;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S> {
 
-    private final boolean showOnPrimaryButton;
-    private final boolean showOnSecondaryButton;
+    private final Predicate<MouseEvent> show;
     private final Supplier<ContextMenu> contextMenu;
 
-    public ContextMenuAugment(boolean showOnPrimaryButton, boolean showOnSecondaryButton, Supplier<ContextMenu> contextMenu) {
-        this.showOnPrimaryButton = showOnPrimaryButton;
-        this.showOnSecondaryButton = showOnSecondaryButton;
+    private static ContextMenu currentContextMenu;
+
+    public ContextMenuAugment(Predicate<MouseEvent> show, Supplier<ContextMenu> contextMenu) {
+        this.show = show;
         this.contextMenu = contextMenu;
     }
 
-    private static ContextMenu currentContextMenu;
+    public ContextMenuAugment(Supplier<ContextMenu> contextMenu) {
+        this.show = event -> event.getButton() == MouseButton.SECONDARY;
+        this.contextMenu = contextMenu;
+    }
 
     @Override
     public void augment(S struc) {
@@ -29,8 +34,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
                 currentContextMenu = null;
             }
 
-            if ((showOnPrimaryButton && event.getButton() == MouseButton.PRIMARY)
-                    || (showOnSecondaryButton && event.getButton() == MouseButton.SECONDARY)) {
+            if (show.test(event)) {
                 var cm = contextMenu.get();
                 if (cm != null) {
                     cm.setAutoHide(true);

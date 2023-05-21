@@ -49,11 +49,11 @@ public class BrowserFileListCompEntry {
         if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
             var tv = ((TableView<BrowserEntry>) row.getParent().getParent().getParent().getParent());
             var all = tv.getItems();
-            var min = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).min().orElse(1);
-            var max = tv.getSelectionModel().getSelectedItems().stream().mapToInt(entry -> all.indexOf(entry)).max().orElse(all.size() - 1);
-            var end = all.indexOf(item);
+            var min = tv.getSelectionModel().getSelectedIndices().stream().mapToInt(value -> value).min().orElse(1);
+            var max = tv.getSelectionModel().getSelectedIndices().stream().mapToInt(value -> value).max().orElse(all.size() - 1);
+            var end = tv.getSelectionModel().getFocusedIndex();
             var start = end > min ? min : max;
-            model.getSelection().setAll(all.subList(Math.min(start, end), Math.max(start, end) + 1));
+            tv.getSelectionModel().selectRange(Math.min(start, end), Math.max(start, end) + 1);
             t.consume();
             return;
         }

@@ -4,9 +4,12 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
+import lombok.SneakyThrows;
 
+import java.io.FilterInputStream;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -75,11 +78,28 @@ public class FileOpener {
             }
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e)
-                    .description("Unable to open file " + file).handle();
+                    .description("Unable to open file " + file)
+                    .handle();
         }
     }
 
     public static void openString(String keyName, Object key, String input, Consumer<String> output) {
         FileBridge.get().openString(keyName, key, input, output, file -> openInTextEditor(file));
+    }
+
+    public static void openCommandOutput(String keyName, Object key, CommandControl cc) {
+        FileBridge.get()
+                .openIO(
+                        keyName,
+                        key,
+                        () -> new FilterInputStream(cc.getStdout()) {
+                            @Override
+                            @SneakyThrows
+                            public void close() {
+                                cc.close();
+                            }
+                        },
+                        null,
+                        file -> openInTextEditor(file));
     }
 }

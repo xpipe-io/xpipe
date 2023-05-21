@@ -59,7 +59,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var sc = model.getFileSystem().getShell();
-        return sc.isPresent() && !sc.get().getOsType().equals(OsType.WINDOWS);
+        return model.isLocal() && !sc.get().getOsType().equals(OsType.WINDOWS);
     }
 
     @Override

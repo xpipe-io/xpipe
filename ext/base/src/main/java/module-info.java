@@ -43,6 +43,7 @@ open module io.xpipe.ext.base {
             RenameAction,
             DeleteAction,
             UnzipAction,
+            JavapAction,
             JarAction;
     provides ActionProvider with
             DeleteStoreChildrenAction,

@@ -26,6 +26,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -164,7 +165,7 @@ public class StoreEntryComp extends SimpleComp {
             });
         });
 
-        new ContextMenuAugment<>(false, true, () -> StoreEntryComp.this.createContextMenu()).augment(new SimpleCompStructure<>(button));
+        new ContextMenuAugment<>(() -> StoreEntryComp.this.createContextMenu()).augment(new SimpleCompStructure<>(button));
 
         return button;
     }
@@ -213,7 +214,7 @@ public class StoreEntryComp extends SimpleComp {
     private Comp<?> createSettingsButton() {
         var settingsButton = new IconButtonComp("mdomz-settings");
         settingsButton.styleClass("settings");
-        settingsButton.apply(new ContextMenuAugment<>(true, false, () -> StoreEntryComp.this.createContextMenu()));
+        settingsButton.apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(GrowAugment.create(false, true));
         settingsButton.apply(s -> {
             s.get().prefWidthProperty().bind(Bindings.divide(s.get().heightProperty(), 1.35));

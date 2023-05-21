@@ -15,6 +15,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -57,7 +58,7 @@ public class OpenFileSystemComp extends SimpleComp {
         terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(true, false, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(menuButton));
+        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(menuButton));
 
         var filter = new BrowserFilterComp(model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));

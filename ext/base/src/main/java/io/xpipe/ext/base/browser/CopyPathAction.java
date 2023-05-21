@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.impl.FileNames;
 
@@ -36,6 +37,10 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 new LeafAction() {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        if (entries.size() == 1) {
+                            return " " + BrowserActionFormatter.centerEllipsis(entries.get(0).getRawFileEntry().getPath(), 50);
+                        }
+
                         return "Absolute Path";
                     }
 
@@ -52,6 +57,10 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 new LeafAction() {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        if (entries.size() == 1) {
+                            return "\"" + BrowserActionFormatter.centerEllipsis(entries.get(0).getRawFileEntry().getPath(), 50) + "\"";
+                        }
+
                         return "Absolute Path (Quoted)";
                     }
 
@@ -73,6 +82,10 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 new LeafAction() {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        if (entries.size() == 1) {
+                            return " " + BrowserActionFormatter.centerEllipsis(FileNames.getFileName(entries.get(0).getRawFileEntry().getPath()), 50);
+                        }
+
                         return "File Name";
                     }
 
@@ -90,6 +103,10 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 new LeafAction() {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        if (entries.size() == 1) {
+                            return "\"" + BrowserActionFormatter.centerEllipsis(FileNames.getFileName(entries.get(0).getRawFileEntry().getPath()), 50) + "\"";
+                        }
+
                         return "File Name (Quoted)";
                     }
 

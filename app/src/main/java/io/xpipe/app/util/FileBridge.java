@@ -166,10 +166,12 @@ public class FileBridge {
         }
 
         var entry = new Entry(file, key, keyName, in -> {
-            try (var out = output.get()) {
-                in.transferTo(out);
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+            if (output != null) {
+                try (var out = output.get()) {
+                    in.transferTo(out);
+                } catch (Exception ex) {
+                    ErrorEvent.fromThrowable(ex).handle();
+                }
             }
         });
         entry.registerChange();

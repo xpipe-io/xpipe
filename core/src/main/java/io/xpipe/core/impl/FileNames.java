@@ -76,7 +76,7 @@ public class FileNames {
         }
 
         var name = FileNames.getFileName(file);
-        var split = file.lastIndexOf("\\.");
+        var split = file.lastIndexOf(".");
         if (split == -1) {
             return name;
         }

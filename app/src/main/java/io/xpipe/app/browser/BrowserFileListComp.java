@@ -30,6 +30,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -221,7 +222,17 @@ final class BrowserFileListComp extends SimpleComp {
 
         table.setRowFactory(param -> {
             TableRow<BrowserEntry> row = new TableRow<>();
-            new ContextMenuAugment<>(true, true, () -> {
+            new ContextMenuAugment<>(event -> {
+                if (row.getItem() != null && row.getItem().getRawFileEntry().isDirectory())  {
+                    return event.getButton() == MouseButton.SECONDARY;
+                }
+
+                if (row.getItem() != null && !row.getItem().getRawFileEntry().isDirectory())  {
+                    return event.getButton() == MouseButton.SECONDARY || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
+                }
+
+                return false;
+            }, () -> {
                         if (row.getItem() != null && row.getItem().isSynthetic()) {
                             return null;
                         }

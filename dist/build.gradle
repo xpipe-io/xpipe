@@ -41,7 +41,7 @@ if (rootProject.fullVersion) {
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
     apply from: 'jreleaser.gradle'
-    //apply from: 'choco.gradle'
+    apply from: 'choco.gradle'
     //apply from: 'homebrew.gradle'
     //apply from: 'flatpak.gradle'
 

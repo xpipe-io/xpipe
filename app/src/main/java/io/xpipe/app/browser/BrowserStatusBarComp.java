@@ -60,7 +60,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         AppFont.small(bar);
 
         // Use status bar as an extension of file list
-        new ContextMenuAugment<>(false, true, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(bar));
+        new ContextMenuAugment<>(() -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(bar));
 
         return bar;
     }
