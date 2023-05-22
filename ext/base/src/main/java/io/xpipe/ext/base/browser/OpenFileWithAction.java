@@ -56,7 +56,7 @@ public class OpenFileWithAction implements LeafAction {
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var os = model.getFileSystem().getShell();
         return os.isPresent()
-                && !os.get().getOsType().equals(OsType.MACOS)
+                && os.get().getOsType().equals(OsType.WINDOWS)
                 && entries.size() == 1
                 && entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
     }

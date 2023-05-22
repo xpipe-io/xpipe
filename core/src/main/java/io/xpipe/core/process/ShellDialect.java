@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
+    String initFileName(ShellControl sc) throws Exception;
+
     CommandControl directoryExists(ShellControl shellControl,  String directory);
 
     CommandControl normalizeDirectory(ShellControl shellControl,  String directory);

@@ -44,7 +44,7 @@ public class ScriptHelper {
     }
 
     public static String constructInitFile(
-            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName) {
+            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName) throws Exception {
         ShellDialect t = processControl.getShellDialect();
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
@@ -71,7 +71,7 @@ public class ScriptHelper {
             content += t.getExitCommand() + nl;
         }
 
-        var initFile = createExecScript(processControl, content);
+        var initFile = createExecScript(processControl, t.initFileName(processControl), content);
         return initFile;
     }
 
@@ -99,7 +99,7 @@ public class ScriptHelper {
     }
 
     @SneakyThrows
-    private static String createExecScript(ShellControl processControl, String file, String content) {
+    public static String createExecScript(ShellControl processControl, String file, String content) {
         ShellDialect type = processControl.getShellDialect();
         content = type.prepareScriptContent(content);
 
