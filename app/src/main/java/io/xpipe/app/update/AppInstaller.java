@@ -42,7 +42,7 @@ public class AppInstaller {
             targetFile = localFile.toString();
         } else {
             targetFile = FileNames.join(
-                    s.getTemporaryDirectory(), localFile.getFileName().toString());
+                    s.getSubTemporaryDirectory(), localFile.getFileName().toString());
             try (InputStream in = Files.newInputStream(localFile)) {
                 in.transferTo(s.getShellDialect().createStreamFileWriteCommand(s, targetFile).startExternalStdin());
             }

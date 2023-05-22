@@ -61,6 +61,6 @@ public class RunAction extends MultiExecuteAction {
 
     @Override
     protected String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
-        return sc.getShellDialect().runScript(entry.getFileName());
+        return sc.getShellDialect().runScript(sc, entry.getFileName());
     }
 }

@@ -110,7 +110,7 @@ public interface ShellDialect {
 
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file) throws Exception;
 
-    String runScript(String file);
+    String runScript(ShellControl parent, String file);
 
     String sourceScript(String file);
 

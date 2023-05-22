@@ -33,7 +33,9 @@ public interface ShellControl extends ProcessControl {
 
     String prepareIntermediateTerminalOpen(String content, String displayName) throws Exception;
 
-    String getTemporaryDirectory() throws Exception;
+    String getSystemTemporaryDirectory();
+
+    String getSubTemporaryDirectory();
 
     public void checkRunning() throws Exception;
 
