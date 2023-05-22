@@ -239,7 +239,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                 """
                                 if application "iTerm" is running then
                                     tell application "iTerm"
-                                    create window with profile "Default" command "%s"
+                                        set newWindow to (create window with default profile)
+                                        tell current session
+                                           write text "%s"
+                                        end tell
                                     end tell
                                 else
                                     activate application "iTerm"
