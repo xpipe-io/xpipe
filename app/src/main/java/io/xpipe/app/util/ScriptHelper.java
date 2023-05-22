@@ -55,13 +55,13 @@ public class ScriptHelper {
 
         var applyRcCommand = t.applyRcFileCommand();
         if (applyRcCommand != null) {
-            content = content + "\n" + applyRcCommand;
+            content = content + "\n" + applyRcCommand + "\n";
         }
 
         if (login) {
             var applyProfilesCommand = t.applyProfileFilesCommand();
             if (applyProfilesCommand != null) {
-                content = content + "\n" + applyProfilesCommand;
+                content = content + "\n" + applyProfilesCommand + "\n";
             }
         }
 
