@@ -235,28 +235,23 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
+                // TODO: Wait for launch. But how?
                 pc.osascriptCommand(String.format(
                                 """
-                                if application "iTerm" is running then
-                                    tell application "iTerm"
-                                        set newWindow to (create window with default profile)
-                                        tell current session
-                                           write text "%s"
-                                        end tell
-                                    end tell
-                                else
-                                    activate application "iTerm"
+                                if application "iTerm" is not running then
+                                    launch application "iTerm"
                                     delay 1
                                     tell application "iTerm"
-                                        tell current window
-                                            tell current session
-                                               write text "%s"
-                                            end tell
+                                        tell current tab of current window
+                                            close
                                         end tell
                                     end tell
                                 end if
+                                tell application "iTerm"
+                                    create window with default profile command "%s"
+                                end tell
                                 """,
-                                file.replaceAll("\"", "\\\\\""), file.replaceAll("\"", "\\\\\"")))
+                                file.replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }
@@ -283,6 +278,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         tell application "System Events"
                             tell process "Warp"
                                 keystroke "%s"
+                                delay 0.01
                                 key code 36
                             end tell
                         end tell

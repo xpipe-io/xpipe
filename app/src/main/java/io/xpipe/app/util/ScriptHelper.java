@@ -53,15 +53,15 @@ public class ScriptHelper {
             content = t.changeTitleCommand(displayName) + "\n" + content;
         }
 
+        var applyRcCommand = t.applyRcFileCommand();
+        if (applyRcCommand != null) {
+            content = content + "\n" + applyRcCommand;
+        }
+
         if (login) {
             var applyProfilesCommand = t.applyProfileFilesCommand();
             if (applyProfilesCommand != null) {
-                content = applyProfilesCommand + "\n" + content;
-            }
-        } else {
-            var applyRcCommand = t.applyRcFileCommand();
-            if (applyRcCommand != null) {
-                content = applyRcCommand + "\n" + content;
+                content = content + "\n" + applyProfilesCommand;
             }
         }
 
