@@ -3,7 +3,6 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
-import io.xpipe.app.prefs.AppPrefs;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -48,6 +47,6 @@ public class OpenTerminalAction implements LeafAction {
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Open in " + AppPrefs.get().terminalType().getValue().toTranslatedString();
+        return "Open in terminal";
     }
 }
