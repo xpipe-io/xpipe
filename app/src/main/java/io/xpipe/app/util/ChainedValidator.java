@@ -79,13 +79,14 @@ public class ChainedValidator implements Validator {
 
     @Override
     public boolean validate() {
+        var valid = true;
         for (var val : validators) {
             if (!val.validate()) {
-                return false;
+                valid = false;
             }
         }
 
-        return true;
+        return valid;
     }
 
     @Override

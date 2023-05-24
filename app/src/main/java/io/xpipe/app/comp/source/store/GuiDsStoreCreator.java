@@ -63,7 +63,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         this.provider = provider;
         this.input = input;
         this.filter = filter;
-        this.name = new SimpleStringProperty(initialName);
+        this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.input.addListener((c, o, n) -> {
             changedSinceError.setValue(true);
         });
