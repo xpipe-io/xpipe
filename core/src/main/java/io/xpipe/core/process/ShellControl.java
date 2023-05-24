@@ -84,7 +84,7 @@ public interface ShellControl extends ProcessControl {
 
     OsType getOsType();
 
-    ShellControl elevated(FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
+    ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
     ShellControl elevationPassword(SecretValue value);
 

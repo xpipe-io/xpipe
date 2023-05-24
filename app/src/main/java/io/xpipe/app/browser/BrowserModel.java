@@ -97,18 +97,18 @@ public class BrowserModel {
         });
     }
 
-    public void openExistingFileSystemIfPresent(ShellStore store) {
+    public void openExistingFileSystemIfPresent(String name, ShellStore store) {
         var found = openFileSystems.stream()
                 .filter(model -> Objects.equals(model.getStore(), store))
                 .findFirst();
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
-            openFileSystemAsync(store, null);
+            openFileSystemAsync(name, store, null);
         }
     }
 
-    public void openFileSystemAsync(ShellStore store, String path) {
+    public void openFileSystemAsync(String name, ShellStore store, String path) {
         //        // Prevent multiple tabs in non browser modes
         //        if (!mode.equals(Mode.BROWSER)) {
         //            ThreadHelper.runFailableAsync(() -> {
@@ -127,7 +127,7 @@ public class BrowserModel {
         //        }
 
         ThreadHelper.runFailableAsync(() -> {
-            var model = new OpenFileSystemModel(this, store);
+            var model = new OpenFileSystemModel(name, this, store);
             model.initFileSystem();
             openFileSystems.add(model);
             selected.setValue(model);

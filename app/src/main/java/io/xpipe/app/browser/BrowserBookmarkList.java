@@ -4,12 +4,16 @@ import io.xpipe.app.comp.storage.store.StoreEntryTree;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.SetChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
@@ -110,9 +114,26 @@ final class BrowserBookmarkList extends SimpleComp {
                 }
 
                 var fileSystem = ((ShellStore) getItem().getEntry().getStore());
-                model.openFileSystemAsync(fileSystem, null);
+                model.openFileSystemAsync(null, fileSystem, null);
                 event.consume();
             });
+            var icon = new SimpleObjectProperty<String>("mdal-keyboard_arrow_right");
+            getPseudoClassStates().addListener((SetChangeListener<? super PseudoClass>) change -> {
+                if (change.getSet().contains(PseudoClass.getPseudoClass("expanded"))) {
+                    icon.set("mdal-keyboard_arrow_down");
+                } else {
+                    icon.set("mdal-keyboard_arrow_right");
+                }
+            });
+            var button = new IconButtonComp(icon,
+                            () -> {
+                                getTreeItem().setExpanded(!getTreeItem().isExpanded());
+                            })
+                    .apply(struc -> struc.get().setPrefWidth(25))
+                    .grow(false, true)
+                    .styleClass("expand-button");
+
+            setDisclosureNode(button.createRegion());
         }
 
         @Override
@@ -147,7 +168,7 @@ final class BrowserBookmarkList extends SimpleComp {
                     return;
                 }
 
-                Platform.runLater(() -> model.openExistingFileSystemIfPresent(store.asNeeded()));
+                Platform.runLater(() -> model.openExistingFileSystemIfPresent(null, store.asNeeded()));
             }
         };
         DROP_TIMER.schedule(activeTask, 500);

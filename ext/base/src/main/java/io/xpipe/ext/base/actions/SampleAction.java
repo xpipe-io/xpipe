@@ -80,7 +80,7 @@ public class SampleAction implements ActionProvider {
                 // sudo and the optional sudo password automatically provided by XPipe
                 // by using the information from the connection store.
                 // You can also set a custom working directory.
-                try (CommandControl cc = sc.command("kill <pid>").elevated().workingDirectory("/").start()) {
+                try (CommandControl cc = sc.command("kill <pid>").elevated("kill").workingDirectory("/").start()) {
                     // Discard any output but throw an exception with the stderr contents if the exit code is not 0
                     cc.discardOrThrow();
                 }

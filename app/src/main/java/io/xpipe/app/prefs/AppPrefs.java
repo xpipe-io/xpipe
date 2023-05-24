@@ -374,6 +374,11 @@ public class AppPrefs {
         PrefsProvider.getAll().forEach(prov -> prov.init());
     }
 
+    public static void reset() {
+        INSTANCE.save();
+        INSTANCE = null;
+    }
+
     public static AppPrefs get() {
         return INSTANCE;
     }

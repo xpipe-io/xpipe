@@ -38,7 +38,8 @@ public class BrowserNavBar extends SimpleComp {
             pathBar.pseudoClassStateChanged(INVISIBLE, !val);
             if (val) {
                 Platform.runLater(() -> {
-                    pathBar.selectAll();
+                    pathBar.end();
+                    pathBar.selectBackward();
                 });
             }
         });

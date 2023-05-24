@@ -6,12 +6,13 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.icon.DirectoryType;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
@@ -231,14 +232,12 @@ public class BrowserComp extends SimpleComp {
                 .bind(Bindings.createDoubleBinding(
                         () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
 
-        var name = DataStorage.get().getStoreEntry(model.getStore()).getName();
-        var image = DataStorage.get()
-                .getStoreEntry(model.getStore())
-                .getProvider()
+        var image = DataStoreProviders.byStore(model.getStore())
                 .getDisplayIconFileName(model.getStore());
         var logo = new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion();
 
-        var label = new Label(name);
+        var label = new Label(model.getName());
+        label.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
         label.addEventHandler(DragEvent.DRAG_ENTERED, new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent mouseEvent) {
@@ -254,6 +253,7 @@ public class BrowserComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
 
         tab.setGraphic(label);
+        new FancyTooltipAugment<>(new SimpleStringProperty(model.getName())).augment(label);
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
         tab.setContent(new OpenFileSystemComp(model).createSimple());
         return tab;

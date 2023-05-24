@@ -60,11 +60,11 @@ public interface CommandControl extends ProcessControl {
 
     int getExitCode();
 
-    default CommandControl elevated() {
-        return elevated((v) -> true);
+    default CommandControl elevated(String message) {
+        return elevated(message, (v) -> true);
     }
 
-    CommandControl elevated(FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
+    CommandControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
     @Override
     CommandControl start() throws Exception;

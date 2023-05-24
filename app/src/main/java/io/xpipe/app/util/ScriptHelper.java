@@ -57,11 +57,11 @@ public class ScriptHelper {
             content = content + "\n" + applyRcCommand + "\n";
         }
 
-        if (login) {
-            var applyProfilesCommand = t.applyProfileFilesCommand();
-            if (applyProfilesCommand != null) {
-                content = content + "\n" + applyProfilesCommand + "\n";
-            }
+        // We just apply the profile files always, as we can't be sure that they definitely have been applied.
+        // Especially if we launch something that is not the system default shell
+        var applyProfilesCommand = t.applyProfileFilesCommand();
+        if (applyProfilesCommand != null) {
+            content = content + "\n" + applyProfilesCommand + "\n";
         }
 
         if (toExecuteInShell != null) {

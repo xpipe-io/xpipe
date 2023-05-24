@@ -100,6 +100,8 @@ public interface ShellDialect {
 
     String getPrintVariableCommand(String name);
 
+    String getUsernameVariableName();
+
     String getPrintExitCodeCommand(String prefix);
 
     default String getPrintEnvironmentVariableCommand(String name) {

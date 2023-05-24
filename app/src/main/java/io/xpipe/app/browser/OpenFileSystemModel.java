@@ -44,11 +44,13 @@ public final class OpenFileSystemModel {
     private final Property<OpenFileSystemSavedState> savedState = new SimpleObjectProperty<>();
     private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
+    private final String name;
     private boolean local;
 
-    public OpenFileSystemModel(BrowserModel browserModel, FileSystemStore store) {
+    public OpenFileSystemModel(String name, BrowserModel browserModel, FileSystemStore store) {
         this.browserModel = browserModel;
         this.store = store;
+        this.name = name != null ? name : DataStorage.get().getStoreEntry(store).getName();
         fileList = new BrowserFileListModel(this);
         addListeners();
     }
@@ -336,6 +338,7 @@ public final class OpenFileSystemModel {
             fs.open();
             this.fileSystem = fs;
             this.local = fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
+            this.cache.init();
         });
     }
 

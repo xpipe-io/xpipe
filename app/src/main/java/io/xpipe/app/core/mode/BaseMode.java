@@ -54,6 +54,7 @@ public class BaseMode extends OperationMode {
         SourceCollectionViewState.reset();
         StoreViewState.reset();
         DataStorage.reset();
+        AppPrefs.reset();
         AppExtensionManager.reset();
         TrackEvent.info("mode", "Background mode shutdown finished");
     }

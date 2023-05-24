@@ -171,13 +171,13 @@ public class AppInstaller {
             public void installRemote(ShellControl shellControl, String file) throws Exception {
                 try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
                     try (CommandControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get remove -qy xpipe")
-                            .elevated()
+                            .elevated("xpipe")
                             .start()) {
                         c.discardOrThrow();
                     }
                     try (CommandControl c = pc.command(
                                     "DEBIAN_FRONTEND=noninteractive apt-get install -qy \"" + file + "\"")
-                            .elevated()
+                            .elevated("xpipe")
                             .start()) {
                         c.discardOrThrow();
                     }
@@ -219,7 +219,7 @@ public class AppInstaller {
             public void installRemote(ShellControl shellControl, String file) throws Exception {
                 try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
                     try (CommandControl c = pc.command("rpm -U -v --force \"" + file + "\"")
-                            .elevated()
+                            .elevated("xpipe")
                             .start()) {
                         c.discardOrThrow();
                     }
@@ -257,7 +257,7 @@ public class AppInstaller {
                 try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
                     try (CommandControl c = pc.command(
                                     "installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /")
-                            .elevated()
+                            .elevated("xpipe")
                             .start()) {
                         c.discardOrThrow();
                     }
