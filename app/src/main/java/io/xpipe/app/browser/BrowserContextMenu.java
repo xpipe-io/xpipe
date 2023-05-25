@@ -26,11 +26,9 @@ final class BrowserContextMenu extends ContextMenu {
         AppFont.normal(this.getStyleableNode());
 
         var empty = source == null;
-        var selected = new ArrayList<>(empty ? List.of() : model.getFileList().getSelection());
+        var selected = new ArrayList<>(empty ? List.of(new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false)) : model.getFileList().getSelection());
         if (source != null && !selected.contains(source)) {
             selected.add(source);
-        } else if (source == null && model.getFileList().getSelection().isEmpty()) {
-            selected.add(new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false));
         }
 
         for (BrowserAction.Category cat : BrowserAction.Category.values()) {

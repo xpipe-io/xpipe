@@ -1,30 +1,26 @@
 .sidebar-comp {
 -fx-pref-width: 7em;
--fx-background-color: -color-neutral-muted;
- -fx-border-width: 0 0 0 0.05em;
+ -fx-border-width: 0 0 0 1px;
 -fx-border-color: -color-neutral-emphasis;
 -fx-padding: 0;
+    -fx-background-insets: 0;
 }
 
-.sidebar-comp .button:hover {
--fx-background-color: -color-neutral-muted;
-}
-
-.sidebar-comp .big-icon-button-comp {
+.sidebar-comp .big-icon-button-comp, .sidebar-comp .button {
 -fx-background-radius: 0;
+-fx-background-insets: 0;
+}
+
+.sidebar-comp .button:disabled {
+-fx-opacity: 1.0;
 }
 
 .sidebar-comp .big-icon-button-comp:selected {
--fx-background-color: -color-accent-muted;
+-fx-background-color: -color-accent-subtle;
 }
 
 .sidebar-comp .big-icon-button-comp .icon {
 -fx-font-size: 1.5em;
-}
-
-.sidebar-comp .big-icon-button-comp * {
--fx-text-fill: -color-fg-default;
--fx-icon-color: -color-fg-default;
 }
 
 .sidebar-comp .big-icon-button-comp {

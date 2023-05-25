@@ -9,9 +9,7 @@ import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.SetChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
@@ -93,8 +91,10 @@ final class BrowserBookmarkList extends SimpleComp {
 
         private final StringProperty img = new SimpleStringProperty();
         private final Node imageView = new PrettyImageComp(img, 20, 20).createRegion();
+        private final BooleanProperty busy = new SimpleBooleanProperty(false);
 
         private StoreCell() {
+            disableProperty().bind(busy);
             setGraphic(imageView);
             addEventHandler(DragEvent.DRAG_OVER, mouseEvent -> {
                 if (getItem() == null) {
@@ -114,7 +114,7 @@ final class BrowserBookmarkList extends SimpleComp {
                 }
 
                 var fileSystem = ((ShellStore) getItem().getEntry().getStore());
-                model.openFileSystemAsync(null, fileSystem, null);
+                model.openFileSystemAsync(null, fileSystem, null, busy);
                 event.consume();
             });
             var icon = new SimpleObjectProperty<String>("mdal-keyboard_arrow_right");

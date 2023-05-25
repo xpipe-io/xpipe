@@ -2,10 +2,13 @@ package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ModalOverlayComp;
+import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.geometry.Insets;
@@ -21,7 +24,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import static io.xpipe.app.browser.BrowserFileListModel.PREDICATE_NOT_HIDDEN;
+import java.util.List;
+import java.util.Map;
 
 public class OpenFileSystemComp extends SimpleComp {
 
@@ -33,9 +37,7 @@ public class OpenFileSystemComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var alertOverlay = new ModalOverlayComp(
-                Comp.of(() -> createContent()),
-                model.getOverlay());
+        var alertOverlay = new ModalOverlayComp(Comp.of(() -> createContent()), model.getOverlay());
         return alertOverlay.createRegion();
     }
 
@@ -58,22 +60,43 @@ public class OpenFileSystemComp extends SimpleComp {
         terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(menuButton));
+        new ContextMenuAugment<>(
+                        event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
+                .augment(new SimpleCompStructure<>(menuButton));
 
         var filter = new BrowserFilterComp(model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new ToolBar();
         topBar.getItems()
-                .setAll(backBtn, forthBtn, new Spacer(10), new BrowserNavBar(model).createRegion(), filter.get(), refreshBtn, terminalBtn, menuButton);
+                .setAll(
+                        backBtn,
+                        forthBtn,
+                        new Spacer(10),
+                        new BrowserNavBar(model).createRegion(),
+                        filter.get(),
+                        refreshBtn,
+                        terminalBtn,
+                        menuButton);
 
-        var directoryView = new BrowserFileListComp(model.getFileList()).createRegion();
-
-        var root = new VBox(topBar, directoryView);
-        root.getChildren().add(new BrowserStatusBarComp(model).createRegion());
-        VBox.setVgrow(directoryView, Priority.ALWAYS);
+        var content = createFileListContent();
+        var root = new VBox(topBar, content);
+        VBox.setVgrow(content, Priority.ALWAYS);
         root.setPadding(Insets.EMPTY);
-        model.getFileList().predicateProperty().set(PREDICATE_NOT_HIDDEN);
         return root;
+    }
+
+    private Region createFileListContent() {
+        var directoryView = new BrowserFileListComp(model.getFileList()).apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
+        var statusBar = new BrowserStatusBarComp(model);
+        var fileList = new VerticalComp(List.of(directoryView, statusBar));
+
+        var home = new BrowserOverviewComp(model);
+        var stack = new MultiContentComp(Map.of(
+                home,
+                model.getCurrentPath().isNull(),
+                fileList,
+                BindingsHelper.persist(model.getCurrentPath().isNull().not())));
+        return stack.createRegion();
     }
 }

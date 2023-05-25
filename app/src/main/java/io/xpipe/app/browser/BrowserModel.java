@@ -1,10 +1,13 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.ShellStore;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -104,11 +107,11 @@ public class BrowserModel {
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
-            openFileSystemAsync(name, store, null);
+            openFileSystemAsync(name, store, null, null);
         }
     }
 
-    public void openFileSystemAsync(String name, ShellStore store, String path) {
+    public void openFileSystemAsync(String name, ShellStore store, String path, BooleanProperty busy) {
         //        // Prevent multiple tabs in non browser modes
         //        if (!mode.equals(Mode.BROWSER)) {
         //            ThreadHelper.runFailableAsync(() -> {
@@ -127,8 +130,13 @@ public class BrowserModel {
         //        }
 
         ThreadHelper.runFailableAsync(() -> {
-            var model = new OpenFileSystemModel(name, this, store);
-            model.initFileSystem();
+            OpenFileSystemModel model;
+
+            try (var b = new BusyProperty(busy != null ? busy : new SimpleBooleanProperty())) {
+                model = new OpenFileSystemModel(name, this, store);
+                model.initFileSystem();
+            }
+
             openFileSystems.add(model);
             selected.setValue(model);
             if (path != null) {

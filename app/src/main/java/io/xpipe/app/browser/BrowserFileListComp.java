@@ -204,6 +204,12 @@ final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableEntries(TableView<BrowserEntry> table) {
         var emptyEntry = new BrowserFileListCompEntry(table, null, fileList);
+        table.setOnMouseClicked(e -> {
+            emptyEntry.onMouseClick(e);
+        });
+        table.setOnMouseDragEntered(event -> {
+            emptyEntry.onMouseDragEntered(event);
+        });
         table.setOnDragOver(event -> {
             emptyEntry.onDragOver(event);
         });
@@ -223,6 +229,10 @@ final class BrowserFileListComp extends SimpleComp {
         table.setRowFactory(param -> {
             TableRow<BrowserEntry> row = new TableRow<>();
             new ContextMenuAugment<>(event -> {
+                if (row.getItem() == null) {
+                    return event.getButton() == MouseButton.SECONDARY;
+                }
+
                 if (row.getItem() != null && row.getItem().getRawFileEntry().isDirectory())  {
                     return event.getButton() == MouseButton.SECONDARY;
                 }

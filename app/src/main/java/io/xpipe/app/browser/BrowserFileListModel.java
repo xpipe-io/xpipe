@@ -4,7 +4,6 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,8 +32,6 @@ public final class BrowserFileListModel {
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
     private final Property<List<BrowserEntry>> all = new SimpleObjectProperty<>(new ArrayList<>());
     private final Property<List<BrowserEntry>> shown = new SimpleObjectProperty<>(new ArrayList<>());
-    private final ObjectProperty<Predicate<BrowserEntry>> predicateProperty =
-            new SimpleObjectProperty<>(path -> true);
     private final ObservableList<BrowserEntry> previousSelection = FXCollections.observableArrayList();
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
     private final ObservableList<FileSystem.FileEntry> selectedRaw =
@@ -128,9 +125,5 @@ public final class BrowserFileListModel {
         } else {
             // FileOpener.openInTextEditor(entry.getRawFileEntry());
         }
-    }
-
-    public ObjectProperty<Predicate<BrowserEntry>> predicateProperty() {
-        return predicateProperty;
     }
 }

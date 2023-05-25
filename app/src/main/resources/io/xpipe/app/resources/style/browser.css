@@ -4,6 +4,11 @@
 -fx-padding: 1em;
 }
 
+.browser .home {
+    -fx-spacing: 1em;
+    -fx-padding: 1em;
+}
+
 .selected-file-list {
     -fx-spacing: 5px;
     -fx-padding: 8px;
@@ -40,12 +45,8 @@
     -fx-background-color: -color-success-muted;
 }
 
-.bookmark-list .button:disabled {
-    -fx-opacity: 1.0;
-}
-
-.bookmark-list .button:disabled * {
-    -fx-opacity: 0.9;
+.bookmark-list > *:disabled {
+    -fx-opacity: 0.5;
 }
 
 .browser .bookmark-list {
@@ -169,7 +170,7 @@
     -fx-background-color: -color-accent-subtle;
 }
 
-.browser .table-row-cell:selected {
+.browser .table-row-cell:selected, .browser .table-row-cell:hover:selected {
     -fx-background-color: -color-success-subtle;
 }
 

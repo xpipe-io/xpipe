@@ -28,7 +28,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
     @Override
     public void augment(S struc) {
         var r = struc.get();
-        r.setOnMousePressed(event -> {
+        r.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (currentContextMenu != null && currentContextMenu.isShowing()) {
                 currentContextMenu.hide();
                 currentContextMenu = null;

@@ -2,6 +2,7 @@ package io.xpipe.core.process;
 
 import io.xpipe.core.impl.FileNames;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +34,8 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         return FileNames.join(getXPipeHomeDirectory(pc), "system_id");
     }
 
+    List<String> determineInterestingPaths(ShellControl pc) throws Exception;
+
     String getHomeDirectory(ShellControl pc) throws Exception;
 
     String getFileSystemSeparator();
@@ -46,6 +49,12 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
     String determineOperatingSystemName(ShellControl pc) throws Exception;
 
     static final class Windows implements OsType {
+
+        @Override
+        public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
+            var home = getHomeDirectory(pc);
+            return List.of(FileNames.join(home, "Desktop"));
+        }
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
@@ -98,6 +107,12 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
     }
 
     static final class Linux implements OsType {
+
+        @Override
+        public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
+            var home = getHomeDirectory(pc);
+            return List.of(FileNames.join(home, "Desktop"));
+        }
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
@@ -161,6 +176,12 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
     }
 
     static final class MacOs implements OsType {
+
+        @Override
+        public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
+            var home = getHomeDirectory(pc);
+            return List.of(FileNames.join(home, "Desktop"));
+        }
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {

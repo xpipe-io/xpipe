@@ -59,9 +59,36 @@ public class BrowserStatusBarComp extends SimpleComp {
         });
         AppFont.small(bar);
 
-        // Use status bar as an extension of file list
-        new ContextMenuAugment<>(() -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(bar));
+        simulateEmptyCell(bar);
 
         return bar;
+    }
+
+    private void simulateEmptyCell(Region r) {
+        var emptyEntry = new BrowserFileListCompEntry(r, null, model.getFileList());
+        r.setOnMouseClicked(e -> {
+            emptyEntry.onMouseClick(e);
+        });
+        r.setOnMouseDragEntered(event -> {
+            emptyEntry.onMouseDragEntered(event);
+        });
+        r.setOnDragOver(event -> {
+            emptyEntry.onDragOver(event);
+        });
+        r.setOnDragEntered(event -> {
+            emptyEntry.onDragEntered(event);
+        });
+        r.setOnDragDetected(event -> {
+            emptyEntry.startDrag(event);
+        });
+        r.setOnDragExited(event -> {
+            emptyEntry.onDragExited(event);
+        });
+        r.setOnDragDropped(event -> {
+            emptyEntry.onDragDrop(event);
+        });
+
+        // Use status bar as an extension of file list
+        new ContextMenuAugment<>(() -> new BrowserContextMenu(model, null)).augment(new SimpleCompStructure<>(r));
     }
 }

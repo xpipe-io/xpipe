@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import com.jfoenix.controls.JFXButton;
 import io.xpipe.app.fxcomps.CompStructure;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -34,7 +33,7 @@ public class BigIconButton extends ButtonComp {
         label.getStyleClass().add("name");
         vbox.getChildren().add(label);
 
-        var b = new JFXButton(null);
+        var b = new Button(null);
         b.setGraphic(vbox);
         b.setOnAction(e -> getListener().run());
         b.getStyleClass().add("big-icon-button-comp");
@@ -50,14 +49,14 @@ public class BigIconButton extends ButtonComp {
     @Value
     @Builder
     public static class Structure implements CompStructure<Button> {
-        JFXButton button;
+        Button button;
         VBox stack;
         Node graphic;
         StackPane graphicPane;
         Label text;
 
         @Override
-        public JFXButton get() {
+        public Button get() {
             return button;
         }
     }

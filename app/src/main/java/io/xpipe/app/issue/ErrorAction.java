@@ -1,8 +1,30 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.Hyperlinks;
 
 public interface ErrorAction {
+
+    public static ErrorAction reportOnGithub() {
+        return new ErrorAction() {
+            @Override
+            public String getName() {
+                return AppI18n.get("reportOnGithub");
+            }
+
+            @Override
+            public String getDescription() {
+                return AppI18n.get("reportOnGithubDescription");
+            }
+
+            @Override
+            public boolean handle(ErrorEvent event) {
+                var url = "https://github.com/xpipe-io/xpipe/issues/new";
+                Hyperlinks.open(url);
+                return false;
+            }
+        };
+    }
 
     public static ErrorAction sendDiagnostics() {
         return new ErrorAction() {

@@ -31,6 +31,8 @@ public class BrowserFileListCompEntry {
 
     @SuppressWarnings("unchecked")
     public void onMouseClick(MouseEvent t) {
+        t.consume();
+
         if (item == null) {
             model.getSelection().clear();
             return;
@@ -38,7 +40,6 @@ public class BrowserFileListCompEntry {
 
         if (t.getClickCount() == 2 && t.getButton() == MouseButton.PRIMARY) {
             model.onDoubleClick(item);
-            t.consume();
             return;
         }
 
@@ -54,7 +55,6 @@ public class BrowserFileListCompEntry {
             var end = tv.getSelectionModel().getFocusedIndex();
             var start = end > min ? min : max;
             tv.getSelectionModel().selectRange(Math.min(start, end), Math.max(start, end) + 1);
-            t.consume();
             return;
         }
     }

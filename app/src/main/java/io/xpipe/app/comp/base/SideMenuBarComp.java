@@ -12,6 +12,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -56,6 +58,13 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             }, XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
             vbox.getChildren().add(b.createRegion());
         }
+
+        var filler = new Button();
+        filler.setDisable(true);
+        filler.setMaxHeight(3000);
+        vbox.getChildren().add(filler);
+        VBox.setVgrow(filler, Priority.ALWAYS);
+        filler.prefWidthProperty().bind(vbox.widthProperty());
 
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);
