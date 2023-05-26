@@ -89,6 +89,7 @@ public class FileSystemHelper {
     public static FileSystem.FileEntry getLocal(Path file) throws Exception {
         if (localFileSystem == null) {
             localFileSystem = new LocalStore().createFileSystem();
+            localFileSystem.open();
         }
 
         return new FileSystem.FileEntry(

@@ -73,6 +73,8 @@ public class BrowserComp extends SimpleComp {
                         model.getOpenFileSystems(),
                         model.getSelected())))
                 .createRegion();
+        localDownloadStage.setPrefHeight(200);
+        localDownloadStage.setMaxHeight(200);
         var vertical = new VBox(bookmarksList, localDownloadStage);
         vertical.setFillWidth(true);
 

@@ -37,7 +37,7 @@ public interface ShellControl extends ProcessControl {
 
     String getSubTemporaryDirectory();
 
-    public void checkRunning() throws Exception;
+    public void checkRunning();
 
     default CommandControl osascriptCommand(String script) {
         return command(String.format(

@@ -42,6 +42,9 @@ public class OpenFileSystemComp extends SimpleComp {
     }
 
     private Region createContent() {
+        var overview = new Button(null, new FontIcon("mdi2m-monitor"));
+        overview.setOnAction(e -> model.cd(null));
+
         var backBtn = new Button(null, new FontIcon("fth-arrow-left"));
         backBtn.setOnAction(e -> model.back());
         backBtn.disableProperty().bind(model.getHistory().canGoBackProperty().not());
@@ -70,6 +73,7 @@ public class OpenFileSystemComp extends SimpleComp {
         var topBar = new ToolBar();
         topBar.getItems()
                 .setAll(
+                        overview,
                         backBtn,
                         forthBtn,
                         new Spacer(10),
