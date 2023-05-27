@@ -2,6 +2,7 @@ package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
+import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.SecretValue;
 
@@ -124,6 +125,8 @@ public interface ShellDialect {
 
     String getPrintWorkingDirectoryCommand();
 
+    StreamCharset getScriptCharset();
+
     String getFileCopyCommand(String oldFile, String newFile);
 
     String getFileMoveCommand(String oldFile, String newFile);
@@ -132,7 +135,7 @@ public interface ShellDialect {
         return content.contains("\n");
     }
 
-    CommandControl createTextFileWriteCommand(ShellControl parent, String content, String file);
+    CommandControl createScriptTextFileWriteCommand(ShellControl parent, String content, String file);
 
     String getFileDeleteCommand(String file);
 

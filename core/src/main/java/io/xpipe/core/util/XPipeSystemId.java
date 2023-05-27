@@ -35,7 +35,7 @@ public class XPipeSystemId {
                     proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)),
                     "Unable to access or create directory " + file);
             var id = UUID.randomUUID();
-            proc.getShellDialect().createTextFileWriteCommand(proc, id.toString(), file).execute();
+            proc.getShellDialect().createScriptTextFileWriteCommand(proc, id.toString(), file).execute();
             return id;
         }
 

@@ -156,11 +156,10 @@ public class ErrorHandlerComp extends SimpleComp {
         if (desc == null) {
             desc = AppI18n.get("errorNoDetail");
         }
-        var limitedDescription = desc.substring(0, Math.min(1000, desc.length()));
 
         var header = new Label(AppI18n.get(headerId));
         AppFont.header(header);
-        var descriptionField = new TextArea(limitedDescription);
+        var descriptionField = new TextArea(desc);
         descriptionField.setPrefRowCount(4);
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
