@@ -35,10 +35,7 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
 
     @Override
     public void augment(S struc) {
-        augment(struc.get());
-    }
-
-    public void augment(Node region) {
+        var region = struc.get();
         var tt = new JFXTooltip();
         var toDisplay = text.getValue();
         if (Shortcuts.getShortcut((Region) region) != null) {

@@ -1,16 +1,27 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.browser.icon.FileIconManager;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
+
+import java.util.List;
 
 public class BrowserNavBar extends SimpleComp {
 
@@ -25,34 +36,73 @@ public class BrowserNavBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         var path = new SimpleStringProperty(model.getCurrentPath().get());
+        model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
+            path.set(newValue);
+        });
         path.addListener((observable, oldValue, newValue) -> {
             var changed = model.cd(newValue);
             changed.ifPresent(path::set);
         });
-        var pathBar = new TextFieldComp(path, true).createStructure().get();
-        pathBar.getStyleClass().add("path-text");
-        model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
-            path.set(newValue);
-        });
-        SimpleChangeListener.apply(pathBar.focusedProperty(), val -> {
-            pathBar.pseudoClassStateChanged(INVISIBLE, !val);
-            if (val) {
-                Platform.runLater(() -> {
-                    pathBar.end();
-                    pathBar.selectBackward();
-                });
-            }
-        });
 
-        var breadcrumbs = new BrowserBreadcrumbBar(model)
-                .hide(pathBar.focusedProperty())
+        var pathBar = new TextFieldComp(path, true)
+                .styleClass(Styles.RIGHT_PILL)
+                .styleClass("path-text")
+                .apply(struc -> {
+                    SimpleChangeListener.apply(struc.get().focusedProperty(), val -> {
+                        struc.get().pseudoClassStateChanged(INVISIBLE, !val);
+                    });
+
+                    struc.get().setOnMouseClicked(event -> {
+                        if (struc.get().isFocused()) {
+                            return;
+                        }
+
+                        struc.get().end();
+                        struc.get().selectAll();
+                        struc.get().requestFocus();
+                    });
+                });
+
+        var graphic = Bindings.createStringBinding(
+                () -> {
+                    var icon = model.getCurrentDirectory() != null
+                            ? FileIconManager.getFileIcon(model.getCurrentDirectory(), false)
+                            : null;
+                    return icon;
+                },
+                model.getCurrentPath());
+        var breadcrumbsGraphic = new PrettyImageComp(graphic, 22, 22)
+                .padding(new Insets(0, 0, 1, 0))
+                .styleClass("path-graphic")
                 .createRegion();
 
-        var stack = new StackPane(pathBar, breadcrumbs);
-        breadcrumbs.prefHeightProperty().bind(pathBar.heightProperty());
-        HBox.setHgrow(stack, Priority.ALWAYS);
-        stack.setAlignment(Pos.CENTER_LEFT);
+        var graphicButton = new Button(null, breadcrumbsGraphic);
+        graphicButton.getStyleClass().add(Styles.LEFT_PILL);
+        graphicButton.getStyleClass().add("path-graphic-button");
+        new ContextMenuAugment<>(
+                        event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
+                .augment(new SimpleCompStructure<>(graphicButton));
+        GrowAugment.create(false, true).augment(graphicButton);
 
-        return stack;
+        var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
+
+        var stack = new StackComp(List.of(pathBar, breadcrumbs))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .hgrow()
+                .apply(struc -> {
+                    var t = struc.get().getChildren().get(0);
+                    var b = struc.get().getChildren().get(1);
+                    b.visibleProperty().bind(t.focusedProperty().not());
+                })
+                .grow(false, true);
+
+        var topBox = new HorizontalComp(List.of(Comp.of(() -> graphicButton), stack))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> {
+                    struc.get().setPickOnBounds(false);
+                })
+                .hgrow();
+
+        return topBox.createRegion();
     }
 }

@@ -94,6 +94,7 @@ public class SvgView {
         var wv = new WebView();
         wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine().setJavaScriptEnabled(false);
+        wv.setContextMenuEnabled(false);
 
         wv.getEngine().loadContent(getHtml(svgContent.getValue()));
         svgContent.addListener((c, o, n) -> {

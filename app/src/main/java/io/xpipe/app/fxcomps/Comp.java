@@ -6,9 +6,12 @@ import io.xpipe.app.fxcomps.impl.WrapperComp;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
@@ -47,12 +50,20 @@ public abstract class Comp<S extends CompStructure<?>> {
         return (T) this;
     }
 
+    public Comp<S> hgrow() {
+        return apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+    }
+
     public Comp<S> visible(ObservableValue<Boolean> o) {
         return apply(struc -> struc.get().visibleProperty().bind(o));
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {
         return apply(struc -> struc.get().disableProperty().bind(o));
+    }
+
+    public Comp<S> padding(Insets insets) {
+        return apply(struc -> struc.get().setPadding(insets));
     }
 
     public Comp<S> hide(ObservableValue<Boolean> o) {

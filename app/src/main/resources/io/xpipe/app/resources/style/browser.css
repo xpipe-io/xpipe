@@ -105,6 +105,10 @@
 .browser .path-text:invisible {
 -fx-text-fill: transparent;
 }
+.browser .path-graphic-button {
+-fx-padding: 0 2px 0 7px;
+}
+
 
 .browser .context-menu .accelerator-text {
 -fx-padding: 3px 0px 3px 50px;
