@@ -80,6 +80,8 @@ public interface CommandControl extends ProcessControl {
 
     void accumulateStderr(Consumer<String> con);
 
+    public byte[] readRawBytesOrThrow() throws Exception;
+
     public String readOrThrow() throws Exception;
 
     public default boolean discardAndCheckExit() throws ProcessOutputException {

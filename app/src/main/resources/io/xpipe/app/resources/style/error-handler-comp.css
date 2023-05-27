@@ -3,7 +3,11 @@
 -fx-spacing: 1em;
 }
 
-.error-handler-comp .text-field {
+.error-handler-comp .text-area * {
+-fx-padding: 0;
+}
+
+.error-handler-comp .text-area {
 -fx-padding: 0;
 -fx-border-width: 0;
 -fx-border-radius: 0;

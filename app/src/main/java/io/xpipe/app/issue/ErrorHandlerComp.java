@@ -18,7 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -160,24 +160,28 @@ public class ErrorHandlerComp extends SimpleComp {
 
         var header = new Label(AppI18n.get(headerId));
         AppFont.header(header);
-        var descriptionField = new TextField(limitedDescription);
+        var descriptionField = new TextArea(limitedDescription);
+        descriptionField.setPrefRowCount(4);
+        descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
         AppFont.small(descriptionField);
         var text = new VBox(header, descriptionField);
+        text.setFillWidth(true);
         text.setSpacing(2);
 
         var graphic = new FontIcon("mdomz-warning");
         graphic.setIconColor(Color.RED);
-        var pane = new StackPane(graphic);
-        var hbox = new HBox(pane, text);
+        var graphicPane = new StackPane(graphic);
+        var hbox = new HBox(graphicPane, text);
+        HBox.setHgrow(text, Priority.ALWAYS);
         hbox.setSpacing(8);
-        pane.prefHeightProperty()
+        graphicPane.prefHeightProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> header.getHeight() + descriptionField.getHeight() + 2,
                         header.heightProperty(),
                         descriptionField.heightProperty()));
-        pane.prefHeightProperty().addListener((c, o, n) -> {
+        graphicPane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
             graphic.setIconSize(size);
         });

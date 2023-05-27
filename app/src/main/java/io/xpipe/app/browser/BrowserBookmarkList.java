@@ -109,11 +109,11 @@ final class BrowserBookmarkList extends SimpleComp {
                 mouseEvent.consume();
             });
             addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                if (getItem() == null || event.getButton() != MouseButton.PRIMARY) {
+                if (getItem() == null || event.getButton() != MouseButton.PRIMARY || (!getItem().getState().getValue().isUsable()) || !(getItem().getEntry()
+                        .getStore() instanceof ShellStore fileSystem)) {
                     return;
                 }
 
-                var fileSystem = ((ShellStore) getItem().getEntry().getStore());
                 model.openFileSystemAsync(null, fileSystem, null, busy);
                 event.consume();
             });

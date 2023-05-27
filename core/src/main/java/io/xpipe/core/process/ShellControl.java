@@ -48,6 +48,12 @@ public interface ShellControl extends ProcessControl {
                 """, script));
     }
 
+    default byte[] executeSimpleRawBytesCommand(String command) throws Exception {
+        try (CommandControl c = command(command).start()) {
+            return c.readRawBytesOrThrow();
+        }
+    }
+
     default String executeSimpleStringCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.readOrThrow();

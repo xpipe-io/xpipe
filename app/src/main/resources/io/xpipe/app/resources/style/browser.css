@@ -26,14 +26,7 @@
 -fx-border-radius: 1px;
 }
 
-.bookmark-list .button {
--fx-border-width: 0;
--fx-border-radius: 0;
--fx-background-radius: 0;
--fx-background-insets: 0;
-}
-
-.bookmark-list .button:hover {
+.bookmark-list .tree-cell:hover {
     -fx-background-color: -color-accent-muted;
 }
 
@@ -41,11 +34,11 @@
     -fx-background-color: -color-success-muted;
 }
 
-.bookmark-list .button:drag-over {
+.bookmark-list .tree-cell:drag-over {
     -fx-background-color: -color-success-muted;
 }
 
-.bookmark-list > *:disabled {
+.bookmark-list .tree-cell:disabled {
     -fx-opacity: 0.5;
 }
 
