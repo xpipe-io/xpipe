@@ -13,6 +13,10 @@ import java.util.List;
 
 public class OpenTerminalAction implements LeafAction {
 
+    public String getId() {
+        return "openTerminal";
+    }
+
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         if (entries.size() == 0) {

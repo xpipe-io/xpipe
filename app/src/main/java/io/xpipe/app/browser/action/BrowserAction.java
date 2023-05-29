@@ -32,6 +32,10 @@ public interface BrowserAction {
                 .toList();
     }
 
+    static LeafAction byId(String id) {
+        return getFlattened().stream().filter(browserAction -> id.equals(browserAction.getId())).findAny().orElseThrow();
+    }
+
     default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return null;
     }

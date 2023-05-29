@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,10 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     public Comp<S> hgrow() {
         return apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+    }
+
+    public Comp<S> vgrow() {
+        return apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
     }
 
     public Comp<S> visible(ObservableValue<Boolean> o) {

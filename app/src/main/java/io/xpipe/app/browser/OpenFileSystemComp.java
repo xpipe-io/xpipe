@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.fxcomps.Comp;
@@ -9,7 +10,6 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -44,6 +44,7 @@ public class OpenFileSystemComp extends SimpleComp {
     private Region createContent() {
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cd(null));
+        overview.disableProperty().bind(model.getInOverview());
 
         var backBtn = new Button(null, new FontIcon("fth-arrow-left"));
         backBtn.setOnAction(e -> model.back());
@@ -56,18 +57,20 @@ public class OpenFileSystemComp extends SimpleComp {
         var refreshBtn = new Button(null, new FontIcon("mdmz-refresh"));
         refreshBtn.setOnAction(e -> model.refresh());
         Shortcuts.addShortcut(refreshBtn, new KeyCodeCombination(KeyCode.F5));
+        refreshBtn.disableProperty().bind(model.getInOverview());
 
-        var terminalBtn = new Button(null, new FontIcon("mdi2c-code-greater-than"));
+        var terminalBtn = BrowserAction.byId("openTerminal").toButton(model, List.of());
         terminalBtn.setOnAction(
                 e -> model.openTerminalAsync(model.getCurrentPath().get()));
-        terminalBtn.disableProperty().bind(PlatformThread.sync(model.getNoDirectory()));
+        terminalBtn.disableProperty().bind(model.getInOverview());
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(
                         event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
                 .augment(new SimpleCompStructure<>(menuButton));
+        menuButton.disableProperty().bind(model.getInOverview());
 
-        var filter = new BrowserFilterComp(model.getFilter()).createStructure();
+        var filter = new BrowserFilterComp(model, model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new ToolBar();

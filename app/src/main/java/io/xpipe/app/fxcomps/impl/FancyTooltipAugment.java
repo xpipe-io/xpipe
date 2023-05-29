@@ -39,8 +39,7 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
         var tt = new JFXTooltip();
         var toDisplay = text.getValue();
         if (Shortcuts.getShortcut((Region) region) != null) {
-            toDisplay =
-                    toDisplay + " (" + Shortcuts.getShortcut((Region) region).getDisplayText() + ")";
+            toDisplay = toDisplay + " (" + Shortcuts.getShortcut((Region) region).getDisplayText() + ")";
         }
         tt.textProperty().setValue(toDisplay);
         tt.setStyle("-fx-font-size: 11pt;");

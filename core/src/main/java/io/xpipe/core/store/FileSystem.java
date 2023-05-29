@@ -42,6 +42,11 @@ public interface FileSystem extends Closeable, AutoCloseable {
             this.executable = executable;
             this.size = size;
         }
+
+        public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
+            return new FileEntry(fileSystem, path, Instant.now(), true, false, false, 0, null);
+        }
+
     }
 
     FileSystemStore getStore();

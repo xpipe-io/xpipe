@@ -7,6 +7,9 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.impl.FileNames;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -42,6 +45,11 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         }
 
                         return "Absolute Path";
+                    }
+
+                    @Override
+                    public KeyCombination getShortcut() {
+                        return new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN, KeyCombination.SHORTCUT_DOWN);
                     }
 
                     @Override
@@ -87,6 +95,11 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         }
 
                         return "File Name";
+                    }
+
+                    @Override
+                    public KeyCombination getShortcut() {
+                        return new KeyCodeCombination(KeyCode.C, KeyCombination.SHIFT_DOWN, KeyCombination.SHORTCUT_DOWN);
                     }
 
                     @Override

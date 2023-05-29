@@ -32,6 +32,7 @@ public class Shortcuts {
         };
 
         AtomicReference<Scene> scene = new AtomicReference<>();
+        SHORTCUTS.put(region, comb);
         SimpleChangeListener.apply(region.sceneProperty(), s -> {
             if (Objects.equals(s, scene.get())) {
                 return;
@@ -45,7 +46,6 @@ public class Shortcuts {
 
             if (s != null) {
                 scene.set(s);
-                s.addEventHandler(KeyEvent.KEY_PRESSED, filter);
                 SHORTCUTS.put(region, comb);
             }
         });

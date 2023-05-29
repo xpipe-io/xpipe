@@ -1,7 +1,6 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.base.ModalOverlayComp;
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
@@ -15,6 +14,7 @@ import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.store.ShellStore;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 @Getter
@@ -37,13 +36,13 @@ public final class OpenFileSystemModel {
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
-    private final BrowserHistory history = new BrowserHistory();
+    private final OpenFileSystemHistory history = new OpenFileSystemHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final BrowserModel browserModel;
-    private final BooleanProperty noDirectory = new SimpleBooleanProperty();
-    private final Property<OpenFileSystemSavedState> savedState = new SimpleObjectProperty<>();
+    private OpenFileSystemSavedState savedState;
     private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
+    private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final String name;
     private boolean local;
 
@@ -51,6 +50,9 @@ public final class OpenFileSystemModel {
         this.browserModel = browserModel;
         this.store = store;
         this.name = name != null ? name : DataStorage.get().getStoreEntry(store).getName();
+        this.inOverview.bind(Bindings.createBooleanBinding(() -> {
+            return currentPath.get() == null;
+        }, currentPath));
         fileList = new BrowserFileListModel(this);
         addListeners();
     }
@@ -73,18 +75,14 @@ public final class OpenFileSystemModel {
     }
 
     private void addListeners() {
-        savedState.addListener((observable, oldValue, newValue) -> {
-            if (store == null) {
-                return;
-            }
-
-            var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
-            storageEntry.ifPresent(entry -> AppCache.update("browser-state-" + entry.getUuid(), newValue));
-        });
-
-        currentPath.addListener((observable, oldValue, newValue) -> {
-            savedState.setValue(savedState.getValue().withLastDirectory(newValue));
-        });
+        //        savedState.addListener((observable, oldValue, newValue) -> {
+        //            if (store == null) {
+        //                return;
+        //            }
+        //
+        //            var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
+        //            storageEntry.ifPresent(entry -> AppCache.update("browser-state-" + entry.getUuid(), newValue));
+        //        });
     }
 
     @SneakyThrows
@@ -132,12 +130,15 @@ public final class OpenFileSystemModel {
         }
 
         // Handle commands typed into navigation bar
-        if (normalizedPath != null && !FileNames.isAbsolute(normalizedPath) && fileSystem.getShell().isPresent()) {
+        if (normalizedPath != null
+                && !FileNames.isAbsolute(normalizedPath)
+                && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = normalizedPath + " - "
                     + XPipeDaemon.getInstance().getStoreName(store).orElse("?");
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.ALL.stream().anyMatch(dialect -> normalizedPath.startsWith(dialect.getOpenCommand()))) {
+                if (ShellDialects.ALL.stream()
+                        .anyMatch(dialect -> normalizedPath.startsWith(dialect.getOpenCommand()))) {
                     var cmd = fileSystem
                             .getShell()
                             .get()
@@ -167,7 +168,7 @@ public final class OpenFileSystemModel {
             dirPath = FileSystemHelper.validateDirectoryPath(this, normalizedPath);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
-            return Optional.of(currentPath.get());
+            return Optional.ofNullable(currentPath.get());
         }
 
         if (!Objects.equals(path, dirPath)) {
@@ -194,7 +195,7 @@ public final class OpenFileSystemModel {
 
         filter.setValue(null);
         currentPath.set(path);
-        savedState.setValue(savedState.getValue().withLastDirectory(path));
+        savedState.cd(path);
         history.updateCurrent(path);
         loadFilesSync(path);
     }
@@ -203,13 +204,11 @@ public final class OpenFileSystemModel {
         try {
             if (dir != null) {
                 var stream = getFileSystem().listFiles(dir);
-                noDirectory.set(false);
                 fileList.setAll(stream);
             } else {
                 var stream = getFileSystem().listRoots().stream()
                         .map(s -> new FileSystem.FileEntry(
                                 getFileSystem(), s, Instant.now(), true, false, false, 0, null));
-                noDirectory.set(true);
                 fileList.setAll(stream);
             }
             return true;
@@ -302,23 +301,6 @@ public final class OpenFileSystemModel {
         });
     }
 
-    public void deleteSelectionAsync() {
-        ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
-
-                if (!BrowserAlerts.showDeleteAlert(fileList.getSelectedRaw())) {
-                    return;
-                }
-
-                FileSystemHelper.delete(fileList.getSelectedRaw());
-                refreshSync();
-            });
-        });
-    }
-
     void closeSync() {
         if (fileSystem == null) {
             return;
@@ -337,38 +319,25 @@ public final class OpenFileSystemModel {
             var fs = store.createFileSystem();
             fs.open();
             this.fileSystem = fs;
-            this.local = fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
+            this.local =
+                    fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
             this.cache.init();
         });
     }
 
     public void initWithGivenDirectory(String dir) throws Exception {
-        initSavedState(dir);
+        initState();
         cdSyncWithoutCheck(dir);
     }
 
     public void initWithDefaultDirectory() throws Exception {
-        var dir = FileSystemHelper.getStartDirectory(this);
-        initSavedState(dir);
-        cdSyncWithoutCheck(dir);
+        initState();
+        savedState.cd(null);
+        history.updateCurrent(null);
     }
 
-    private void initSavedState(String path) {
-        var storageEntry = DataStorage.get()
-                .getStoreEntryIfPresent(store)
-                .map(entry -> entry.getUuid())
-                .orElse(UUID.randomUUID());
-        this.savedState.setValue(
-                AppCache.get("browser-state-" + storageEntry, OpenFileSystemSavedState.class, () -> {
-                    try {
-                        return OpenFileSystemSavedState.builder()
-                                .lastDirectory(path)
-                                .build();
-                    } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
-                        return null;
-                    }
-                }));
+    private void initState() {
+        this.savedState = OpenFileSystemSavedState.loadForStore(store);
     }
 
     public void openTerminalAsync(String directory) {
@@ -392,19 +361,19 @@ public final class OpenFileSystemModel {
         });
     }
 
-    public BrowserHistory getHistory() {
+    public OpenFileSystemHistory getHistory() {
         return history;
     }
 
     public void back() {
         try (var ignored = new BusyProperty(busy)) {
-            history.back().ifPresent(s -> cd(s));
+            cd(history.back());
         }
     }
 
     public void forth() {
         try (var ignored = new BusyProperty(busy)) {
-            history.forth().ifPresent(s -> cd(s));
+            cd(history.forth());
         }
     }
 }

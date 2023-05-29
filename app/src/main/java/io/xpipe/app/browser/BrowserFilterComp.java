@@ -48,6 +48,10 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         var fi = new FontIcon("mdi2m-magnify");
         button.setGraphic(fi);
         button.setOnAction(event -> {
+            if (model.getCurrentDirectory() == null) {
+                return;
+            }
+
             if (expanded.get()) {
                 if (filterString.getValue() == null) {
                     expanded.set(false);
@@ -62,6 +66,7 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
 
         text.setPrefWidth(0);
         button.getStyleClass().add(Styles.FLAT);
+        button.disableProperty().bind(model.getInOverview());
         expanded.addListener((observable, oldValue, val) -> {
             if (val) {
                 text.setPrefWidth(250);
@@ -88,9 +93,11 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         }
     }
 
+    private final OpenFileSystemModel model;
     private final Property<String> filterString;
 
-    public BrowserFilterComp(Property<String> filterString) {
+    public BrowserFilterComp(OpenFileSystemModel model, Property<String> filterString) {
+        this.model = model;
         this.filterString = filterString;
     }
 }

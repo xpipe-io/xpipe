@@ -36,7 +36,7 @@ public class BrowserNavBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         var path = new SimpleStringProperty(model.getCurrentPath().get());
-        model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
+        SimpleChangeListener.apply(model.getCurrentPath(), (newValue) -> {
             path.set(newValue);
         });
         path.addListener((observable, oldValue, newValue) -> {
@@ -49,7 +49,11 @@ public class BrowserNavBar extends SimpleComp {
                 .styleClass("path-text")
                 .apply(struc -> {
                     SimpleChangeListener.apply(struc.get().focusedProperty(), val -> {
-                        struc.get().pseudoClassStateChanged(INVISIBLE, !val);
+                        struc.get().pseudoClassStateChanged(INVISIBLE, !val && !model.getInOverview().get());
+                    });
+
+                    SimpleChangeListener.apply(model.getInOverview(), val -> {
+                        struc.get().pseudoClassStateChanged(INVISIBLE, !val && !struc.get().isFocused());
                     });
 
                     struc.get().setOnMouseClicked(event -> {
@@ -61,13 +65,15 @@ public class BrowserNavBar extends SimpleComp {
                         struc.get().selectAll();
                         struc.get().requestFocus();
                     });
+
+                    struc.get().setPromptText("Overview of " + model.getName());
                 });
 
         var graphic = Bindings.createStringBinding(
                 () -> {
                     var icon = model.getCurrentDirectory() != null
                             ? FileIconManager.getFileIcon(model.getCurrentDirectory(), false)
-                            : null;
+                            : "home_icon.png";
                     return icon;
                 },
                 model.getCurrentPath());
@@ -80,7 +86,9 @@ public class BrowserNavBar extends SimpleComp {
         graphicButton.getStyleClass().add(Styles.LEFT_PILL);
         graphicButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(
-                        event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
+                        event -> event.getButton() == MouseButton.PRIMARY, () -> {
+                            return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
+        })
                 .augment(new SimpleCompStructure<>(graphicButton));
         GrowAugment.create(false, true).augment(graphicButton);
 
@@ -92,7 +100,9 @@ public class BrowserNavBar extends SimpleComp {
                 .apply(struc -> {
                     var t = struc.get().getChildren().get(0);
                     var b = struc.get().getChildren().get(1);
-                    b.visibleProperty().bind(t.focusedProperty().not());
+                    b.visibleProperty().bind(Bindings.createBooleanBinding(() -> {
+                        return !t.isFocused() && !model.getInOverview().get();
+                    }, t.focusedProperty(), model.getInOverview()));
                 })
                 .grow(false, true);
 

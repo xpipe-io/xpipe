@@ -22,8 +22,23 @@ public interface DirectoryType {
     }
 
     public static void loadDefinitions() {
-        ALL.add(new Simple(
-                "default", new IconVariant("default_root_folder.svg"), new IconVariant("default_root_folder_opened.svg"), ""));
+        ALL.add(new DirectoryType() {
+
+            @Override
+            public String getId() {
+                return "root";
+            }
+
+            @Override
+            public boolean matches(FileSystem.FileEntry entry) {
+                return entry.getPath().equals("/") || entry.getPath().matches("\\w:\\\\");
+            }
+
+            @Override
+            public String getIcon(FileSystem.FileEntry entry, boolean open) {
+                return open ? "default_root_folder_opened.svg" : "default_root_folder.svg";
+            }
+        });
 
         AppResources.with(AppResources.XPIPE_MODULE, "folder_list.txt", path -> {
             try (var reader =

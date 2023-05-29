@@ -53,7 +53,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getHomeDirectory(pc);
-            return List.of(FileNames.join(home, "Desktop"));
+            return List.of(home, FileNames.join(home, "Documents"), FileNames.join(home, "Downloads"), FileNames.join(home, "Desktop"));
         }
 
         @Override

@@ -4,11 +4,13 @@ import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileSystem;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Region;
+import lombok.SneakyThrows;
 
-import java.time.Instant;
 import java.util.List;
 
 public class BrowserOverviewComp extends SimpleComp {
@@ -20,16 +22,23 @@ public class BrowserOverviewComp extends SimpleComp {
     }
 
     @Override
+    @SneakyThrows
     protected Region createSimple() {
-        var commonList = new BrowserSelectionListComp(FXCollections.observableArrayList(
-                new FileSystem.FileEntry(model.getFileSystem(), "C:\\", Instant.now(), true, false, false, 0, null)));
-        var common = new SimpleTitledPaneComp(AppI18n.observable("a"), commonList);
+        ShellControl sc = model.getFileSystem().getShell().orElseThrow();
+        var common = sc.getOsType().determineInterestingPaths(sc).stream().map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s)).toList();
+        var commonOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(common));
+        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview);
 
-        var recentList = new BrowserSelectionListComp(FXCollections.observableArrayList(
-                new FileSystem.FileEntry(model.getFileSystem(), "C:\\", Instant.now(), true, false, false, 0, null)));
-        var recent = new SimpleTitledPaneComp(AppI18n.observable("Recent"), recentList);
+        var roots = sc.getShellDialect().listRoots(sc).map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s)).toList();
+        var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots));
+        var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview);
 
-        var vbox = new VerticalComp(List.of(common, recent)).styleClass("home");
+
+        var recent = BindingsHelper.mappedContentBinding(model.getSavedState().getRecentDirectories(), s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()));
+        var recentOverview = new BrowserFileOverviewComp(model, recent);
+        var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview).vgrow();
+
+        var vbox = new VerticalComp(List.of(commonPane, rootsPane, recentPane)).styleClass("overview");
         return vbox.createRegion();
     }
 }

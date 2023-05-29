@@ -4,9 +4,9 @@
 -fx-padding: 1em;
 }
 
-.browser .home {
-    -fx-spacing: 1em;
-    -fx-padding: 1em;
+.browser .overview {
+    -fx-spacing: 1.5em;
+    -fx-padding: 1.5em;
 }
 
 .selected-file-list {
@@ -106,9 +106,18 @@
 -fx-text-fill: transparent;
 }
 .browser .path-graphic-button {
--fx-padding: 0 2px 0 7px;
+-fx-padding: 0 5px 0 5px;
 }
 
+.browser .overview-file-list {
+    -fx-border-width: 1px;
+}
+
+.browser .overview-file-list .button {
+    -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
 
 .browser .context-menu .accelerator-text {
 -fx-padding: 3px 0px 3px 50px;

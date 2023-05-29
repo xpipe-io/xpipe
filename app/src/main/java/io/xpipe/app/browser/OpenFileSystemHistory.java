@@ -8,11 +8,10 @@ import javafx.beans.property.SimpleIntegerProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-final class BrowserHistory {
+final class OpenFileSystemHistory {
 
-    private final IntegerProperty cursor = new SimpleIntegerProperty(0);
+    private final IntegerProperty cursor = new SimpleIntegerProperty(-1);
     private final List<String> history = new ArrayList<>();
     private final BooleanBinding canGoBack = Bindings.createBooleanBinding(
         () -> cursor.get() > 0 && history.size() > 1, cursor);
@@ -24,35 +23,33 @@ final class BrowserHistory {
     }
 
     public void updateCurrent(String s) {
-        if (s == null) {
-            return;
-        }
         var lastString = getCurrent();
-        if (Objects.equals(lastString, s)) {
+        if (cursor.get() != -1 && Objects.equals(lastString, s)) {
             return;
         }
 
         if (canGoForth.get()) {
             history.subList(cursor.get() + 1, history.size()).clear();
         }
+
         history.add(s);
         cursor.set(history.size() - 1);
     }
 
-    public Optional<String> back() {
+    public String back() {
         if (!canGoBack.get()) {
-            return Optional.empty();
+            return null;
         }
         cursor.set(cursor.get() - 1);
-        return Optional.of(history.get(cursor.get()));
+        return history.get(cursor.get());
     }
 
-    public Optional<String> forth() {
+    public String forth() {
         if (!canGoForth.get()) {
-            return Optional.empty();
+            return null;
         }
         cursor.set(cursor.get() + 1);
-        return Optional.of(history.get(cursor.get()));
+        return history.get(cursor.get());
     }
 
     public BooleanBinding canGoBackProperty() {
