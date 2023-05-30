@@ -46,23 +46,10 @@ public class OpenFileSystemComp extends SimpleComp {
         overview.setOnAction(e -> model.cd(null));
         overview.disableProperty().bind(model.getInOverview());
 
-        var backBtn = new Button(null, new FontIcon("fth-arrow-left"));
-        backBtn.setOnAction(e -> model.back());
-        backBtn.disableProperty().bind(model.getHistory().canGoBackProperty().not());
-
-        var forthBtn = new Button(null, new FontIcon("fth-arrow-right"));
-        forthBtn.setOnAction(e -> model.forth());
-        forthBtn.disableProperty().bind(model.getHistory().canGoForthProperty().not());
-
-        var refreshBtn = new Button(null, new FontIcon("mdmz-refresh"));
-        refreshBtn.setOnAction(e -> model.refresh());
-        Shortcuts.addShortcut(refreshBtn, new KeyCodeCombination(KeyCode.F5));
-        refreshBtn.disableProperty().bind(model.getInOverview());
-
+        var backBtn = BrowserAction.byId("back").toButton(model, List.of());
+        var forthBtn = BrowserAction.byId("forward").toButton(model, List.of());
+        var refreshBtn = BrowserAction.byId("refresh").toButton(model, List.of());
         var terminalBtn = BrowserAction.byId("openTerminal").toButton(model, List.of());
-        terminalBtn.setOnAction(
-                e -> model.openTerminalAsync(model.getCurrentPath().get()));
-        terminalBtn.disableProperty().bind(model.getInOverview());
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(

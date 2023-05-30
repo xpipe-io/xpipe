@@ -5,10 +5,7 @@ import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.about.AboutTabComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
-import io.xpipe.app.core.AppActionLinkDetector;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -33,7 +30,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
 
     public AppLayoutComp() {
         entries = createEntryList();
-        selected = new SimpleObjectProperty<>(entries.get(0));
+        selected = new SimpleObjectProperty<>(AppState.get().isInitialLaunch() ? entries.get(1) : entries.get(0));
 
         shortcut(new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN), structure -> {
             AppActionLinkDetector.detectOnPaste();
@@ -43,11 +40,11 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
     @SneakyThrows
     private List<SideMenuBarComp.Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
-                new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("browser"),
                         "mdi2f-file-cabinet",
                         new BrowserComp(BrowserModel.DEFAULT)),
+                new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 // new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),

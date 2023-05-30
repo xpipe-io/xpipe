@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.JacksonMapper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -63,15 +62,15 @@ public class OpenFileSystemSavedState {
         }
     }
 
-    static OpenFileSystemSavedState loadForStore(FileSystemStore store) {
+    static OpenFileSystemSavedState loadForStore(OpenFileSystemModel model) {
         var storageEntry = DataStorage.get()
-                .getStoreEntryIfPresent(store)
+                .getStoreEntryIfPresent(model.getStore())
                 .map(entry -> entry.getUuid())
                 .orElse(UUID.randomUUID());
         var state = AppCache.get("fs-state-" + storageEntry, OpenFileSystemSavedState.class, () -> {
             return new OpenFileSystemSavedState();
         });
-        state.store = store;
+        state.setModel(model);
         return state;
     }
 
@@ -84,7 +83,8 @@ public class OpenFileSystemSavedState {
         Instant time;
     }
 
-    private FileSystemStore store;
+    @Setter
+    private OpenFileSystemModel model;
     private String lastDirectory;
     @NonNull
     private ObservableList<RecentEntry> recentDirectories;
@@ -103,11 +103,11 @@ public class OpenFileSystemSavedState {
     }
 
     public void save() {
-        if (store == null) {
+        if (model == null) {
             return;
         }
 
-        var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
+        var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
         storageEntry.ifPresent(entry -> AppCache.update("fs-state-" + entry.getUuid(), this));
     }
 
@@ -123,6 +123,10 @@ public class OpenFileSystemSavedState {
                     public void run() {
                         // Synchronize with platform thread
                         Platform.runLater(() -> {
+                            if (model.isClosed()) {
+                                return;
+                            }
+
                             if (Objects.equals(lastDirectory, dir)) {
                                 updateRecent(dir);
                                 save();
@@ -130,7 +134,7 @@ public class OpenFileSystemSavedState {
                         });
                     }
                 },
-                20000);
+                200);
     }
 
     private void updateRecent(String dir) {

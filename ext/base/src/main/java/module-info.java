@@ -27,6 +27,9 @@ open module io.xpipe.ext.base {
     requires com.sun.jna.platform;
 
     provides BrowserAction with
+            BackAction,
+            ForwardAction,
+            RefreshAction,
             OpenFileDefaultAction,
             OpenFileWithAction,
             OpenDirectoryAction,

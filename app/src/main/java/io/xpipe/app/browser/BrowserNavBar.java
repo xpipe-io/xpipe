@@ -18,6 +18,9 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
@@ -67,6 +70,8 @@ public class BrowserNavBar extends SimpleComp {
                     });
 
                     struc.get().setPromptText("Overview of " + model.getName());
+                }).shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
+                    s.get().requestFocus();
                 });
 
         var graphic = Bindings.createStringBinding(

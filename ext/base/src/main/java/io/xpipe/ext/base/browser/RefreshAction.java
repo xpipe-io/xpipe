@@ -2,6 +2,7 @@ package io.xpipe.ext.base.browser;
 
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
@@ -11,22 +12,20 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class OpenTerminalAction implements LeafAction {
+public class RefreshAction implements LeafAction {
 
     public String getId() {
-        return "openTerminal";
+        return "refresh";
     }
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-        if (entries.size() == 0) {
-            model.openTerminalAsync(model.getCurrentDirectory().getPath());
-            return;
-        }
+        model.refreshSync();
+    }
 
-        for (var entry : entries) {
-            model.openTerminalAsync(entry.getRawFileEntry().getPath());
-        }
+    @Override
+    public BrowserAction.Category getCategory() {
+        return null;
     }
 
     @Override
@@ -35,27 +34,22 @@ public class OpenTerminalAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.OPEN;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2c-console");
+        return new FontIcon("mdmz-refresh");
     }
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory());
+        return false;
     }
 
     @Override
     public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
+        return new KeyCodeCombination(KeyCode.F5);
     }
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Open in terminal";
+        return "Refresh";
     }
 }

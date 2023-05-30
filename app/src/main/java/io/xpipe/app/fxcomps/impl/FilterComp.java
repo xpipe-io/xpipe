@@ -28,6 +28,7 @@ public class FilterComp extends Comp<FilterComp.Structure> {
         var bgLabel = new Label("Search ...", fi);
         bgLabel.getStyleClass().add("background");
         var filter = new TextField();
+        filter.setAccessibleText("Filter");
 
         SimpleChangeListener.apply(filterText, val -> {
             PlatformThread.runLaterIfNeeded(() -> filter.setText(val));

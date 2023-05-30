@@ -46,7 +46,7 @@ public class Shortcuts {
 
             if (s != null) {
                 scene.set(s);
-                SHORTCUTS.put(region, comb);
+                s.addEventHandler(KeyEvent.KEY_PRESSED, filter);
             }
         });
     }

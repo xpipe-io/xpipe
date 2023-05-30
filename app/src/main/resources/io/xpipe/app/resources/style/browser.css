@@ -105,9 +105,6 @@
 .browser .path-text:invisible {
 -fx-text-fill: transparent;
 }
-.browser .path-graphic-button {
--fx-padding: 0 5px 0 5px;
-}
 
 .browser .overview-file-list {
     -fx-border-width: 1px;

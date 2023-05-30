@@ -22,7 +22,6 @@ import org.apache.commons.lang3.function.FailableConsumer;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -54,7 +53,6 @@ public final class OpenFileSystemModel {
             return currentPath.get() == null;
         }, currentPath));
         fileList = new BrowserFileListModel(this);
-        addListeners();
     }
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
@@ -72,17 +70,6 @@ public final class OpenFileSystemModel {
                 }
             });
         });
-    }
-
-    private void addListeners() {
-        //        savedState.addListener((observable, oldValue, newValue) -> {
-        //            if (store == null) {
-        //                return;
-        //            }
-        //
-        //            var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
-        //            storageEntry.ifPresent(entry -> AppCache.update("browser-state-" + entry.getUuid(), newValue));
-        //        });
     }
 
     @SneakyThrows
@@ -194,9 +181,9 @@ public final class OpenFileSystemModel {
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
         filter.setValue(null);
-        currentPath.set(path);
         savedState.cd(path);
         history.updateCurrent(path);
+        currentPath.set(path);
         loadFilesSync(path);
     }
 
@@ -206,10 +193,7 @@ public final class OpenFileSystemModel {
                 var stream = getFileSystem().listFiles(dir);
                 fileList.setAll(stream);
             } else {
-                var stream = getFileSystem().listRoots().stream()
-                        .map(s -> new FileSystem.FileEntry(
-                                getFileSystem(), s, Instant.now(), true, false, false, 0, null));
-                fileList.setAll(stream);
+                fileList.setAll(Stream.of());
             }
             return true;
         } catch (Exception e) {
@@ -314,6 +298,10 @@ public final class OpenFileSystemModel {
         fileSystem = null;
     }
 
+    public boolean isClosed() {
+        return fileSystem == null;
+    }
+
     public void initFileSystem() throws Exception {
         BusyProperty.execute(busy, () -> {
             var fs = store.createFileSystem();
@@ -337,7 +325,7 @@ public final class OpenFileSystemModel {
     }
 
     private void initState() {
-        this.savedState = OpenFileSystemSavedState.loadForStore(store);
+        this.savedState = OpenFileSystemSavedState.loadForStore(this);
     }
 
     public void openTerminalAsync(String directory) {
@@ -365,15 +353,11 @@ public final class OpenFileSystemModel {
         return history;
     }
 
-    public void back() {
-        try (var ignored = new BusyProperty(busy)) {
-            cd(history.back());
-        }
+    public void backSync() throws Exception {
+        cdSyncWithoutCheck(history.back());
     }
 
-    public void forth() {
-        try (var ignored = new BusyProperty(busy)) {
-            cd(history.forth());
-        }
+    public void forthSync() throws Exception {
+        cdSyncWithoutCheck(history.forth());
     }
 }

@@ -11,51 +11,44 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class OpenTerminalAction implements LeafAction {
+public class BackAction implements LeafAction {
 
     public String getId() {
-        return "openTerminal";
+        return "back";
     }
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-        if (entries.size() == 0) {
-            model.openTerminalAsync(model.getCurrentDirectory().getPath());
-            return;
-        }
-
-        for (var entry : entries) {
-            model.openTerminalAsync(entry.getRawFileEntry().getPath());
-        }
-    }
-
-    @Override
-    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return !model.getInOverview().get();
+        model.backSync();
     }
 
     @Override
     public Category getCategory() {
-        return Category.OPEN;
+        return null;
     }
 
     @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2c-console");
+        return new FontIcon("fth-arrow-left");
     }
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory());
+        return false;
+    }
+
+    @Override
+    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return model.getHistory().canGoBackProperty().get();
     }
 
     @Override
     public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
+        return new KeyCodeCombination(KeyCode.LEFT, KeyCombination.ALT_DOWN);
     }
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Open in terminal";
+        return "Back";
     }
 }

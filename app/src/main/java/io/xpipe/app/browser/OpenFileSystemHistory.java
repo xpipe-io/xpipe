@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-final class OpenFileSystemHistory {
+public final class OpenFileSystemHistory {
 
     private final IntegerProperty cursor = new SimpleIntegerProperty(-1);
     private final List<String> history = new ArrayList<>();

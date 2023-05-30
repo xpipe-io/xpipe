@@ -32,8 +32,8 @@ public class StoreEntryListHeaderComp extends SimpleComp {
     }
 
     private Region createGroupListFilter() {
-        var filledHerProperty = new SimpleStringProperty();
-        filledHerProperty.addListener((observable, oldValue, newValue) -> {
+        var filterProperty = new SimpleStringProperty();
+        filterProperty.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runAsync(() -> {
                 StoreViewState.get().getFilter().filterProperty().setValue(newValue);
             });

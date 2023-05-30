@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,15 @@ public class AppLogs {
         var logDir = AppProperties.get().getDataDir().resolve("logs");
         var shouldLogToFile = shouldWriteLogs();
 
-        Path usedLogsDir = logDir.resolve(FORMATTER.format(Instant.now()));
+        var now = Instant.now();
+        var name = FORMATTER.format(now);
+        Path usedLogsDir = logDir.resolve(name);
+
+        // When two instances are being launched within the same second, add milliseconds
+        if (Files.exists(usedLogsDir)) {
+            usedLogsDir = logDir.resolve(name + "_" + now.get(ChronoField.MILLI_OF_SECOND));
+        }
+
         if (shouldLogToFile) {
             try {
                 Files.createDirectories(usedLogsDir);
