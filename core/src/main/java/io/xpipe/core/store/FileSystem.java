@@ -22,29 +22,31 @@ public interface FileSystem extends Closeable, AutoCloseable {
         @NonNull
         String path;
         Instant date;
-        boolean directory;
         boolean hidden;
         Boolean executable;
         long size;
         String mode;
+        @NonNull
+        FileKind kind;
 
         public FileEntry(
-                @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean directory, boolean hidden, Boolean executable,
+                @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean hidden, Boolean executable,
                 long size,
-                String mode
+                String mode,
+                @NonNull FileKind kind
         ) {
             this.fileSystem = fileSystem;
             this.mode = mode;
-            this.path = directory ? FileNames.toDirectory(path) : path;
+            this.kind = kind;
+            this.path = kind == FileKind.DIRECTORY ? FileNames.toDirectory(path) : path;
             this.date = date;
-            this.directory = directory;
             this.hidden = hidden;
             this.executable = executable;
             this.size = size;
         }
 
         public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
-            return new FileEntry(fileSystem, path, Instant.now(), true, false, false, 0, null);
+            return new FileEntry(fileSystem, path, Instant.now(), true, false, 0, null, FileKind.DIRECTORY);
         }
 
     }
@@ -79,7 +81,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     default Stream<FileEntry> listFilesRecursively(String file) throws Exception {
         return listFiles(file).flatMap(fileEntry -> {
-            if (!fileEntry.isDirectory()) {
+            if (fileEntry.getKind() != FileKind.DIRECTORY) {
                 return Stream.of(fileEntry);
             }
 

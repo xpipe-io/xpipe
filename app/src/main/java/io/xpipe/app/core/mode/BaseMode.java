@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DefaultSecretValue;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LockedSecretValue;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -37,6 +38,7 @@ public class BaseMode extends OperationMode {
         JacksonMapper.configure(objectMapper -> {
             objectMapper.registerSubtypes(LockedSecretValue.class, DefaultSecretValue.class);
         });
+        LocalStore.init();
         AppPrefs.init();
         AppCharsets.init();
         AppCharsetter.init();

@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.core.store.FileKind;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
@@ -80,7 +81,7 @@ public class BrowserFileListCompEntry {
         // Prevent drag and drops of files into the current directory
         if (BrowserClipboard.currentDragClipboard
                 .getBaseDirectory().getPath()
-                .equals(model.getFileSystemModel().getCurrentDirectory().getPath()) && (item == null || !item.getRawFileEntry().isDirectory())) {
+                .equals(model.getFileSystemModel().getCurrentDirectory().getPath()) && (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {
             return false;
         }
 
@@ -100,7 +101,7 @@ public class BrowserFileListCompEntry {
         if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
             Dragboard db = event.getDragboard();
             var list = db.getFiles().stream().map(File::toPath).toList();
-            var target = item != null && item.getRawFileEntry().isDirectory()
+            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel().dropLocalFilesIntoAsync(target, list);
@@ -111,7 +112,7 @@ public class BrowserFileListCompEntry {
         // Accept drops from inside the app window
         if (event.getGestureSource() != null) {
             var files = BrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
-            var target = item != null && item.getRawFileEntry().isDirectory()
+            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel().dropFilesIntoAsync(target, files, false);
@@ -121,7 +122,7 @@ public class BrowserFileListCompEntry {
     }
 
     public void onDragExited(DragEvent event) {
-        if (item != null && item.getRawFileEntry().isDirectory()) {
+        if (item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
             model.getDraggedOverDirectory().setValue(null);
         } else {
             model.getDraggedOverEmpty().setValue(false);
@@ -151,13 +152,13 @@ public class BrowserFileListCompEntry {
     }
 
     private void acceptDrag(DragEvent event) {
-        model.getDraggedOverEmpty().setValue(item == null || !item.getRawFileEntry().isDirectory());
+        model.getDraggedOverEmpty().setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
         model.getDraggedOverDirectory().setValue(item);
         event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
     }
 
     private void handleHoverTimer(DragEvent event) {
-        if (item == null || !item.getRawFileEntry().isDirectory()) {
+        if (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY) {
             return;
         }
 

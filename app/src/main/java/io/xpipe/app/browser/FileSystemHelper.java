@@ -5,6 +5,7 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.ConnectionFileSystem;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 
 import java.nio.file.Files;
@@ -96,11 +97,11 @@ public class FileSystemHelper {
                 localFileSystem,
                 file.toString(),
                 Files.getLastModifiedTime(file).toInstant(),
-                Files.isDirectory(file),
                 Files.isHidden(file),
                 Files.isExecutable(file),
                 Files.size(file),
-                null
+                null,
+                Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE
         );
     }
 
@@ -176,7 +177,7 @@ public class FileSystemHelper {
             return;
         }
 
-        if (source.isDirectory()) {
+        if (source.getKind() == FileKind.DIRECTORY) {
             var directoryName = FileNames.getFileName(source.getPath());
             flatFiles.put(source, directoryName);
 
@@ -197,7 +198,7 @@ public class FileSystemHelper {
                 throw new IllegalStateException();
             }
 
-            if (sourceFile.isDirectory()) {
+            if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
             } else {
                 try (var in = sourceFile.getFileSystem().openInput(sourceFile.getPath());

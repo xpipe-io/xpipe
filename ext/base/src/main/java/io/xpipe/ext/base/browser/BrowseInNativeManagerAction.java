@@ -6,6 +6,7 @@ import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.store.FileKind;
 
 import java.util.List;
 
@@ -19,21 +20,21 @@ public class BrowseInNativeManagerAction implements LeafAction {
             var e = entry.getRawFileEntry().getPath();
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
-                    if (entry.getRawFileEntry().isDirectory()) {
+                    if (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
                         sc.executeSimpleCommand("explorer " + d.fileArgument(e));
                     } else {
                         sc.executeSimpleCommand("explorer /select," + d.fileArgument(e));
                     }
                 }
                 case OsType.Linux linux -> {
-                    var action = entry.getRawFileEntry().isDirectory() ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowItems";
+                    var action = entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowItems";
                     var dbus = String.format("""
                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
                                                 """, action, entry.getRawFileEntry().getPath());
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
-                    sc.executeSimpleCommand("open " + (entry.getRawFileEntry().isDirectory() ? "" : "-R ")
+                    sc.executeSimpleCommand("open " + (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "" : "-R ")
                             + d.fileArgument(entry.getRawFileEntry().getPath()));
                 }
             }

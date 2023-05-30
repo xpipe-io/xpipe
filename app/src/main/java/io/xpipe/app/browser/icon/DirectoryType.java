@@ -2,6 +2,7 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppResources;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 
@@ -94,7 +95,7 @@ public interface DirectoryType {
 
         @Override
         public boolean matches(FileSystem.FileEntry entry) {
-            if (!entry.isDirectory()) {
+            if (entry.getKind() != FileKind.DIRECTORY) {
                 return false;
             }
 

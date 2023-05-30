@@ -8,6 +8,7 @@ import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -58,7 +59,7 @@ public class OpenFileWithAction implements LeafAction {
         return os.isPresent()
                 && os.get().getOsType().equals(OsType.WINDOWS)
                 && entries.size() == 1
-                && entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 
     @Override

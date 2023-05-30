@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserClipboard;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -21,7 +22,7 @@ public class PasteAction implements LeafAction {
             return;
         }
 
-        var target = entries.size() == 1 && entries.get(0).getRawFileEntry().isDirectory() ? entries.get(0).getRawFileEntry() : model.getCurrentDirectory();
+        var target = entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() == FileKind.DIRECTORY ? entries.get(0).getRawFileEntry() : model.getCurrentDirectory();
         var files = clipboard.getEntries();
         model.dropFilesIntoAsync(target, files, true);
     }
@@ -38,7 +39,7 @@ public class PasteAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() < 2 && entries.stream().allMatch(entry -> entry.getRawFileEntry().isDirectory());
+        return entries.size() < 2 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override

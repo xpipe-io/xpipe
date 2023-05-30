@@ -10,10 +10,7 @@ import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ConnectionFileSystem;
-import io.xpipe.core.store.FileSystem;
-import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import lombok.Getter;
@@ -94,7 +91,7 @@ public final class OpenFileSystemModel {
             return null;
         }
 
-        return new FileSystem.FileEntry(fileSystem, parent, null, true, false, false, 0, null);
+        return new FileSystem.FileEntry(fileSystem, parent, null, false, false, 0, null, FileKind.DIRECTORY);
     }
 
     public FileSystem.FileEntry getCurrentDirectory() {
@@ -102,7 +99,7 @@ public final class OpenFileSystemModel {
             return null;
         }
 
-        return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, true, false, false, 0, null);
+        return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, false, false, 0, null, FileKind.DIRECTORY);
     }
 
     public Optional<String> cd(String path) {

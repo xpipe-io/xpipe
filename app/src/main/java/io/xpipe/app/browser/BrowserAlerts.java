@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.scene.control.Alert;
 
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 public class BrowserAlerts {
 
     public static boolean showMoveAlert(List<FileSystem.FileEntry> source, FileSystem.FileEntry target) {
-        if (source.stream().noneMatch(entry -> entry.isDirectory())) {
+        if (source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
 
@@ -26,7 +27,7 @@ public class BrowserAlerts {
     }
 
     public static boolean showDeleteAlert(List<FileSystem.FileEntry> source) {
-        if (source.stream().noneMatch(entry -> entry.isDirectory())) {
+        if (source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
 

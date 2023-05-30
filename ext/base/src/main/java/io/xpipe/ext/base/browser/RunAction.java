@@ -5,6 +5,7 @@ import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.MultiExecuteAction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -14,7 +15,7 @@ import java.util.List;
 public class RunAction extends MultiExecuteAction {
 
     private boolean isExecutable(FileSystem.FileEntry e) {
-        if (e.isDirectory()) {
+        if (e.getKind() != FileKind.FILE) {
             return false;
         }
 

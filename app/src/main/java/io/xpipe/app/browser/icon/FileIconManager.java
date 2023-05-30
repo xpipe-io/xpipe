@@ -3,6 +3,7 @@ package io.xpipe.app.browser.icon;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.impl.SvgCache;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.scene.image.Image;
 import lombok.Getter;
@@ -46,7 +47,7 @@ public class FileIconManager {
 
         loadIfNecessary();
 
-        if (!entry.isDirectory()) {
+        if (entry.getKind() != FileKind.DIRECTORY) {
             for (var f : FileType.ALL) {
                 if (f.matches(entry)) {
                     return getIconPath(f.getIcon());
@@ -60,7 +61,7 @@ public class FileIconManager {
             }
         }
 
-        return entry.isDirectory() ? (open ? "default_folder_opened.svg" : "default_folder.svg") : "default_file.svg";
+        return entry.getKind() == FileKind.DIRECTORY ? (open ? "default_folder_opened.svg" : "default_folder.svg") : "default_file.svg";
     }
 
     private static String getIconPath(String name) {

@@ -3,6 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
 public final class BrowserFileListModel {
 
     static final Comparator<BrowserEntry> FILE_TYPE_COMPARATOR =
-            Comparator.comparing(path -> !path.getRawFileEntry().isDirectory());
+            Comparator.comparing(path -> path.getRawFileEntry().getKind() != FileKind.DIRECTORY);
     static final Predicate<BrowserEntry> PREDICATE_ANY = path -> true;
     static final Predicate<BrowserEntry> PREDICATE_NOT_HIDDEN = path -> true;
 
@@ -112,12 +113,12 @@ public final class BrowserFileListModel {
     }
 
     public void onDoubleClick(BrowserEntry entry) {
-        if (!entry.getRawFileEntry().isDirectory() && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
+        if (entry.getRawFileEntry().getKind() != FileKind.DIRECTORY && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
             getFileSystemModel().getBrowserModel().finishChooser();
             return;
         }
 
-        if (entry.getRawFileEntry().isDirectory()) {
+        if (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
             var dir = fileSystemModel.cd(entry.getRawFileEntry().getPath());
             if (dir.isPresent()) {
                 fileSystemModel.cd(dir.get());

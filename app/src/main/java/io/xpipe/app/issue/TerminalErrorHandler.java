@@ -47,6 +47,8 @@ public class TerminalErrorHandler implements ErrorHandler {
                     event.clearAttachments();
                     handleSecondaryException(event, r);
                     return;
+                } else {
+                    PlatformState.setCurrent(PlatformState.RUNNING);
                 }
             }
         }

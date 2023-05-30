@@ -12,7 +12,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -64,12 +63,6 @@ public class App extends Application {
 
     public void setupWindow() {
         var content = new AppLayoutComp();
-        content.apply(struc -> {
-            struc.get().addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-                // AppActionLinkDetector.detectOnFocus();
-            });
-        });
-
         var titleBinding = Bindings.createStringBinding(
                 () -> {
                     var base = String.format(

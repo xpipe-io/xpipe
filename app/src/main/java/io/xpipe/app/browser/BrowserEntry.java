@@ -3,6 +3,7 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.icon.DirectoryType;
 import io.xpipe.app.browser.icon.FileType;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 
@@ -24,7 +25,7 @@ public class BrowserEntry {
     }
 
     private static FileType fileType(FileSystem.FileEntry rawFileEntry) {
-        if (rawFileEntry.isDirectory()) {
+        if (rawFileEntry.getKind() == FileKind.DIRECTORY) {
             return null;
         }
 
@@ -38,7 +39,7 @@ public class BrowserEntry {
     }
 
     private static DirectoryType directoryType(FileSystem.FileEntry rawFileEntry) {
-        if (!rawFileEntry.isDirectory()) {
+        if (rawFileEntry.getKind() != FileKind.DIRECTORY) {
             return null;
         }
 

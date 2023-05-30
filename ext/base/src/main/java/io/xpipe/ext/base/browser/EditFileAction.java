@@ -5,6 +5,7 @@ import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -31,7 +32,7 @@ public class EditFileAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.stream().noneMatch(entry -> entry.getRawFileEntry().isDirectory());
+        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 
     @Override

@@ -15,6 +15,7 @@ import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -111,7 +112,7 @@ final class BrowserFileListComp extends SimpleComp {
 
             var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
             var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
-                    path -> !path.getRawFileEntry().isDirectory());
+                    path -> path.getRawFileEntry().getKind() != FileKind.DIRECTORY);
 
             Comparator<? super BrowserEntry> us =
                     syntheticFirst.thenComparing(dirsFirst).thenComparing(comp);
@@ -149,9 +150,9 @@ final class BrowserFileListComp extends SimpleComp {
                                     .getCurrentParentDirectory()
                                     .getPath()));
             // Remove unsuitable selection
-            toSelect.removeIf(browserEntry -> (browserEntry.getRawFileEntry().isDirectory()
+            toSelect.removeIf(browserEntry -> (browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
                             && !fileList.getMode().isAcceptsDirectories())
-                    || (!browserEntry.getRawFileEntry().isDirectory()
+                    || (browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY
                             && !fileList.getMode().isAcceptsFiles()));
             fileList.getSelection().setAll(toSelect);
 
@@ -233,11 +234,11 @@ final class BrowserFileListComp extends SimpleComp {
                     return event.getButton() == MouseButton.SECONDARY;
                 }
 
-                if (row.getItem() != null && row.getItem().getRawFileEntry().isDirectory())  {
+                if (row.getItem() != null && row.getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY)  {
                     return event.getButton() == MouseButton.SECONDARY;
                 }
 
-                if (row.getItem() != null && !row.getItem().getRawFileEntry().isDirectory())  {
+                if (row.getItem() != null && row.getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY)  {
                     return event.getButton() == MouseButton.SECONDARY || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
                 }
 
@@ -261,9 +262,9 @@ final class BrowserFileListComp extends SimpleComp {
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(EMPTY, newValue == null);
                 row.pseudoClassStateChanged(
-                        FILE, newValue != null && !newValue.getRawFileEntry().isDirectory());
+                        FILE, newValue != null && newValue.getRawFileEntry().getKind() != FileKind.DIRECTORY);
                 row.pseudoClassStateChanged(
-                        FOLDER, newValue != null && newValue.getRawFileEntry().isDirectory());
+                        FOLDER, newValue != null && newValue.getRawFileEntry().getKind() == FileKind.DIRECTORY);
             });
 
             fileList.getDraggedOverDirectory().addListener((observable, oldValue, newValue) -> {
@@ -455,7 +456,7 @@ final class BrowserFileListComp extends SimpleComp {
                                     : getTableRow().getItem().getRawFileEntry(),
                             isParentLink));
 
-                    var isDirectory = getTableRow().getItem().getRawFileEntry().isDirectory();
+                    var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                     pseudoClassStateChanged(FOLDER, isDirectory);
 
                     var fileName = isParentLink ? ".." : FileNames.getFileName(fullPath);
@@ -477,7 +478,7 @@ final class BrowserFileListComp extends SimpleComp {
                 setText(null);
             } else {
                 var path = getTableRow().getItem();
-                if (path.getRawFileEntry().isDirectory()) {
+                if (path.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
                     setText("");
                 } else {
                     setText(byteCount(fileSize.longValue()));
