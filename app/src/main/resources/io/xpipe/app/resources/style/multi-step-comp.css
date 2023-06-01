@@ -40,6 +40,10 @@
 -fx-border-radius: 4px;
 }
 
+.multi-step-comp {
+-fx-background-color: -color-bg-default;
+}
+
 .multi-step-comp .entry:completed .circle {
 -fx-background-color: #0B9F9B;
 }
