@@ -76,7 +76,7 @@ public interface ShellControl extends ProcessControl {
         try (CommandControl c = command(command).start()) {
             c.discardOrThrow();
         } catch (ProcessOutputException out) {
-            throw ProcessOutputException.of(failMessage, out);
+            throw ProcessOutputException.withPrefix(failMessage, out);
         }
     }
 

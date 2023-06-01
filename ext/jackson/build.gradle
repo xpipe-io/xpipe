@@ -14,7 +14,7 @@ configurations {
 
 dependencies {
     compileOnly project(':app')
-    implementation(group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: "2.13.0") {
+    implementation(group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: "2.15.2") {
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
         exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'

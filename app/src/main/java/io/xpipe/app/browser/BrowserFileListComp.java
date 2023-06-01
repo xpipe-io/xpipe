@@ -119,7 +119,7 @@ final class BrowserFileListComp extends SimpleComp {
             FXCollections.sort(param.getItems(), us);
             return true;
         });
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
 
         table.setFixedCellSize(34.0);

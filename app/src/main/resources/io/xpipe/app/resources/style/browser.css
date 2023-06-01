@@ -94,6 +94,10 @@
 -fx-border-insets: 0px;
 }
 
+.browser .breadcrumbs {
+-fx-background-color: transparent;
+}
+
 .browser .breadcrumbs .button {
 -fx-padding: 3px 1px 3px 1px;
 -fx-background-color: transparent;
@@ -102,6 +106,7 @@
 .browser .breadcrumbs .button:hover {
 -fx-background-color: -color-neutral-muted;
 }
+
 .browser .path-text:invisible {
 -fx-text-fill: transparent;
 }

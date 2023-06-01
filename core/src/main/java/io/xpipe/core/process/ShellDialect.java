@@ -135,6 +135,8 @@ public interface ShellDialect {
         return content.contains("\n");
     }
 
+    CommandControl createTextFileWriteCommand(ShellControl parent, String content, String file);
+
     CommandControl createScriptTextFileWriteCommand(ShellControl parent, String content, String file);
 
     String getFileDeleteCommand(String file);

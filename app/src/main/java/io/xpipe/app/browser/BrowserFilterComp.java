@@ -3,6 +3,7 @@ package io.xpipe.app.browser;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
@@ -20,6 +21,7 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         var expanded = new SimpleBooleanProperty();
         var text = new TextFieldComp(filterString, false).createRegion();
         var button = new Button();
+        new FancyTooltipAugment<>("app.search").augment(button);
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
                 if (button.isFocused()) {

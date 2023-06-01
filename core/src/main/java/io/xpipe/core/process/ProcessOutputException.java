@@ -5,21 +5,21 @@ import lombok.Getter;
 @Getter
 public class ProcessOutputException extends Exception {
 
-    public static ProcessOutputException of(String customPrefix, ProcessOutputException ex) {
+    public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
         var messageSuffix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ": " + ex.getOutput() : "";
         var message = customPrefix + messageSuffix;
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
 
-    public static ProcessOutputException of(int exitCode, String output, String accumulatedError) {
-        var combinedError = (accumulatedError != null ? accumulatedError.trim() + "\n" : "")
-                + (output != null ? output.trim() : "");
-        var hasMessage = !combinedError.trim().isEmpty();
+    public static ProcessOutputException of(int exitCode, String stdout, String stderr) {
+        var combinedError = (stdout != null && !stdout.isBlank() ? stdout.strip() + "\n\n" : "")
+                + (stderr != null && !stderr.isBlank() ? stderr.strip() : "");
+        var hasMessage = !combinedError.isBlank();
         var errorSuffix = hasMessage ? ": " + combinedError : "";
         var message =
                 switch (exitCode) {
-                    case CommandControl.KILLED_EXIT_CODE -> "Process timed out and had to be killed" + errorSuffix;
-                    case CommandControl.TIMEOUT_EXIT_CODE -> "Wait for process exit timed out"
+                    case CommandControl.START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed" + errorSuffix;
+                    case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out"
                             + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
                 };
@@ -36,10 +36,10 @@ public class ProcessOutputException extends Exception {
     }
 
     public boolean isTimeOut() {
-        return exitCode == CommandControl.TIMEOUT_EXIT_CODE;
+        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
     }
 
     public boolean isKill() {
-        return exitCode == CommandControl.KILLED_EXIT_CODE;
+        return exitCode == CommandControl.START_FAILED_EXIT_CODE;
     }
 }

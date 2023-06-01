@@ -41,7 +41,7 @@ apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
 
 dependencies {
-    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.13.0"
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"
     compileOnly project(':core')
     compileOnly project(':beacon')
     compileOnly project(':app')

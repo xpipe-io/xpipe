@@ -134,7 +134,7 @@ public class OpenFileSystemSavedState {
                         });
                     }
                 },
-                200);
+                20000);
     }
 
     private void updateRecent(String dir) {

@@ -13,10 +13,11 @@ public class XPipeSystemId {
 
     public static void init() {
         try {
-        var file = Path.of(System.getProperty("user.home")).resolve(".xpipe").resolve("system_id");
-        if (!Files.exists(file)) {
-            Files.writeString(file, UUID.randomUUID().toString());
-        }
+            var file =
+                    Path.of(System.getProperty("user.home")).resolve(".xpipe").resolve("system_id");
+            if (!Files.exists(file)) {
+                Files.writeString(file, UUID.randomUUID().toString());
+            }
             localId = UUID.fromString(Files.readString(file).trim());
         } catch (Exception ex) {
             localId = UUID.randomUUID();
@@ -31,14 +32,27 @@ public class XPipeSystemId {
         var file = proc.getOsType().getSystemIdFile(proc);
 
         if (!proc.getShellDialect().createFileExistsCommand(proc, file).executeAndCheck()) {
-            proc.executeSimpleCommand(
-                    proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)),
-                    "Unable to access or create directory " + file);
-            var id = UUID.randomUUID();
-            proc.getShellDialect().createScriptTextFileWriteCommand(proc, id.toString(), file).execute();
-            return id;
+            return writeRandom(proc, file);
         }
 
-        return UUID.fromString(proc.executeSimpleStringCommand(proc.getShellDialect().getFileReadCommand(file)).trim());
+        try {
+            return UUID.fromString(
+                    proc.executeSimpleStringCommand(proc.getShellDialect().getFileReadCommand(file))
+                            .trim());
+        } catch (IllegalArgumentException ex) {
+            // Handle invalid UUID content case
+            return writeRandom(proc, file);
+        }
+    }
+
+    private static UUID writeRandom(ShellControl proc, String file) throws Exception {
+        proc.executeSimpleCommand(
+                proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)),
+                "Unable to access or create directory " + file);
+        var id = UUID.randomUUID();
+        proc.getShellDialect()
+                .createTextFileWriteCommand(proc, id.toString(), file)
+                .execute();
+        return id;
     }
 }

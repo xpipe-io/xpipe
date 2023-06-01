@@ -158,7 +158,7 @@ public class JsonStorageHandler implements StorageHandler {
 
     @Override
     public double loadDividerPosition() {
-        return 0;
+        return 0.27;
     }
 
     @Override
