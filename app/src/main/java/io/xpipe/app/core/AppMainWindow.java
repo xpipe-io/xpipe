@@ -218,6 +218,7 @@ public class AppMainWindow {
     private void setupContent(Comp<?> content) {
         var contentR = content.createRegion();
         var scene = new Scene(contentR, -1, -1, false);
+        TrackEvent.debug("Created initial scene");
         stage.setScene(scene);
         contentR.requestFocus();
         TrackEvent.debug("Set content scene");

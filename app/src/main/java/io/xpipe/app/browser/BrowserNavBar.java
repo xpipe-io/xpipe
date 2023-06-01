@@ -111,7 +111,10 @@ public class BrowserNavBar extends SimpleComp {
 
         var topBox = new HorizontalComp(List.of(Comp.of(() -> graphicButton), stack))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .apply(struc -> ((Region) struc.get().getChildren().get(0)).prefHeightProperty().bind(((Region) struc.get().getChildren().get(1)).heightProperty()))
+                .apply(struc -> {
+                    ((Region) struc.get().getChildren().get(0)).minHeightProperty().bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+                    ((Region) struc.get().getChildren().get(0)).maxHeightProperty().bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+                })
                 .apply(struc -> {
                     struc.get().setPickOnBounds(false);
                 })
