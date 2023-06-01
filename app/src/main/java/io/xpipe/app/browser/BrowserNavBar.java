@@ -6,8 +6,10 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.StackComp;
+import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -92,7 +94,6 @@ public class BrowserNavBar extends SimpleComp {
                             return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
         })
                 .augment(new SimpleCompStructure<>(graphicButton));
-        GrowAugment.create(false, true).augment(graphicButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
 
@@ -110,6 +111,7 @@ public class BrowserNavBar extends SimpleComp {
 
         var topBox = new HorizontalComp(List.of(Comp.of(() -> graphicButton), stack))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> ((Region) struc.get().getChildren().get(0)).prefHeightProperty().bind(((Region) struc.get().getChildren().get(1)).heightProperty()))
                 .apply(struc -> {
                     struc.get().setPickOnBounds(false);
                 })
