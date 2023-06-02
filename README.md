@@ -17,9 +17,34 @@ Furthermore, XPipe integrates with your existing tools and workflows by delegati
 
 You have more questions? Then check out the new [FAQ](/FAQ.md).
 
-## Getting Started
+## Downloads
 
-Head over to the [releases page](https://github.com/xpipe-io/xpipe/releases/latest) and try it out.
+### Installers
+
+Installers are the easiest way to get started and come with an automatic updater functionality. The following installers are available:
+
+- [Windows .msi Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
+- [Linux .deb Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.deb)
+- [Linux .rpm Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.rpm)
+- [MacOS .pkg Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
+- [MacOS .pkg Installer (arm64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
+
+### Portable
+
+If you don't like installers, you can also use portable versions that are packaged as an archive. The following portable versions are available:
+
+- [Windows .zip Portable (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
+- [Linux .tar.gz Portable (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
+- [MacOS .dmg Portable (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
+- [MacOS .dmg Portable (arm64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
+
+### Bash Script (Linux / MacOS)
+
+You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
+
+```
+bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
+```
 
 ## Features
 
