@@ -26,7 +26,7 @@ are also not included to prevent attackers from easily impersonating the XPipe a
 
 ## Modularity
 
-All XPipe components target [JDK 19](https://openjdk.java.net/projects/jdk/19/) and make full use of the Java Module System (JPMS).
+All XPipe components target [Java 19](https://openjdk.java.net/projects/jdk/19/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [moditect](https://github.com/moditect/moditect-gradle-plugin).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,

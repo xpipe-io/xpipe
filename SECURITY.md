@@ -25,11 +25,11 @@ then there is no technical way of preventing malicious programs to also infect X
 
 ## Reliance on other programs
 
-XPipe essentially outsources any form of connection and shell handling to your existing command-line tools.
+XPipe essentially delegates any form of connection and shell handling to your existing command-line tools.
 It does not come with any remote handling capabilities of its own.
 Therefore, any used command-line program should be secure.
 If for example your `ssh` command-line program or its connections are susceptible to MITM attacks or
-vulnerable in any other way, there is no way for XPipe to keep the sensitive information secure.
+vulnerable in any other way, there is no way for XPipe to guarantee that the sensitive information can be kept secure.
 It is your responsibility to use the programs in a secure environment and keep them up to date with security patches and
 more.
 XPipe can only be as secure as your underlying command-line tools itself.
@@ -63,7 +63,7 @@ You can choose to change this storage location in the settings menu.
 All sensitive information is encrypted when it is saved to disk on your local machine using AES
 with either:
 
-- A custom master lock key that can be set by you in the settings menu
+- A custom master key that can be set by you in the settings menu
   (This option is only as secure as the password you choose)
 - A somewhat dynamically generated key (This option can be reverse
   engineered though, there is no way of perfectly securing your data without any custom key)
@@ -123,7 +123,7 @@ you have the option to automatically send an error report with optional feedback
 This error report does not contain any sensitive information unless
 you explicitly choose to attach debug mode log files (See above).
 
-## Isolation
+## Isolation of systems
 
 Any infected remote system should be isolated enough such that any infection can't spread through XPipe.
 
