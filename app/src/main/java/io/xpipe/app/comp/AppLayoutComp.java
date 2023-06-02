@@ -22,6 +22,7 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
 
@@ -71,24 +72,34 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
     @Override
     public CompStructure<BorderPane> createBase() {
         var map = new HashMap<SideMenuBarComp.Entry, Region>();
-        entries.forEach(entry -> map.put(entry, entry.comp().createRegion()));
+        getRegion(entries.get(0), map);
+        getRegion(entries.get(1), map);
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(selected, entries);
-        pane.setCenter(map.get(selected.getValue()));
+        pane.setCenter(getRegion(selected.getValue(), map));
         pane.setRight(sidebar.createRegion());
         selected.addListener((c, o, n) -> {
             if (o != null && o.equals(entries.get(2))) {
                 AppPrefs.get().save();
             }
 
-            pane.setCenter(map.get(n));
+            pane.setCenter(getRegion(n, map));
         });
-        pane.setCenter(map.get(selected.getValue()));
         pane.setPrefWidth(1280);
         pane.setPrefHeight(720);
         AppFont.normal(pane);
         return new SimpleCompStructure<>(pane);
+    }
+
+    private Region getRegion(SideMenuBarComp.Entry entry, Map<SideMenuBarComp.Entry, Region> map) {
+        if (map.containsKey(entry)) {
+            return map.get(entry);
+        }
+
+        Region r = entry.comp().createRegion();
+        map.put(entry, r);
+        return r;
     }
 
     public List<SideMenuBarComp.Entry> getEntries() {

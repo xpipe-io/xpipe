@@ -26,6 +26,7 @@ import java.time.temporal.ChronoField;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AppLogs {
@@ -362,10 +363,16 @@ public class AppLogs {
         @Override
         protected void handleNormalizedLoggingCall(
                 Level level, Marker marker, String msg, Object[] arguments, Throwable throwable) {
+            var formatted = msg;
+            if (arguments != null) {
+                for (var arg : arguments) {
+                    msg = msg.replaceFirst("\\{}", Objects.toString(arg));
+                }
+            }
             TrackEvent.builder()
                     .category(name)
                     .type(level.toString().toLowerCase())
-                    .message(msg)
+                    .message(formatted)
                     .build()
                     .handle();
         }

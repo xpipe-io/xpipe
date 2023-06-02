@@ -20,6 +20,10 @@ import java.util.List;
 public abstract class LauncherInput {
 
     public static void handle(List<String> arguments) {
+        if (arguments.size() == 0) {
+            return;
+        }
+
         TrackEvent.withDebug("launcher", "Handling arguments")
                 .elements(arguments)
                 .handle();

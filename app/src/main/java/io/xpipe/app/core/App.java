@@ -80,15 +80,15 @@ public class App extends Application {
                 },
                 XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate());
 
-        var appWindow = new AppMainWindow(stage);
+        var appWindow = AppMainWindow.init(stage);
         appWindow.getStage().titleProperty().bind(PlatformThread.sync(titleBinding));
         appWindow.initialize();
+        appWindow.show();
         appWindow.setContent(content);
         TrackEvent.info("Application window initialized");
         stage.setOnShown(event -> {
             focus();
         });
-        appWindow.show();
 
         // For demo purposes
         //        if (true) {

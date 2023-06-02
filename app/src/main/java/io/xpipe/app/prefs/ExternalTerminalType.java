@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.MacOsPermissions;
 import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
@@ -12,7 +13,10 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import lombok.Getter;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
@@ -76,6 +80,44 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     return OsType.getLocal().equals(OsType.WINDOWS);
                 }
             };
+
+
+    public abstract static class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
+            implements ExternalTerminalType {
+
+        public WindowsFullPathType(String id) {
+            super(id);
+        }
+
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            var path = determinePath();
+            if (path.isEmpty()) {
+                throw new IOException("Unable to find installation of " + getId());
+            }
+
+            ApplicationHelper.executeLocalApplication(
+                    sc -> createCommand(sc, name, path.get().toString(), file), false);
+        }
+
+        protected abstract String createCommand(ShellControl shellControl, String name, String path, String file);
+    }
+
+    ExternalTerminalType TABBY_WINDOWS = new WindowsFullPathType("app.tabbyWindows") {
+
+        @Override
+        protected String createCommand(ShellControl shellControl, String name, String path, String file) {
+            return shellControl.getShellDialect().fileArgument(path) + " run " + shellControl.getShellDialect().fileArgument(file);
+        }
+
+        @Override
+        protected Optional<Path> determinePath() {
+            Optional<String> launcherDir;
+            launcherDir = WindowsRegistry.readString(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5", "InstallLocation")
+                    .map(p -> p + "\\Tabby.exe");
+            return launcherDir.map(Path::of);
+        }
+    };
 
     ExternalTerminalType GNOME_TERMINAL =
             new SimpleType("app.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
@@ -143,6 +185,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType CUSTOM = new CustomType();
 
     List<ExternalTerminalType> ALL = Stream.of(
+                    TABBY_WINDOWS,
                     WINDOWS_TERMINAL,
                     PWSH_WINDOWS,
                     POWERSHELL_WINDOWS,
