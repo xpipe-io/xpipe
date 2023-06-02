@@ -34,19 +34,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType POWERSHELL_WINDOWS =
-            new SimpleType("app.powershell", "powershell", "PowerShell") {
+    ExternalTerminalType POWERSHELL_WINDOWS = new SimpleType("app.powershell", "powershell", "PowerShell") {
 
-                @Override
-                protected String toCommand(String name, String file) {
-                    return "-ExecutionPolicy Bypass -NoProfile -Command cmd /C '" + file + "'";
-                }
+        @Override
+        protected String toCommand(String name, String file) {
+            return "-ExecutionPolicy Bypass -NoProfile -Command cmd /C '" + file + "'";
+        }
 
-                @Override
-                public boolean isSelectable() {
-                    return OsType.getLocal().equals(OsType.WINDOWS);
-                }
-            };
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
+        }
+    };
 
     ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh", "PowerShell Core") {
 
@@ -63,24 +62,22 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType WINDOWS_TERMINAL =
-            new SimpleType("app.windowsTerminal", "wt.exe", "Windows Terminal") {
+    ExternalTerminalType WINDOWS_TERMINAL = new SimpleType("app.windowsTerminal", "wt.exe", "Windows Terminal") {
 
-                @Override
-                protected String toCommand(String name, String file) {
-                    // A weird behavior in Windows Terminal causes the trailing
-                    // backslash of a filepath to escape the closing quote in the title argument
-                    // So just remove that slash
-                    var fixedName = FileNames.removeTrailingSlash(name);
-                    return "-w 1 nt --title \"" + fixedName + "\" \"" + file + "\"";
-                }
+        @Override
+        protected String toCommand(String name, String file) {
+            // A weird behavior in Windows Terminal causes the trailing
+            // backslash of a filepath to escape the closing quote in the title argument
+            // So just remove that slash
+            var fixedName = FileNames.removeTrailingSlash(name);
+            return "-w 1 nt --title \"" + fixedName + "\" \"" + file + "\"";
+        }
 
-                @Override
-                public boolean isSelectable() {
-                    return OsType.getLocal().equals(OsType.WINDOWS);
-                }
-            };
-
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
+        }
+    };
 
     public abstract static class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
             implements ExternalTerminalType {
@@ -107,45 +104,47 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected String createCommand(ShellControl shellControl, String name, String path, String file) {
-            return shellControl.getShellDialect().fileArgument(path) + " run " + shellControl.getShellDialect().fileArgument(file);
+            return shellControl.getShellDialect().fileArgument(path) + " run "
+                    + shellControl.getShellDialect().fileArgument(file);
         }
 
         @Override
         protected Optional<Path> determinePath() {
             Optional<String> launcherDir;
-            launcherDir = WindowsRegistry.readString(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5", "InstallLocation")
+            launcherDir = WindowsRegistry.readString(
+                            WindowsRegistry.HKEY_CURRENT_USER,
+                            "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
+                            "InstallLocation")
                     .map(p -> p + "\\Tabby.exe");
             return launcherDir.map(Path::of);
         }
     };
 
-    ExternalTerminalType GNOME_TERMINAL =
-            new SimpleType("app.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
+    ExternalTerminalType GNOME_TERMINAL = new SimpleType("app.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
 
-                @Override
-                public void launch(String name, String file, boolean elevated) throws Exception {
-                    try (ShellControl pc = LocalStore.getShell()) {
-                        ApplicationHelper.checkSupport(pc, executable, getDisplayName());
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                ApplicationHelper.checkSupport(pc, executable, getDisplayName());
 
-                        var toExecute = executable + " " + toCommand(name, file);
-                        // In order to fix this bug which also affects us:
-                        // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
-                        toExecute =
-                                "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
-                        pc.executeSimpleCommand(toExecute);
-                    }
-                }
+                var toExecute = executable + " " + toCommand(name, file);
+                // In order to fix this bug which also affects us:
+                // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
+                toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                pc.executeSimpleCommand(toExecute);
+            }
+        }
 
-                @Override
-                protected String toCommand(String name, String file) {
-                    return "-v --title \"" + name + "\" -- \"" + file + "\"";
-                }
+        @Override
+        protected String toCommand(String name, String file) {
+            return "-v --title \"" + name + "\" -- \"" + file + "\"";
+        }
 
-                @Override
-                public boolean isSelectable() {
-                    return OsType.getLocal().equals(OsType.LINUX);
-                }
-            };
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
 
     ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole", "Konsole") {
 
@@ -194,6 +193,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     XFCE,
                     GNOME_TERMINAL,
                     ITERM2,
+                    TABBY_WINDOWS,
                     WARP,
                     MACOS_TERMINAL,
                     CUSTOM)
@@ -300,6 +300,24 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
+    class TabbyType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+
+        public TabbyType() {
+            super("app.tabbyMacOs", "Tabby");
+        }
+
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                pc.osascriptCommand(String.format(
+                        """
+                        %s/Contents/MacOS/Tabby run %s
+                        """, getApplicationPath().orElseThrow(), pc.getShellDialect().fileArgument(file)))
+                        .execute();
+            }
+        }
+    }
+
     class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public WarpType() {
@@ -333,8 +351,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     @Getter
-    abstract class SimpleType extends ExternalApplicationType.PathApplication
-            implements ExternalTerminalType {
+    abstract class SimpleType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
 
         private final String displayName;
 
