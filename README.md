@@ -2,7 +2,7 @@
 
 ### The remote file browser for professionals
 
-XPipe is a brand-new type of remote file browser that works by only interacting with your installed command-line tools on local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with file system APIs or remote file handling protocols at all.
+XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs to establish and utilize local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all.
 
 It currently supports:
 - Containers located on any host such as [docker](https://www.docker.com/) or [LXD](https://linuxcontainers.org/lxd/introduction/) container instances
@@ -21,24 +21,24 @@ You have more questions? Then check out the new [FAQ](/FAQ.md).
 
 ### Installers
 
-Installers are the easiest way to get started and come with an automatic updater functionality. The following installers are available:
+Installers are the easiest way to get started and come with an optional automatic update functionality. The following installers are available:
 
-- [Windows .msi Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
-- [Linux .deb Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.deb)
-- [Linux .rpm Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.rpm)
-- [MacOS .pkg Installer (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
-- [MacOS .pkg Installer (arm64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
+- [Windows .msi Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
+- [Linux .deb Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.deb)
+- [Linux .rpm Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.rpm)
+- [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
+- [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
 
 ### Portable
 
 If you don't like installers, you can also use portable versions that are packaged as an archive. The following portable versions are available:
 
-- [Windows .zip Portable (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
-- [Linux .tar.gz Portable (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
-- [MacOS .dmg Portable (x86_64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
-- [MacOS .dmg Portable (arm64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
+- [Windows .zip Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
+- [Linux .tar.gz Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
+- [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
+- [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
 
-### Bash Script (Linux / MacOS)
+### Install Script (Linux / MacOS)
 
 You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
 
@@ -53,6 +53,7 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 - Interact with the file system of any remote system using a workflow optimized for professionals
 - Quickly open a terminal into any directory
 - Utilize your favourite local programs to open and edit remote files
+- Has the same feature set for all supported connection types
 
 ![Remote file explorer](https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png)
 
@@ -68,9 +69,10 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 ### Instant launch for remote shells and commands
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
-- Works for all kinds of shells. This includes command shells (e.g. bash, PowerShell, cmd, etc.) and some database shells (e.g. PostgreSQL Shell)
+- Works for all kinds of shells and connections, locally and remote.
+- Supports command shells (e.g. bash, PowerShell, cmd, etc.) and some database shells (e.g. PostgreSQL Shell)
 - Comes with support for all commonly used terminals across all operating systems
-- Allows you to customize the launched shell's init environment
+- Allows you to fully customize the init environment of the launched shell session with custom scripts
 - Supports launches from the GUI or command-line
 
 ## Further information

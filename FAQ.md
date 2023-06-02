@@ -3,7 +3,7 @@
 ## What is so new and different about this?
 
 Compared to other existing tools, the fundamental approach of how to
-connect and how to communicate with the remote system differs.
+connect and how to communicate with remote systems differs.
 Other tools utilize the established protocol-based approach, i.e. connect and communicate with a
 server via a certain protocol like SSH, SFTP, and many more using an integrated library for that purpose.
 XPipe utilizes a shell-based approach that works on top of command-line programs.
