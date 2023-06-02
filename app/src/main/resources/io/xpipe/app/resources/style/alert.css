@@ -5,7 +5,7 @@
 -fx-background-radius: 2px;
 }
 
-.dialog-pane:no-header .graphic-container {
+.dialog-pane:no-header > * {
     -fx-padding: 0;
 }
 

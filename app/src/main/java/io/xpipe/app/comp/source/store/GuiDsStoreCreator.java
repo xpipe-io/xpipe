@@ -288,7 +288,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             } catch (Exception ex) {
                 messageProp.setValue(ExceptionConverter.convertMessage(ex));
                 changedSinceError.setValue(false);
-                ErrorEvent.fromThrowable(ex).omit().reportable(false).handle();
+                ErrorEvent.fromThrowable(ex).omit().handle();
             }
         });
         return false;
