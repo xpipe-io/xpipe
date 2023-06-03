@@ -95,6 +95,7 @@ public class PrettyImageComp extends SimpleComp {
                 currentNode.set(node);
             } else {
                 var storeIcon = new ImageView();
+                storeIcon.setFocusTraversable(false);
                 storeIcon
                         .imageProperty()
                         .bind(Bindings.createObjectBinding(
@@ -132,6 +133,7 @@ public class PrettyImageComp extends SimpleComp {
 
             stack.getChildren().setAll(val);
         });
+        stack.setFocusTraversable(false);
         stack.setPrefWidth(width);
         stack.setMinWidth(width);
         stack.setPrefHeight(height);

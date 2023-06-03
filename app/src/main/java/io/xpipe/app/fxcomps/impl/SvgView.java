@@ -6,9 +6,11 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
@@ -17,6 +19,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.Value;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 
 @Getter
@@ -105,6 +108,15 @@ public class SvgView {
             }
 
             wv.getEngine().loadContent(getHtml(n));
+        });
+
+        // Hide scrollbars that popup on every content change. Bug in WebView?
+        wv.getChildrenUnmodifiable().addListener((ListChangeListener<Node>) change -> {
+            Set<Node> scrolls = wv.lookupAll(".scroll-bar");
+            for (Node scroll : scrolls) {
+                scroll.setVisible(false);
+                scroll.setFocusTraversable(false);
+            }
         });
 
         // As the aspect ratio of the WebView is kept constant, we can compute the zoom only using the width

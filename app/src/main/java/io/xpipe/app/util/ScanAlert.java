@@ -96,12 +96,13 @@ public class ScanAlert {
                     btOk.addEventFilter(ActionEvent.ACTION, event -> {
                         BusyProperty.execute(busy, () -> {
                             for (var a : selected) {
-                                try (var ignored = new BusyProperty(busy)) {
+                                try {
                                     a.getScanner().run();
                                 } catch (Exception ex) {
                                     ErrorEvent.fromThrowable(ex).handle();
                                 }
                             }
+                            alert.setResult(ButtonType.OK);
                             alert.close();
                         });
                     });
@@ -114,6 +115,7 @@ public class ScanAlert {
 
                                 Platform.runLater(() -> {
                                     if (a == null) {
+                                        alert.setResult(ButtonType.OK);
                                         alert.close();
                                         return;
                                     }
