@@ -45,6 +45,7 @@ public class OpenFileSystemComp extends SimpleComp {
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cd(null));
         overview.disableProperty().bind(model.getInOverview());
+        overview.setAccessibleText("System overview");
 
         var backBtn = BrowserAction.byId("back").toButton(model, List.of());
         var forthBtn = BrowserAction.byId("forward").toButton(model, List.of());
@@ -56,6 +57,7 @@ public class OpenFileSystemComp extends SimpleComp {
                         event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
                 .augment(new SimpleCompStructure<>(menuButton));
         menuButton.disableProperty().bind(model.getInOverview());
+        menuButton.setAccessibleText("Directory options");
 
         var filter = new BrowserFilterComp(model, model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));

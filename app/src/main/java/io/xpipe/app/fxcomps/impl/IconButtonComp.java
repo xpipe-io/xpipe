@@ -34,6 +34,7 @@ public class IconButtonComp extends Comp<CompStructure<JFXButton>> {
         var button = new JFXButton();
 
         var fi = new FontIcon(icon.getValue());
+        fi.setFocusTraversable(false);
         icon.addListener((c, o, n) -> {
             fi.setIconLiteral(n);
         });

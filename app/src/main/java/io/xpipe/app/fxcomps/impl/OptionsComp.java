@@ -107,6 +107,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 }
 
                 if (compRegion != null) {
+                    compRegion.accessibleTextProperty().bind(name.textProperty());
+                    compRegion.accessibleHelpProperty().bind(description.textProperty());
                     line.getChildren().add(compRegion);
                 }
 
@@ -132,6 +134,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 line.getChildren().add(name);
 
                 if (compRegion != null) {
+                    compRegion.accessibleTextProperty().bind(name.textProperty());
                     compRegions.add(compRegion);
                     line.getChildren().add(compRegion);
                     HBox.setHgrow(compRegion, Priority.ALWAYS);

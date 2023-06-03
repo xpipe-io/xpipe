@@ -71,7 +71,7 @@ public class BrowserNavBar extends SimpleComp {
                     struc.get().setPromptText("Overview of " + model.getName());
                 }).shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
                     s.get().requestFocus();
-                });
+                }).accessibleText("Current path");
 
         var graphic = Bindings.createStringBinding(
                 () -> {
@@ -87,6 +87,7 @@ public class BrowserNavBar extends SimpleComp {
                 .createRegion();
 
         var graphicButton = new Button(null, breadcrumbsGraphic);
+        graphicButton.setAccessibleText("Directory options");
         graphicButton.getStyleClass().add(Styles.LEFT_PILL);
         graphicButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(

@@ -59,8 +59,8 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     protected Region createGraphic(T s) {
         var provider = DataStoreProviders.byStore(s);
-        var imgView =
-                new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16).createRegion();
+        var imgView = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16)
+                .createRegion();
 
         var name = DataStorage.get().getUsableStores().stream()
                 .filter(e -> e.equals(s))
@@ -77,6 +77,14 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         return new Label(name, imgView);
     }
 
+    private String toName(DataStore store) {
+        if (mode == Mode.PROXY && store instanceof ShellStore && ShellStore.isLocal(store.asNeeded())) {
+            return AppI18n.get("none");
+        }
+
+        return XPipeDaemon.getInstance().getStoreName(store).orElse("?");
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
@@ -88,6 +96,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         .findFirst()
                         .orElseThrow()
                         .createRegion(),
+                t -> toName(t),
                 new Label(AppI18n.get("none")),
                 n -> true);
         comboBox.setSelectedDisplay(t -> createGraphic(t));

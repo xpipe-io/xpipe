@@ -72,7 +72,7 @@ public class DsProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>>> im
 
     @Override
     public CompStructure<ComboBox<Node>> createBase() {
-        var comboBox = new CustomComboBoxBuilder<>(provider, this::createGraphic, createDefaultNode(), v -> true);
+        var comboBox = new CustomComboBoxBuilder<>(provider, this::createGraphic, dataSourceProvider -> dataSourceProvider.getDisplayName(), createDefaultNode(), v -> true);
         comboBox.add(null);
         comboBox.addSeparator();
         comboBox.addFilter((v, s) -> v.getDisplayName().toLowerCase().contains(s.toLowerCase()));

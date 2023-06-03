@@ -165,7 +165,8 @@ public class BrowserComp extends SimpleComp {
         // Handle selection from model
         model.getSelected().addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(newValue));
+                var tab = tabs.getTabs().get(model.getOpenFileSystems().indexOf(newValue));
+                tabs.getSelectionModel().select(tab);
             });
         });
 
@@ -258,6 +259,7 @@ public class BrowserComp extends SimpleComp {
         new FancyTooltipAugment<>(new SimpleStringProperty(model.getName())).augment(label);
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
         tab.setContent(new OpenFileSystemComp(model).createSimple());
+        tab.setText(model.getName());
         return tab;
     }
 }

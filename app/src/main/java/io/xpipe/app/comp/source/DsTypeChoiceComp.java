@@ -50,7 +50,7 @@ public class DsTypeChoiceComp extends Comp<CompStructure<StackPane>> {
                 return;
             }
 
-            var builder = new CustomComboBoxBuilder<>(selectedType, app -> createLabel(app), new Label(""), v -> true);
+            var builder = new CustomComboBoxBuilder<>(selectedType, app -> createLabel(app), dataSourceType -> dataSourceType.toString(), new Label(""), v -> true);
             builder.add(provider.getValue().getPrimaryType());
 
             var list = Arrays.stream(DataSourceType.values())

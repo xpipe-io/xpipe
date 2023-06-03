@@ -36,6 +36,8 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
                             section.getWrapper().toggleExpanded();
                         })
                 .apply(struc -> struc.get().setPrefWidth(40))
+                .focusTraversable()
+                .accessibleText("Expand")
                 .disable(BindingsHelper.persist(
                         Bindings.size(section.getChildren()).isEqualTo(0)))
                 .grow(false, true).styleClass("expand-button");

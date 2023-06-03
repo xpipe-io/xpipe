@@ -60,7 +60,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
         });
 
         var comboBox =
-                new CustomComboBoxBuilder<FileSystemStore>(fileSystemProperty, this::createGraphic, null, v -> true);
+                new CustomComboBoxBuilder<FileSystemStore>(fileSystemProperty, this::createGraphic, store -> getName(store), null, v -> true);
         comboBox.setSelectedDisplay(this::createDisplayGraphic);
         DataStorage.get().getUsableStores().stream()
                 .filter(e -> e instanceof FileSystemStore)

@@ -34,6 +34,7 @@ public class BigIconButton extends ButtonComp {
         vbox.getChildren().add(label);
 
         var b = new Button(null);
+        b.accessibleTextProperty().bind(getName());
         b.setGraphic(vbox);
         b.setOnAction(e -> getListener().run());
         b.getStyleClass().add("big-icon-button-comp");

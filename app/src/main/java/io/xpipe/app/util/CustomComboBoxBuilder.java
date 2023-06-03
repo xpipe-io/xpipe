@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -25,6 +26,7 @@ public class CustomComboBoxBuilder<T> {
 
     private final Property<T> selected;
     private final Function<T, Node> nodeFunction;
+    private final Function<T, String> accessibleNameFunction;
     private Function<T, Node> selectedDisplayNodeFunction;
     private final Map<Node, T> nodeMap = new HashMap<>();
     private final Map<Node, Runnable> actionsMap = new HashMap<>();
@@ -39,10 +41,11 @@ public class CustomComboBoxBuilder<T> {
     private Function<T, Node> unknownNode;
 
     public CustomComboBoxBuilder(
-            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
+            Property<T> selected, Function<T, Node> nodeFunction, Function<T, String> accessibleNameFunction, Node emptyNode, Predicate<T> veto) {
         this.selected = selected;
         this.nodeFunction = nodeFunction;
         this.selectedDisplayNodeFunction = nodeFunction;
+        this.accessibleNameFunction = accessibleNameFunction;
         this.emptyNode = emptyNode;
         this.veto = veto;
     }
@@ -66,6 +69,7 @@ public class CustomComboBoxBuilder<T> {
 
     public Node add(T val) {
         var node = nodeFunction.apply(val);
+        node.setAccessibleText(accessibleNameFunction.apply(val));
         nodeMap.put(node, val);
         nodes.add(node);
         if (filterPredicate != null) {
@@ -86,6 +90,7 @@ public class CustomComboBoxBuilder<T> {
         var header = new Label(name);
         header.setAlignment(Pos.CENTER);
         var v = new VBox(spacer, header, new Separator(Orientation.HORIZONTAL));
+        v.setAccessibleText(name);
         v.setAlignment(Pos.CENTER);
         nodes.add(v);
         disabledNodes.add(v);
@@ -105,6 +110,9 @@ public class CustomComboBoxBuilder<T> {
 
     public ComboBox<Node> build() {
         var cb = new ComboBox<Node>();
+        cb.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+            return selected.getValue() != null ? accessibleNameFunction.apply(selected.getValue()) : null;
+        }, selected));
         cb.getItems().addAll(nodes);
         cb.setCellFactory((lv) -> {
             return new Cell();

@@ -148,7 +148,11 @@ public class StoreEntryComp extends SimpleComp {
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(grid));
         button.getStyleClass().add("store-entry-comp");
         button.setMaxWidth(2000);
-        button.setFocusTraversable(false);
+        button.setFocusTraversable(true);
+        button.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+            return entry.getName();
+        }, entry.nameProperty()));
+        button.accessibleHelpProperty().bind(entry.getInformation());
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
@@ -214,6 +218,7 @@ public class StoreEntryComp extends SimpleComp {
     private Comp<?> createSettingsButton() {
         var settingsButton = new IconButtonComp("mdomz-settings");
         settingsButton.styleClass("settings");
+        settingsButton.accessibleText("Settings");
         settingsButton.apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(GrowAugment.create(false, true));
         settingsButton.apply(s -> {

@@ -36,6 +36,7 @@ public interface LeafAction extends BrowserAction {
             b.setGraphic(graphic);
         }
         b.setMnemonicParsing(false);
+        b.setAccessibleText(getName(model, selected));
 
         b.setDisable(!isActive(model, selected));
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {

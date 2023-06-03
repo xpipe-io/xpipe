@@ -86,7 +86,7 @@ public class BrowserFileListCompEntry {
         }
 
         // Prevent dropping items onto themselves
-        if (item != null && BrowserClipboard.currentDragClipboard.getEntries().contains(item)) {
+        if (item != null && BrowserClipboard.currentDragClipboard.getEntries().contains(item.getRawFileEntry())) {
             return false;
         }
 

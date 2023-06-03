@@ -24,7 +24,7 @@ public class CharsetChoiceComp extends SimpleComp {
                     return new Label(streamCharset.getCharset().displayName()
                             + (streamCharset.hasByteOrderMark() ? " (BOM)" : ""));
                 },
-                new Label(AppI18n.get("app.none")),
+                streamCharset -> streamCharset.getNames().get(0), new Label(AppI18n.get("app.none")),
                 null);
         builder.addFilter((charset, filter) -> {
             return charset.getCharset().displayName().contains(filter);

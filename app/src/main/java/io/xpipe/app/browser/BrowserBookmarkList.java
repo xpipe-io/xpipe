@@ -6,6 +6,7 @@ import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
@@ -13,6 +14,7 @@ import javafx.beans.property.*;
 import javafx.collections.SetChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
+import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
@@ -47,7 +49,7 @@ final class BrowserBookmarkList extends SimpleComp {
             return new StoreCell();
         });
 
-        model.getSelected().addListener((observable, oldValue, newValue) -> {
+        PlatformThread.sync(model.getSelected()).addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 view.getSelectionModel().clearSelection();
                 return;
@@ -95,6 +97,7 @@ final class BrowserBookmarkList extends SimpleComp {
 
         private StoreCell() {
             disableProperty().bind(busy);
+            setAccessibleRole(AccessibleRole.BUTTON);
             setGraphic(imageView);
             addEventHandler(DragEvent.DRAG_OVER, mouseEvent -> {
                 if (getItem() == null) {
@@ -131,7 +134,8 @@ final class BrowserBookmarkList extends SimpleComp {
                             })
                     .apply(struc -> struc.get().setPrefWidth(25))
                     .grow(false, true)
-                    .styleClass("expand-button");
+                    .styleClass("expand-button")
+                    .apply(struc -> struc.get().setFocusTraversable(false));
 
             setDisclosureNode(button.createRegion());
         }
@@ -145,12 +149,16 @@ final class BrowserBookmarkList extends SimpleComp {
                 // and cells are emptied on each change, leading to unnecessary changes
                 // img.set(null);
                 setGraphic(null);
+                setFocusTraversable(false);
+                setAccessibleText(null);
             } else {
                 setText(item.getName());
                 img.set(item.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(item.getEntry().getStore()));
                 setGraphic(imageView);
+                setFocusTraversable(true);
+                setAccessibleText(item.getName() + " " + item.getEntry().getProvider().getDisplayName());
             }
         }
     }

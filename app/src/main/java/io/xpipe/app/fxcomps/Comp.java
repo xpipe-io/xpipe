@@ -59,6 +59,14 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
     }
 
+    public Comp<S> focusTraversable() {
+        return apply(struc -> struc.get().setFocusTraversable(true));
+    }
+
+    public Comp<S> focusTraversable(boolean b) {
+        return apply(struc -> struc.get().setFocusTraversable(b));
+    }
+
     public Comp<S> visible(ObservableValue<Boolean> o) {
         return apply(struc -> struc.get().visibleProperty().bind(o));
     }
@@ -89,6 +97,11 @@ public abstract class Comp<S extends CompStructure<?>> {
     public Comp<S> styleClass(String styleClass) {
         return apply(struc -> struc.get().getStyleClass().add(styleClass));
     }
+
+    public Comp<S> accessibleText(String text) {
+        return apply(struc -> struc.get().setAccessibleText(text));
+    }
+
 
     public Comp<S> grow(boolean width, boolean height) {
         return apply(GrowAugment.create(width, height));

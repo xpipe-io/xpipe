@@ -26,6 +26,7 @@ import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.TableViewSkin;
@@ -100,10 +101,12 @@ final class BrowserFileListComp extends SimpleComp {
         modeCol.setSortable(false);
 
         var table = new TableView<BrowserEntry>();
+        table.setAccessibleText("Directory contents");
         table.setPlaceholder(new Region());
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, sizeCol, modeCol, mtimeCol);
         table.getSortOrder().add(filenameCol);
+        table.setFocusTraversable(true);
         table.setSortPolicy(param -> {
             var comp = table.getComparator();
             if (comp == null) {
@@ -229,6 +232,12 @@ final class BrowserFileListComp extends SimpleComp {
 
         table.setRowFactory(param -> {
             TableRow<BrowserEntry> row = new TableRow<>();
+            row.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+                return row.getItem() != null ? row.getItem().getFileName() : null;
+            }, row.itemProperty()));
+            row.focusTraversableProperty().bind(Bindings.createBooleanBinding(() -> {
+                return row.getItem() != null;
+            }, row.itemProperty()));
             new ContextMenuAugment<>(event -> {
                 if (row.getItem() == null) {
                     return event.getButton() == MouseButton.SECONDARY;
@@ -405,6 +414,11 @@ final class BrowserFileListComp extends SimpleComp {
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
         public FilenameCell(Property<BrowserEntry> editing) {
+            accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+                return getItem() != null ? getItem() : null;
+            }, itemProperty()));
+            setAccessibleRole(AccessibleRole.TEXT);
+
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
                     PlatformThread.runLaterIfNeeded(() -> textField.requestFocus());

@@ -95,6 +95,7 @@ public class SvgView {
         wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine().setJavaScriptEnabled(false);
         wv.setContextMenuEnabled(false);
+        wv.setFocusTraversable(false);
 
         wv.getEngine().loadContent(getHtml(svgContent.getValue()));
         svgContent.addListener((c, o, n) -> {
