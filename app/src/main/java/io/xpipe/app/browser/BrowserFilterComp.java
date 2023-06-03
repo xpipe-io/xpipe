@@ -67,15 +67,18 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         });
 
         text.setPrefWidth(0);
+        text.setFocusTraversable(false);
         button.getStyleClass().add(Styles.FLAT);
         button.disableProperty().bind(model.getInOverview());
         expanded.addListener((observable, oldValue, val) -> {
             if (val) {
                 text.setPrefWidth(250);
+                text.setFocusTraversable(true);
                 button.getStyleClass().add(Styles.RIGHT_PILL);
                 button.getStyleClass().remove(Styles.FLAT);
             } else {
                 text.setPrefWidth(0);
+                text.setFocusTraversable(false);
                 button.getStyleClass().remove(Styles.RIGHT_PILL);
                 button.getStyleClass().add(Styles.FLAT);
             }
