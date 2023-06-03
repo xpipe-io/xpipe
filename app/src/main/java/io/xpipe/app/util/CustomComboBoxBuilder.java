@@ -1,11 +1,12 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -26,7 +27,8 @@ public class CustomComboBoxBuilder<T> {
 
     private final Property<T> selected;
     private final Function<T, Node> nodeFunction;
-    private final Function<T, String> accessibleNameFunction;
+    private ObservableValue<String> emptyAccessibilityName = AppI18n.observable("none");
+    private Function<T, String> accessibleNameFunction;
     private Function<T, Node> selectedDisplayNodeFunction;
     private final Map<Node, T> nodeMap = new HashMap<>();
     private final Map<Node, Runnable> actionsMap = new HashMap<>();
@@ -41,17 +43,24 @@ public class CustomComboBoxBuilder<T> {
     private Function<T, Node> unknownNode;
 
     public CustomComboBoxBuilder(
-            Property<T> selected, Function<T, Node> nodeFunction, Function<T, String> accessibleNameFunction, Node emptyNode, Predicate<T> veto) {
+            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
         this.selected = selected;
         this.nodeFunction = nodeFunction;
         this.selectedDisplayNodeFunction = nodeFunction;
-        this.accessibleNameFunction = accessibleNameFunction;
         this.emptyNode = emptyNode;
         this.veto = veto;
     }
 
     public void setSelectedDisplay(Function<T, Node> nodeFunction) {
         selectedDisplayNodeFunction = nodeFunction;
+    }
+
+    public void setAccessibleNames(Function<T, String> function) {
+        accessibleNameFunction = function;
+    }
+
+    public void setEmptyAccessibilityName(ObservableValue<String> n) {
+        emptyAccessibilityName = n;
     }
 
     public void addAction(Node node, Runnable run) {
@@ -69,7 +78,6 @@ public class CustomComboBoxBuilder<T> {
 
     public Node add(T val) {
         var node = nodeFunction.apply(val);
-        node.setAccessibleText(accessibleNameFunction.apply(val));
         nodeMap.put(node, val);
         nodes.add(node);
         if (filterPredicate != null) {
@@ -110,10 +118,8 @@ public class CustomComboBoxBuilder<T> {
 
     public ComboBox<Node> build() {
         var cb = new ComboBox<Node>();
-        cb.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-            return selected.getValue() != null ? accessibleNameFunction.apply(selected.getValue()) : null;
-        }, selected));
         cb.getItems().addAll(nodes);
+
         cb.setCellFactory((lv) -> {
             return new Cell();
         });
@@ -166,6 +172,13 @@ public class CustomComboBoxBuilder<T> {
             });
         }
 
+        if (emptyNode != null) {
+            emptyNode.setAccessibleText(emptyAccessibilityName.getValue());
+        }
+        if (accessibleNameFunction != null) {
+            nodes.forEach(node -> node.setAccessibleText(accessibleNameFunction.apply(nodeMap.get(node))));
+        }
+
         return cb;
     }
 
@@ -174,6 +187,16 @@ public class CustomComboBoxBuilder<T> {
         @Override
         protected void updateItem(Node item, boolean empty) {
             super.updateItem(item, empty);
+
+            accessibleTextProperty().unbind();
+            if (empty || item.equals(emptyNode)) {
+                if (emptyAccessibilityName != null) {
+                    accessibleTextProperty().bind(emptyAccessibilityName);
+                } else {
+                    setAccessibleText(null);
+                }
+            }
+
             if (empty) {
                 return;
             }
@@ -186,12 +209,15 @@ public class CustomComboBoxBuilder<T> {
             // Case for dynamically created unknown nodes
             if (!nodeMap.containsKey(item)) {
                 setGraphic(item);
+                // Don't expect the accessible name function to properly map this item
+                setAccessibleText(null);
                 return;
             }
 
             var val = nodeMap.get(item);
             var newNode = selectedDisplayNodeFunction.apply(val);
             setGraphic(newNode);
+            setAccessibleText(newNode.getAccessibleText());
         }
     }
 
@@ -212,9 +238,12 @@ public class CustomComboBoxBuilder<T> {
             setGraphic(item);
             if (disabledNodes.contains(item)) {
                 this.setDisable(true);
+                this.setFocusTraversable(false);
                 //                 this.setPadding(Insets.EMPTY);
             } else {
                 this.setDisable(false);
+                this.setFocusTraversable(true);
+                setAccessibleText(item.getAccessibleText());
             }
         }
     }

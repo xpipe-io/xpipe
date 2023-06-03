@@ -1,6 +1,6 @@
 <img src="https://user-images.githubusercontent.com/72509152/213873342-7638e830-8a95-4b5d-ad3e-5a9a0b4bf538.png" alt="drawing" width="250"/>
 
-### The remote file browser for professionals
+### The revolutionary remote file browser for professionals
 
 XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs to establish and utilize local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all.
 

@@ -26,7 +26,7 @@
 -fx-border-radius: 1px;
 }
 
-.bookmark-list .tree-cell:hover {
+.bookmark-list .tree-cell:filled:hover {
     -fx-background-color: -color-accent-muted;
 }
 

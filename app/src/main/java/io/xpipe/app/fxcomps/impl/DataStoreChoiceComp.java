@@ -96,9 +96,9 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         .findFirst()
                         .orElseThrow()
                         .createRegion(),
-                t -> toName(t),
                 new Label(AppI18n.get("none")),
                 n -> true);
+        comboBox.setAccessibleNames(t -> toName(t));
         comboBox.setSelectedDisplay(t -> createGraphic(t));
         comboBox.setUnknownNode(t -> createGraphic(t));
 

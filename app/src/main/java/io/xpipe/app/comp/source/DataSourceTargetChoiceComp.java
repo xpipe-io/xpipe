@@ -68,7 +68,8 @@ public class DataSourceTargetChoiceComp extends Comp<CompStructure<ComboBox<Node
         var addMoreLabel = new Label(AppI18n.get("addMore"), new FontIcon("mdmz-plus"));
 
         var builder = new CustomComboBoxBuilder<DataSourceTarget>(
-                selectedApplication, app -> createLabel(app), dataSourceTarget -> dataSourceTarget.getName().getValue(), new Label(""), v -> true);
+                selectedApplication, app -> createLabel(app), new Label(""), v -> true);
+        builder.setAccessibleNames(dataSourceTarget -> dataSourceTarget.getName().getValue());
 
         // builder.addFilter((v, s) -> v.getName().getValue().toLowerCase().contains(s));
 
