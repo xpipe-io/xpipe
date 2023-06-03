@@ -1,10 +1,14 @@
 <img src="https://user-images.githubusercontent.com/72509152/213873342-7638e830-8a95-4b5d-ad3e-5a9a0b4bf538.png" alt="drawing" width="250"/>
 
-### The revolutionary remote file browser for professionals
+### The remote file browser for professionals
 
 XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs to establish and utilize local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all.
 
-It currently supports:
+It comes with all file management features you would expect plus a dedicated remote connection manager to organize and open remote shell connections to your infrastructure.
+
+XPipe fully integrates with your existing tools by delegating all tasks to your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
+
+The full feature set is currently supported for:
 - Containers located on any host such as [docker](https://www.docker.com/) or [LXD](https://linuxcontainers.org/lxd/introduction/) container instances
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl) instances
@@ -13,7 +17,7 @@ It currently supports:
 - Any other custom remote connection methods that works through the command-line
 - Arbitrary types of proxies to establish connections
 
-Furthermore, XPipe integrates with your existing tools and workflows by delegating all tasks to your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to implement custom functionality through extensions.
+The project is still in a relatively early stage and will benefit massively from your feedback, issue reports, feature request, and more. There are also a lot more features to come in the future.
 
 You have more questions? Then check out the new [FAQ](/FAQ.md).
 
@@ -54,6 +58,7 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 - Quickly open a terminal into any directory
 - Utilize your favourite local programs to open and edit remote files
 - Has the same feature set for all supported connection types
+- Dynamically elevate sessions with sudo when required 
 
 ![Remote file explorer](https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png)
 
@@ -87,3 +92,4 @@ If you want to talk you can also join:
 
 - The [XPipe Discord Server](https://discord.gg/8y89vS8cRb)
 - The [XPipe Slack Server](https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
+
