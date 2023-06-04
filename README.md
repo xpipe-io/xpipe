@@ -52,7 +52,7 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 
 ## Features
 
-### Flexible remote file browser
+### Powerful remote file browser
 
 - Interact with the file system of any remote system using a workflow optimized for professionals
 - Quickly open a terminal into any directory
@@ -68,6 +68,7 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 - Securely stores all information exclusively on your computer and encrypts all secret information. See
   the [security page](/SECURITY.md) for more information
 - Create custom desktop shortcuts to automatically open specific remote connections in your terminal
+- Don't worry about encoding issues on Windows systems, all shells are launched in UTF8 mode by default
 
 ![Connection manager](https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png)
 

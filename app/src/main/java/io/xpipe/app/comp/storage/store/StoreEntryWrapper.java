@@ -163,6 +163,24 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         });
     }
 
+    public void refreshIfNeeded() throws Exception {
+        var found = getDefaultActionProvider().getValue();
+        if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || found == null) {
+            getEntry().refresh(true);
+            PlatformThread.runLaterIfNeeded(() -> {
+                expanded.set(true);
+            });
+        }
+    }
+
+    public void executeDefaultAction() throws Exception {
+        var found = getDefaultActionProvider().getValue();
+        if (found != null) {
+            entry.updateLastUsed();
+            found.createAction(entry.getStore().asNeeded()).execute();
+        }
+    }
+
     public void toggleExpanded() {
         this.expanded.set(!expanded.getValue());
     }

@@ -2,7 +2,6 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.dialog.Dialog;
-import io.xpipe.core.source.CollectionDataSource;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.ShellStore;
@@ -13,10 +12,6 @@ import javafx.beans.property.Property;
 import java.util.List;
 
 public interface DataStoreProvider {
-
-    default CollectionDataSource<?> createAssociatedContainer(DataStore store) {
-        return null;
-    }
 
     default ModuleInstall getRequiredAdditionalInstallation() {
         return null;

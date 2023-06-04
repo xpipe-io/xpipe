@@ -7,6 +7,8 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
@@ -112,12 +114,20 @@ final class BrowserBookmarkList extends SimpleComp {
                 mouseEvent.consume();
             });
             addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                if (getItem() == null || event.getButton() != MouseButton.PRIMARY || (!getItem().getState().getValue().isUsable()) || !(getItem().getEntry()
-                        .getStore() instanceof ShellStore fileSystem)) {
+                if (getItem() == null
+                        || event.getButton() != MouseButton.PRIMARY
+                        || (!getItem().getState().getValue().isUsable())) {
                     return;
                 }
 
-                model.openFileSystemAsync(null, fileSystem, null, busy);
+                ThreadHelper.runFailableAsync(() -> {
+                    BusyProperty.execute(busy, () -> {
+                        getItem().refreshIfNeeded();
+                    });
+                    if (getItem().getEntry().getStore() instanceof ShellStore fileSystem) {
+                        model.openFileSystemAsync(null, fileSystem, null, busy);
+                    }
+                });
                 event.consume();
             });
             var icon = new SimpleObjectProperty<String>("mdal-keyboard_arrow_right");
@@ -128,15 +138,13 @@ final class BrowserBookmarkList extends SimpleComp {
                     icon.set("mdal-keyboard_arrow_right");
                 }
             });
-            var button = new IconButtonComp(icon,
-                            () -> {
-                                getTreeItem().setExpanded(!getTreeItem().isExpanded());
-                            })
+            var button = new IconButtonComp(icon, () -> {
+                        getTreeItem().setExpanded(!getTreeItem().isExpanded());
+                    })
                     .apply(struc -> struc.get().setPrefWidth(25))
                     .grow(false, true)
                     .styleClass("expand-button")
                     .apply(struc -> struc.get().setFocusTraversable(false));
-
             setDisclosureNode(button.createRegion());
         }
 
@@ -158,7 +166,8 @@ final class BrowserBookmarkList extends SimpleComp {
                         .getDisplayIconFileName(item.getEntry().getStore()));
                 setGraphic(imageView);
                 setFocusTraversable(true);
-                setAccessibleText(item.getName() + " " + item.getEntry().getProvider().getDisplayName());
+                setAccessibleText(
+                        item.getName() + " " + item.getEntry().getProvider().getDisplayName());
             }
         }
     }
