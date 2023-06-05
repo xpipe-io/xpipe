@@ -56,7 +56,7 @@ public interface ShellControl extends ProcessControl {
 
     default String executeSimpleStringCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
-            return c.readOrThrow();
+            return c.readStdoutOrThrow();
         }
     }
 

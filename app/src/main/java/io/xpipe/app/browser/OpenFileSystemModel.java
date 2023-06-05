@@ -139,7 +139,7 @@ public final class OpenFileSystemModel {
                             .getShell()
                             .get()
                             .command(normalizedPath)
-                            .workingDirectory(directory)
+                            .withWorkingDirectory(directory)
                             .prepareTerminalOpen(name);
                     TerminalHelper.open(normalizedPath, cmd);
                 }

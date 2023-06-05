@@ -14,7 +14,7 @@ public abstract class ExecuteApplicationAction implements LeafAction, Applicatio
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         for (BrowserEntry entry : entries) {
             var command = detach() ? ScriptHelper.createDetachCommand(sc, createCommand(model, entry)) : createCommand(model, entry);
-            try (var cc = sc.command(command).workingDirectory(model.getCurrentDirectory().getPath()).start()) {
+            try (var cc = sc.command(command).withWorkingDirectory(model.getCurrentDirectory().getPath()).start()) {
                 cc.discardOrThrow();
             }
         }

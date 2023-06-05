@@ -2,6 +2,9 @@ package io.xpipe.core.process;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 @Getter
 public class ProcessOutputException extends Exception {
 
@@ -11,16 +14,20 @@ public class ProcessOutputException extends Exception {
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
 
-    public static ProcessOutputException of(int exitCode, String stdout, String stderr) {
-        var combinedError = (stdout != null && !stdout.isBlank() ? stdout.strip() + "\n\n" : "")
-                + (stderr != null && !stderr.isBlank() ? stderr.strip() : "");
+    public static ProcessOutputException of(int exitCode, String... messages) {
+        var combinedError = Arrays.stream(messages)
+                .filter(s -> s != null && !s.isBlank())
+                .map(s -> s.strip())
+                .collect(Collectors.joining("\n\n"))
+                .replaceAll("\r\n", "\n");
         var hasMessage = !combinedError.isBlank();
-        var errorSuffix = hasMessage ? ": " + combinedError : "";
+        var errorSuffix = hasMessage ? ":\n" + combinedError : "";
         var message =
                 switch (exitCode) {
-                    case CommandControl.START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed" + errorSuffix;
-                    case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out"
+                    case CommandControl
+                            .START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed"
                             + errorSuffix;
+                    case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
                 };
         return new ProcessOutputException(message, exitCode, combinedError);

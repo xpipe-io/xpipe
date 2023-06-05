@@ -75,7 +75,7 @@ public class FileSystemHelper {
         var normalized = shell.get()
                 .getShellDialect()
                 .normalizeDirectory(shell.get(), path)
-                .readOrThrow();
+                .readStdoutOrThrow();
 
         if (!model.getFileSystem().directoryExists(normalized)) {
             throw new IllegalArgumentException(String.format("Directory %s does not exist", normalized));

@@ -34,7 +34,7 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl notComplex();
 
-    CommandControl workingDirectory(String directory);
+    CommandControl withWorkingDirectory(String directory);
 
     default void execute() throws Exception {
         try (var c = start()) {
@@ -56,7 +56,7 @@ public interface CommandControl extends ProcessControl {
 
     public boolean waitFor();
 
-    CommandControl customCharset(Charset charset);
+    CommandControl withCustomCharset(Charset charset);
 
     int getExitCode();
 
@@ -82,7 +82,7 @@ public interface CommandControl extends ProcessControl {
 
     public byte[] readRawBytesOrThrow() throws Exception;
 
-    public String readOrThrow() throws Exception;
+    public String readStdoutOrThrow() throws Exception;
 
     public default boolean discardAndCheckExit() throws ProcessOutputException {
         try {

@@ -156,7 +156,7 @@ public class XPipeInstallation {
 
     public static String queryInstallationVersion(ShellControl p, String exec) throws Exception {
         try (CommandControl c = p.command(List.of(exec, "version")).start()) {
-            return c.readOrThrow();
+            return c.readStdoutOrThrow();
         } catch (ProcessOutputException ex) {
             return "?";
         }

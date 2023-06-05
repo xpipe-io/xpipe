@@ -30,7 +30,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
                                         var cmd = pc.command(createCommand(pc, model, entry))
-                                                .workingDirectory(model.getCurrentDirectory()
+                                                .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())
                                                 .prepareTerminalOpen(FileNames.getFileName(
                                                         entry.getRawFileEntry().getPath()));
@@ -58,7 +58,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                                         var cmd = ScriptHelper.createDetachCommand(
                                                 pc, createCommand(pc, model, entry));
                                         pc.command(cmd)
-                                                .workingDirectory(model.getCurrentDirectory()
+                                                .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())
                                                 .execute();
                                     }
@@ -79,7 +79,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
                                         pc.command(createCommand(pc, model, entry))
-                                                .workingDirectory(model.getCurrentDirectory()
+                                                .withWorkingDirectory(model.getCurrentDirectory()
                                                                           .getPath())
                                                 .execute();
                                     }
