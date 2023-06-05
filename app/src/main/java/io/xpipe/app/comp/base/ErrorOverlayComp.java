@@ -27,7 +27,7 @@ public class ErrorOverlayComp extends SimpleComp {
             var comp = Comp.of(() -> {
                 var l = new TextArea();
                 l.textProperty().bind(text);
-                l.setWrapText(true);
+                l.setWrapText(false);
                 l.getStyleClass().add("error-overlay-comp");
                 l.setEditable(false);
                 return l;

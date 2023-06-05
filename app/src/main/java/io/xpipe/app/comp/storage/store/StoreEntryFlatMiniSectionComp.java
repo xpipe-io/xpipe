@@ -29,7 +29,6 @@ public class StoreEntryFlatMiniSectionComp extends SimpleComp {
             ALL.clear();
             var depth = 0;
             for (StoreSection v : topLevel.getChildren()) {
-                System.out.println(v.getWrapper().getEntry().getName() + " " + v.getChildren().size());
                 add(depth, v);
             }
         });

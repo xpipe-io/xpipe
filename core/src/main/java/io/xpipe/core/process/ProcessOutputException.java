@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 public class ProcessOutputException extends Exception {
 
     public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
-        var messageSuffix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ": " + ex.getOutput() : "";
+        var messageSuffix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ":\n" + ex.getOutput() : "";
         var message = customPrefix + messageSuffix;
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
