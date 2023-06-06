@@ -9,6 +9,7 @@ import io.xpipe.beacon.exchange.AskpassExchange;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,8 +48,7 @@ public class AskpassExchangeImpl extends AskpassExchange
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
                     var text = new SecretFieldComp(prop).createRegion();
-                    text.setStyle("-fx-border-width: 1px");
-                    alert.getDialogPane().setContent(text);
+                    alert.getDialogPane().setContent(new StackPane(text));
                 })
                 .filter(b -> b.getButtonData().isDefaultButton() && prop.getValue() != null)
                 .map(t -> {

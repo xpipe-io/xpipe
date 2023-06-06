@@ -25,6 +25,7 @@ public class SecretFieldComp extends Comp<CompStructure<TextField>> {
     @Override
     public CompStructure<TextField> createBase() {
         var text = new PasswordField();
+        text.getStyleClass().add("secret-field-comp");
         text.setText(value.getValue() != null ? value.getValue().getSecretValue() : null);
         text.textProperty().addListener((c, o, n) -> {
             value.setValue(n != null && n.length() > 0 ? encrypt(n.toCharArray()) : null);
