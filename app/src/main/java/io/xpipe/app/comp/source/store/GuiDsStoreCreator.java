@@ -267,6 +267,18 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             }
         }
 
+        if (DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
+            messageProp.setValue("Store with name " + name.getValue() + " does already exist");
+            changedSinceError.setValue(false);
+            return false;
+        }
+
+        if (DataStorage.get().getStoreEntryIfPresent(entry.getValue().getStore()).isPresent()) {
+            messageProp.setValue("A store with the same configuration does already exist");
+            changedSinceError.setValue(false);
+            return false;
+        }
+
         if (!validator.getValue().validate()) {
             var msg = validator
                     .getValue()
