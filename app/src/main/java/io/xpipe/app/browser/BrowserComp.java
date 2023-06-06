@@ -165,7 +165,8 @@ public class BrowserComp extends SimpleComp {
         // Handle selection from model
         model.getSelected().addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                var tab = tabs.getTabs().get(model.getOpenFileSystems().indexOf(newValue));
+                var index = model.getOpenFileSystems().indexOf(newValue);
+                var tab = index != -1 ? tabs.getTabs().get(index) : null;
                 tabs.getSelectionModel().select(tab);
             });
         });

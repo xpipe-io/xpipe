@@ -52,7 +52,6 @@ open module io.xpipe.ext.base {
             DeleteStoreChildrenAction,
             AddStoreAction,
             EditStoreAction,
-            StreamExportAction,
             ShareStoreAction,
             FileBrowseAction,
             FileEditAction;

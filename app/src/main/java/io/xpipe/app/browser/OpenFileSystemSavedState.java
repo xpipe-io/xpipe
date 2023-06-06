@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.util.JacksonMapper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -24,6 +25,9 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
@@ -38,7 +42,8 @@ public class OpenFileSystemSavedState {
         }
 
         @Override
-        public void serialize(OpenFileSystemSavedState value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        public void serialize(OpenFileSystemSavedState value, JsonGenerator gen, SerializerProvider provider)
+                throws IOException {
             var node = JsonNodeFactory.instance.objectNode();
             node.set("recentDirectories", JacksonMapper.getDefault().valueToTree(value.getRecentDirectories()));
             gen.writeTree(node);
@@ -51,14 +56,26 @@ public class OpenFileSystemSavedState {
             super(OpenFileSystemSavedState.class);
         }
 
+        private static <T> Predicate<T> distinctBy(Function<? super T, ?> f) {
+            Set<Object> objects = new HashSet<>();
+            return t -> objects.add(f.apply(t));
+        }
+
         @Override
         @SneakyThrows
         public OpenFileSystemSavedState deserialize(JsonParser p, DeserializationContext ctxt)
                 throws IOException, JacksonException {
             var tree = (ObjectNode) JacksonMapper.getDefault().readTree(p);
-            JavaType javaType = JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, RecentEntry.class);
-            List<RecentEntry> recentDirectories = JacksonMapper.getDefault().treeToValue(tree.remove("recentDirectories"), javaType);
-            return new OpenFileSystemSavedState(null, FXCollections.observableList(recentDirectories));
+            JavaType javaType = JacksonMapper.getDefault()
+                    .getTypeFactory()
+                    .constructCollectionLikeType(List.class, RecentEntry.class);
+            List<RecentEntry> recentDirectories =
+                    JacksonMapper.getDefault().treeToValue(tree.remove("recentDirectories"), javaType);
+            var cleaned = recentDirectories.stream()
+                    .map(recentEntry -> new RecentEntry(FileNames.toDirectory(recentEntry.directory), recentEntry.time))
+                    .filter(distinctBy(recentEntry -> recentEntry.getDirectory()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+            return new OpenFileSystemSavedState(null, FXCollections.observableList(cleaned));
         }
     }
 
@@ -85,7 +102,9 @@ public class OpenFileSystemSavedState {
 
     @Setter
     private OpenFileSystemModel model;
+
     private String lastDirectory;
+
     @NonNull
     private ObservableList<RecentEntry> recentDirectories;
 
@@ -138,14 +157,17 @@ public class OpenFileSystemSavedState {
     }
 
     private void updateRecent(String dir) {
-        recentDirectories.removeIf(recentEntry -> Objects.equals(recentEntry.directory, dir));
+        var without = FileNames.removeTrailingSlash(dir);
+        var with = FileNames.toDirectory(dir);
+        recentDirectories.removeIf(recentEntry ->
+                Objects.equals(recentEntry.directory, without) || Objects.equals(recentEntry.directory, with));
 
-        var o = new RecentEntry(dir, Instant.now());
+        var o = new RecentEntry(with, Instant.now());
         if (recentDirectories.size() < STORED) {
             recentDirectories.add(0, o);
         } else {
             recentDirectories.remove(recentDirectories.size() - 1);
-            recentDirectories.add(o);
+            recentDirectories.add(0, o);
         }
     }
 }

@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.Shortcuts;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +24,6 @@ import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ModalOverlayComp extends SimpleComp {
-
 
     public ModalOverlayComp(Comp<?> background, Property<OverlayContent> overlayContent) {
         this.background = background;
@@ -74,7 +74,6 @@ public class ModalOverlayComp extends SimpleComp {
                 }
 
                 var tp = new TitledPane(AppI18n.get(newValue.titleKey), box);
-                tp.setMaxWidth(400);
                 tp.setCollapsible(false);
 
                 var closeButton = new Button(null, new FontIcon("mdi2w-window-close"));
@@ -98,8 +97,16 @@ public class ModalOverlayComp extends SimpleComp {
                 stack.setAlignment(Pos.CENTER);
                 close.maxWidthProperty().bind(tp.widthProperty());
                 close.maxHeightProperty().bind(tp.heightProperty());
+                tp.maxWidthProperty().bind(stack.widthProperty().add(-100));
 
                 modal.show(stack);
+
+                // Wait 2 pulses before focus so that the scene can be assigned to r
+                Platform.runLater(() -> {
+                    Platform.runLater(() -> {
+                        r.requestFocus();
+                    });
+                });
             }
         });
         return pane;

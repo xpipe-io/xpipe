@@ -34,6 +34,10 @@ public class FileNames {
     }
 
     public static String getFileName(String file) {
+        if (file == null) {
+            return null;
+        }
+
         if (file.isEmpty()) {
             return "";
         }
