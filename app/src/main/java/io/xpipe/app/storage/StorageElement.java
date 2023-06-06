@@ -49,7 +49,8 @@ public abstract class StorageElement {
     public abstract void refresh(boolean deep) throws Exception;
 
     public void updateLastUsed() {
-        lastUsed = Instant.now();
+        this.lastUsed = Instant.now();
+        this.dirty = true;
         this.listeners.forEach(l -> l.onUpdate());
     }
 

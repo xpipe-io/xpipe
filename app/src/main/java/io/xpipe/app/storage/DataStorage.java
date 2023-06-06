@@ -440,7 +440,7 @@ public abstract class DataStorage {
 
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
         if (!store.getConfiguration().isDeletable()) {
-            throw new UnsupportedOperationException();
+            // throw new UnsupportedOperationException();
         }
 
         synchronized (this) {
