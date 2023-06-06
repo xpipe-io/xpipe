@@ -95,7 +95,9 @@ public class SvgView {
 
     private WebView createWebView() {
         var wv = new WebView();
-        wv.setPageFill(Color.TRANSPARENT);
+        // Sometimes a web view might not render when the background is said to transparent, at least according to stack overflow
+        wv.setPageFill(Color.valueOf("#00000001"));
+        // wv.setPageFill(Color.BLACK);
         wv.getEngine().setJavaScriptEnabled(false);
         wv.setContextMenuEnabled(false);
         wv.setFocusTraversable(false);
@@ -114,8 +116,9 @@ public class SvgView {
         wv.getChildrenUnmodifiable().addListener((ListChangeListener<Node>) change -> {
             Set<Node> scrolls = wv.lookupAll(".scroll-bar");
             for (Node scroll : scrolls) {
-                scroll.setVisible(false);
                 scroll.setFocusTraversable(false);
+                scroll.setVisible(false);
+                scroll.setManaged(false);
             }
         });
 

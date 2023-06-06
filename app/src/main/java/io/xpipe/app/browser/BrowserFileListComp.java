@@ -23,6 +23,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -108,19 +109,7 @@ final class BrowserFileListComp extends SimpleComp {
         table.getSortOrder().add(filenameCol);
         table.setFocusTraversable(true);
         table.setSortPolicy(param -> {
-            var comp = table.getComparator();
-            if (comp == null) {
-                return true;
-            }
-
-            var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
-            var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
-                    path -> path.getRawFileEntry().getKind() != FileKind.DIRECTORY);
-
-            Comparator<? super BrowserEntry> us =
-                    syntheticFirst.thenComparing(dirsFirst).thenComparing(comp);
-            FXCollections.sort(param.getItems(), us);
-            return true;
+            return sort(table, param.getItems());
         });
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
@@ -133,6 +122,22 @@ final class BrowserFileListComp extends SimpleComp {
         prepareTableChanges(table, mtimeCol, modeCol);
 
         return table;
+    }
+
+    private boolean sort(TableView<BrowserEntry> table, ObservableList<BrowserEntry> list) {
+        var comp = table.getComparator();
+        if (comp == null) {
+            return true;
+        }
+
+        var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
+        var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
+                path -> path.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+
+        Comparator<? super BrowserEntry> us =
+                syntheticFirst.thenComparing(dirsFirst).thenComparing(comp);
+        FXCollections.sort(list, us);
+        return true;
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
@@ -232,33 +237,44 @@ final class BrowserFileListComp extends SimpleComp {
 
         table.setRowFactory(param -> {
             TableRow<BrowserEntry> row = new TableRow<>();
-            row.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-                return row.getItem() != null ? row.getItem().getFileName() : null;
-            }, row.itemProperty()));
-            row.focusTraversableProperty().bind(Bindings.createBooleanBinding(() -> {
-                return row.getItem() != null;
-            }, row.itemProperty()));
-            new ContextMenuAugment<>(event -> {
-                if (row.getItem() == null) {
-                    return event.getButton() == MouseButton.SECONDARY;
-                }
+            row.accessibleTextProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return row.getItem() != null ? row.getItem().getFileName() : null;
+                            },
+                            row.itemProperty()));
+            row.focusTraversableProperty()
+                    .bind(Bindings.createBooleanBinding(
+                            () -> {
+                                return row.getItem() != null;
+                            },
+                            row.itemProperty()));
+            new ContextMenuAugment<>(
+                            event -> {
+                                if (row.getItem() == null) {
+                                    return event.getButton() == MouseButton.SECONDARY;
+                                }
 
-                if (row.getItem() != null && row.getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY)  {
-                    return event.getButton() == MouseButton.SECONDARY;
-                }
+                                if (row.getItem() != null
+                                        && row.getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY) {
+                                    return event.getButton() == MouseButton.SECONDARY;
+                                }
 
-                if (row.getItem() != null && row.getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY)  {
-                    return event.getButton() == MouseButton.SECONDARY || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
-                }
+                                if (row.getItem() != null
+                                        && row.getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY) {
+                                    return event.getButton() == MouseButton.SECONDARY
+                                            || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
+                                }
 
-                return false;
-            }, () -> {
-                        if (row.getItem() != null && row.getItem().isSynthetic()) {
-                            return null;
-                        }
+                                return false;
+                            },
+                            () -> {
+                                if (row.getItem() != null && row.getItem().isSynthetic()) {
+                                    return null;
+                                }
 
-                        return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
-                    })
+                                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
+                            })
                     .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
                     () -> new BrowserFileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
@@ -347,8 +363,11 @@ final class BrowserFileListComp extends SimpleComp {
                 }
 
                 if (!table.getItems().equals(newItems)) {
-                    table.getItems().setAll(newItems);
-                    table.sort();
+                    // Sort the list ourselves as sorting the table would incur a lot of cell updates
+                    var obs = FXCollections.observableList(newItems);
+                    sort(table, obs);
+                    table.getItems().setAll(obs);
+                    // table.sort();
                 }
 
                 var currentDirectory = fileList.getFileSystemModel().getCurrentDirectory();
@@ -410,13 +429,17 @@ final class BrowserFileListComp extends SimpleComp {
                 .createRegion();
         private final StackPane textField =
                 new LazyTextFieldComp(text).createStructure().get();
+        private final HBox graphic;
 
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
         public FilenameCell(Property<BrowserEntry> editing) {
-            accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-                return getItem() != null ? getItem() : null;
-            }, itemProperty()));
+            accessibleTextProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return getItem() != null ? getItem() : null;
+                            },
+                            itemProperty()));
             setAccessibleRole(AccessibleRole.TEXT);
 
             editing.addListener((observable, oldValue, newValue) -> {
@@ -436,30 +459,29 @@ final class BrowserFileListComp extends SimpleComp {
                 updateItem(getItem(), isEmpty());
             };
             text.addListener(listener);
+
+            graphic = new HBox(imageView, textField);
+            graphic.setSpacing(10);
+            graphic.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(textField, Priority.ALWAYS);
+            setGraphic(graphic);
         }
 
         @Override
-        protected void updateItem(String fullPath, boolean empty) {
+        protected void updateItem(String newName, boolean empty) {
             if (updating.get()) {
-                super.updateItem(fullPath, empty);
+                super.updateItem(newName, empty);
                 return;
             }
 
             try (var ignored = new BusyProperty(updating)) {
-                super.updateItem(fullPath, empty);
-                setText(null);
-                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                super.updateItem(newName, empty);
+                if (empty || newName == null) {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
-                    setGraphic(null);
+                    setOpacity(0.0);
                 } else {
-                    var box = new HBox(imageView, textField);
-                    box.setSpacing(10);
-                    box.setAlignment(Pos.CENTER_LEFT);
-                    HBox.setHgrow(textField, Priority.ALWAYS);
-                    setGraphic(box);
-
                     var isParentLink = getTableRow()
                             .getItem()
                             .getRawFileEntry()
@@ -473,11 +495,12 @@ final class BrowserFileListComp extends SimpleComp {
                     var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                     pseudoClassStateChanged(FOLDER, isDirectory);
 
-                    var fileName = isParentLink ? ".." : FileNames.getFileName(fullPath);
+                    var fileName = isParentLink ? ".." : FileNames.getFileName(newName);
                     var hidden = !isParentLink
                             && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
+                    setOpacity(1.0);
                 }
             }
         }
