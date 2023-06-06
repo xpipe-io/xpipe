@@ -480,6 +480,8 @@ final class BrowserFileListComp extends SimpleComp {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
+
+                    // Use opacity instead of visibility as visibility is kinda bugged with web views
                     setOpacity(0.0);
                 } else {
                     var isParentLink = getTableRow()
@@ -500,6 +502,8 @@ final class BrowserFileListComp extends SimpleComp {
                             && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
+
+                    // Use opacity instead of visibility as visibility is kinda bugged with web views
                     setOpacity(1.0);
                 }
             }
