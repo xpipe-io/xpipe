@@ -134,6 +134,12 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder addProperty(Property<?> prop) {
+        props.add(prop);
+        return this;
+    }
+
+
     public OptionsBuilder addSecret(Property<SecretValue> prop) {
         var comp = new SecretFieldComp(prop);
         pushComp(comp);

@@ -42,7 +42,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     MultiStepComp parent;
     Property<DataStoreProvider> provider;
-    Property<DataStore> input;
+    Property<DataStore> store;
     Predicate<DataStoreProvider> filter;
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
@@ -51,20 +51,23 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     Property<DataStoreEntry> entry = new SimpleObjectProperty<>();
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
     StringProperty name;
+    boolean exists;
 
     public GuiDsStoreCreator(
             MultiStepComp parent,
             Property<DataStoreProvider> provider,
-            Property<DataStore> input,
+            Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
-            String initialName) {
+            String initialName, boolean exists
+    ) {
         super(null);
         this.parent = parent;
         this.provider = provider;
-        this.input = input;
+        this.store = store;
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
-        this.input.addListener((c, o, n) -> {
+        this.exists = exists;
+        this.store.addListener((c, o, n) -> {
             changedSinceError.setValue(true);
         });
         this.name.addListener((c, o, n) -> {
@@ -72,10 +75,10 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         });
 
         this.provider.addListener((c, o, n) -> {
-            input.unbind();
-            input.setValue(null);
+            store.unbind();
+            store.setValue(null);
             if (n != null) {
-                input.setValue(n.defaultStore());
+                store.setValue(n.defaultStore());
             }
         });
 
@@ -100,7 +103,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 }
                 DataStorage.get().refresh();
             });
-        });
+        }, true);
     }
 
     public static void showCreation(Predicate<DataStoreProvider> filter) {
@@ -111,7 +114,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
-        });
+        }, false);
     }
 
     public static void show(
@@ -119,7 +122,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             DataStoreProvider provider,
             DataStore s,
             Predicate<DataStoreProvider> filter,
-            Consumer<DataStoreEntry> con) {
+            Consumer<DataStoreEntry> con,
+            boolean exists) {
         var prop = new SimpleObjectProperty<DataStoreProvider>(provider);
         var store = new SimpleObjectProperty<DataStore>(s);
         var loading = new SimpleBooleanProperty();
@@ -131,7 +135,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         return new MultiStepComp() {
 
                             private final GuiDsStoreCreator creator =
-                                    new GuiDsStoreCreator(this, prop, store, filter, initialName);
+                                    new GuiDsStoreCreator(this, prop, store, filter, initialName, exists);
 
                             @Override
                             protected List<Entry> setup() {
@@ -167,18 +171,18 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
         return new OptionsBuilder()
-                .addComp(comp, input)
+                .addComp(comp, store)
                 .name("connectionName")
                 .description("connectionNameDescription")
                 .addString(name, false)
                 .nonNull(propVal)
                 .bind(
                         () -> {
-                            if (name.getValue() == null || input.getValue() == null) {
+                            if (name.getValue() == null || store.getValue() == null) {
                                 return null;
                             }
 
-                            return DataStoreEntry.createNew(UUID.randomUUID(), name.getValue(), input.getValue());
+                            return DataStoreEntry.createNew(UUID.randomUUID(), name.getValue(), store.getValue());
                         },
                         entry)
                 .build();
@@ -210,7 +214,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 //                    return;
                 //                }
 
-                var d = n.guiDialog(input);
+                var d = n.guiDialog(store);
                 var propVal = new SimpleValidator();
                 var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
                 layout.setCenter(propR);
@@ -257,7 +261,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             return true;
         }
 
-        if (input.getValue() == null) {
+        if (store.getValue() == null) {
             return false;
         }
 
@@ -267,16 +271,12 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             }
         }
 
-        if (DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
-            messageProp.setValue("Store with name " + name.getValue() + " does already exist");
-            changedSinceError.setValue(false);
-            return false;
-        }
-
-        if (DataStorage.get().getStoreEntryIfPresent(entry.getValue().getStore()).isPresent()) {
-            messageProp.setValue("A store with the same configuration does already exist");
-            changedSinceError.setValue(false);
-            return false;
+        if (!exists) {
+            if (name.getValue() != null && DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
+                messageProp.setValue("Store with name " + name.getValue() + " does already exist");
+                changedSinceError.setValue(false);
+                return false;
+            }
         }
 
         if (!validator.getValue().validate()) {

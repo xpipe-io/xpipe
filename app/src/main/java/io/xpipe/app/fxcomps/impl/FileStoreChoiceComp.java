@@ -48,7 +48,8 @@ public class FileStoreChoiceComp extends SimpleComp {
 
         var fileNameComp = new TextFieldComp(fileProperty)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
-                .styleClass(onlyLocal ? Styles.LEFT_PILL : Styles.CENTER_PILL);
+                .styleClass(onlyLocal ? Styles.LEFT_PILL : Styles.CENTER_PILL)
+                .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
                     StandaloneFileBrowser.openSingleFile(selected);

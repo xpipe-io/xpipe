@@ -10,6 +10,7 @@ import javafx.collections.ListChangeListener;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.geometry.Point2D;
+import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -101,6 +102,7 @@ public class SvgView {
         wv.getEngine().setJavaScriptEnabled(false);
         wv.setContextMenuEnabled(false);
         wv.setFocusTraversable(false);
+        wv.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
 
         wv.getEngine().loadContent(getHtml(svgContent.getValue()));
         svgContent.addListener((c, o, n) -> {

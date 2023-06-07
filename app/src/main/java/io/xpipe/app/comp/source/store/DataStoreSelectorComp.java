@@ -32,7 +32,7 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
         button.setOnAction(e -> {
             GuiDsStoreCreator.show("inProgress", null, null, v -> v.getCategory().equals(category), entry -> {
                 chosenStore.setValue(entry.getStore());
-            });
+            }, false);
             e.consume();
         });
 
