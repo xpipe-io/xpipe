@@ -376,7 +376,9 @@ public class AppPrefs {
 
     public static void reset() {
         INSTANCE.save();
-        INSTANCE = null;
+
+        // Keep instance as we might need some values on shutdown, e.g. on update with terminals
+        // INSTANCE = null;
     }
 
     public static AppPrefs get() {
