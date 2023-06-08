@@ -2,20 +2,21 @@
 
 ### The remote file browser for professionals
 
-XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs via stdout, stderr, and stdin to establish local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all as that part is delegated to other programs.
+XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs via stdout, stderr, and stdin to handle local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all as that part is delegated to your programs.
 
-It comes with all file management features you would expect plus a dedicated remote connection manager to organize and open remote shell connections to your entire infrastructure.
+It comes with all file management features you would expect plus a dedicated remote connection hub to organize and open remote shell connections to your entire infrastructure.
 
-XPipe fully integrates with your existing tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
+XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
 The full feature set is currently supported for:
-- Containers located on any host such as [docker](https://www.docker.com/) or [LXD](https://linuxcontainers.org/lxd/introduction/) container instances
+- [docker](https://www.docker.com/) and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
 - [Kubernetes](https://kubernetes.io/) clusters and their contained pods and containers
 - Any other custom remote connection methods that works through the command-line
-- Arbitrary types of proxies to establish connections
+
+Furthermore, you can also use any remote shell connection as a proxy when establishing new connections, allowing full flexibility to set up connection routes.
 
 The project is still in a relatively early stage and will benefit massively from your feedback, issue reports, feature request, and more. There are also a lot more features to come in the future.
 
@@ -80,11 +81,11 @@ The feature set is the same for all supported connection types. It of course als
 - Supports launches from the GUI or directly from the command-line
 - Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
 
-</br>
+<br>
 <p align="center">
   <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" />
 </p>
-</br>
+<br>
 
 ## Further information
 
