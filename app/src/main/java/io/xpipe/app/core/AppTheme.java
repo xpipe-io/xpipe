@@ -83,6 +83,9 @@ public class AppTheme {
 
         PlatformThread.runLaterIfNeeded(() -> {
             for (Window window : Window.getWindows()) {
+                // Fix scene content not taking the correct size after style seed change
+                window.setWidth(window.getWidth() - 1);
+
                 var scene = window.getScene();
                 Image snapshot = scene.snapshot(null);
                 Pane root = (Pane) scene.getRoot();
@@ -95,7 +98,9 @@ public class AppTheme {
                         new KeyFrame(Duration.ZERO, new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
                         new KeyFrame(
                                 Duration.millis(1250), new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
-                transition.setOnFinished(e -> root.getChildren().remove(imageView));
+                transition.setOnFinished(e -> {
+                    root.getChildren().remove(imageView);
+                });
                 transition.play();
             }
 

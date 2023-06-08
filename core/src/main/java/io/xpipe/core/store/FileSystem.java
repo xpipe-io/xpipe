@@ -9,6 +9,7 @@ import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -79,18 +80,22 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     Stream<FileEntry> listFiles(String file) throws Exception;
 
-    default Stream<FileEntry> listFilesRecursively(String file) throws Exception {
-        return listFiles(file).flatMap(fileEntry -> {
+    default List<FileEntry> listFilesRecursively(String file) throws Exception {
+        var base = listFiles(file).toList();
+        return base.stream().flatMap(fileEntry -> {
             if (fileEntry.getKind() != FileKind.DIRECTORY) {
                 return Stream.of(fileEntry);
             }
 
             try {
-                return Stream.concat(Stream.of(fileEntry), listFilesRecursively(fileEntry.getPath()));
+                var list = new ArrayList<FileEntry>();
+                list.add(fileEntry);
+                list.addAll(listFilesRecursively(fileEntry.getPath()));
+                return list.stream();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        });
+        }).toList();
     }
 
     List<String> listRoots() throws Exception;

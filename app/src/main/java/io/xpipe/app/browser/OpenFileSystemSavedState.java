@@ -132,6 +132,7 @@ public class OpenFileSystemSavedState {
 
     public void cd(String dir) {
         if (dir == null) {
+            lastDirectory = null;
             return;
         }
 

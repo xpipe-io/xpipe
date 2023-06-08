@@ -182,11 +182,10 @@ public class FileSystemHelper {
             flatFiles.put(source, directoryName);
 
             var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
-            try (var stream = source.getFileSystem().listFilesRecursively(source.getPath())) {
-                stream.forEach(fileEntry -> {
-                    flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
-                });
-            }
+            List<FileSystem.FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
+            list.forEach(fileEntry -> {
+                flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
+            });
         } else {
             flatFiles.put(source, FileNames.getFileName(source.getPath()));
         }
