@@ -2,11 +2,11 @@
 
 ### The remote file browser for professionals
 
-XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs to establish and utilize local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all.
+XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs via stdout, stderr, and stdin to establish local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all as that part is delegated to other programs.
 
-It comes with all file management features you would expect plus a dedicated remote connection manager to organize and open remote shell connections to your infrastructure.
+It comes with all file management features you would expect plus a dedicated remote connection manager to organize and open remote shell connections to your entire infrastructure.
 
-XPipe fully integrates with your existing tools by delegating all tasks to your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
+XPipe fully integrates with your existing tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
 The full feature set is currently supported for:
 - Containers located on any host such as [docker](https://www.docker.com/) or [LXD](https://linuxcontainers.org/lxd/introduction/) container instances
@@ -50,36 +50,35 @@ You can also install XPipe by pasting the installation command into your termina
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
 
-## Features
-
-### Powerful remote file browser
+## Remote File Browser
 
 - Interact with the file system of any remote system using a workflow optimized for professionals
 - Quickly open a terminal into any directory
 - Utilize your favourite local programs to open and edit remote files
 - Has the same feature set for all supported connection types
-- Dynamically elevate sessions with sudo when required 
+- Dynamically elevate sessions with sudo when required
+
+The feature set is the same for all supported connection types. It of course also supports browsing the file system on your local machine.
 
 ![Remote file explorer](https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png)
 
-### Simple connection management
+## Connection Hub
 
-- Easily create and manage all kinds of remote connections
-- Securely stores all information exclusively on your computer and encrypts all secret information. See
-  the [security page](/SECURITY.md) for more information
-- Create custom desktop shortcuts to automatically open specific remote connections in your terminal
-- Don't worry about encoding issues on Windows systems, all shells are launched in UTF8 mode by default
+- Easily create and manage all kinds of remote connections, all in one place
+- Allows you to fully customize the init environment of the launched shell sessions with custom scripts
+- Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
+- Create desktop shortcuts that automatically open remote connections in your terminal
 
-![Connection manager](https://user-images.githubusercontent.com/72509152/230098966-000596ca-8167-4cb8-8ada-f6b3a7d482e2.png)
+![connections](https://github.com/xpipe-io/xpipe/assets/72509152/75869979-df32-4106-880c-7036137e0c96)
 
-### Instant launch for remote shells and commands
+## Terminal Launcher
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
 - Works for all kinds of shells and connections, locally and remote.
 - Supports command shells (e.g. bash, PowerShell, cmd, etc.) and some database shells (e.g. PostgreSQL Shell)
-- Comes with support for all commonly used terminals across all operating systems
-- Allows you to fully customize the init environment of the launched shell session with custom scripts
-- Supports launches from the GUI or command-line
+- Comes with support for all commonly used terminal emulators across all operating systems
+- Supports launches from the GUI or directly from the command-line
+- Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
 
 ## Further information
 
