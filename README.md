@@ -60,7 +60,7 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 
 The feature set is the same for all supported connection types. It of course also supports browsing the file system on your local machine.
 
-![Remote file explorer](https://user-images.githubusercontent.com/72509152/230100929-4476f76c-ea81-43d9-ac4a-b3b02df2334e.png)
+![browser](https://github.com/xpipe-io/xpipe/assets/72509152/186c5468-670f-4b64-9290-d8111c89d9ce)
 
 ## Connection Hub
 
@@ -69,7 +69,7 @@ The feature set is the same for all supported connection types. It of course als
 - Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
 - Create desktop shortcuts that automatically open remote connections in your terminal
 
-![connections](https://github.com/xpipe-io/xpipe/assets/72509152/75869979-df32-4106-880c-7036137e0c96)
+![connections](https://github.com/xpipe-io/xpipe/assets/72509152/9efd449e-3a3a-4278-9bbb-8179fd64fbf1)
 
 ## Terminal Launcher
 
@@ -79,6 +79,8 @@ The feature set is the same for all supported connection types. It of course als
 - Comes with support for all commonly used terminal emulators across all operating systems
 - Supports launches from the GUI or directly from the command-line
 - Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
+
+![terminal launcher](https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b)
 
 ## Further information
 
