@@ -80,7 +80,11 @@ The feature set is the same for all supported connection types. It of course als
 - Supports launches from the GUI or directly from the command-line
 - Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
 
-![terminal launcher](https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b)
+</br>
+<p align="center">
+  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" />
+</p>
+</br>
 
 ## Further information
 
