@@ -125,7 +125,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkSupport(pc, executable, getDisplayName());
+                ApplicationHelper.checkSupport(pc, executable, getDisplayName(), null);
 
                 var toExecute = executable + " " + toCommand(name, file);
                 // In order to fix this bug which also affects us:
@@ -367,7 +367,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     try (ShellControl pc = LocalStore.getShell()
                             .subShell(ShellDialects.POWERSHELL)
                             .start()) {
-                        ApplicationHelper.checkSupport(pc, executable, displayName);
+                        ApplicationHelper.checkSupport(pc, executable, displayName, null);
                         var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \""
                                 + toCommand(name, file).replaceAll("\"", "`\"") + "\"";
                         pc.executeSimpleCommand(toExecute);
@@ -377,7 +377,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkSupport(pc, executable, displayName);
+                ApplicationHelper.checkSupport(pc, executable, displayName, null);
 
                 var toExecute = executable + " " + toCommand(name, file);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
