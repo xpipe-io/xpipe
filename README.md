@@ -9,7 +9,7 @@ It comes with all file management features you would expect plus a dedicated rem
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
 The full feature set is currently supported for:
-- [docker](https://www.docker.com/) and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
+- [Docker](https://www.docker.com/) and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
