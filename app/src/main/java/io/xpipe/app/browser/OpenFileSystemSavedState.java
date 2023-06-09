@@ -71,6 +71,9 @@ public class OpenFileSystemSavedState {
                     .constructCollectionLikeType(List.class, RecentEntry.class);
             List<RecentEntry> recentDirectories =
                     JacksonMapper.getDefault().treeToValue(tree.remove("recentDirectories"), javaType);
+            if (recentDirectories == null) {
+                recentDirectories = List.of();
+            }
             var cleaned = recentDirectories.stream()
                     .map(recentEntry -> new RecentEntry(FileNames.toDirectory(recentEntry.directory), recentEntry.time))
                     .filter(distinctBy(recentEntry -> recentEntry.getDirectory()))

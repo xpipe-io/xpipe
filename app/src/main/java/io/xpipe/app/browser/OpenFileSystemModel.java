@@ -306,22 +306,21 @@ public final class OpenFileSystemModel {
             this.fileSystem = fs;
             this.local =
                     fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
+            this.initState();
             this.cache.init();
         });
     }
 
     public void initWithGivenDirectory(String dir) throws Exception {
-        initState();
         cdSyncWithoutCheck(dir);
     }
 
     public void initWithDefaultDirectory() throws Exception {
-        initState();
         savedState.cd(null);
         history.updateCurrent(null);
     }
 
-    private void initState() {
+    void initState() {
         this.savedState = OpenFileSystemSavedState.loadForStore(this);
     }
 
