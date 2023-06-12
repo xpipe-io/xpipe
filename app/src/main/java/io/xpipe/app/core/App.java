@@ -68,10 +68,15 @@ public class App extends Application {
                     var base = String.format(
                             "XPipe Desktop (%s)", AppProperties.get().getVersion());
                     var prefix = AppProperties.get().isStaging() ? "[STAGE] " : "";
-                    var suffix = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null
+                    var suffix = XPipeDistributionType.get()
+                                            .getUpdateHandler()
+                                            .getPreparedUpdate()
+                                            .getValue()
+                                    != null
                             ? String.format(
-                            " (Update to %s ready)",
-                            XPipeDistributionType.get().getUpdateHandler()
+                                    " (Update to %s ready)",
+                                    XPipeDistributionType.get()
+                                            .getUpdateHandler()
                                             .getPreparedUpdate()
                                             .getValue()
                                             .getVersion())
@@ -89,14 +94,6 @@ public class App extends Application {
         stage.setOnShown(event -> {
             focus();
         });
-
-        // For demo purposes
-        //        if (true) {
-        //            stage.setX(310);
-        //            stage.setY(178);
-        //            stage.setWidth(1300);
-        //            stage.setHeight(730);
-        //        }
     }
 
     public void focus() {

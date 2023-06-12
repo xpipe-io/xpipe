@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
@@ -19,6 +20,9 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -160,14 +164,23 @@ public class AppMainWindow {
             // stage.setMaximized(state.maximized);
 
             TrackEvent.debug("Window loaded saved bounds");
-        } else {
+        } else if (!AppProperties.get().isShowcase()) {
             stage.setWidth(1280);
             stage.setHeight(720);
+        } else {
+            stage.setX(310);
+            stage.setY(178);
+            stage.setWidth(1300);
+            stage.setHeight(730);
         }
     }
 
     private void saveState() {
         if (!AppPrefs.get().saveWindowLocation.get()) {
+            return;
+        }
+
+        if (AppProperties.get().isShowcase()) {
             return;
         }
 
@@ -183,6 +196,10 @@ public class AppMainWindow {
 
     private WindowState loadState() {
         if (!AppPrefs.get().saveWindowLocation.get()) {
+            return null;
+        }
+
+        if (AppProperties.get().isShowcase()) {
             return null;
         }
 
@@ -230,6 +247,19 @@ public class AppMainWindow {
                 newR.requestFocus();
 
                 TrackEvent.debug("Rebuilt content");
+                event.consume();
+            }
+
+            if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
+                var image = stage.getScene().getRoot().snapshot(null, null);
+                var awt = AppImages.toAwtImage(image);
+                var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
+                try {
+                    ImageIO.write(awt, "png",file.toFile());
+                } catch (IOException e) {
+                    ErrorEvent.fromThrowable(e).handle();
+                }
+                TrackEvent.debug("Screenshot taken");
                 event.consume();
             }
         });

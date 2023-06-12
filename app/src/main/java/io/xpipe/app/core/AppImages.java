@@ -7,6 +7,7 @@ import javafx.scene.image.WritableImage;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -104,6 +105,18 @@ public class AppImages {
 
         TrackEvent.warn("Normal image " + key + " not found");
         return DEFAULT_IMAGE;
+    }
+
+    public static BufferedImage toAwtImage(Image fxImage) {
+        BufferedImage img = new BufferedImage(
+                (int) fxImage.getWidth(), (int) fxImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int x = 0; x < fxImage.getWidth(); x++) {
+            for (int y = 0; y < fxImage.getHeight(); y++) {
+                int rgb = fxImage.getPixelReader().getArgb(x, y);
+                img.setRGB(x, y, rgb);
+            }
+        }
+        return img;
     }
 
     private static Image loadImage(Path p) {

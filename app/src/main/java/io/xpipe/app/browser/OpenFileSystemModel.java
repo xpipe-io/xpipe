@@ -306,7 +306,6 @@ public final class OpenFileSystemModel {
             this.fileSystem = fs;
             this.local =
                     fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
-            this.initState();
             this.cache.init();
         });
     }
@@ -320,7 +319,7 @@ public final class OpenFileSystemModel {
         history.updateCurrent(null);
     }
 
-    void initState() {
+    void initSavedState() {
         this.savedState = OpenFileSystemSavedState.loadForStore(this);
     }
 

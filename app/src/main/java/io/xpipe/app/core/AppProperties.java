@@ -1,16 +1,16 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
 import lombok.Value;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Value
 public class AppProperties {
@@ -28,26 +28,15 @@ public class AppProperties {
     boolean image;
     boolean staging;
     Path dataDir;
+    boolean showcase;
 
     public AppProperties() {
         image = ModuleHelper.isImage();
-
-        Properties props = new Properties();
-        AppResources.with(AppResources.XPIPE_MODULE, "app.properties", p -> {
-            if (Files.exists(p)) {
-                try (var in = Files.newInputStream(p)) {
-                    props.load(in);
-                } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).omitted(true).build().handle();
-                }
-            }
-        });
-
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        version = Optional.ofNullable(props.getProperty("version")).orElse("dev");
-        build = Optional.ofNullable(props.getProperty("build")).orElse("unknown");
+        version = Optional.ofNullable(System.getProperty("io.xpipe.app.version")).orElse("dev");
+        build = Optional.ofNullable(System.getProperty("io.xpipe.app.build")).orElse("unknown");
         buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
@@ -55,6 +44,9 @@ public class AppProperties {
         arch = System.getProperty("io.xpipe.app.arch");
         dataDir = parseDataDir();
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
     }

@@ -111,7 +111,7 @@ public class BrowserModel {
         }
     }
 
-    public void openFileSystemAsync(String name, ShellStore store, String path, BooleanProperty busy) {
+    public void openFileSystemAsync(String name, ShellStore store, String path, BooleanProperty externalBusy) {
         //        // Prevent multiple tabs in non browser modes
         //        if (!mode.equals(Mode.BROWSER)) {
         //            ThreadHelper.runFailableAsync(() -> {
@@ -132,9 +132,10 @@ public class BrowserModel {
         ThreadHelper.runFailableAsync(() -> {
             OpenFileSystemModel model;
 
-            try (var b = new BusyProperty(busy != null ? busy : new SimpleBooleanProperty())) {
+            try (var b = new BusyProperty(externalBusy != null ? externalBusy : new SimpleBooleanProperty())) {
                 model = new OpenFileSystemModel(name, this, store);
                 model.initFileSystem();
+                model.initSavedState();
             }
 
             openFileSystems.add(model);
