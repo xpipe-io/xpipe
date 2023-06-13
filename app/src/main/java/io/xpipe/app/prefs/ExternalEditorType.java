@@ -163,7 +163,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         public void launch(Path file) throws Exception {
             var path = determinePath();
             if (path.isEmpty()) {
-                throw new IOException("Unable to find installation of " + getId());
+                throw new IOException("Unable to find installation of " + toTranslatedString());
             }
 
             ApplicationHelper.executeLocalApplication(

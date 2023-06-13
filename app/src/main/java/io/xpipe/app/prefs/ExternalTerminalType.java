@@ -90,7 +90,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(String name, String file, boolean elevated) throws Exception {
             var path = determinePath();
             if (path.isEmpty()) {
-                throw new IOException("Unable to find installation of " + getId());
+                throw new IOException("Unable to find installation of " + toTranslatedString());
             }
 
             ApplicationHelper.executeLocalApplication(
@@ -181,6 +181,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType WARP = new WarpType();
 
+    ExternalTerminalType TABBY_MAC_OS = new TabbyMacOsType();
+
     ExternalTerminalType CUSTOM = new CustomType();
 
     List<ExternalTerminalType> ALL = Stream.of(
@@ -193,7 +195,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     XFCE,
                     GNOME_TERMINAL,
                     ITERM2,
-                    TABBY_WINDOWS,
+                    TABBY_MAC_OS,
                     WARP,
                     MACOS_TERMINAL,
                     CUSTOM)
@@ -300,9 +302,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    class TabbyType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
+    class TabbyMacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
-        public TabbyType() {
+        public TabbyMacOsType() {
             super("app.tabbyMacOs", "Tabby");
         }
 
