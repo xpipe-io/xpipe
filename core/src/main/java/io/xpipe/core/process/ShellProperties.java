@@ -6,5 +6,5 @@ import lombok.Value;
 public class ShellProperties {
 
     ShellDialect dialect;
-    boolean tty;
+    boolean ansiEscapes;
 }
