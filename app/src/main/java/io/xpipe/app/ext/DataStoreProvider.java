@@ -1,13 +1,17 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
@@ -25,6 +29,22 @@ public interface DataStoreProvider {
                         String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
         }
+    }
+
+    default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
+        var content = Bindings.createStringBinding(() -> {
+            if (store.getValue() == null || !store.getValue().isComplete() || !getStoreClasses().contains(store.getValue().getClass())) {
+                return null;
+            }
+
+            return createInsightsMarkdown(store.getValue());
+        }, store);
+        var markdown = new MarkdownComp(content, s -> s).apply(struc -> struc.get().setPrefWidth(450)).apply(struc -> struc.get().setPrefHeight(200));
+        return markdown;
+    }
+
+    default String createInsightsMarkdown(DataStore store) {
+        return null;
     }
 
     default DataCategory getCategory() {

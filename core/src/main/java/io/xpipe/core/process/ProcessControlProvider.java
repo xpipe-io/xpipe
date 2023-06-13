@@ -57,6 +57,14 @@ public abstract class ProcessControlProvider {
                 .orElseThrow();
     }
 
+    public static String createSshPreview(Object sshStore) {
+        return INSTANCES.stream()
+                .map(localProcessControlProvider -> localProcessControlProvider.createSshControlPreview(sshStore))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElseThrow();
+    }
+
     public abstract ShellControl sub(
             ShellControl parent,
             @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
@@ -70,4 +78,6 @@ public abstract class ProcessControlProvider {
     public abstract ShellControl createLocalProcessControl(boolean stoppable);
 
     public abstract ShellControl createSshControl(Object sshStore);
+
+    public abstract String createSshControlPreview(Object sshStore);
 }

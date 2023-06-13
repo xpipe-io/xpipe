@@ -41,7 +41,6 @@ public class GuiDsStoreSelectStep extends MultiStepComp.Step<CompStructure<? ext
             DataSourceProvider.Category category,
             ObjectProperty<? extends DataSource<?>> baseSource,
             BooleanProperty loading) {
-        super(null);
         this.parent = parent;
         this.provider = provider;
         this.input = input;

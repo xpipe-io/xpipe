@@ -26,7 +26,6 @@ public class GuiDsCreatorSaveStep extends MultiStepComp.Step<CompStructure<?>> {
 
     public GuiDsCreatorSaveStep(
             Property<DataSourceCollection> storageGroup, Property<DataSourceEntry> dataSourceEntry) {
-        super(null);
         this.storageGroup = storageGroup;
         this.dataSourceEntry = dataSourceEntry;
     }

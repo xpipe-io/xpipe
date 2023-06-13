@@ -48,7 +48,7 @@ public class GuiDsTableMappingConfirmation extends SimpleComp {
                         var multi = new MultiStepComp() {
                             @Override
                             protected List<Entry> setup() {
-                                return List.of(new Entry(null, new Step<>(null) {
+                                return List.of(new Entry(null, new Step<>() {
                                     @Override
                                     public CompStructure<?> createBase() {
                                         return ms.createStructure();

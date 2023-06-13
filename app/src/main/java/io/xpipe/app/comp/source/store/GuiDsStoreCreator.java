@@ -2,6 +2,7 @@ package io.xpipe.app.comp.source.store;
 
 import io.xpipe.app.comp.base.ErrorOverlayComp;
 import io.xpipe.app.comp.base.MultiStepComp;
+import io.xpipe.app.comp.base.PopupMenuButtonComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -22,9 +23,11 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
@@ -60,7 +63,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Predicate<DataStoreProvider> filter,
             String initialName, boolean exists
     ) {
-        super(null);
         this.parent = parent;
         this.provider = provider;
         this.store = store;
@@ -158,6 +160,16 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         });
     }
 
+    @Override
+    public Comp<?> bottom() {
+        var disable = Bindings.createBooleanBinding(() -> {
+            return provider.getValue() == null || store.getValue() == null || !store.getValue().isComplete();
+        }, provider, store);
+        return new PopupMenuButtonComp(new SimpleStringProperty("Insights >"), Comp.of(() -> {
+            return provider.getValue() != null ? provider.getValue().createInsightsComp(store).createRegion() : null;
+        }), true).disable(disable).styleClass("button-comp");
+    }
+
     private static boolean showInvalidConfirmAlert() {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
@@ -197,6 +209,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     private Region createLayout() {
         var layout = new BorderPane();
+        layout.getStyleClass().add("store-creator");
         layout.setPadding(new Insets(20));
         var providerChoice = new DsStoreProviderChoiceComp(filter, provider);
         if (provider.getValue() != null) {
@@ -217,7 +230,10 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 var d = n.guiDialog(store);
                 var propVal = new SimpleValidator();
                 var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
-                layout.setCenter(propR);
+
+                var sp = new ScrollPane(propR);
+                sp.setFitToWidth(true);
+                layout.setCenter(sp);
 
                 validator.setValue(new ChainedValidator(List.of(
                         d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));

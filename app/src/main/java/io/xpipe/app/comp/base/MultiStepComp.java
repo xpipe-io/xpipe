@@ -1,11 +1,13 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.Spacer;
 import com.jfoenix.controls.JFXTabPane;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyProperty;
@@ -78,14 +80,6 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
             currentIndex = index;
             set(entries.get(index).step());
         });
-    }
-
-    protected void setStartingIndex(int start) {
-        if (this.entries != null) {
-            throw new IllegalStateException();
-        }
-
-        currentIndex = start;
     }
 
     public boolean isCompleted(Entry e) {
@@ -193,23 +187,15 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
         MultiStepComp comp = this;
 
         HBox buttons = new HBox();
+        buttons.setFillHeight(true);
+        buttons.getChildren().add(new Region());
+        buttons.getChildren().add(new Spacer());
         buttons.getStyleClass().add("buttons");
         buttons.setSpacing(5);
 
-        var helpButton = new ButtonComp(AppI18n.observable("help"), null, () -> {
-                    getValue().help.run();
-                })
-                .styleClass("help")
-                .apply(struc -> struc.get()
-                        .visibleProperty()
-                        .bind(Bindings.createBooleanBinding(() -> getValue().help == null, currentStep)));
-        if (getValue().help != null) {
-            buttons.getChildren().add(helpButton.createRegion());
-        }
-
-        var spacer = new Region();
-        buttons.getChildren().add(spacer);
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        SimpleChangeListener.apply(currentStep, val -> {
+            buttons.getChildren().set(0, val.bottom() != null ? val.bottom().createRegion() : new Region());
+        });
 
         buttons.setAlignment(Pos.CENTER_RIGHT);
         var nextText = Bindings.createStringBinding(
@@ -242,7 +228,7 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
 
         var compContent = new JFXTabPane();
         compContent.getStyleClass().add("content");
-        for (var entry : comp.getEntries()) {
+        for (var ignored : comp.getEntries()) {
             compContent.getTabs().add(new Tab(null, null));
         }
         var entryR = comp.getValue().createRegion();
@@ -282,10 +268,8 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
 
     public abstract static class Step<S extends CompStructure<?>> extends Comp<S> {
 
-        private final Runnable help;
-
-        public Step(Runnable help) {
-            this.help = help;
+        public Comp<?> bottom() {
+            return null;
         }
 
         public void onInit() {}

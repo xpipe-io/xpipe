@@ -15,6 +15,16 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
+    public static String flatten(List<String> command) {
+        return command.stream()
+                .map(s -> s.contains(" ")
+                        && !(s.startsWith("\"") && s.endsWith("\""))
+                        && !(s.startsWith("'") && s.endsWith("'"))
+                        ? "\"" + s + "\""
+                        : s)
+                .collect(Collectors.joining(" "));
+    }
+
     CommandControl prepareTempDirectory(ShellControl shellControl,  String directory);
 
     String initFileName(ShellControl sc) throws Exception;
@@ -66,16 +76,6 @@ public interface ShellDialect {
     String getPauseCommand();
 
     String prepareScriptContent(String content);
-
-    default String flatten(List<String> command) {
-        return command.stream()
-                .map(s -> s.contains(" ")
-                                && !(s.startsWith("\"") && s.endsWith("\""))
-                                && !(s.startsWith("'") && s.endsWith("'"))
-                        ? "\"" + s + "\""
-                        : s)
-                .collect(Collectors.joining(" "));
-    }
 
     default String getExitCommand() {
         return "exit";

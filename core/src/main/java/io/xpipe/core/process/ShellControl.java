@@ -197,7 +197,7 @@ public interface ShellControl extends ProcessControl {
 
     default CommandControl command(List<String> command) {
         return command(
-                shellProcessControl -> shellProcessControl.getShellDialect().flatten(command));
+                shellProcessControl -> ShellDialect.flatten(command));
     }
 
     void exitAndWait() throws IOException;

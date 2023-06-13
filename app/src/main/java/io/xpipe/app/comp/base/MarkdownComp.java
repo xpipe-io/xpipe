@@ -8,8 +8,12 @@ import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -25,21 +29,26 @@ import java.util.function.UnaryOperator;
 
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
-    private final String markdown;
-    private final UnaryOperator<String> transformation;
+    private final ObservableValue<String> markdown;
+    private final UnaryOperator<String> htmlTransformation;
 
-    public MarkdownComp(String markdown, UnaryOperator<String> transformation) {
+    public MarkdownComp(String markdown, UnaryOperator<String> htmlTransformation) {
+        this.markdown = new SimpleStringProperty(markdown);
+        this.htmlTransformation = htmlTransformation;
+    }
+
+    public MarkdownComp(ObservableValue<String> markdown, UnaryOperator<String> htmlTransformation) {
         this.markdown = markdown;
-        this.transformation = transformation;
+        this.htmlTransformation = htmlTransformation;
     }
 
     private String getHtml() {
         MutableDataSet options = new MutableDataSet();
         Parser parser = Parser.builder(options).build();
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
-        Document document = parser.parse(markdown);
+        Document document = parser.parse(markdown.getValue());
         var html = renderer.render(document);
-        var result = transformation.apply(html);
+        var result = htmlTransformation.apply(html);
         return "<article class=\"markdown-body\">" + result + "</article>";
     }
 
@@ -51,15 +60,17 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                 .orElseThrow();
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
-        // Work around for https://bugs.openjdk.org/browse/JDK-8199014
-        try {
-            var file = Files.createTempFile(null, ".html");
-            Files.writeString(file, getHtml());
-            var contentUrl = file.toUri();
-            wv.getEngine().load(contentUrl.toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        SimpleChangeListener.apply(PlatformThread.sync(markdown), val -> {
+            // Work around for https://bugs.openjdk.org/browse/JDK-8199014
+            try {
+                var file = Files.createTempFile(null, ".html");
+                Files.writeString(file, getHtml());
+                var contentUrl = file.toUri();
+                wv.getEngine().load(contentUrl.toString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         wv.getStyleClass().add("markdown-comp");
         addLinkHandler(wv.getEngine());

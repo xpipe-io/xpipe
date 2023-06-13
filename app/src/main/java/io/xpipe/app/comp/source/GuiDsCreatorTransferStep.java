@@ -35,7 +35,6 @@ public class GuiDsCreatorTransferStep extends MultiStepComp.Step<CompStructure<?
             DataSourceCollection targetGroup,
             Property<? extends DataStore> store,
             ObjectProperty<? extends DataSource<?>> source) {
-        super(null);
         this.targetGroup = targetGroup;
         this.store = store;
         this.source = source;

@@ -90,15 +90,17 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     popover.setDetachable(true);
                     AppFont.small(popover.getContentNode());
 
-                    var descriptionHover = new Button("... ?");
-                    descriptionHover.getStyleClass().add(Styles.BUTTON_OUTLINED);
-                    descriptionHover.getStyleClass().add(Styles.ACCENT);
-                    descriptionHover.setPadding(new Insets(0, 6, 0, 6));
-                    descriptionHover.getStyleClass().add("long-description");
-                    AppFont.header(descriptionHover);
-                    descriptionHover.setOnAction(e -> popover.show(descriptionHover));
+                    var extendedDescription = new Button("... ?");
+                    extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
+                    extendedDescription.getStyleClass().add(Styles.BUTTON_OUTLINED);
+                    extendedDescription.getStyleClass().add(Styles.ACCENT);
+                    extendedDescription.setPadding(new Insets(0, 6, 0, 6));
+                    extendedDescription.getStyleClass().add("long-description");
+                    AppFont.header(extendedDescription);
+                    extendedDescription.setOnAction(e -> popover.show(extendedDescription));
 
-                    var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), descriptionHover);
+                    var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
+                    descriptionBox.setSpacing(5);
                     HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                     descriptionBox.setAlignment(Pos.CENTER_LEFT);
                     line.getChildren().add(descriptionBox);

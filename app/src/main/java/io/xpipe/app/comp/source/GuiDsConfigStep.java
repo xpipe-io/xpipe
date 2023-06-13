@@ -51,7 +51,6 @@ public class GuiDsConfigStep extends MultiStepComp.Step<CompStructure<?>> {
             Property<? extends DataSource<?>> currentSource,
             Property<DataSourceType> type,
             BooleanProperty loading) {
-        super(null);
         this.input = input;
         this.baseSource = baseSource;
         this.currentSource = currentSource;
