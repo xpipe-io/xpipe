@@ -42,6 +42,18 @@
     -fx-opacity: 0.5;
 }
 
+.bookmark-list .tree-cell {
+    -fx-background-radius: 5px;
+    -fx-padding: 8px 8px 8px 3px;
+    -fx-background-insets: 5px 5px 5px 5px;
+}
+
+.bookmark-list .tree-cell.first {
+    -fx-padding: 12px 8px 8px 3px;
+    -fx-background-insets: 9px 5px 5px 5px;
+
+}
+
 .browser .bookmark-list {
     -fx-border-width: 0;
 }

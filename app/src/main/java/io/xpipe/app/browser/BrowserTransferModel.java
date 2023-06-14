@@ -59,6 +59,7 @@ public class BrowserTransferModel {
                     item.finishedDownload.set(true);
                 } catch (Throwable t) {
                     ErrorEvent.fromThrowable(t).handle();
+                    items.remove(item);
                 }
             });
         });

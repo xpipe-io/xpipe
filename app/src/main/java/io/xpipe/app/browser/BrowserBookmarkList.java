@@ -18,6 +18,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -48,7 +49,7 @@ final class BrowserBookmarkList extends SimpleComp {
         view.setShowRoot(false);
         view.getStyleClass().add("bookmark-list");
         view.setCellFactory(param -> {
-            return new StoreCell();
+            return new StoreCell(view);
         });
 
         PlatformThread.sync(model.getSelected()).addListener((observable, oldValue, newValue) -> {
@@ -97,10 +98,11 @@ final class BrowserBookmarkList extends SimpleComp {
         private final Node imageView = new PrettyImageComp(img, 20, 20).createRegion();
         private final BooleanProperty busy = new SimpleBooleanProperty(false);
 
-        private StoreCell() {
+        private StoreCell(TreeView<?> t) {
             disableProperty().bind(busy);
             setAccessibleRole(AccessibleRole.BUTTON);
             setGraphic(imageView);
+            setTextOverrun(OverrunStyle.ELLIPSIS);
             addEventHandler(DragEvent.DRAG_OVER, mouseEvent -> {
                 if (getItem() == null) {
                     return;
@@ -146,6 +148,14 @@ final class BrowserBookmarkList extends SimpleComp {
                     .styleClass("expand-button")
                     .apply(struc -> struc.get().setFocusTraversable(false));
             setDisclosureNode(button.createRegion());
+
+            indexProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue.intValue() == 0) {
+                    getStyleClass().add("first");
+                } else {
+                    getStyleClass().remove("first");
+                }
+            });
         }
 
         @Override
