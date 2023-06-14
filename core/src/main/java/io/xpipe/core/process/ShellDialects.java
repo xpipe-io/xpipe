@@ -16,6 +16,7 @@ public class ShellDialects {
     public static ShellDialect DASH;
     public static ShellDialect BASH;
     public static ShellDialect ZSH;
+    public static ShellDialect CSH;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -31,6 +32,7 @@ public class ShellDialects {
             DASH = byName("dash");
             BASH = byName("bash");
             ZSH = byName("zsh");
+            CSH = byName("csh");
             SH = byName("sh");
         }
 
