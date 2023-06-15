@@ -31,10 +31,9 @@ public class JfxHelper {
 
     public static Region createNamedEntry(String nameString, String descString, FontIcon graphic) {
         var header = new Label(nameString);
-        AppFont.header(header);
         var desc = new Label(descString);
-        desc.setWrapText(true);
         AppFont.small(desc);
+        desc.setOpacity(0.65);
         var text = new VBox(header, desc);
         text.setSpacing(2);
 
@@ -43,7 +42,7 @@ public class JfxHelper {
         hbox.setSpacing(8);
         pane.prefWidthProperty()
                 .bind(Bindings.createDoubleBinding(
-                        () -> header.getHeight() + desc.getHeight() + 2,
+                        () -> (header.getHeight() + desc.getHeight()) * 0.6,
                         header.heightProperty(),
                         desc.heightProperty()));
         pane.prefHeightProperty()
@@ -53,9 +52,8 @@ public class JfxHelper {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            graphic.setIconSize(size);
+            graphic.setIconSize((int) (size * 0.55));
         });
-
         return hbox;
     }
 

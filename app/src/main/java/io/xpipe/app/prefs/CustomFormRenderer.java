@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import com.dlsc.formsfx.model.structure.Element;
 import com.dlsc.formsfx.model.structure.Field;
 import com.dlsc.formsfx.model.structure.Form;
-import com.dlsc.formsfx.model.structure.NodeElement;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
 import com.dlsc.preferencesfx.formsfx.view.renderer.PreferencesFxFormRenderer;
 import com.dlsc.preferencesfx.formsfx.view.renderer.PreferencesFxGroup;
@@ -35,6 +34,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                     @Override
                     public void initializeParts() {
                         super.initializeParts();
+                        grid.getStyleClass().add("grid");
                     }
 
                     @Override
@@ -73,7 +73,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
 
                                 SimpleControl c = (SimpleControl) ((Field) element).getRenderer();
                                 c.setField((Field) element);
-                                AppFont.header(c.getFieldLabel());
+                                AppFont.normal(c.getFieldLabel());
                                 c.getFieldLabel().setPrefHeight(AppFont.getPixelSize(1));
                                 c.getFieldLabel().setMaxHeight(AppFont.getPixelSize(1));
                                 grid.add(c.getFieldLabel(), 0, i + rowAmount, 2, 1);
@@ -81,7 +81,9 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 var canFocus = BindingsHelper.persist(c.getNode().disabledProperty().not());
 
                                 var descriptionLabel = new Label();
+                                AppFont.medium(descriptionLabel);
                                 descriptionLabel.setWrapText(true);
+                                descriptionLabel.setMaxWidth(700);
                                 descriptionLabel
                                         .disableProperty()
                                         .bind(c.getFieldLabel().disabledProperty());
@@ -89,14 +91,13 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                         .opacityProperty()
                                         .bind(c.getFieldLabel()
                                                 .opacityProperty()
-                                                .multiply(0.8));
+                                                .multiply(0.65));
                                 descriptionLabel
                                         .managedProperty()
                                         .bind(c.getFieldLabel().managedProperty());
                                 descriptionLabel
                                         .visibleProperty()
                                         .bind(c.getFieldLabel().visibleProperty());
-                                descriptionLabel.setMaxHeight(USE_PREF_SIZE);
                                 if (AppI18n.getInstance().containsKey(descriptionKey)) {
                                     rowAmount++;
                                     descriptionLabel.textProperty().bind(AppI18n.observable(descriptionKey));
@@ -107,6 +108,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 rowAmount++;
 
                                 var node = c.getNode();
+                                AppFont.medium(c.getNode());
                                 c.getFieldLabel().focusTraversableProperty().bind(canFocus);
                                 grid.add(node, 0, i + rowAmount, 1, 1);
 
@@ -130,8 +132,9 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 node.getStyleClass().add(styleClass.toString() + "-node");
                             }
 
-                            if (element instanceof NodeElement nodeElement) {
-                                grid.add(nodeElement.getNode(), 0, i + rowAmount, GridPane.REMAINING, 1);
+                            if (element instanceof LazyNodeElement<?> nodeElement) {
+                                var node = nodeElement.getNode();
+                                grid.add(node, 0, i + rowAmount, 2, 1);
                             }
                         }
                     }

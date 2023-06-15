@@ -1,4 +1,4 @@
-package io.xpipe.app.comp.about;
+package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFont;
@@ -19,6 +19,7 @@ public class PropertiesComp extends SimpleComp {
         var title = Comp.of(() -> {
             var image = new ImageView(App.getApp().getIcon());
             image.setPreserveRatio(true);
+            image.setSmooth(true);
             image.setFitHeight(40);
             var label = new Label(AppI18n.get("xPipeClient"), image);
             label.getStyleClass().add("header");

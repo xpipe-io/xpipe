@@ -6,7 +6,9 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.icon.DirectoryType;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
@@ -30,6 +32,7 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.layout.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
@@ -105,13 +108,14 @@ public class BrowserComp extends SimpleComp {
             PlatformThread.runLaterIfNeeded(() -> {
                 selected.getChildren()
                         .setAll(c.getList().stream()
-                                        .map(s -> {
-                                            var field = new TextField(s.getRawFileEntry().getPath());
-                                            field.setEditable(false);
-                                            field.setPrefWidth(400);
-                                            return field;
-                                        })
-                                        .toList());
+                                .map(s -> {
+                                    var field =
+                                            new TextField(s.getRawFileEntry().getPath());
+                                    field.setEditable(false);
+                                    field.setPrefWidth(400);
+                                    return field;
+                                })
+                                .toList());
             });
         });
         var spacer = new Spacer(Orientation.HORIZONTAL);
@@ -130,9 +134,21 @@ public class BrowserComp extends SimpleComp {
     }
 
     private Node createTabs() {
-        var stack = new StackPane();
-        var tabs = createTabPane();
-        stack.getChildren().add(tabs);
+        var multi = new MultiContentComp(Map.of(
+                Comp.of(() -> createTabPane()),
+                Bindings.isNotEmpty(model.getOpenFileSystems()),
+                new BrowserWelcomeComp(model),
+                Bindings.isEmpty(model.getOpenFileSystems())));
+        return multi.createRegion();
+    }
+
+    private TabPane createTabPane() {
+        var tabs = new TabPane();
+        tabs.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
+        tabs.setTabMinWidth(Region.USE_COMPUTED_SIZE);
+        tabs.setTabClosingPolicy(ALL_TABS);
+        Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
+        toggleStyleClass(tabs, DENSE);
 
         var map = new HashMap<OpenFileSystemModel, Tab>();
 
@@ -217,16 +233,6 @@ public class BrowserComp extends SimpleComp {
                 }
             }
         });
-        return stack;
-    }
-
-    private TabPane createTabPane() {
-        var tabs = new TabPane();
-        tabs.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        tabs.setTabMinWidth(Region.USE_COMPUTED_SIZE);
-        tabs.setTabClosingPolicy(ALL_TABS);
-        Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
-        toggleStyleClass(tabs, DENSE);
         return tabs;
     }
 
@@ -241,8 +247,7 @@ public class BrowserComp extends SimpleComp {
                 .bind(Bindings.createDoubleBinding(
                         () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
 
-        var image = DataStoreProviders.byStore(model.getStore())
-                .getDisplayIconFileName(model.getStore());
+        var image = DataStoreProviders.byStore(model.getStore()).getDisplayIconFileName(model.getStore());
         var logo = new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion();
 
         var label = new Label(model.getName());

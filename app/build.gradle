@@ -108,6 +108,7 @@ List<String> jvmRunArgs = [
         "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
         "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
         "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
+        "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.model=io.xpipe.app',
         "-Xmx8g",
         "-Dio.xpipe.app.arch=$rootProject.arch",
         "--enable-preview",

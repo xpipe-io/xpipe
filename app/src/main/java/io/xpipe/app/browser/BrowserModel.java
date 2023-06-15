@@ -1,6 +1,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileStore;
@@ -14,9 +15,7 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Getter
@@ -67,6 +66,16 @@ public class BrowserModel {
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel();
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
+
+    public void reset() {
+        var map = new LinkedHashMap<UUID, String>();
+        openFileSystems.forEach(model -> {
+            var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
+            storageEntry.ifPresent(entry -> map.put(entry.getUuid(), model.getCurrentPath().get()));
+        });
+        var state = new BrowserSavedState(map);
+        state.save();
+    }
 
     public void finishChooser() {
         if (!getMode().isChooser()) {

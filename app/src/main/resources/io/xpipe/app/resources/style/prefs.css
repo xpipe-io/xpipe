@@ -37,20 +37,30 @@ visibility: hidden;
 }
 
 .prefs .tree-view {
+-fx-border-width: 0 1px 0 0;
+}
+
+.prefs .grid {
+-fx-padding: 1em 2.3em 0 2.3em;
 }
 
 .prefs {
 -fx-border-width: 0;
--fx-padding: 1em 1em 4em 1em;
+-fx-padding: 0;
 -fx-border-color: transparent;
  -fx-background-insets: 0;
 }
 
-.prefs > * > * {
- -fx-background-insets: 0;
+.prefs .custom-text-field {
+-fx-border-width: 5px;
+-fx-padding: 0;
+-fx-border-color: transparent;
+-fx-border-radius: 0;
+-fx-background-radius: 0;
 }
 
 .prefs .split-pane-divider {
 -fx-padding: 0 ;
 dividerPositions: 0.5;
 }
+

@@ -28,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import lombok.SneakyThrows;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -490,8 +491,15 @@ public class AppPrefs {
         return null;
     }
 
+    @SneakyThrows
     private AppPreferencesFx createPreferences() {
+        var ctr = Setting.class.getDeclaredConstructor(String.class, Element.class, Property.class);
+        ctr.setAccessible(true);
+        var s = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
+
         var categories = new ArrayList<>(List.of(
+                Category.of(
+                        "application", Group.of(s)),
                 Category.of(
                         "system",
                         Group.of(

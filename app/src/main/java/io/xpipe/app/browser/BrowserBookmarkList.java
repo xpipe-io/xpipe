@@ -98,6 +98,12 @@ final class BrowserBookmarkList extends SimpleComp {
         private final Node imageView = new PrettyImageComp(img, 20, 20).createRegion();
         private final BooleanProperty busy = new SimpleBooleanProperty(false);
 
+        @Override
+        protected double computePrefWidth(double height) {
+            // This makes the cell always properly cut of any overflow of text
+            return 1;
+        }
+
         private StoreCell(TreeView<?> t) {
             disableProperty().bind(busy);
             setAccessibleRole(AccessibleRole.BUTTON);

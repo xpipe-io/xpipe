@@ -2,7 +2,6 @@ package io.xpipe.app.comp;
 
 import io.xpipe.app.browser.BrowserComp;
 import io.xpipe.app.browser.BrowserModel;
-import io.xpipe.app.comp.about.AboutTabComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
 import io.xpipe.app.core.*;
@@ -48,11 +47,10 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
                 new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 // new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
-                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this)),
+                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this))));
                 // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
                 // StorageLayoutComp()),
-                // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp()),
-                new SideMenuBarComp.Entry(AppI18n.observable("about"), "mdi2p-package-variant", new AboutTabComp())));
+                // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
         if (AppProperties.get().isDeveloperMode()) {
             l.add(new SideMenuBarComp.Entry(
                     AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));

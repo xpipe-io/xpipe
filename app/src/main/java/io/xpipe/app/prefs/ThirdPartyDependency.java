@@ -1,4 +1,4 @@
-package io.xpipe.app.comp.about;
+package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppResources;
