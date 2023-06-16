@@ -67,12 +67,32 @@ public class BrowserModel {
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel();
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
 
+    public void restoreState(BrowserSavedState state) {
+        state.getLastSystems().forEach((uuid, s) -> {
+            var storageEntry = DataStorage.get().getStoreEntry(uuid);
+            storageEntry.ifPresent(entry -> {
+                openFileSystemAsync(entry.getName(), entry.getStore().asNeeded(), s, new SimpleBooleanProperty());
+            });
+        });
+    }
+
     public void reset() {
         var map = new LinkedHashMap<UUID, String>();
         openFileSystems.forEach(model -> {
             var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
             storageEntry.ifPresent(entry -> map.put(entry.getUuid(), model.getCurrentPath().get()));
         });
+
+        // Don't override state if it is empty
+        if (map.size() == 0) {
+            return;
+        }
+
+        var meaningful = map.size() > 1 || map.values().stream().allMatch(s -> s != null);
+        if (!meaningful) {
+            return;
+        }
+
         var state = new BrowserSavedState(map);
         state.save();
     }

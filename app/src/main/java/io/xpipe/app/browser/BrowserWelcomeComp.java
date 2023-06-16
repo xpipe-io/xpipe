@@ -12,6 +12,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class BrowserWelcomeComp extends SimpleComp {
 
     private final BrowserModel model;
@@ -23,16 +25,16 @@ public class BrowserWelcomeComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var state = BrowserSavedState.load();
-        var showList = state.getLastSystems().size() > 1
-                || (state.getLastSystems().size() == 1
-                        && state.getLastSystems().values().stream().allMatch(s -> s != null));
 
         var welcome = new BrowserGreetingComp().createSimple();
 
         var vbox = new VBox(welcome);
         vbox.setPadding(new Insets(40, 40, 40, 50));
         vbox.setSpacing(18);
-        if (!showList) {
+        if (state == null) {
+            var header = new Label("Have fun with the file browser!");
+            AppFont.header(header);
+            vbox.getChildren().add(header);
             return vbox;
         }
 
@@ -65,6 +67,16 @@ public class BrowserWelcomeComp extends SimpleComp {
         vbox.getChildren().add(restoreLabel);
 
         var restoreButton = new Button("Restore sessions");
+        var done = new AtomicBoolean();
+        restoreButton.setOnAction(event -> {
+            if (done.get()) {
+                return;
+            }
+
+            done.set(true);
+            model.restoreState(state);
+            event.consume();
+        });
         vbox.getChildren().add(restoreButton);
 
         return vbox;
