@@ -15,12 +15,12 @@ public class ArchiveEntryStore extends ArchiveEntryDataStore {
     }
 
     @Override
-    public InputStream openInput() throws Exception {
+    public InputStream openInput() {
         return con.getInputStream();
     }
 
     @Override
-    public OutputStream openOutput() throws Exception {
+    public OutputStream openOutput() {
         return null;
     }
 

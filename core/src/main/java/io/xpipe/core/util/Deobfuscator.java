@@ -92,7 +92,7 @@ public class Deobfuscator {
         System.err.println(s);
     }
 
-    private static boolean canDeobfuscate() throws Exception {
+    private static boolean canDeobfuscate() {
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;
         }

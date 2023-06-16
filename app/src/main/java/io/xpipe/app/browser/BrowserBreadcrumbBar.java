@@ -25,9 +25,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory = crumb -> {
-            var name = crumb.getValue().equals("/")
-                    ? "/"
-                    : FileNames.getFileName(crumb.getValue());
+            var name = crumb.getValue().equals("/") ? "/" : FileNames.getFileName(crumb.getValue());
             var btn = new Button(name, null);
             btn.setMnemonicParsing(false);
             btn.setFocusTraversable(false);

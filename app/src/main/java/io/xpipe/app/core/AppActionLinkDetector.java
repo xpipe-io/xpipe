@@ -65,7 +65,8 @@ public class AppActionLinkDetector {
                     alert.setTitle(AppI18n.get("clipboardActionDetectedTitle"));
                     alert.setHeaderText(AppI18n.get("clipboardActionDetectedHeader"));
                     alert.getDialogPane()
-                            .setContent(AppWindowHelper.alertContentText(AppI18n.get("clipboardActionDetectedContent")));
+                            .setContent(
+                                    AppWindowHelper.alertContentText(AppI18n.get("clipboardActionDetectedContent")));
                 })
                 .map(buttonType -> buttonType.getButtonData().isDefaultButton())
                 .orElse(false);

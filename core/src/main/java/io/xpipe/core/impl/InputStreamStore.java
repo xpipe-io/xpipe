@@ -17,7 +17,7 @@ public class InputStreamStore implements StreamDataStore {
     }
 
     @Override
-    public InputStream openInput() throws Exception {
+    public InputStream openInput() {
         return in;
     }
 

@@ -11,10 +11,10 @@ import java.util.Optional;
  */
 public interface TableWriteConnection extends DataSourceConnection {
 
-    public static TableWriteConnection empty() {
+    static TableWriteConnection empty() {
         return new TableWriteConnection() {
             @Override
-            public Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
+            public Optional<TableMapping> createMapping(TupleType inputType) {
                 return Optional.of(TableMapping.empty(inputType));
             }
 

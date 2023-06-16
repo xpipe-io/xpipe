@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PrefsComp;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
@@ -41,16 +42,14 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
     private List<SideMenuBarComp.Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
                 new SideMenuBarComp.Entry(
-                        AppI18n.observable("browser"),
-                        "mdi2f-file-cabinet",
-                        new BrowserComp(BrowserModel.DEFAULT)),
+                        AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
                 new SideMenuBarComp.Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 // new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new SideMenuBarComp.Entry(
                         AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this))));
-                // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
-                // StorageLayoutComp()),
-                // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
+        // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
+        // StorageLayoutComp()),
+        // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
         if (AppProperties.get().isDeveloperMode()) {
             l.add(new SideMenuBarComp.Entry(
                     AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));

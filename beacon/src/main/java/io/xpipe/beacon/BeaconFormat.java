@@ -12,7 +12,7 @@ public class BeaconFormat {
 
     private static final int SEGMENT_SIZE = 65536;
 
-    public static OutputStream writeBlocks(OutputStream out) throws IOException {
+    public static OutputStream writeBlocks(OutputStream out) {
         return new OutputStream() {
             private final byte[] currentBytes = new byte[SEGMENT_SIZE];
             private int index;
@@ -64,7 +64,7 @@ public class BeaconFormat {
         };
     }
 
-    public static InputStream readBlocks(InputStream in) throws IOException {
+    public static InputStream readBlocks(InputStream in) {
         return new InputStream() {
 
             private byte[] currentBytes;

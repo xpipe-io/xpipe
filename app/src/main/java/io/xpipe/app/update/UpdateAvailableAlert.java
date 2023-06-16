@@ -24,10 +24,10 @@ public class UpdateAvailableAlert {
                     alert.setAlertType(Alert.AlertType.NONE);
 
                     var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> {
-                                        var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
-                                        return header + s;
-                                    })
-                                    .createRegion();
+                                var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
+                                return header + s;
+                            })
+                            .createRegion();
                     alert.getButtonTypes().clear();
                     var updaterContent = uh.createInterface();
                     if (updaterContent != null) {
@@ -39,7 +39,8 @@ public class UpdateAvailableAlert {
                         alert.getDialogPane().setContent(box);
                     } else {
                         alert.getDialogPane().setContent(markdown);
-                        alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
+                        alert.getButtonTypes()
+                                .add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
                     }
 
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));

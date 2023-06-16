@@ -33,9 +33,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
     }
 
     private List<DataStoreProvider> getProviders() {
-        return DataStoreProviders.getAll().stream()
-                .filter(filter)
-                .toList();
+        return DataStoreProviders.getAll().stream().filter(filter).toList();
     }
 
     private Region createGraphic(DataStoreProvider provider) {

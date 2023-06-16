@@ -29,18 +29,21 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                     }
                 }
                 case OsType.Linux linux -> {
-                    var dbus = String.format("""
+                    var dbus = String.format(
+                            """
                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
-                                                """, entry.getRawFileEntry().getPath());
+                                                """,
+                            entry.getRawFileEntry().getPath());
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
                     sc.osascriptCommand(String.format(
-                            """
+                                    """
                              set fileEntry to (POSIX file "%s") as text
                              tell application "Finder" to open information window of file fileEntry
                              """,
-                            entry.getRawFileEntry().getPath())).execute();
+                                    entry.getRawFileEntry().getPath()))
+                            .execute();
                 }
             }
         }

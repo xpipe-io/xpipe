@@ -121,7 +121,8 @@ public class FileBridge {
         return Optional.empty();
     }
 
-    public void openString(String keyName, Object key, String input, Consumer<String> output, Consumer<String> consumer) {
+    public void openString(
+            String keyName, Object key, String input, Consumer<String> output, Consumer<String> consumer) {
         if (input == null) {
             input = "";
         }

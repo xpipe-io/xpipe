@@ -116,8 +116,8 @@ public abstract class DataStorage {
         }
     }
 
-    public synchronized void deleteChildren(DataStoreEntry e, boolean  deep) {
-        getStoreChildren(e,deep).forEach(entry -> {
+    public synchronized void deleteChildren(DataStoreEntry e, boolean deep) {
+        getStoreChildren(e, deep).forEach(entry -> {
             if (!entry.getConfiguration().isDeletable()) {
                 return;
             }
@@ -126,17 +126,17 @@ public abstract class DataStorage {
         });
     }
 
-    public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry,   boolean  deep) {
-        var children = new ArrayList<>(getStoreEntries().stream().filter(other -> {
-            if (!other.getState().isUsable()) {
-                return false;
-            }
+    public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry, boolean deep) {
+        var children = new ArrayList<>(getStoreEntries().stream()
+                .filter(other -> {
+                    if (!other.getState().isUsable()) {
+                        return false;
+                    }
 
-            var parent = other
-                    .getProvider()
-                    .getParent(other.getStore());
-            return entry.getStore().equals(parent);
-        }).toList());
+                    var parent = other.getProvider().getParent(other.getStore());
+                    return entry.getStore().equals(parent);
+                })
+                .toList());
 
         if (deep) {
             for (DataStoreEntry dataStoreEntry : new ArrayList<>(children)) {

@@ -8,7 +8,7 @@ public class FocusExchangeImpl extends FocusExchange
         implements MessageExchangeImpl<FocusExchange.Request, FocusExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         OperationMode.switchUp(OperationMode.map(msg.getMode()));
         return Response.builder().build();
     }

@@ -56,8 +56,9 @@ public class PrettyImageComp extends SimpleComp {
         var currentNode = new SimpleObjectProperty<Node>();
         SimpleChangeListener.apply(PlatformThread.sync(value), val -> {
             image.set(val);
-            var requiresChange = val == null || (val.endsWith(".svg") && !(currentNode.get() instanceof WebView) ||
-                    !(currentNode.get() instanceof ImageView));
+            var requiresChange = val == null
+                    || (val.endsWith(".svg") && !(currentNode.get() instanceof WebView)
+                            || !(currentNode.get() instanceof ImageView));
             if (!requiresChange) {
                 return;
             }
@@ -66,17 +67,16 @@ public class PrettyImageComp extends SimpleComp {
 
             if (val == null) {
                 currentNode.set(new Region());
-            }
-
-            else if (val.endsWith(".svg")) {
-                var storeIcon = SvgView.create(
-                        Bindings.createStringBinding(() -> {
+            } else if (val.endsWith(".svg")) {
+                var storeIcon = SvgView.create(Bindings.createStringBinding(
+                        () -> {
                             if (!AppImages.hasSvgImage(image.getValue())) {
                                 return null;
                             }
 
                             return AppImages.svgImage(image.getValue());
-                        }, image));
+                        },
+                        image));
                 var ar = Bindings.createDoubleBinding(
                         () -> {
                             return storeIcon.getWidth().getValue().doubleValue()
@@ -86,12 +86,12 @@ public class PrettyImageComp extends SimpleComp {
                         storeIcon.getHeight());
                 aspectRatioProperty.bind(ar);
                 var node = storeIcon.createWebview();
-                ((WebView) node).prefWidthProperty().bind(widthProperty);
-                ((WebView) node).maxWidthProperty().bind(widthProperty);
-                ((WebView) node).minWidthProperty().bind(widthProperty);
-                ((WebView) node).prefHeightProperty().bind(heightProperty);
-                ((WebView) node).maxHeightProperty().bind(heightProperty);
-                ((WebView) node).minHeightProperty().bind(heightProperty);
+                node.prefWidthProperty().bind(widthProperty);
+                node.maxWidthProperty().bind(widthProperty);
+                node.minWidthProperty().bind(widthProperty);
+                node.prefHeightProperty().bind(heightProperty);
+                node.maxHeightProperty().bind(heightProperty);
+                node.minHeightProperty().bind(heightProperty);
                 currentNode.set(node);
             } else {
                 var storeIcon = new ImageView();
@@ -113,7 +113,8 @@ public class PrettyImageComp extends SimpleComp {
                                 return 1.0;
                             }
 
-                            return storeIcon.getImage().getWidth() / storeIcon.getImage().getHeight();
+                            return storeIcon.getImage().getWidth()
+                                    / storeIcon.getImage().getHeight();
                         },
                         storeIcon.imageProperty());
                 aspectRatioProperty.bind(ar);

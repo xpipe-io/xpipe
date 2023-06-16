@@ -22,14 +22,16 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -252,12 +254,9 @@ public class BrowserComp extends SimpleComp {
 
         var label = new Label(model.getName());
         label.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-        label.addEventHandler(DragEvent.DRAG_ENTERED, new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent mouseEvent) {
-                Platform.runLater(() -> tabs.getSelectionModel().select(tab));
-            }
-        });
+        label.addEventHandler(
+                DragEvent.DRAG_ENTERED,
+                mouseEvent -> Platform.runLater(() -> tabs.getSelectionModel().select(tab)));
 
         label.graphicProperty()
                 .bind(Bindings.createObjectBinding(

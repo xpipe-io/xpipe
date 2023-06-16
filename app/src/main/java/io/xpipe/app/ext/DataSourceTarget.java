@@ -1,9 +1,9 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
@@ -16,10 +16,9 @@ import java.util.ServiceLoader;
 
 public interface DataSourceTarget {
 
-    static List<DataSourceTarget> ALL = new ArrayList<>();
-    ;
+    List<DataSourceTarget> ALL = new ArrayList<>();
 
-    public static class Loader implements ModuleLayerLoader {
+    class Loader implements ModuleLayerLoader {
 
         @Override
         public void init(ModuleLayer layer) {
@@ -40,11 +39,11 @@ public interface DataSourceTarget {
         }
     }
 
-    public static Optional<DataSourceTarget> byId(String id) {
+    static Optional<DataSourceTarget> byId(String id) {
         return ALL.stream().filter(d -> d.getId().equals(id)).findAny();
     }
 
-    public static List<DataSourceTarget> getAll() {
+    static List<DataSourceTarget> getAll() {
         return ALL;
     }
 
@@ -87,7 +86,7 @@ public interface DataSourceTarget {
 
     @Value
     @AllArgsConstructor
-    public static class InstructionsDisplay {
+    class InstructionsDisplay {
         Region region;
         Runnable onFinish;
         Validator validator;

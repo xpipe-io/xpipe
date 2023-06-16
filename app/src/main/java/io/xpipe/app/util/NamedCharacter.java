@@ -13,7 +13,7 @@ public class NamedCharacter {
     String translationKey;
 
     public static QueryConverter<Character> converter(List<NamedCharacter> chars, boolean allowOthers) {
-        return new QueryConverter<Character>() {
+        return new QueryConverter<>() {
             @Override
             protected Character fromString(String s) {
                 if (s.length() == 0) {

@@ -113,7 +113,7 @@ public abstract class StorageElement {
         return lastModified;
     }
 
-    public static interface Listener {
+    public interface Listener {
         void onUpdate();
     }
 

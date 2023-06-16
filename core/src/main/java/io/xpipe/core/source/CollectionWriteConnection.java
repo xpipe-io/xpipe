@@ -4,5 +4,5 @@ import java.io.InputStream;
 
 public interface CollectionWriteConnection extends DataSourceConnection {
 
-    void write(String entry, InputStream content) throws Exception;
+    void write(String entry, InputStream content);
 }

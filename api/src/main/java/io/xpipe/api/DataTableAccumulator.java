@@ -15,7 +15,7 @@ import io.xpipe.core.source.DataSourceId;
  */
 public interface DataTableAccumulator {
 
-    public static DataTableAccumulator create(TupleType type) {
+    static DataTableAccumulator create(TupleType type) {
         return new DataTableAccumulatorImpl(type);
     }
 

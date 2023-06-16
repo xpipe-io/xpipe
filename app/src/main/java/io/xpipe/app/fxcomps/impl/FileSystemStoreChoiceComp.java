@@ -56,11 +56,10 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
         });
 
         selected.addListener((observable, oldValue, newValue) -> {
-            fileSystemProperty.setValue(newValue != null?newValue.getFileSystem():null);
+            fileSystemProperty.setValue(newValue != null ? newValue.getFileSystem() : null);
         });
 
-        var comboBox =
-                new CustomComboBoxBuilder<>(fileSystemProperty, this::createGraphic, null, v -> true);
+        var comboBox = new CustomComboBoxBuilder<>(fileSystemProperty, this::createGraphic, null, v -> true);
         comboBox.setAccessibleNames(store -> getName(store));
         comboBox.setSelectedDisplay(this::createDisplayGraphic);
         DataStorage.get().getUsableStores().stream()

@@ -14,7 +14,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 @EqualsAndHashCode(callSuper = true)
 public class DataStoreTypeComp extends SimpleComp {
 
-    private final DataSource<?> source;
+    DataSource<?> source;
 
     @Override
     protected Region createSimple() {

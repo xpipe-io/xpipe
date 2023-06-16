@@ -1,6 +1,5 @@
 package io.xpipe.core.util;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -67,8 +66,7 @@ public abstract class ProxyFunction {
 
         @Override
         @SneakyThrows
-        public ProxyFunction deserialize(JsonParser p, DeserializationContext ctxt)
-                throws IOException, JacksonException {
+        public ProxyFunction deserialize(JsonParser p, DeserializationContext ctxt) {
             var tree = (ObjectNode) JacksonMapper.getDefault().readTree(p);
             var moduleReference = tree.remove("module").asText();
             var classReference = tree.remove("class").asText();

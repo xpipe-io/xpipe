@@ -79,7 +79,7 @@ public interface DataStore {
 
     default void checkComplete() throws Exception {}
 
-    default boolean delete() throws Exception {
+    default boolean delete() {
         return false;
     }
 

@@ -22,36 +22,44 @@ public class BrowserStatusBarComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var cc = PlatformThread.sync(BrowserClipboard.currentCopyClipboard);
-        var ccCount = Bindings.createStringBinding(() -> {
-            if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
-                return cc.getValue().getEntries().size() + " file" + (cc.getValue().getEntries().size() > 1 ? "s" : "") + " in clipboard";
-            } else {
-                return null;
-            }
-        }, cc);
+        var ccCount = Bindings.createStringBinding(
+                () -> {
+                    if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
+                        return cc.getValue().getEntries().size() + " file"
+                                + (cc.getValue().getEntries().size() > 1 ? "s" : "") + " in clipboard";
+                    } else {
+                        return null;
+                    }
+                },
+                cc);
 
-        var selectedCount = PlatformThread.sync(Bindings.createIntegerBinding(() -> {
-            return model.getFileList().getSelection().size();
-        }, model.getFileList().getSelection()));
+        var selectedCount = PlatformThread.sync(Bindings.createIntegerBinding(
+                () -> {
+                    return model.getFileList().getSelection().size();
+                },
+                model.getFileList().getSelection()));
 
-        var allCount = PlatformThread.sync(Bindings.createIntegerBinding(() -> {
-            return (int) model.getFileList().getAll().getValue().stream().filter(entry -> !entry.isSynthetic()).count();
-        }, model.getFileList().getAll()));
+        var allCount = PlatformThread.sync(Bindings.createIntegerBinding(
+                () -> {
+                    return (int) model.getFileList().getAll().getValue().stream()
+                            .filter(entry -> !entry.isSynthetic())
+                            .count();
+                },
+                model.getFileList().getAll()));
 
-        var selectedComp = new LabelComp(Bindings.createStringBinding(() -> {
-            if (selectedCount.getValue().intValue() == 0) {
-                return null;
-            } else {
-                return selectedCount.getValue() + " / " + allCount.getValue() + " selected";
-            }
-        }, selectedCount, allCount));
+        var selectedComp = new LabelComp(Bindings.createStringBinding(
+                () -> {
+                    if (selectedCount.getValue().intValue() == 0) {
+                        return null;
+                    } else {
+                        return selectedCount.getValue() + " / " + allCount.getValue() + " selected";
+                    }
+                },
+                selectedCount,
+                allCount));
 
         var bar = new ToolBar();
-        bar.getItems().setAll(
-                new LabelComp(ccCount).createRegion(),
-                new Spacer(),
-                selectedComp.createRegion()
-        );
+        bar.getItems().setAll(new LabelComp(ccCount).createRegion(), new Spacer(), selectedComp.createRegion());
         bar.getStyleClass().add("status-bar");
         bar.setOnDragDetected(event -> {
             event.consume();

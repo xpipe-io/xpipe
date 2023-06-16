@@ -255,7 +255,7 @@ public class AppMainWindow {
                 var awt = AppImages.toAwtImage(image);
                 var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
                 try {
-                    ImageIO.write(awt, "png",file.toFile());
+                    ImageIO.write(awt, "png", file.toFile());
                 } catch (IOException e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }

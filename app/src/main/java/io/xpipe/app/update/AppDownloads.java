@@ -33,7 +33,8 @@ public class AppDownloads {
                 .withRateLimitHandler(RateLimitHandler.FAIL)
                 .withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
                 .build();
-        repository = github.getRepository(AppProperties.get().isStaging() ? "xpipe-io/xpipe_staging" : "xpipe-io/xpipe");
+        repository =
+                github.getRepository(AppProperties.get().isStaging() ? "xpipe-io/xpipe_staging" : "xpipe-io/xpipe");
         return repository;
     }
 
@@ -103,7 +104,6 @@ public class AppDownloads {
                 .orElse("?");
     }
 
-
     public static Optional<GHRelease> getLatestIncludingPreRelease() throws IOException {
         var repo = getRepository();
         return Optional.ofNullable(repo.listReleases().iterator().next());
@@ -122,7 +122,8 @@ public class AppDownloads {
         }
 
         // If we are currently running a prerelease, always return this as the suitable release!
-        if (preIncluding.isPresent() && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
+        if (preIncluding.isPresent()
+                && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
             return preIncluding;
         }
 

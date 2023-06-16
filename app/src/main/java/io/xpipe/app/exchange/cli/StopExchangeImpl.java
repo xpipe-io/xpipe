@@ -10,7 +10,7 @@ public class StopExchangeImpl extends StopExchange
         implements MessageExchangeImpl<StopExchange.Request, StopExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         handler.postResponse(() -> {
             ThreadHelper.runAsync(() -> {
                 ThreadHelper.sleep(1000);

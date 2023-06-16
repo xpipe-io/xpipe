@@ -18,10 +18,13 @@ public interface FileType {
     List<FileType> ALL = new ArrayList<>();
 
     static FileType byId(String id) {
-        return ALL.stream().filter(fileType -> fileType.getId().equals(id)).findAny().orElseThrow();
+        return ALL.stream()
+                .filter(fileType -> fileType.getId().equals(id))
+                .findAny()
+                .orElseThrow();
     }
 
-    public static void loadDefinitions() {
+    static void loadDefinitions() {
         AppResources.with(AppResources.XPIPE_MODULE, "file_list.txt", path -> {
             try (var reader =
                     new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {

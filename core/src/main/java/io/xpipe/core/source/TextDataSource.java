@@ -15,7 +15,7 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
     }
 
     @Override
-    public final TextReadConnection openReadConnection() throws Exception {
+    public final TextReadConnection openReadConnection() {
         if (!isComplete()) {
             throw new UnsupportedOperationException();
         }
@@ -24,7 +24,7 @@ public abstract class TextDataSource<DS extends DataStore> extends DataSource<DS
     }
 
     @Override
-    public final TextWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+    public final TextWriteConnection openWriteConnection(WriteMode mode) {
         var con = newWriteConnection(mode);
         if (con == null) {
             throw new UnsupportedOperationException(mode.getId());

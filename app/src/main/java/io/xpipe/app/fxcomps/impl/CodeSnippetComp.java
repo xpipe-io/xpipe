@@ -87,8 +87,7 @@ public class CodeSnippetComp extends Comp<CompStructure<?>> {
             s.getParent().fireEvent(e);
             e.consume();
         });
-        s.prefHeightProperty()
-                .setValue(20 * this.value.getValue().lines().stream().count());
+        s.prefHeightProperty().setValue(20 * this.value.getValue().lines().size());
 
         var lineNumbers = new VBox();
         lineNumbers.getStyleClass().add("line-numbers");

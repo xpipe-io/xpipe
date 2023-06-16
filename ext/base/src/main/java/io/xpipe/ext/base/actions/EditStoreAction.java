@@ -22,23 +22,27 @@ public class EditStoreAction implements ActionProvider {
         }
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             GuiDsStoreCreator.showEdit(store);
         }
     }
 
-
     @Override
     public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
-        return new DefaultDataStoreCallSite<DataStore>() {
+        return new DefaultDataStoreCallSite<>() {
             @Override
             public boolean isApplicable(DataStore o) {
-                return DataStorage.get().getStoreEntryIfPresent(o).orElseThrow().getState().equals(DataStoreEntry.State.INCOMPLETE);
+                return DataStorage.get()
+                        .getStoreEntryIfPresent(o)
+                        .orElseThrow()
+                        .getState()
+                        .equals(DataStoreEntry.State.INCOMPLETE);
             }
 
             @Override
             public ActionProvider.Action createAction(DataStore store) {
-                return new Action(DataStorage.get().getStoreEntryIfPresent(store).orElseThrow());
+                return new Action(
+                        DataStorage.get().getStoreEntryIfPresent(store).orElseThrow());
             }
 
             @Override
@@ -50,7 +54,7 @@ public class EditStoreAction implements ActionProvider {
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<DataStore>() {
+        return new DataStoreCallSite<>() {
 
             @Override
             public boolean isMajor() {
@@ -73,7 +77,7 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(DataStore o) throws Exception {
+            public boolean isApplicable(DataStore o) {
                 return DataStorage.get().getStoreEntry(o).getConfiguration().isEditable();
             }
 

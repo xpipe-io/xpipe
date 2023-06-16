@@ -11,7 +11,7 @@ import java.util.UUID;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public abstract class DialogElement {
 
-    protected String id;
+    protected final String id;
 
     public DialogElement() {
         this.id = UUID.randomUUID().toString();

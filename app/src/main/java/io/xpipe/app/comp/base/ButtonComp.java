@@ -55,7 +55,7 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
         }
         var graphic = getGraphic();
         if (graphic instanceof FontIcon f) {
-            //f.iconColorProperty().bind(button.textFillProperty());
+            // f.iconColorProperty().bind(button.textFillProperty());
             SimpleChangeListener.apply(button.fontProperty(), c -> {
                 f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
             });

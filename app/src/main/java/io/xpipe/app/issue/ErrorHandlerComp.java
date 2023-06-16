@@ -76,9 +76,12 @@ public class ErrorHandlerComp extends SimpleComp {
         if (!showing.get()) {
             showing.set(true);
             var window = AppWindowHelper.sideWindow(
-                    AppI18n.get("errorHandler"), w -> {
+                    AppI18n.get("errorHandler"),
+                    w -> {
                         return setUpComp(event, w, finishLatch);
-                    }, true, null);
+                    },
+                    true,
+                    null);
 
             // An exception is thrown when show and wait is called
             // within an animation or layout processing task, so use show
@@ -101,9 +104,12 @@ public class ErrorHandlerComp extends SimpleComp {
             if (!showing.get()) {
                 showing.set(true);
                 var window = AppWindowHelper.sideWindow(
-                        AppI18n.get("errorHandler"), w -> {
+                        AppI18n.get("errorHandler"),
+                        w -> {
                             return setUpComp(event, w, finishLatch);
-                        }, true, null);
+                        },
+                        true,
+                        null);
                 // An exception is thrown when show and wait is called
                 // within an animation or layout processing task, so use show
                 try {
@@ -175,7 +181,8 @@ public class ErrorHandlerComp extends SimpleComp {
         var hbox = new HBox(graphicPane, text);
         HBox.setHgrow(text, Priority.ALWAYS);
         hbox.setSpacing(8);
-        graphicPane.prefHeightProperty()
+        graphicPane
+                .prefHeightProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> header.getHeight() + descriptionField.getHeight() + 2,
                         header.heightProperty(),
@@ -198,7 +205,8 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getStyleClass().add("actions");
             actionBox.setFillWidth(true);
 
-            for (var action : List.of(ErrorAction.sendDiagnostics(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
+            for (var action :
+                    List.of(ErrorAction.sendDiagnostics(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
                 var ac = createActionComp(action);
                 actionBox.getChildren().add(ac);
             }

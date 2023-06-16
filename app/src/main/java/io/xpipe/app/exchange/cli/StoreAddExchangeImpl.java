@@ -26,8 +26,8 @@ public class StoreAddExchangeImpl extends StoreAddExchange
 
     @Override
     @SneakyThrows
-    public StoreAddExchange.Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        Dialog creatorDialog = null;
+    public StoreAddExchange.Response handleRequest(BeaconHandler handler, Request msg) {
+        Dialog creatorDialog;
         DataStoreProvider provider;
         if (msg.getStoreInput() != null) {
             creatorDialog = Dialog.empty().evaluateTo(msg::getStoreInput);

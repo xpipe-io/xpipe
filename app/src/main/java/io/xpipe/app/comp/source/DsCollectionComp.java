@@ -30,15 +30,15 @@ public class DsCollectionComp extends Comp<CompStructure<TreeView<String>>> {
         if (con.getValue() != null) {
             try {
                 con.getValue().listEntries().forEach(e -> {
-//                    var item = new TreeItem<String>(e.getFileName());
-//                    c.add(item);
+                    //                    var item = new TreeItem<String>(e.getFileName());
+                    //                    c.add(item);
                 });
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
             }
         }
 
-        var ar = new TreeItem<String>(value.getValue());
+        var ar = new TreeItem<>(value.getValue());
         ar.getChildren().setAll(c);
         return ar;
     }

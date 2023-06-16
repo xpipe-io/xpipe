@@ -54,7 +54,8 @@ public class StoreEntryFlatMiniSectionComp extends SimpleComp {
         var image = entry.getState() == DataStoreEntry.State.LOAD_FAILED
                 ? "disabled_icon.png"
                 : entry.getProvider().getDisplayIconFileName(entry.getStore());
-        var label = new Label(entry.getName(), new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion());
+        var label =
+                new Label(entry.getName(), new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion());
         var spacer = new Spacer(depth * 10, Orientation.HORIZONTAL);
         var box = new HBox(spacer, label);
         return box;

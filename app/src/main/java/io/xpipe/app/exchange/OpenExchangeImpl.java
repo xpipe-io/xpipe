@@ -9,7 +9,7 @@ public class OpenExchangeImpl extends OpenExchange
         implements MessageExchangeImpl<OpenExchange.Request, OpenExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         if (msg.getArguments().size() == 0) {
             OperationMode.switchToAsync(OperationMode.GUI);
         }

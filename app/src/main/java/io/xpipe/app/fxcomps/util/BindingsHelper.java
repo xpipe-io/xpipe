@@ -19,8 +19,7 @@ import java.util.function.Predicate;
 
 public class BindingsHelper {
 
-    private static final Set<ReferenceEntry> REFERENCES =
-            Collections.newSetFromMap(new ConcurrentHashMap<ReferenceEntry, Boolean>());
+    private static final Set<ReferenceEntry> REFERENCES = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public static <T, V> void bindExclusive(
             Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind) {

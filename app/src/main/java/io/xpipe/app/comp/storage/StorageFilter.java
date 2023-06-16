@@ -49,7 +49,7 @@ public class StorageFilter {
         return filter;
     }
 
-    public static interface Filterable {
+    public interface Filterable {
 
         boolean shouldShow(String filter);
     }

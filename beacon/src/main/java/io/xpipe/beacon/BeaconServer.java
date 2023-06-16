@@ -25,17 +25,16 @@ public class BeaconServer {
     }
 
     private static List<String> toProcessCommand(String toExec) {
-        var command = OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec) : List.of("sh", "-c", toExec);
+        var command =
+                OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec) : List.of("sh", "-c", toExec);
         return command;
     }
 
     public static Process tryStartCustom() throws Exception {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
-            var toExec = custom
-                    + (BeaconConfig.getDaemonArguments() != null
-                    ? " " + BeaconConfig.getDaemonArguments()
-                    : "");
+            var toExec =
+                    custom + (BeaconConfig.getDaemonArguments() != null ? " " + BeaconConfig.getDaemonArguments() : "");
             var command = toProcessCommand(toExec);
             Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
             printDaemonOutput(process, command);
@@ -113,7 +112,7 @@ public class BeaconServer {
         return res.isSuccess();
     }
 
-    public static String getDaemonDebugExecutable(String installationBase) throws Exception {
+    public static String getDaemonDebugExecutable(String installationBase) {
         var osType = OsType.getLocal();
         var debug = BeaconConfig.launchDaemonInDebugMode();
         if (!debug) {

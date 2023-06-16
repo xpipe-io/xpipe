@@ -9,18 +9,18 @@ import java.util.stream.Stream;
 
 @SuperBuilder
 public abstract class SimpleCollectionSource extends ReadOnlyCollectionSource {
-    protected abstract List<DataSource<?>> get() throws Exception;
+    protected abstract List<DataSource<?>> get();
 
     @Override
     protected CollectionReadConnection newReadConnection() {
         return new CollectionReadConnection() {
             @Override
-            public Stream<DataSource<?>> listEntries() throws Exception {
+            public Stream<DataSource<?>> listEntries() {
                 return get().stream();
             }
 
             @Override
-            public boolean canRead() throws Exception {
+            public boolean canRead() {
                 return true;
             }
         };

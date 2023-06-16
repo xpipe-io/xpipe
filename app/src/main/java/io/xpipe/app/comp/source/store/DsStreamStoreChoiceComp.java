@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 @EqualsAndHashCode(callSuper = true)
 public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
 
-    public static enum Mode {
+    public enum Mode {
         OPEN,
         WRITE
     }
@@ -71,7 +71,7 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
     protected Region createSimple() {
         var isNamedStore =
                 XPipeDaemon.getInstance().getStoreName(selected.getValue()).isPresent();
-        var localStore = new SimpleObjectProperty<FileStore>(
+        var localStore = new SimpleObjectProperty<>(
                 !isNamedStore
                                 && selected.getValue() instanceof FileStore fileStore
                                 && fileStore.getFileSystem() instanceof LocalStore
@@ -101,7 +101,7 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
                 },
                 provider != null ? provider : new SimpleObjectProperty<>());
 
-        var remoteStore = new SimpleObjectProperty<DataStore>(
+        var remoteStore = new SimpleObjectProperty<>(
                 isNamedStore
                                 && selected.getValue() instanceof FileStore fileStore
                                 && !(fileStore.getFileSystem() instanceof LocalStore)
@@ -110,13 +110,13 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
         var remote = new TabPaneComp.Entry(
                 AppI18n.observable("remote"), "mdi2e-earth", new DsRemoteFileChoiceComp(remoteStore));
 
-        var namedStore = new SimpleObjectProperty<DataStore>(isNamedStore ? selected.getValue() : null);
+        var namedStore = new SimpleObjectProperty<>(isNamedStore ? selected.getValue() : null);
         var named = new TabPaneComp.Entry(
                 AppI18n.observable("stored"),
                 "mdrmz-storage",
                 NamedStoreChoiceComp.create(filter, namedStore, DataStoreProvider.DataCategory.STREAM));
 
-        var otherStore = new SimpleObjectProperty<DataStore>(
+        var otherStore = new SimpleObjectProperty<>(
                 localStore.get() == null && remoteStore.get() == null && !isNamedStore ? selected.getValue() : null);
         var other = new TabPaneComp.Entry(
                 AppI18n.observable("other"),

@@ -14,7 +14,7 @@ public abstract class RawDataSource<DS extends DataStore> extends DataSource<DS>
     }
 
     @Override
-    public final RawReadConnection openReadConnection() throws Exception {
+    public final RawReadConnection openReadConnection() {
         if (!isComplete()) {
             throw new UnsupportedOperationException();
         }
@@ -23,7 +23,7 @@ public abstract class RawDataSource<DS extends DataStore> extends DataSource<DS>
     }
 
     @Override
-    public final RawWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+    public final RawWriteConnection openWriteConnection(WriteMode mode) {
         var con = newWriteConnection(mode);
         if (con == null) {
             throw new UnsupportedOperationException(mode.getId());

@@ -79,7 +79,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    public abstract static class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
+    abstract class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
             implements ExternalTerminalType {
 
         public WindowsFullPathType(String id) {
@@ -312,9 +312,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 pc.osascriptCommand(String.format(
-                        """
+                                """
                         %s/Contents/MacOS/Tabby run %s
-                        """, getApplicationPath().orElseThrow(), pc.getShellDialect().fileArgument(file)))
+                        """,
+                                getApplicationPath().orElseThrow(),
+                                pc.getShellDialect().fileArgument(file)))
                         .execute();
             }
         }

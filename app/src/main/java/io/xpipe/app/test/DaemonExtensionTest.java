@@ -2,11 +2,11 @@ package io.xpipe.app.test;
 
 import io.xpipe.api.DataSource;
 import io.xpipe.app.ext.XPipeServiceProviders;
+import io.xpipe.app.util.XPipeSession;
 import io.xpipe.beacon.BeaconDaemonController;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.app.util.XPipeSession;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 

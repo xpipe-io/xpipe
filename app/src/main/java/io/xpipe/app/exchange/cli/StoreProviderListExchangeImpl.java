@@ -14,7 +14,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
         implements MessageExchangeImpl<StoreProviderListExchange.Request, StoreProviderListExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         var categories = DataStoreProvider.DataCategory.values();
         var all = DataStoreProviders.getAll();
         var map = Arrays.stream(categories)

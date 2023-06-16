@@ -68,8 +68,7 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
         if (chosenFile.getValue() == null || !(chosenFile.getValue() instanceof FileStore f) || f.getPath() == null) {
             return JfxHelper.createNamedEntry(AppI18n.get("browse"), AppI18n.get("selectFileFromComputer"), graphic);
         } else {
-            return JfxHelper.createNamedEntry(
-                    f.getFileName().toString(), f.getPath().toString(), graphic);
+            return JfxHelper.createNamedEntry(f.getFileName(), f.getPath(), graphic);
         }
     }
 }

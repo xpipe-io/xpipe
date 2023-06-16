@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public class AppCharsets {
 
-    private static List<String> observedCharsets = new ArrayList<>();
+    private static final List<String> observedCharsets = new ArrayList<>();
 
     public static void init() {
         var system = System.getProperty("file.encoding");

@@ -31,9 +31,12 @@ public class StoreEntryListComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var initialCount = StoreViewState.get().getAllEntries().size();
-        var showIntro = Bindings.createBooleanBinding(() -> {
-            return initialCount == StoreViewState.get().getAllEntries().size() && AppState.get().isInitialLaunch();
-        }, StoreViewState.get().getAllEntries());
+        var showIntro = Bindings.createBooleanBinding(
+                () -> {
+                    return initialCount == StoreViewState.get().getAllEntries().size()
+                            && AppState.get().isInitialLaunch();
+                },
+                StoreViewState.get().getAllEntries());
         var map = new LinkedHashMap<Comp<?>, ObservableBooleanValue>();
         map.put(
                 createList(),

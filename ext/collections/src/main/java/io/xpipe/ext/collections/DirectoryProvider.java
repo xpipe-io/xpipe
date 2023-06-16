@@ -7,7 +7,6 @@ import io.xpipe.core.source.*;
 import io.xpipe.core.store.DataStore;
 import lombok.experimental.SuperBuilder;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileVisitResult;
@@ -23,7 +22,7 @@ import java.util.stream.Stream;
 public class DirectoryProvider implements UniformDataSourceProvider<DirectoryProvider.Source> {
 
     @Override
-    public Source createDefaultSource(DataStore input) throws Exception {
+    public Source createDefaultSource(DataStore input) {
         return Source.builder().store(input.asNeeded()).build();
     }
 
@@ -69,13 +68,13 @@ public class DirectoryProvider implements UniformDataSourceProvider<DirectoryPro
         public CollectionWriteConnection newWriteConnection(WriteMode mode) {
             return new CollectionWriteConnection() {
                 @Override
-                public void write(String entry, InputStream content) throws Exception {}
+                public void write(String entry, InputStream content) {}
 
                 @Override
-                public void init() throws Exception {}
+                public void init() {}
 
                 @Override
-                public void close() throws Exception {}
+                public void close() {}
             };
         }
 
@@ -83,7 +82,7 @@ public class DirectoryProvider implements UniformDataSourceProvider<DirectoryPro
         public CollectionReadConnection newReadConnection() {
             return new CollectionReadConnection() {
                 @Override
-                public boolean canRead() throws Exception {
+                public boolean canRead() {
                     return true;
                 }
 
@@ -92,7 +91,7 @@ public class DirectoryProvider implements UniformDataSourceProvider<DirectoryPro
                     var entries = new ArrayList<ArchiveEntryDataStore>();
                     Files.walkFileTree(store.getPath(), new SimpleFileVisitor<>() {
                         @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                             var rel = store.getPath().relativize(file);
                             var name = rel.toString();
                             var dir = Files.isDirectory(file);
@@ -116,7 +115,8 @@ public class DirectoryProvider implements UniformDataSourceProvider<DirectoryPro
                             return FileVisitResult.CONTINUE;
                         }
                     });
-                    return entries.stream().map(archiveEntryDataStore -> DataSourceProviders.createDefault(archiveEntryDataStore));
+                    return entries.stream()
+                            .map(archiveEntryDataStore -> DataSourceProviders.createDefault(archiveEntryDataStore));
                 }
             };
         }

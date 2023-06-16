@@ -33,7 +33,9 @@ public class BrowserOverviewComp extends SimpleComp {
                 .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
                 .filter(entry -> {
                     try {
-                        var b = sc.getShellDialect().directoryExists(sc, entry.getPath()).executeAndCheck();
+                        var b = sc.getShellDialect()
+                                .directoryExists(sc, entry.getPath())
+                                .executeAndCheck();
                         return b;
                     } catch (Exception e) {
                         ErrorEvent.fromThrowable(e).handle();
@@ -42,7 +44,8 @@ public class BrowserOverviewComp extends SimpleComp {
                 })
                 .toList();
         var commonOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(common), false);
-        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview).apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
+        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview)
+                .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
 
         var roots = sc.getShellDialect()
                 .listRoots(sc)

@@ -45,7 +45,7 @@ final class BrowserBookmarkList extends SimpleComp {
     @Override
     protected Region createSimple() {
         var root = StoreEntryTree.createTree();
-        var view = new TreeView<StoreEntryWrapper>(root);
+        var view = new TreeView<>(root);
         view.setShowRoot(false);
         view.getStyleClass().add("bookmark-list");
         view.setCellFactory(param -> {
@@ -138,7 +138,7 @@ final class BrowserBookmarkList extends SimpleComp {
                 });
                 event.consume();
             });
-            var icon = new SimpleObjectProperty<String>("mdal-keyboard_arrow_right");
+            var icon = new SimpleObjectProperty<>("mdal-keyboard_arrow_right");
             getPseudoClassStates().addListener((SetChangeListener<? super PseudoClass>) change -> {
                 if (change.getSet().contains(PseudoClass.getPseudoClass("expanded"))) {
                     icon.set("mdal-keyboard_arrow_down");

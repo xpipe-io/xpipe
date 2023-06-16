@@ -17,10 +17,10 @@ public class ErrorEvent {
     private boolean terminal;
 
     @Builder.Default
-    private boolean omitted = false;
+    private final boolean omitted = false;
 
     @Builder.Default
-    private boolean reportable = true;
+    private final boolean reportable = true;
 
     private Throwable throwable;
 

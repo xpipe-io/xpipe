@@ -18,7 +18,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class SourceEntryContextMenu<S extends CompStructure<?>> extends ContextMenuAugment<S> {
 
-
     public SourceEntryContextMenu(boolean showOnPrimaryButton, SourceEntryWrapper entry, Region renameTextField) {
         super(() -> createContextMenu(entry, renameTextField));
     }

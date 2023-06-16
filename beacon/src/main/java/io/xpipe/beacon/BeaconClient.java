@@ -24,7 +24,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Optional;
@@ -188,8 +187,6 @@ public class BeaconClient implements AutoCloseable {
         JsonNode node;
         try (InputStream blockIn = BeaconFormat.readBlocks(in)) {
             node = JacksonMapper.newMapper().readTree(blockIn);
-        } catch (SocketException ex) {
-            throw new ConnectorException("Connection to xpipe daemon closed unexpectedly", ex);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't read from socket", ex);
         }

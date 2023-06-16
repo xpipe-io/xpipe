@@ -38,8 +38,8 @@ public class HttpStoreProvider implements DataStoreProvider {
         HttpStore st = (HttpStore) store.getValue();
 
         Property<String> methodProp = new SimpleObjectProperty<>(st != null ? st.getMethod() : null);
-        Property<String> requestProp = new SimpleObjectProperty<>(
-                st != null && st.getUriString() != null ? st.getUriString().toString() : null);
+        Property<String> requestProp =
+                new SimpleObjectProperty<>(st != null && st.getUriString() != null ? st.getUriString() : null);
 
         Property<DataFlow> flowProperty = new SimpleObjectProperty<>(st.getFlow());
 
@@ -64,7 +64,7 @@ public class HttpStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public String queryInformationString(DataStore store, int length) throws Exception {
+    public String queryInformationString(DataStore store, int length) {
         return getDisplayName();
     }
 

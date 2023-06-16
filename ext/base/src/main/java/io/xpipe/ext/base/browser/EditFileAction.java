@@ -14,7 +14,7 @@ import java.util.List;
 public class EditFileAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         for (BrowserEntry entry : entries) {
             FileOpener.openInTextEditor(entry.getRawFileEntry());
         }

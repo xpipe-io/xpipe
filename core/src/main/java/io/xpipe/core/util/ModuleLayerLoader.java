@@ -1,12 +1,12 @@
 package io.xpipe.core.util;
 
-
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
 
 public interface ModuleLayerLoader {
 
-    public static void loadAll(ModuleLayer layer, boolean hasDaemon, boolean prioritization, Consumer<Throwable> errorHandler) {
+    static void loadAll(
+            ModuleLayer layer, boolean hasDaemon, boolean prioritization, Consumer<Throwable> errorHandler) {
         ServiceLoader.load(layer, ModuleLayerLoader.class).stream().forEach(moduleLayerLoaderProvider -> {
             var instance = moduleLayerLoaderProvider.get();
             try {
@@ -25,7 +25,7 @@ public interface ModuleLayerLoader {
         });
     }
 
-    public void init(ModuleLayer layer);
+    void init(ModuleLayer layer);
 
     boolean requiresFullDaemon();
 

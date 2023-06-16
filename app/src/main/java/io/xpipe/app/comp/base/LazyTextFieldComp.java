@@ -7,9 +7,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import lombok.Builder;
 import lombok.Value;
@@ -29,19 +27,16 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         var sp = new StackPane();
         var r = new JFXTextField();
 
-        r.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ESCAPE)) {
-                    currentValue.setValue(appliedValue.getValue());
-                }
-
-                if (ke.getCode().equals(KeyCode.ENTER) || ke.getCode().equals(KeyCode.ESCAPE)) {
-                    r.getScene().getRoot().requestFocus();
-                }
-
-                ke.consume();
+        r.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ESCAPE)) {
+                currentValue.setValue(appliedValue.getValue());
             }
+
+            if (ke.getCode().equals(KeyCode.ENTER) || ke.getCode().equals(KeyCode.ESCAPE)) {
+                r.getScene().getRoot().requestFocus();
+            }
+
+            ke.consume();
         });
 
         r.focusedProperty().addListener((c, o, n) -> {

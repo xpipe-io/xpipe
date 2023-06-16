@@ -36,7 +36,8 @@ public class UpdateChangelogAlert {
                     alert.getDialogPane().setContent(markdown);
 
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
-                },null,
+                },
+                null,
                 r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
     }
 }

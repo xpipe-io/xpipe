@@ -11,7 +11,7 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
         return DataSourceType.COLLECTION;
     }
 
-    public final CollectionReadConnection openReadConnection() throws Exception {
+    public final CollectionReadConnection openReadConnection() {
         if (!isComplete()) {
             throw new UnsupportedOperationException();
         }
@@ -19,7 +19,7 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
         return newReadConnection();
     }
 
-    public final CollectionWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+    public final CollectionWriteConnection openWriteConnection(WriteMode mode) {
         var con = newWriteConnection(mode);
         if (con == null) {
             throw new UnsupportedOperationException(mode.getId());
@@ -30,5 +30,5 @@ public abstract class CollectionDataSource<DS extends DataStore> extends DataSou
 
     protected abstract CollectionWriteConnection newWriteConnection(WriteMode mode);
 
-    protected abstract CollectionReadConnection newReadConnection() throws Exception;
+    protected abstract CollectionReadConnection newReadConnection();
 }

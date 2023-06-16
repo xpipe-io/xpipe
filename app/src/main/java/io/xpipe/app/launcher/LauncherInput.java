@@ -81,7 +81,7 @@ public abstract class LauncherInput {
                                             .equalsIgnoreCase(action))
                             .findFirst();
                     if (found.isPresent()) {
-                        ActionProvider.Action a = null;
+                        ActionProvider.Action a;
                         try {
                             a = found.get().getLauncherCallSite().createAction(args);
                         } catch (Exception e) {

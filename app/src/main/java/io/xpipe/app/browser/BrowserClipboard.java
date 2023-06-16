@@ -21,7 +21,7 @@ public class BrowserClipboard {
         List<FileSystem.FileEntry> entries;
     }
 
-    public static Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
+    public static final Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
     public static Instance currentDragClipboard;
 
     @SneakyThrows

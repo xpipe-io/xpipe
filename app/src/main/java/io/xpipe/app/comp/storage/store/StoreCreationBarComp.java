@@ -23,7 +23,8 @@ public class StoreCreationBarComp extends SimpleComp {
     protected Region createSimple() {
         var newStreamStore = new ButtonComp(
                         AppI18n.observable("addCommand"), new FontIcon("mdi2c-code-greater-than"), () -> {
-                            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.COMMAND));
+                            GuiDsStoreCreator.showCreation(
+                                    v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.COMMAND));
                         })
                 .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN))
@@ -38,22 +39,24 @@ public class StoreCreationBarComp extends SimpleComp {
                 .apply(new FancyTooltipAugment<>("addHost"));
 
         var newShellStore = new ButtonComp(
-                AppI18n.observable("addShell"), new FontIcon("mdi2t-text-box-multiple"), () -> {
-            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.SHELL));
-        })
+                        AppI18n.observable("addShell"), new FontIcon("mdi2t-text-box-multiple"), () -> {
+                            GuiDsStoreCreator.showCreation(
+                                    v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.SHELL));
+                        })
                 .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addShell"));
 
-        var newDbStore = new ButtonComp(
-                        AppI18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus"), () -> {
-                            GuiDsStoreCreator.showCreation(v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
-                        })
+        var newDbStore = new ButtonComp(AppI18n.observable("addDatabase"), new FontIcon("mdi2d-database-plus"), () -> {
+                    GuiDsStoreCreator.showCreation(
+                            v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
+                })
                 .styleClass(Styles.FLAT)
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addDatabase"));
 
-        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore)).apply(struc -> struc.get().setFillWidth(true));
+        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore))
+                .apply(struc -> struc.get().setFillWidth(true));
         box.apply(s -> AppFont.medium(s.get()));
         var bar = box.createRegion();
         bar.getStyleClass().add("bar");

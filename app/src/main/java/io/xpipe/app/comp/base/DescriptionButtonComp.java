@@ -49,7 +49,6 @@ public class DescriptionButtonComp extends SimpleComp {
         return bt;
     }
 
-
     private Region createNamedEntry() {
         var header = new Label();
         header.textProperty().bind(PlatformThread.sync(name));

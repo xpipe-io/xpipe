@@ -35,10 +35,9 @@ public class SourceCollectionWrapper implements StorageFilter.Filterable {
 
     public SourceCollectionWrapper(DataSourceCollection collection) {
         this.collection = collection;
-        this.entries =
-                new SimpleListProperty<SourceEntryWrapper>(FXCollections.observableList(collection.getEntries().stream()
-                        .map(SourceEntryWrapper::new)
-                        .collect(Collectors.toCollection(ArrayList::new))));
+        this.entries = new SimpleListProperty<>(FXCollections.observableList(collection.getEntries().stream()
+                .map(SourceEntryWrapper::new)
+                .collect(Collectors.toCollection(ArrayList::new))));
         this.size = new SimpleIntegerProperty(collection.getEntries().size());
         this.name = new SimpleStringProperty(collection.getName());
         this.lastAccess = new SimpleObjectProperty<>(collection.getLastAccess().minus(Duration.ofMillis(500)));

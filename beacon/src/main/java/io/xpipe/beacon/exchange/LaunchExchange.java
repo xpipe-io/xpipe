@@ -28,6 +28,7 @@ public class LaunchExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull List<String> command;
+        @NonNull
+        List<String> command;
     }
 }

@@ -42,8 +42,10 @@ public class SampleAction implements ActionProvider {
                 System.out.println(sc.getOsType());
 
                 // Simple commands can be executed in one line
-                // The shell dialects also provide the appropriate commands for common operations like echo for all supported shells
-                String echoOut = sc.executeSimpleStringCommand(sc.getShellDialect().getEchoCommand("hello!", false));
+                // The shell dialects also provide the appropriate commands for common operations like echo for all
+                // supported shells
+                String echoOut =
+                        sc.executeSimpleStringCommand(sc.getShellDialect().getEchoCommand("hello!", false));
 
                 // You can also implement custom handling for more complex commands
                 try (CommandControl cc = sc.command("ls").start()) {
@@ -52,7 +54,8 @@ public class SampleAction implements ActionProvider {
 
                     // Read the stdout lines as a stream
                     BufferedReader reader = new BufferedReader(new InputStreamReader(cc.getStdout(), cc.getCharset()));
-                    // We don't have to close this stream here, that will be automatically done by the command control after the try-with block
+                    // We don't have to close this stream here, that will be automatically done by the command control
+                    // after the try-with block
                     reader.lines().filter(s -> !s.isBlank()).forEach(s -> {
                         System.out.println(s);
                     });
@@ -66,12 +69,13 @@ public class SampleAction implements ActionProvider {
                 // Commands can also be more complex and span multiple lines.
                 // In this case, XPipe will internally write a command to a script file and then execute the script
                 try (CommandControl cc = sc.command(
-                        """
+                                """
                         VAR="value"
                         echo "$VAR"
-                        """
-                ).start()) {
-                    // Reads stdout, stashes stderr. If the exit code is not 0, it will throw an exception with the stderr contents.
+                        """)
+                        .start()) {
+                    // Reads stdout, stashes stderr. If the exit code is not 0, it will throw an exception with the
+                    // stderr contents.
                     var output = cc.readStdoutOrThrow();
                 }
 
@@ -80,7 +84,10 @@ public class SampleAction implements ActionProvider {
                 // sudo and the optional sudo password automatically provided by XPipe
                 // by using the information from the connection store.
                 // You can also set a custom working directory.
-                try (CommandControl cc = sc.command("kill <pid>").elevated("kill").withWorkingDirectory("/").start()) {
+                try (CommandControl cc = sc.command("kill <pid>")
+                        .elevated("kill")
+                        .withWorkingDirectory("/")
+                        .start()) {
                     // Discard any output but throw an exception with the stderr contents if the exit code is not 0
                     cc.discardOrThrow();
                 }
@@ -117,7 +124,7 @@ public class SampleAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(ShellStore o) throws Exception {
+            public boolean isApplicable(ShellStore o) {
                 // Allows you to individually check whether this action should be available for the specific store.
                 // In this case it should only be available for remote shell connections, not local ones.
                 return !ShellStore.isLocal(o);

@@ -49,9 +49,10 @@ public class SourceCollectionLayoutComp extends SimpleComp {
         var filler = Comp.of(() -> new Region());
         filler.styleClass("bar");
         filler.styleClass("filler-bar");
-        var button = new ButtonComp(AppI18n.observable("addCollection"), new FontIcon("mdi2f-folder-plus-outline"), () -> {
-                    SourceCollectionViewState.get().addNewCollection();
-                })
+        var button = new ButtonComp(
+                        AppI18n.observable("addCollection"), new FontIcon("mdi2f-folder-plus-outline"), () -> {
+                            SourceCollectionViewState.get().addNewCollection();
+                        })
                 .apply(new FancyTooltipAugment<>("addCollectionFolder"));
         button.styleClass("intro-add-collection-button");
 

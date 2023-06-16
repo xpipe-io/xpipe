@@ -11,7 +11,7 @@ import java.util.Map;
 
 public abstract class QueryConverter<T> {
 
-    public static final QueryConverter<NewLine> NEW_LINE = new QueryConverter<NewLine>() {
+    public static final QueryConverter<NewLine> NEW_LINE = new QueryConverter<>() {
         @Override
         protected NewLine fromString(String s) {
             return NewLine.byId(s);
@@ -23,7 +23,7 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<StreamCharset> CHARSET = new QueryConverter<StreamCharset>() {
+    public static final QueryConverter<StreamCharset> CHARSET = new QueryConverter<>() {
         @Override
         protected StreamCharset fromString(String s) {
             return StreamCharset.get(s);
@@ -35,7 +35,7 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<String> STRING = new QueryConverter<String>() {
+    public static final QueryConverter<String> STRING = new QueryConverter<>() {
         @Override
         protected String fromString(String s) {
             return s;
@@ -47,10 +47,10 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<SecretValue> SECRET = new QueryConverter<SecretValue>() {
+    public static final QueryConverter<SecretValue> SECRET = new QueryConverter<>() {
         @Override
         protected SecretValue fromString(String s) {
-            //TODO
+            // TODO
             return null;
         }
 
@@ -60,29 +60,28 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<Map.Entry<String, String>> HTTP_HEADER =
-            new QueryConverter<Map.Entry<String, String>>() {
-                @Override
-                protected Map.Entry<String, String> fromString(String s) {
-                    if (!s.contains(":")) {
-                        throw new IllegalArgumentException("Missing colon");
-                    }
+    public static final QueryConverter<Map.Entry<String, String>> HTTP_HEADER = new QueryConverter<>() {
+        @Override
+        protected Map.Entry<String, String> fromString(String s) {
+            if (!s.contains(":")) {
+                throw new IllegalArgumentException("Missing colon");
+            }
 
-                    var split = s.split(":");
-                    if (split.length != 2) {
-                        throw new IllegalArgumentException("Too many colons");
-                    }
+            var split = s.split(":");
+            if (split.length != 2) {
+                throw new IllegalArgumentException("Too many colons");
+            }
 
-                    return new AbstractMap.SimpleEntry<>(split[0].trim(), split[1].trim());
-                }
+            return new AbstractMap.SimpleEntry<>(split[0].trim(), split[1].trim());
+        }
 
-                @Override
-                protected String toString(Map.Entry<String, String> value) {
-                    return value.getKey() + ": " + value.getValue();
-                }
-            };
+        @Override
+        protected String toString(Map.Entry<String, String> value) {
+            return value.getKey() + ": " + value.getValue();
+        }
+    };
 
-    public static final QueryConverter<URI> URI = new QueryConverter<URI>() {
+    public static final QueryConverter<URI> URI = new QueryConverter<>() {
         @Override
         protected URI fromString(String s) {
             try {
@@ -98,7 +97,7 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<Integer> INTEGER = new QueryConverter<Integer>() {
+    public static final QueryConverter<Integer> INTEGER = new QueryConverter<>() {
         @Override
         protected Integer fromString(String s) {
             return Integer.parseInt(s);
@@ -110,7 +109,7 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<Character> CHARACTER = new QueryConverter<Character>() {
+    public static final QueryConverter<Character> CHARACTER = new QueryConverter<>() {
         @Override
         protected Character fromString(String s) {
             if (s.length() != 1) {
@@ -126,7 +125,7 @@ public abstract class QueryConverter<T> {
         }
     };
 
-    public static final QueryConverter<Boolean> BOOLEAN = new QueryConverter<Boolean>() {
+    public static final QueryConverter<Boolean> BOOLEAN = new QueryConverter<>() {
         @Override
         protected Boolean fromString(String s) {
             if (s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes") || s.equalsIgnoreCase("true")) {

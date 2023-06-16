@@ -45,7 +45,7 @@ public abstract class TableDataSource<DS extends DataStore> extends DataSource<D
         return newReadConnection();
     }
 
-    public final Optional<TableMapping> createMapping(TupleType inputType) throws Exception {
+    public final Optional<TableMapping> createMapping(TupleType inputType) {
         return Optional.ofNullable(new CreateMappingFunction(this, inputType).callAndGet());
     }
 

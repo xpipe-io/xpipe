@@ -46,7 +46,7 @@ public class DataStorageWriter {
                             var found = DataStorage.get().getStoreEntryIfPresent(store);
                             return found.map(dataSourceEntry -> dataSourceEntry.getUuid());
                         }
-                    } catch (JsonProcessingException e) {
+                    } catch (JsonProcessingException ignored) {
                     }
                     return Optional.empty();
                 },
@@ -62,7 +62,7 @@ public class DataStorageWriter {
                             var found = DataStorage.get().getSourceEntry(source);
                             return found.map(dataSourceEntry -> dataSourceEntry.getUuid());
                         }
-                    } catch (JsonProcessingException e) {
+                    } catch (JsonProcessingException ignored) {
                     }
                     return Optional.empty();
                 },

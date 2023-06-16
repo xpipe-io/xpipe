@@ -15,23 +15,23 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
-    public static String flatten(List<String> command) {
+    static String flatten(List<String> command) {
         return command.stream()
                 .map(s -> s.contains(" ")
-                        && !(s.startsWith("\"") && s.endsWith("\""))
-                        && !(s.startsWith("'") && s.endsWith("'"))
+                                && !(s.startsWith("\"") && s.endsWith("\""))
+                                && !(s.startsWith("'") && s.endsWith("'"))
                         ? "\"" + s + "\""
                         : s)
                 .collect(Collectors.joining(" "));
     }
 
-    CommandControl prepareTempDirectory(ShellControl shellControl,  String directory);
+    CommandControl prepareTempDirectory(ShellControl shellControl, String directory);
 
     String initFileName(ShellControl sc) throws Exception;
 
-    CommandControl directoryExists(ShellControl shellControl,  String directory);
+    CommandControl directoryExists(ShellControl shellControl, String directory);
 
-    CommandControl normalizeDirectory(ShellControl shellControl,  String directory);
+    CommandControl normalizeDirectory(ShellControl shellControl, String directory);
 
     String fileArgument(String s);
 
@@ -53,15 +53,15 @@ public interface ShellDialect {
 
     CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file);
 
-    default String getCdCommand(String directory){
+    default String getCdCommand(String directory) {
         return "cd \"" + directory + "\"";
     }
 
-    default String getPushdCommand(String directory){
+    default String getPushdCommand(String directory) {
         return "pushd \"" + directory + "\"";
     }
 
-    default String getPopdCommand(){
+    default String getPopdCommand() {
         return "popd";
     }
 
@@ -113,7 +113,7 @@ public interface ShellDialect {
 
     String getOpenCommand();
 
-    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file) throws Exception;
+    String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
 
     String runScript(ShellControl parent, String file);
 
@@ -149,7 +149,7 @@ public interface ShellDialect {
 
     String getWhichCommand(String executable);
 
-    Charset determineCharset(ShellControl control) throws Exception;
+    Charset determineCharset(ShellControl control);
 
     NewLine getNewLine();
 

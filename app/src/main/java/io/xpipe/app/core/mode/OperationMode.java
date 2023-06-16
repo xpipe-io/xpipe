@@ -264,7 +264,7 @@ public abstract class OperationMode {
 
     public abstract void onSwitchTo();
 
-    public abstract void onSwitchFrom() throws Throwable;
+    public abstract void onSwitchFrom();
 
     public abstract void initialSetup() throws Throwable;
 

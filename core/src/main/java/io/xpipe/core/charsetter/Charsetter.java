@@ -69,7 +69,7 @@ public abstract class Charsetter {
         if (charset.hasByteOrderMark()) {
             var bom = stream.readNBytes(charset.getByteOrderMark().length);
             if (bom.length != 0 && !Arrays.equals(bom, charset.getByteOrderMark())) {
-                throw new IllegalStateException("Charset does not match: " + charset.toString());
+                throw new IllegalStateException("Charset does not match: " + charset);
             }
         }
 

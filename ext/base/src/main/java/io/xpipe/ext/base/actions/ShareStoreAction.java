@@ -26,11 +26,12 @@ public class ShareStoreAction implements ActionProvider {
         }
 
         public static String create(DataStore store) {
-            return "xpipe://addStore/" + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
+            return "xpipe://addStore/"
+                    + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
         }
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             var string = create(store);
             var selection = new StringSelection(string);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -41,7 +42,7 @@ public class ShareStoreAction implements ActionProvider {
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<DataStore>() {
+        return new DataStoreCallSite<>() {
 
             @Override
             public ActionProvider.Action createAction(DataStore store) {
@@ -54,7 +55,7 @@ public class ShareStoreAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(DataStore o) throws Exception {
+            public boolean isApplicable(DataStore o) {
                 return DataStoreProviders.byStore(o).isShareable();
             }
 

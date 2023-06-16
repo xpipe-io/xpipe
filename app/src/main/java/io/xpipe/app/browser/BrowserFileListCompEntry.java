@@ -49,19 +49,26 @@ public class BrowserFileListCompEntry {
         }
 
         if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
-            var tv = ((TableView<BrowserEntry>) row.getParent().getParent().getParent().getParent());
+            var tv = ((TableView<BrowserEntry>)
+                    row.getParent().getParent().getParent().getParent());
             var all = tv.getItems();
-            var min = tv.getSelectionModel().getSelectedIndices().stream().mapToInt(value -> value).min().orElse(1);
-            var max = tv.getSelectionModel().getSelectedIndices().stream().mapToInt(value -> value).max().orElse(all.size() - 1);
+            var min = tv.getSelectionModel().getSelectedIndices().stream()
+                    .mapToInt(value -> value)
+                    .min()
+                    .orElse(1);
+            var max = tv.getSelectionModel().getSelectedIndices().stream()
+                    .mapToInt(value -> value)
+                    .max()
+                    .orElse(all.size() - 1);
             var end = tv.getSelectionModel().getFocusedIndex();
             var start = end > min ? min : max;
             tv.getSelectionModel().selectRange(Math.min(start, end), Math.max(start, end) + 1);
-            return;
         }
     }
 
     public boolean isSynthetic() {
-        return item != null && item.getRawFileEntry().equals(model.getFileSystemModel().getCurrentParentDirectory());
+        return item != null
+                && item.getRawFileEntry().equals(model.getFileSystemModel().getCurrentParentDirectory());
     }
 
     private boolean acceptsDrop(DragEvent event) {
@@ -80,8 +87,10 @@ public class BrowserFileListCompEntry {
 
         // Prevent drag and drops of files into the current directory
         if (BrowserClipboard.currentDragClipboard
-                .getBaseDirectory().getPath()
-                .equals(model.getFileSystemModel().getCurrentDirectory().getPath()) && (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {
+                        .getBaseDirectory()
+                        .getPath()
+                        .equals(model.getFileSystemModel().getCurrentDirectory().getPath())
+                && (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {
             return false;
         }
 
@@ -152,7 +161,8 @@ public class BrowserFileListCompEntry {
     }
 
     private void acceptDrag(DragEvent event) {
-        model.getDraggedOverEmpty().setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+        model.getDraggedOverEmpty()
+                .setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
         model.getDraggedOverDirectory().setValue(item);
         event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
     }
@@ -205,7 +215,8 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        var tv = ((TableView<BrowserEntry>) row.getParent().getParent().getParent().getParent());
+        var tv = ((TableView<BrowserEntry>)
+                row.getParent().getParent().getParent().getParent());
         tv.getSelectionModel().select(item);
     }
 

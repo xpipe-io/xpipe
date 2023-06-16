@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 public class RunAction extends MultiExecuteAction {
 
@@ -29,11 +30,13 @@ public class RunAction extends MultiExecuteAction {
         }
 
         var os = shell.get().getOsType();
-        if (os.equals(OsType.WINDOWS) && List.of("exe", "bat", "ps1", "cmd").stream().anyMatch(s -> e.getPath().endsWith(s))) {
+        if (os.equals(OsType.WINDOWS)
+                && Stream.of("exe", "bat", "ps1", "cmd")
+                        .anyMatch(s -> e.getPath().endsWith(s))) {
             return true;
         }
 
-        if (List.of("sh", "command").stream().anyMatch(s -> e.getPath().endsWith(s))) {
+        if (Stream.of("sh", "command").anyMatch(s -> e.getPath().endsWith(s))) {
             return true;
         }
 

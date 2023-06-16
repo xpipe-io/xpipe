@@ -16,13 +16,15 @@ import java.util.List;
 public class PasteAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var clipboard = BrowserClipboard.retrieveCopy();
         if (clipboard == null) {
             return;
         }
 
-        var target = entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() == FileKind.DIRECTORY ? entries.get(0).getRawFileEntry() : model.getCurrentDirectory();
+        var target = entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() == FileKind.DIRECTORY
+                ? entries.get(0).getRawFileEntry()
+                : model.getCurrentDirectory();
         var files = clipboard.getEntries();
         model.dropFilesIntoAsync(target, files, true);
     }
@@ -39,7 +41,8 @@ public class PasteAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() < 2 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+        return entries.size() < 2
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override

@@ -38,9 +38,9 @@ public class AppImages {
 
             var simpleName = FilenameUtils.getExtension(module);
             String defaultPrefix = simpleName + ":";
-            Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     var relativeFileName = FilenameUtils.separatorsToUnix(
                             basePath.relativize(file).toString());
                     try {
@@ -108,8 +108,8 @@ public class AppImages {
     }
 
     public static BufferedImage toAwtImage(Image fxImage) {
-        BufferedImage img = new BufferedImage(
-                (int) fxImage.getWidth(), (int) fxImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img =
+                new BufferedImage((int) fxImage.getWidth(), (int) fxImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < fxImage.getWidth(); x++) {
             for (int y = 0; y < fxImage.getHeight(); y++) {
                 int rgb = fxImage.getPixelReader().getArgb(x, y);

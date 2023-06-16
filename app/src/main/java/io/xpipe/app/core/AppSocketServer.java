@@ -79,7 +79,7 @@ public class AppSocketServer {
         }
         try {
             listenerThread.join();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
         }
     }
 
@@ -89,7 +89,7 @@ public class AppSocketServer {
         listenerThread = new Thread(
                 () -> {
                     while (running) {
-                        Socket clientSocket = null;
+                        Socket clientSocket;
                         try {
                             clientSocket = socket.accept();
                         } catch (Exception ex) {
@@ -114,7 +114,7 @@ public class AppSocketServer {
             return false;
         }
 
-        JsonNode node = null;
+        JsonNode node;
         try (InputStream blockIn = BeaconFormat.readBlocks(clientSocket.getInputStream())) {
             node = JacksonMapper.newMapper().readTree(blockIn);
         }
@@ -180,7 +180,7 @@ public class AppSocketServer {
 
     private void performExchanges(Socket clientSocket, int id) {
         try {
-            JsonNode informationNode = null;
+            JsonNode informationNode;
             try (InputStream blockIn = BeaconFormat.readBlocks(clientSocket.getInputStream())) {
                 informationNode = JacksonMapper.newMapper().readTree(blockIn);
             }
@@ -230,10 +230,8 @@ public class AppSocketServer {
                 Deobfuscator.deobfuscate(ex);
                 sendServerErrorResponse(clientSocket, ex);
             }
-        } catch (SocketException ex) {
-            // Omit it, as this might happen often
-            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-        } catch (Throwable ex) {
+        } // Omit it, as this might happen often
+        catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).build().handle();
         } finally {
             try {

@@ -25,7 +25,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                 new LeafAction() {
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
@@ -51,12 +51,11 @@ public abstract class MultiExecuteAction implements BranchAction {
                 new LeafAction() {
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = ScriptHelper.createDetachCommand(
-                                                pc, createCommand(pc, model, entry));
+                                        var cmd = ScriptHelper.createDetachCommand(pc, createCommand(pc, model, entry));
                                         pc.command(cmd)
                                                 .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())
@@ -74,13 +73,13 @@ public abstract class MultiExecuteAction implements BranchAction {
                 new LeafAction() {
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
                                         pc.command(createCommand(pc, model, entry))
                                                 .withWorkingDirectory(model.getCurrentDirectory()
-                                                                          .getPath())
+                                                        .getPath())
                                                 .execute();
                                     }
                                 },

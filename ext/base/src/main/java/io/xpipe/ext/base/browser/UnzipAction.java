@@ -18,12 +18,14 @@ public class UnzipAction extends ExecuteApplicationAction implements FileTypeAct
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return FileTypeAction.super.isApplicable(model, entries) && !model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
+        return FileTypeAction.super.isApplicable(model, entries)
+                && !model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
     }
 
     @Override
     protected String createCommand(OpenFileSystemModel model, BrowserEntry entry) {
-        return "unzip -o " + entry.getOptionallyQuotedFileName() + " -d " + FileNames.quoteIfNecessary(FileNames.getBaseName(entry.getFileName()));
+        return "unzip -o " + entry.getOptionallyQuotedFileName() + " -d "
+                + FileNames.quoteIfNecessary(FileNames.getBaseName(entry.getFileName()));
     }
 
     @Override

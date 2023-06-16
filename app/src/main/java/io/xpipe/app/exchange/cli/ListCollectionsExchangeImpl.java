@@ -10,7 +10,7 @@ public class ListCollectionsExchangeImpl extends ListCollectionsExchange
         implements MessageExchangeImpl<ListCollectionsExchange.Request, ListCollectionsExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         DataStorage s = DataStorage.get();
         var e = s.getSourceCollections().stream()
                 .map(col -> CollectionListEntry.builder()

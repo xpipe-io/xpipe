@@ -8,7 +8,7 @@ public class VersionExchangeImpl extends VersionExchange
         implements MessageExchangeImpl<VersionExchange.Request, VersionExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         var jvmVersion = System.getProperty("java.vm.vendor") + " "
                 + System.getProperty("java.vm.name") + " ("
                 + System.getProperty("java.vm.version") + ")";

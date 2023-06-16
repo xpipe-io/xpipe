@@ -34,7 +34,7 @@ public class BrowserModel {
     }
 
     @Getter
-    public static enum Mode {
+    public enum Mode {
         BROWSER(false, true, true, true),
         SINGLE_FILE_CHOOSER(true, false, true, false),
         SINGLE_FILE_SAVE(true, false, true, false),
@@ -80,7 +80,8 @@ public class BrowserModel {
         var map = new LinkedHashMap<UUID, String>();
         openFileSystems.forEach(model -> {
             var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
-            storageEntry.ifPresent(entry -> map.put(entry.getUuid(), model.getCurrentPath().get()));
+            storageEntry.ifPresent(
+                    entry -> map.put(entry.getUuid(), model.getCurrentPath().get()));
         });
 
         // Don't override state if it is empty

@@ -18,10 +18,10 @@ import java.util.Map;
 
 public class PdxTextFileProvider
         implements UniformDataSourceProvider<PdxTextFileProvider.Source>,
-                   SimpleFileDataSourceProvider<PdxTextFileProvider.Source> {
+                SimpleFileDataSourceProvider<PdxTextFileProvider.Source> {
 
     @Override
-    public Source createDefaultSource(DataStore input) throws Exception {
+    public Source createDefaultSource(DataStore input) {
         return Source.builder().store(input.asNeeded()).build();
     }
 

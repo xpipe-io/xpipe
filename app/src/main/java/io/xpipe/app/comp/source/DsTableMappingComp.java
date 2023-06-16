@@ -38,7 +38,7 @@ public class DsTableMappingComp extends SimpleComp {
                 grid.add(output.createRegion(), 2, i);
 
                 if (i % 2 != 0) {
-                    grid.getChildren().stream().skip((i * 3)).forEach(node -> node.getStyleClass()
+                    grid.getChildren().stream().skip((i * 3L)).forEach(node -> node.getStyleClass()
                             .add("odd"));
                 }
             }

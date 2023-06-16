@@ -17,25 +17,31 @@ import java.util.stream.Stream;
 public interface FileSystem extends Closeable, AutoCloseable {
 
     @Value
-    static class FileEntry {
+    class FileEntry {
         @NonNull
         FileSystem fileSystem;
+
         @NonNull
         String path;
+
         Instant date;
         boolean hidden;
         Boolean executable;
         long size;
         String mode;
+
         @NonNull
         FileKind kind;
 
         public FileEntry(
-                @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean hidden, Boolean executable,
+                @NonNull FileSystem fileSystem,
+                @NonNull String path,
+                Instant date,
+                boolean hidden,
+                Boolean executable,
                 long size,
                 String mode,
-                @NonNull FileKind kind
-        ) {
+                @NonNull FileKind kind) {
             this.fileSystem = fileSystem;
             this.mode = mode;
             this.kind = kind;
@@ -49,7 +55,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
         public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
             return new FileEntry(fileSystem, path, Instant.now(), true, false, 0, null, FileKind.DIRECTORY);
         }
-
     }
 
     FileSystemStore getStore();
@@ -62,9 +67,9 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     OutputStream openOutput(String file) throws Exception;
 
-    public boolean fileExists(String file) throws Exception;
+    boolean fileExists(String file) throws Exception;
 
-    public  void delete(String file) throws Exception;
+    void delete(String file) throws Exception;
 
     void copy(String file, String newFile) throws Exception;
 
@@ -82,20 +87,22 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     default List<FileEntry> listFilesRecursively(String file) throws Exception {
         var base = listFiles(file).toList();
-        return base.stream().flatMap(fileEntry -> {
-            if (fileEntry.getKind() != FileKind.DIRECTORY) {
-                return Stream.of(fileEntry);
-            }
+        return base.stream()
+                .flatMap(fileEntry -> {
+                    if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                        return Stream.of(fileEntry);
+                    }
 
-            try {
-                var list = new ArrayList<FileEntry>();
-                list.add(fileEntry);
-                list.addAll(listFilesRecursively(fileEntry.getPath()));
-                return list.stream();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
+                    try {
+                        var list = new ArrayList<FileEntry>();
+                        list.add(fileEntry);
+                        list.addAll(listFilesRecursively(fileEntry.getPath()));
+                        return list.stream();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .toList();
     }
 
     List<String> listRoots() throws Exception;

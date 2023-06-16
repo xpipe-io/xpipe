@@ -116,8 +116,12 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
             refreshShown(list, shown);
         });
 
-        var prop = new SimpleObjectProperty<>(selected.getValue() != null ?
-                DataStorage.get().getStoreEntryIfPresent(selected.getValue()).orElse(null):null);
+        var prop = new SimpleObjectProperty<>(
+                selected.getValue() != null
+                        ? DataStorage.get()
+                                .getStoreEntryIfPresent(selected.getValue())
+                                .orElse(null)
+                        : null);
         setUpListener(prop);
 
         var filterComp = new FilterComp(filterString)

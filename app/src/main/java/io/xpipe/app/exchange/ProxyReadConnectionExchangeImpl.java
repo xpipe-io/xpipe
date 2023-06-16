@@ -11,7 +11,7 @@ public class ProxyReadConnectionExchangeImpl extends ProxyReadConnectionExchange
         implements MessageExchangeImpl<ProxyReadConnectionExchange.Request, ProxyReadConnectionExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         handler.postResponse(() -> {
             var outputSource = DataSource.createInternalDataSource(
                     msg.getSource().getType(), new OutputStreamStore(handler.sendBody()));

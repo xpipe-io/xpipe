@@ -39,7 +39,7 @@ public class DataTypeParserInternal {
         try {
             var bigDecimal = new BigDecimal(val);
             return Optional.of(ValueNode.ofDecimal(bigDecimal));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         return Optional.empty();
@@ -89,14 +89,14 @@ public class DataTypeParserInternal {
         try {
             var bigInteger = new BigInteger(val);
             return Optional.of(ValueNode.ofInteger(bigInteger));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         // Big decimal value
         try {
             var bigDecimal = new BigDecimal(val);
             return Optional.of(ValueNode.ofDecimal(bigDecimal));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         return Optional.empty();

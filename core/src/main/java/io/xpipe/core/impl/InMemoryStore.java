@@ -35,12 +35,12 @@ public class InMemoryStore extends JacksonizedValue implements StreamDataStore {
     }
 
     @Override
-    public InputStream openInput() throws Exception {
+    public InputStream openInput() {
         return value != null ? new ByteArrayInputStream(value) : InputStream.nullInputStream();
     }
 
     @Override
-    public OutputStream openOutput() throws Exception {
+    public OutputStream openOutput() {
         return new ByteArrayOutputStream() {
             @Override
             public void close() throws IOException {

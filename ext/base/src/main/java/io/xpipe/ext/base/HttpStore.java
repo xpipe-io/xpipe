@@ -89,7 +89,7 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
     }
 
     @Override
-    public boolean canOpen() throws Exception {
+    public boolean canOpen() {
         return flow == DataFlow.INPUT;
     }
 

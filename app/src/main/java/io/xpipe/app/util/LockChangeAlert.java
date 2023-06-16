@@ -48,9 +48,13 @@ public class LockChangeAlert {
                     alert.getDialogPane().setContent(content);
 
                     var button = alert.getDialogPane().lookupButton(ButtonType.OK);
-                    button.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-                        return !Objects.equals(prop1.getValue(), prop2.getValue());
-                    }, prop1, prop2));
+                    button.disableProperty()
+                            .bind(Bindings.createBooleanBinding(
+                                    () -> {
+                                        return !Objects.equals(prop1.getValue(), prop2.getValue());
+                                    },
+                                    prop1,
+                                    prop2));
                 })
                 .filter(b -> b.getButtonData().isDefaultButton())
                 .ifPresent(t -> {

@@ -58,8 +58,7 @@ public class DataStoreEntry extends StorageElement {
             boolean dirty,
             State state,
             Configuration configuration,
-            boolean expanded)
-            throws Exception {
+            boolean expanded) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.information = information;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -100,7 +99,17 @@ public class DataStoreEntry extends StorageElement {
             Configuration configuration,
             boolean expanded) {
         var entry = new DataStoreEntry(
-                directory, uuid, name, lastUsed, lastModified, information, storeNode, false, state, configuration, expanded);
+                directory,
+                uuid,
+                name,
+                lastUsed,
+                lastModified,
+                information,
+                storeNode,
+                false,
+                state,
+                configuration,
+                expanded);
         return entry;
     }
 
@@ -140,7 +149,9 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(Configuration.defaultConfiguration());
-        var expanded = Optional.ofNullable(json.get("expanded")).map(jsonNode -> jsonNode.booleanValue()).orElse(true);
+        var expanded = Optional.ofNullable(json.get("expanded"))
+                .map(jsonNode -> jsonNode.booleanValue())
+                .orElse(true);
 
         // Store loading is prone to errors.
         JsonNode storeNode = null;
@@ -149,7 +160,8 @@ public class DataStoreEntry extends StorageElement {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }
-        return createExisting(dir, uuid, name, lastUsed, lastModified, information, storeNode, state, configuration, expanded);
+        return createExisting(
+                dir, uuid, name, lastUsed, lastModified, information, storeNode, state, configuration, expanded);
     }
 
     public void setConfiguration(Configuration configuration) {
@@ -310,7 +322,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     @Getter
-    public static enum State {
+    public enum State {
         @JsonProperty("loadFailed")
         LOAD_FAILED(false),
         @JsonProperty("incomplete")

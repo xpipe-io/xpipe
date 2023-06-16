@@ -78,7 +78,8 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 c.getFieldLabel().setMaxHeight(AppFont.getPixelSize(1));
                                 grid.add(c.getFieldLabel(), 0, i + rowAmount, 2, 1);
 
-                                var canFocus = BindingsHelper.persist(c.getNode().disabledProperty().not());
+                                var canFocus = BindingsHelper.persist(
+                                        c.getNode().disabledProperty().not());
 
                                 var descriptionLabel = new Label();
                                 AppFont.medium(descriptionLabel);
@@ -128,8 +129,8 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                     GridPane.setMargin(c.getFieldLabel(), new Insets(SPACING, 0, 0, offset));
                                 }
 
-                                c.getFieldLabel().getStyleClass().add(styleClass.toString() + "-label");
-                                node.getStyleClass().add(styleClass.toString() + "-node");
+                                c.getFieldLabel().getStyleClass().add(styleClass + "-label");
+                                node.getStyleClass().add(styleClass + "-node");
                             }
 
                             if (element instanceof LazyNodeElement<?> nodeElement) {

@@ -80,12 +80,12 @@ public class SinkDrainStore extends JacksonizedValue implements KnownFormatStrea
     }
 
     @Override
-    public boolean canOpen() throws Exception {
+    public boolean canOpen() {
         return getState() == State.PRODUCER_CONNECTED;
     }
 
     @Override
-    public InputStream openInput() throws Exception {
+    public InputStream openInput() {
         checkState(false);
 
         if (getState() == State.PRODUCER_CONNECTED) {
@@ -112,7 +112,7 @@ public class SinkDrainStore extends JacksonizedValue implements KnownFormatStrea
     }
 
     @Override
-    public OutputStream openOutput() throws Exception {
+    public OutputStream openOutput() {
         checkState(true);
 
         if (getState() == State.CONSUMER_CONNECTED) {
@@ -157,7 +157,7 @@ public class SinkDrainStore extends JacksonizedValue implements KnownFormatStrea
         }
     }
 
-    public static enum State {
+    public enum State {
         NONE_CONNECTED,
         PRODUCER_CONNECTED,
         CONSUMER_CONNECTED,

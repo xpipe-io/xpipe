@@ -30,9 +30,15 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
         var button = new JFXButton();
         button.setGraphic(getGraphic());
         button.setOnAction(e -> {
-            GuiDsStoreCreator.show("inProgress", null, null, v -> v.getCategory().equals(category), entry -> {
-                chosenStore.setValue(entry.getStore());
-            }, false);
+            GuiDsStoreCreator.show(
+                    "inProgress",
+                    null,
+                    null,
+                    v -> v.getCategory().equals(category),
+                    entry -> {
+                        chosenStore.setValue(entry.getStore());
+                    },
+                    false);
             e.consume();
         });
 
@@ -61,8 +67,7 @@ public class DataStoreSelectorComp extends Comp<CompStructure<Button>> {
             return JfxHelper.createNamedEntry(
                     AppI18n.get("selectStreamStore"), AppI18n.get("openStreamStoreWizard"), graphic);
         } else {
-            return JfxHelper.createNamedEntry(
-                    f.getFileName().toString(), f.getPath().toString(), graphic);
+            return JfxHelper.createNamedEntry(f.getFileName(), f.getPath(), graphic);
         }
     }
 }

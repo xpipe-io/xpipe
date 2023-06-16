@@ -18,7 +18,7 @@ public class TextReadConnection extends StreamReadConnection implements io.xpipe
     }
 
     @Override
-    public Stream<String> lines() throws Exception {
+    public Stream<String> lines() {
         return bufferedReader.lines();
     }
 

@@ -25,8 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-;
-
 public class JsonProvider
         implements UniformDataSourceProvider<JsonProvider.Source>, SimpleFileDataSourceProvider<JsonProvider.Source> {
 
@@ -91,8 +89,8 @@ public class JsonProvider
 
     @Override
     public Region configGui(Property<Source> source, boolean preferQuiet) {
-        var charset = new SimpleObjectProperty<StreamCharset>(source.getValue().getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(source.getValue().getNewLine());
+        var charset = new SimpleObjectProperty<>(source.getValue().getCharset());
+        var newLine = new SimpleObjectProperty<>(source.getValue().getNewLine());
         if (preferQuiet) {
             return new DynamicOptionsBuilder()
                     .addCharset(charset)

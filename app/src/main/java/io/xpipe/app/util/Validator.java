@@ -12,7 +12,8 @@ import org.apache.commons.lang3.function.FailableRunnable;
 public interface Validator {
 
     static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
-        return v.createCheck().dependsOn("val", s).withMethod(c -> {            if (c.get("val") == null) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") == null) {
                 c.error(AppI18n.get("app.mustNotBeEmpty", name.getValue()));
             }
         });
@@ -30,49 +31,49 @@ public interface Validator {
         });
     }
 
-    public Check createCheck();
+    Check createCheck();
 
     /**
      * Add another check to the checker. Changes in the check's validationResultProperty will be reflected in the checker.
      *
      * @param check The check to add.
      */
-    public void add(Check check);
+    void add(Check check);
 
     /**
      * Removes a check from this validator.
      *
      * @param check The check to remove from this validator.
      */
-    public void remove(Check check);
+    void remove(Check check);
 
     /**
      * Retrieves current validation result
      *
      * @return validation result
      */
-    public ValidationResult getValidationResult();
+    ValidationResult getValidationResult();
 
     /**
      * Can be used to track validation result changes
      *
      * @return The Validation result property.
      */
-    public ReadOnlyObjectProperty<ValidationResult> validationResultProperty();
+    ReadOnlyObjectProperty<ValidationResult> validationResultProperty();
 
     /**
      * A read-only boolean property indicating whether any of the checks of this validator emitted an error.
      */
-    public ReadOnlyBooleanProperty containsErrorsProperty();
+    ReadOnlyBooleanProperty containsErrorsProperty();
 
-    public boolean containsErrors();
+    boolean containsErrors();
 
     /**
      * Run all checks (decorating nodes if appropriate)
      *
      * @return true if no errors were found, false otherwise
      */
-    public boolean validate();
+    boolean validate();
 
     /**
      * Create a string property that depends on the validation result.
@@ -80,7 +81,7 @@ public interface Validator {
      *
      * @return
      */
-    public StringBinding createStringBinding();
+    StringBinding createStringBinding();
 
     /**
      * Create a string property that depends on the validation result.
@@ -89,5 +90,5 @@ public interface Validator {
      * @param separator The string to separate consecutive validation messages with
      * @return
      */
-    public StringBinding createStringBinding(String prefix, String separator);
+    StringBinding createStringBinding(String prefix, String separator);
 }

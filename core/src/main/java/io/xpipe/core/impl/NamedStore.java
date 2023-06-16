@@ -22,12 +22,12 @@ public final class NamedStore implements DataStore {
     private final String name;
 
     @Override
-    public void validate() throws Exception {
+    public void validate() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean delete() throws Exception {
+    public boolean delete() {
         throw new UnsupportedOperationException();
     }
 

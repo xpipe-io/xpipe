@@ -14,7 +14,8 @@ import javafx.scene.layout.VBox;
 public class UnlockAlert {
 
     public static void showIfNeeded() {
-        if (AppPrefs.get().getLockCrypt().getValue() == null || AppPrefs.get().getLockCrypt().getValue().isEmpty()) {
+        if (AppPrefs.get().getLockCrypt().getValue() == null
+                || AppPrefs.get().getLockCrypt().getValue().isEmpty()) {
             return;
         }
 
@@ -34,8 +35,7 @@ public class UnlockAlert {
                         alert.getDialogPane().setContent(content);
                     })
                     .filter(b -> b.getButtonData().isDefaultButton())
-                    .ifPresentOrElse(t -> {
-                    }, () -> canceled.set(true));
+                    .ifPresentOrElse(t -> {}, () -> canceled.set(true));
 
             if (canceled.get()) {
                 ErrorEvent.fromMessage("Unlock cancelled").term().omit().handle();

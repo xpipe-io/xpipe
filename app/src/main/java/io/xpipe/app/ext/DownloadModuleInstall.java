@@ -6,11 +6,11 @@ import java.util.List;
 
 public abstract class DownloadModuleInstall extends ModuleInstall {
 
-    private String licenseFile;
-    private String vendorURL;
+    private final String licenseFile;
+    private final String vendorURL;
 
     @Getter
-    private List<String> assets;
+    private final List<String> assets;
 
     public DownloadModuleInstall(String id, String module, String licenseFile, String vendorURL, List<String> assets) {
         super(id, module);

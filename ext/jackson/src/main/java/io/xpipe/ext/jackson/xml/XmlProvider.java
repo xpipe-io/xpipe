@@ -83,8 +83,8 @@ public class XmlProvider implements SimpleFileDataSourceProvider<XmlProvider.Sou
 
     @Override
     public Region configGui(Property<Source> source, boolean preferQuiet) {
-        var charset = new SimpleObjectProperty<StreamCharset>(source.getValue().getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(source.getValue().getNewLine());
+        var charset = new SimpleObjectProperty<>(source.getValue().getCharset());
+        var newLine = new SimpleObjectProperty<>(source.getValue().getNewLine());
         return new DynamicOptionsBuilder()
                 .addCharset(charset)
                 .addNewLine(newLine)

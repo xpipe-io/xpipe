@@ -18,15 +18,16 @@ public class PortableUpdater extends UpdateHandler {
     @Override
     public Region createInterface() {
         return new ButtonComp(AppI18n.observable("checkOutUpdate"), () -> {
-            Hyperlinks.open(XPipeDistributionType.get()
-                                    .getUpdateHandler()
-                                    .getPreparedUpdate()
-                                    .getValue()
-                                    .getReleaseUrl());
-        }).createRegion();
+                    Hyperlinks.open(XPipeDistributionType.get()
+                            .getUpdateHandler()
+                            .getPreparedUpdate()
+                            .getValue()
+                            .getReleaseUrl());
+                })
+                .createRegion();
     }
 
-    public void executeUpdateAndCloseImpl() throws Exception {
+    public void executeUpdateAndCloseImpl() {
         throw new UnsupportedOperationException();
     }
 

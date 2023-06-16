@@ -225,7 +225,7 @@ public class DataSourceEntry extends StorageElement {
     }
 
     @Getter
-    public static enum State {
+    public enum State {
         @JsonProperty("loadFailed")
         LOAD_FAILED(false),
         @JsonProperty("incomplete")

@@ -35,13 +35,11 @@ public class DataSourceOutputTarget implements DataSourceTarget {
         var sourceType =
                 DataSourceProviders.byDataSourceClass(source.getClass()).getPrimaryType();
         var chooser = new NamedSourceChoiceComp(
-                        new SimpleObjectProperty<>(s -> s != source
-                                && s.getFlow().hasOutput()
-                                && DataSourceProviders.byDataSourceClass(s.getClass())
-                                                .getPrimaryType()
-                                        == sourceType),
-                        target,
-                        DataSourceProvider.Category.STREAM);
+                new SimpleObjectProperty<>(s -> s != source
+                        && s.getFlow().hasOutput()
+                        && DataSourceProviders.byDataSourceClass(s.getClass()).getPrimaryType() == sourceType),
+                target,
+                DataSourceProvider.Category.STREAM);
         chooser.apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
 
         var mode = new SimpleObjectProperty<WriteMode>();

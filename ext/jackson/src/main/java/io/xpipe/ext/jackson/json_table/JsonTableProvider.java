@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class JsonTableProvider
         implements UniformDataSourceProvider<JsonTableProvider.Source>,
-                   SimpleFileDataSourceProvider<JsonTableProvider.Source> {
+                SimpleFileDataSourceProvider<JsonTableProvider.Source> {
 
     @Override
     public boolean supportsConversion(JsonTableProvider.Source in, DataSourceType t) {
@@ -108,8 +108,8 @@ public class JsonTableProvider
 
     @Override
     public Region configGui(Property<Source> source, boolean preferQuiet) {
-        var charset = new SimpleObjectProperty<StreamCharset>(source.getValue().getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(source.getValue().getNewLine());
+        var charset = new SimpleObjectProperty<>(source.getValue().getCharset());
+        var newLine = new SimpleObjectProperty<>(source.getValue().getNewLine());
         if (preferQuiet) {
             return new DynamicOptionsBuilder()
                     .addCharset(charset)

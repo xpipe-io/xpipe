@@ -13,7 +13,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
     Linux LINUX = new Linux();
     MacOs MACOS = new MacOs();
 
-    public static OsType getLocal() {
+    static OsType getLocal() {
         String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((osName.contains("mac")) || (osName.contains("darwin"))) {
             return MACOS;
@@ -48,7 +48,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
 
     String determineOperatingSystemName(ShellControl pc) throws Exception;
 
-    static final class Windows implements OsType {
+    final class Windows implements OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -90,7 +90,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public String determineOperatingSystemName(ShellControl pc) throws Exception {
+        public String determineOperatingSystemName(ShellControl pc) {
             try {
                 return pc.executeSimpleStringCommand("wmic os get Caption")
                                 .lines()
@@ -110,7 +110,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
     }
 
-    static final class Linux implements OsType {
+    final class Linux implements OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -130,7 +130,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public String getTempDirectory(ShellControl pc) throws Exception {
+        public String getTempDirectory(ShellControl pc) {
             return "/tmp/";
         }
 
@@ -140,7 +140,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public Map<String, String> getProperties(ShellControl pc) throws Exception {
+        public Map<String, String> getProperties(ShellControl pc) {
             return null;
         }
 
@@ -180,7 +180,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
     }
 
-    static final class MacOs implements OsType {
+    final class MacOs implements OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -193,8 +193,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
                     "/Applications",
                     "/Library",
                     "/System",
-                    "/etc"
-            );
+                    "/etc");
         }
 
         @Override

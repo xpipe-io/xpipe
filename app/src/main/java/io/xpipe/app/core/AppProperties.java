@@ -35,7 +35,8 @@ public class AppProperties {
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        version = Optional.ofNullable(System.getProperty("io.xpipe.app.version")).orElse("dev");
+        version =
+                Optional.ofNullable(System.getProperty("io.xpipe.app.version")).orElse("dev");
         build = Optional.ofNullable(System.getProperty("io.xpipe.app.build")).orElse("unknown");
         buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))
                 .map(UUID::fromString)

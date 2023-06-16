@@ -61,8 +61,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Property<DataStoreProvider> provider,
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
-            String initialName, boolean exists
-    ) {
+            String initialName,
+            boolean exists) {
         this.parent = parent;
         this.provider = provider;
         this.store = store;
@@ -97,26 +97,38 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     }
 
     public static void showEdit(DataStoreEntry e) {
-        show(e.getName(), e.getProvider(), e.getStore(), v -> true, newE -> {
-            ThreadHelper.runAsync(() -> {
-                e.applyChanges(newE);
-                if (!DataStorage.get().getStoreEntries().contains(e)) {
-                    DataStorage.get().addStoreEntry(e);
-                }
-                DataStorage.get().refresh();
-            });
-        }, true);
+        show(
+                e.getName(),
+                e.getProvider(),
+                e.getStore(),
+                v -> true,
+                newE -> {
+                    ThreadHelper.runAsync(() -> {
+                        e.applyChanges(newE);
+                        if (!DataStorage.get().getStoreEntries().contains(e)) {
+                            DataStorage.get().addStoreEntry(e);
+                        }
+                        DataStorage.get().refresh();
+                    });
+                },
+                true);
     }
 
     public static void showCreation(Predicate<DataStoreProvider> filter) {
-        show(null, null, null, filter, e -> {
-            try {
-                DataStorage.get().addStoreEntry(e);
-                // ScanAlert.showAsync(e.getStore(), true);
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
-            }
-        }, false);
+        show(
+                null,
+                null,
+                null,
+                filter,
+                e -> {
+                    try {
+                        DataStorage.get().addStoreEntry(e);
+                        // ScanAlert.showAsync(e.getStore(), true);
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable(ex).handle();
+                    }
+                },
+                false);
     }
 
     public static void show(
@@ -126,8 +138,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Predicate<DataStoreProvider> filter,
             Consumer<DataStoreEntry> con,
             boolean exists) {
-        var prop = new SimpleObjectProperty<DataStoreProvider>(provider);
-        var store = new SimpleObjectProperty<DataStore>(s);
+        var prop = new SimpleObjectProperty<>(provider);
+        var store = new SimpleObjectProperty<>(s);
         var loading = new SimpleBooleanProperty();
         var name = "addConnection";
         Platform.runLater(() -> {
@@ -162,12 +174,26 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     @Override
     public Comp<?> bottom() {
-        var disable = Bindings.createBooleanBinding(() -> {
-            return provider.getValue() == null || store.getValue() == null || !store.getValue().isComplete();
-        }, provider, store);
-        return new PopupMenuButtonComp(new SimpleStringProperty("Insights >"), Comp.of(() -> {
-            return provider.getValue() != null ? provider.getValue().createInsightsComp(store).createRegion() : null;
-        }), true).disable(disable).styleClass("button-comp");
+        var disable = Bindings.createBooleanBinding(
+                () -> {
+                    return provider.getValue() == null
+                            || store.getValue() == null
+                            || !store.getValue().isComplete();
+                },
+                provider,
+                store);
+        return new PopupMenuButtonComp(
+                        new SimpleStringProperty("Insights >"),
+                        Comp.of(() -> {
+                            return provider.getValue() != null
+                                    ? provider.getValue()
+                                            .createInsightsComp(store)
+                                            .createRegion()
+                                    : null;
+                        }),
+                        true)
+                .disable(disable)
+                .styleClass("button-comp");
     }
 
     private static boolean showInvalidConfirmAlert() {
@@ -288,7 +314,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         }
 
         if (!exists) {
-            if (name.getValue() != null && DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
+            if (name.getValue() != null
+                    && DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
                 messageProp.setValue("Store with name " + name.getValue() + " does already exist");
                 changedSinceError.setValue(false);
                 return false;

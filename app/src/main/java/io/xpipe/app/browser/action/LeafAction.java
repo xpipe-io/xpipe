@@ -15,7 +15,7 @@ import java.util.function.UnaryOperator;
 
 public interface LeafAction extends BrowserAction {
 
-    public abstract void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception;
+    void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception;
 
     default Button toButton(OpenFileSystemModel model, List<BrowserEntry> selected) {
         var b = new Button();

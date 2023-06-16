@@ -27,10 +27,12 @@ public class ApplicationHelper {
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 
-    public static void checkSupport(ShellControl processControl, String executable, String displayName, String connectionName)
+    public static void checkSupport(
+            ShellControl processControl, String executable, String displayName, String connectionName)
             throws Exception {
         if (!isInPath(processControl, executable)) {
-            throw new IOException(displayName + " executable " + executable + " not found in PATH" + (connectionName != null ? " on system " + connectionName : ""));
+            throw new IOException(displayName + " executable " + executable + " not found in PATH"
+                    + (connectionName != null ? " on system " + connectionName : ""));
         }
     }
 }

@@ -37,7 +37,7 @@ public class StandardStorage extends DataStorage {
 
                 var name = file.getFileName().toString();
                 try {
-                    UUID uuid = null;
+                    UUID uuid;
                     try {
                         uuid = UUID.fromString(name);
                     } catch (Exception ex) {
@@ -69,7 +69,7 @@ public class StandardStorage extends DataStorage {
 
                 var name = file.getFileName().toString();
                 try {
-                    UUID uuid = null;
+                    UUID uuid;
                     try {
                         uuid = UUID.fromString(name);
                     } catch (Exception ex) {
@@ -101,7 +101,7 @@ public class StandardStorage extends DataStorage {
 
                 var name = file.getFileName().toString();
                 try {
-                    UUID uuid = null;
+                    UUID uuid;
                     try {
                         uuid = UUID.fromString(name);
                     } catch (Exception ex) {

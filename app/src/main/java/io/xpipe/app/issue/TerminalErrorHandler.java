@@ -3,8 +3,8 @@ package io.xpipe.app.issue;
 import io.sentry.Sentry;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -91,9 +91,11 @@ public class TerminalErrorHandler implements ErrorHandler {
                             alert.setTitle(AppI18n.get("updateAvailableTitle"));
                             alert.setHeaderText(AppI18n.get("updateAvailableHeader", rel.getVersion()));
                             alert.getDialogPane()
-                                    .setContent(AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
+                                    .setContent(
+                                            AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
                             alert.getButtonTypes().clear();
-                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
+                            alert.getButtonTypes()
+                                    .add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
                             alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
                         })
                         .map(buttonType -> buttonType.getButtonData().isDefaultButton())

@@ -91,8 +91,7 @@ public class AppPrefs {
                     languageList, languageInternal)
             .render(() -> new TranslatableComboBoxControl<>());
 
-    public final ObjectProperty<AppTheme.Theme> theme =
-            typed(new SimpleObjectProperty<>(), AppTheme.Theme.class);
+    public final ObjectProperty<AppTheme.Theme> theme = typed(new SimpleObjectProperty<>(), AppTheme.Theme.class);
     private final SingleSelectionField<AppTheme.Theme> themeControl =
             Field.ofSingleSelectionType(themeList, theme).render(() -> new TranslatableComboBoxControl<>());
     private final BooleanProperty useSystemFontInternal = typed(new SimpleBooleanProperty(true), Boolean.class);
@@ -118,9 +117,10 @@ public class AppPrefs {
     // Lock
     // ====
 
-    private final Property<SecretValue> lockPassword = new SimpleObjectProperty<SecretValue>();
+    private final Property<SecretValue> lockPassword = new SimpleObjectProperty<>();
     private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
-    private final StringField lockCryptControl = StringField.ofStringType(lockCrypt).render(() -> new SimpleControl<StringField, StackPane>() {
+    private final StringField lockCryptControl = StringField.ofStringType(lockCrypt)
+            .render(() -> new SimpleControl<StringField, StackPane>() {
 
                 private Region button;
 
@@ -128,15 +128,20 @@ public class AppPrefs {
                 public void initializeParts() {
                     super.initializeParts();
                     this.node = new StackPane();
-                    button = new ButtonComp(Bindings.createStringBinding(() -> {
-                        return lockCrypt.getValue() != null? AppI18n.get("changeLock"):AppI18n.get("createLock");
-                    }), () -> LockChangeAlert.show()).createRegion();
+                    button = new ButtonComp(
+                                    Bindings.createStringBinding(() -> {
+                                        return lockCrypt.getValue() != null
+                                                ? AppI18n.get("changeLock")
+                                                : AppI18n.get("createLock");
+                                    }),
+                                    () -> LockChangeAlert.show())
+                            .createRegion();
                 }
 
                 @Override
                 public void layoutParts() {
-                    ((StackPane)this.node).getChildren().addAll(this.button);
-                    ((StackPane)this.node).setAlignment(Pos.CENTER_LEFT);
+                    this.node.getChildren().addAll(this.button);
+                    this.node.setAlignment(Pos.CENTER_LEFT);
                 }
             });
 
@@ -177,8 +182,7 @@ public class AppPrefs {
 
     // Automatically update
     // ====================
-    private final BooleanProperty automaticallyCheckForUpdates =
-            typed(new SimpleBooleanProperty(true), Boolean.class);
+    private final BooleanProperty automaticallyCheckForUpdates = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanField automaticallyCheckForUpdatesField =
             BooleanField.ofBooleanType(automaticallyCheckForUpdates).render(() -> new CustomToggleControl());
 
@@ -287,10 +291,6 @@ public class AppPrefs {
 
     public Property<SecretValue> getLockPassword() {
         return lockPassword;
-    }
-
-    public StringProperty lockCryptProperty() {
-        return lockCrypt;
     }
 
     public final ReadOnlyIntegerProperty editorReloadTimeout() {
@@ -419,7 +419,7 @@ public class AppPrefs {
 
     public <T> void setFromText(ReadOnlyProperty<T> prop, String newValue) {
         var field = getFieldForEntry(prop);
-        if (!field.isEditable()) {
+        if (field == null || !field.isEditable()) {
             return;
         }
 
@@ -450,7 +450,12 @@ public class AppPrefs {
     }
 
     public Class<?> getSettingType(String breadcrumb) {
-        var found = classMap.get(getSetting(breadcrumb).valueProperty());
+        var s = getSetting(breadcrumb);
+        if (s == null) {
+            throw new IllegalStateException("Unknown breadcrumb " + breadcrumb);
+        }
+
+        var found = classMap.get(s.valueProperty());
         if (found == null) {
             throw new IllegalStateException("Unassigned type for " + breadcrumb);
         }
@@ -498,8 +503,7 @@ public class AppPrefs {
         var s = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
 
         var categories = new ArrayList<>(List.of(
-                Category.of(
-                        "application", Group.of(s)),
+                Category.of("application", Group.of(s)),
                 Category.of(
                         "system",
                         Group.of(
@@ -509,12 +513,13 @@ public class AppPrefs {
                                         externalStartupBehaviourControl,
                                         externalStartupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
-                        Group.of(
-                                "security",
-                                Setting.of("workspaceLock", lockCryptControl, lockCrypt)),
+                        Group.of("security", Setting.of("workspaceLock", lockCryptControl, lockCrypt)),
                         Group.of(
                                 "updates",
-                                Setting.of("automaticallyUpdate", automaticallyCheckForUpdatesField, automaticallyCheckForUpdates),
+                                Setting.of(
+                                        "automaticallyUpdate",
+                                        automaticallyCheckForUpdatesField,
+                                        automaticallyCheckForUpdates),
                                 Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
                         Group.of(
                                 "advanced",

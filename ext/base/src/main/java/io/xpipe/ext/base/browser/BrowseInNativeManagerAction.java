@@ -27,15 +27,20 @@ public class BrowseInNativeManagerAction implements LeafAction {
                     }
                 }
                 case OsType.Linux linux -> {
-                    var action = entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "org.freedesktop.FileManager1.ShowFolders" : "org.freedesktop.FileManager1.ShowItems";
-                    var dbus = String.format("""
+                    var action = entry.getRawFileEntry().getKind() == FileKind.DIRECTORY
+                            ? "org.freedesktop.FileManager1.ShowFolders"
+                            : "org.freedesktop.FileManager1.ShowItems";
+                    var dbus = String.format(
+                            """
                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
-                                                """, action, entry.getRawFileEntry().getPath());
+                                                """,
+                            action, entry.getRawFileEntry().getPath());
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
-                    sc.executeSimpleCommand("open " + (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "" : "-R ")
-                            + d.fileArgument(entry.getRawFileEntry().getPath()));
+                    sc.executeSimpleCommand(
+                            "open " + (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "" : "-R ")
+                                    + d.fileArgument(entry.getRawFileEntry().getPath()));
                 }
             }
         }

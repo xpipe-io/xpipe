@@ -17,10 +17,10 @@ public class PropertiesFormatsParser {
         String line;
 
         String currentKey = null;
-        String currentValue = "";
+        StringBuilder currentValue = new StringBuilder();
         while ((line = reader.readLine()) != null) {
-            if (line.startsWith("\s") || line.startsWith("\t")) {
-                currentValue += line;
+            if (line.startsWith(" ") || line.startsWith("\t")) {
+                currentValue.append(line);
                 continue;
             }
 
@@ -35,15 +35,15 @@ public class PropertiesFormatsParser {
             }
 
             if (currentKey != null) {
-                map.put(currentKey, currentValue);
+                map.put(currentKey, currentValue.toString());
             }
 
             currentKey = keyName;
-            currentValue = value;
+            currentValue = new StringBuilder(value);
         }
 
         if (currentKey != null) {
-            map.put(currentKey, currentValue);
+            map.put(currentKey, currentValue.toString());
         }
 
         return map;

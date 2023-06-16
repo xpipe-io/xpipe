@@ -53,9 +53,15 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var fi = new FontIcon("mdi2u-update");
             var b = new BigIconButton(AppI18n.observable("update"), fi, () -> UpdateAvailableAlert.showIfNeeded());
             b.apply(GrowAugment.create(true, false));
-            b.hide(PlatformThread.sync(Bindings.createBooleanBinding(() -> {
-                return XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() == null;
-            }, XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+            b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
+                    () -> {
+                        return XPipeDistributionType.get()
+                                        .getUpdateHandler()
+                                        .getPreparedUpdate()
+                                        .getValue()
+                                == null;
+                    },
+                    XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
             vbox.getChildren().add(b.createRegion());
         }
 
@@ -70,5 +76,5 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    public static record Entry(ObservableValue<String> name, String icon, Comp<?> comp) {}
+    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp) {}
 }

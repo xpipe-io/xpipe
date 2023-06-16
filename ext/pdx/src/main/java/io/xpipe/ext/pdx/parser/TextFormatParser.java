@@ -84,21 +84,19 @@ public final class TextFormatParser {
         }
     }
 
-    public final synchronized TupleNode parse(Path file) throws IOException, ParseException {
+    public synchronized TupleNode parse(Path file) throws IOException, ParseException {
         return parse(file.getFileName().toString(), Files.readAllBytes(file), 0, false);
     }
 
-    public final synchronized TupleNode parse(String name, Path file, boolean strict)
-            throws IOException, ParseException {
+    public synchronized TupleNode parse(String name, Path file, boolean strict) throws IOException, ParseException {
         return parse(name, Files.readAllBytes(file), 0, strict);
     }
 
-    public final synchronized TupleNode parse(String name, byte[] input, int start) throws ParseException {
+    public synchronized TupleNode parse(String name, byte[] input, int start) throws ParseException {
         return parse(name, input, start, false);
     }
 
-    public final synchronized TupleNode parse(String name, byte[] input, int start, boolean strict)
-            throws ParseException {
+    public synchronized TupleNode parse(String name, byte[] input, int start, boolean strict) throws ParseException {
         try {
             verifyTextFormat(input);
 

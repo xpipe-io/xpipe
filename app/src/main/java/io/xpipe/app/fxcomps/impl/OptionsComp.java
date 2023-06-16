@@ -104,7 +104,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                     descriptionBox.setAlignment(Pos.CENTER_LEFT);
                     line.getChildren().add(descriptionBox);
-                }else {
+                } else {
                     line.getChildren().add(description);
                 }
 
@@ -115,9 +115,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 }
 
                 pane.getChildren().add(line);
-            }
-
-            else if (entry.name() != null) {
+            } else if (entry.name() != null) {
                 var line = new HBox();
                 line.setFillHeight(true);
                 line.prefWidthProperty().bind(pane.widthProperty());
@@ -175,5 +173,10 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         return entries;
     }
 
-    public record Entry(String key, ObservableValue<String> description,  String longDescriptionSource, ObservableValue<String> name, Comp<?> comp) {}
+    public record Entry(
+            String key,
+            ObservableValue<String> description,
+            String longDescriptionSource,
+            ObservableValue<String> name,
+            Comp<?> comp) {}
 }

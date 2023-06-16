@@ -148,9 +148,12 @@ public class StoreEntryComp extends SimpleComp {
         button.getStyleClass().add("store-entry-comp");
         button.setMaxWidth(2000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-            return entry.getName();
-        }, entry.nameProperty()));
+        button.accessibleTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return entry.getName();
+                        },
+                        entry.nameProperty()));
         button.accessibleHelpProperty().bind(entry.getInformation());
         button.setOnAction(event -> {
             event.consume();
@@ -160,7 +163,8 @@ public class StoreEntryComp extends SimpleComp {
             });
         });
 
-        new ContextMenuAugment<>(() -> StoreEntryComp.this.createContextMenu()).augment(new SimpleCompStructure<>(button));
+        new ContextMenuAugment<>(() -> StoreEntryComp.this.createContextMenu())
+                .augment(new SimpleCompStructure<>(button));
 
         return button;
     }
@@ -210,7 +214,8 @@ public class StoreEntryComp extends SimpleComp {
         var settingsButton = new IconButtonComp("mdomz-settings");
         settingsButton.styleClass("settings");
         settingsButton.accessibleText("Settings");
-        settingsButton.apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
+        settingsButton.apply(new ContextMenuAugment<>(
+                event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(GrowAugment.create(false, true));
         settingsButton.apply(s -> {
             s.get().prefWidthProperty().bind(Bindings.divide(s.get().heightProperty(), 1.35));

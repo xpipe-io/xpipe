@@ -10,7 +10,7 @@ public class InstanceExchangeImpl extends InstanceExchange
         implements MessageExchangeImpl<InstanceExchange.Request, InstanceExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         return Response.builder()
                 .instance(XPipeInstanceHelper.getInstance(new LocalStore()).orElseThrow())
                 .build();

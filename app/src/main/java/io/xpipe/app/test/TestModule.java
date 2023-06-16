@@ -11,7 +11,7 @@ public abstract class TestModule<V> {
 
     private static final Map<Class<?>, Map<String, ?>> values = new LinkedHashMap<>();
 
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> Map<String, T> get(Class<T> c, String... classes) {
         if (!values.containsKey(c)) {
             List<Class<?>> loadedClasses = (List<Class<?>>) Arrays.stream(classes)

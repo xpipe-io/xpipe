@@ -51,11 +51,16 @@ public class BrowserNavBar extends SimpleComp {
                 .styleClass("path-text")
                 .apply(struc -> {
                     SimpleChangeListener.apply(struc.get().focusedProperty(), val -> {
-                        struc.get().pseudoClassStateChanged(INVISIBLE, !val && !model.getInOverview().get());
+                        struc.get()
+                                .pseudoClassStateChanged(
+                                        INVISIBLE,
+                                        !val && !model.getInOverview().get());
                     });
 
                     SimpleChangeListener.apply(model.getInOverview(), val -> {
-                        struc.get().pseudoClassStateChanged(INVISIBLE, !val && !struc.get().isFocused());
+                        struc.get()
+                                .pseudoClassStateChanged(
+                                        INVISIBLE, !val && !struc.get().isFocused());
                     });
 
                     struc.get().setOnMouseClicked(event -> {
@@ -69,9 +74,11 @@ public class BrowserNavBar extends SimpleComp {
                     });
 
                     struc.get().setPromptText("Overview of " + model.getName());
-                }).shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
+                })
+                .shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
                     s.get().requestFocus();
-                }).accessibleText("Current path");
+                })
+                .accessibleText("Current path");
 
         var graphic = Bindings.createStringBinding(
                 () -> {
@@ -90,10 +97,9 @@ public class BrowserNavBar extends SimpleComp {
         graphicButton.setAccessibleText("Directory options");
         graphicButton.getStyleClass().add(Styles.LEFT_PILL);
         graphicButton.getStyleClass().add("path-graphic-button");
-        new ContextMenuAugment<>(
-                        event -> event.getButton() == MouseButton.PRIMARY, () -> {
-                            return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
-        })
+        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> {
+                    return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
+                })
                 .augment(new SimpleCompStructure<>(graphicButton));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
@@ -104,17 +110,26 @@ public class BrowserNavBar extends SimpleComp {
                 .apply(struc -> {
                     var t = struc.get().getChildren().get(0);
                     var b = struc.get().getChildren().get(1);
-                    b.visibleProperty().bind(Bindings.createBooleanBinding(() -> {
-                        return !t.isFocused() && !model.getInOverview().get();
-                    }, t.focusedProperty(), model.getInOverview()));
+                    b.visibleProperty()
+                            .bind(Bindings.createBooleanBinding(
+                                    () -> {
+                                        return !t.isFocused()
+                                                && !model.getInOverview().get();
+                                    },
+                                    t.focusedProperty(),
+                                    model.getInOverview()));
                 })
                 .grow(false, true);
 
         var topBox = new HorizontalComp(List.of(Comp.of(() -> graphicButton), stack))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> {
-                    ((Region) struc.get().getChildren().get(0)).minHeightProperty().bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-                    ((Region) struc.get().getChildren().get(0)).maxHeightProperty().bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+                    ((Region) struc.get().getChildren().get(0))
+                            .minHeightProperty()
+                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+                    ((Region) struc.get().getChildren().get(0))
+                            .maxHeightProperty()
+                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
                 })
                 .apply(struc -> {
                     struc.get().setPickOnBounds(false);

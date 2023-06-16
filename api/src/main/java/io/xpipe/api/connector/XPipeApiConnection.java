@@ -137,14 +137,14 @@ public final class XPipeApiConnection extends BeaconConnection {
     }
 
     @FunctionalInterface
-    public static interface Handler {
+    public interface Handler {
 
-        void handle(BeaconConnection con) throws Exception;
+        void handle(BeaconConnection con);
     }
 
     @FunctionalInterface
-    public static interface Mapper<T> {
+    public interface Mapper<T> {
 
-        T handle(BeaconConnection con) throws Exception;
+        T handle(BeaconConnection con);
     }
 }

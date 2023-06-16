@@ -9,5 +9,5 @@ public interface CommandExecutionStore extends DataStore, LaunchableStore {
         return create().prepareTerminalOpen(displayName);
     }
 
-    CommandControl create() throws Exception;
+    CommandControl create();
 }

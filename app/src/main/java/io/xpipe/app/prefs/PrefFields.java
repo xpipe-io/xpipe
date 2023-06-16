@@ -15,7 +15,7 @@ public class PrefFields {
 
     public static StringField ofPath(ObjectProperty<Path> fileProperty) {
         StringProperty stringProperty = new SimpleStringProperty();
-        stringProperty.bindBidirectional(fileProperty, new StringConverter<Path>() {
+        stringProperty.bindBidirectional(fileProperty, new StringConverter<>() {
             @Override
             public String toString(Path file) {
                 if (Objects.isNull(file)) {

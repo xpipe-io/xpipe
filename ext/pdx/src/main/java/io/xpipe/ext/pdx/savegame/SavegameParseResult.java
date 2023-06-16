@@ -24,7 +24,7 @@ public abstract class SavegameParseResult {
 
     public static class Success extends SavegameParseResult {
 
-        public SavegameContent content;
+        public final SavegameContent content;
 
         public Success(SavegameContent content) {
             this.content = content;
@@ -52,7 +52,7 @@ public abstract class SavegameParseResult {
 
     public static class Error extends SavegameParseResult {
 
-        public Exception error;
+        public final Exception error;
 
         public Error(Exception error) {
             this.error = error;
@@ -76,14 +76,14 @@ public abstract class SavegameParseResult {
 
     public static class Invalid extends SavegameParseResult {
 
-        public String message;
+        public final String message;
 
         public Invalid(String message) {
             this.message = message;
         }
 
         @Override
-        public Success orThrow() throws Exception {
+        public Success orThrow() {
             throw new IllegalArgumentException(message);
         }
 

@@ -18,7 +18,9 @@ public class ScriptHelper {
     public static String createDetachCommand(ShellControl pc, String command) {
         if (pc.getShellDialect().equals(ShellDialects.POWERSHELL)) {
             var script = ScriptHelper.createExecScript(pc, command);
-            return String.format("Start-Process -WindowStyle Minimized -FilePath powershell.exe -ArgumentList \"-NoProfile\", \"-File\", %s", ShellDialects.POWERSHELL.fileArgument(script));
+            return String.format(
+                    "Start-Process -WindowStyle Minimized -FilePath powershell.exe -ArgumentList \"-NoProfile\", \"-File\", %s",
+                    ShellDialects.POWERSHELL.fileArgument(script));
         }
 
         if (pc.getOsType().equals(OsType.WINDOWS)) {
@@ -43,7 +45,8 @@ public class ScriptHelper {
     }
 
     public static String constructInitFile(
-            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName) throws Exception {
+            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
+            throws Exception {
         ShellDialect t = processControl.getShellDialect();
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
@@ -145,14 +148,22 @@ public class ScriptHelper {
             try (var sub = parent.subShell(type).start()) {
                 var content = sub.getShellDialect()
                         .prepareAskpassContent(
-                                sub, file, pass.stream().map(secretValue -> secretValue.getSecretValue()).toList());
+                                sub,
+                                file,
+                                pass.stream()
+                                        .map(secretValue -> secretValue.getSecretValue())
+                                        .toList());
                 var exec = createExecScript(sub, file, content);
                 return exec;
             }
         } else {
             var content = parent.getShellDialect()
                     .prepareAskpassContent(
-                            parent, file, pass.stream().map(secretValue -> secretValue.getSecretValue()).toList());
+                            parent,
+                            file,
+                            pass.stream()
+                                    .map(secretValue -> secretValue.getSecretValue())
+                                    .toList());
             var exec = createExecScript(parent, file, content);
             return exec;
         }

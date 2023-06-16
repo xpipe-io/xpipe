@@ -21,14 +21,14 @@ public class DeleteStoreChildrenAction implements ActionProvider {
         }
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             DataStorage.get().deleteChildren(store, true);
         }
     }
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<DataStore>() {
+        return new DataStoreCallSite<>() {
 
             @Override
             public boolean isMajor() {
@@ -46,8 +46,11 @@ public class DeleteStoreChildrenAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(DataStore o) throws Exception {
-                return DataStorage.get().getStoreChildren(DataStorage.get().getStoreEntry(o),true).size() > 1;
+            public boolean isApplicable(DataStore o) {
+                return DataStorage.get()
+                                .getStoreChildren(DataStorage.get().getStoreEntry(o), true)
+                                .size()
+                        > 1;
             }
 
             @Override

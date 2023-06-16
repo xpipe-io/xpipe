@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -87,10 +86,11 @@ public class CoreJacksonModule extends SimpleModule {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static class NullDeserializer extends JsonDeserializer<DataSource> {
 
         @Override
-        public DataSource deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public DataSource deserialize(JsonParser p, DeserializationContext ctxt) {
             return null;
         }
     }
@@ -186,9 +186,8 @@ public class CoreJacksonModule extends SimpleModule {
     @JsonSerialize(as = DataSourceReference.class)
     public abstract static class DataSourceReferenceTypeMixIn {}
 
-    public class NullSerializer extends JsonSerializer<Object> {
-        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException, JsonProcessingException {
+    public static class NullSerializer extends JsonSerializer<Object> {
+        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeNull();
         }
     }

@@ -11,7 +11,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.StorageElement;
 import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataFlow;
 import javafx.beans.property.*;
@@ -37,14 +36,9 @@ public class SourceEntryWrapper implements StorageFilter.Filterable {
 
     public SourceEntryWrapper(DataSourceEntry entry) {
         this.entry = entry;
-        entry.addListener(new StorageElement.Listener() {
-            @Override
-            public void onUpdate() {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    update();
-                });
-            }
-        });
+        entry.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
+            update();
+        }));
         update();
         name.addListener((c, o, n) -> {
             if (!entry.getName().equals(n)) {

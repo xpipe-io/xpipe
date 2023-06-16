@@ -18,7 +18,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return null;
     }
 
-    default void validate() throws Exception {
+    default void validate() {
         getCategory();
         getSourceClass();
     }
@@ -67,7 +67,7 @@ public interface DataSourceProvider<T extends DataSource<?>> {
         return i != -1 ? n.substring(i + 1) : n;
     }
 
-    default String queryInformationString(DataStore store, int length) throws Exception {
+    default String queryInformationString(DataStore store, int length) {
         return getDisplayName();
     }
 
@@ -125,9 +125,9 @@ public interface DataSourceProvider<T extends DataSource<?>> {
 
     List<String> getPossibleNames();
 
-    static enum Category {
+    enum Category {
         STREAM,
-        DATABASE;
+        DATABASE
     }
 
     interface FileProvider {

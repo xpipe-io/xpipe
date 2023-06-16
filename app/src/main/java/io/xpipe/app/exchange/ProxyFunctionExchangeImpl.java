@@ -7,7 +7,7 @@ public class ProxyFunctionExchangeImpl extends ProxyFunctionExchange
         implements MessageExchangeImpl<ProxyFunctionExchange.Request, ProxyFunctionExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         msg.getFunction().callLocal();
         return ProxyFunctionExchange.Response.builder()
                 .function(msg.getFunction())

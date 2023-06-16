@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.DialogHelper;
 import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.app.util.NamedCharacter;
-import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.TextSource;
 import io.xpipe.core.source.DataSource;
@@ -53,14 +52,14 @@ public class CsvSourceProvider implements SimpleFileDataSourceProvider<CsvSource
     public Region configGui(Property<CsvSource> source, boolean preferQuiet) {
         var s = source.getValue();
         var charset = new SimpleObjectProperty<>(s.getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(s.getNewLine());
+        var newLine = new SimpleObjectProperty<>(s.getNewLine());
 
-        var headerState = new SimpleObjectProperty<CsvHeaderState>(s.getHeaderState());
+        var headerState = new SimpleObjectProperty<>(s.getHeaderState());
         var headerStateNames = new LinkedHashMap<CsvHeaderState, ObservableValue<String>>();
         headerStateNames.put(CsvHeaderState.INCLUDED, AppI18n.observable("csv.included"));
         headerStateNames.put(CsvHeaderState.OMITTED, AppI18n.observable("csv.omitted"));
 
-        var delimiter = new SimpleObjectProperty<Character>(s.getDelimiter());
+        var delimiter = new SimpleObjectProperty<>(s.getDelimiter());
         var delimiterNames = new LinkedHashMap<Character, ObservableValue<String>>();
         CsvDelimiter.ALL.forEach(d -> {
             delimiterNames.put(
@@ -69,7 +68,7 @@ public class CsvSourceProvider implements SimpleFileDataSourceProvider<CsvSource
         });
         ObservableValue<String> delimiterCustom = AppI18n.observable("csv.custom");
 
-        var quote = new SimpleObjectProperty<Character>(s.getQuote());
+        var quote = new SimpleObjectProperty<>(s.getQuote());
         var quoteNames = new LinkedHashMap<Character, ObservableValue<String>>();
         CsvQuoteChar.CHARS.forEach(d -> {
             quoteNames.put(d.getCharacter(), AppI18n.observable(d.getTranslationKey()));

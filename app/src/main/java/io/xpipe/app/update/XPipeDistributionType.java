@@ -81,7 +81,9 @@ public enum XPipeDistributionType {
                     if (brewOut.getExitCode() == 0) {
                         if (out.lines().anyMatch(s -> {
                             var split = s.split(" ");
-                            return split.length == 2 && split[0].equals("xpipe") && split[1].equals(AppProperties.get().getVersion());
+                            return split.length == 2
+                                    && split[0].equals("xpipe")
+                                    && split[1].equals(AppProperties.get().getVersion());
                         })) {
                             return HOMEBREW;
                         }
@@ -97,6 +99,7 @@ public enum XPipeDistributionType {
 
     @Getter
     private final String id;
+
     private UpdateHandler updateHandler;
     private final Supplier<UpdateHandler> updateHandlerSupplier;
 

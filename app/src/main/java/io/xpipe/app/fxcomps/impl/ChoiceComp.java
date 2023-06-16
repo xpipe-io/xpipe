@@ -40,7 +40,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
     @Override
     public CompStructure<ComboBox<T>> createBase() {
         var cb = new ComboBox<T>();
-        cb.setConverter(new StringConverter<T>() {
+        cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(T object) {
                 if (object == null) {

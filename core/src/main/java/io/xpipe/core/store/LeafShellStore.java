@@ -1,5 +1,3 @@
 package io.xpipe.core.store;
 
-public interface LeafShellStore extends DataStore {
-
-}
+public interface LeafShellStore extends DataStore {}

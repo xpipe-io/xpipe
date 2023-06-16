@@ -19,7 +19,7 @@ import java.util.List;
 
 public class AppPreferencesFx {
 
-    private PreferencesFxModel preferencesFxModel;
+    private final PreferencesFxModel preferencesFxModel;
 
     private NavigationView navigationView;
     private NavigationPresenter navigationPresenter;
@@ -61,12 +61,10 @@ public class AppPreferencesFx {
 
         breadCrumbView = new BreadCrumbView(preferencesFxModel, undoRedoBox) {
             @Override
-            public void initializeParts() {
-            }
+            public void initializeParts() {}
 
             @Override
-            public void layoutParts() {
-            }
+            public void layoutParts() {}
         };
         breadCrumbPresenter = new BreadCrumbPresenter(preferencesFxModel, breadCrumbView);
 

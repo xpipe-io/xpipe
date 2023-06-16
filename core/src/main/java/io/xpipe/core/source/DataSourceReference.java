@@ -89,7 +89,7 @@ public interface DataSourceReference {
      */
     @Value
     @AllArgsConstructor
-    static class Id implements DataSourceReference {
+    class Id implements DataSourceReference {
         @NonNull
         DataSourceId value;
 
@@ -143,7 +143,7 @@ public interface DataSourceReference {
      */
     @Value
     @AllArgsConstructor
-    static class Name implements DataSourceReference {
+    class Name implements DataSourceReference {
         @NonNull
         String value;
 
@@ -195,7 +195,7 @@ public interface DataSourceReference {
      * Data source referral this way is unstable however as adding or
      * removing data sources might change the referral behaviour and is therefore not recommended.
      */
-    static class Latest implements DataSourceReference {
+    class Latest implements DataSourceReference {
 
         @Override
         public String toRefString() {

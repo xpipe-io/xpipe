@@ -34,7 +34,8 @@ public class OpenFileSystemCache {
     public boolean isApplicationInPath(String app) {
         if (!installedApplications.containsKey(app)) {
             try {
-                var b = ApplicationHelper.isInPath(model.getFileSystem().getShell().orElseThrow(), app);
+                var b = ApplicationHelper.isInPath(
+                        model.getFileSystem().getShell().orElseThrow(), app);
                 installedApplications.put(app, b);
             } catch (Exception e) {
                 installedApplications.put(app, false);

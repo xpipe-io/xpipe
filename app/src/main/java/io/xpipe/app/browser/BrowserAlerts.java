@@ -19,7 +19,8 @@ public class BrowserAlerts {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("moveAlertTitle"));
                     alert.setHeaderText(AppI18n.get("moveAlertHeader", source.size(), target.getPath()));
-                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(getSelectedElementsString(source)));
+                    alert.getDialogPane()
+                            .setContent(AppWindowHelper.alertContentText(getSelectedElementsString(source)));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                 })
                 .map(b -> b.getButtonData().isDefaultButton())
@@ -34,7 +35,8 @@ public class BrowserAlerts {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("deleteAlertTitle"));
                     alert.setHeaderText(AppI18n.get("deleteAlertHeader", source.size()));
-                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(getSelectedElementsString(source)));
+                    alert.getDialogPane()
+                            .setContent(AppWindowHelper.alertContentText(getSelectedElementsString(source)));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                 })
                 .map(b -> b.getButtonData().isDefaultButton())
@@ -43,7 +45,8 @@ public class BrowserAlerts {
 
     private static String getSelectedElementsString(List<FileSystem.FileEntry> source) {
         var namesHeader = AppI18n.get("selectedElements");
-        var names = namesHeader + "\n" + source.stream().limit(10).map(entry -> "- " + entry.getPath()).collect(Collectors.joining("\n"));
+        var names = namesHeader + "\n"
+                + source.stream().limit(10).map(entry -> "- " + entry.getPath()).collect(Collectors.joining("\n"));
         if (source.size() > 10) {
             names += "\n+ " + (source.size() - 10) + " ...";
         }

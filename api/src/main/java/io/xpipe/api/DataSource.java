@@ -98,14 +98,14 @@ public interface DataSource {
     /**
      * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
-    public static DataSource createAnonymous(String type, Path path) {
+    static DataSource createAnonymous(String type, Path path) {
         return create(null, type, path);
     }
 
     /**
      * Wrapper for {@link #create(DataSourceId, String, InputStream)}.
      */
-    public static DataSource create(DataSourceId id, String type, Path path) {
+    static DataSource create(DataSourceId id, String type, Path path) {
         try (var in = Files.newInputStream(path)) {
             return create(id, type, in);
         } catch (IOException e) {
@@ -116,14 +116,14 @@ public interface DataSource {
     /**
      * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
-    public static DataSource createAnonymous(String type, URL url) {
+    static DataSource createAnonymous(String type, URL url) {
         return create(null, type, url);
     }
 
     /**
      * Wrapper for {@link #create(DataSourceId, String, InputStream)}.
      */
-    public static DataSource create(DataSourceId id, String type, URL url) {
+    static DataSource create(DataSourceId id, String type, URL url) {
         try (var in = url.openStream()) {
             return create(id, type, in);
         } catch (IOException e) {
@@ -134,7 +134,7 @@ public interface DataSource {
     /**
      * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
      */
-    public static DataSource createAnonymous(String type, InputStream in) {
+    static DataSource createAnonymous(String type, InputStream in) {
         return create(null, type, in);
     }
 
@@ -146,7 +146,7 @@ public interface DataSource {
      * @param in   the input stream to read
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    public static DataSource create(DataSourceId id, String type, InputStream in) {
+    static DataSource create(DataSourceId id, String type, InputStream in) {
         return DataSourceImpl.create(id, type, in);
     }
 
@@ -156,7 +156,7 @@ public interface DataSource {
      * @param id the data source id
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    public static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
+    static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
         return DataSourceImpl.create(id, source);
     }
 
@@ -169,7 +169,7 @@ public interface DataSource {
      * @param in   the data store to add
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    public static DataSource create(DataSourceId id, String type, DataStore in) {
+    static DataSource create(DataSourceId id, String type, DataStore in) {
         return DataSourceImpl.create(id, type, in);
     }
 
@@ -177,7 +177,7 @@ public interface DataSource {
 
     void appendTo(DataSource target);
 
-    public io.xpipe.core.source.DataSource<?> getInternalSource();
+    io.xpipe.core.source.DataSource<?> getInternalSource();
 
     /**
      * Returns the id of this data source.

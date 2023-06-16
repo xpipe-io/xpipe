@@ -34,7 +34,11 @@ public class NewItemAction implements BrowserAction, BranchAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.get(0).getRawFileEntry().getPath().equals(model.getCurrentPath().get());
+        return entries.size() == 1
+                && entries.get(0)
+                        .getRawFileEntry()
+                        .getPath()
+                        .equals(model.getCurrentPath().get());
     }
 
     @Override
@@ -52,15 +56,20 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
-                        model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newFile", Comp.of(() -> {
-                            var creationName = new TextField();
-                            creationName.textProperty().bindBidirectional(name);
-                            return creationName;
-                        }), "finish", () -> {
-                            model.createFileAsync(name.getValue());
-                        }));
+                        model.getOverlay()
+                                .setValue(new ModalOverlayComp.OverlayContent(
+                                        "newFile",
+                                        Comp.of(() -> {
+                                            var creationName = new TextField();
+                                            creationName.textProperty().bindBidirectional(name);
+                                            return creationName;
+                                        }),
+                                        "finish",
+                                        () -> {
+                                            model.createFileAsync(name.getValue());
+                                        }));
                     }
 
                     @Override
@@ -75,16 +84,22 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
-                        model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newDirectory", Comp.of(() -> {
-                            var creationName = new TextField();
-                            creationName.textProperty().bindBidirectional(name);
-                            return creationName;
-                        }), "finish", () -> {
-                            model.createDirectoryAsync(name.getValue());
-                        }));
+                        model.getOverlay()
+                                .setValue(new ModalOverlayComp.OverlayContent(
+                                        "newDirectory",
+                                        Comp.of(() -> {
+                                            var creationName = new TextField();
+                                            creationName.textProperty().bindBidirectional(name);
+                                            return creationName;
+                                        }),
+                                        "finish",
+                                        () -> {
+                                            model.createDirectoryAsync(name.getValue());
+                                        }));
                     }
+
                     @Override
                     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultDirectoryIcon().createRegion();

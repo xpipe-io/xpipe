@@ -5,7 +5,7 @@ import io.xpipe.app.util.Hyperlinks;
 
 public interface ErrorAction {
 
-    public static ErrorAction reportOnGithub() {
+    static ErrorAction reportOnGithub() {
         return new ErrorAction() {
             @Override
             public String getName() {
@@ -26,7 +26,7 @@ public interface ErrorAction {
         };
     }
 
-    public static ErrorAction sendDiagnostics() {
+    static ErrorAction sendDiagnostics() {
         return new ErrorAction() {
             @Override
             public String getName() {
@@ -46,7 +46,7 @@ public interface ErrorAction {
         };
     }
 
-    public static ErrorAction ignore() {
+    static ErrorAction ignore() {
         return new ErrorAction() {
             @Override
             public String getName() {

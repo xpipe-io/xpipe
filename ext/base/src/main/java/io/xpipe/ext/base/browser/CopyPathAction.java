@@ -41,7 +41,9 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return " " + BrowserActionFormatter.centerEllipsis(entries.get(0).getRawFileEntry().getPath(), 50);
+                            return " "
+                                    + BrowserActionFormatter.centerEllipsis(
+                                            entries.get(0).getRawFileEntry().getPath(), 50);
                         }
 
                         return "Absolute Path";
@@ -53,7 +55,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
                                 .map(entry -> entry.getRawFileEntry().getPath())
                                 .collect(Collectors.joining("\n"));
@@ -66,7 +68,10 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return "\"" + BrowserActionFormatter.centerEllipsis(entries.get(0).getRawFileEntry().getPath(), 50) + "\"";
+                            return "\""
+                                    + BrowserActionFormatter.centerEllipsis(
+                                            entries.get(0).getRawFileEntry().getPath(), 50)
+                                    + "\"";
                         }
 
                         return "Absolute Path (Quoted)";
@@ -74,11 +79,13 @@ public class CopyPathAction implements BrowserAction, BranchAction {
 
                     @Override
                     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry().getPath().contains(" "));
+                        return entries.stream()
+                                .anyMatch(entry ->
+                                        entry.getRawFileEntry().getPath().contains(" "));
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
                                 .map(entry -> "\"" + entry.getRawFileEntry().getPath() + "\"")
                                 .collect(Collectors.joining("\n"));
@@ -91,7 +98,12 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return " " + BrowserActionFormatter.centerEllipsis(FileNames.getFileName(entries.get(0).getRawFileEntry().getPath()), 50);
+                            return " "
+                                    + BrowserActionFormatter.centerEllipsis(
+                                            FileNames.getFileName(entries.get(0)
+                                                    .getRawFileEntry()
+                                                    .getPath()),
+                                            50);
                         }
 
                         return "File Name";
@@ -99,14 +111,15 @@ public class CopyPathAction implements BrowserAction, BranchAction {
 
                     @Override
                     public KeyCombination getShortcut() {
-                        return new KeyCodeCombination(KeyCode.C, KeyCombination.SHIFT_DOWN, KeyCombination.SHORTCUT_DOWN);
+                        return new KeyCodeCombination(
+                                KeyCode.C, KeyCombination.SHIFT_DOWN, KeyCombination.SHORTCUT_DOWN);
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry ->
-                                        FileNames.getFileName(entry.getRawFileEntry().getPath()))
+                                .map(entry -> FileNames.getFileName(
+                                        entry.getRawFileEntry().getPath()))
                                 .collect(Collectors.joining("\n"));
                         var selection = new StringSelection(s);
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -117,7 +130,13 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
-                            return "\"" + BrowserActionFormatter.centerEllipsis(FileNames.getFileName(entries.get(0).getRawFileEntry().getPath()), 50) + "\"";
+                            return "\""
+                                    + BrowserActionFormatter.centerEllipsis(
+                                            FileNames.getFileName(entries.get(0)
+                                                    .getRawFileEntry()
+                                                    .getPath()),
+                                            50)
+                                    + "\"";
                         }
 
                         return "File Name (Quoted)";
@@ -125,14 +144,17 @@ public class CopyPathAction implements BrowserAction, BranchAction {
 
                     @Override
                     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return entries.stream().anyMatch(entry -> FileNames.getFileName(entry.getRawFileEntry().getPath()).contains(" "));
+                        return entries.stream().anyMatch(entry -> FileNames.getFileName(
+                                        entry.getRawFileEntry().getPath())
+                                .contains(" "));
                     }
 
                     @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
-                                .map(entry ->
-                                             "\"" + FileNames.getFileName(entry.getRawFileEntry().getPath()) + "\"")
+                                .map(entry -> "\""
+                                        + FileNames.getFileName(
+                                                entry.getRawFileEntry().getPath()) + "\"")
                                 .collect(Collectors.joining("\n"));
                         var selection = new StringSelection(s);
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();

@@ -21,7 +21,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default void validate() throws Exception {
+    default void validate() {
         getCategory();
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
@@ -32,14 +32,20 @@ public interface DataStoreProvider {
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
-        var content = Bindings.createStringBinding(() -> {
-            if (store.getValue() == null || !store.getValue().isComplete() || !getStoreClasses().contains(store.getValue().getClass())) {
-                return null;
-            }
+        var content = Bindings.createStringBinding(
+                () -> {
+                    if (store.getValue() == null
+                            || !store.getValue().isComplete()
+                            || !getStoreClasses().contains(store.getValue().getClass())) {
+                        return null;
+                    }
 
-            return createInsightsMarkdown(store.getValue());
-        }, store);
-        var markdown = new MarkdownComp(content, s -> s).apply(struc -> struc.get().setPrefWidth(450)).apply(struc -> struc.get().setPrefHeight(200));
+                    return createInsightsMarkdown(store.getValue());
+                },
+                store);
+        var markdown = new MarkdownComp(content, s -> s)
+                .apply(struc -> struc.get().setPrefWidth(450))
+                .apply(struc -> struc.get().setPrefHeight(200));
         return markdown;
     }
 
@@ -91,7 +97,7 @@ public interface DataStoreProvider {
 
     String queryInformationString(DataStore store, int length) throws Exception;
 
-    public String toSummaryString(DataStore store, int length);
+    String toSummaryString(DataStore store, int length);
 
     default String i18n(String key) {
         return AppI18n.get(getId() + "." + key);
@@ -140,7 +146,7 @@ public interface DataStoreProvider {
     enum DataCategory {
         STREAM,
         SHELL,
-        DATABASE;
+        DATABASE
     }
 
     enum DisplayCategory {
@@ -148,6 +154,6 @@ public interface DataStoreProvider {
         DATABASE,
         SHELL,
         COMMAND,
-        OTHER;
+        OTHER
     }
 }

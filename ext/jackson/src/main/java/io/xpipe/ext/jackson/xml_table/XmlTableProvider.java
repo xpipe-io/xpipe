@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class XmlTableProvider
         implements UniformDataSourceProvider<XmlTableProvider.Source>,
-                   SimpleFileDataSourceProvider<XmlTableProvider.Source> {
+                SimpleFileDataSourceProvider<XmlTableProvider.Source> {
 
     @Override
     public boolean shouldShow(DataSourceType type) {
@@ -106,8 +106,8 @@ public class XmlTableProvider
 
     @Override
     public Region configGui(Property<Source> source, boolean preferQuiet) {
-        var charset = new SimpleObjectProperty<StreamCharset>(source.getValue().getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(source.getValue().getNewLine());
+        var charset = new SimpleObjectProperty<>(source.getValue().getCharset());
+        var newLine = new SimpleObjectProperty<>(source.getValue().getNewLine());
         var rootName = new SimpleStringProperty(source.getValue().getRootName());
         var entryName = new SimpleStringProperty(source.getValue().getEntryName());
         return new DynamicOptionsBuilder()

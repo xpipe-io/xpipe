@@ -86,7 +86,7 @@ public abstract class Dialog {
                 .toList();
         var index = Arrays.asList(vals).indexOf(def);
         if (def != null && index == -1) {
-            throw new IllegalArgumentException("Default value " + def.toString() + " is not in possible values");
+            throw new IllegalArgumentException("Default value " + def + " is not in possible values");
         }
 
         var c = choice(description, elements, required, quiet, index);
@@ -164,7 +164,6 @@ public abstract class Dialog {
                 if (currentElement == null) {
                     DialogElement next = null;
                     while (current < ds.length - 1 && (next = ds[++current].start()) == null) {}
-                    ;
                     return next;
                 }
 
@@ -213,13 +212,13 @@ public abstract class Dialog {
         final String[] msgEval = {null};
         return new Dialog() {
             @Override
-            public DialogElement start() throws Exception {
+            public DialogElement start() {
                 msgEval[0] = msg.get();
                 return new HeaderElement(msgEval[0]);
             }
 
             @Override
-            protected DialogElement next(String answer) throws Exception {
+            protected DialogElement next(String answer) {
                 return null;
             }
         }.evaluateTo(() -> msgEval[0]);
@@ -264,13 +263,13 @@ public abstract class Dialog {
         return new Dialog() {
 
             @Override
-            public DialogElement start() throws Exception {
+            public DialogElement start() {
                 eval = null;
                 return e;
             }
 
             @Override
-            protected DialogElement next(String answer) throws Exception {
+            protected DialogElement next(String answer) {
                 if (e.apply(answer)) {
                     return null;
                 }
@@ -365,7 +364,7 @@ public abstract class Dialog {
             }
 
             @Override
-            public DialogElement start() throws Exception {
+            public DialogElement start() {
                 choiceMade = null;
                 eval = null;
                 return choice;
@@ -458,7 +457,7 @@ public abstract class Dialog {
 
     protected abstract DialogElement next(String answer) throws Exception;
 
-    public static interface FailableSupplier<T> {
+    public interface FailableSupplier<T> {
 
         T get() throws Exception;
     }
@@ -477,12 +476,12 @@ public abstract class Dialog {
         }
 
         @Override
-        public DialogElement start() throws Exception {
+        public DialogElement start() {
             return element;
         }
 
         @Override
-        protected DialogElement next(String answer) throws Exception {
+        protected DialogElement next(String answer) {
             if (element.apply(answer)) {
                 return null;
             }
@@ -511,12 +510,12 @@ public abstract class Dialog {
         }
 
         @Override
-        public DialogElement start() throws Exception {
+        public DialogElement start() {
             return element;
         }
 
         @Override
-        protected DialogElement next(String answer) throws Exception {
+        protected DialogElement next(String answer) {
             if (element.requiresExplicitUserInput()
                     && (answer == null || answer.trim().length() == 0)) {
                 return element;

@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 public class HeaderElement extends DialogElement {
 
-    protected String header;
+    protected final String header;
 
     @JsonCreator
     public HeaderElement(String header) {

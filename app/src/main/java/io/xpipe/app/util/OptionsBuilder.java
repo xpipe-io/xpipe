@@ -49,7 +49,11 @@ public class OptionsBuilder {
     public OptionsBuilder addTitle(ObservableValue<String> title) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
-                null, null, null, null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+                null,
+                null,
+                null,
+                null,
+                Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         return this;
     }
 
@@ -82,28 +86,27 @@ public class OptionsBuilder {
         props.add(prop);
         return this;
     }
+
     public OptionsBuilder addToggle(Property<Boolean> prop) {
         var comp = new ToggleGroupComp<>(
                 prop,
                 new SimpleObjectProperty<>(Map.of(
-                        Boolean.TRUE,
-                        AppI18n.observable("app.yes"),
-                        Boolean.FALSE,
-                        AppI18n.observable("app.no"))));
+                        Boolean.TRUE, AppI18n.observable("app.yes"), Boolean.FALSE, AppI18n.observable("app.no"))));
         pushComp(comp);
         props.add(prop);
         return this;
     }
+
     public OptionsBuilder addString(Property<String> prop) {
         return addString(prop, false);
     }
+
     public OptionsBuilder addString(Property<String> prop, boolean lazy) {
         var comp = new TextFieldComp(prop, lazy);
         pushComp(comp);
         props.add(prop);
         return this;
     }
-
 
     public OptionsBuilder name(String nameKey) {
         finishCurrent();
@@ -138,7 +141,6 @@ public class OptionsBuilder {
         props.add(prop);
         return this;
     }
-
 
     public OptionsBuilder addSecret(Property<SecretValue> prop) {
         var comp = new SecretFieldComp(prop);

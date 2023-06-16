@@ -3,8 +3,6 @@ package io.xpipe.ext.base;
 import io.xpipe.app.util.DialogHelper;
 import io.xpipe.app.util.DynamicOptionsBuilder;
 import io.xpipe.core.charsetter.Charsetter;
-import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.TextSource;
 import io.xpipe.core.source.DataSourceType;
@@ -35,8 +33,8 @@ public class TextSourceProvider implements SimpleFileDataSourceProvider<TextSour
 
     @Override
     public Region configGui(Property<TextSource> source, boolean preferQuiet) {
-        var charset = new SimpleObjectProperty<StreamCharset>(source.getValue().getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(source.getValue().getNewLine());
+        var charset = new SimpleObjectProperty<>(source.getValue().getCharset());
+        var newLine = new SimpleObjectProperty<>(source.getValue().getNewLine());
         return new DynamicOptionsBuilder()
                 .addCharset(charset)
                 .addNewLine(newLine)

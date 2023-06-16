@@ -116,10 +116,16 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                            AppWindowHelper.sideWindow(AppI18n.get("openSourceNotices"), stage -> Comp.of(() -> createThirdPartyDeps()), true, null).show();
-                            e.consume();
-                        })
+                        new DescriptionButtonComp(
+                                        "thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
+                                            AppWindowHelper.sideWindow(
+                                                            AppI18n.get("openSourceNotices"),
+                                                            stage -> Comp.of(() -> createThirdPartyDeps()),
+                                                            true,
+                                                            null)
+                                                    .show();
+                                            e.consume();
+                                        })
                                 .grow(true, false),
                         null)
                 .addComp(

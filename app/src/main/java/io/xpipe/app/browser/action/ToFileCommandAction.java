@@ -14,12 +14,14 @@ public abstract class ToFileCommandAction implements LeafAction, ApplicationPath
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         for (BrowserEntry entry : entries) {
             var command = createCommand(model, entry);
-            try (var cc = sc.command(command).withWorkingDirectory(model.getCurrentDirectory().getPath()).start()) {
+            try (var cc = sc.command(command)
+                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
+                    .start()) {
                 cc.discardErr();
                 FileOpener.openCommandOutput(entry.getFileName(), entry, cc);
             }
         }
     }
 
-    protected abstract String createCommand(OpenFileSystemModel model,  BrowserEntry entry);
+    protected abstract String createCommand(OpenFileSystemModel model, BrowserEntry entry);
 }

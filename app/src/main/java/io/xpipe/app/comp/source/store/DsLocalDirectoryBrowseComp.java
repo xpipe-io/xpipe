@@ -18,10 +18,10 @@ import java.nio.file.Path;
 
 public class DsLocalDirectoryBrowseComp extends Comp<CompStructure<Button>> {
 
-    private final DataSourceProvider provider;
+    private final DataSourceProvider<?> provider;
     private final Property<Path> chosenDir;
 
-    public DsLocalDirectoryBrowseComp(DataSourceProvider provider, Property<Path> chosenDir) {
+    public DsLocalDirectoryBrowseComp(DataSourceProvider<?> provider, Property<Path> chosenDir) {
         this.provider = provider;
         this.chosenDir = chosenDir;
     }
@@ -32,8 +32,8 @@ public class DsLocalDirectoryBrowseComp extends Comp<CompStructure<Button>> {
         button.setGraphic(getGraphic());
         button.setOnAction(e -> {
             var dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(
-                    AppI18n.get("browseDirectoryTitle", provider.getFileProvider().getFileName()));
+            dirChooser.setTitle(AppI18n.get(
+                    "browseDirectoryTitle", provider.getFileProvider().getFileName()));
             File file = dirChooser.showDialog(button.getScene().getWindow());
             if (file != null && file.exists()) {
                 chosenDir.setValue(file.toPath());
@@ -55,7 +55,8 @@ public class DsLocalDirectoryBrowseComp extends Comp<CompStructure<Button>> {
     private Region getGraphic() {
         var graphic = provider.getDisplayIconFileName();
         if (chosenDir.getValue() == null) {
-            return JfxHelper.createNamedEntry(AppI18n.get("browse"), AppI18n.get("selectDirectoryFromComputer"), graphic);
+            return JfxHelper.createNamedEntry(
+                    AppI18n.get("browse"), AppI18n.get("selectDirectoryFromComputer"), graphic);
         } else {
             return JfxHelper.createNamedEntry(
                     chosenDir.getValue().getFileName().toString(),

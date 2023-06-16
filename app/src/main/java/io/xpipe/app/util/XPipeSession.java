@@ -47,7 +47,7 @@ public class XPipeSession {
                 : UuidHelper.parse(() -> Files.readString(sessionFile)).orElse(UUID.randomUUID());
 
         try {
-            //TODO: People might move their page file to another drive
+            // TODO: People might move their page file to another drive
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
                 var pf = Path.of("C:\\pagefile.sys");
                 BasicFileAttributes attr = Files.readAttributes(pf, BasicFileAttributes.class);
@@ -70,7 +70,8 @@ public class XPipeSession {
         var isBuildChanged = !buildSessionId.toString().equals(s);
         AppCache.update("lastBuild", AppProperties.get().getVersion());
 
-        INSTANCE = new XPipeSession(isNewSystemSession, isBuildChanged, UUID.randomUUID(), buildSessionId, systemSessionId);
+        INSTANCE = new XPipeSession(
+                isNewSystemSession, isBuildChanged, UUID.randomUUID(), buildSessionId, systemSessionId);
     }
 
     public static XPipeSession get() {

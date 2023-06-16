@@ -26,10 +26,10 @@ public class RawFileOutputTarget implements DataSourceTarget {
         var target = new SimpleObjectProperty<StreamDataStore>();
 
         var storeChoice = new NamedStoreChoiceComp(
-                        new SimpleObjectProperty<>(store -> store instanceof StreamDataStore
-                                && (store.getFlow().hasOutput())),
-                        target,
-                        DataStoreProvider.DataCategory.STREAM);
+                new SimpleObjectProperty<>(store ->
+                        store instanceof StreamDataStore && (store.getFlow().hasOutput())),
+                target,
+                DataStoreProvider.DataCategory.STREAM);
         storeChoice
                 .apply(GrowAugment.create(true, true))
                 .apply(struc -> GridPane.setVgrow(struc.get(), Priority.ALWAYS));
@@ -40,19 +40,16 @@ public class RawFileOutputTarget implements DataSourceTarget {
 
         return new InstructionsDisplay(
                 layout,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            StreamDataStore inputStore = (StreamDataStore) source.getStore();
-                            try (var in = inputStore.openInput()) {
-                                try (var out = target.get().openOutput()) {
-                                    in.transferTo(out);
-                                }
+                () -> {
+                    try {
+                        StreamDataStore inputStore = (StreamDataStore) source.getStore();
+                        try (var in = inputStore.openInput()) {
+                            try (var out = target.get().openOutput()) {
+                                in.transferTo(out);
                             }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
                         }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 },
                 storeChoice.getValidator());

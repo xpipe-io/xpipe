@@ -34,7 +34,7 @@ public class InMemoryStoreProvider implements DataStoreProvider {
 
         var q = new DynamicOptionsBuilder(AppI18n.observable("configuration"))
                 .addCharset(charset)
-                .addStringArea((String) null, valProp, false)
+                .addStringArea(null, valProp, false)
                 .bind(
                         () -> {
                             return new InMemoryStore(
@@ -49,7 +49,7 @@ public class InMemoryStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public String queryInformationString(DataStore store, int length) throws Exception {
+    public String queryInformationString(DataStore store, int length) {
         return getDisplayName();
     }
 

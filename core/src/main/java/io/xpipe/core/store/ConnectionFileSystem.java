@@ -31,8 +31,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean directoryExists(String file) throws Exception{
-        return shellControl.getShellDialect().directoryExists(shellControl, file).executeAndCheck();
+    public boolean directoryExists(String file) throws Exception {
+        return shellControl
+                .getShellDialect()
+                .directoryExists(shellControl, file)
+                .executeAndCheck();
     }
 
     @Override
@@ -63,22 +66,25 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public InputStream openInput(String file) throws Exception {
-        return shellControl.command(proc ->
-                                        proc.getShellDialect().getFileReadCommand(file))
+        return shellControl
+                .command(proc -> proc.getShellDialect().getFileReadCommand(file))
                 .startExternalStdout();
     }
 
     @Override
     public OutputStream openOutput(String file) throws Exception {
-        return shellControl.getShellDialect()
-                        .createStreamFileWriteCommand(shellControl, file)
+        return shellControl
+                .getShellDialect()
+                .createStreamFileWriteCommand(shellControl, file)
                 .startExternalStdin();
     }
 
     @Override
     public boolean fileExists(String file) throws Exception {
-        try (var pc = shellControl.getShellDialect()
-                        .createFileExistsCommand(shellControl, file).complex()
+        try (var pc = shellControl
+                .getShellDialect()
+                .createFileExistsCommand(shellControl, file)
+                .complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -86,8 +92,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void delete(String file) throws Exception {
-        try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileDeleteCommand(file)).complex()
+        try (var pc = shellControl
+                .command(proc -> proc.getShellDialect().getFileDeleteCommand(file))
+                .complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -95,8 +102,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void copy(String file, String newFile) throws Exception {
-        try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileCopyCommand(file, newFile)).complex()
+        try (var pc = shellControl
+                .command(proc -> proc.getShellDialect().getFileCopyCommand(file, newFile))
+                .complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -104,8 +112,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void move(String file, String newFile) throws Exception {
-        try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileMoveCommand(file, newFile)).complex()
+        try (var pc = shellControl
+                .command(proc -> proc.getShellDialect().getFileMoveCommand(file, newFile))
+                .complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -113,8 +122,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void mkdirs(String file) throws Exception {
-        try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                                         .getMkdirsCommand(file)).complex()
+        try (var pc = shellControl
+                .command(proc -> proc.getShellDialect().getMkdirsCommand(file))
+                .complex()
                 .start()) {
             pc.discardOrThrow();
         }
@@ -122,8 +132,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void touch(String file) throws Exception {
-        try (var pc = shellControl.command(proc -> proc.getShellDialect()
-                        .getFileTouchCommand(file)).complex()
+        try (var pc = shellControl
+                .command(proc -> proc.getShellDialect().getFileTouchCommand(file))
+                .complex()
                 .start()) {
             pc.discardOrThrow();
         }

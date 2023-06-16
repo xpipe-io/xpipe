@@ -14,7 +14,7 @@ import java.util.List;
 public class RenameAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         model.getFileList().getEditing().setValue(entries.get(0));
     }
 

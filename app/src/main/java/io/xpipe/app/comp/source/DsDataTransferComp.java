@@ -116,12 +116,12 @@ public class DsDataTransferComp extends SimpleComp {
                                         if (c != null && c.getAccessType() == DataSourceTarget.AccessType.PASSIVE) {
                                             ((Region) s.get().getChildren().get(2)).setMaxHeight(0);
                                             ((Region) s.get().getChildren().get(2)).setMinHeight(0);
-                                            ((Region) s.get().getChildren().get(2)).setVisible(false);
+                                            s.get().getChildren().get(2).setVisible(false);
                                         } else {
 
                                             ((Region) s.get().getChildren().get(2)).setMaxHeight(Region.USE_PREF_SIZE);
                                             ((Region) s.get().getChildren().get(2)).setMinHeight(Region.USE_PREF_SIZE);
-                                            ((Region) s.get().getChildren().get(2)).setVisible(true);
+                                            s.get().getChildren().get(2).setVisible(true);
                                         }
                                     });
                                     s.get().setPrefWidth(600);

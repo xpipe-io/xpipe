@@ -1,6 +1,5 @@
 package io.xpipe.app.browser;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -63,8 +62,7 @@ public class OpenFileSystemSavedState {
 
         @Override
         @SneakyThrows
-        public OpenFileSystemSavedState deserialize(JsonParser p, DeserializationContext ctxt)
-                throws IOException, JacksonException {
+        public OpenFileSystemSavedState deserialize(JsonParser p, DeserializationContext ctxt) {
             var tree = (ObjectNode) JacksonMapper.getDefault().readTree(p);
             JavaType javaType = JacksonMapper.getDefault()
                     .getTypeFactory()

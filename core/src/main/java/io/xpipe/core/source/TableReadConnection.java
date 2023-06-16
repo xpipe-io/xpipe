@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public interface TableReadConnection extends DataSourceReadConnection {
 
-    public static TableReadConnection empty() {
+    static TableReadConnection empty() {
         return new TableReadConnection() {
             @Override
-            public boolean canRead() throws Exception {
+            public boolean canRead() {
                 return true;
             }
 
@@ -32,15 +32,15 @@ public interface TableReadConnection extends DataSourceReadConnection {
             }
 
             @Override
-            public OptionalInt getRowCount() throws Exception {
+            public OptionalInt getRowCount() {
                 return OptionalInt.empty();
             }
 
             @Override
-            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) throws Exception {}
+            public void withRows(DataStructureNodeAcceptor<TupleNode> lineAcceptor) {}
 
             @Override
-            public ArrayNode readRows(int maxLines) throws Exception {
+            public ArrayNode readRows(int maxLines) {
                 return ArrayNode.of();
             }
         };

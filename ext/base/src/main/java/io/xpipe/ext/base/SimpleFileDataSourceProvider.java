@@ -68,7 +68,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
 
     Map<String, List<String>> getSupportedExtensions();
 
-    public default List<String> getSupportedMimeTypes() {
+    default List<String> getSupportedMimeTypes() {
         return List.of();
     }
 

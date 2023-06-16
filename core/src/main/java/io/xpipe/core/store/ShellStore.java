@@ -2,14 +2,14 @@ package io.xpipe.core.store;
 
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
 
 import java.nio.charset.Charset;
 
 public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStore, FileSystemStore {
 
-    public static ShellStore createLocal() {
+    static ShellStore createLocal() {
         return new LocalStore();
     }
 
@@ -57,7 +57,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
 
     ShellControl createBasicControl();
 
-    public default ShellDialect determineType() throws Exception {
+    default ShellDialect determineType() throws Exception {
         try (var pc = control().start()) {
             return pc.getShellDialect();
         }
@@ -68,7 +68,7 @@ public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStor
         try (ShellControl pc = control().start()) {}
     }
 
-    public default String queryMachineName() throws Exception {
+    default String queryMachineName() throws Exception {
         try (var pc = control().start()) {
             var operatingSystem = pc.getOsType();
             return operatingSystem.determineOperatingSystemName(pc);

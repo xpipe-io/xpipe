@@ -12,11 +12,11 @@ import java.util.function.Function;
 
 public interface CommandControl extends ProcessControl {
 
-    public static final int UNASSIGNED_EXIT_CODE = -1;
-    public static final int EXIT_TIMEOUT_EXIT_CODE = -2;
-    public static final int START_FAILED_EXIT_CODE = -3;
+    int UNASSIGNED_EXIT_CODE = -1;
+    int EXIT_TIMEOUT_EXIT_CODE = -2;
+    int START_FAILED_EXIT_CODE = -3;
 
-    static enum TerminalExitMode {
+    enum TerminalExitMode {
         KEEP_OPEN,
         CLOSE
     }
@@ -25,10 +25,10 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl terminalExitMode(TerminalExitMode mode);
 
-    public CommandControl doesNotObeyReturnValueConvention();
+    CommandControl doesNotObeyReturnValueConvention();
 
     @Override
-    public CommandControl sensitive();
+    CommandControl sensitive();
 
     CommandControl complex();
 
@@ -54,7 +54,7 @@ public interface CommandControl extends ProcessControl {
 
     OutputStream startExternalStdin() throws Exception;
 
-    public boolean waitFor();
+    boolean waitFor();
 
     CommandControl withCustomCharset(Charset charset);
 
@@ -71,24 +71,25 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl exitTimeout(Integer timeout);
 
-    public void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c) throws Exception;
+    void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c);
+
     String readStdoutDiscardErr() throws Exception;
 
-    public void discardOrThrow() throws Exception;
+    void discardOrThrow() throws Exception;
 
     void accumulateStdout(Consumer<String> con);
 
     void accumulateStderr(Consumer<String> con);
 
-    public byte[] readRawBytesOrThrow() throws Exception;
+    byte[] readRawBytesOrThrow() throws Exception;
 
-    public String readStdoutOrThrow() throws Exception;
+    String readStdoutOrThrow() throws Exception;
 
-    public default boolean discardAndCheckExit() throws ProcessOutputException {
+    default boolean discardAndCheckExit() throws ProcessOutputException {
         try {
             discardOrThrow();
             return true;
-        }  catch (ProcessOutputException ex) {
+        } catch (ProcessOutputException ex) {
             if (ex.isTimeOut()) {
                 throw ex;
             }

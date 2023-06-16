@@ -44,12 +44,13 @@ public class XPipeExecTempDirectory {
 
     public static String getSubDirectory(ShellControl proc, String... sub) throws Exception {
         var base = proc.getOsType().getTempDirectory(proc);
-        var arr = Stream.concat(Stream.of(base, "xpipe", "exec"), Arrays.stream(sub)).toArray(String[]::new);
+        var arr = Stream.concat(Stream.of(base, "xpipe", "exec"), Arrays.stream(sub))
+                .toArray(String[]::new);
         var dir = FileNames.join(arr);
 
         var existsCommand = proc.getShellDialect().createFileExistsCommand(proc, dir);
         if (!existsCommand.executeAndCheck()) {
-            proc.getShellDialect().prepareTempDirectory(proc,dir).execute();
+            proc.getShellDialect().prepareTempDirectory(proc, dir).execute();
         }
 
         return dir;

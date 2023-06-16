@@ -38,7 +38,7 @@ public final class BrowserFileListModel {
     private final ObservableList<FileSystem.FileEntry> selectedRaw =
             BindingsHelper.mappedContentBinding(selection, entry -> entry.getRawFileEntry());
 
-    private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<BrowserEntry>();
+    private final Property<BrowserEntry> draggedOverDirectory = new SimpleObjectProperty<>();
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
     private final Property<BrowserEntry> editing = new SimpleObjectProperty<>();
 
@@ -113,7 +113,8 @@ public final class BrowserFileListModel {
     }
 
     public void onDoubleClick(BrowserEntry entry) {
-        if (entry.getRawFileEntry().getKind() != FileKind.DIRECTORY && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
+        if (entry.getRawFileEntry().getKind() != FileKind.DIRECTORY
+                && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
             getFileSystemModel().getBrowserModel().finishChooser();
             return;
         }

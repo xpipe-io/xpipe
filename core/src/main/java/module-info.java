@@ -35,8 +35,8 @@ open module io.xpipe.core {
     uses ModuleLayerLoader;
     uses ShellDialect;
 
-    provides ModuleLayerLoader with ShellDialects.Loader;
-
+    provides ModuleLayerLoader with
+            ShellDialects.Loader;
     provides WriteMode with
             WriteMode.Replace,
             WriteMode.Append,

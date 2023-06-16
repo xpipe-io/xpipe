@@ -34,33 +34,39 @@ public class ArchiveReadConnection implements CollectionReadConnection {
         }
 
         return Stream.iterate(
-                entry.get(),
-                e -> {
-                    ArchiveEntry next = null;
+                        entry.get(),
+                        e -> {
+                            ArchiveEntry next;
+                            try {
+                                next = inputStream.getNextEntry();
+                            } catch (IOException ex) {
+                                throw new UncheckedIOException(ex);
+                            }
+
+                            if (next == null) {
+                                return false;
+                            }
+
+                            var dir = next.isDirectory();
+                            entry.set(new ArchiveEntryStore(store, dir, this, next.getName()));
+                            return true;
+                        },
+                        e -> {
+                            return entry.get();
+                        })
+                .map(archiveEntryStore -> {
+                    var preferred = DataSourceProviders.byPreferredStore(archiveEntryStore, null);
                     try {
-                        next = inputStream.getNextEntry();
-                    } catch (IOException ex) {
-                        throw new UncheckedIOException(ex);
+                        return preferred.isPresent()
+                                ? preferred
+                                        .get()
+                                        .createDefaultSource(archiveEntryStore)
+                                        .asNeeded()
+                                : null;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
-
-                    if (next == null) {
-                        return false;
-                    }
-
-                    var dir = next.isDirectory();
-                    entry.set(new ArchiveEntryStore(store, dir, this, next.getName()));
-                    return true;
-                },
-                e -> {
-                    return entry.get();
-                }).map(archiveEntryStore -> {
-            var preferred = DataSourceProviders.byPreferredStore(archiveEntryStore, null);
-            try {
-                return preferred.isPresent() ? preferred.get().createDefaultSource(archiveEntryStore).asNeeded() : null;
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+                });
     }
 
     @Override

@@ -234,7 +234,7 @@ public class TextFormatTokenizer {
         }
     }
 
-    private boolean checkForControlTokenKey(byte controlToken) throws ParseException {
+    private boolean checkForControlTokenKey(byte controlToken) {
         if (controlToken == CLOSE_GROUP) {
             if (getSuccessorByte() == EQUALS_CHAR) {
                 if (nextScalarStart == i) {

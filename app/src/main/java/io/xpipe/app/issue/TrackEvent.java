@@ -120,7 +120,6 @@ public class TrackEvent {
                 var value = valueString.contains("\n")
                         ? "\n"
                                 + (valueString
-                                        .toString()
                                         .lines()
                                         .map(line -> "    | " + line)
                                         .collect(Collectors.joining("\n")))

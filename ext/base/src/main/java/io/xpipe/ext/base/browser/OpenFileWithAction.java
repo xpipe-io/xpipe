@@ -35,7 +35,8 @@ public class OpenFileWithAction implements LeafAction {
             case OsType.Linux linux -> {
                 ShellControl sc = model.getFileSystem().getShell().get();
                 ShellDialect d = sc.getShellDialect();
-                sc.executeSimpleCommand("mimeopen -a " + d.fileArgument(entries.get(0).getRawFileEntry().getPath()));
+                sc.executeSimpleCommand("mimeopen -a "
+                        + d.fileArgument(entries.get(0).getRawFileEntry().getPath()));
             }
             case OsType.MacOs macOs -> {
                 throw new UnsupportedOperationException();

@@ -31,13 +31,17 @@ public class PropertiesComp extends SimpleComp {
                 .addComp(title, null)
                 .addComp(
                         AppI18n.observable("version"),
-                        new LabelComp(AppProperties.get().getVersion() + " (" + AppProperties.get().getArch() + ")"),
+                        new LabelComp(AppProperties.get().getVersion() + " ("
+                                + AppProperties.get().getArch() + ")"),
                         null)
                 .addComp(
                         AppI18n.observable("build"),
                         new LabelComp(AppProperties.get().getBuild()),
                         null)
-                .addComp(AppI18n.observable("runtimeVersion"), new LabelComp(System.getProperty("java.vm.version")), null)
+                .addComp(
+                        AppI18n.observable("runtimeVersion"),
+                        new LabelComp(System.getProperty("java.vm.version")),
+                        null)
                 .addComp(
                         AppI18n.observable("virtualMachine"),
                         new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")),

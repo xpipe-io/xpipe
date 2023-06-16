@@ -12,7 +12,7 @@ public class ListStoresExchangeImpl extends ListStoresExchange
         implements MessageExchangeImpl<ListStoresExchange.Request, ListStoresExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         DataStorage s = DataStorage.get();
         var e = s.getStoreEntries().stream()
                 .filter(entry -> !entry.isDisabled() && entry.getProvider().shouldShow())

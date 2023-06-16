@@ -1,11 +1,10 @@
-package io.xpipe.app.comp;
+package io.xpipe.app.prefs;
 
+import io.xpipe.app.comp.AppLayoutComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.ClearCacheAlert;
 import javafx.geometry.Pos;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;

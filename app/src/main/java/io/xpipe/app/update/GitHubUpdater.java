@@ -27,8 +27,8 @@ public class GitHubUpdater extends UpdateHandler {
             return;
         }
 
-        var changelogString = AppDownloads.downloadChangelog(
-                lastUpdateCheckResult.getValue().getVersion(), false);
+        var changelogString =
+                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
         var changelog = changelogString.orElse(null);
         var rel = new PreparedUpdate(
                 AppProperties.get().getVersion(),

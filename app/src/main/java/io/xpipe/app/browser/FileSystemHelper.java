@@ -101,8 +101,7 @@ public class FileSystemHelper {
                 Files.isExecutable(file),
                 Files.size(file),
                 null,
-                Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE
-        );
+                Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }
 
     public static void dropLocalFilesInto(FileSystem.FileEntry entry, List<Path> files) {
@@ -122,7 +121,7 @@ public class FileSystemHelper {
         }
     }
 
-    public static void delete(List<FileSystem.FileEntry> files) throws Exception {
+    public static void delete(List<FileSystem.FileEntry> files) {
         if (files.size() == 0) {
             return;
         }

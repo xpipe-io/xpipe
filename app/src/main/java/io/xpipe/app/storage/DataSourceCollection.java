@@ -114,7 +114,7 @@ public class DataSourceCollection extends StorageElement {
     }
 
     @Override
-    public void refresh(boolean deep) throws Exception {}
+    public void refresh(boolean deep) {}
 
     public void setName(String name) {
         if (name.equals(this.name)) {

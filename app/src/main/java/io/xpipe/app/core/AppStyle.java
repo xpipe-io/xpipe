@@ -100,5 +100,4 @@ public class AppStyle {
 
         scenes.add(scene);
     }
-
 }

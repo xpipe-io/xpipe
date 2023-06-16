@@ -29,7 +29,7 @@ public class DsStorageGroupSelector extends SimpleComp {
 
     @Override
     protected ComboBox<Node> createSimple() {
-        var comboBox = new CustomComboBoxBuilder<DataSourceCollection>(
+        var comboBox = new CustomComboBoxBuilder<>(
                 selected, DsStorageGroupSelector::createGraphic, createGraphic(null), v -> true);
         comboBox.setAccessibleNames(dataSourceCollection -> dataSourceCollection.getName());
 

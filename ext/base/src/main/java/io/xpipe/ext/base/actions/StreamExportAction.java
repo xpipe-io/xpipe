@@ -27,7 +27,7 @@ public class StreamExportAction implements ActionProvider {
         }
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             var outputFile = new SimpleObjectProperty<FileStore>();
             StandaloneFileBrowser.saveSingleFile(outputFile);
             if (outputFile.get() == null) {
@@ -56,7 +56,7 @@ public class StreamExportAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(StreamDataStore o) throws Exception {
+            public boolean isApplicable(StreamDataStore o) {
                 return o.getFlow() != null && o.getFlow().hasInput();
             }
 

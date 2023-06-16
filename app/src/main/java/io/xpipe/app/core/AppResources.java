@@ -71,8 +71,7 @@ public class AppResources {
         }
     }
 
-    private static boolean withLocalDevResource(
-            String module, String file, FailableConsumer<Path, IOException> con) {
+    private static boolean withLocalDevResource(String module, String file, FailableConsumer<Path, IOException> con) {
         try (var fs = openFileSystem(module)) {
             var url = fs.getPath("").getWrappedPath().toUri().toURL();
             if (!url.getProtocol().equals("jar")) {

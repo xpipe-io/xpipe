@@ -98,9 +98,9 @@ public enum CsvHeaderState {
         throw new IllegalStateException();
     }
 
-    private static interface GeneralType {
+    private interface GeneralType {
 
-        static List<GeneralType> TYPES = List.of(new NumberType(), new TextType());
+        List<GeneralType> TYPES = List.of(new NumberType(), new TextType());
 
         boolean matches(String s);
     }

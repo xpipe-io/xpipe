@@ -102,7 +102,6 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().setAccessibleText(text));
     }
 
-
     public Comp<S> grow(boolean width, boolean height) {
         return apply(GrowAugment.create(width, height));
     }

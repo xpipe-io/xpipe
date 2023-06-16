@@ -23,7 +23,7 @@ public class AddStoreAction implements ActionProvider {
         }
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             if (store == null) {
                 return;
             }
@@ -43,7 +43,8 @@ public class AddStoreAction implements ActionProvider {
 
             @Override
             public Action createAction(List<String> args) throws Exception {
-                var storeString = DefaultSecretValue.builder().encryptedValue(args.get(0)).build();
+                var storeString =
+                        DefaultSecretValue.builder().encryptedValue(args.get(0)).build();
                 var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
                 return new Action(store);
             }

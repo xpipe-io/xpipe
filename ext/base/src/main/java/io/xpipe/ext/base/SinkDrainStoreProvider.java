@@ -23,8 +23,8 @@ public class SinkDrainStoreProvider implements DataStoreProvider {
         var val = new SimpleValidator();
         SinkDrainStore st = (SinkDrainStore) store.getValue();
 
-        var charset = new SimpleObjectProperty<StreamCharset>(st.getCharset());
-        var newLine = new SimpleObjectProperty<NewLine>(st.getNewLine());
+        var charset = new SimpleObjectProperty<>(st.getCharset());
+        var newLine = new SimpleObjectProperty<>(st.getNewLine());
 
         var q = new DynamicOptionsBuilder(AppI18n.observable("configuration"))
                 .addCharset(charset)
@@ -47,7 +47,7 @@ public class SinkDrainStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public String queryInformationString(DataStore store, int length) throws Exception {
+    public String queryInformationString(DataStore store, int length) {
         return null;
     }
 

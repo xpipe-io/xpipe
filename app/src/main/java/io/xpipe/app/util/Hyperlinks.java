@@ -14,31 +14,26 @@ public class Hyperlinks {
             "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
     public static final String DOCS_PRIVACY = "https://xpipe.io/docs/privacy";
 
-    static final String[] browsers = {
-            "xdg-open",
-            "google-chrome",
-            "firefox",
-            "opera",
-            "konqueror",
-            "mozilla"
-    };
+    static final String[] browsers = {"xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla"};
 
     @SuppressWarnings("deprecation")
     public static void open(String uri) {
         String osName = System.getProperty("os.name");
         try {
             if (osName.startsWith("Mac OS")) {
-                Runtime.getRuntime().exec(
-                        "open " + uri);
+                Runtime.getRuntime().exec("open " + uri);
             } else if (osName.startsWith("Windows")) {
-                Runtime.getRuntime().exec(
-                        "rundll32 url.dll,FileProtocolHandler " + uri);
-            } else { //assume Unix or Linux
+                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + uri);
+            } else { // assume Unix or Linux
                 String browser = null;
                 for (String b : browsers) {
-                    if (browser == null && Runtime.getRuntime().exec(
-                            new String[]{"which", b}).getInputStream().read() != -1) {
-                        Runtime.getRuntime().exec(new String[]{browser = b, uri});
+                    if (browser == null
+                            && Runtime.getRuntime()
+                                            .exec(new String[] {"which", b})
+                                            .getInputStream()
+                                            .read()
+                                    != -1) {
+                        Runtime.getRuntime().exec(new String[] {browser = b, uri});
                     }
                 }
                 if (browser == null) {

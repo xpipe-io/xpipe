@@ -62,7 +62,7 @@ public class NamedSourceChoiceComp extends SimpleComp implements Validatable {
     @SuppressWarnings("unchecked")
     private <T extends DataSource<?>> void setUpListener(ObservableValue<T> prop) {
         prop.addListener((c, o, n) -> {
-            ((Property<T>) selected).setValue((T) n);
+            ((Property<T>) selected).setValue(n);
         });
     }
 

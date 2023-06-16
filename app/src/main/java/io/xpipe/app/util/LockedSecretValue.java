@@ -32,7 +32,9 @@ public class LockedSecretValue extends AesSecretValue {
     }
 
     protected SecretKey getAESKey(int keysize) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        var chars = AppPrefs.get().getLockPassword().getValue() != null ? AppPrefs.get().getLockPassword().getValue().getSecret() : new char[0];
+        var chars = AppPrefs.get().getLockPassword().getValue() != null
+                ? AppPrefs.get().getLockPassword().getValue().getSecret()
+                : new char[0];
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         var salt = new byte[16];
         new Random(keysize).nextBytes(salt);

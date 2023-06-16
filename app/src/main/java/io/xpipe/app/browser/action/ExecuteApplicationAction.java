@@ -13,8 +13,12 @@ public abstract class ExecuteApplicationAction implements LeafAction, Applicatio
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         for (BrowserEntry entry : entries) {
-            var command = detach() ? ScriptHelper.createDetachCommand(sc, createCommand(model, entry)) : createCommand(model, entry);
-            try (var cc = sc.command(command).withWorkingDirectory(model.getCurrentDirectory().getPath()).start()) {
+            var command = detach()
+                    ? ScriptHelper.createDetachCommand(sc, createCommand(model, entry))
+                    : createCommand(model, entry);
+            try (var cc = sc.command(command)
+                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
+                    .start()) {
                 cc.discardOrThrow();
             }
         }
@@ -36,6 +40,5 @@ public abstract class ExecuteApplicationAction implements LeafAction, Applicatio
         return false;
     }
 
-    protected abstract String createCommand(OpenFileSystemModel model,  BrowserEntry entry);
-
+    protected abstract String createCommand(OpenFileSystemModel model, BrowserEntry entry);
 }

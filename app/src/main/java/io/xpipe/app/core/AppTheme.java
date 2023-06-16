@@ -95,9 +95,11 @@ public class AppTheme {
 
                 // Animate!
                 var transition = new Timeline(
-                        new KeyFrame(Duration.ZERO, new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
                         new KeyFrame(
-                                Duration.millis(1250), new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
+                                Duration.ZERO, new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
+                        new KeyFrame(
+                                Duration.millis(1250),
+                                new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
                 transition.setOnFinished(e -> {
                     root.getChildren().remove(imageView);
                 });

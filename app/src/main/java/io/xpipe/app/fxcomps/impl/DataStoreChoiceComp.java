@@ -44,7 +44,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, shellStore -> true);
     }
 
-    public static enum Mode {
+    public enum Mode {
         HOST,
         ENVIRONMENT,
         OTHER,
@@ -89,7 +89,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
         var list = StoreEntryFlatMiniSectionComp.ALL;
-        var comboBox = new CustomComboBoxBuilder<T>(
+        var comboBox = new CustomComboBoxBuilder<>(
                 selected,
                 t -> list.stream()
                         .filter(e -> t.equals(e.getEntry().getStore()))

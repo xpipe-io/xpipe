@@ -68,7 +68,8 @@ public class FileOutputTarget implements DataSourceTarget {
         });
 
         var layout = new BorderPane();
-        var providerChoice = new DsProviderChoiceComp(DataSourceProvider.Category.STREAM, provider, sourceProvider.getPrimaryType());
+        var providerChoice =
+                new DsProviderChoiceComp(DataSourceProvider.Category.STREAM, provider, sourceProvider.getPrimaryType());
         providerChoice.apply(GrowAugment.create(true, false));
         var providerChoiceRegion = providerChoice.createRegion();
         var top = new VBox(providerChoiceRegion, new Separator());
@@ -108,22 +109,19 @@ public class FileOutputTarget implements DataSourceTarget {
                 List.of(providerChoice.getValidator(), chooser.getValidator(), modeComp.getValidator()));
         return new InstructionsDisplay(
                 layout,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            AppCache.update(
-                                    "lastStreamOutputProvider", provider.get().getId());
-                            try (var connection = targetSource.getValue().openWriteConnection(mode.get())) {
-                                connection.init();
-                                try (var readConnection = source.openReadConnection()) {
-                                    readConnection.init();
-                                    readConnection.forward(connection);
-                                }
+                () -> {
+                    try {
+                        AppCache.update(
+                                "lastStreamOutputProvider", provider.get().getId());
+                        try (var connection = targetSource.getValue().openWriteConnection(mode.get())) {
+                            connection.init();
+                            try (var readConnection = source.openReadConnection()) {
+                                readConnection.init();
+                                readConnection.forward(connection);
                             }
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
                         }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
                     }
                 },
                 validator);

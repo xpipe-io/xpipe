@@ -15,7 +15,7 @@ public class SourceProviderListExchangeImpl extends SourceProviderListExchange
         implements MessageExchangeImpl<SourceProviderListExchange.Request, SourceProviderListExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         var all = DataSourceProviders.getAll();
         var map = new LinkedHashMap<DataSourceType, List<ProviderEntry>>();
         for (DataSourceType t : DataSourceType.values()) {

@@ -79,48 +79,47 @@ public class SvgCacheComp extends SimpleComp {
                         stop();
                         SnapshotParameters parameters = new SnapshotParameters();
                         parameters.setFill(Color.TRANSPARENT);
-                            if (!instance.equals(active.get())) {
-                                active.set(null);
-                                return;
-                            }
+                        if (!instance.equals(active.get())) {
                             active.set(null);
+                            return;
+                        }
+                        active.set(null);
 
-                            WritableImage image = back.snapshot(parameters, null);
-                            if (image.getWidth() < 10) {
-                                return;
-                            }
+                        WritableImage image = back.snapshot(parameters, null);
+                        if (image.getWidth() < 10) {
+                            return;
+                        }
 
-                            if (cache.getCached(newValue).isPresent()) {
-                                return;
-                            }
+                        if (cache.getCached(newValue).isPresent()) {
+                            return;
+                        }
 
-                            if (!newValue.equals(svgFile.getValue())) {
-                                return;
-                            }
+                        if (!newValue.equals(svgFile.getValue())) {
+                            return;
+                        }
 
-                            var found = false;
-                            out:
-                            for (int x = 0; x < image.getWidth(); x++) {
-                                for (int y = 0; y < image.getHeight(); y++) {
-                                    if (image.getPixelReader().getArgb(x, y) != 0x00000000) {
-                                        found = true;
-                                        break out;
-                                    }
+                        var found = false;
+                        out:
+                        for (int x = 0; x < image.getWidth(); x++) {
+                            for (int y = 0; y < image.getHeight(); y++) {
+                                if (image.getPixelReader().getArgb(x, y) != 0x00000000) {
+                                    found = true;
+                                    break out;
                                 }
                             }
-                            if (!found) {
-                                return;
-                            }
-
-                            System.out.println("cache " + newValue);
-                            cache.put(newValue, image);
+                        }
+                        if (!found) {
                             return;
+                        }
+
+                        System.out.println("cache " + newValue);
+                        cache.put(newValue, image);
                     }
                 }
             };
             Platform.runLater(() -> {
-//                timer.start();
-//                active.set(timer);
+                //                timer.start();
+                //                active.set(timer);
             });
         });
 

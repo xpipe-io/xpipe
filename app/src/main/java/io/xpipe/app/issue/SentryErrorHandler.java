@@ -100,7 +100,11 @@ public class SentryErrorHandler implements ErrorHandler {
         atts.forEach(attachment -> s.addAttachment(attachment));
 
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
-        s.setTag("developerMode", AppPrefs.get() != null ? AppPrefs.get().developerMode().getValue().toString() : "false");
+        s.setTag(
+                "developerMode",
+                AppPrefs.get() != null
+                        ? AppPrefs.get().developerMode().getValue().toString()
+                        : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
         if (ee.getThrowable() != null) {

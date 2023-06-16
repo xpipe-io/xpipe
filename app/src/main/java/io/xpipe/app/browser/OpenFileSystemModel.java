@@ -46,9 +46,11 @@ public final class OpenFileSystemModel {
         this.browserModel = browserModel;
         this.store = store;
         this.name = name != null ? name : DataStorage.get().getStoreEntry(store).getName();
-        this.inOverview.bind(Bindings.createBooleanBinding(() -> {
-            return currentPath.get() == null;
-        }, currentPath));
+        this.inOverview.bind(Bindings.createBooleanBinding(
+                () -> {
+                    return currentPath.get() == null;
+                },
+                currentPath));
         fileList = new BrowserFileListModel(this);
     }
 
@@ -147,7 +149,7 @@ public final class OpenFileSystemModel {
             return Optional.of(currentPath.get());
         }
 
-        String dirPath = null;
+        String dirPath;
         try {
             dirPath = FileSystemHelper.validateDirectoryPath(this, normalizedPath);
         } catch (Exception ex) {
@@ -314,7 +316,7 @@ public final class OpenFileSystemModel {
         cdSyncWithoutCheck(dir);
     }
 
-    public void initWithDefaultDirectory() throws Exception {
+    public void initWithDefaultDirectory() {
         savedState.cd(null);
         history.updateCurrent(null);
     }

@@ -17,7 +17,7 @@ public abstract class EventHandler {
             if (cat == null) {
                 cat = "log";
             }
-            System.out.println("[" + cat + "] " + te.toString());
+            System.out.println("[" + cat + "] " + te);
             System.out.flush();
         }
 

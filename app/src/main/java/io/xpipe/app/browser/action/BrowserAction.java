@@ -13,7 +13,7 @@ import java.util.ServiceLoader;
 
 public interface BrowserAction {
 
-    static enum Category {
+    enum Category {
         CUSTOM,
         OPEN,
         NATIVE,
@@ -21,9 +21,9 @@ public interface BrowserAction {
         MUTATION
     }
 
-    static List<BrowserAction> ALL = new ArrayList<>();
+    List<BrowserAction> ALL = new ArrayList<>();
 
-    public static List<LeafAction> getFlattened() {
+    static List<LeafAction> getFlattened() {
         return ALL.stream()
                 .map(browserAction -> browserAction instanceof LeafAction
                         ? List.of((LeafAction) browserAction)
@@ -33,7 +33,10 @@ public interface BrowserAction {
     }
 
     static LeafAction byId(String id) {
-        return getFlattened().stream().filter(browserAction -> id.equals(browserAction.getId())).findAny().orElseThrow();
+        return getFlattened().stream()
+                .filter(browserAction -> id.equals(browserAction.getId()))
+                .findAny()
+                .orElseThrow();
     }
 
     default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
@@ -52,17 +55,17 @@ public interface BrowserAction {
         return false;
     }
 
-    public abstract String getName(OpenFileSystemModel model, List<BrowserEntry> entries);
+    String getName(OpenFileSystemModel model, List<BrowserEntry> entries);
 
-    public default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;
     }
 
-    public default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;
     }
 
-    public static class Loader implements ModuleLayerLoader {
+    class Loader implements ModuleLayerLoader {
 
         @Override
         public void init(ModuleLayer layer) {

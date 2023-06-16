@@ -2,14 +2,17 @@ package io.xpipe.app.issue;
 
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class AttachmentHelper {
 
-    public static Path compressZipfile(Path sourceDir, Path outputFile) throws IOException, FileNotFoundException {
+    public static Path compressZipfile(Path sourceDir, Path outputFile) throws IOException {
         ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputFile.toFile()));
         compressDirectoryToZipfile(sourceDir, sourceDir, zipFile);
         IOUtils.closeQuietly(zipFile);
@@ -17,7 +20,7 @@ public class AttachmentHelper {
     }
 
     private static void compressDirectoryToZipfile(Path rootDir, Path sourceDir, ZipOutputStream out)
-            throws IOException, FileNotFoundException {
+            throws IOException {
         for (File file : sourceDir.toFile().listFiles()) {
             if (file.isDirectory()) {
                 compressDirectoryToZipfile(rootDir, sourceDir.resolve(file.getName()), out);

@@ -263,8 +263,8 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
         switch (state) {
             case EDIT -> {}
             case CREATE -> {
-                list.add(
-                        new Entry(AppI18n.observable("target"), new GuiDsCreatorTransferStep(targetGroup, store, source)));
+                list.add(new Entry(
+                        AppI18n.observable("target"), new GuiDsCreatorTransferStep(targetGroup, store, source)));
             }
         }
         return list;
@@ -287,7 +287,7 @@ public class GuiDsCreatorMultiStep<DI extends DataStore, DS extends DataSource<D
         window.close();
     }
 
-    public static enum State {
+    public enum State {
         EDIT,
         CREATE
     }

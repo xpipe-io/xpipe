@@ -41,7 +41,8 @@ public class FileStoreChoiceComp extends SimpleComp {
             fileProperty.setValue(newValue != null ? newValue.getPath() : null);
         });
 
-        var fileSystemChoiceComp = new FileSystemStoreChoiceComp(selected).grow(false, true).styleClass(Styles.LEFT_PILL);
+        var fileSystemChoiceComp =
+                new FileSystemStoreChoiceComp(selected).grow(false, true).styleClass(Styles.LEFT_PILL);
         if (onlyLocal) {
             fileSystemChoiceComp.hide(new SimpleBooleanProperty(true));
         }
@@ -54,9 +55,11 @@ public class FileStoreChoiceComp extends SimpleComp {
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
                     StandaloneFileBrowser.openSingleFile(selected);
                 })
-                .styleClass(Styles.RIGHT_PILL).grow(false, true);
+                .styleClass(Styles.RIGHT_PILL)
+                .grow(false, true);
 
-        var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton)).apply(struc -> struc.get().setFillHeight(true));
+        var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton))
+                .apply(struc -> struc.get().setFillHeight(true));
 
         return layout.createRegion();
     }

@@ -98,10 +98,7 @@ public class DynamicOptionsBuilder {
         var comp = new ToggleGroupComp<>(
                 prop,
                 new SimpleObjectProperty<>(Map.of(
-                        Boolean.TRUE,
-                        AppI18n.observable("app.yes"),
-                        Boolean.FALSE,
-                        AppI18n.observable("app.no"))));
+                        Boolean.TRUE, AppI18n.observable("app.yes"), Boolean.FALSE, AppI18n.observable("app.no"))));
         entries.add(new DynamicOptionsComp.Entry(nameKey, AppI18n.observable(nameKey), comp));
         props.add(prop);
         return this;

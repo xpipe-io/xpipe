@@ -16,7 +16,7 @@ public class XpbtProvider implements SimpleFileDataSourceProvider<XpbtSource>, U
     }
 
     @Override
-    public XpbtSource createDefaultSource(DataStore input) throws Exception {
+    public XpbtSource createDefaultSource(DataStore input) {
         return XpbtSource.builder().store(input.asNeeded()).build();
     }
 

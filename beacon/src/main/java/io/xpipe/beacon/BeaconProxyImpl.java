@@ -20,7 +20,6 @@ import lombok.SneakyThrows;
 
 import java.io.FilterInputStream;
 import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -89,7 +88,7 @@ public class BeaconProxyImpl extends ProxyProvider {
             var inputStream = new FilterInputStream(finalClient.receiveBody()) {
                 @Override
                 @SneakyThrows
-                public void close() throws IOException {
+                public void close() {
                     super.close();
                     finalClient.close();
                 }
@@ -120,7 +119,7 @@ public class BeaconProxyImpl extends ProxyProvider {
             var outputStream = new FilterOutputStream(client.sendBody()) {
                 @Override
                 @SneakyThrows
-                public void close() throws IOException {
+                public void close() {
                     super.close();
                     finalClient.receiveResponse();
                     finalClient.close();

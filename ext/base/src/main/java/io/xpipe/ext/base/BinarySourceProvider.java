@@ -13,7 +13,7 @@ public class BinarySourceProvider
         implements UniformDataSourceProvider<BinarySource>, SimpleFileDataSourceProvider<BinarySource> {
 
     @Override
-    public BinarySource createDefaultSource(DataStore input) throws Exception {
+    public BinarySource createDefaultSource(DataStore input) {
         return BinarySource.builder().store(input.asNeeded()).build();
     }
 

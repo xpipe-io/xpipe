@@ -35,7 +35,7 @@ public class BrowserFileOverviewComp extends SimpleComp {
                     event.consume();
                 });
                 l.setAlignment(Pos.CENTER_LEFT);
-                GrowAugment.create(true,false).augment(l);
+                GrowAugment.create(true, false).augment(l);
                 return l;
             });
         };

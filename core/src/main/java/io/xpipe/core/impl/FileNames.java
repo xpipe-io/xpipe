@@ -46,7 +46,7 @@ public class FileNames {
         if (split.length == 0) {
             return "";
         }
-        var components =  Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+        var components = Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
         if (components.size() == 0) {
             return "";
         }
@@ -134,7 +134,7 @@ public class FileNames {
     }
 
     public static String relativize(String from, String to) {
-       return normalize(to).substring(normalize(from).length());
+        return normalize(to).substring(normalize(from).length());
     }
 
     public static String normalize(String file) {
@@ -149,7 +149,7 @@ public class FileNames {
 
     public static String toUnix(String file) {
         var joined = String.join("/", split(file));
-        var prefix =  file.startsWith("/") ? "/" : "";
+        var prefix = file.startsWith("/") ? "/" : "";
         var suffix = file.endsWith("/") || file.endsWith("\\") ? "/" : "";
         return prefix + joined + suffix;
     }

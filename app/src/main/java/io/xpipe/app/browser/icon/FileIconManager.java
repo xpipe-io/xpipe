@@ -8,12 +8,15 @@ import io.xpipe.core.store.FileSystem;
 import javafx.scene.image.Image;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class FileIconManager {
 
     @Getter
-    private static SvgCache svgCache = createCache();
+    private static final SvgCache svgCache = createCache();
+
     private static boolean loaded;
 
     private static SvgCache createCache() {
@@ -61,7 +64,9 @@ public class FileIconManager {
             }
         }
 
-        return entry.getKind() == FileKind.DIRECTORY ? (open ? "default_folder_opened.svg" : "default_folder.svg") : "default_file.svg";
+        return entry.getKind() == FileKind.DIRECTORY
+                ? (open ? "default_folder_opened.svg" : "default_folder.svg")
+                : "default_file.svg";
     }
 
     private static String getIconPath(String name) {

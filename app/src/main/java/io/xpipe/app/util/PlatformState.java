@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 public enum PlatformState {
-
     NOT_INITIALIZED,
     RUNNING,
     EXITED;

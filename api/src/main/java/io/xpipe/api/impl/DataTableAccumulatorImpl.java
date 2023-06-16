@@ -28,9 +28,9 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
     private final XPipeApiConnection connection;
     private final TupleType type;
     private int rows;
-    private InternalStreamStore store;
+    private final InternalStreamStore store;
     private TupleType writtenDescriptor;
-    private OutputStream bodyOutput;
+    private final OutputStream bodyOutput;
 
     public DataTableAccumulatorImpl(TupleType type) {
         this.type = type;

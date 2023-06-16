@@ -77,7 +77,6 @@ public abstract class PlatformMode extends OperationMode {
             ThreadHelper.sleep(100);
         }
 
-
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
         // You can still update manually in the about tab
         if (AppPrefs.get().automaticallyUpdate().get()) {
@@ -91,7 +90,9 @@ public abstract class PlatformMode extends OperationMode {
     protected void waitForPlatform() {
         // The platform thread waits for the shutdown hook to finish in case SIGTERM is sent.
         // Therefore, we do not wait for the platform when being in a shutdown hook.
-        if (PlatformState.getCurrent() == PlatformState.RUNNING && !Platform.isFxApplicationThread() && !OperationMode.isInShutdownHook()) {
+        if (PlatformState.getCurrent() == PlatformState.RUNNING
+                && !Platform.isFxApplicationThread()
+                && !OperationMode.isInShutdownHook()) {
             TrackEvent.info("mode", "Waiting for platform thread ...");
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(latch::countDown);

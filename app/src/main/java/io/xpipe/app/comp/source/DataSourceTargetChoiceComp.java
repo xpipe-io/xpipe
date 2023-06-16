@@ -33,8 +33,7 @@ public class DataSourceTargetChoiceComp extends Comp<CompStructure<ComboBox<Node
         selectedApplication.addListener((observable, oldValue, val) -> {
             AppCache.update("application-last-used", val != null ? val.getId() : null);
         });
-        var all =
-                DataSourceTarget.getAll().stream().filter((p) -> filter.test(p)).toList();
+        var all = DataSourceTarget.getAll().stream().filter(filter).toList();
 
         if (selectedApplication.getValue() == null) {
             String selectedId = AppCache.get("application-last-used", String.class, () -> null);
@@ -67,9 +66,10 @@ public class DataSourceTargetChoiceComp extends Comp<CompStructure<ComboBox<Node
     public CompStructure<ComboBox<Node>> createBase() {
         var addMoreLabel = new Label(AppI18n.get("addMore"), new FontIcon("mdmz-plus"));
 
-        var builder = new CustomComboBoxBuilder<DataSourceTarget>(
-                selectedApplication, app -> createLabel(app), new Label(""), v -> true);
-        builder.setAccessibleNames(dataSourceTarget -> dataSourceTarget.getName().getValue());
+        var builder =
+                new CustomComboBoxBuilder<>(selectedApplication, app -> createLabel(app), new Label(""), v -> true);
+        builder.setAccessibleNames(
+                dataSourceTarget -> dataSourceTarget.getName().getValue());
 
         // builder.addFilter((v, s) -> v.getName().getValue().toLowerCase().contains(s));
 

@@ -7,10 +7,8 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
 import java.util.Objects;
 
@@ -45,26 +43,24 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
             currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
-                if (Objects.equals(text.getText(), n) || (n == null && text.getText().isEmpty())) {
+                if (Objects.equals(text.getText(), n)
+                        || (n == null && text.getText().isEmpty())) {
                     return;
                 }
-                
+
                 text.setText(n);
             });
         });
 
-        text.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER)) {
-                    text.getScene().getRoot().requestFocus();
-                }
-
-                if (lazy && ke.getCode().equals(KeyCode.ENTER)) {
-                    lastAppliedValue.setValue(currentValue.getValue());
-                }
-                ke.consume();
+        text.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER)) {
+                text.getScene().getRoot().requestFocus();
             }
+
+            if (lazy && ke.getCode().equals(KeyCode.ENTER)) {
+                lastAppliedValue.setValue(currentValue.getValue());
+            }
+            ke.consume();
         });
 
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {

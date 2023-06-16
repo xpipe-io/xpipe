@@ -53,14 +53,11 @@ public class SaveSourceTarget implements DataSourceTarget {
         var validator = new SimpleValidator();
         return new InstructionsDisplay(
                 storeSettings.createRegion(),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        var e = dataSourceEntry.getValue();
-                        var c = storageGroup.getValue();
-                        if (!c.getEntries().contains(e)) {
-                            DataStorage.get().add(e, c);
-                        }
+                () -> {
+                    var e = dataSourceEntry.getValue();
+                    var c = storageGroup.getValue();
+                    if (!c.getEntries().contains(e)) {
+                        DataStorage.get().add(e, c);
                     }
                 },
                 validator);

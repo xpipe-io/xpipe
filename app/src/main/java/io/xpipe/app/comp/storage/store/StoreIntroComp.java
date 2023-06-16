@@ -18,7 +18,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-
 public class StoreIntroComp extends SimpleComp {
 
     @Override
@@ -53,15 +52,11 @@ public class StoreIntroComp extends SimpleComp {
         docLinkPane.setAlignment(Pos.CENTER);
 
         var v = new VBox(
-                title,
-                introDesc,
-                new Separator(Orientation.HORIZONTAL),
-                machine,
-                scanPane
-//                new Separator(Orientation.HORIZONTAL),
-//                documentation,
-//                docLinkPane
-        );
+                title, introDesc, new Separator(Orientation.HORIZONTAL), machine, scanPane
+                //                new Separator(Orientation.HORIZONTAL),
+                //                documentation,
+                //                docLinkPane
+                );
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);

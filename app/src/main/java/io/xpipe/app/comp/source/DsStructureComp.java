@@ -28,7 +28,7 @@ public class DsStructureComp extends Comp<CompStructure<TreeView<String>>> {
                 item.setValue("[" + i + "] = " + item.getValue());
                 c.add(item);
             }
-            var ar = new TreeItem<String>("[" + n.size() + "... ]");
+            var ar = new TreeItem<>("[" + n.size() + "... ]");
             ar.getChildren().setAll(c);
             return ar;
         } else if (n.isTuple()) {
@@ -39,11 +39,11 @@ public class DsStructureComp extends Comp<CompStructure<TreeView<String>>> {
                 item.setValue((key != null ? key : "" + i) + " = " + item.getValue());
                 c.add(item);
             }
-            var ar = new TreeItem<String>("( " + n.size() + "... )");
+            var ar = new TreeItem<>("( " + n.size() + "... )");
             ar.getChildren().setAll(c);
             return ar;
         } else {
-            var ar = new TreeItem<String>(n.asValue().asString());
+            var ar = new TreeItem<>(n.asValue().asString());
             return ar;
         }
     }

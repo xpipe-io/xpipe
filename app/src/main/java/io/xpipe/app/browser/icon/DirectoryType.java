@@ -19,10 +19,13 @@ public interface DirectoryType {
     List<DirectoryType> ALL = new ArrayList<>();
 
     static DirectoryType byId(String id) {
-        return ALL.stream().filter(fileType -> fileType.getId().equals(id)).findAny().orElseThrow();
+        return ALL.stream()
+                .filter(fileType -> fileType.getId().equals(id))
+                .findAny()
+                .orElseThrow();
     }
 
-    public static void loadDefinitions() {
+    static void loadDefinitions() {
         ALL.add(new DirectoryType() {
 
             @Override
@@ -43,7 +46,7 @@ public interface DirectoryType {
 
         AppResources.with(AppResources.XPIPE_MODULE, "folder_list.txt", path -> {
             try (var reader =
-                         new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
+                    new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     var split = line.split("\\|");
@@ -70,7 +73,8 @@ public interface DirectoryType {
                     var lightOpenIcon = split.length > 4 ? split[5].trim() : openIcon;
 
                     ALL.add(new Simple(
-                            id, new IconVariant(lightClosedIcon, closedIcon),
+                            id,
+                            new IconVariant(lightClosedIcon, closedIcon),
                             new IconVariant(lightOpenIcon, openIcon),
                             filter.toArray(String[]::new)));
                 }
@@ -82,6 +86,7 @@ public interface DirectoryType {
 
         @Getter
         private final String id;
+
         private final IconVariant closed;
         private final IconVariant open;
         private final String[] names;
@@ -99,8 +104,8 @@ public interface DirectoryType {
                 return false;
             }
 
-            return Arrays.stream(names).anyMatch(name -> FileNames.getFileName(entry.getPath())
-                    .equalsIgnoreCase(name));
+            return Arrays.stream(names)
+                    .anyMatch(name -> FileNames.getFileName(entry.getPath()).equalsIgnoreCase(name));
         }
 
         @Override

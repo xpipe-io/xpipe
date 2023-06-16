@@ -11,9 +11,9 @@ public interface SourceEntryDisplayMode {
     SourceEntryDisplayMode LIST = new ListMode();
     SourceEntryDisplayMode TILES = new ListMode();
 
-    public Region create(List<SourceEntryWrapper> entries);
+    Region create(List<SourceEntryWrapper> entries);
 
-    static class ListMode implements SourceEntryDisplayMode {
+    class ListMode implements SourceEntryDisplayMode {
 
         private static final double SOURCE_TYPE_WIDTH = 0.15;
         private static final double NAME_WIDTH = 0.4;

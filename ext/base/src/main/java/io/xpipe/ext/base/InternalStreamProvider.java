@@ -21,7 +21,7 @@ public class InternalStreamProvider implements DataStoreProvider {
     }
 
     @Override
-    public String queryInformationString(DataStore store, int length) throws Exception {
+    public String queryInformationString(DataStore store, int length) {
         return getDisplayName();
     }
 

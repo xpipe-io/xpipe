@@ -15,7 +15,6 @@ import javafx.geometry.NodeOrientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Region;
 import javafx.stage.Window;
 import javafx.util.Duration;
 
@@ -38,8 +37,8 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
         var region = struc.get();
         var tt = new JFXTooltip();
         var toDisplay = text.getValue();
-        if (Shortcuts.getShortcut((Region) region) != null) {
-            toDisplay = toDisplay + " (" + Shortcuts.getShortcut((Region) region).getDisplayText() + ")";
+        if (Shortcuts.getShortcut(region) != null) {
+            toDisplay = toDisplay + " (" + Shortcuts.getShortcut(region).getDisplayText() + ")";
         }
         tt.textProperty().setValue(toDisplay);
         tt.setStyle("-fx-font-size: 11pt;");
@@ -138,8 +137,7 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
             }
             hoveredNode = (Node) event.getSource();
             Object property = hoveredNode.getProperties().get(TOOLTIP_PROP);
-            if (property instanceof JFXTooltip) {
-                JFXTooltip tooltip = (JFXTooltip) property;
+            if (property instanceof JFXTooltip tooltip) {
                 ensureHoveredNodeIsVisible(() -> {
                     // if a tooltip is already showing then show this tooltip immediately
                     if (leftTimer.getStatus() == Timeline.Status.RUNNING) {

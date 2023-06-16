@@ -11,7 +11,8 @@ public class DesktopShortcuts {
 
     private static void createWindowsShortcut(String target, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
-        var shortcutTarget = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.WINDOWS));
+        var shortcutTarget = XPipeInstallation.getCurrentInstallationBasePath()
+                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.WINDOWS));
         var content = String.format(
                 """
                         set "TARGET=%s"
@@ -20,12 +21,13 @@ public class DesktopShortcuts {
 
                         %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.WindowStyle=7; $S.TargetPath = '%%TARGET%%'; $S.Arguments = 'open %s'; $S.Save()"
                         """,
-                shortcutTarget, name, icon.toString(), target);
+                shortcutTarget, name, icon, target);
         LocalStore.getShell().executeSimpleCommand(content);
     }
 
     private static void createLinuxShortcut(String target, String name) throws Exception {
-        var exec = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.LINUX));
+        var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.LINUX));
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                 """
@@ -38,14 +40,15 @@ public class DesktopShortcuts {
                         Terminal=false
                         Categories=Utility;Development;Office;
                         """,
-                name, exec, target, icon.toString());
+                name, exec, target, icon);
         var file = Path.of(System.getProperty("user.home") + "/Desktop/" + name + ".desktop");
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
     }
 
     private static void createMacOSShortcut(String target, String name) throws Exception {
-        var exec = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.MACOS));
+        var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.MACOS));
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var base = System.getProperty("user.home") + "/Desktop/" + name + ".app";
         var content = String.format(
@@ -60,10 +63,14 @@ public class DesktopShortcuts {
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
 
             var executable = base + "/Contents/MacOS/" + name;
-            pc.getShellDialect().createScriptTextFileWriteCommand(pc, content, executable).execute();
+            pc.getShellDialect()
+                    .createScriptTextFileWriteCommand(pc, content, executable)
+                    .execute();
             pc.executeSimpleCommand("chmod ugo+x \"" + executable + "\"");
 
-            pc.getShellDialect().createScriptTextFileWriteCommand(pc, "APPL????", base + "/PkgInfo").execute();
+            pc.getShellDialect()
+                    .createScriptTextFileWriteCommand(pc, "APPL????", base + "/PkgInfo")
+                    .execute();
             pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/" + name + ".icns\"");
         }
     }

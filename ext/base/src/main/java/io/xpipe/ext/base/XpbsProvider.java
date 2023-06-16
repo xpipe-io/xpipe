@@ -11,7 +11,7 @@ import java.util.Map;
 public class XpbsProvider implements SimpleFileDataSourceProvider<XpbsSource>, UniformDataSourceProvider<XpbsSource> {
 
     @Override
-    public XpbsSource createDefaultSource(DataStore input) throws Exception {
+    public XpbsSource createDefaultSource(DataStore input) {
         return XpbsSource.builder().store(input.asNeeded()).build();
     }
 

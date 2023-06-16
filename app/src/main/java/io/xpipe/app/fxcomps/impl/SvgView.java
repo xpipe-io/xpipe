@@ -30,10 +30,7 @@ public class SvgView {
     private final ObservableValue<Number> height;
     private final ObservableValue<String> svgContent;
 
-    private SvgView(
-            ObservableValue<Number> width,
-            ObservableValue<Number> height,
-            ObservableValue<String> svgContent) {
+    private SvgView(ObservableValue<Number> width, ObservableValue<Number> height, ObservableValue<String> svgContent) {
         this.width = PlatformThread.sync(width);
         this.height = PlatformThread.sync(height);
         this.svgContent = PlatformThread.sync(svgContent);
@@ -68,7 +65,7 @@ public class SvgView {
     }
 
     private static Point2D getDimensions(String val) {
-        var regularExpression = Pattern.compile("<svg[^>]+?width=\"([^\s]+)\"", Pattern.DOTALL);
+        var regularExpression = Pattern.compile("<svg[^>]+?width=\"([^ ]+)\"", Pattern.DOTALL);
         var matcher = regularExpression.matcher(val);
 
         if (!matcher.find()) {
@@ -83,7 +80,7 @@ public class SvgView {
         }
 
         var width = matcher.group(1);
-        regularExpression = Pattern.compile("<svg.+?height=\"([^\s]+)\"", Pattern.DOTALL);
+        regularExpression = Pattern.compile("<svg.+?height=\"([^ ]+)\"", Pattern.DOTALL);
         matcher = regularExpression.matcher(val);
         matcher.find();
         var height = matcher.group(1);
@@ -96,7 +93,8 @@ public class SvgView {
 
     private WebView createWebView() {
         var wv = new WebView();
-        // Sometimes a web view might not render when the background is said to transparent, at least according to stack overflow
+        // Sometimes a web view might not render when the background is said to transparent, at least according to stack
+        // overflow
         wv.setPageFill(Color.valueOf("#00000001"));
         // wv.setPageFill(Color.BLACK);
         wv.getEngine().setJavaScriptEnabled(false);

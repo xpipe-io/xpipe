@@ -9,7 +9,7 @@ public class StatusExchangeImpl extends StatusExchange
         implements MessageExchangeImpl<StatusExchange.Request, StatusExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
+    public Response handleRequest(BeaconHandler handler, Request msg) {
         String mode;
         if (OperationMode.get() == null) {
             mode = "none";

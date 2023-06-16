@@ -7,7 +7,10 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
-import io.xpipe.app.util.*;
+import io.xpipe.app.util.ProxyManagerProviderImpl;
+import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.XPipeDaemon;
+import io.xpipe.app.util.XPipeDaemonProvider;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
@@ -113,7 +116,6 @@ open module io.xpipe.app {
     uses MessageExchangeImpl;
     uses TerminalHelper;
     uses io.xpipe.app.ext.ActionProvider;
-
     uses DataSourceProvider;
     uses DataSourceTarget;
     uses EventHandler;

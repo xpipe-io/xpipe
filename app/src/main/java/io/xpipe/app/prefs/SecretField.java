@@ -6,12 +6,13 @@ import io.xpipe.app.util.SecretHelper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
 
-public class SecretField extends DataField<Property<SecretValue>, SecretValue, com.dlsc.formsfx.model.structure.PasswordField> {
+public class SecretField
+        extends DataField<Property<SecretValue>, SecretValue, com.dlsc.formsfx.model.structure.PasswordField> {
 
     protected SecretField(Property<SecretValue> valueProperty, Property<SecretValue> persistentValueProperty) {
         super(valueProperty, persistentValueProperty);
 
-        stringConverter = new AbstractStringConverter<SecretValue>() {
+        stringConverter = new AbstractStringConverter<>() {
             @Override
             public SecretValue fromString(String string) {
                 return SecretHelper.encrypt(string);

@@ -37,7 +37,7 @@ public interface ShellControl extends ProcessControl {
 
     String getSubTemporaryDirectory();
 
-    public void checkRunning();
+    void checkRunning();
 
     default CommandControl osascriptCommand(String script) {
         return command(String.format(
@@ -45,7 +45,8 @@ public interface ShellControl extends ProcessControl {
                 osascript - "$@" <<EOF
                 %s
                 EOF
-                """, script));
+                """,
+                script));
     }
 
     default byte[] executeSimpleRawBytesCommand(String command) throws Exception {
@@ -112,7 +113,7 @@ public interface ShellControl extends ProcessControl {
                     }
 
                     @Override
-                    public String prepare(ShellControl sc, String command) throws Exception {
+                    public String prepare(ShellControl sc, String command) {
                         return command;
                     }
                 })
@@ -134,7 +135,7 @@ public interface ShellControl extends ProcessControl {
                     }
 
                     @Override
-                    public String prepare(ShellControl sc, String command) throws Exception {
+                    public String prepare(ShellControl sc, String command) {
                         return command;
                     }
                 })
@@ -149,7 +150,7 @@ public interface ShellControl extends ProcessControl {
             }
 
             @Override
-            public String prepare(ShellControl sc, String command) throws Exception {
+            public String prepare(ShellControl sc, String command) {
                 return command;
             }
         });
@@ -196,8 +197,7 @@ public interface ShellControl extends ProcessControl {
     }
 
     default CommandControl command(List<String> command) {
-        return command(
-                shellProcessControl -> ShellDialect.flatten(command));
+        return command(shellProcessControl -> ShellDialect.flatten(command));
     }
 
     void exitAndWait() throws IOException;

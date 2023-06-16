@@ -7,10 +7,10 @@ import java.util.List;
 
 public interface ApplicationPathAction extends BrowserAction {
 
-    public abstract String getExecutable();
+    String getExecutable();
 
     @Override
-    public default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+    default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return model.getCache().isApplicationInPath(getExecutable());
     }
 }

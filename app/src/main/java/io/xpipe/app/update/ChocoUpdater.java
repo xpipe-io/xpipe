@@ -31,8 +31,12 @@ public class ChocoUpdater extends UpdateHandler {
 
     public AvailableRelease refreshUpdateCheckImpl() throws Exception {
         try (var sc = ShellStore.createLocal().control().start()) {
-            var latest = sc.executeSimpleStringCommand(
-                    "choco outdated -r --nocolor").lines().filter(s -> s.startsWith("xpipe")).findAny().orElseThrow().split("\\|")[2];
+            var latest = sc.executeSimpleStringCommand("choco outdated -r --nocolor")
+                    .lines()
+                    .filter(s -> s.startsWith("xpipe"))
+                    .findAny()
+                    .orElseThrow()
+                    .split("\\|")[2];
             var isUpdate = isUpdate(latest);
             var rel = new AvailableRelease(
                     AppProperties.get().getVersion(),

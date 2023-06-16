@@ -4,8 +4,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -23,7 +23,11 @@ public class UpdateCheckComp extends SimpleComp {
     public UpdateCheckComp() {
         updateReady = PlatformThread.sync(Bindings.createBooleanBinding(
                 () -> {
-                    return XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null;
+                    return XPipeDistributionType.get()
+                                    .getUpdateHandler()
+                                    .getPreparedUpdate()
+                                    .getValue()
+                            != null;
                 },
                 XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
     }
@@ -43,26 +47,41 @@ public class UpdateCheckComp extends SimpleComp {
     private ObservableValue<String> descriptionText() {
         return PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
-                    if (XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null) {
+                    if (XPipeDistributionType.get()
+                                    .getUpdateHandler()
+                                    .getPreparedUpdate()
+                                    .getValue()
+                            != null) {
                         return null;
                     }
 
-                    if (XPipeDistributionType.get().getUpdateHandler().getLastUpdateCheckResult().getValue() != null
-                            && XPipeDistributionType.get().getUpdateHandler()
+                    if (XPipeDistributionType.get()
+                                            .getUpdateHandler()
+                                            .getLastUpdateCheckResult()
+                                            .getValue()
+                                    != null
+                            && XPipeDistributionType.get()
+                                    .getUpdateHandler()
                                     .getLastUpdateCheckResult()
                                     .getValue()
                                     .isUpdate()) {
                         return AppI18n.get(
                                 "updateAvailable",
-                                XPipeDistributionType.get().getUpdateHandler()
+                                XPipeDistributionType.get()
+                                        .getUpdateHandler()
                                         .getLastUpdateCheckResult()
                                         .getValue()
                                         .getVersion());
                     }
 
-                    if (XPipeDistributionType.get().getUpdateHandler().getLastUpdateCheckResult().getValue() != null) {
+                    if (XPipeDistributionType.get()
+                                    .getUpdateHandler()
+                                    .getLastUpdateCheckResult()
+                                    .getValue()
+                            != null) {
                         return AppI18n.readableDuration(
-                                        new SimpleObjectProperty<>(XPipeDistributionType.get().getUpdateHandler()
+                                        new SimpleObjectProperty<>(XPipeDistributionType.get()
+                                                .getUpdateHandler()
                                                 .getLastUpdateCheckResult()
                                                 .getValue()
                                                 .getCheckTime()),
@@ -80,7 +99,9 @@ public class UpdateCheckComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var button = new Button();
-        button.disableProperty().bind(PlatformThread.sync(XPipeDistributionType.get().getUpdateHandler().getBusy()));
+        button.disableProperty()
+                .bind(PlatformThread.sync(
+                        XPipeDistributionType.get().getUpdateHandler().getBusy()));
         button.textProperty()
                 .bind(Bindings.createStringBinding(
                         () -> {

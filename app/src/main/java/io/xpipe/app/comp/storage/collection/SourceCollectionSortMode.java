@@ -7,7 +7,7 @@ import java.util.Comparator;
 
 public interface SourceCollectionSortMode {
 
-    static SourceCollectionSortMode ALPHABETICAL_DESC = new SourceCollectionSortMode() {
+    SourceCollectionSortMode ALPHABETICAL_DESC = new SourceCollectionSortMode() {
         @Override
         public String getId() {
             return "alphabetical-desc";
@@ -21,7 +21,7 @@ public interface SourceCollectionSortMode {
         }
     };
 
-    static SourceCollectionSortMode ALPHABETICAL_ASC = new SourceCollectionSortMode() {
+    SourceCollectionSortMode ALPHABETICAL_ASC = new SourceCollectionSortMode() {
         @Override
         public String getId() {
             return "alphabetical-asc";
@@ -34,7 +34,7 @@ public interface SourceCollectionSortMode {
         }
     };
 
-    static SourceCollectionSortMode DATE_DESC = new SourceCollectionSortMode() {
+    SourceCollectionSortMode DATE_DESC = new SourceCollectionSortMode() {
         @Override
         public String getId() {
             return "date-desc";
@@ -48,7 +48,7 @@ public interface SourceCollectionSortMode {
         }
     };
 
-    static SourceCollectionSortMode DATE_ASC = new SourceCollectionSortMode() {
+    SourceCollectionSortMode DATE_ASC = new SourceCollectionSortMode() {
         @Override
         public String getId() {
             return "date-asc";

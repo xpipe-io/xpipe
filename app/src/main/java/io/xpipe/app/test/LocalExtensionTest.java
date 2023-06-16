@@ -11,7 +11,7 @@ import java.util.UUID;
 public class LocalExtensionTest extends ExtensionTest {
 
     @BeforeAll
-    public static void setup() throws Exception {
+    public static void setup() {
         JacksonMapper.initModularized(ModuleLayer.boot());
         XPipeServiceProviders.load(ModuleLayer.boot());
         AppProperties.init();

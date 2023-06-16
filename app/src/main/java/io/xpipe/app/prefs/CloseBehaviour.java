@@ -6,7 +6,6 @@ import lombok.Getter;
 
 @Getter
 public enum CloseBehaviour implements PrefsChoiceValue {
-
     QUIT("app.quit", () -> {
         OperationMode.shutdown(false, false);
     }),
@@ -15,8 +14,8 @@ public enum CloseBehaviour implements PrefsChoiceValue {
         OperationMode.switchToAsync(OperationMode.TRAY);
     });
 
-    private String id;
-    private Runnable exit;
+    private final String id;
+    private final Runnable exit;
 
     CloseBehaviour(String id, Runnable exit) {
         this.id = id;

@@ -24,7 +24,7 @@ public abstract class StructureDataSource<DS extends DataStore> extends DataSour
         return c;
     }
 
-    public final StructureReadConnection openReadConnection() throws Exception {
+    public final StructureReadConnection openReadConnection() {
         if (!isComplete()) {
             throw new UnsupportedOperationException();
         }
@@ -32,7 +32,7 @@ public abstract class StructureDataSource<DS extends DataStore> extends DataSour
         return newReadConnection();
     }
 
-    public final StructureWriteConnection openWriteConnection(WriteMode mode) throws Exception {
+    public final StructureWriteConnection openWriteConnection(WriteMode mode) {
         var con = newWriteConnection(mode);
         if (con == null) {
             throw new UnsupportedOperationException(mode.getId());

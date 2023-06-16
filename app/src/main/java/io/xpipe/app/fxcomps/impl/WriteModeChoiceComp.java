@@ -41,8 +41,7 @@ public class WriteModeChoiceComp extends SimpleComp implements Validatable {
     @Override
     protected Region createSimple() {
         var a = available;
-        Property<Map<WriteMode, ObservableValue<String>>> map =
-                new SimpleObjectProperty<>(new LinkedHashMap<WriteMode, ObservableValue<String>>());
+        Property<Map<WriteMode, ObservableValue<String>>> map = new SimpleObjectProperty<>(new LinkedHashMap<>());
         for (WriteMode writeMode : a) {
             map.getValue().put(writeMode, AppI18n.observable(writeMode.getId()));
         }

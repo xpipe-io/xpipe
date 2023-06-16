@@ -83,7 +83,8 @@ public class OpenFileSystemComp extends SimpleComp {
     }
 
     private Region createFileListContent() {
-        var directoryView = new BrowserFileListComp(model.getFileList()).apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
+        var directoryView = new BrowserFileListComp(model.getFileList())
+                .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
         var statusBar = new BrowserStatusBarComp(model);
         var fileList = new VerticalComp(List.of(directoryView, statusBar));
 

@@ -99,7 +99,10 @@ public class DialogHelper {
         var name = XPipeDaemon.getInstance().getStoreName(store).orElse(null);
         return Dialog.query("Store", false, true, false, name, QueryConverter.STRING)
                 .map((String newName) -> {
-                    var found = DataStorage.get().getStoreEntryIfPresent(newName).map(entry -> entry.getStore()).orElseThrow();
+                    var found = DataStorage.get()
+                            .getStoreEntryIfPresent(newName)
+                            .map(entry -> entry.getStore())
+                            .orElseThrow();
                     if (!filter.isAssignableFrom(found.getClass())) {
                         throw new IllegalArgumentException("Incompatible store type");
                     }

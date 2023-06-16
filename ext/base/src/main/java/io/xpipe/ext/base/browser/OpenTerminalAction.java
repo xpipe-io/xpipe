@@ -22,7 +22,9 @@ public class OpenTerminalAction implements LeafAction {
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         if (model.getInOverview().get()) {
-            TerminalHelper.open(model.getName(), model.getFileSystem().getShell().orElseThrow().prepareTerminalOpen(model.getName()));
+            TerminalHelper.open(
+                    model.getName(),
+                    model.getFileSystem().getShell().orElseThrow().prepareTerminalOpen(model.getName()));
             return;
         }
 

@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 
 @JsonTypeName("stdout")
@@ -16,7 +15,7 @@ import java.io.OutputStream;
 public class StdoutDataStore extends JacksonizedValue implements StreamDataStore {
 
     @Override
-    public boolean canOpen() throws Exception {
+    public boolean canOpen() {
         return false;
     }
 
@@ -26,11 +25,11 @@ public class StdoutDataStore extends JacksonizedValue implements StreamDataStore
     }
 
     @Override
-    public OutputStream openOutput() throws Exception {
+    public OutputStream openOutput() {
         // Create an output stream that will write to standard out but will not close it
         return new FilterOutputStream(System.out) {
             @Override
-            public void close() throws IOException {}
+            public void close() {}
         };
     }
 }

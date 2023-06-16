@@ -14,14 +14,14 @@ import java.util.function.Supplier;
 
 public interface ExternalEditorType extends PrefsChoiceValue {
 
-    public static final ExternalEditorType NOTEPAD = new WindowsFullPathType("app.notepad") {
+    ExternalEditorType NOTEPAD = new WindowsFullPathType("app.notepad") {
         @Override
         protected Optional<Path> determinePath() {
             return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
         }
     };
 
-    public static final ExternalEditorType VSCODE_WINDOWS = new WindowsFullPathType("app.vscode") {
+    ExternalEditorType VSCODE_WINDOWS = new WindowsFullPathType("app.vscode") {
 
         @Override
         public boolean canOpenDirectory() {
@@ -42,7 +42,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return false;
         }
     };
-    public static final ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsFullPathType("app.notepad++") {
+    ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsFullPathType("app.notepad++") {
 
         @Override
         protected Optional<Path> determinePath() {
@@ -53,7 +53,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    public static final LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
+    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
 
         @Override
         public boolean canOpenDirectory() {
@@ -61,15 +61,15 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    public static final LinuxPathType KATE = new LinuxPathType("app.kate", "kate");
+    LinuxPathType KATE = new LinuxPathType("app.kate", "kate");
 
-    public static final LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit");
+    LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit");
 
-    public static final LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad");
+    LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad");
 
-    public static final LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad");
+    LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad");
 
-    public static final LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma");
+    LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma");
 
     class MacOsEditor extends ExternalApplicationType.MacApplication implements ExternalEditorType {
 
@@ -82,17 +82,20 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             ApplicationHelper.executeLocalApplication(
                     shellControl -> String.format(
                             "open -a %s %s",
-                            shellControl.getShellDialect().fileArgument(getApplicationPath().orElseThrow().toString()),
+                            shellControl
+                                    .getShellDialect()
+                                    .fileArgument(
+                                            getApplicationPath().orElseThrow().toString()),
                             shellControl.getShellDialect().fileArgument(file.toString())),
                     false);
         }
     }
 
-    public static final ExternalEditorType TEXT_EDIT = new MacOsEditor("app.textEdit", "TextEdit");
+    ExternalEditorType TEXT_EDIT = new MacOsEditor("app.textEdit", "TextEdit");
 
-    public static final ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
+    ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
 
-    public static final ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
+    ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
 
         @Override
         public boolean canOpenDirectory() {
@@ -100,7 +103,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    public static final ExternalEditorType CUSTOM = new ExternalEditorType() {
+    ExternalEditorType CUSTOM = new ExternalEditorType() {
 
         @Override
         public void launch(Path file) throws Exception {
@@ -125,13 +128,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    public void launch(Path file) throws Exception;
+    void launch(Path file) throws Exception;
 
     default boolean canOpenDirectory() {
         return false;
     }
 
-    public static class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
+    class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
         public LinuxPathType(String id, String command) {
             super(id, command);
@@ -148,7 +151,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    public abstract static class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
+    abstract class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
             implements ExternalEditorType {
 
         public WindowsFullPathType(String id) {
@@ -168,17 +171,18 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
             ApplicationHelper.executeLocalApplication(
                     sc -> String.format(
-                            "%s %s", sc.getShellDialect().fileArgument(path.get().toString()), sc.getShellDialect().fileArgument(file.toString())),
+                            "%s %s",
+                            sc.getShellDialect().fileArgument(path.get().toString()),
+                            sc.getShellDialect().fileArgument(file.toString())),
                     detach());
         }
     }
 
-    public static final List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
-    public static final List<LinuxPathType> LINUX_EDITORS =
-            List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
-    public static final List<ExternalEditorType> MACOS_EDITORS = List.of(VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
+    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
+    List<ExternalEditorType> MACOS_EDITORS = List.of(VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
-    public static final List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
+    List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();
                 if (OsType.getLocal().equals(OsType.WINDOWS)) {
                     all.addAll(WINDOWS_EDITORS);
@@ -194,7 +198,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             })
             .get();
 
-    public static void detectDefault() {
+    static void detectDefault() {
         var typeProperty = AppPrefs.get().externalEditor;
         var customProperty = AppPrefs.get().customEditorCommand;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {

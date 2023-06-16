@@ -42,8 +42,7 @@ public class PrettyListView<T> extends ListView<T> {
     private void bindScrollBars() {
         final Set<Node> nodes = lookupAll("VirtualScrollBar");
         for (Node node : nodes) {
-            if (node instanceof ScrollBar) {
-                ScrollBar bar = (ScrollBar) node;
+            if (node instanceof ScrollBar bar) {
                 if (bar.getOrientation().equals(Orientation.VERTICAL)) {
                     bindScrollBars(vBar, bar, true);
                 } else if (bar.getOrientation().equals(Orientation.HORIZONTAL)) {

@@ -25,12 +25,12 @@ public class OutputStreamStore implements StreamDataStore {
     }
 
     @Override
-    public InputStream openInput() throws Exception {
+    public InputStream openInput() {
         throw new UnsupportedOperationException("No input available");
     }
 
     @Override
-    public OutputStream openOutput() throws Exception {
+    public OutputStream openOutput() {
         return out;
     }
 
