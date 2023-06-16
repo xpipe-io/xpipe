@@ -68,33 +68,33 @@ public class BrowserModel {
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
 
     public void restoreState(BrowserSavedState state) {
-        state.getLastSystems().forEach((uuid, s) -> {
-            var storageEntry = DataStorage.get().getStoreEntry(uuid);
+        state.getLastSystems().forEach(e -> {
+            var storageEntry = DataStorage.get().getStoreEntry(e.getUuid());
             storageEntry.ifPresent(entry -> {
-                openFileSystemAsync(entry.getName(), entry.getStore().asNeeded(), s, new SimpleBooleanProperty());
+                openFileSystemAsync(entry.getName(), entry.getStore().asNeeded(), e.getPath(), new SimpleBooleanProperty());
             });
         });
     }
 
     public void reset() {
-        var map = new LinkedHashMap<UUID, String>();
+        var list = new ArrayList<BrowserSavedState.Entry>();
         openFileSystems.forEach(model -> {
             var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
             storageEntry.ifPresent(
-                    entry -> map.put(entry.getUuid(), model.getCurrentPath().get()));
+                    entry -> list.add(new BrowserSavedState.Entry(entry.getUuid(), model.getCurrentPath().get())));
         });
 
         // Don't override state if it is empty
-        if (map.size() == 0) {
+        if (list.size() == 0) {
             return;
         }
 
-        var meaningful = map.size() > 1 || map.values().stream().allMatch(s -> s != null);
+        var meaningful = list.size() > 1 || list.stream().allMatch(s -> s.getPath() != null);
         if (!meaningful) {
             return;
         }
 
-        var state = new BrowserSavedState(map);
+        var state = BrowserSavedState.builder().lastSystems(list).build();
         state.save();
     }
 

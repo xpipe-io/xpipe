@@ -14,6 +14,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
@@ -138,9 +139,9 @@ public class BrowserComp extends SimpleComp {
     private Node createTabs() {
         var multi = new MultiContentComp(Map.of(
                 Comp.of(() -> createTabPane()),
-                Bindings.isNotEmpty(model.getOpenFileSystems()),
+                BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
                 new BrowserWelcomeComp(model),
-                Bindings.isEmpty(model.getOpenFileSystems())));
+                BindingsHelper.persist(Bindings.isEmpty(model.getOpenFileSystems()))));
         return multi.createRegion();
     }
 

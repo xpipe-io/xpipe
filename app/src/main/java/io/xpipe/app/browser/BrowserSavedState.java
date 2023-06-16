@@ -1,18 +1,18 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.store.FileSystemStore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.Instant;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.UUID;
 
+@Value
+@Jacksonized
+@Builder
 @Getter
 public class BrowserSavedState {
 
@@ -26,29 +26,15 @@ public class BrowserSavedState {
     @Value
     @Jacksonized
     @Builder
-    public static class RecentEntry {
+    public static class Entry {
 
-        String directory;
-        Instant time;
+        UUID uuid;
+        String path;
     }
 
-    @NonNull
-    private final LinkedHashMap<UUID, String> lastSystems;
-
-    public BrowserSavedState() {
-        lastSystems = new LinkedHashMap<>();
-    }
-
-    public BrowserSavedState(@NonNull LinkedHashMap<UUID, String> lastSystems) {
-        this.lastSystems = lastSystems;
-    }
+    @NonNull List<Entry> lastSystems;
 
     public void save() {
         AppCache.update("browser-state", this);
-    }
-
-    public void open(FileSystemStore store) {
-        var storageEntry = DataStorage.get().getStoreEntryIfPresent(store);
-        storageEntry.ifPresent(entry -> lastSystems.put(entry.getUuid(), null));
     }
 }

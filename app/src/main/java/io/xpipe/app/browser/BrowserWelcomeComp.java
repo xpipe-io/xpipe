@@ -45,8 +45,8 @@ public class BrowserWelcomeComp extends SimpleComp {
         var storeList = new VBox();
         storeList.setPadding(new Insets(0, 0, 0, 10));
         storeList.setSpacing(8);
-        state.getLastSystems().forEach((uuid, s) -> {
-            var entry = DataStorage.get().getStoreEntry(uuid);
+        state.getLastSystems().forEach(e-> {
+            var entry = DataStorage.get().getStoreEntry(e.getUuid());
             if (entry.isEmpty()) {
                 return;
             }
@@ -54,7 +54,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             var graphic =
                     entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
             var view = new PrettyImageComp(new SimpleStringProperty(graphic), 24, 24);
-            var l = new Label(entry.get().getName() + (s != null ? ":   " + s : ""), view.createRegion());
+            var l = new Label(entry.get().getName() + (e.getPath() != null ? ":   " + e.getPath() : ""), view.createRegion());
             l.setGraphicTextGap(10);
             storeList.getChildren().add(l);
         });
