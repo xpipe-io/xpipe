@@ -31,7 +31,9 @@ public interface ShellDialect {
 
     CommandControl directoryExists(ShellControl shellControl, String directory);
 
-    CommandControl normalizeDirectory(ShellControl shellControl, String directory);
+    CommandControl evaluateExpression(ShellControl shellControl, String s);
+
+    CommandControl resolveDirectory(ShellControl shellControl, String directory);
 
     String fileArgument(String s);
 

@@ -80,9 +80,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
         }
 
         breadcrumbs.selectedCrumbProperty().addListener((obs, old, val) -> {
-            model.cd(val != null ? val.getValue() : null).ifPresent(s -> {
-                model.cd(s);
-            });
+            model.cd(val != null ? val.getValue() : null);
         });
 
         return breadcrumbs;

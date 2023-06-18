@@ -24,14 +24,14 @@ import java.util.function.Consumer;
 
 @AllArgsConstructor
 @Getter
-public class DescriptionButtonComp extends SimpleComp {
+public class TileButtonComp extends SimpleComp {
 
     private final ObservableValue<String> name;
     private final ObservableValue<String> description;
     private final ObservableValue<String> icon;
     private final Consumer<ActionEvent> action;
 
-    public DescriptionButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
+    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);
         this.description = AppI18n.observable(descriptionKey);
         this.icon = new SimpleStringProperty(icon);

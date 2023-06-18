@@ -9,7 +9,6 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.SvgCacheComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
@@ -23,7 +22,6 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
@@ -67,9 +65,6 @@ final class BrowserFileListComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         TableView<BrowserEntry> table = createTable();
-        SimpleChangeListener.apply(table.comparatorProperty(), (newValue) -> {
-            fileList.setComparator(newValue);
-        });
         return table;
     }
 
@@ -87,17 +82,17 @@ final class BrowserFileListComp extends SimpleComp {
 
         var sizeCol = new TableColumn<BrowserEntry, Number>("Size");
         sizeCol.setCellValueFactory(param ->
-                new SimpleLongProperty(param.getValue().getRawFileEntry().getSize()));
+                new SimpleLongProperty(param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
 
         var mtimeCol = new TableColumn<BrowserEntry, Instant>("Modified");
         mtimeCol.setCellValueFactory(param ->
-                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getDate()));
+                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
 
         var modeCol = new TableColumn<BrowserEntry, String>("Attributes");
         modeCol.setCellValueFactory(param ->
-                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().getMode()));
+                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
         modeCol.setSortable(false);
 
@@ -109,7 +104,8 @@ final class BrowserFileListComp extends SimpleComp {
         table.getSortOrder().add(filenameCol);
         table.setFocusTraversable(true);
         table.setSortPolicy(param -> {
-            return sort(table, param.getItems());
+            fileList.setComparator(table.getComparator());
+            return true;
         });
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         filenameCol.minWidthProperty().bind(table.widthProperty().multiply(0.5));
@@ -122,22 +118,6 @@ final class BrowserFileListComp extends SimpleComp {
         prepareTableChanges(table, mtimeCol, modeCol);
 
         return table;
-    }
-
-    private boolean sort(TableView<BrowserEntry> table, ObservableList<BrowserEntry> list) {
-        var comp = table.getComparator();
-        if (comp == null) {
-            return true;
-        }
-
-        var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
-        var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
-                path -> path.getRawFileEntry().getKind() != FileKind.DIRECTORY);
-
-        Comparator<? super BrowserEntry> us =
-                syntheticFirst.thenComparing(dirsFirst).thenComparing(comp);
-        FXCollections.sort(list, us);
-        return true;
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
@@ -256,12 +236,12 @@ final class BrowserFileListComp extends SimpleComp {
                                 }
 
                                 if (row.getItem() != null
-                                        && row.getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY) {
+                                        && row.getItem().getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
                                     return event.getButton() == MouseButton.SECONDARY;
                                 }
 
                                 if (row.getItem() != null
-                                        && row.getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY) {
+                                        && row.getItem().getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
                                     return event.getButton() == MouseButton.SECONDARY
                                             || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
                                 }
@@ -365,7 +345,6 @@ final class BrowserFileListComp extends SimpleComp {
                 if (!table.getItems().equals(newItems)) {
                     // Sort the list ourselves as sorting the table would incur a lot of cell updates
                     var obs = FXCollections.observableList(newItems);
-                    sort(table, obs);
                     table.getItems().setAll(obs);
                     // table.sort();
                 }
@@ -497,7 +476,15 @@ final class BrowserFileListComp extends SimpleComp {
                     var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                     pseudoClassStateChanged(FOLDER, isDirectory);
 
-                    var fileName = isParentLink ? ".." : FileNames.getFileName(newName);
+                    var normalName = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.LINK
+                            ? getTableRow().getItem().getFileName() + " -> "
+                                    + getTableRow()
+                                            .getItem()
+                                            .getRawFileEntry()
+                                            .resolved()
+                                            .getPath()
+                            : getTableRow().getItem().getFileName();
+                    var fileName = isParentLink ? ".." : normalName;
                     var hidden = !isParentLink
                             && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
@@ -519,7 +506,7 @@ final class BrowserFileListComp extends SimpleComp {
                 setText(null);
             } else {
                 var path = getTableRow().getItem();
-                if (path.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
+                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
                     setText("");
                 } else {
                     setText(byteCount(fileSize.longValue()));

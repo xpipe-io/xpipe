@@ -42,7 +42,7 @@ public class BrowserNavBar extends SimpleComp {
             path.set(newValue);
         });
         path.addListener((observable, oldValue, newValue) -> {
-            var changed = model.cd(newValue);
+            var changed = model.cdOrRetry(newValue, true);
             changed.ifPresent(path::set);
         });
 

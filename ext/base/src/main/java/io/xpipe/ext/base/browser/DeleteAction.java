@@ -5,6 +5,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.FileSystemHelper;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -43,6 +44,6 @@ public class DeleteAction implements LeafAction {
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Delete";
+        return "Delete" + (entries.stream().allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.LINK) ? " link" : "");
     }
 }

@@ -61,6 +61,10 @@ public interface BrowserAction {
         return true;
     }
 
+    default boolean automaticallyResolveLinks() {
+        return true;
+    }
+
     default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;
     }

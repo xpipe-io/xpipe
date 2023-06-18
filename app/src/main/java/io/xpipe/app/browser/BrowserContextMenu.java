@@ -38,7 +38,8 @@ final class BrowserContextMenu extends ContextMenu {
             var all = BrowserAction.ALL.stream()
                     .filter(browserAction -> browserAction.getCategory() == cat)
                     .filter(browserAction -> {
-                        if (!browserAction.isApplicable(model, selected)) {
+                        var used = resolveIfNeeded(browserAction, selected);
+                        if (!browserAction.isApplicable(model, used)) {
                             return false;
                         }
 
@@ -58,26 +59,40 @@ final class BrowserContextMenu extends ContextMenu {
             }
 
             for (BrowserAction a : all) {
+                var used = resolveIfNeeded(a, selected);
                 if (a instanceof LeafAction la) {
-                    getItems().add(la.toItem(model, selected, s -> s));
+                    getItems().add(la.toItem(model, used, s -> s));
                 }
 
                 if (a instanceof BranchAction la) {
-                    var m = new Menu(a.getName(model, selected) + " ...");
+                    var m = new Menu(a.getName(model, used) + " ...");
                     for (LeafAction sub : la.getBranchingActions()) {
-                        if (!sub.isApplicable(model, selected)) {
+                        var subUsed = resolveIfNeeded(sub, selected);
+                        if (!sub.isApplicable(model, subUsed)) {
                             continue;
                         }
-                        m.getItems().add(sub.toItem(model, selected, s -> s));
+                        m.getItems().add(sub.toItem(model, subUsed, s -> s));
                     }
-                    var graphic = a.getIcon(model, selected);
+                    var graphic = a.getIcon(model, used);
                     if (graphic != null) {
                         m.setGraphic(graphic);
                     }
-                    m.setDisable(!a.isActive(model, selected));
+                    m.setDisable(!a.isActive(model, used));
                     getItems().add(m);
                 }
             }
         }
+    }
+
+    private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
+        var used = action.automaticallyResolveLinks()
+                ? selected.stream()
+                .map(browserEntry -> new BrowserEntry(
+                        browserEntry.getRawFileEntry().resolved(),
+                        browserEntry.getModel(),
+                        browserEntry.isSynthetic()))
+                .toList()
+                : selected;
+        return used;
     }
 }

@@ -50,21 +50,22 @@ public class FileIconManager {
 
         loadIfNecessary();
 
-        if (entry.getKind() != FileKind.DIRECTORY) {
+        var r = entry.resolved();
+        if (r.getKind() != FileKind.DIRECTORY) {
             for (var f : FileType.ALL) {
-                if (f.matches(entry)) {
+                if (f.matches(r)) {
                     return getIconPath(f.getIcon());
                 }
             }
         } else {
             for (var f : DirectoryType.ALL) {
-                if (f.matches(entry)) {
-                    return getIconPath(f.getIcon(entry, open));
+                if (f.matches(r)) {
+                    return getIconPath(f.getIcon(r, open));
                 }
             }
         }
 
-        return entry.getKind() == FileKind.DIRECTORY
+        return r.getKind() == FileKind.DIRECTORY
                 ? (open ? "default_folder_opened.svg" : "default_folder.svg")
                 : "default_file.svg";
     }

@@ -104,61 +104,81 @@ public final class OpenFileSystemModel {
         return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, false, false, 0, null, FileKind.DIRECTORY);
     }
 
-    public Optional<String> cd(String path) {
+    public void cd(String path) {
+        cdOrRetry(path, false).ifPresent(s -> cdOrRetry(s, false));
+    }
+
+    public Optional<String> cdOrRetry(String path, boolean allowCommands) {
         if (Objects.equals(path, currentPath.get())) {
             return Optional.empty();
         }
 
         // Fix common issues with paths
-        var normalizedPath = FileSystemHelper.resolvePath(this, path);
-        if (!Objects.equals(path, normalizedPath)) {
-            return Optional.of(normalizedPath);
+        var adjustedPath = FileSystemHelper.adjustPath(this, path);
+        if (!Objects.equals(path, adjustedPath)) {
+            return Optional.of(adjustedPath);
+        }
+
+        // Evaluate optional expressions
+        String evaluatedPath;
+        try {
+            evaluatedPath = FileSystemHelper.evaluatePath(this, adjustedPath);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return Optional.ofNullable(currentPath.get());
         }
 
         // Handle commands typed into navigation bar
-        if (normalizedPath != null
-                && !FileNames.isAbsolute(normalizedPath)
+        if (allowCommands && evaluatedPath != null && !FileNames.isAbsolute(evaluatedPath)
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
-            var name = normalizedPath + " - "
+            var name = adjustedPath + " - "
                     + XPipeDaemon.getInstance().getStoreName(store).orElse("?");
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.ALL.stream()
-                        .anyMatch(dialect -> normalizedPath.startsWith(dialect.getOpenCommand()))) {
+                        .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
                     var cmd = fileSystem
                             .getShell()
                             .get()
-                            .subShell(normalizedPath)
+                            .subShell(adjustedPath)
                             .initWith(fileSystem
                                     .getShell()
                                     .get()
                                     .getShellDialect()
                                     .getCdCommand(currentPath.get()))
                             .prepareTerminalOpen(name);
-                    TerminalHelper.open(normalizedPath, cmd);
+                    TerminalHelper.open(adjustedPath, cmd);
                 } else {
                     var cmd = fileSystem
                             .getShell()
                             .get()
-                            .command(normalizedPath)
+                            .command(adjustedPath)
                             .withWorkingDirectory(directory)
                             .prepareTerminalOpen(name);
-                    TerminalHelper.open(normalizedPath, cmd);
+                    TerminalHelper.open(adjustedPath, cmd);
                 }
             });
             return Optional.of(currentPath.get());
         }
 
-        String dirPath;
+        // Evaluate optional links
+        String resolvedPath;
         try {
-            dirPath = FileSystemHelper.validateDirectoryPath(this, normalizedPath);
+            resolvedPath = FileSystemHelper.resolveDirectoryPath(this, evaluatedPath);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.ofNullable(currentPath.get());
         }
 
-        if (!Objects.equals(path, dirPath)) {
-            return Optional.of(dirPath);
+        if (!Objects.equals(path, resolvedPath)) {
+            return Optional.ofNullable(resolvedPath);
+        }
+
+        try {
+            FileSystemHelper.validateDirectoryPath(this, resolvedPath);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return Optional.ofNullable(currentPath.get());
         }
 
         ThreadHelper.runFailableAsync(() -> {

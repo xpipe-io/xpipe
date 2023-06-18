@@ -2,8 +2,11 @@ package io.xpipe.core.store;
 
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.io.Closeable;
 import java.io.InputStream;
@@ -17,11 +20,14 @@ import java.util.stream.Stream;
 public interface FileSystem extends Closeable, AutoCloseable {
 
     @Value
+    @NonFinal
     class FileEntry {
         @NonNull
         FileSystem fileSystem;
 
         @NonNull
+                @NonFinal
+                @Setter
         String path;
 
         Instant date;
@@ -52,8 +58,31 @@ public interface FileSystem extends Closeable, AutoCloseable {
             this.size = size;
         }
 
+        public FileEntry resolved() {
+            return this;
+        }
+
         public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
             return new FileEntry(fileSystem, path, Instant.now(), true, false, 0, null, FileKind.DIRECTORY);
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    class LinkFileEntry extends FileEntry {
+
+        @NonNull
+        FileEntry target;
+
+        public LinkFileEntry(
+                @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean hidden, Boolean executable, long size, String mode, @NonNull FileEntry target
+        ) {
+            super(fileSystem, path, date, hidden, executable, size, mode, FileKind.LINK);
+            this.target = target;
+        }
+
+        public FileEntry resolved() {
+            return target;
         }
     }
 

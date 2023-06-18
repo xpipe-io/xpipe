@@ -17,16 +17,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 @Getter
 public final class BrowserFileListModel {
 
     static final Comparator<BrowserEntry> FILE_TYPE_COMPARATOR =
-            Comparator.comparing(path -> path.getRawFileEntry().getKind() != FileKind.DIRECTORY);
-    static final Predicate<BrowserEntry> PREDICATE_ANY = path -> true;
-    static final Predicate<BrowserEntry> PREDICATE_NOT_HIDDEN = path -> true;
+            Comparator.comparing(path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
 
     private final OpenFileSystemModel fileSystemModel;
     private final Property<Comparator<BrowserEntry>> comparatorProperty =
@@ -95,8 +92,19 @@ public final class BrowserFileListModel {
         var comparator =
                 tableComparator != null ? FILE_TYPE_COMPARATOR.thenComparing(tableComparator) : FILE_TYPE_COMPARATOR;
         var listCopy = new ArrayList<>(filtered);
-        listCopy.sort(comparator);
+        sort(listCopy);
         shown.setValue(listCopy);
+    }
+
+    private void sort(List<BrowserEntry> l) {
+        var syntheticFirst = Comparator.<BrowserEntry, Boolean>comparing(path -> !path.isSynthetic());
+        var dirsFirst = Comparator.<BrowserEntry, Boolean>comparing(
+                path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
+        var comp = comparatorProperty.getValue();
+
+        Comparator<? super BrowserEntry> us =
+                comp != null ? syntheticFirst.thenComparing(dirsFirst).thenComparing(comp) : syntheticFirst.thenComparing(dirsFirst);
+        l.sort(us);
     }
 
     public boolean rename(String filename, String newName) {
@@ -113,19 +121,14 @@ public final class BrowserFileListModel {
     }
 
     public void onDoubleClick(BrowserEntry entry) {
-        if (entry.getRawFileEntry().getKind() != FileKind.DIRECTORY
+        if (entry.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY
                 && getMode().equals(BrowserModel.Mode.SINGLE_FILE_CHOOSER)) {
             getFileSystemModel().getBrowserModel().finishChooser();
             return;
         }
 
-        if (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
-            var dir = fileSystemModel.cd(entry.getRawFileEntry().getPath());
-            if (dir.isPresent()) {
-                fileSystemModel.cd(dir.get());
-            }
-        } else {
-            // FileOpener.openInTextEditor(entry.getRawFileEntry());
+        if (entry.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
+            fileSystemModel.cd(entry.getRawFileEntry().resolved().getPath());
         }
     }
 }

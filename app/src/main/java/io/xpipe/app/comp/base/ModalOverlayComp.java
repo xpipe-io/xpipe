@@ -1,27 +1,22 @@
 package io.xpipe.app.comp.base;
 
 import atlantafx.base.controls.ModalPane;
+import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
-import javafx.scene.control.TitledPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.Value;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -55,8 +50,9 @@ public class ModalOverlayComp extends SimpleComp {
             }
 
             if (newValue != null) {
+                var l = new Label(AppI18n.get(newValue.titleKey));
                 var r = newValue.content.createRegion();
-                var box = new VBox(r);
+                var box = new VBox(l, r);
                 box.setSpacing(15);
                 box.setPadding(new Insets(15));
 
@@ -73,33 +69,16 @@ public class ModalOverlayComp extends SimpleComp {
                     box.getChildren().add(buttonBar);
                 }
 
-                var tp = new TitledPane(AppI18n.get(newValue.titleKey), box);
-                tp.setCollapsible(false);
-
-                var closeButton = new Button(null, new FontIcon("mdi2w-window-close"));
-                closeButton.setOnAction(event -> {
+                var modalBox = new ModalBox(box);
+                modalBox.setOnClose(event -> {
                     overlayContent.setValue(null);
+                    event.consume();
                 });
-                Shortcuts.addShortcut(closeButton, new KeyCodeCombination(KeyCode.ESCAPE));
-                Styles.toggleStyleClass(closeButton, Styles.FLAT);
-                var close = new AnchorPane(closeButton);
-                close.setPickOnBounds(false);
-                AnchorPane.setTopAnchor(closeButton, 10.0);
-                AnchorPane.setRightAnchor(closeButton, 10.0);
-
-                var stack = new StackPane(tp, close);
-                stack.setPadding(new Insets(10));
-                stack.setOnMouseClicked(event -> {
-                    if (overlayContent.getValue() != null) {
-                        overlayContent.setValue(null);
-                    }
-                });
-                stack.setAlignment(Pos.CENTER);
-                close.maxWidthProperty().bind(tp.widthProperty());
-                close.maxHeightProperty().bind(tp.heightProperty());
-                tp.maxWidthProperty().bind(stack.widthProperty().add(-100));
-
-                modal.show(stack);
+                modalBox.prefWidthProperty().bind(box.widthProperty());
+                modalBox.prefHeightProperty().bind(box.heightProperty());
+                modalBox.maxWidthProperty().bind(box.widthProperty());
+                modalBox.maxHeightProperty().bind(box.heightProperty());
+                modal.show(modalBox);
 
                 // Wait 2 pulses before focus so that the scene can be assigned to r
                 Platform.runLater(() -> {

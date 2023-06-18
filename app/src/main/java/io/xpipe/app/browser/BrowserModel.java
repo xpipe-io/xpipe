@@ -15,7 +15,9 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Getter
@@ -71,7 +73,8 @@ public class BrowserModel {
         state.getLastSystems().forEach(e -> {
             var storageEntry = DataStorage.get().getStoreEntry(e.getUuid());
             storageEntry.ifPresent(entry -> {
-                openFileSystemAsync(entry.getName(), entry.getStore().asNeeded(), e.getPath(), new SimpleBooleanProperty());
+                openFileSystemAsync(
+                        entry.getName(), entry.getStore().asNeeded(), e.getPath(), new SimpleBooleanProperty());
             });
         });
     }
@@ -80,8 +83,8 @@ public class BrowserModel {
         var list = new ArrayList<BrowserSavedState.Entry>();
         openFileSystems.forEach(model -> {
             var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
-            storageEntry.ifPresent(
-                    entry -> list.add(new BrowserSavedState.Entry(entry.getUuid(), model.getCurrentPath().get())));
+            storageEntry.ifPresent(entry -> list.add(new BrowserSavedState.Entry(
+                    entry.getUuid(), model.getCurrentPath().get())));
         });
 
         // Don't override state if it is empty
@@ -162,14 +165,17 @@ public class BrowserModel {
         ThreadHelper.runFailableAsync(() -> {
             OpenFileSystemModel model;
 
-            try (var b = new BusyProperty(externalBusy != null ? externalBusy : new SimpleBooleanProperty())) {
-                model = new OpenFileSystemModel(name, this, store);
-                model.initFileSystem();
-                model.initSavedState();
-            }
+            // Prevent multiple calls from interfering with each other
+            synchronized (BrowserModel.this) {
+                try (var b = new BusyProperty(externalBusy != null ? externalBusy : new SimpleBooleanProperty())) {
+                    model = new OpenFileSystemModel(name, this, store);
+                    model.initFileSystem();
+                    model.initSavedState();
+                }
 
-            openFileSystems.add(model);
-            selected.setValue(model);
+                openFileSystems.add(model);
+                selected.setValue(model);
+            }
             if (path != null) {
                 model.initWithGivenDirectory(path);
             } else {

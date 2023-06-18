@@ -32,10 +32,12 @@ public class FileSystemHelper {
                         .get()
                         .getOsType()
                         .getHomeDirectory(fileSystem.getShell().get());
-        return validateDirectoryPath(model, resolvePath(model, current));
+        var r = resolveDirectoryPath(model, evaluatePath(model, adjustPath(model, current)));
+        validateDirectoryPath(model, r);
+        return r;
     }
 
-    public static String resolvePath(OpenFileSystemModel model, String path) {
+    public static String adjustPath(OpenFileSystemModel model, String path) {
         if (path == null) {
             return null;
         }
@@ -62,7 +64,7 @@ public class FileSystemHelper {
         return path;
     }
 
-    public static String validateDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+    public static String evaluatePath(OpenFileSystemModel model, String path) throws Exception {
         if (path == null) {
             return null;
         }
@@ -72,17 +74,50 @@ public class FileSystemHelper {
             return path;
         }
 
-        var normalized = shell.get()
+        return shell.get()
                 .getShellDialect()
-                .normalizeDirectory(shell.get(), path)
+                .evaluateExpression(shell.get(), path)
                 .readStdoutOrThrow();
+    }
 
-        if (!model.getFileSystem().directoryExists(normalized)) {
-            throw new IllegalArgumentException(String.format("Directory %s does not exist", normalized));
+    public static String resolveDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+        if (path == null) {
+            return null;
         }
 
-        model.getFileSystem().directoryAccessible(normalized);
-        return FileNames.toDirectory(normalized);
+        var shell = model.getFileSystem().getShell();
+        if (shell.isEmpty()) {
+            return path;
+        }
+
+        var resolved = shell.get()
+                .getShellDialect()
+                .resolveDirectory(shell.get(), path)
+                .withWorkingDirectory(model.getCurrentPath().get())
+                .readStdoutOrThrow();
+
+        if (!FileNames.isAbsolute(resolved)) {
+            throw new IllegalArgumentException(String.format("Directory %s is not absolute", resolved));
+        }
+
+        return FileNames.toDirectory(resolved);
+    }
+
+    public static void validateDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
+        if (path == null) {
+            return;
+        }
+
+        var shell = model.getFileSystem().getShell();
+        if (shell.isEmpty()) {
+            return;
+        }
+
+        if (!model.getFileSystem().directoryExists(path)) {
+            throw new IllegalArgumentException(String.format("Directory %s does not exist", path));
+        }
+
+        model.getFileSystem().directoryAccessible(path);
     }
 
     private static FileSystem localFileSystem;

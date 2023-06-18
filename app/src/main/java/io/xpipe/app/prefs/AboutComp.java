@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.base.DescriptionButtonComp;
+import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppWindowHelper;
@@ -34,7 +34,7 @@ public class AboutComp extends Comp<CompStructure<?>> {
         return new OptionsBuilder()
                 .addTitle("usefulActions")
                 .addComp(
-                        new DescriptionButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
+                        new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
                                     var event = ErrorEvent.fromMessage("User Report");
                                     if (AppLogs.get().isWriteToFile()) {
                                         event.attachment(AppLogs.get().getSessionLogsDirectory());
@@ -45,7 +45,7 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp(
+                        new TileButtonComp(
                                         "openCurrentLogFile",
                                         "openCurrentLogFileDescription",
                                         "mdmz-text_snippet",
@@ -59,7 +59,7 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp(
+                        new TileButtonComp(
                                         "launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                             OperationMode.executeAfterShutdown(() -> {
                                                 try (var sc = ShellStore.createLocal()
@@ -84,7 +84,7 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp(
+                        new TileButtonComp(
                                         "openInstallationDirectory",
                                         "openInstallationDirectoryDescription",
                                         "mdomz-snippet_folder",
@@ -101,7 +101,7 @@ public class AboutComp extends Comp<CompStructure<?>> {
     private Comp<?> createLinks() {
         return new OptionsBuilder()
                 .addComp(
-                        new DescriptionButtonComp(
+                        new TileButtonComp(
                                         "securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
                                             Hyperlinks.open(Hyperlinks.SECURITY);
                                             e.consume();
@@ -109,14 +109,14 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
+                        new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
                                     Hyperlinks.open(Hyperlinks.PRIVACY);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp(
+                        new TileButtonComp(
                                         "thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
                                             AppWindowHelper.sideWindow(
                                                             AppI18n.get("openSourceNotices"),
@@ -129,21 +129,21 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp("discord", "discordDescription", "mdi2d-discord", e -> {
+                        new TileButtonComp("discord", "discordDescription", "mdi2d-discord", e -> {
                                     Hyperlinks.open(Hyperlinks.DISCORD);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp("slack", "slackDescription", "mdi2s-slack", e -> {
+                        new TileButtonComp("slack", "slackDescription", "mdi2s-slack", e -> {
                                     Hyperlinks.open(Hyperlinks.SLACK);
                                     e.consume();
                                 })
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new DescriptionButtonComp("github", "githubDescription", "mdi2g-github", e -> {
+                        new TileButtonComp("github", "githubDescription", "mdi2g-github", e -> {
                                     Hyperlinks.open(Hyperlinks.GITHUB);
                                     e.consume();
                                 })
