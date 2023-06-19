@@ -84,7 +84,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 var descriptionLabel = new Label();
                                 AppFont.medium(descriptionLabel);
                                 descriptionLabel.setWrapText(true);
-                                descriptionLabel.setMaxWidth(700);
+                                descriptionLabel.setMaxWidth(800);
                                 descriptionLabel
                                         .disableProperty()
                                         .bind(c.getFieldLabel().disabledProperty());

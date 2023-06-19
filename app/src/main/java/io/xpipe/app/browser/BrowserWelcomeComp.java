@@ -1,18 +1,23 @@
 package io.xpipe.app.browser;
 
-import atlantafx.base.controls.Spacer;
+import atlantafx.base.controls.Tile;
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.storage.DataStorage;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserWelcomeComp extends SimpleComp {
 
@@ -29,6 +34,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var welcome = new BrowserGreetingComp().createSimple();
 
         var vbox = new VBox(welcome);
+        vbox.setMaxWidth(600);
         vbox.setPadding(new Insets(40, 40, 40, 50));
         vbox.setSpacing(18);
         if (state == null) {
@@ -39,11 +45,11 @@ public class BrowserWelcomeComp extends SimpleComp {
         }
 
         var header = new Label("Last time you were connected to the following systems:");
+        header.getStyleClass().add(Styles.TEXT_MUTED);
         AppFont.header(header);
         vbox.getChildren().add(header);
 
         var storeList = new VBox();
-        storeList.setPadding(new Insets(0, 0, 0, 10));
         storeList.setSpacing(8);
         state.getLastSystems().forEach(e-> {
             var entry = DataStorage.get().getStoreEntry(e.getUuid());
@@ -53,31 +59,29 @@ public class BrowserWelcomeComp extends SimpleComp {
 
             var graphic =
                     entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
-            var view = new PrettyImageComp(new SimpleStringProperty(graphic), 24, 24);
-            var l = new Label(entry.get().getName() + (e.getPath() != null ? ":   " + e.getPath() : ""), view.createRegion());
-            l.setGraphicTextGap(10);
-            storeList.getChildren().add(l);
+            var view = new PrettyImageComp(new SimpleStringProperty(graphic), 45, 45);
+            var openButton = new Button(null, new FontIcon("mdmz-restore"));
+            new FancyTooltipAugment<>("restore").augment(openButton);
+            openButton.getStyleClass().addAll(Styles.FLAT, Styles.BUTTON_CIRCLE);
+            openButton.setOnAction(event -> {
+                model.restoreState(e, openButton.disableProperty());
+                event.consume();
+            });
+            var tile = new Tile(entry.get().getName(), e.getPath(), view.createRegion());
+            tile.setAction(openButton);
+            storeList.getChildren().add(tile);
         });
 
-        vbox.getChildren().add(storeList);
-        vbox.getChildren().add(new Spacer(20));
+        var sp = new ScrollPane(storeList);
+        sp.setFitToWidth(true);
+        vbox.getChildren().add(sp);
+        vbox.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
-        var restoreLabel = new Label("Do you want to restore these sessions?");
-        AppFont.header(restoreLabel);
-        vbox.getChildren().add(restoreLabel);
-
-        var restoreButton = new Button("Restore sessions");
-        var done = new AtomicBoolean();
-        restoreButton.setOnAction(event -> {
-            if (done.get()) {
-                return;
-            }
-
-            done.set(true);
+        var tile = new TileButtonComp("restore", "restoreAllSessions", "mdmz-restore", actionEvent -> {
             model.restoreState(state);
-            event.consume();
-        });
-        vbox.getChildren().add(restoreButton);
+            actionEvent.consume();
+        }).grow(true, false);
+        vbox.getChildren().add(tile.createRegion());
 
         return vbox;
     }

@@ -16,6 +16,10 @@
 -fx-graphic-text-gap: 0.8em;
 }
 
+.properties-comp .tile > * {
+ -fx-padding: 0.6em 0 0.6em 0;
+}
+
 .about-tab .information {
 -fx-spacing: 2em;
 }

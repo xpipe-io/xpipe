@@ -71,11 +71,15 @@ public class BrowserModel {
 
     public void restoreState(BrowserSavedState state) {
         state.getLastSystems().forEach(e -> {
-            var storageEntry = DataStorage.get().getStoreEntry(e.getUuid());
-            storageEntry.ifPresent(entry -> {
-                openFileSystemAsync(
-                        entry.getName(), entry.getStore().asNeeded(), e.getPath(), new SimpleBooleanProperty());
-            });
+            restoreState(e, null);
+        });
+    }
+
+    public void restoreState(BrowserSavedState.Entry e, BooleanProperty busy) {
+        var storageEntry = DataStorage.get().getStoreEntry(e.getUuid());
+        storageEntry.ifPresent(entry -> {
+            openFileSystemAsync(
+                    entry.getName(), entry.getStore().asNeeded(), e.getPath(), busy);
         });
     }
 

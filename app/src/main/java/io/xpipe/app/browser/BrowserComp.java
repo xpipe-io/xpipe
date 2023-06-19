@@ -22,6 +22,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -29,10 +30,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.DragEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +87,7 @@ public class BrowserComp extends SimpleComp {
                 .widthProperty()
                 .addListener(
                         // set sidebar width in pixels depending on split pane width
-                        (obs, old, val) -> splitPane.setDividerPosition(0, 280 / splitPane.getWidth()));
+                        (obs, old, val) -> splitPane.setDividerPosition(0, 320 / splitPane.getWidth()));
 
         var r = addBottomBar(splitPane);
         r.getStyleClass().add("browser");
@@ -137,10 +135,10 @@ public class BrowserComp extends SimpleComp {
     }
 
     private Node createTabs() {
-        var multi = new MultiContentComp(Map.of(
+        var multi = new MultiContentComp(Map.<Comp<?>, ObservableBooleanValue>of(
                 Comp.of(() -> createTabPane()),
                 BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
-                new BrowserWelcomeComp(model),
+                new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
                 BindingsHelper.persist(Bindings.isEmpty(model.getOpenFileSystems()))));
         return multi.createRegion();
     }

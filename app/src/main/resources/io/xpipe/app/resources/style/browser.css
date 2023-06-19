@@ -4,6 +4,10 @@
 -fx-padding: 1em;
 }
 
+.browser .tile > * {
+ -fx-padding: 0.6em 0 0.6em 0;
+}
+
 .browser .overview {
     -fx-spacing: 1.5em;
     -fx-padding: 1.5em;

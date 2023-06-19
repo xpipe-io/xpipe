@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.controls.Tile;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -7,7 +8,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
-import io.xpipe.app.util.DynamicOptionsBuilder;
+import io.xpipe.app.util.OptionsBuilder;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
@@ -24,26 +25,22 @@ public class PropertiesComp extends SimpleComp {
             var label = new Label(AppI18n.get("xPipeClient"), image);
             label.getStyleClass().add("header");
             AppFont.setSize(label, 5);
-            return label;
+            return new Tile(AppI18n.get("xPipeClient"), "Version " + AppProperties.get().getVersion() + " ("
+                    + AppProperties.get().getArch() + ")", image);
         });
 
-        var section = new DynamicOptionsBuilder(false)
+        var section = new OptionsBuilder()
                 .addComp(title, null)
+                .name("build")
                 .addComp(
-                        AppI18n.observable("version"),
-                        new LabelComp(AppProperties.get().getVersion() + " ("
-                                + AppProperties.get().getArch() + ")"),
-                        null)
-                .addComp(
-                        AppI18n.observable("build"),
                         new LabelComp(AppProperties.get().getBuild()),
                         null)
+                .name("runtimeVersion")
                 .addComp(
-                        AppI18n.observable("runtimeVersion"),
                         new LabelComp(System.getProperty("java.vm.version")),
                         null)
+                .name("virtualMachine")
                 .addComp(
-                        AppI18n.observable("virtualMachine"),
                         new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")),
                         null)
                 .buildComp();
