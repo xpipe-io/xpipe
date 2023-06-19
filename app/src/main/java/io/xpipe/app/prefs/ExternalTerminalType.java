@@ -8,6 +8,7 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
-    ExternalTerminalType CMD = new SimpleType("app.cmd", "cmd.exe", "cmd.exe") {
+    ExternalTerminalType CMD = new SimpleType("app.cmd", "cmd.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -34,7 +35,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType POWERSHELL_WINDOWS = new SimpleType("app.powershell", "powershell", "PowerShell") {
+    ExternalTerminalType POWERSHELL_WINDOWS = new SimpleType("app.powershell", "powershell") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -47,7 +48,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh", "PowerShell Core") {
+    ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -62,7 +63,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType WINDOWS_TERMINAL = new SimpleType("app.windowsTerminal", "wt.exe", "Windows Terminal") {
+    ExternalTerminalType WINDOWS_TERMINAL = new SimpleType("app.windowsTerminal", "wt.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -120,12 +121,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType GNOME_TERMINAL = new SimpleType("app.gnomeTerminal", "gnome-terminal", "Gnome Terminal") {
+    ExternalTerminalType GNOME_TERMINAL = new SimpleType("app.gnomeTerminal", "gnome-terminal") {
 
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkSupport(pc, executable, getDisplayName(), null);
+                ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
 
                 var toExecute = executable + " " + toCommand(name, file);
                 // In order to fix this bug which also affects us:
@@ -146,7 +147,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole", "Konsole") {
+    ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -162,11 +163,102 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType XFCE = new SimpleType("app.xfce", "xfce4-terminal", "Xfce") {
+    ExternalTerminalType XFCE = new SimpleType("app.xfce", "xfce4-terminal") {
 
         @Override
         protected String toCommand(String name, String file) {
             return "--tab --title \"" + name + "\" --command \"" + file + "\"";
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType TERMINATOR = new SimpleType("app.terminator", "terminator") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-e").addQuoted(file).add("-T").addQuoted(name).add("--new-tab").build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType KITTY = new SimpleType("app.kitty", "kitty") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-T").addQuoted(name).addQuoted(file).build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType TERMINOLOGY = new SimpleType("app.terminology", "terminology") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-T").addQuoted(name).add("-2").add("-e").addQuoted(file).build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType COOL_RETRO_TERM = new SimpleType("app.coolRetroTerm", "cool-retro-term") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-T").addQuoted(name).add("-e").addQuoted(file).build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType GUAKE = new SimpleType("app.guake", "guake") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-r").addQuoted(name).add("-e").addQuoted(file).build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType ALACRITTY = new SimpleType("app.alacritty", "alacritty") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-t").addQuoted(name).add("-e").addQuoted(file).build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType TILDA = new SimpleType("app.tilda", "tilda") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of().add("-c").addQuoted(file).build();
         }
 
         @Override
@@ -194,6 +286,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     KONSOLE,
                     XFCE,
                     GNOME_TERMINAL,
+                    TERMINATOR,
+                    KITTY,
+                    TERMINOLOGY,
+                    COOL_RETRO_TERM,
+                    GUAKE,
+                    ALACRITTY,
+                    TILDA,
                     ITERM2,
                     TABBY_MAC_OS,
                     WARP,
@@ -357,11 +456,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     @Getter
     abstract class SimpleType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
 
-        private final String displayName;
-
-        public SimpleType(String id, String executable, String displayName) {
+        public SimpleType(String id, String executable) {
             super(id, executable);
-            this.displayName = displayName;
         }
 
         @Override
@@ -371,7 +467,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     try (ShellControl pc = LocalStore.getShell()
                             .subShell(ShellDialects.POWERSHELL)
                             .start()) {
-                        ApplicationHelper.checkSupport(pc, executable, displayName, null);
+                        ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
                         var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \""
                                 + toCommand(name, file).replaceAll("\"", "`\"") + "\"";
                         pc.executeSimpleCommand(toExecute);
@@ -381,7 +477,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkSupport(pc, executable, displayName, null);
+                ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
 
                 var toExecute = executable + " " + toCommand(name, file);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {

@@ -51,6 +51,14 @@ public abstract class Comp<S extends CompStructure<?>> {
         return (T) this;
     }
 
+    public Comp<S> prefWidth(int width) {
+        return apply(struc -> struc.get().setPrefWidth(width));
+    }
+
+    public Comp<S> prefHeight(int height) {
+        return apply(struc -> struc.get().setPrefHeight(height));
+    }
+
     public Comp<S> hgrow() {
         return apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
     }

@@ -134,7 +134,14 @@ public class ConnectionFileSystem implements FileSystem {
     public void touch(String file) throws Exception {
         try (var pc = shellControl
                 .command(proc -> proc.getShellDialect().getFileTouchCommand(file))
-                .complex()
+                .start()) {
+            pc.discardOrThrow();
+        }
+    }
+
+    @Override
+    public void symbolicLink(String linkFile, String targetFile) throws Exception {
+        try (var pc = shellControl.getShellDialect().symbolicLink(shellControl,linkFile, targetFile)
                 .start()) {
             pc.discardOrThrow();
         }

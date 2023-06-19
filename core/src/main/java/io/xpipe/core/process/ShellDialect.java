@@ -147,6 +147,8 @@ public interface ShellDialect {
 
     CommandControl createFileExistsCommand(ShellControl sc, String file);
 
+    CommandControl symbolicLink(ShellControl sc, String linkFile, String targetFile);
+
     String getFileTouchCommand(String file);
 
     String getWhichCommand(String executable);

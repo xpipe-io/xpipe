@@ -282,18 +282,40 @@ public final class OpenFileSystemModel {
         });
     }
 
-    public void createFileAsync(String name) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
-        if (getCurrentDirectory() == null) {
+    public void createLinkAsync(String linkName, String targetFile) {
+        if (linkName == null || linkName.isBlank() || targetFile == null || targetFile.isBlank()) {
             return;
         }
 
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
                 if (fileSystem == null) {
+                    return;
+                }
+
+                if (getCurrentDirectory() == null) {
+                    return;
+                }
+
+                var abs = FileNames.join(getCurrentDirectory().getPath(), linkName);
+                fileSystem.symbolicLink(abs, targetFile);
+                refreshSync();
+            });
+        });
+    }
+
+    public void createFileAsync(String name) {
+        if (name == null || name.isBlank()) {
+            return;
+        }
+
+        ThreadHelper.runFailableAsync(() -> {
+            BusyProperty.execute(busy, () -> {
+                if (fileSystem == null) {
+                    return;
+                }
+
+                if (getCurrentDirectory() == null) {
                     return;
                 }
 

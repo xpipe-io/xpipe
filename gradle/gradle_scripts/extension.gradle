@@ -46,6 +46,10 @@ dependencies {
     compileOnly project(':beacon')
     compileOnly project(':app')
     compileOnly 'net.synedra:validatorfx:0.3.1'
+    compileOnly ('io.github.mkpaz:atlantafx-base:2.0.1') {
+        exclude group: 'org.openjfx', module: 'javafx-base'
+        exclude group: 'org.openjfx', module: 'javafx-controls'
+    }
 
     if (project != project(':base')) {
         compileOnly project(':base')

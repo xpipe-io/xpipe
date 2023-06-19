@@ -8,6 +8,8 @@ import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.core.process.OsType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -103,6 +105,45 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     @Override
                     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultDirectoryIcon().createRegion();
+                    }
+                },
+                new LeafAction() {
+                    @Override
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return "Symbolic link";
+                    }
+
+                    @Override
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+                    }
+
+                    @Override
+                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        var linkName = new SimpleStringProperty();
+                        var target = new SimpleStringProperty();
+                        model.getOverlay()
+                                .setValue(new ModalOverlayComp.OverlayContent(
+                                        "base.newLink",
+                                        new OptionsBuilder()
+                                                .spacer(10)
+                                                .name("linkName")
+                                                .addString(linkName)
+                                                .spacer(10)
+                                                .name("targetPath")
+                                                .addString(target)
+                                                .buildComp()
+                                                .prefWidth(400)
+                                                .prefHeight(130),
+                                        "finish",
+                                        () -> {
+                                            model.createLinkAsync(linkName.getValue(), target.getValue());
+                                        }));
+                    }
+
+                    @Override
+                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return BrowserIcons.createDefaultFileIcon().createRegion();
                     }
                 });
     }

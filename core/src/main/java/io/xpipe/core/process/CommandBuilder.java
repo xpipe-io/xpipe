@@ -17,6 +17,26 @@ public class CommandBuilder {
     private final boolean noQuoting;
     private final StringBuilder builder = new StringBuilder();
 
+    public CommandBuilder add(String... s) {
+        for (String s1 : s) {
+            add(s1);
+        }
+        return this;
+    }
+
+    public CommandBuilder addQuoted(String s) {
+        if (!builder.isEmpty()) {
+            builder.append(' ');
+        }
+
+        if (noQuoting) {
+            throw new IllegalArgumentException("No quoting rule conflicts with spaces an argument");
+        }
+
+        builder.append("\"").append(s).append("\"");
+        return this;
+    }
+
     public CommandBuilder add(String s) {
         if (!builder.isEmpty()) {
             builder.append(' ');

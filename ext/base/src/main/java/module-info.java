@@ -25,6 +25,7 @@ open module io.xpipe.ext.base {
     requires org.kordamp.ikonli.javafx;
     requires com.sun.jna;
     requires com.sun.jna.platform;
+    requires atlantafx.base;
 
     provides BrowserAction with
             FollowLinkAction,

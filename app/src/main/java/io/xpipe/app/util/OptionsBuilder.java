@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
@@ -7,6 +8,7 @@ import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import net.synedra.validatorfx.Check;
@@ -106,6 +108,10 @@ public class OptionsBuilder {
         pushComp(comp);
         props.add(prop);
         return this;
+    }
+
+    public OptionsBuilder spacer(double size) {
+        return addComp(Comp.of(() -> new Spacer(size, Orientation.VERTICAL)));
     }
 
     public OptionsBuilder name(String nameKey) {

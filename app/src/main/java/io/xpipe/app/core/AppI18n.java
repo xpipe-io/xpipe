@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.issue.ErrorEvent;
@@ -131,6 +132,7 @@ public class AppI18n {
         for (Class<?> caller : callers) {
             if (caller.equals(CallingClass.class)
                     || caller.equals(ModuleHelper.class)
+                    || caller.equals(ModalOverlayComp.class)
                     || caller.equals(AppI18n.class)
                     || caller.equals(FancyTooltipAugment.class)
                     || caller.equals(PrefsChoiceValue.class)

@@ -108,6 +108,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     void touch(String file) throws Exception;
 
+    void symbolicLink(String linkFile, String targetFile) throws Exception;
+
     boolean directoryExists(String file) throws Exception;
 
     void directoryAccessible(String file) throws Exception;
