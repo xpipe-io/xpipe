@@ -98,9 +98,6 @@ public class AppPrefs {
     public final ReadOnlyBooleanProperty useSystemFont = useSystemFontInternal;
     private final IntegerProperty tooltipDelayInternal = typed(new SimpleIntegerProperty(1000), Integer.class);
 
-    private final IntegerProperty fontSizeInternal = typed(new SimpleIntegerProperty(12), Integer.class);
-    public final ReadOnlyIntegerProperty fontSize = fontSizeInternal;
-
     private final BooleanProperty saveWindowLocationInternal = typed(new SimpleBooleanProperty(false), Boolean.class);
     public final ReadOnlyBooleanProperty saveWindowLocation = saveWindowLocationInternal;
 
