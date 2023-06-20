@@ -1,5 +1,7 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.controls.Spacer;
+import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -10,11 +12,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 public class UpdateCheckComp extends SimpleComp {
 
@@ -52,7 +52,11 @@ public class UpdateCheckComp extends SimpleComp {
                                     .getPreparedUpdate()
                                     .getValue()
                             != null) {
-                        return null;
+                        return "Version " + XPipeDistributionType.get()
+                                .getUpdateHandler()
+                                .getPreparedUpdate()
+                                .getValue()
+                                .getVersion();
                     }
 
                     if (XPipeDistributionType.get()
@@ -98,44 +102,51 @@ public class UpdateCheckComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var button = new Button();
-        button.disableProperty()
-                .bind(PlatformThread.sync(
-                        XPipeDistributionType.get().getUpdateHandler().getBusy()));
-        button.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            if (updateReady.getValue()) {
-                                return AppI18n.get("updateReady");
-                            }
+        var name = Bindings.createStringBinding(
+                () -> {
+                    if (updateReady.getValue()) {
+                        return AppI18n.get("updateReady");
+                    }
 
-                            return AppI18n.get("checkForUpdates");
-                        },
-                        updateReady));
-        button.graphicProperty()
-                .bind(Bindings.createObjectBinding(
-                        () -> {
-                            if (updateReady.getValue()) {
-                                return new FontIcon("mdi2a-apple-airplay");
-                            }
+                    return AppI18n.get("checkForUpdates");
+                },
+                updateReady);
+        var description = Bindings.createStringBinding(
+                () -> {
+                    if (updateReady.getValue()) {
+                        return AppI18n.get("updateReadyDescription");
+                    }
 
-                            return new FontIcon("mdi2r-refresh");
-                        },
-                        updateReady));
-        button.getStyleClass().add("button-comp");
-        button.setOnAction(e -> {
-            if (updateReady.getValue()) {
-                restart();
-                return;
-            }
+                    return AppI18n.get("checkForUpdatesDescription");
+                },
+                updateReady);
+        var graphic = Bindings.createObjectBinding(
+                () -> {
+                    if (updateReady.getValue()) {
+                        return "mdi2a-apple-airplay";
+                    }
 
-            refresh();
-        });
+                    return "mdi2r-refresh";
+                },
+                updateReady);
+        var button = new TileButtonComp(name, description, graphic, actionEvent -> {
+                    actionEvent.consume();
+                    if (updateReady.getValue()) {
+                        restart();
+                        return;
+                    }
+
+                    refresh();
+                })
+                .styleClass("button-comp")
+                .disable(PlatformThread.sync(
+                        XPipeDistributionType.get().getUpdateHandler().getBusy()))
+                .createRegion();
 
         var checked = new Label();
         checked.textProperty().bind(descriptionText());
 
-        var box = new HBox(button, checked);
+        var box = new HBox(button, new Spacer(), checked, new Spacer(15));
         box.setAlignment(Pos.CENTER_LEFT);
         box.setFillHeight(true);
         box.getStyleClass().add("update-check");

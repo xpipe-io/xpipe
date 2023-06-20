@@ -8,6 +8,7 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
@@ -30,6 +31,10 @@ public abstract class Comp<S extends CompStructure<?>> {
             var region = r.get();
             return () -> region;
         });
+    }
+
+    public static Comp<CompStructure<Separator>> separator() {
+        return Comp.of(() -> new Separator());
     }
 
     public static <S extends CompStructure<?>> Comp<S> ofStructure(Supplier<S> r) {

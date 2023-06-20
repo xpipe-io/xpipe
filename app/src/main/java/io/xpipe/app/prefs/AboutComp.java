@@ -16,10 +16,8 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
 import java.util.List;
 
@@ -32,7 +30,6 @@ public class AboutComp extends Comp<CompStructure<?>> {
 
     private Comp<?> createActions() {
         return new OptionsBuilder()
-                .addTitle("usefulActions")
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
                                     var event = ErrorEvent.fromMessage("User Report");
@@ -46,6 +43,31 @@ public class AboutComp extends Comp<CompStructure<?>> {
                         null)
                 .addComp(
                         new TileButtonComp(
+                                "launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
+                            OperationMode.executeAfterShutdown(() -> {
+                                try (var sc = ShellStore.createLocal()
+                                        .control()
+                                        .start()) {
+                                    var script = FileNames.join(
+                                            XPipeInstallation.getCurrentInstallationBasePath()
+                                                    .toString(),
+                                            XPipeInstallation.getDaemonDebugScriptPath(sc.getOsType()));
+                                    if (sc.getOsType().equals(OsType.WINDOWS)) {
+                                        sc.executeSimpleCommand(ScriptHelper.createDetachCommand(
+                                                sc, "\"" + script + "\""));
+                                    } else {
+                                        TerminalHelper.open("XPipe Debug", "\"" + script + "\"");
+                                    }
+                                }
+                            });
+                            DesktopHelper.browsePath(
+                                    AppLogs.get().getSessionLogsDirectory());
+                            e.consume();
+                        })
+                                .grow(true, false),
+                        null)
+                .addComp(
+                        new TileButtonComp(
                                         "openCurrentLogFile",
                                         "openCurrentLogFileDescription",
                                         "mdmz-text_snippet",
@@ -54,31 +76,6 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                                     .getSessionLogsDirectory()
                                                     .resolve("xpipe.log")
                                                     .toString());
-                                            e.consume();
-                                        })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp(
-                                        "launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
-                                            OperationMode.executeAfterShutdown(() -> {
-                                                try (var sc = ShellStore.createLocal()
-                                                        .control()
-                                                        .start()) {
-                                                    var script = FileNames.join(
-                                                            XPipeInstallation.getCurrentInstallationBasePath()
-                                                                    .toString(),
-                                                            XPipeInstallation.getDaemonDebugScriptPath(sc.getOsType()));
-                                                    if (sc.getOsType().equals(OsType.WINDOWS)) {
-                                                        sc.executeSimpleCommand(ScriptHelper.createDetachCommand(
-                                                                sc, "\"" + script + "\""));
-                                                    } else {
-                                                        TerminalHelper.open("XPipe Debug", "\"" + script + "\"");
-                                                    }
-                                                }
-                                            });
-                                            DesktopHelper.browsePath(
-                                                    AppLogs.get().getSessionLogsDirectory());
                                             e.consume();
                                         })
                                 .grow(true, false),
@@ -101,34 +98,6 @@ public class AboutComp extends Comp<CompStructure<?>> {
     private Comp<?> createLinks() {
         return new OptionsBuilder()
                 .addComp(
-                        new TileButtonComp(
-                                        "securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
-                                            Hyperlinks.open(Hyperlinks.SECURITY);
-                                            e.consume();
-                                        })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
-                                    Hyperlinks.open(Hyperlinks.PRIVACY);
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .addComp(
-                        new TileButtonComp(
-                                        "thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
-                                            AppWindowHelper.sideWindow(
-                                                            AppI18n.get("openSourceNotices"),
-                                                            stage -> Comp.of(() -> createThirdPartyDeps()),
-                                                            true,
-                                                            null)
-                                                    .show();
-                                            e.consume();
-                                        })
-                                .grow(true, false),
-                        null)
-                .addComp(
                         new TileButtonComp("discord", "discordDescription", "mdi2d-discord", e -> {
                                     Hyperlinks.open(Hyperlinks.DISCORD);
                                     e.consume();
@@ -149,6 +118,34 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 })
                                 .grow(true, false),
                         null)
+                .addComp(
+                        new TileButtonComp(
+                                "securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
+                            Hyperlinks.open(Hyperlinks.SECURITY);
+                            e.consume();
+                        })
+                                .grow(true, false),
+                        null)
+                .addComp(
+                        new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
+                            Hyperlinks.open(Hyperlinks.PRIVACY);
+                            e.consume();
+                        })
+                                .grow(true, false),
+                        null)
+                .addComp(
+                        new TileButtonComp(
+                                "thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
+                            AppWindowHelper.sideWindow(
+                                            AppI18n.get("openSourceNotices"),
+                                            stage -> Comp.of(() -> createThirdPartyDeps()),
+                                            true,
+                                            null)
+                                    .show();
+                            e.consume();
+                        })
+                                .grow(true, false),
+                        null)
                 .buildComp();
     }
 
@@ -165,19 +162,13 @@ public class AboutComp extends Comp<CompStructure<?>> {
     @Override
     public CompStructure<?> createBase() {
         var props = new PropertiesComp().padding(new Insets(0, 0, 0, 15));
-        var update = Comp.derive(new UpdateCheckComp(), u -> {
-                    var sp = new StackPane(u);
-                    sp.setAlignment(Pos.CENTER);
-                    sp.setPadding(new Insets(10, 0, 10, 15));
-                    return sp;
-                })
-                .grow(true, false);
-        var box = new VerticalComp(List.of(props, update, createLinks(), createActions()))
+        var update = new UpdateCheckComp().grow(true, false);
+        var box = new VerticalComp(List.of(props, Comp.separator(), update, Comp.separator(), createLinks(), Comp.separator(), createActions()))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(15))
                 .styleClass("information")
                 .styleClass("about-tab")
-                .apply(struc -> struc.get().setPrefWidth(800));
+                .apply(struc -> struc.get().setPrefWidth(600));
         return box.createStructure();
     }
 }

@@ -3,7 +3,8 @@ package io.xpipe.app.comp.base;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
@@ -13,43 +14,28 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Consumer;
 
 @AllArgsConstructor
 @Getter
-public class TileButtonComp extends SimpleComp {
-
-    private final ObservableValue<String> name;
-    private final ObservableValue<String> description;
-    private final ObservableValue<String> icon;
-    private final Consumer<ActionEvent> action;
-
-    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
-        this.name = AppI18n.observable(nameKey);
-        this.description = AppI18n.observable(descriptionKey);
-        this.icon = new SimpleStringProperty(icon);
-        this.action = action;
-    }
+public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
     @Override
-    protected Region createSimple() {
+    public Structure createBase() {
         var bt = new Button();
-        bt.setGraphic(createNamedEntry());
         Styles.toggleStyleClass(bt, Styles.FLAT);
         bt.setOnAction(e -> {
             action.accept(e);
         });
-        return bt;
-    }
 
-    private Region createNamedEntry() {
         var header = new Label();
         header.textProperty().bind(PlatformThread.sync(name));
         var desc = new Label();
@@ -81,6 +67,34 @@ public class TileButtonComp extends SimpleComp {
             var size = Math.min(n.intValue(), 100);
             fi.setIconSize((int) (size * 0.55));
         });
-        return hbox;
+        bt.setGraphic(hbox);
+        return Structure.builder().graphic(fi).button(bt).content(hbox).name(header).description(desc).build();
+    }
+
+    @Value
+    @Builder
+    public static class Structure implements CompStructure<Button> {
+        Button button;
+        HBox content;
+        FontIcon graphic;
+        Label name;
+        Label description;
+
+        @Override
+        public Button get() {
+            return button;
+        }
+    }
+
+    private final ObservableValue<String> name;
+    private final ObservableValue<String> description;
+    private final ObservableValue<String> icon;
+    private final Consumer<ActionEvent> action;
+
+    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
+        this.name = AppI18n.observable(nameKey);
+        this.description = AppI18n.observable(descriptionKey);
+        this.icon = new SimpleStringProperty(icon);
+        this.action = action;
     }
 }
