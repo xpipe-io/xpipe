@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.process.OsType;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.Node;
@@ -25,7 +26,7 @@ public class AppFont {
     }
 
     public static double getPixelSize(int off) {
-        var baseSize = AppPrefs.get() != null ? AppPrefs.get().fontSize.getValue() : 12;
+        var baseSize = OsType.getLocal() == OsType.LINUX ? 11 : 12;
         return new Size(baseSize + off, SizeUnits.PT).pixels();
     }
 
@@ -54,7 +55,8 @@ public class AppFont {
             return;
         }
 
-        var baseSize = AppPrefs.get() != null ? AppPrefs.get().fontSize.getValue() : 12;
+        // Somehow the font is bigger on Linux
+        var baseSize = OsType.getLocal() == OsType.LINUX ? 11 : 12;
         node.setStyle(node.getStyle() + "-fx-font-size: " + (baseSize + off) + "pt;");
     }
 
