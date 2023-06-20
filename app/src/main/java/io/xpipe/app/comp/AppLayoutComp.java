@@ -50,7 +50,7 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
         // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
         // StorageLayoutComp()),
         // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
-        if (AppProperties.get().isDeveloperMode()) {
+        if (AppProperties.get().isDeveloperMode() && !AppProperties.get().isImage()) {
             l.add(new SideMenuBarComp.Entry(
                     AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
         }
