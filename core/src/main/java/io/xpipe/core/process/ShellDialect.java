@@ -115,6 +115,10 @@ public interface ShellDialect {
 
     String getOpenCommand();
 
+    default String getLoginOpenCommand() {
+        return getOpenCommand();
+    }
+
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
 
     String runScript(ShellControl parent, String file);
