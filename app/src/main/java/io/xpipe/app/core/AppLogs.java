@@ -372,7 +372,7 @@ public class AppLogs {
             TrackEvent.builder()
                     .category(name)
                     .type(level.toString().toLowerCase())
-                    .message(formatted)
+                    .message(msg)
                     .build()
                     .handle();
         }

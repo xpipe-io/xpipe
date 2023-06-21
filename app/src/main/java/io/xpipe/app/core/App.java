@@ -11,7 +11,6 @@ import io.xpipe.core.process.OsType;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -21,7 +20,6 @@ public class App extends Application {
 
     private static App APP;
     private Stage stage;
-    private Image icon;
 
     public static App getApp() {
         return APP;
@@ -33,13 +31,12 @@ public class App extends Application {
         APP = this;
         PlatformState.setCurrent(PlatformState.RUNNING);
         stage = primaryStage;
-        icon = AppImages.image("logo.png");
 
         // Set dock icon explicitly on mac
         // This is necessary in case XPipe was started through a script as it will have no icon otherwise
         if (OsType.getLocal().equals(OsType.MACOS)) {
             try {
-                var iconUrl = Main.class.getResourceAsStream("resources/img/logo.png");
+                var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_128x128.png");
                 if (iconUrl != null) {
                     var awtIcon = ImageIO.read(iconUrl);
                     Taskbar.getTaskbar().setIconImage(awtIcon);
@@ -49,8 +46,7 @@ public class App extends Application {
             }
         }
 
-        primaryStage.getIcons().clear();
-        primaryStage.getIcons().add(icon);
+        AppWindowHelper.addIcons(stage);
         Platform.setImplicitExit(false);
     }
 
@@ -102,10 +98,6 @@ public class App extends Application {
             stage.setAlwaysOnTop(false);
             stage.requestFocus();
         });
-    }
-
-    public Image getIcon() {
-        return icon;
     }
 
     public Stage getStage() {

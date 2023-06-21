@@ -1,10 +1,7 @@
 package io.xpipe.app.prefs;
 
 import atlantafx.base.controls.Tile;
-import io.xpipe.app.core.App;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
@@ -18,7 +15,7 @@ public class PropertiesComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var title = Comp.of(() -> {
-            var image = new ImageView(App.getApp().getIcon());
+            var image = new ImageView(AppImages.image("logo/logo_48x48.png"));
             image.setPreserveRatio(true);
             image.setSmooth(true);
             image.setFitHeight(40);

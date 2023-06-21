@@ -17,7 +17,7 @@ public class AppTray {
     private final ErrorHandler errorHandler;
 
     private AppTray() {
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo.png");
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo/logo_48x48.png");
 
         var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url.orElse(null))
                 .menuItem(AppI18n.get("open"), e -> {
