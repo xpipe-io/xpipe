@@ -34,7 +34,7 @@ public class App extends Application {
 
         // Set dock icon explicitly on mac
         // This is necessary in case XPipe was started through a script as it will have no icon otherwise
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal().equals(OsType.MACOS) && AppProperties.get().isDeveloperMode() && !AppLogs.get().isWriteToFile()) {
             try {
                 var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_128x128.png");
                 if (iconUrl != null) {
