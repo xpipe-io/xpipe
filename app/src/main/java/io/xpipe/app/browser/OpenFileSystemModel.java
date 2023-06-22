@@ -158,7 +158,7 @@ public final class OpenFileSystemModel {
                     TerminalHelper.open(adjustedPath, cmd);
                 }
             });
-            return Optional.of(currentPath.get());
+            return Optional.ofNullable(currentPath.get());
         }
 
         // Evaluate optional links
