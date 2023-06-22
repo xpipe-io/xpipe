@@ -497,10 +497,12 @@ public class AppPrefs {
     private AppPreferencesFx createPreferences() {
         var ctr = Setting.class.getDeclaredConstructor(String.class, Element.class, Property.class);
         ctr.setAccessible(true);
-        var s = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
+        var about = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
+        var troubleshoot = ctr.newInstance(null, new LazyNodeElement<>(() -> new TroubleshootComp().createRegion()), null);
 
         var categories = new ArrayList<>(List.of(
-                Category.of("application", Group.of(s)),
+                Category.of("about", Group.of(about)),
+                Category.of("troubleshoot", Group.of(troubleshoot)),
                 Category.of(
                         "system",
                         Group.of(

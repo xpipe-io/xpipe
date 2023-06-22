@@ -38,7 +38,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         vbox.setPadding(new Insets(40, 40, 40, 50));
         vbox.setSpacing(18);
         if (state == null) {
-            var header = new Label("Have fun with the file browser!");
+            var header = new Label("Here you will be able to see were you left off last time you exited XPipe.");
             AppFont.header(header);
             vbox.getChildren().add(header);
             return vbox;

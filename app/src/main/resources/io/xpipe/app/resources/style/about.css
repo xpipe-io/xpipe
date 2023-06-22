@@ -20,12 +20,9 @@
  -fx-padding: 0.6em 0 0.6em 0;
 }
 
-.about-tab .information {
--fx-spacing: 2em;
-}
 
-.about-tab {
--fx-padding: 1.3em;
+.troubleshoot-tab .separator {
+-fx-padding: 0.3em 0 0.3em 0;
 }
 
 .about-tab .update-check {

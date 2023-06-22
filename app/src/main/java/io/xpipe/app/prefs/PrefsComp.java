@@ -1,13 +1,8 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.AppLayoutComp;
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
-import javafx.geometry.Pos;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import org.controlsfx.control.MasterDetailPane;
@@ -31,18 +26,7 @@ public class PrefsComp extends SimpleComp {
         MasterDetailPane p = (MasterDetailPane) pfx.getCenter();
         p.dividerPositionProperty().setValue(0.27);
 
-        var clearCaches = new ButtonComp(AppI18n.observable("clearCaches"), null, ClearCacheAlert::show).createRegion();
-        // var reload = new ButtonComp(AppI18n.observable("reload"), null, () -> OperationMode.reload()).createRegion();
-        var leftButtons = new HBox(clearCaches);
-        leftButtons.setAlignment(Pos.CENTER);
-        leftButtons.prefWidthProperty().bind(((Region) p.getDetailNode()).widthProperty());
-
-        var leftPane = new AnchorPane(leftButtons);
-        leftPane.setPickOnBounds(false);
-        AnchorPane.setBottomAnchor(leftButtons, 15.0);
-        AnchorPane.setLeftAnchor(leftButtons, 15.0);
-
-        var stack = new StackPane(pfx, leftPane);
+        var stack = new StackPane(pfx);
         stack.setPickOnBounds(false);
         AppFont.medium(stack);
 

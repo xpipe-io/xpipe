@@ -114,6 +114,11 @@ public class OptionsBuilder {
         return addComp(Comp.of(() -> new Spacer(size, Orientation.VERTICAL)));
     }
 
+    public OptionsBuilder separator() {
+        return addComp(Comp.separator());
+    }
+
+
     public OptionsBuilder name(String nameKey) {
         finishCurrent();
         name = AppI18n.observable(nameKey);
