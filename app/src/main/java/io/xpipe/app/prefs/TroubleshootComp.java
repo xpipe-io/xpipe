@@ -34,25 +34,25 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .separator()
-                .addComp(
-                        new TileButtonComp("restart", "restartDescription", "mdmz-refresh", e -> {
-                                    OperationMode.executeAfterShutdown(() -> {
-                                        try (var sc = ShellStore.createLocal()
-                                                .control()
-                                                .start()) {
-                                            var script = FileNames.join(
-                                                    XPipeInstallation.getCurrentInstallationBasePath()
-                                                            .toString(),
-                                                    XPipeInstallation.getDaemonExecutablePath(sc.getOsType()));
-                                            sc.executeSimpleCommand(
-                                                    ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
-                                        }
-                                    });
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .separator()
+//                .addComp(
+//                        new TileButtonComp("restart", "restartDescription", "mdmz-refresh", e -> {
+//                                    OperationMode.executeAfterShutdown(() -> {
+//                                        try (var sc = ShellStore.createLocal()
+//                                                .control()
+//                                                .start()) {
+//                                            var script = FileNames.join(
+//                                                    XPipeInstallation.getCurrentInstallationBasePath()
+//                                                            .toString(),
+//                                                    XPipeInstallation.getDaemonExecutablePath(sc.getOsType()));
+//                                            sc.executeSimpleCommand(
+//                                                    ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
+//                                        }
+//                                    });
+//                                    e.consume();
+//                                })
+//                                .grow(true, false),
+//                        null)
+//                .separator()
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
