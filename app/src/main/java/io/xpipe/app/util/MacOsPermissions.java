@@ -17,11 +17,22 @@ public class MacOsPermissions {
         var state = new SimpleBooleanProperty(true);
         try (var pc = LocalStore.getShell().start()) {
             while (state.get()) {
+                // We can't wait in the platform thread, so just return instantly
+                if (Platform.isFxApplicationThread()) {
+                    pc.osascriptCommand(
+                                    """
+                                    tell application "System Events" to keystroke "t"
+                                    """)
+                            .execute();
+                    return true;
+                }
+
                 var success = pc.osascriptCommand(
                                 """
                                 tell application "System Events" to keystroke "t"
                                 """)
                         .executeAndCheck();
+
                 if (success) {
                     Platform.runLater(() -> {
                         if (alert.get() != null) {

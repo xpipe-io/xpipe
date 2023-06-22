@@ -43,6 +43,8 @@ public class AppLogs {
     private final PrintStream originalSysOut;
     private final PrintStream originalSysErr;
     private final Path logDir;
+
+    @Getter
     private final boolean writeToSysout;
 
     @Getter
