@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -177,6 +178,15 @@ final class BrowserBookmarkList extends SimpleComp {
                 setAccessibleText(null);
             } else {
                 setText(item.getName());
+
+                // Check if store is in failed state
+                if (item.getEntry().getState() == DataStoreEntry.State.LOAD_FAILED) {
+                    setGraphic(null);
+                    setFocusTraversable(false);
+                    setAccessibleText(null);
+                    return;
+                }
+
                 img.set(item.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(item.getEntry().getStore()));

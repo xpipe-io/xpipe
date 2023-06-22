@@ -112,6 +112,11 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                 continue;
             }
 
+            // Check if load failed
+            if (e.getEntry().getStore() == null) {
+                continue;
+            }
+
             var node = comboBox.add((T) e.getEntry().getStore());
             if (!storeClass.isAssignableFrom(s.getClass()) || !applicableCheck.test((T) s)) {
                 comboBox.disable(node);
