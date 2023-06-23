@@ -1,26 +1,60 @@
 <img src="https://user-images.githubusercontent.com/72509152/213873342-7638e830-8a95-4b5d-ad3e-5a9a0b4bf538.png" alt="drawing" width="250"/>
 
-### The remote file browser for professionals
+### A shell connection hub and remote file manager
 
-XPipe is a brand-new type of remote file browser that works by interacting with your installed command-line programs via stdout, stderr, and stdin to handle local and remote shell connections. This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all as that part is delegated to your programs.
-
-It comes with all file management features you would expect plus a dedicated remote connection hub to organize and open remote shell connections to your entire infrastructure.
+XPipe is a brand-new type of shell connection hub and remote file manager that allows you to access your entire sever infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.
 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
 The full feature set is currently supported for:
+- [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
 - [Docker](https://www.docker.com/) and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
-- [Kubernetes](https://kubernetes.io/) clusters and their contained pods and containers
-- Any other custom remote connection methods that works through the command-line
+- Any other custom remote connection methods that work through the command-line
 
 Furthermore, you can also use any remote shell connection as a proxy when establishing new connections, allowing full flexibility to set up connection routes.
 
 The project is still in a relatively early stage and will benefit massively from your feedback, issue reports, feature request, and more. There are also a lot more features to come in the future.
 
 You have more questions? Then check out the new [FAQ](/FAQ.md).
+
+## Connection Hub
+
+- Easily create and manage all kinds of remote connections, all in one place
+- Allows you to fully customize the init environment of the launched shell sessions with custom scripts
+- Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
+- Can create desktop shortcuts that automatically open remote connections in your terminal
+
+![connections](https://github.com/xpipe-io/xpipe/assets/72509152/802f91a5-ad51-4139-8841-0b93087202e1)
+
+## Remote File Manager
+
+- Interact with the file system of any remote system using a workflow optimized for professionals
+- Quickly open a terminal into any directory
+- Utilize your favourite local programs to open and edit remote files
+- Has the same feature set for all supported connection types
+- Dynamically elevate sessions with sudo when required
+
+The feature set is the same for all supported connection types. It of course also supports browsing the file system on your local machine.
+
+![browser](https://github.com/xpipe-io/xpipe/assets/72509152/5631fe50-58b4-4847-a5f4-ad3898a02a9f)
+
+## Terminal Launcher
+
+- Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
+- Works for all kinds of shells and connections, locally and remote.
+- Supports command shells (e.g. bash, PowerShell, cmd, etc.) and some database shells (e.g. PostgreSQL Shell)
+- Comes with support for all commonly used terminal emulators across all operating systems
+- Supports launches from the GUI or directly from the command-line
+- Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
+
+<br>
+<p align="center">
+  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" />
+</p>
+<br>
 
 ## Downloads
 
@@ -50,42 +84,6 @@ You can also install XPipe by pasting the installation command into your termina
 ```
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
-
-## Remote File Browser
-
-- Interact with the file system of any remote system using a workflow optimized for professionals
-- Quickly open a terminal into any directory
-- Utilize your favourite local programs to open and edit remote files
-- Has the same feature set for all supported connection types
-- Dynamically elevate sessions with sudo when required
-
-The feature set is the same for all supported connection types. It of course also supports browsing the file system on your local machine.
-
-![browser](https://github.com/xpipe-io/xpipe/assets/72509152/5631fe50-58b4-4847-a5f4-ad3898a02a9f)
-
-## Connection Hub
-
-- Easily create and manage all kinds of remote connections, all in one place
-- Allows you to fully customize the init environment of the launched shell sessions with custom scripts
-- Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
-- Create desktop shortcuts that automatically open remote connections in your terminal
-
-![connections](https://github.com/xpipe-io/xpipe/assets/72509152/802f91a5-ad51-4139-8841-0b93087202e1)
-
-## Terminal Launcher
-
-- Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
-- Works for all kinds of shells and connections, locally and remote.
-- Supports command shells (e.g. bash, PowerShell, cmd, etc.) and some database shells (e.g. PostgreSQL Shell)
-- Comes with support for all commonly used terminal emulators across all operating systems
-- Supports launches from the GUI or directly from the command-line
-- Solves all encoding issues on Windows systems as all Windows shells are launched in UTF8 mode by default
-
-<br>
-<p align="center">
-  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" />
-</p>
-<br>
 
 ## Further information
 

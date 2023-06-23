@@ -7,7 +7,10 @@ connect and how to communicate with remote systems differs.
 Other tools utilize the established protocol-based approach, i.e. connect and communicate with a
 server via a certain protocol like SSH, SFTP, and many more using an integrated library for that purpose.
 XPipe utilizes a shell-based approach that works on top of command-line programs.
-Everything file browser related is then realized on top of this connection by sending commands via that shell connection.
+It interacts with your installed command-line programs via their stdout, stderr,
+and stdin to handle local and remote shell connections.
+This approach makes it much more flexible as it doesn't have to deal with any file system APIs, remote file handling protocols, or libraries at all as that part is delegated to your existing programs.
+
 
 Let's use the example of SSH.
 Protocol-based programs come with an included SSH library that allows them to interact with a remote system via SSH.
