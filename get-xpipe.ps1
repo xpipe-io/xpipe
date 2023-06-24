@@ -192,7 +192,8 @@ Request-File -Url $XPipeDownloadUrl -File $file
 Write-Host "Installing XPipe ..."
 
 # Wait for completion
-Start-Process -FilePath "msiexec" -Wait -ArgumentList "/i", "$file", "/quiet"
+# The file variable can contain spaces, so we have to accommodate for that
+Start-Process -FilePath "msiexec" -Wait -ArgumentList "/i", "`"$file`"", "/quiet"
 
 # Update current process PATH environment variable
 $env:Path=(
