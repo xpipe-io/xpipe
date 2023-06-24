@@ -38,12 +38,12 @@ param(
     # stable version is installed.
     [Parameter(Mandatory = $false)]
     [string]
-    $XPipeVersion = $null,
+    $XPipeVersion = $xpipeVersion,
 
     # If set, will download releases from the staging repository instead.
     [Parameter(Mandatory = $false)]
     [switch]
-    $UseStageDownloads = $false
+    $UseStageDownloads = $useStageDownloads
 )
 
 #region Functions
