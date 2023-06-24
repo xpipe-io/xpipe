@@ -34,7 +34,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var welcome = new BrowserGreetingComp().createSimple();
 
         var vbox = new VBox(welcome);
-        vbox.setMaxWidth(600);
+        vbox.setMaxWidth(700);
         vbox.setPadding(new Insets(40, 40, 40, 50));
         vbox.setSpacing(18);
         if (state == null) {
