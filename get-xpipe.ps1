@@ -120,50 +120,6 @@ function Request-File {
     (Get-Downloader $url).DownloadFile($url, $file)
 }
 
-function Set-PSConsoleWriter {
-    <#
-    .SYNOPSIS
-    Workaround for a bug in output stream handling PS v2 or v3.
-
-    .DESCRIPTION
-    PowerShell v2/3 caches the output stream. Then it throws errors due to the
-    FileStream not being what is expected. Fixes "The OS handle's position is
-    not what FileStream expected. Do not use a handle simultaneously in one
-    FileStream and in Win32 code or another FileStream." error.
-
-    .EXAMPLE
-    Set-PSConsoleWriter
-
-    .NOTES
-    General notes
-    #>
-
-    [CmdletBinding()]
-    param()
-    if ($PSVersionTable.PSVersion.Major -gt 3) {
-        return
-    }
-
-    try {
-        # http://www.leeholmes.com/blog/2008/07/30/workaround-the-os-handles-position-is-not-what-filestream-expected/ plus comments
-        $bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetField"
-        $objectRef = $host.GetType().GetField("externalHostRef", $bindingFlags).GetValue($host)
-
-        $bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetProperty"
-        $consoleHost = $objectRef.GetType().GetProperty("Value", $bindingFlags).GetValue($objectRef, @())
-        [void] $consoleHost.GetType().GetProperty("IsStandardOutputRedirected", $bindingFlags).GetValue($consoleHost, @())
-
-        $bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetField"
-        $field = $consoleHost.GetType().GetField("standardOutputWriter", $bindingFlags)
-        $field.SetValue($consoleHost, [Console]::Out)
-
-        [void] $consoleHost.GetType().GetProperty("IsStandardErrorRedirected", $bindingFlags).GetValue($consoleHost, @())
-        $field2 = $consoleHost.GetType().GetField("standardErrorWriter", $bindingFlags)
-        $field2.SetValue($consoleHost, [Console]::Error)
-    } catch {
-        Write-Warning "Unable to apply redirection fix."
-    }
-}
 
 function Uninstall {
     [CmdletBinding()]
@@ -182,16 +138,13 @@ function Uninstall {
             "Uninstalling existing XPipe $($cim.Version) installation ..."
         ) -join [Environment]::NewLine
         Write-Host $message
-        Invoke-CimMethod -InputObject $cim -Name Uninstall
+        $cimResult = Invoke-CimMethod -InputObject $cim -Name Uninstall
     }
 }
 
 #endregion Functions
 
 #region Pre-check
-
-# Ensure we have all our streams setup correctly, needed for older PSVersions.
-Set-PSConsoleWriter
 
 Uninstall
 
@@ -226,21 +179,20 @@ if (-not (Test-Path $tempDir -PathType Container)) {
 
 #endregion Setup
 
-#region Download & Extract XPipe
+#region Download
 
 $file = Join-Path $tempDir "xpipe-installer.msi"
 Write-Host "Getting XPipe from $XPipeRepoUrl."
 Request-File -Url $XPipeDownloadUrl -File $file
 
-#endregion Download & Extract XPipe
+#endregion Download
 
 #region Install XPipe
 
 Write-Host "Installing XPipe ..."
-$result = msiexec /i "$file" /quiet
 
-# Wait for Path information from installation to update
-Start-Sleep 5
+# Wait for completion
+Start-Process -FilePath "msiexec" -Wait -ArgumentList "/i", "$file", "/quiet"
 
 # Update current process PATH environment variable
 $env:Path=(
@@ -248,6 +200,7 @@ $env:Path=(
     [System.Environment]::GetEnvironmentVariable("Path", "User")
 ) -match '.' -join ';'
 
-xpipe open
+# Use absolute path as we can't assume that the user has selected to put XPipe into the Path
+& "$env:LOCALAPPDATA\XPipe\app\xpiped.exe"
 
 #endregion Install XPipe
