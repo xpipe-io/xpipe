@@ -77,12 +77,20 @@ If you don't like installers, you can also use portable versions that are packag
 - [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
 - [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
 
-### Install Script (Linux / MacOS)
+### Install Script
 
 You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
 
+#####  Linux / MacOS
+
 ```
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
+```
+
+##### Windows (Experimental)
+
+```
+powershell -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1'))"
 ```
 
 ## Further information
