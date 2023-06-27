@@ -27,12 +27,20 @@
 -fx-padding: 6px 6px 6px 0;
 }
 
+.condensed-store-entry-comp {
+-fx-padding: 1px 6px 1px 0;
+}
+
 .store-entry-comp:hover {
 -fx-background-color: -color-neutral-muted;
 }
 
 .expand-button:hover {
 -fx-background-color: -color-neutral-muted;
+}
+
+.store-entry-comp .button-bar .button {
+-fx-padding: 8px;
 }
 
 

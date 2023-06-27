@@ -1,36 +1,40 @@
 package io.xpipe.app.comp.storage.store;
 
-import atlantafx.base.theme.Styles;
+import com.jfoenix.controls.JFXButton;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.*;
-import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FixedHierarchyStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import lombok.SneakyThrows;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 
-public abstract class StoreEntryComp extends SimpleComp {
+public class StandardStoreEntryComp extends SimpleComp {
 
     public static Comp<?> customSection(StoreEntryWrapper e) {
         var prov = e.getEntry().getProvider();
@@ -41,19 +45,19 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
     }
 
-    public static final double NAME_WIDTH = 0.30;
-    public static final double STORE_TYPE_WIDTH = 0.08;
-    public static final double DETAILS_WIDTH = 0.52;
-    public static final double BUTTONS_WIDTH = 0.1;
-    public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
-    public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
-    protected final StoreEntryWrapper entry;
+    private static final double NAME_WIDTH = 0.30;
+    private static final double STORE_TYPE_WIDTH = 0.08;
+    private static final double DETAILS_WIDTH = 0.52;
+    private static final double BUTTONS_WIDTH = 0.1;
+    private static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
+    private static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
+    private final StoreEntryWrapper entry;
 
-    public StoreEntryComp(StoreEntryWrapper entry) {
+    public StandardStoreEntryComp(StoreEntryWrapper entry) {
         this.entry = entry;
     }
 
-    protected Label createInformation() {
+    private Label createInformation() {
         var information = new Label();
         information.textProperty().bind(PlatformThread.sync(entry.getInformation()));
         information.getStyleClass().add("information");
@@ -61,7 +65,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         return information;
     }
 
-    protected Label createSummary() {
+    private Label createSummary() {
         var summary = new Label();
         summary.textProperty().bind(PlatformThread.sync(entry.getSummary()));
         summary.getStyleClass().add("summary");
@@ -69,7 +73,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         return summary;
     }
 
-    protected void applyState(Node node) {
+    private void applyState(Node node) {
         SimpleChangeListener.apply(PlatformThread.sync(entry.getState()), val -> {
             switch (val) {
                 case LOAD_FAILED -> {
@@ -88,41 +92,21 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
     }
 
-    protected Comp<?> createName() {
-        var filtered = BindingsHelper.filteredContentBinding(
-                StoreViewState.get().getAllEntries(),
-                other -> other.getEntry().getState().isUsable()
-                        && entry.getEntry()
-                                .getStore()
-                                .equals(other.getEntry()
-                                        .getProvider()
-                                        .getLogicalParent(other.getEntry().getStore())));
-        LabelComp name = new LabelComp(Bindings.createStringBinding(
-                () -> {
-                    return entry.getName()
-                            + (entry.getInformation().get() != null
-                                    ? "    [" + entry.getInformation().get() + "]"
-                                    : "")
-                            + (filtered.size() > 0 && entry.getEntry().getStore() instanceof FixedHierarchyStore
-                                    ? "     (" + filtered.size() + ")"
-                                    : "");
-                },
-                entry.nameProperty(),
-                entry.getInformation(),
-                filtered));
-        name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
+    private Comp<?> createName() {
+        var name = new LabelComp(entry.nameProperty())
+                .apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
                 .apply(struc -> struc.get().setPadding(new Insets(5, 5, 5, 0)));
         name.apply(s -> AppFont.header(s.get()));
         return name;
     }
 
-    protected Node createIcon(int w, int h) {
+    private Node createIcon() {
         var img = entry.isDisabled()
                 ? "disabled_icon.png"
                 : entry.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(entry.getEntry().getStore());
-        var imageComp = new PrettyImageComp(new SimpleStringProperty(img), w, h);
+        var imageComp = new PrettyImageComp(new SimpleStringProperty(img), 55, 45);
         var storeIcon = imageComp.createRegion();
         storeIcon.getStyleClass().add("icon");
         if (entry.getState().getValue().isUsable()) {
@@ -131,6 +115,67 @@ public abstract class StoreEntryComp extends SimpleComp {
                     .augment(storeIcon);
         }
         return storeIcon;
+    }
+
+    protected Region createContent() {
+        var name = createName().createRegion();
+
+        var size = createInformation();
+
+        var date = new Label();
+        date.textProperty().bind(AppI18n.readableDuration("usedDate", PlatformThread.sync(entry.lastAccessProperty())));
+        AppFont.small(date);
+        date.getStyleClass().add("date");
+
+        var grid = new GridPane();
+
+        var storeIcon = createIcon();
+
+        grid.getColumnConstraints()
+                .addAll(
+                        createShareConstraint(grid, STORE_TYPE_WIDTH), createShareConstraint(grid, NAME_WIDTH),
+                        createShareConstraint(grid, DETAILS_WIDTH), createShareConstraint(grid, BUTTONS_WIDTH));
+        grid.add(storeIcon, 0, 0, 1, 2);
+        grid.add(name, 1, 0);
+        grid.add(date, 1, 1);
+        grid.add(createSummary(), 2, 1);
+        grid.add(createInformation(), 2, 0);
+        grid.add(createButtonBar().createRegion(), 3, 0, 1, 2);
+        grid.setVgap(5);
+        GridPane.setHalignment(storeIcon, HPos.CENTER);
+
+        AppFont.small(size);
+        AppFont.small(date);
+
+        grid.getStyleClass().add("store-entry-grid");
+
+        applyState(grid);
+
+        var button = new JFXButton();
+        button.setGraphic(grid);
+        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(grid));
+        button.getStyleClass().add("store-entry-comp");
+        button.setMaxWidth(2000);
+        button.setFocusTraversable(true);
+        button.accessibleTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return entry.getName();
+                        },
+                        entry.nameProperty()));
+        button.accessibleHelpProperty().bind(entry.getInformation());
+        button.setOnAction(event -> {
+            event.consume();
+            ThreadHelper.runFailableAsync(() -> {
+                entry.refreshIfNeeded();
+                entry.executeDefaultAction();
+            });
+        });
+
+        new ContextMenuAugment<>(() -> StandardStoreEntryComp.this.createContextMenu())
+                .augment(new SimpleCompStructure<>(button));
+
+        return button;
     }
 
     protected Comp<?> createButtonBar() {
@@ -162,22 +207,16 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var settingsButton = createSettingsButton();
         list.add(settingsButton);
-        if (list.size() > 1) {
-            list.get(0).styleClass(Styles.LEFT_PILL);
-            for (int i = 1; i < list.size() - 1; i++) {
-                list.get(i).styleClass(Styles.CENTER_PILL);
-            }
-            list.get(list.size() - 1).styleClass(Styles.RIGHT_PILL);
-        }
-        list.forEach(comp -> {
-            comp.apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT));
-        });
         return new HorizontalComp(list)
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT))
                 .apply(struc -> {
-                    struc.get().setAlignment(Pos.CENTER_RIGHT);
-                    struc.get().setPadding(new Insets(5));
-                })
-                .styleClass("button-bar");
+                    for (Node child : struc.get().getChildren()) {
+                        ((Region) child)
+                                .prefWidthProperty()
+                                .bind((struc.get().heightProperty().divide(1.7)));
+                        ((Region) child).prefHeightProperty().bind((struc.get().heightProperty()));
+                    }
+                });
     }
 
     protected Comp<?> createSettingsButton() {
@@ -185,7 +224,11 @@ public abstract class StoreEntryComp extends SimpleComp {
         settingsButton.styleClass("settings");
         settingsButton.accessibleText("Settings");
         settingsButton.apply(new ContextMenuAugment<>(
-                event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
+                event -> event.getButton() == MouseButton.PRIMARY, () -> StandardStoreEntryComp.this.createContextMenu()));
+        settingsButton.apply(GrowAugment.create(false, true));
+        settingsButton.apply(s -> {
+            s.get().prefWidthProperty().bind(Bindings.divide(s.get().heightProperty(), 1.35));
+        });
         settingsButton.apply(new FancyTooltipAugment<>("more"));
         return settingsButton;
     }
@@ -249,5 +292,13 @@ public abstract class StoreEntryComp extends SimpleComp {
         var cc = new ColumnConstraints();
         cc.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> r.getWidth() * share, r.widthProperty()));
         return cc;
+    }
+
+    @SneakyThrows
+    @Override
+    protected Region createSimple() {
+        var loading = new LoadingOverlayComp(Comp.of(() -> createContent()), entry.getLoading());
+        var region = loading.createRegion();
+        return region;
     }
 }

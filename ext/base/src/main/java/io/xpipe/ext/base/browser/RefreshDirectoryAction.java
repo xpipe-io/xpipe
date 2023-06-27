@@ -12,7 +12,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class RefreshAction implements LeafAction {
+public class RefreshDirectoryAction implements LeafAction {
 
     public String getId() {
         return "refresh";

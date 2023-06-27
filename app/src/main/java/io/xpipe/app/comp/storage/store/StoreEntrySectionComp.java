@@ -14,17 +14,17 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
-public class StoreEntrySection extends Comp<CompStructure<VBox>> {
+public class StoreEntrySectionComp extends Comp<CompStructure<VBox>> {
 
     private final StoreSection section;
 
-    public StoreEntrySection(StoreSection section) {
+    public StoreEntrySectionComp(StoreSection section) {
         this.section = section;
     }
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = new StoreEntryComp(section.getWrapper()).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+        var root = StandardStoreEntryComp.customSection(section.getWrapper()).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var button = new IconButtonComp(
                         Bindings.createStringBinding(
                                 () -> section.getWrapper().getExpanded().get()
@@ -51,7 +51,7 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListBoxViewComp<>(shown, all, (StoreSection e) -> {
-                    return new StoreEntrySection(e).apply(GrowAugment.create(true, false));
+                    return StoreSection.customSection(e).apply(GrowAugment.create(true, false));
                 })
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .apply(struc -> struc.get().backgroundProperty().set(Background.fill(Color.color(0, 0, 0, 0.01))));
@@ -62,7 +62,8 @@ public class StoreEntrySection extends Comp<CompStructure<VBox>> {
             return padding;
         });
         return new VerticalComp(List.of(
-                        new HorizontalComp(topEntryList),
+                        new HorizontalComp(topEntryList)
+                                .apply(struc -> struc.get().setFillHeight(true)),
                         new HorizontalComp(List.of(spacer, content))
                                 .apply(struc -> struc.get().setFillHeight(true))
                                 .hide(BindingsHelper.persist(Bindings.or(

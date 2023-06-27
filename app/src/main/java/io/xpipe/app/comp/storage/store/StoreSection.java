@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.storage.StorageFilter;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -13,6 +14,15 @@ import java.util.Comparator;
 
 @Value
 public class StoreSection implements StorageFilter.Filterable {
+
+    public static Comp<?> customSection(StoreSection e) {
+        var prov = e.getWrapper().getEntry().getProvider();
+        if (prov != null) {
+            return prov.customContainer(e);
+        } else {
+            return new StoreEntrySectionComp(e);
+        }
+    }
 
     StoreEntryWrapper wrapper;
     ObservableList<StoreSection> children;
@@ -36,7 +46,7 @@ public class StoreSection implements StorageFilter.Filterable {
             var parent = section.getWrapper()
                     .getEntry()
                     .getProvider()
-                    .getParent(section.getWrapper().getEntry().getStore());
+                    .getLogicalParent(section.getWrapper().getEntry().getStore());
             return parent == null
                     || (DataStorage.get().getStoreEntryIfPresent(parent).isEmpty());
         });
@@ -56,7 +66,7 @@ public class StoreSection implements StorageFilter.Filterable {
                                 .getStore()
                                 .equals(other.getEntry()
                                         .getProvider()
-                                        .getParent(other.getEntry().getStore())));
+                                        .getLogicalParent(other.getEntry().getStore())));
         var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1));
         var ordered = BindingsHelper.orderedContentBinding(children, COMPARATOR);
         return new StoreSection(e, ordered);

@@ -7,7 +7,6 @@ import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataSourceEntry;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ContextMenu;
@@ -63,7 +62,6 @@ public class SourceEntryContextMenu<S extends CompStructure<?>> extends ContextM
 
         var validate = new MenuItem(AppI18n.get("refresh"), new FontIcon("mdal-360"));
         validate.setOnAction(event -> {
-            DataStorage.get().refreshAsync(entry.getEntry(), true);
         });
         cm.getItems().add(validate);
 

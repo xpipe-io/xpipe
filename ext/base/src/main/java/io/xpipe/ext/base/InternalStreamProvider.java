@@ -11,7 +11,7 @@ import java.util.List;
 public class InternalStreamProvider implements DataStoreProvider {
 
     @Override
-    public boolean shouldShow() {
+    public boolean canManuallyCreate() {
         return false;
     }
 

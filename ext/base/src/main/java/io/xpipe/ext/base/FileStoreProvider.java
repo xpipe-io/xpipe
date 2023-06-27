@@ -17,7 +17,7 @@ import java.util.List;
 public class FileStoreProvider implements DataStoreProvider {
 
     @Override
-    public boolean shouldShow() {
+    public boolean canManuallyCreate() {
         return false;
     }
 

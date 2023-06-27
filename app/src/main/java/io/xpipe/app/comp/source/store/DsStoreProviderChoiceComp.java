@@ -50,7 +50,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
         var comboBox = new CustomComboBoxBuilder<>(provider, this::createGraphic, createDefaultNode(), v -> true);
         comboBox.setAccessibleNames(dataStoreProvider -> dataStoreProvider.getDisplayName());
         getProviders().stream()
-                .filter(p -> AppPrefs.get().developerShowHiddenProviders().get() || p.shouldShow())
+                .filter(p -> AppPrefs.get().developerShowHiddenProviders().get() || p.canManuallyCreate())
                 .forEach(comboBox::add);
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("data-source-type");

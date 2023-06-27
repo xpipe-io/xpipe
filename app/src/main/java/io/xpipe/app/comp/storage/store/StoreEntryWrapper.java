@@ -8,6 +8,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.store.FixedHierarchyStore;
 import javafx.beans.property.*;
 import lombok.Getter;
 
@@ -94,10 +95,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         disabled.setValue(entry.isDisabled());
         state.setValue(entry.getState());
         expanded.setValue(entry.isExpanded());
-        information.setValue(
-                entry.getInformation() != null
-                        ? entry.getInformation()
-                        : entry.isDisabled() ? null : entry.getProvider().getDisplayName());
+        information.setValue(entry.getInformation());
 
         loading.setValue(entry.getState() == DataStoreEntry.State.VALIDATING);
         if (entry.getState().isUsable()) {
@@ -178,6 +176,8 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         if (found != null) {
             entry.updateLastUsed();
             found.createAction(entry.getStore().asNeeded()).execute();
+        } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
+            DataStorage.get().refreshChildren(entry);
         }
     }
 

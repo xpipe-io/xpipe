@@ -23,7 +23,7 @@ public class StoreEntryListComp extends SimpleComp {
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListBoxViewComp<>(filtered, topLevel.getChildren(), (StoreSection e) -> {
-            return new StoreEntrySection(e);
+            return StoreSection.customSection(e);
         });
         return content.styleClass("store-list-comp").styleClass(Styles.STRIPED);
     }

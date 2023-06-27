@@ -97,19 +97,23 @@ public abstract class DataStorage {
     }
 
     public synchronized void refreshChildren(DataStoreEntry e) {
+        refreshChildren(e, List.of());
+    }
+
+
+    public synchronized void refreshChildren(DataStoreEntry e, List<DataStoreEntry> oldChildren) {
         if (!(e.getStore() instanceof FixedHierarchyStore)) {
             return;
         }
 
         try {
             var newChildren = ((FixedHierarchyStore) e.getStore()).listChildren();
-            deleteChildren(e, true);
-            newChildren.forEach((key, value) -> {
-                try {
-                    addStoreEntry(key, value);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+            oldChildren.stream().filter(entry -> !newChildren.containsValue(entry.getStore())).forEach(entry ->  {
+                deleteChildren(entry, true);
+                deleteStoreEntry(entry);
+            });
+            newChildren.entrySet().stream().filter(entry -> oldChildren.stream().noneMatch(old -> old.getStore().equals(entry.getValue()))).forEach(entry ->  {
+                addStoreEntryIfNotPresent(entry.getKey(), entry.getValue());
             });
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
@@ -133,8 +137,8 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    var parent = other.getProvider().getParent(other.getStore());
-                    return entry.getStore().equals(parent);
+                    var parent = other.getProvider().getLogicalParent(other.getStore());
+                    return Objects.equals(entry.getStore(), parent);
                 })
                 .toList());
 
@@ -386,11 +390,28 @@ public abstract class DataStorage {
         latest = e;
     }
 
-    public void refreshAsync(StorageElement element, boolean deep) {
+    public void setAndRefreshAsync(DataStoreEntry entry, DataStore s) {
+        ThreadHelper.runAsync(() -> {
+            var old = entry.getStore();
+            var children = getStoreChildren(entry, false);
+            try {
+                entry.setStoreInternal(s);
+                entry.refresh(true);
+                // Update old children
+                children.forEach(entry1 -> propagateUpdate(entry1));
+                DataStorage.get().refreshChildren(entry, children);
+            } catch (Exception e) {
+                entry.setStoreInternal(old);
+                entry.simpleRefresh();
+            }
+        });
+    }
+
+    public void refreshAsync(DataStoreEntry element, boolean deep) {
         ThreadHelper.runAsync(() -> {
             try {
                 element.refresh(deep);
-                propagateUpdate();
+                propagateUpdate(element);
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).reportable(false).handle();
             }
@@ -398,14 +419,11 @@ public abstract class DataStorage {
         });
     }
 
-    private void propagateUpdate() {
-        for (DataStoreEntry dataStoreEntry : getStoreEntries()) {
-            dataStoreEntry.simpleRefresh();
-        }
-
-        for (var e : getSourceEntries()) {
-            e.simpleRefresh();
-        }
+    void propagateUpdate(DataStoreEntry origin) {
+        getStoreChildren(origin, false).forEach(entry -> {
+            entry.simpleRefresh();
+            propagateUpdate(entry);
+        });
     }
 
     public void addStoreEntry(@NonNull DataStoreEntry e) {
@@ -417,19 +435,21 @@ public abstract class DataStorage {
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
             this.storeEntries.add(e);
         }
-        propagateUpdate();
+        propagateUpdate(e);
         save();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
     }
 
-    public void addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {
-        if (getStoreEntryIfPresent(store).isPresent()) {
-            return;
+    public DataStoreEntry addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {
+        var found = getStoreEntryIfPresent(store);
+        if (found.isPresent()) {
+            return found.get();
         }
 
         var e = DataStoreEntry.createNew(UUID.randomUUID(), createUniqueStoreEntryName(name), store);
         addStoreEntry(e);
+        return e;
     }
 
     public DataStoreEntry addStoreEntry(@NonNull String name, DataStore store) {
@@ -446,7 +466,7 @@ public abstract class DataStorage {
         synchronized (this) {
             this.storeEntries.remove(store);
         }
-        propagateUpdate();
+        propagateUpdate(store);
         save();
         this.listeners.forEach(l -> l.onStoreRemove(store));
     }

@@ -31,7 +31,7 @@ open module io.xpipe.ext.base {
             FollowLinkAction,
             BackAction,
             ForwardAction,
-            RefreshAction,
+            RefreshDirectoryAction,
             OpenFileDefaultAction,
             OpenFileWithAction,
             OpenDirectoryAction,

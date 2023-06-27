@@ -1,13 +1,14 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.storage.store.StandardStoreEntryComp;
+import io.xpipe.app.comp.storage.store.StoreEntrySectionComp;
+import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
+import io.xpipe.app.comp.storage.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.core.dialog.Dialog;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileSystem;
-import io.xpipe.core.store.ShellStore;
-import io.xpipe.core.store.StreamDataStore;
+import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonizedValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -29,6 +30,14 @@ public interface DataStoreProvider {
                         String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
         }
+    }
+
+    default Comp<?> customDisplay(StoreEntryWrapper w) {
+        return new StandardStoreEntryComp(w);
+    }
+
+    default Comp<?> customContainer(StoreSection section) {
+        return new StoreEntrySectionComp(section);
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
@@ -77,8 +86,12 @@ public interface DataStoreProvider {
         return DisplayCategory.OTHER;
     }
 
-    default DataStore getParent(DataStore store) {
+    default DataStore getLogicalParent(DataStore store) {
         return null;
+    }
+
+    default DataStore getDisplayParent(DataStore store) {
+        return getLogicalParent(store);
     }
 
     default GuiDialog guiDialog(Property<DataStore> store) {
@@ -129,7 +142,13 @@ public interface DataStoreProvider {
         return null;
     }
 
-    DataStore defaultStore();
+    default boolean requiresFrequentRefresh() {
+        return getStoreClasses().stream().anyMatch(aClass -> FixedHierarchyStore.class.isAssignableFrom(aClass));
+    }
+
+    default DataStore defaultStore() {
+        return null;
+    }
 
     List<String> getPossibleNames();
 
@@ -139,7 +158,7 @@ public interface DataStoreProvider {
 
     List<Class<?>> getStoreClasses();
 
-    default boolean shouldShow() {
+    default boolean canManuallyCreate() {
         return true;
     }
 
