@@ -97,6 +97,13 @@ public class DataStoreEntry extends StorageElement {
             State state,
             Configuration configuration,
             boolean expanded) {
+
+        // The validation must be stuck if that happens
+        var stateToUse = state;
+        if (state == State.VALIDATING) {
+            stateToUse = State.COMPLETE_BUT_INVALID;
+        }
+
         var entry = new DataStoreEntry(
                 directory,
                 uuid,
@@ -106,7 +113,7 @@ public class DataStoreEntry extends StorageElement {
                 information,
                 storeNode,
                 false,
-                state,
+                stateToUse,
                 configuration,
                 expanded);
         return entry;
@@ -216,12 +223,6 @@ public class DataStoreEntry extends StorageElement {
     TODO: Implement singular change functions
      */
     public void refresh(boolean deep) throws Exception {
-        // Assume that refresh can't be called while validating.
-        // Therefore the validation must be stuck if that happens
-        if (state == State.VALIDATING) {
-            state = State.COMPLETE_BUT_INVALID;
-        }
-
         var oldStore = store;
         DataStore newStore = DataStorageParser.storeFromNode(storeNode);
         if (newStore == null

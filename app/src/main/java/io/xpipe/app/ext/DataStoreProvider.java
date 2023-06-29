@@ -1,12 +1,14 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.storage.store.StandardStoreEntryComp;
 import io.xpipe.app.comp.storage.store.StoreEntrySectionComp;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.comp.storage.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonizedValue;
@@ -38,6 +40,28 @@ public interface DataStoreProvider {
 
     default Comp<?> customContainer(StoreSection section) {
         return new StoreEntrySectionComp(section);
+    }
+
+    default String failureInfo() {
+        return null;
+    }
+
+    default Comp<?> stateDisplay(StoreEntryWrapper w) {
+        var state = Bindings.createObjectBinding(
+                () -> {
+                    return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID
+                            ? SystemStateComp.State.FAILURE
+                            : w.getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
+                                    ? SystemStateComp.State.SUCCESS
+                                    : SystemStateComp.State.OTHER;
+                },
+                w.getState());
+        var name = Bindings.createStringBinding(
+                () -> {
+                    return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID ? "stop" : "start";
+                },
+                w.getState());
+        return new SystemStateComp(name, state);
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {

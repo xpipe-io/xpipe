@@ -98,9 +98,14 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected Label createInformation() {
         var information = new Label();
+        information.setGraphicTextGap(7);
         information.textProperty().bind(PlatformThread.sync(entry.getInformation()));
         information.getStyleClass().add("information");
         AppFont.header(information);
+
+        var state = entry.getEntry().getProvider().stateDisplay(entry);
+        information.setGraphic(state.createRegion());
+
         return information;
     }
 

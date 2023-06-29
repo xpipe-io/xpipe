@@ -4,6 +4,7 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.DataStateProvider;
 
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -20,8 +21,10 @@ public class DataStateProviderImpl extends DataStateProvider {
             return;
         }
 
-        entry.get().getElementState().put(key, value);
-        entry.get().simpleRefresh();
+        var old = entry.get().getElementState().put(key, value);
+        if (!Objects.equals(old, value)) {
+            entry.get().simpleRefresh();
+        }
     }
 
     @Override
