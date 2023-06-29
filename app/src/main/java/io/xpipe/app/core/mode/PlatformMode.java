@@ -1,6 +1,5 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
@@ -83,7 +82,6 @@ public abstract class PlatformMode extends OperationMode {
             UpdateAvailableAlert.showIfNeeded();
         }
 
-        SourceCollectionViewState.init();
         StoreViewState.init();
     }
 

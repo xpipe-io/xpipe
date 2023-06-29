@@ -1,7 +1,6 @@
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
-import io.xpipe.app.exchange.api.*;
 import io.xpipe.app.exchange.cli.*;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
@@ -9,8 +8,6 @@ import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalHelper;
-import io.xpipe.app.util.XPipeDaemon;
-import io.xpipe.app.util.XPipeDaemonProvider;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
@@ -19,18 +16,16 @@ import org.slf4j.spi.SLF4JServiceProvider;
 
 open module io.xpipe.app {
     exports io.xpipe.app.core;
-    exports io.xpipe.app.comp.source;
     exports io.xpipe.app.util;
     exports io.xpipe.app;
     exports io.xpipe.app.issue;
     exports io.xpipe.app.comp.base;
     exports io.xpipe.app.core.mode;
     exports io.xpipe.app.prefs;
-    exports io.xpipe.app.comp.source.store;
+    exports io.xpipe.app.comp.store;
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
     exports io.xpipe.app.comp.storage;
-    exports io.xpipe.app.comp.storage.collection;
     exports io.xpipe.app.ext;
     exports io.xpipe.app.fxcomps.impl;
     exports io.xpipe.app.fxcomps;
@@ -122,7 +117,6 @@ open module io.xpipe.app {
     uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
-    uses XPipeDaemon;
     uses ProxyFunction;
     uses ModuleLayerLoader;
     uses ScanProvider;
@@ -142,26 +136,17 @@ open module io.xpipe.app {
             AppLogs.Slf4jProvider;
     provides EventHandler with
             EventHandlerImpl;
-    provides XPipeDaemon with
-            XPipeDaemonProvider;
     provides MessageExchangeImpl with
             ReadDrainExchangeImpl,
-            ForwardExchangeImpl,
             EditStoreExchangeImpl,
-            AddSourceExchangeImpl,
             StoreProviderListExchangeImpl,
-            ListCollectionsExchangeImpl,
             OpenExchangeImpl,
             LaunchExchangeImpl,
             FocusExchangeImpl,
-            ListEntriesExchangeImpl,
             ProxyReadConnectionExchangeImpl,
             StatusExchangeImpl,
             StopExchangeImpl,
             ModeExchangeImpl,
-            WritePreparationExchangeImpl,
-            WriteExecuteExchangeImpl,
-            ReadExchangeImpl,
             DialogExchangeImpl,
             ProxyWriteConnectionExchangeImpl,
             RemoveStoreExchangeImpl,
@@ -169,22 +154,10 @@ open module io.xpipe.app {
             ProxyFunctionExchangeImpl,
             ListStoresExchangeImpl,
             StoreAddExchangeImpl,
-            QueryDataSourceExchangeImpl,
-            RemoveCollectionExchangeImpl,
-            RemoveEntryExchangeImpl,
-            RenameCollectionExchangeImpl,
-            RenameEntryExchangeImpl,
             AskpassExchangeImpl,
-            SourceProviderListExchangeImpl,
             QueryStoreExchangeImpl,
-            SelectExchangeImpl,
             WriteStreamExchangeImpl,
             ReadStreamExchangeImpl,
-            QueryTextDataExchangeImpl,
-            EditExchangeImpl,
-            QueryTableDataExchangeImpl,
-            QueryRawDataExchangeImpl,
-            ConvertExchangeImpl,
             InstanceExchangeImpl,
             VersionExchangeImpl;
 }

@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
+import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -177,7 +177,12 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
             entry.updateLastUsed();
             found.createAction(entry.getStore().asNeeded()).execute();
         } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
-            DataStorage.get().refreshChildren(entry);
+            var hasChildren = DataStorage.get().refreshChildren(entry);
+            if (!hasChildren) {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    expanded.set(false);
+                });
+            }
         }
     }
 

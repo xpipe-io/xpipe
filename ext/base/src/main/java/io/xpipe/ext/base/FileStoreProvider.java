@@ -1,6 +1,6 @@
 package io.xpipe.ext.base;
 
-import io.xpipe.app.comp.source.store.DsStreamStoreChoiceComp;
+import io.xpipe.app.comp.store.DsStreamStoreChoiceComp;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.util.DataStoreFormatter;

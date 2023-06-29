@@ -23,12 +23,22 @@
 -fx-opacity: 0.5;
 }
 
-.store-entry-comp {
+.store-entry-grid {
 -fx-padding: 6px 6px 6px 0;
 }
 
-.condensed-store-entry-comp {
+.store-entry-grid.dense {
 -fx-padding: 1px 6px 1px 0;
+}
+
+.store-entry-section-comp.top {
+-fx-border-width: 0 0 1em 0;
+-fx-background-insets: 0 0 1em 0;
+-fx-border-color: transparent;
+}
+
+.store-entry-section-comp.top:odd {
+-fx-background-color: -color-neutral-subtle;
 }
 
 .store-entry-comp:hover {
@@ -41,6 +51,7 @@
 
 .store-entry-comp .button-bar .button {
 -fx-padding: 8px;
+-fx-background-insets: 0;
 }
 
 

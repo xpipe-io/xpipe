@@ -35,7 +35,7 @@ public class StoreEntrySectionComp extends Comp<CompStructure<VBox>> {
                         () -> {
                             section.getWrapper().toggleExpanded();
                         })
-                .apply(struc -> struc.get().setPrefWidth(40))
+                .apply(struc -> struc.get().setPrefWidth(30))
                 .focusTraversable()
                 .accessibleText("Expand")
                 .disable(BindingsHelper.persist(
@@ -69,6 +69,7 @@ public class StoreEntrySectionComp extends Comp<CompStructure<VBox>> {
                                 .hide(BindingsHelper.persist(Bindings.or(
                                         Bindings.not(section.getWrapper().getExpanded()),
                                         Bindings.size(section.getChildren()).isEqualTo(0))))))
+                .styleClass("store-entry-section-comp")
                 .createStructure();
     }
 }

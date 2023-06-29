@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -17,6 +18,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
+
+    private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd");
+    private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even");
 
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
@@ -64,6 +68,13 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                         return cache.get(v);
                     })
                     .toList();
+
+            for (int i = 0; i < newShown.size(); i++) {
+                var r = newShown.get(i);
+                r.pseudoClassStateChanged(ODD, false);
+                r.pseudoClassStateChanged(EVEN, false);
+                r.pseudoClassStateChanged(i % 2 == 0 ? EVEN : ODD, true);
+            }
 
             if (!listView.getChildren().equals(newShown)) {
                 listView.getChildren().setAll(newShown);

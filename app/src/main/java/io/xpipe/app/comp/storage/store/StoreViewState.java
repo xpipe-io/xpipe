@@ -2,7 +2,6 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataSourceCollection;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
@@ -68,12 +67,6 @@ public class StoreViewState {
                     allEntries.removeIf(e -> e.getEntry().equals(entry));
                 });
             }
-
-            @Override
-            public void onCollectionAdd(DataSourceCollection collection) {}
-
-            @Override
-            public void onCollectionRemove(DataSourceCollection collection) {}
         });
     }
 

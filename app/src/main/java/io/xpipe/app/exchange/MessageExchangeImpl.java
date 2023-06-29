@@ -2,8 +2,6 @@ package io.xpipe.app.exchange;
 
 import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.ext.DataSourceProviders;
-import io.xpipe.app.storage.DataSourceCollection;
-import io.xpipe.app.storage.DataSourceEntry;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconHandler;
@@ -14,9 +12,6 @@ import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.NamedStore;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceReference;
-import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
 import lombok.NonNull;
 
@@ -66,42 +61,6 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
                     String.format("Store %s is disabled", store.get().getName()));
         }
         return store.get();
-    }
-
-    default DataSourceCollection getCollection(String name) throws ClientException {
-        var col = DataStorage.get().getCollectionForName(name);
-        if (col.isEmpty()) {
-            throw new ClientException("No collection with name " + name + " was found");
-        }
-        return col.get();
-    }
-
-    default DataSourceEntry getSourceEntry(DataSourceReference ref, DataSourceType typeFilter, boolean acceptDisabled)
-            throws ClientException {
-        var ds = DataStorage.get().getDataSource(ref);
-        if (ds.isEmpty() && ref.getType() == DataSourceReference.Type.LATEST) {
-            throw new ClientException("No latest data source available");
-        }
-        if (ds.isEmpty()) {
-            throw new ClientException("Unable to locate data source with reference " + ref.toRefString());
-        }
-
-        if (typeFilter != null && ds.get().getProvider().getPrimaryType() != typeFilter) {
-            throw new ClientException(
-                    "Data source is not a " + typeFilter.name().toLowerCase());
-        }
-
-        if (!ds.get().getState().isUsable() && !acceptDisabled) {
-            throw new ClientException(
-                    String.format("Data source %s is disabled", ds.get().getName()));
-        }
-
-        return ds.get();
-    }
-
-    default DataSourceEntry getSourceEntry(DataSourceId id, DataSourceType typeFilter, boolean acceptDisabled)
-            throws ClientException {
-        return getSourceEntry(DataSourceReference.id(id), typeFilter, acceptDisabled);
     }
 
     String getId();

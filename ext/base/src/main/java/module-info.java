@@ -1,16 +1,13 @@
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataSourceProvider;
-import io.xpipe.app.ext.DataSourceTarget;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.*;
 import io.xpipe.ext.base.actions.*;
-import io.xpipe.ext.base.apps.*;
 import io.xpipe.ext.base.browser.*;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
-    exports io.xpipe.ext.base.apps;
     exports io.xpipe.ext.base.actions;
 
     requires java.desktop;
@@ -57,13 +54,6 @@ open module io.xpipe.ext.base {
             ShareStoreAction,
             FileBrowseAction,
             FileEditAction;
-    provides DataSourceTarget with
-            SaveSourceTarget,
-            JavaTarget,
-            CommandLineTarget,
-            FileOutputTarget,
-            DataSourceOutputTarget,
-            RawFileOutputTarget;
     provides DataSourceProvider with
             TextSourceProvider,
             BinarySourceProvider,

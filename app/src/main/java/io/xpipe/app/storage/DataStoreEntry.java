@@ -80,7 +80,7 @@ public class DataStoreEntry extends StorageElement {
                 true,
                 State.LOAD_FAILED,
                 Configuration.defaultConfiguration(),
-                true);
+                false);
         entry.refresh(false);
         return entry;
     }
@@ -203,10 +203,12 @@ public class DataStoreEntry extends StorageElement {
         simpleRefresh();
     }
 
-    void setStoreInternal(DataStore store) {
+    void setStoreInternal(DataStore store, boolean updateTime) {
         this.store = store;
         this.storeNode = DataStorageWriter.storeToNode(store);
-        lastModified = Instant.now();
+        if (updateTime) {
+            lastModified = Instant.now();
+        }
         dirty = true;
     }
 

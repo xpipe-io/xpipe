@@ -33,7 +33,7 @@ public interface DataStoreProvider {
     }
 
     default Comp<?> customDisplay(StoreEntryWrapper w) {
-        return new StandardStoreEntryComp(w);
+        return new StandardStoreEntryComp(w, null);
     }
 
     default Comp<?> customContainer(StoreSection section) {

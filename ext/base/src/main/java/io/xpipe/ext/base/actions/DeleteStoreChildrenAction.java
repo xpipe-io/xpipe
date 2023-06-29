@@ -48,7 +48,7 @@ public class DeleteStoreChildrenAction implements ActionProvider {
             @Override
             public boolean isApplicable(DataStore o) {
                 return DataStorage.get()
-                                .getStoreChildren(DataStorage.get().getStoreEntry(o), true)
+                                .getLogicalStoreChildren(DataStorage.get().getStoreEntry(o), true)
                                 .size()
                         > 1;
             }

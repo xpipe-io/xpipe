@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.storage.store;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.core.AppState;
@@ -23,9 +22,9 @@ public class StoreEntryListComp extends SimpleComp {
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListBoxViewComp<>(filtered, topLevel.getChildren(), (StoreSection e) -> {
-            return StoreSection.customSection(e);
+            return StoreSection.customSection(e).styleClass("top");
         });
-        return content.styleClass("store-list-comp").styleClass(Styles.STRIPED);
+        return content.styleClass("store-list-comp");
     }
 
     @Override

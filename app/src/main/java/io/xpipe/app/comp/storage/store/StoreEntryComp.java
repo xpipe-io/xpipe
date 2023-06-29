@@ -1,12 +1,17 @@
 package io.xpipe.app.comp.storage.store;
 
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import com.jfoenix.controls.JFXButton;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -25,6 +30,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -37,21 +44,57 @@ public abstract class StoreEntryComp extends SimpleComp {
         if (prov != null) {
             return prov.customDisplay(e);
         } else {
-            return new StandardStoreEntryComp(e);
+            return new StandardStoreEntryComp(e, null);
         }
     }
 
-    public static final double NAME_WIDTH = 0.30;
-    public static final double STORE_TYPE_WIDTH = 0.08;
-    public static final double DETAILS_WIDTH = 0.52;
-    public static final double BUTTONS_WIDTH = 0.1;
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
     protected final StoreEntryWrapper entry;
+    protected final Comp<?> content;
 
-    public StoreEntryComp(StoreEntryWrapper entry) {
+    public StoreEntryComp(StoreEntryWrapper entry, Comp<?> content) {
         this.entry = entry;
+        this.content = content;
     }
+
+    @Override
+    protected final Region createSimple() {
+        var r = createContent();
+
+        var button = new JFXButton();
+        button.setGraphic(r);
+        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(r));
+        button.getStyleClass().add("store-entry-comp");
+        button.setPadding(Insets.EMPTY);
+        button.setMaxWidth(2000);
+        button.setFocusTraversable(true);
+        button.accessibleTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return entry.getName();
+                        },
+                        entry.nameProperty()));
+        button.accessibleHelpProperty().bind(entry.getInformation());
+        button.setOnAction(event -> {
+            event.consume();
+            ThreadHelper.runFailableAsync(() -> {
+                entry.refreshIfNeeded();
+                entry.executeDefaultAction();
+            });
+        });
+        new ContextMenuAugment<>(() -> this.createContextMenu())
+                .augment(new SimpleCompStructure<>(button));
+
+        HBox.setHgrow(button, Priority.ALWAYS);
+        var hbox = new HBox(button, new Spacer(25));
+
+        var loading = new LoadingOverlayComp(Comp.of(() -> hbox), entry.getLoading());
+        var region = loading.createRegion();
+        return region;
+    }
+
+    protected abstract Region createContent();
 
     protected Label createInformation() {
         var information = new Label();
@@ -100,9 +143,6 @@ public abstract class StoreEntryComp extends SimpleComp {
         LabelComp name = new LabelComp(Bindings.createStringBinding(
                 () -> {
                     return entry.getName()
-                            + (entry.getInformation().get() != null
-                                    ? "    [" + entry.getInformation().get() + "]"
-                                    : "")
                             + (filtered.size() > 0 && entry.getEntry().getStore() instanceof FixedHierarchyStore
                                     ? "     (" + filtered.size() + ")"
                                     : "");
@@ -130,6 +170,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                             entry.getEntry().getProvider().getDisplayName()))
                     .augment(storeIcon);
         }
+        storeIcon.setPadding(new Insets(3, 0, 0, 0));
         return storeIcon;
     }
 
@@ -237,7 +278,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         contextMenu.getItems().add(refresh);
 
-        var del = new MenuItem(AppI18n.get("delete"), new FontIcon("mdal-delete_outline"));
+        var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.disableProperty().bind(entry.getDeletable().not());
         del.setOnAction(event -> entry.delete());
         contextMenu.getItems().add(del);

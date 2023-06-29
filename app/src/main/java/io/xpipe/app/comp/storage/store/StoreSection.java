@@ -29,7 +29,7 @@ public class StoreSection implements StorageFilter.Filterable {
 
     private static final Comparator<StoreSection> COMPARATOR = Comparator.<StoreSection, Instant>comparing(
                     o -> o.wrapper.getEntry().getState().equals(DataStoreEntry.State.COMPLETE_AND_VALID)
-                            ? o.wrapper.getEntry().getLastAccess()
+                            ? o.wrapper.getEntry().getLastModified()
                             : Instant.EPOCH)
             .reversed()
             .thenComparing(
@@ -66,7 +66,7 @@ public class StoreSection implements StorageFilter.Filterable {
                                 .getStore()
                                 .equals(other.getEntry()
                                         .getProvider()
-                                        .getLogicalParent(other.getEntry().getStore())));
+                                        .getDisplayParent(other.getEntry().getStore())));
         var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1));
         var ordered = BindingsHelper.orderedContentBinding(children, COMPARATOR);
         return new StoreSection(e, ordered);
