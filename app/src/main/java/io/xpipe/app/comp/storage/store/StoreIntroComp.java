@@ -3,6 +3,7 @@ package io.xpipe.app.comp.storage.store;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.impl.LocalStore;
@@ -35,7 +36,7 @@ public class StoreIntroComp extends SimpleComp {
         });
 
         var scanButton = new Button(AppI18n.get("detectConnections"), new FontIcon("mdi2m-magnify"));
-        scanButton.setOnAction(event -> ScanAlert.showAsync(new LocalStore(), false));
+        scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().getStoreEntry(new LocalStore()), false));
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 

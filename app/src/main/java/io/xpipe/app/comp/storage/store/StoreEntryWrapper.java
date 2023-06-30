@@ -8,6 +8,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedHierarchyStore;
 import javafx.beans.property.*;
 import lombok.Getter;
@@ -161,28 +163,32 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         });
     }
 
-    public void refreshIfNeeded() throws Exception {
+    public void executeRefreshAction() throws Exception {
         var found = getDefaultActionProvider().getValue();
-        if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || found == null) {
-            getEntry().refresh(true);
-            PlatformThread.runLaterIfNeeded(() -> {
-                expanded.set(true);
-            });
-        }
+        getEntry().refresh(true);
+        var hasChildren = DataStorage.get().refreshChildren(entry);
+        PlatformThread.runLaterIfNeeded(() -> {
+            expanded.set(hasChildren);
+        });
+    }
+
+    public void mutate(DataStore newValue) {
+        ThreadHelper.runAsync(() -> {
+            DataStorage.get().setAndRefreshAsync(getEntry(), newValue);
+        });
     }
 
     public void executeDefaultAction() throws Exception {
         var found = getDefaultActionProvider().getValue();
         if (found != null) {
+            if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
+                executeRefreshAction();
+            }
+
             entry.updateLastUsed();
             found.createAction(entry.getStore().asNeeded()).execute();
         } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
-            var hasChildren = DataStorage.get().refreshChildren(entry);
-            if (!hasChildren) {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    expanded.set(false);
-                });
-            }
+            executeRefreshAction();
         }
     }
 

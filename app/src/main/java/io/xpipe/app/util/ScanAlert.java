@@ -9,7 +9,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -29,34 +29,34 @@ import java.util.function.Supplier;
 
 public class ScanAlert {
 
-    public static void showAsync(DataStore store, boolean automatic) {
+    public static void showAsync(DataStoreEntry entry, boolean automatic) {
         ThreadHelper.runAsync(() -> {
-            if (store instanceof ShellStore) {
-                showForShellStore(store.asNeeded(), automatic);
+            if (entry.getStore() instanceof ShellStore) {
+                showForShellStore(entry, automatic);
             } else {
-                showForOtherStore(store, automatic);
+                showForOtherStore(entry, automatic);
             }
         });
     }
 
-    private static void showForOtherStore(DataStore store, boolean automatic) {
+    private static void showForOtherStore(DataStoreEntry entry, boolean automatic) {
         showIfNeeded(() -> {
             var providers = ScanProvider.getAll();
             var applicable = providers.stream()
-                    .map(scanProvider -> scanProvider.create(store, automatic))
+                    .map(scanProvider -> scanProvider.create(entry.getStore(), automatic))
                     .filter(scanOperation -> scanOperation != null)
                     .toList();
             return applicable;
         });
     }
 
-    private static void showForShellStore(ShellStore store, boolean automatic) {
+    private static void showForShellStore(DataStoreEntry entry, boolean automatic) {
         showIfNeeded(() -> {
-            try (var sc = store.control().start()) {
+            try (var sc = ((ShellStore) entry.getStore()).control().start()) {
                 var providers = ScanProvider.getAll();
                 var applicable = new ArrayList<ScanProvider.ScanOperation>();
                 for (ScanProvider scanProvider : providers) {
-                    ScanProvider.ScanOperation operation = scanProvider.create(store, sc, automatic);
+                    ScanProvider.ScanOperation operation = scanProvider.create(entry, sc, automatic);
                     if (operation != null) {
                         applicable.add(operation);
                     }
@@ -94,16 +94,21 @@ public class ScanAlert {
                     // Custom behavior for ok button
                     var btOk = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
                     btOk.addEventFilter(ActionEvent.ACTION, event -> {
-                        BusyProperty.execute(busy, () -> {
-                            for (var a : selected) {
-                                try {
-                                    a.getScanner().run();
-                                } catch (Exception ex) {
-                                    ErrorEvent.fromThrowable(ex).handle();
+                        ThreadHelper.runAsync(() -> {
+                            BusyProperty.execute(busy, () -> {
+                                for (var a : selected) {
+                                    try {
+                                        a.getScanner().run();
+                                    } catch (Exception ex) {
+                                        ErrorEvent.fromThrowable(ex).handle();
+                                    }
                                 }
-                            }
-                            alert.setResult(ButtonType.OK);
-                            alert.close();
+
+                                Platform.runLater(() -> {
+                                    alert.setResult(ButtonType.OK);
+                                    alert.close();
+                                });
+                            });
                         });
                     });
 

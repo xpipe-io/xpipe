@@ -68,7 +68,8 @@ public abstract class DataStorage {
     }
 
     public synchronized boolean refreshChildren(DataStoreEntry e) {
-        return refreshChildren(e, List.of());
+        var children = getLogicalStoreChildren(e, false);
+        return refreshChildren(e, children);
     }
 
     public synchronized boolean refreshChildren(DataStoreEntry e, List<DataStoreEntry> oldChildren) {
@@ -93,11 +94,11 @@ public abstract class DataStorage {
     }
 
     public synchronized void deleteChildren(DataStoreEntry e, boolean deep) {
-        getLogicalStoreChildren(e, deep).forEach(entry -> {
-            if (!entry.getConfiguration().isDeletable()) {
-                return;
-            }
+        // Reverse to delete deepest children first
+        var ordered = getLogicalStoreChildren(e, deep);
+        Collections.reverse(ordered);
 
+        ordered.forEach(entry -> {
             deleteStoreEntry(entry);
         });
     }
@@ -191,7 +192,7 @@ public abstract class DataStorage {
                 .findFirst();
     }
 
-    public void updateAndRefreshAsync(DataStoreEntry entry, DataStore s) {
+    public void setAndRefreshAsync(DataStoreEntry entry, DataStore s) {
         ThreadHelper.runAsync(() -> {
             var old = entry.getStore();
             var children = getLogicalStoreChildren(entry, false);

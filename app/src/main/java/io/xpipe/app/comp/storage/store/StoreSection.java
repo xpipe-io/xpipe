@@ -46,7 +46,7 @@ public class StoreSection implements StorageFilter.Filterable {
             var parent = section.getWrapper()
                     .getEntry()
                     .getProvider()
-                    .getLogicalParent(section.getWrapper().getEntry().getStore());
+                    .getDisplayParent(section.getWrapper().getEntry().getStore());
             return parent == null
                     || (DataStorage.get().getStoreEntryIfPresent(parent).isEmpty());
         });

@@ -258,7 +258,7 @@ public class DataStoreEntry extends StorageElement {
                     dirty = true;
                 } else if (complete) {
                     var stateToUse = state == State.LOAD_FAILED || state == State.INCOMPLETE
-                            ? State.COMPLETE_BUT_INVALID
+                            ? State.COMPLETE_NOT_VALIDATED
                             : state;
                     state = stateToUse;
                 } else {
@@ -331,6 +331,8 @@ public class DataStoreEntry extends StorageElement {
         LOAD_FAILED(false),
         @JsonProperty("incomplete")
         INCOMPLETE(false),
+        @JsonProperty("completeNotValidated")
+        COMPLETE_NOT_VALIDATED(true),
         @JsonProperty("completeButInvalid")
         COMPLETE_BUT_INVALID(true),
         @JsonProperty("validating")

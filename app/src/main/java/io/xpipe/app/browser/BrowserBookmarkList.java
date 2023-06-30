@@ -131,7 +131,7 @@ final class BrowserBookmarkList extends SimpleComp {
 
                 ThreadHelper.runFailableAsync(() -> {
                     BusyProperty.execute(busy, () -> {
-                        getItem().refreshIfNeeded();
+                        getItem().executeRefreshAction();
                     });
                     if (getItem().getEntry().getStore() instanceof ShellStore fileSystem) {
                         model.openFileSystemAsync(null, fileSystem, null, busy);

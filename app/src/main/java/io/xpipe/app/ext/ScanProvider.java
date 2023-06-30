@@ -1,8 +1,8 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.ModuleLayerLoader;
 import lombok.Value;
 import org.apache.commons.lang3.function.FailableRunnable;
@@ -53,7 +53,7 @@ public abstract class ScanProvider {
         return null;
     }
 
-    public ScanOperation create(ShellStore store, ShellControl sc, boolean automatic) throws Exception {
+    public ScanOperation create(DataStoreEntry entry, ShellControl sc, boolean automatic) throws Exception {
         return null;
     }
 }

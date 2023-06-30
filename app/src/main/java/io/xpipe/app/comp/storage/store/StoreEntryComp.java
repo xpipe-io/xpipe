@@ -79,7 +79,6 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
-                entry.refreshIfNeeded();
                 entry.executeDefaultAction();
             });
         });
