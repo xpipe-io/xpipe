@@ -134,6 +134,10 @@ public interface DataStoreProvider {
 
     String queryInformationString(DataStore store, int length) throws Exception;
 
+    default String queryInvalidInformationString(DataStore store, int length) throws Exception {
+        return null;
+    }
+
     String toSummaryString(DataStore store, int length);
 
     default String i18n(String key) {

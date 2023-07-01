@@ -46,6 +46,9 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     boolean expanded;
 
+    @NonFinal
+    DataStoreProvider provider;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -65,6 +68,7 @@ public class DataStoreEntry extends StorageElement {
         this.state = state;
         this.configuration = configuration;
         this.expanded = expanded;
+        this.provider = store != null ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null) : null;
     }
 
     @SneakyThrows
@@ -207,6 +211,7 @@ public class DataStoreEntry extends StorageElement {
         lastModified = Instant.now();
         information = e.information;
         dirty = true;
+        provider = e.provider;
         simpleRefresh();
     }
 
@@ -230,6 +235,7 @@ public class DataStoreEntry extends StorageElement {
             store = null;
             state = State.LOAD_FAILED;
             information = null;
+            provider = null;
             dirty = dirty || oldStore != null;
             listeners.forEach(l -> l.onUpdate());
         } else {
@@ -241,6 +247,7 @@ public class DataStoreEntry extends StorageElement {
 
             dirty = dirty || !nodesEqual;
             store = newStore;
+            provider = DataStoreProviders.byStoreClass(newStore.getClass()).orElse(null);
             var complete = newStore.isComplete();
 
             try {
@@ -261,13 +268,18 @@ public class DataStoreEntry extends StorageElement {
                             ? State.COMPLETE_NOT_VALIDATED
                             : state;
                     state = stateToUse;
+                    information = state == State.COMPLETE_AND_VALID
+                            ? information
+                            : state == State.COMPLETE_BUT_INVALID
+                                    ? getProvider().queryInvalidInformationString(getStore(), 50)
+                                    : null;
                 } else {
                     var stateToUse = state == State.LOAD_FAILED ? State.COMPLETE_BUT_INVALID : State.INCOMPLETE;
                     state = stateToUse;
                 }
             } catch (Exception e) {
-                state = store.isComplete() ? State.COMPLETE_BUT_INVALID : State.INCOMPLETE;
-                information = null;
+                state = State.COMPLETE_BUT_INVALID;
+                information = getProvider().queryInvalidInformationString(getStore(), 50);
                 throw e;
             } finally {
                 propagateUpdate();
@@ -318,11 +330,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public DataStoreProvider getProvider() {
-        if (store == null) {
-            return null;
-        }
-
-        return DataStoreProviders.byStoreClass(store.getClass()).orElse(null);
+        return provider;
     }
 
     @Getter

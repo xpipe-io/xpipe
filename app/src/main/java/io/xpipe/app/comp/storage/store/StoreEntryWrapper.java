@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.comp.storage.StorageFilter;
+import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
@@ -181,7 +181,8 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     public void executeDefaultAction() throws Exception {
         var found = getDefaultActionProvider().getValue();
         if (found != null) {
-            if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
+            if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID)
+                    || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
                 executeRefreshAction();
             }
 

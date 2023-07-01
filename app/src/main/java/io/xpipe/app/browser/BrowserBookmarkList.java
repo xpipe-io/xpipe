@@ -170,10 +170,14 @@ final class BrowserBookmarkList extends SimpleComp {
             super.updateItem(item, empty);
             if (empty || item == null) {
                 setText(null);
+
                 // Don't set image as that would trigger image comp update
                 // and cells are emptied on each change, leading to unnecessary changes
                 // img.set(null);
-                setGraphic(null);
+
+                // Use opacity instead of visibility as visibility is kinda bugged with web views
+                setOpacity(0.0);
+
                 setFocusTraversable(false);
                 setAccessibleText(null);
             } else {
@@ -190,7 +194,7 @@ final class BrowserBookmarkList extends SimpleComp {
                 img.set(item.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(item.getEntry().getStore()));
-                setGraphic(imageView);
+                setOpacity(1.0);
                 setFocusTraversable(true);
                 setAccessibleText(
                         item.getName() + " " + item.getEntry().getProvider().getDisplayName());

@@ -39,11 +39,11 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         VBox listView = new VBox();
         listView.setFocusTraversable(false);
 
-        refresh(listView, shown, cache, false);
+        refresh(listView, shown, all, cache, false);
         listView.requestLayout();
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
-            refresh(listView, c.getList(), cache, true);
+            refresh(listView, c.getList(), all, cache, true);
         });
 
         all.addListener((ListChangeListener<? super T>) c -> {
@@ -57,9 +57,12 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         return new SimpleCompStructure<>(scroll);
     }
 
-    private void refresh(VBox listView, List<? extends T> c, Map<T, Region> cache, boolean asynchronous) {
+    private void refresh(VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
-            var newShown = c.stream()
+            // Clear cache of unused values
+            cache.keySet().removeIf(t -> !all.contains(t));
+
+            var newShown = shown.stream()
                     .map(v -> {
                         if (!cache.containsKey(v)) {
                             cache.put(v, compFunction.apply(v).createRegion());

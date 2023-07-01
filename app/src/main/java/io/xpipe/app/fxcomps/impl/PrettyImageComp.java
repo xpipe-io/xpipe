@@ -6,15 +6,12 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.web.WebView;
 
 public class PrettyImageComp extends SimpleComp {
 
@@ -31,6 +28,8 @@ public class PrettyImageComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var aspectRatioProperty = new SimpleDoubleProperty(1);
+        var imageAspectRatioProperty = new SimpleDoubleProperty(1);
+        var svgAspectRatioProperty = new SimpleDoubleProperty(1);
         var widthProperty = Bindings.createDoubleBinding(
                 () -> {
                     boolean widthLimited = width / height < aspectRatioProperty.doubleValue();
@@ -51,89 +50,84 @@ public class PrettyImageComp extends SimpleComp {
                     }
                 },
                 aspectRatioProperty);
-
         var image = new SimpleStringProperty();
-        var currentNode = new SimpleObjectProperty<Node>();
+        var stack = new StackPane();
+
+        {
+            var svgImageContent = new SimpleStringProperty();
+            var storeIcon = SvgView.create(svgImageContent);
+            SimpleChangeListener.apply(image, newValue -> {
+                if (AppImages.hasSvgImage(newValue)) {
+                    svgImageContent.set(AppImages.svgImage(newValue));
+                }
+            });
+            var ar = Bindings.createDoubleBinding(
+                    () -> {
+                        return storeIcon.getWidth().getValue().doubleValue()
+                                / storeIcon.getHeight().getValue().doubleValue();
+                    },
+                    storeIcon.getWidth(),
+                    storeIcon.getHeight());
+            svgAspectRatioProperty.bind(ar);
+            var node = storeIcon.createWebview();
+            node.prefWidthProperty().bind(widthProperty);
+            node.maxWidthProperty().bind(widthProperty);
+            node.minWidthProperty().bind(widthProperty);
+            node.prefHeightProperty().bind(heightProperty);
+            node.maxHeightProperty().bind(heightProperty);
+            node.minHeightProperty().bind(heightProperty);
+            stack.getChildren().add(node);
+        }
+
+        {
+            var storeIcon = new ImageView();
+            storeIcon.setFocusTraversable(false);
+            storeIcon
+                    .imageProperty()
+                    .bind(Bindings.createObjectBinding(
+                            () -> {
+                                if (!AppImages.hasNormalImage(image.getValue())) {
+                                    return null;
+                                }
+
+                                return AppImages.image(image.getValue());
+                            },
+                            image));
+            var ar = Bindings.createDoubleBinding(
+                    () -> {
+                        if (storeIcon.getImage() == null) {
+                            return 1.0;
+                        }
+
+                        return storeIcon.getImage().getWidth()
+                                / storeIcon.getImage().getHeight();
+                    },
+                    storeIcon.imageProperty());
+            imageAspectRatioProperty.bind(ar);
+            storeIcon.fitWidthProperty().bind(widthProperty);
+            storeIcon.fitHeightProperty().bind(heightProperty);
+            storeIcon.setSmooth(true);
+            stack.getChildren().add(storeIcon);
+        }
+
         SimpleChangeListener.apply(PlatformThread.sync(value), val -> {
             image.set(val);
-            var requiresChange = val == null
-                    || (val.endsWith(".svg") && !(currentNode.get() instanceof WebView)
-                            || !(currentNode.get() instanceof ImageView));
-            if (!requiresChange) {
-                return;
-            }
-
             aspectRatioProperty.unbind();
 
             if (val == null) {
-                currentNode.set(new Region());
+                stack.getChildren().get(0).setOpacity(0.0);
+                stack.getChildren().get(1).setOpacity(0.0);
             } else if (val.endsWith(".svg")) {
-                var storeIcon = SvgView.create(Bindings.createStringBinding(
-                        () -> {
-                            if (!AppImages.hasSvgImage(image.getValue())) {
-                                return null;
-                            }
-
-                            return AppImages.svgImage(image.getValue());
-                        },
-                        image));
-                var ar = Bindings.createDoubleBinding(
-                        () -> {
-                            return storeIcon.getWidth().getValue().doubleValue()
-                                    / storeIcon.getHeight().getValue().doubleValue();
-                        },
-                        storeIcon.getWidth(),
-                        storeIcon.getHeight());
-                aspectRatioProperty.bind(ar);
-                var node = storeIcon.createWebview();
-                node.prefWidthProperty().bind(widthProperty);
-                node.maxWidthProperty().bind(widthProperty);
-                node.minWidthProperty().bind(widthProperty);
-                node.prefHeightProperty().bind(heightProperty);
-                node.maxHeightProperty().bind(heightProperty);
-                node.minHeightProperty().bind(heightProperty);
-                currentNode.set(node);
+                aspectRatioProperty.bind(svgAspectRatioProperty);
+                stack.getChildren().get(0).setOpacity(1.0);
+                stack.getChildren().get(1).setOpacity(0.0);
             } else {
-                var storeIcon = new ImageView();
-                storeIcon.setFocusTraversable(false);
-                storeIcon
-                        .imageProperty()
-                        .bind(Bindings.createObjectBinding(
-                                () -> {
-                                    if (!AppImages.hasNormalImage(image.getValue())) {
-                                        return null;
-                                    }
-
-                                    return AppImages.image(image.getValue());
-                                },
-                                image));
-                var ar = Bindings.createDoubleBinding(
-                        () -> {
-                            if (storeIcon.getImage() == null) {
-                                return 1.0;
-                            }
-
-                            return storeIcon.getImage().getWidth()
-                                    / storeIcon.getImage().getHeight();
-                        },
-                        storeIcon.imageProperty());
-                aspectRatioProperty.bind(ar);
-                storeIcon.fitWidthProperty().bind(widthProperty);
-                storeIcon.fitHeightProperty().bind(heightProperty);
-                storeIcon.setSmooth(true);
-                currentNode.set(storeIcon);
+                aspectRatioProperty.bind(imageAspectRatioProperty);
+                stack.getChildren().get(0).setOpacity(0.0);
+                stack.getChildren().get(1).setOpacity(1.0);
             }
         });
 
-        var stack = new StackPane();
-        SimpleChangeListener.apply(currentNode, val -> {
-            if (val == null) {
-                stack.getChildren().clear();
-                return;
-            }
-
-            stack.getChildren().setAll(val);
-        });
         stack.setFocusTraversable(false);
         stack.setPrefWidth(width);
         stack.setMinWidth(width);
