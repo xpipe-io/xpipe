@@ -75,7 +75,10 @@ public abstract class DataStorage {
         try {
             deleteChildren(e, true);
             var newChildren = ((FixedHierarchyStore) e.getStore()).listChildren();
-            newChildren.forEach((key, value) -> addStoreEntryIfNotPresent(key, value));
+            addStoreEntries(newChildren.entrySet().stream()
+                    .map(stringDataStoreEntry -> DataStoreEntry.createNew(
+                            UUID.randomUUID(), stringDataStoreEntry.getKey(), stringDataStoreEntry.getValue()))
+                    .toArray(DataStoreEntry[]::new));
             return newChildren.size() > 0;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
@@ -88,12 +91,10 @@ public abstract class DataStorage {
         var ordered = getStoreChildren(e, false, deep);
         Collections.reverse(ordered);
 
-        ordered.forEach(entry -> {
-            synchronized (this) {
-                this.storeEntries.remove(entry);
-            }
-            this.listeners.forEach(l -> l.onStoreRemove(entry));
-        });
+        synchronized (this) {
+            this.storeEntries.removeAll(ordered);
+            this.listeners.forEach(l -> l.onStoreRemove(ordered.toArray(DataStoreEntry[]::new)));
+        }
         save();
     }
 
@@ -103,22 +104,27 @@ public abstract class DataStorage {
         }
 
         var provider = entry.getProvider();
-        var parent = display ? provider.getDisplayParent(entry.getStore()) : provider.getLogicalParent(entry.getStore());
+        var parent =
+                display ? provider.getDisplayParent(entry.getStore()) : provider.getLogicalParent(entry.getStore());
         return parent != null ? getStoreEntryIfPresent(parent) : Optional.empty();
     }
 
     public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry, boolean display, boolean deep) {
         var children = new ArrayList<>(getStoreEntries().stream()
-                                               .filter(other -> {
-                                                   if (!other.getState().isUsable()) {
-                                                       return false;
-                                                   }
+                .filter(other -> {
+                    if (!other.getState().isUsable()) {
+                        return false;
+                    }
 
-                                                   var provider = other.getProvider();
-                                                   var parent = display ? provider.getDisplayParent(other.getStore()) : provider.getLogicalParent(other.getStore());
-                                                   return parent != null && entry.getStore().getClass().equals(parent.getClass()) && entry.getStore().equals(parent);
-                                               })
-                                               .toList());
+                    var provider = other.getProvider();
+                    var parent = display
+                            ? provider.getDisplayParent(other.getStore())
+                            : provider.getLogicalParent(other.getStore());
+                    return parent != null
+                            && entry.getStore().getClass().equals(parent.getClass())
+                            && entry.getStore().equals(parent);
+                })
+                .toList());
 
         if (deep) {
             for (DataStoreEntry dataStoreEntry : new ArrayList<>(children)) {
@@ -179,7 +185,7 @@ public abstract class DataStorage {
 
     public synchronized DataStoreEntry getStoreEntry(@NonNull DataStore store) {
         var entry = storeEntries.stream()
-                .filter(n -> Objects.equals(store.getClass(), n.getStore().getClass()) && store.equals(n.getStore()))
+                .filter(n -> n.getStore() != null && Objects.equals(store.getClass(), n.getStore().getClass()) && store.equals(n.getStore()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
         return entry;
@@ -240,6 +246,18 @@ public abstract class DataStorage {
         save();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
+    }
+
+    public void addStoreEntries(@NonNull DataStoreEntry... es) {
+        synchronized (this) {
+            for (DataStoreEntry e : es) {
+                e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
+                this.storeEntries.add(e);
+                propagateUpdate(e);
+            }
+            this.listeners.forEach(l -> l.onStoreAdd(es));
+        }
+        save();
     }
 
     public DataStoreEntry addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {

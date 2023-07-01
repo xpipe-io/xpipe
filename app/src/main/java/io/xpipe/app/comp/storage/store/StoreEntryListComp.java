@@ -5,12 +5,15 @@ import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.core.AppState;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class StoreEntryListComp extends SimpleComp {
 
@@ -22,8 +25,9 @@ public class StoreEntryListComp extends SimpleComp {
                         .getFilterString()
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListBoxViewComp<>(filtered, topLevel.getChildren(), (StoreSection e) -> {
-            return StoreSection.customSection(e).styleClass("top");
-        });
+            var custom = StoreSection.customSection(e).hgrow();
+            return new HorizontalComp(List.of(Comp.spacer(20), custom, Comp.spacer(20))).styleClass("top");
+        }).apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(20, 0, 20, 0)));
         return content.styleClass("store-list-comp");
     }
 
