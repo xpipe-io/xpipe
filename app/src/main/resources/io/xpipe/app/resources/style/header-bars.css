@@ -1,7 +1,8 @@
 .bar {
 -fx-padding: 0.8em 1.0em 0.8em 1.0em;
 -fx-background-color: -color-bg-subtle;
--fx-border-color: -color-neutral-emphasis;
+-fx-border-color: -color-border-default;
+-fx-effect: dropshadow(three-pass-box, -color-shadow-default, 8px, 0.5, 0, 1);
 }
 
 .store-header-bar {
@@ -25,7 +26,7 @@
 }
 
 .sidebar {
--fx-spacing: 5px;
+-fx-spacing: 0.75em;
 }
 
 .bar .button-comp {

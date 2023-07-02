@@ -3,7 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.storage.store.StandardStoreEntryComp;
-import io.xpipe.app.comp.storage.store.StoreEntrySectionComp;
+import io.xpipe.app.comp.storage.store.StoreSectionComp;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.comp.storage.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
@@ -34,12 +34,12 @@ public interface DataStoreProvider {
         }
     }
 
-    default Comp<?> customDisplay(StoreEntryWrapper w) {
-        return new StandardStoreEntryComp(w, null);
+    default Comp<?> customDisplay(StoreSection s) {
+        return new StandardStoreEntryComp(s.getWrapper(), null);
     }
 
     default Comp<?> customContainer(StoreSection section) {
-        return new StoreEntrySectionComp(section);
+        return new StoreSectionComp(section);
     }
 
     default String failureInfo() {

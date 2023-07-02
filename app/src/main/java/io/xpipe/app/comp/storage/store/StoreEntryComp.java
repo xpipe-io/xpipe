@@ -34,12 +34,12 @@ import java.util.ArrayList;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
-    public static Comp<?> customSection(StoreEntryWrapper e) {
-        var prov = e.getEntry().getProvider();
+    public static Comp<?> customSection(StoreSection e) {
+        var prov = e.getWrapper().getEntry().getProvider();
         if (prov != null) {
             return prov.customDisplay(e);
         } else {
-            return new StandardStoreEntryComp(e, null);
+            return new StandardStoreEntryComp(e.getWrapper(), null);
         }
     }
 

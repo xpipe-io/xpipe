@@ -36,23 +36,25 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     public CompStructure<ScrollPane> createBase() {
         Map<T, Region> cache = new HashMap<>();
 
-        VBox listView = new VBox();
-        listView.setFocusTraversable(false);
+        VBox vbox = new VBox();
+        vbox.getStyleClass().add("content");
+        vbox.setFocusTraversable(false);
 
-        refresh(listView, shown, all, cache, false);
-        listView.requestLayout();
+        refresh(vbox, shown, all, cache, false);
+        vbox.requestLayout();
 
         shown.addListener((ListChangeListener<? super T>) (c) -> {
-            refresh(listView, c.getList(), all, cache, true);
+            refresh(vbox, c.getList(), all, cache, true);
         });
 
         all.addListener((ListChangeListener<? super T>) c -> {
             cache.keySet().retainAll(c.getList());
         });
 
-        var scroll = new ScrollPane(listView);
+        var scroll = new ScrollPane(vbox);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scroll.setFitToWidth(true);
+        scroll.getStyleClass().add("list-box-view-comp");
 
         return new SimpleCompStructure<>(scroll);
     }

@@ -4,6 +4,9 @@ import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Value;
@@ -19,12 +22,30 @@ public class StoreSection implements StorageFilter.Filterable {
         if (prov != null) {
             return prov.customContainer(e);
         } else {
-            return new StoreEntrySectionComp(e);
+            return new StoreSectionComp(e);
         }
     }
 
     StoreEntryWrapper wrapper;
     ObservableList<StoreSection> children;
+    int depth;
+    ObservableBooleanValue showDetails;
+
+    public StoreSection(StoreEntryWrapper wrapper, ObservableList<StoreSection> children, int depth) {
+        this.wrapper = wrapper;
+        this.children = children;
+        this.depth = depth;
+        if (wrapper != null) {
+            this.showDetails = Bindings.createBooleanBinding(
+                    () -> {
+                        return wrapper.getExpanded().get() || children.size() == 0;
+                    },
+                    wrapper.getExpanded(),
+                    children);
+        } else {
+            this.showDetails = new SimpleBooleanProperty(true);
+        }
+    }
 
     private static final Comparator<StoreSection> COMPARATOR = Comparator.<StoreSection, Instant>comparing(
                     o -> o.wrapper.getEntry().getState().isUsable()
@@ -36,19 +57,19 @@ public class StoreSection implements StorageFilter.Filterable {
 
     public static StoreSection createTopLevel() {
         var topLevel = BindingsHelper.mappedContentBinding(
-                StoreViewState.get().getAllEntries(), storeEntryWrapper -> create(storeEntryWrapper));
+                StoreViewState.get().getAllEntries(), storeEntryWrapper -> create(storeEntryWrapper, 1));
         var filtered = BindingsHelper.filteredContentBinding(topLevel, section -> {
             return DataStorage.get()
                     .getParent(section.getWrapper().getEntry(), true)
                     .isEmpty();
         });
         var ordered = BindingsHelper.orderedContentBinding(filtered, COMPARATOR);
-        return new StoreSection(null, ordered);
+        return new StoreSection(null, ordered, 0);
     }
 
-    private static StoreSection create(StoreEntryWrapper e) {
+    private static StoreSection create(StoreEntryWrapper e, int depth) {
         if (!e.getEntry().getState().isUsable()) {
-            return new StoreSection(e, FXCollections.observableArrayList());
+            return new StoreSection(e, FXCollections.observableArrayList(), depth);
         }
 
         var filtered =
@@ -58,9 +79,9 @@ public class StoreSection implements StorageFilter.Filterable {
                             .map(found -> found.equals(e.getEntry()))
                             .orElse(false);
                 });
-        var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1));
+        var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1, depth + 1));
         var ordered = BindingsHelper.orderedContentBinding(children, COMPARATOR);
-        return new StoreSection(e, ordered);
+        return new StoreSection(e, ordered, depth);
     }
 
     @Override

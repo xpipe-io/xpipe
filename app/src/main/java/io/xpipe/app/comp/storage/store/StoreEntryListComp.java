@@ -26,8 +26,8 @@ public class StoreEntryListComp extends SimpleComp {
                         .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
         var content = new ListBoxViewComp<>(filtered, topLevel.getChildren(), (StoreSection e) -> {
             var custom = StoreSection.customSection(e).hgrow();
-            return new HorizontalComp(List.of(Comp.spacer(20), custom, Comp.spacer(20))).styleClass("top");
-        }).apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(20, 0, 20, 0)));
+            return new HorizontalComp(List.of(Comp.spacer(10), custom, Comp.spacer(10))).styleClass("top");
+        }).apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(10, 0, 10, 0)));
         return content.styleClass("store-list-comp");
     }
 
