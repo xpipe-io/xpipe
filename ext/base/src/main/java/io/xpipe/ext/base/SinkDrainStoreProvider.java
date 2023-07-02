@@ -42,7 +42,7 @@ public class SinkDrainStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean shouldShow() {
+    public boolean canManuallyCreate() {
         return false;
     }
 

@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.actions;
 
-import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
+import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DefaultSecretValue;

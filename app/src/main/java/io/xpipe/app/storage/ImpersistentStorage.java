@@ -13,8 +13,6 @@ public class ImpersistentStorage extends DataStorage {
 
     @Override
     public void load() {
-        // Add temporary collection it is not added yet
-        getInternalCollection();
     }
 
     @Override

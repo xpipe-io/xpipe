@@ -6,7 +6,6 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.LeafShellStore;
 import io.xpipe.core.store.ShellStore;
@@ -70,7 +69,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         return Optional.of(AppI18n.get("none"));
                     }
 
-                    return XPipeDaemon.getInstance().getStoreName(store);
+                    return DataStorage.get().getStoreDisplayName(store);
                 })
                 .orElse(AppI18n.get("unknown"));
 
@@ -82,7 +81,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             return AppI18n.get("none");
         }
 
-        return XPipeDaemon.getInstance().getStoreName(store).orElse("?");
+        return DataStorage.get().getStoreDisplayName(store).orElse("?");
     }
 
     @Override

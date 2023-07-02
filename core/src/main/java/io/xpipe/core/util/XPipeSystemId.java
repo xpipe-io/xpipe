@@ -30,6 +30,9 @@ public class XPipeSystemId {
 
     public static UUID getSystemId(ShellControl proc) throws Exception {
         var file = proc.getOsType().getSystemIdFile(proc);
+        if (file == null) {
+            return UUID.randomUUID();
+        }
 
         if (!proc.getShellDialect().createFileExistsCommand(proc, file).executeAndCheck()) {
             return writeRandom(proc, file);

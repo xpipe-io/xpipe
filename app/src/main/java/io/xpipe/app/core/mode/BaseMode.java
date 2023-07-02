@@ -1,7 +1,6 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.browser.BrowserModel;
-import io.xpipe.app.comp.storage.collection.SourceCollectionViewState;
 import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.*;
@@ -55,7 +54,6 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("mode", "Background mode shutdown started");
         BrowserModel.DEFAULT.reset();
         AppSocketServer.reset();
-        SourceCollectionViewState.reset();
         StoreViewState.reset();
         DataStorage.reset();
         AppPrefs.reset();

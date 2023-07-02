@@ -41,7 +41,7 @@ visibility: hidden;
 }
 
 .prefs .grid {
--fx-padding: 1em 2.3em 0 2.3em;
+-fx-padding: 1em 2.3em 2em 2.3em;
 }
 
 .prefs {

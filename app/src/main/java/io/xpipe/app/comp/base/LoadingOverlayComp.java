@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
@@ -27,8 +28,6 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
         var loading = new RingProgressIndicator(0, false);
         loading.setProgress(-1);
-        loading.setPrefWidth(50);
-        loading.setPrefHeight(50);
 
         var loadingBg = new StackPane(loading);
         loadingBg.getStyleClass().add("loading-comp");
@@ -69,7 +68,14 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         };
         PlatformThread.sync(showLoading).addListener(listener);
 
-        var stack = new StackPane(compStruc.get(), loadingBg);
+        var r = compStruc.get();
+        var stack = new StackPane(r, loadingBg);
+
+        loading.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+            return Math.min(r.getHeight() - 20, 50);
+        }, r.heightProperty()));
+        loading.prefHeightProperty().bind(loading.prefWidthProperty());
+
         return new SimpleCompStructure<>(stack);
     }
 }

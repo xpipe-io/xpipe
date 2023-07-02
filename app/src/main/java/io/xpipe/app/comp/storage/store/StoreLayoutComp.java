@@ -16,6 +16,7 @@ public class StoreLayoutComp extends SimpleComp {
         var groupHeader = new StoreSidebarComp().createRegion();
         r.setLeft(groupHeader);
         r.setCenter(listR);
+        r.getStyleClass().add("layout");
         return r;
     }
 }

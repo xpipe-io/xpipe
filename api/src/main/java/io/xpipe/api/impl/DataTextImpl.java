@@ -2,25 +2,12 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataText;
-import io.xpipe.api.connector.XPipeApiConnection;
-import io.xpipe.beacon.BeaconConnection;
-import io.xpipe.beacon.BeaconException;
-import io.xpipe.beacon.exchange.api.QueryTextDataExchange;
 import io.xpipe.core.source.DataSourceId;
-import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class DataTextImpl extends DataSourceImpl implements DataText {
 
@@ -53,47 +40,7 @@ public class DataTextImpl extends DataSourceImpl implements DataText {
 
     @Override
     public Stream<String> lines() {
-        var iterator = new Iterator<String>() {
-
-            private final BeaconConnection connection;
-            private final BufferedReader reader;
-            private String nextValue;
-
-            {
-                connection = XPipeApiConnection.open();
-                var req = QueryTextDataExchange.Request.builder()
-                        .ref(DataSourceReference.id(getId()))
-                        .maxLines(-1)
-                        .build();
-                connection.sendRequest(req);
-                connection.receiveResponse();
-                reader = new BufferedReader(new InputStreamReader(connection.receiveBody(), StandardCharsets.UTF_8));
-            }
-
-            private void close() {
-                connection.close();
-            }
-
-            @Override
-            public boolean hasNext() {
-                connection.checkClosed();
-
-                try {
-                    nextValue = reader.readLine();
-                } catch (IOException e) {
-                    throw new BeaconException(e);
-                }
-                return nextValue != null;
-            }
-
-            @Override
-            public String next() {
-                return nextValue;
-            }
-        };
-
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false)
-                .onClose(iterator::close);
+        return Stream.of();
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.List;
 public class InMemoryStoreProvider implements DataStoreProvider {
 
     @Override
-    public boolean shouldShow() {
+    public boolean canManuallyCreate() {
         return false;
     }
 

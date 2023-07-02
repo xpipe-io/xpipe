@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
 
@@ -10,7 +11,7 @@ public class DataStoreFormatter {
 
     public static String formatSubHost(IntFunction<String> func, DataStore at, int length) {
         var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? XPipeDaemon.getInstance().getStoreName(at).orElse(null)
+                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
                 : null;
         if (atString == null) {
             return func.apply(length);
@@ -22,7 +23,7 @@ public class DataStoreFormatter {
 
     public static String formatAtHost(IntFunction<String> func, DataStore at, int length) {
         var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? XPipeDaemon.getInstance().getStoreName(at).orElse(null)
+                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
                 : null;
         if (atString == null) {
             return func.apply(length);
@@ -34,7 +35,7 @@ public class DataStoreFormatter {
 
     public static String formatViaProxy(IntFunction<String> func, DataStore at, int length) {
         var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? XPipeDaemon.getInstance().getStoreName(at).orElse(null)
+                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
                 : null;
         if (atString == null) {
             return func.apply(length);
@@ -53,7 +54,7 @@ public class DataStoreFormatter {
             return "?";
         }
 
-        var named = XPipeDaemon.getInstance().getStoreName(input);
+        var named = DataStorage.get().getStoreDisplayName(input);
         if (named.isPresent()) {
             return cut(named.get(), length);
         }

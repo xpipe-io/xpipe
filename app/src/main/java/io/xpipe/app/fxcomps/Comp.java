@@ -1,12 +1,13 @@
 package io.xpipe.app.fxcomps;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
-import io.xpipe.app.fxcomps.impl.WrapperComp;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
@@ -26,19 +27,25 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     private List<Augment<S>> augments;
 
+    public static Comp<CompStructure<Region>> empty() {
+        return of(() -> new Region());
+    }
+
+    public static Comp<CompStructure<Spacer>> spacer(double size) {
+        return of(() -> new Spacer(size));
+    }
+
     public static <R extends Region> Comp<CompStructure<R>> of(Supplier<R> r) {
-        return new WrapperComp<>(() -> {
-            var region = r.get();
-            return () -> region;
-        });
+        return new Comp<>() {
+            @Override
+            public CompStructure<R> createBase() {
+                return new SimpleCompStructure<>(r.get());
+            }
+        };
     }
 
     public static Comp<CompStructure<Separator>> separator() {
-        return Comp.of(() -> new Separator());
-    }
-
-    public static <S extends CompStructure<?>> Comp<S> ofStructure(Supplier<S> r) {
-        return new WrapperComp<>(r);
+        return of(() -> new Separator(Orientation.HORIZONTAL));
     }
 
     @SuppressWarnings("unchecked")

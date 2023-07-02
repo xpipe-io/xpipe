@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.XPipeSession;
 import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
@@ -17,7 +18,6 @@ import java.util.stream.Stream;
 public class StandardStorage extends DataStorage {
 
     private final List<Path> directoriesToKeep = new ArrayList<>();
-    private DataSourceCollection recovery;
 
     private boolean isNewSession() {
         return XPipeSession.get().isNewSystemSession();
@@ -48,70 +48,6 @@ public class StandardStorage extends DataStorage {
                     var entry = getStoreEntry(uuid);
                     if (entry.isEmpty()) {
                         TrackEvent.withTrace("storage", "Deleting leftover store directory")
-                                .tag("uuid", uuid)
-                                .handle();
-                        FileUtils.forceDelete(file.toFile());
-                    }
-                } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                }
-            });
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
-        }
-
-        // Delete leftover directories in entries dir
-        try (var s = Files.list(entriesDir)) {
-            s.forEach(file -> {
-                if (directoriesToKeep.contains(file)) {
-                    return;
-                }
-
-                var name = file.getFileName().toString();
-                try {
-                    UUID uuid;
-                    try {
-                        uuid = UUID.fromString(name);
-                    } catch (Exception ex) {
-                        FileUtils.forceDelete(file.toFile());
-                        return;
-                    }
-
-                    var entry = getSourceEntry(uuid);
-                    if (entry.isEmpty()) {
-                        TrackEvent.withTrace("storage", "Deleting leftover entry directory")
-                                .tag("uuid", uuid)
-                                .handle();
-                        FileUtils.forceDelete(file.toFile());
-                    }
-                } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                }
-            });
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
-        }
-
-        // Delete leftover directories in collections dir
-        try (var s = Files.list(collectionsDir)) {
-            s.forEach(file -> {
-                if (directoriesToKeep.contains(file)) {
-                    return;
-                }
-
-                var name = file.getFileName().toString();
-                try {
-                    UUID uuid;
-                    try {
-                        uuid = UUID.fromString(name);
-                    } catch (Exception ex) {
-                        FileUtils.forceDelete(file.toFile());
-                        return;
-                    }
-
-                    var col = getCollection(uuid);
-                    if (col.isEmpty()) {
-                        TrackEvent.withTrace("storage", "Deleting leftover collection directory")
                                 .tag("uuid", uuid)
                                 .handle();
                         FileUtils.forceDelete(file.toFile());
@@ -158,75 +94,23 @@ public class StandardStorage extends DataStorage {
 
                         storeEntries.add(entry);
                     } catch (Exception e) {
-                        directoriesToKeep.add(path);
+                        // We only keep invalid entries in developer mode as there's no point in keeping them in
+                        // production.
+                        if (AppPrefs.get().developerMode().getValue()) {
+                            directoriesToKeep.add(path);
+                        }
                         ErrorEvent.fromThrowable(e).omitted(true).build().handle();
                     }
                 });
+
+                // Refresh to update state
                 storeEntries.forEach(dataStoreEntry -> dataStoreEntry.simpleRefresh());
-            }
 
-            try (var dirs = Files.list(entriesDir)) {
-                dirs.filter(Files::isDirectory).forEach(path -> {
-                    try {
-                        try (Stream<Path> list = Files.list(path)) {
-                            if (list.findAny().isEmpty()) {
-                                return;
-                            }
-                        }
-
-                        var entry = DataSourceEntry.fromDirectory(path);
-                        if (entry == null) {
-                            return;
-                        }
-
-                        sourceEntries.add(entry);
-                    } catch (Exception e) {
-                        directoriesToKeep.add(path);
-                        ErrorEvent.fromThrowable(e).omitted(true).build().handle();
-                    }
-                });
-            }
-
-            try (var dirs = Files.list(collectionsDir)) {
-                dirs.filter(Files::isDirectory).forEach(path -> {
-                    try {
-                        try (Stream<Path> list = Files.list(path)) {
-                            if (list.findAny().isEmpty()) {
-                                return;
-                            }
-                        }
-
-                        var col = DataSourceCollection.fromDirectory(this, path);
-
-                        // Empty temp on new session
-                        if (col.getName() == null && newSession) {
-                            for (var e : col.getEntries()) {
-                                var file = e.getDirectory();
-                                TrackEvent.withTrace("storage", "Deleting temporary entry directory")
-                                        .tag("uuid", e.getUuid())
-                                        .handle();
-                                FileUtils.forceDelete(file.toFile());
-                            }
-                            col.clear();
-                        }
-
-                        sourceCollections.add(col);
-                    } catch (Exception e) {
-                        directoriesToKeep.add(path);
-                        ErrorEvent.fromThrowable(e).omitted(true).build().handle();
-                    }
-                });
-            }
-
-            // Add temporary collection it is not added yet
-            getInternalCollection();
-
-            for (var e : getSourceEntries()) {
-                var inCol = getSourceCollections().stream()
-                        .anyMatch(col -> col.getEntries().contains(e));
-                if (!inCol) {
-                    recovery = createOrGetCollection("Recovery");
-                    recovery.addEntry(e);
+                // Remove even incomplete stores when in production
+                if (!AppPrefs.get().developerMode().getValue()) {
+                    storeEntries.removeIf(entry -> {
+                        return !entry.getState().isUsable();
+                    });
                 }
             }
         } catch (IOException ex) {
@@ -257,31 +141,6 @@ public class StandardStorage extends DataStorage {
                         ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
                     }
                 });
-
-        // Save entries
-        sourceEntries.stream()
-                .filter(dataStoreEntry -> dataStoreEntry.shouldSave())
-                .forEach(e -> {
-                    try {
-                        e.writeDataToDisk();
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                    }
-                });
-
-        // Save collections
-        for (var c : sourceCollections) {
-            if (c.equals(recovery)) {
-                continue;
-            }
-
-            try {
-                c.writeDataToDisk();
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-            }
-        }
-
         deleteLeftovers();
     }
 

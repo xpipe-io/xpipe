@@ -1,13 +1,16 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
 import io.xpipe.app.comp.storage.StorageFilter;
+import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedHierarchyStore;
 import javafx.beans.property.*;
 import lombok.Getter;
 
@@ -94,10 +97,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         disabled.setValue(entry.isDisabled());
         state.setValue(entry.getState());
         expanded.setValue(entry.isExpanded());
-        information.setValue(
-                entry.getInformation() != null
-                        ? entry.getInformation()
-                        : entry.isDisabled() ? null : entry.getProvider().getDisplayName());
+        information.setValue(entry.getInformation());
 
         loading.setValue(entry.getState() == DataStoreEntry.State.VALIDATING);
         if (entry.getState().isUsable()) {
@@ -164,20 +164,49 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     }
 
     public void refreshIfNeeded() throws Exception {
-        var found = getDefaultActionProvider().getValue();
-        if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID) || found == null) {
+        if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID)
+                || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
             getEntry().refresh(true);
-            PlatformThread.runLaterIfNeeded(() -> {
-                expanded.set(true);
-            });
         }
+    }
+
+    public void refreshAsync() {
+        ThreadHelper.runFailableAsync(() -> {
+            getEntry().refresh(true);
+        });
+    }
+
+    public void refreshWithChildren() throws Exception {
+        getEntry().refresh(true);
+        var hasChildren = DataStorage.get().refreshChildren(entry);
+        PlatformThread.runLaterIfNeeded(() -> {
+            expanded.set(hasChildren);
+        });
+    }
+
+    public void refreshWithChildrenAsync() {
+        ThreadHelper.runFailableAsync(() -> {
+            refreshWithChildren();
+        });
+    }
+
+    public void mutateAsync(DataStore newValue) {
+        ThreadHelper.runAsync(() -> {
+            var hasChildren = DataStorage.get().setAndRefresh(getEntry(), newValue);
+            PlatformThread.runLaterIfNeeded(() -> {
+                expanded.set(hasChildren);
+            });
+        });
     }
 
     public void executeDefaultAction() throws Exception {
         var found = getDefaultActionProvider().getValue();
+        entry.updateLastUsed();
         if (found != null) {
-            entry.updateLastUsed();
+            refreshIfNeeded();
             found.createAction(entry.getStore().asNeeded()).execute();
+        } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
+            refreshWithChildrenAsync();
         }
     }
 

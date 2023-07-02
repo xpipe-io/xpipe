@@ -24,7 +24,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
                         .map(p -> ProviderEntry.builder()
                                 .id(p.getId())
                                 .description(p.getDisplayDescription())
-                                .hidden(!p.shouldShow())
+                                .hidden(!p.canManuallyCreate())
                                 .build())
                         .toList()));
 

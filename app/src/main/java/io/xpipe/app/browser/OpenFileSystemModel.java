@@ -6,7 +6,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -133,7 +132,7 @@ public final class OpenFileSystemModel {
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = adjustedPath + " - "
-                    + XPipeDaemon.getInstance().getStoreName(store).orElse("?");
+                    + DataStorage.get().getStoreDisplayName(store).orElse("?");
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.ALL.stream()
                         .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
@@ -379,8 +378,7 @@ public final class OpenFileSystemModel {
                     var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
                             .prepareTerminalOpen(directory + " - "
-                                    + XPipeDaemon.getInstance()
-                                            .getStoreName(store)
+                                    + DataStorage.get().getStoreDisplayName(store)
                                             .orElse("?"));
                     TerminalHelper.open(directory, command);
                 }

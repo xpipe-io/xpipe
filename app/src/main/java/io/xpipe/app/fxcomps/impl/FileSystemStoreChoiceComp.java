@@ -4,7 +4,6 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
-import io.xpipe.app.util.XPipeDaemon;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
@@ -27,7 +26,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
         var name = DataStorage.get().getUsableStores().stream()
                 .filter(e -> e.equals(store))
                 .findAny()
-                .map(e -> XPipeDaemon.getInstance().getStoreName(e).orElse("?"))
+                .map(e -> DataStorage.get().getStoreDisplayName(e).orElse("?"))
                 .orElse("?");
         return name;
     }

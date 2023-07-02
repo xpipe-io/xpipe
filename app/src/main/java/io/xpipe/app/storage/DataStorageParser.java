@@ -69,15 +69,6 @@ public class DataStorageParser {
             return Optional.of(replaceReferenceIds(entry.get().getStoreNode(), newSeenIds));
         });
 
-        node = replaceReferenceIdsForType(node, "sourceId", id -> {
-            var foundEntry = DataStorage.get().getSourceEntry(id);
-            if (foundEntry.isPresent()) {
-                var sourceNode = mapper.valueToTree(foundEntry.get().getSource());
-                // return Optional.of(resolvesReferenceIds(sourceNode));
-            }
-            return Optional.empty();
-        });
-
         return node;
     }
 

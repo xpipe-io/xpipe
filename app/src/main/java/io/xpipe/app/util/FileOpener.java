@@ -83,6 +83,10 @@ public class FileOpener {
         }
     }
 
+    public static void openReadOnlyString(String input) {
+        FileBridge.get().openReadOnlyString(input, s -> openInTextEditor(s));
+    }
+
     public static void openString(String keyName, Object key, String input, Consumer<String> output) {
         FileBridge.get().openString(keyName, key, input, output, file -> openInTextEditor(file));
     }

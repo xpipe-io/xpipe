@@ -11,6 +11,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedHierarchyStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -130,11 +131,15 @@ final class BrowserBookmarkList extends SimpleComp {
                 }
 
                 ThreadHelper.runFailableAsync(() -> {
-                    BusyProperty.execute(busy, () -> {
-                        getItem().refreshIfNeeded();
-                    });
                     if (getItem().getEntry().getStore() instanceof ShellStore fileSystem) {
+                        BusyProperty.execute(busy, () -> {
+                            getItem().refreshIfNeeded();
+                        });
                         model.openFileSystemAsync(null, fileSystem, null, busy);
+                    } else if (getItem().getEntry().getStore() instanceof FixedHierarchyStore) {
+                        BusyProperty.execute(busy, () -> {
+                            getItem().refreshWithChildren();
+                        });
                     }
                 });
                 event.consume();
@@ -170,10 +175,14 @@ final class BrowserBookmarkList extends SimpleComp {
             super.updateItem(item, empty);
             if (empty || item == null) {
                 setText(null);
+
                 // Don't set image as that would trigger image comp update
                 // and cells are emptied on each change, leading to unnecessary changes
                 // img.set(null);
-                setGraphic(null);
+
+                // Use opacity instead of visibility as visibility is kinda bugged with web views
+                setOpacity(0.0);
+
                 setFocusTraversable(false);
                 setAccessibleText(null);
             } else {
@@ -190,7 +199,7 @@ final class BrowserBookmarkList extends SimpleComp {
                 img.set(item.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(item.getEntry().getStore()));
-                setGraphic(imageView);
+                setOpacity(1.0);
                 setFocusTraversable(true);
                 setAccessibleText(
                         item.getName() + " " + item.getEntry().getProvider().getDisplayName());

@@ -6,15 +6,12 @@ import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.impl.LocalStore;
-import io.xpipe.core.source.DataSource;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.util.SecretValue;
 import lombok.Value;
-
-import java.util.function.Predicate;
 
 public class DialogHelper {
 
@@ -26,7 +23,7 @@ public class DialogHelper {
     }
 
     public static Dialog machineQuery(DataStore store) {
-        var storeName = XPipeDaemon.getInstance().getStoreName(store).orElse("localhost");
+        var storeName = DataStorage.get().getStoreDisplayName(store).orElse("localhost");
         return Dialog.query("Machine", false, true, false, storeName, QueryConverter.STRING)
                 .map((String name) -> {
                     if (name.equals("local") || name.equals("localhost")) {
@@ -51,7 +48,7 @@ public class DialogHelper {
     }
 
     public static Dialog shellQuery(String displayName, DataStore store) {
-        var storeName = XPipeDaemon.getInstance().getStoreName(store).orElse("localhost");
+        var storeName = DataStorage.get().getStoreDisplayName(store).orElse("localhost");
         return Dialog.query(displayName, false, true, false, storeName, QueryConverter.STRING)
                 .map((String name) -> {
                     if (name.equals("local") || name.equals("localhost")) {
@@ -96,7 +93,7 @@ public class DialogHelper {
     }
 
     public static Dialog namedStoreQuery(DataStore store, Class<? extends DataStore> filter) {
-        var name = XPipeDaemon.getInstance().getStoreName(store).orElse(null);
+        var name = DataStorage.get().getStoreDisplayName(store).orElse(null);
         return Dialog.query("Store", false, true, false, name, QueryConverter.STRING)
                 .map((String newName) -> {
                     var found = DataStorage.get()
@@ -104,18 +101,6 @@ public class DialogHelper {
                             .map(entry -> entry.getStore())
                             .orElseThrow();
                     if (!filter.isAssignableFrom(found.getClass())) {
-                        throw new IllegalArgumentException("Incompatible store type");
-                    }
-                    return found;
-                });
-    }
-
-    public static Dialog sourceQuery(DataSource<?> source, Predicate<DataSource<?>> filter) {
-        var id = XPipeDaemon.getInstance().getSourceId(source).orElse(null);
-        return Dialog.query("Source Id", false, true, false, id, QueryConverter.STRING)
-                .map((String newName) -> {
-                    var found = XPipeDaemon.getInstance().getSource(newName).orElseThrow();
-                    if (!filter.test(found)) {
                         throw new IllegalArgumentException("Incompatible store type");
                     }
                     return found;

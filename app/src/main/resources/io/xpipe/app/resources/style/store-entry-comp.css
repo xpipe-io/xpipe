@@ -23,8 +23,28 @@
 -fx-opacity: 0.5;
 }
 
-.store-entry-comp {
--fx-padding: 6px 6px 6px 0;
+.store-entry-grid {
+-fx-padding: 6px 6px 6px 6px;
+}
+
+.store-entry-grid.dense {
+-fx-padding: 1px 6px 1px 6px;
+}
+
+.store-list-comp .top {
+-fx-border-width: 0 0 0.7em 0;
+-fx-background-insets: 0 0 0.7em 0;
+-fx-border-color: transparent;
+}
+
+.store-entry-section-comp:expanded:odd-depth {
+-fx-background-color: -color-bg-default;
+-fx-background-radius: 4px;
+}
+
+.store-entry-section-comp:expanded:even-depth {
+-fx-background-color: -color-bg-subtle;
+-fx-background-radius: 4px;
 }
 
 .store-entry-comp:hover {
@@ -35,6 +55,41 @@
 -fx-background-color: -color-neutral-muted;
 }
 
+.store-entry-comp .button-bar .button {
+-fx-padding: 6px;
+}
+
+.store-entry-section-comp .separator {
+-fx-padding: 0 0.75em 0 0.75em;
+-fx-border-insets: 0px;
+}
+
+.store-entry-section-comp > .content {
+-fx-padding: 5px 0 5px 25px;
+}
+
+.store-entry-section-comp .separator .line {
+-fx-padding: 0;
+-fx-border-insets: 0px;
+-fx-background-color: -color-border-subtle;
+-fx-pref-height: 1;
+}
+
+.top > .store-entry-section-comp {
+-fx-effect: dropshadow(three-pass-box, -color-shadow-default, 6px, 0.5, 0, 1);
+-fx-background-color: -color-bg-default;
+-fx-background-radius: 4px;
+}
+
+.store-entry-section-comp:expanded {
+-fx-border-radius: 4px;
+-fx-border-width: 1px;
+-fx-border-color: -color-border-default;
+}
+
+.store-entry-section-comp .list-box-view-comp .content {
+-fx-spacing: 0.2em;
+}
 
 
 

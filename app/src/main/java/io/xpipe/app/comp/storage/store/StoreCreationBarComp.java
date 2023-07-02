@@ -2,7 +2,7 @@ package io.xpipe.app.comp.storage.store;
 
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.source.store.GuiDsStoreCreator;
+import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;

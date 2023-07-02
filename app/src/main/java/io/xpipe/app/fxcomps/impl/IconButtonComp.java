@@ -1,6 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
-import com.jfoenix.controls.JFXButton;
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -9,9 +9,10 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
+import javafx.scene.control.Button;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class IconButtonComp extends Comp<CompStructure<JFXButton>> {
+public class IconButtonComp extends Comp<CompStructure<Button>> {
 
     private final ObservableValue<String> icon;
     private final Runnable listener;
@@ -30,8 +31,9 @@ public class IconButtonComp extends Comp<CompStructure<JFXButton>> {
     }
 
     @Override
-    public CompStructure<JFXButton> createBase() {
-        var button = new JFXButton();
+    public CompStructure<Button> createBase() {
+        var button = new Button();
+        button.getStyleClass().add(Styles.FLAT);
 
         var fi = new FontIcon(icon.getValue());
         fi.setFocusTraversable(false);
