@@ -203,19 +203,18 @@ public abstract class DataStorage {
                 .findFirst();
     }
 
-    public void setAndRefreshAsync(DataStoreEntry entry, DataStore s) {
-        ThreadHelper.runAsync(() -> {
-            var old = entry.getStore();
-            deleteChildren(entry, true);
-            try {
-                entry.setStoreInternal(s, false);
-                entry.refresh(true);
-                DataStorage.get().refreshChildren(entry);
-            } catch (Exception e) {
-                entry.setStoreInternal(old, false);
-                entry.simpleRefresh();
-            }
-        });
+    public boolean setAndRefresh(DataStoreEntry entry, DataStore s) {
+        var old = entry.getStore();
+        deleteChildren(entry, true);
+        try {
+            entry.setStoreInternal(s, false);
+            entry.refresh(true);
+            return DataStorage.get().refreshChildren(entry);
+        } catch (Exception e) {
+            entry.setStoreInternal(old, false);
+            entry.simpleRefresh();
+            return false;
+        }
     }
 
     public void refreshAsync(DataStoreEntry element, boolean deep) {

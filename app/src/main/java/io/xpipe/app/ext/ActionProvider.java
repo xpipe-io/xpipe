@@ -9,7 +9,6 @@ import javafx.beans.value.ObservableValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.stream.Collectors;
 
 public interface ActionProvider {
 
@@ -29,7 +28,7 @@ public interface ActionProvider {
                             return false;
                         }
                     })
-                    .collect(Collectors.toSet()));
+                    .toList());
         }
 
         @Override

@@ -163,8 +163,20 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         });
     }
 
-    public void executeRefreshAction() throws Exception {
-        var found = getDefaultActionProvider().getValue();
+    public void refreshIfNeeded() throws Exception {
+        if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID)
+                || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
+            getEntry().refresh(true);
+        }
+    }
+
+    public void refreshAsync() {
+        ThreadHelper.runFailableAsync(() -> {
+            getEntry().refresh(true);
+        });
+    }
+
+    public void refreshWithChildren() throws Exception {
         getEntry().refresh(true);
         var hasChildren = DataStorage.get().refreshChildren(entry);
         PlatformThread.runLaterIfNeeded(() -> {
@@ -172,24 +184,29 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         });
     }
 
-    public void mutate(DataStore newValue) {
+    public void refreshWithChildrenAsync() {
+        ThreadHelper.runFailableAsync(() -> {
+            refreshWithChildren();
+        });
+    }
+
+    public void mutateAsync(DataStore newValue) {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().setAndRefreshAsync(getEntry(), newValue);
+            var hasChildren = DataStorage.get().setAndRefresh(getEntry(), newValue);
+            PlatformThread.runLaterIfNeeded(() -> {
+                expanded.set(hasChildren);
+            });
         });
     }
 
     public void executeDefaultAction() throws Exception {
         var found = getDefaultActionProvider().getValue();
+        entry.updateLastUsed();
         if (found != null) {
-            if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID)
-                    || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
-                executeRefreshAction();
-            }
-
-            entry.updateLastUsed();
+            refreshIfNeeded();
             found.createAction(entry.getStore().asNeeded()).execute();
         } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
-            executeRefreshAction();
+            refreshWithChildrenAsync();
         }
     }
 

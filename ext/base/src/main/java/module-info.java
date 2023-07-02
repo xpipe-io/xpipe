@@ -48,7 +48,6 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
-            DeleteStoreChildrenAction,
             AddStoreAction,
             EditStoreAction,
             ShareStoreAction,

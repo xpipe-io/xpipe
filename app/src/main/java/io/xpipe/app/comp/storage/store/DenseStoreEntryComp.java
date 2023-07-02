@@ -19,7 +19,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var name = createName().createRegion();
 
         var grid = new GridPane();
-        grid.setHgap(10);
+        grid.setHgap(8);
 
         if (showIcon) {
             var storeIcon = createIcon(30, 25);
@@ -28,7 +28,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             GridPane.setHalignment(storeIcon, HPos.CENTER);
         } else {
             grid.add(new Region(), 0, 0);
-            grid.getColumnConstraints().add(new ColumnConstraints(5));
+            grid.getColumnConstraints().add(new ColumnConstraints(0));
         }
 
         var custom = new ColumnConstraints(content != null ? 300 : 0);

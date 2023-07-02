@@ -11,6 +11,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedHierarchyStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -130,11 +131,15 @@ final class BrowserBookmarkList extends SimpleComp {
                 }
 
                 ThreadHelper.runFailableAsync(() -> {
-                    BusyProperty.execute(busy, () -> {
-                        getItem().executeRefreshAction();
-                    });
                     if (getItem().getEntry().getStore() instanceof ShellStore fileSystem) {
+                        BusyProperty.execute(busy, () -> {
+                            getItem().refreshIfNeeded();
+                        });
                         model.openFileSystemAsync(null, fileSystem, null, busy);
+                    } else if (getItem().getEntry().getStore() instanceof FixedHierarchyStore) {
+                        BusyProperty.execute(busy, () -> {
+                            getItem().refreshWithChildren();
+                        });
                     }
                 });
                 event.consume();
