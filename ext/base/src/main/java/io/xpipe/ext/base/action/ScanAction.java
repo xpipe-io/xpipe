@@ -24,7 +24,7 @@ public class ScanAction implements ActionProvider {
 
         @Override
         public void execute() {
-            ScanAlert.showAsync(entry, false);
+            ScanAlert.showAsync(entry);
         }
     }
 

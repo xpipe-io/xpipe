@@ -29,34 +29,34 @@ import java.util.function.Supplier;
 
 public class ScanAlert {
 
-    public static void showAsync(DataStoreEntry entry, boolean automatic) {
+    public static void showAsync(DataStoreEntry entry) {
         ThreadHelper.runAsync(() -> {
             if (entry.getStore() instanceof ShellStore) {
-                showForShellStore(entry, automatic);
+                showForShellStore(entry);
             } else {
-                showForOtherStore(entry, automatic);
+                showForOtherStore(entry);
             }
         });
     }
 
-    private static void showForOtherStore(DataStoreEntry entry, boolean automatic) {
+    private static void showForOtherStore(DataStoreEntry entry) {
         showIfNeeded(() -> {
             var providers = ScanProvider.getAll();
             var applicable = providers.stream()
-                    .map(scanProvider -> scanProvider.create(entry.getStore(), automatic))
+                    .map(scanProvider -> scanProvider.create(entry.getStore()))
                     .filter(scanOperation -> scanOperation != null)
                     .toList();
             return applicable;
         });
     }
 
-    private static void showForShellStore(DataStoreEntry entry, boolean automatic) {
+    private static void showForShellStore(DataStoreEntry entry) {
         showIfNeeded(() -> {
             try (var sc = ((ShellStore) entry.getStore()).control().start()) {
                 var providers = ScanProvider.getAll();
                 var applicable = new ArrayList<ScanProvider.ScanOperation>();
                 for (ScanProvider scanProvider : providers) {
-                    ScanProvider.ScanOperation operation = scanProvider.create(entry, sc, automatic);
+                    ScanProvider.ScanOperation operation = scanProvider.create(entry, sc);
                     if (operation != null) {
                         applicable.add(operation);
                     }

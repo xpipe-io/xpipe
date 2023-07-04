@@ -49,11 +49,11 @@ public abstract class ScanProvider {
         return ALL;
     }
 
-    public ScanOperation create(DataStore store, boolean automatic) {
+    public ScanOperation create(DataStore store) {
         return null;
     }
 
-    public ScanOperation create(DataStoreEntry entry, ShellControl sc, boolean automatic) throws Exception {
+    public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
         return null;
     }
 }
