@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.actions;
+package io.xpipe.ext.base.action;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
@@ -31,7 +31,7 @@ public class RefreshStoreAction implements ActionProvider  {
         return new ActionProvider.DataStoreCallSite<>() {
 
             @Override
-            public boolean isMajor() {
+            public boolean isMajor(DataStore o) {
                 return true;
             }
 

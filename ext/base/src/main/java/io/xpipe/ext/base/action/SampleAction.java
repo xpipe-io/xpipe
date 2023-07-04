@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.actions;
+package io.xpipe.ext.base.action;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;

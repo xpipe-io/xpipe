@@ -240,6 +240,9 @@ public class AppMainWindow {
         stage.getScene().setRoot(contentR);
         TrackEvent.debug("Set content scene");
 
+        contentR.prefWidthProperty().bind(stage.getScene().widthProperty());
+        contentR.prefHeightProperty().bind(stage.getScene().heightProperty());
+
         stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
                 var newR = content.createRegion();

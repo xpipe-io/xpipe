@@ -102,7 +102,7 @@ public class SvgView {
         wv.setFocusTraversable(false);
         wv.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
 
-        wv.getEngine().loadContent(getHtml(svgContent.getValue()));
+        wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
         svgContent.addListener((c, o, n) -> {
             if (n == null) {
                 wv.getEngine().loadContent("");

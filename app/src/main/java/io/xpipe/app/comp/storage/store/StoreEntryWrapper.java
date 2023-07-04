@@ -32,9 +32,6 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final StringProperty summary = new SimpleStringProperty();
     private final Map<ActionProvider, BooleanProperty> actionProviders;
     private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
-    private final BooleanProperty editable = new SimpleBooleanProperty();
-    private final BooleanProperty renamable = new SimpleBooleanProperty();
-    private final BooleanProperty refreshable = new SimpleBooleanProperty();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
 
@@ -108,13 +105,6 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
             }
         }
 
-        editable.setValue(entry.getState() != DataStoreEntry.State.LOAD_FAILED
-                && (entry.getConfiguration().isEditable()
-                        || AppPrefs.get().developerDisableGuiRestrictions().get()));
-        renamable.setValue(entry.getConfiguration().isRenameable()
-                || AppPrefs.get().developerDisableGuiRestrictions().getValue());
-        refreshable.setValue(entry.getConfiguration().isRefreshable()
-                || AppPrefs.get().developerDisableGuiRestrictions().getValue());
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 

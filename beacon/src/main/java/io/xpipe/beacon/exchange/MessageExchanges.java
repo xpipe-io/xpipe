@@ -3,14 +3,14 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MessageExchanges {
 
-    private static Set<MessageExchange> ALL;
+    private static List<MessageExchange> ALL;
 
     public static void loadAll() {
         if (ALL == null) {
@@ -19,7 +19,7 @@ public class MessageExchanges {
                         var ex = (MessageExchange) s.get();
                         return ex;
                     })
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
         }
     }
 
@@ -42,7 +42,7 @@ public class MessageExchanges {
                 .findAny();
     }
 
-    public static Set<MessageExchange> getAll() {
+    public static List<MessageExchange> getAll() {
         loadAll();
         return ALL;
     }

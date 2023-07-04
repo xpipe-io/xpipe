@@ -3,12 +3,12 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.*;
-import io.xpipe.ext.base.actions.*;
+import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
-    exports io.xpipe.ext.base.actions;
+    exports io.xpipe.ext.base.action;
 
     requires java.desktop;
     requires io.xpipe.core;
@@ -48,10 +48,14 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            ScanAction,
+            LaunchAction,
+            LaunchShortcutAction,
             AddStoreAction,
             EditStoreAction,
             ShareStoreAction,
             FileBrowseAction,
+            BrowseStoreAction,
             FileEditAction;
     provides DataSourceProvider with
             TextSourceProvider,

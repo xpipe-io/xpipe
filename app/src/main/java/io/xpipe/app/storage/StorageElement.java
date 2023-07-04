@@ -122,12 +122,9 @@ public abstract class StorageElement {
     @Value
     public static class Configuration {
         boolean deletable;
-        boolean renameable;
-        boolean editable;
-        boolean refreshable;
 
         public static Configuration defaultConfiguration() {
-            return new Configuration(true, true, true, true);
+            return new Configuration(true);
         }
     }
 }

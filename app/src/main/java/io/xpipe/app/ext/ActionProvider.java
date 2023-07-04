@@ -99,7 +99,7 @@ public interface ActionProvider {
 
         Class<T> getApplicableClass();
 
-        default boolean isMajor() {
+        default boolean isMajor(T o) {
             return false;
         }
 

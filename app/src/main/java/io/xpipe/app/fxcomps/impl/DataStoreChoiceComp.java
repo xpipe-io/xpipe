@@ -7,7 +7,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.LeafShellStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,6 +21,10 @@ import java.util.function.Predicate;
 
 @AllArgsConstructor
 public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
+
+    public static <T extends DataStore> DataStoreChoiceComp<T> other(Property<T> selected, Class<T> clazz, Predicate<T> filter) {
+        return new DataStoreChoiceComp<T>(Mode.OTHER, null, selected, clazz, filter);
+    }
 
     public static DataStoreChoiceComp<ShellStore> proxy(Property<ShellStore> selected) {
         return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, shellStore -> true);
@@ -107,7 +110,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             }
 
             var s = e.getEntry().getStore();
-            if (!(mode == Mode.ENVIRONMENT) && s instanceof LeafShellStore) {
+            if (!(mode == Mode.ENVIRONMENT) && e.getEntry().getProvider() != null && !e.getEntry().getProvider().canHaveSubShells()) {
                 continue;
             }
 

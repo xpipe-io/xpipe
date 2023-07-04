@@ -42,8 +42,12 @@ public interface DataStoreProvider {
         return new StoreSectionComp(section);
     }
 
-    default String failureInfo() {
-        return null;
+    default boolean canHaveSubShells() {
+        return true;
+    }
+
+    default boolean shouldHaveSubShells() {
+        return canHaveSubShells();
     }
 
     default Comp<?> stateDisplay(StoreEntryWrapper w) {

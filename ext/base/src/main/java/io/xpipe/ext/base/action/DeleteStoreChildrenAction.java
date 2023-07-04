@@ -1,42 +1,29 @@
-package io.xpipe.ext.base.actions;
+package io.xpipe.ext.base.action;
 
-import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.util.SecretHelper;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedHierarchyStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-
-public class ShareStoreAction implements ActionProvider {
+public class DeleteStoreChildrenAction implements ActionProvider {
 
     @Value
     static class Action implements ActionProvider.Action {
 
-        DataStore store;
+        DataStoreEntry store;
 
         @Override
         public boolean requiresJavaFXPlatform() {
             return false;
         }
 
-        public static String create(DataStore store) {
-            return "xpipe://addStore/"
-                    + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
-        }
-
         @Override
         public void execute() {
-            var string = create(store);
-            var selection = new StringSelection(string);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            AppActionLinkDetector.setLastDetectedAction(string);
-            clipboard.setContents(selection, selection);
+            DataStorage.get().deleteChildren(store, true);
         }
     }
 
@@ -45,8 +32,13 @@ public class ShareStoreAction implements ActionProvider {
         return new DataStoreCallSite<>() {
 
             @Override
+            public boolean isMajor(DataStore o) {
+                return false;
+            }
+
+            @Override
             public ActionProvider.Action createAction(DataStore store) {
-                return new Action(store);
+                return new Action(DataStorage.get().getStoreEntry(store));
             }
 
             @Override
@@ -56,17 +48,20 @@ public class ShareStoreAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStore o) {
-                return DataStoreProviders.byStore(o).isShareable();
+                return !(o instanceof FixedHierarchyStore) && DataStorage.get()
+                                .getStoreChildren(DataStorage.get().getStoreEntry(o), true, true)
+                                .size()
+                        > 1;
             }
 
             @Override
             public ObservableValue<String> getName(DataStore store) {
-                return AppI18n.observable("base.copyShareLink");
+                return AppI18n.observable("base.deleteChildren");
             }
 
             @Override
             public String getIcon(DataStore store) {
-                return "mdi2c-clipboard-list-outline";
+                return "mdal-delete_outline";
             }
         };
     }

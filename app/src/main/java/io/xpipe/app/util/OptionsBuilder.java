@@ -6,6 +6,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -61,6 +62,11 @@ public class OptionsBuilder {
 
     public OptionsBuilder decorate(Check c) {
         comp.apply(s -> c.decorates(s.get()));
+        return this;
+    }
+
+    public OptionsBuilder disable() {
+        comp.disable(new SimpleBooleanProperty(true));
         return this;
     }
 

@@ -31,16 +31,14 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
 
         grid.add(createInformation(), 2, 0, 1, 2);
-        var info = new ColumnConstraints(content != null ? 300 : 600);
+        var infoSize = content != null ? 300 : 600;
+        var info = new ColumnConstraints(0, infoSize, infoSize);
         info.setHalignment(HPos.LEFT);
-        info.setMinWidth(Region.USE_PREF_SIZE);
-        info.setMaxWidth(Region.USE_PREF_SIZE);
         grid.getColumnConstraints().add(info);
 
-        var custom = new ColumnConstraints(content != null ? 300 : 0);
+        var customSize = content != null ? 300 : 0;
+        var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
-        custom.setMinWidth(Region.USE_PREF_SIZE);
-        custom.setMaxWidth(Region.USE_PREF_SIZE);
         var cr = content != null ? content.createRegion() : new Region();
         var bb = createButtonBar().createRegion();
         var controls = new HBox(cr, bb);

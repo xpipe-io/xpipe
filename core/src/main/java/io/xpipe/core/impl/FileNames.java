@@ -11,6 +11,10 @@ public class FileNames {
     }
 
     public static String toDirectory(String path) {
+        if (path == null) {
+            return null;
+        }
+
         if (path.endsWith("/") || path.endsWith("\\")) {
             return path;
         }

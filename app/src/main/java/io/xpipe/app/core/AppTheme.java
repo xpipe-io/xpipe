@@ -83,9 +83,6 @@ public class AppTheme {
 
         PlatformThread.runLaterIfNeeded(() -> {
             for (Window window : Window.getWindows()) {
-                // Fix scene content not taking the correct size after style seed change
-                window.setWidth(window.getWidth() - 1);
-
                 var scene = window.getScene();
                 Image snapshot = scene.snapshot(null);
                 Pane root = (Pane) scene.getRoot();

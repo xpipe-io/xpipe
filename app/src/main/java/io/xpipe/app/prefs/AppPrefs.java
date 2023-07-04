@@ -149,6 +149,19 @@ public class AppPrefs {
             StringField.ofStringType(customTerminalCommand).render(() -> new SimpleTextControl()),
             terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
 
+    private final BooleanProperty preferTerminalTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
+    private final BooleanField preferTerminalTabsField =
+            BooleanField.ofBooleanType(preferTerminalTabs).render(() -> new CustomToggleControl());
+
+    // Start behaviour
+    // ===============
+    private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour =
+            typed(new SimpleObjectProperty<>(ExternalStartupBehaviour.TRAY), ExternalStartupBehaviour.class);
+
+    private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
+            Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
+                    .render(() -> new TranslatableComboBoxControl<>());
+
     // Close behaviour
     // ===============
     private final ObjectProperty<CloseBehaviour> closeBehaviour =
@@ -170,12 +183,10 @@ public class AppPrefs {
             StringField.ofStringType(customEditorCommand).render(() -> new SimpleTextControl()),
             externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
     private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
-    private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour =
-            typed(new SimpleObjectProperty<>(ExternalStartupBehaviour.TRAY), ExternalStartupBehaviour.class);
 
-    private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
-            Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
-                    .render(() -> new TranslatableComboBoxControl<>());
+    private final BooleanProperty preferEditorTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
+    private final BooleanField preferEditorTabsField =
+            BooleanField.ofBooleanType(preferEditorTabs).render(() -> new CustomToggleControl());
 
     // Automatically update
     // ====================
@@ -529,15 +540,14 @@ public class AppPrefs {
                         "appearance",
                         Group.of(
                                 "uiOptions",
-                                Setting.of("language", languageControl, languageInternal),
                                 Setting.of("theme", themeControl, theme),
                                 Setting.of("useSystemFont", useSystemFontInternal),
-                                Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax)),
+                                Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
+                                Setting.of("language", languageControl, languageInternal)),
                         Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
                 Category.of(
-                        "integrations",
+                        "editor",
                         Group.of(
-                                "editor",
                                 Setting.of("editorProgram", externalEditorControl, externalEditor),
                                 Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand)
                                         .applyVisibility(VisibilityProperty.of(
@@ -546,13 +556,15 @@ public class AppPrefs {
                                         "editorReloadTimeout",
                                         editorReloadTimeout,
                                         editorReloadTimeoutMin,
-                                        editorReloadTimeoutMax)),
-                        Group.of(
-                                "terminal",
-                                Setting.of("terminalProgram", terminalTypeControl, terminalType),
-                                Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
-                                        .applyVisibility(VisibilityProperty.of(
-                                                terminalType.isEqualTo(ExternalTerminalType.CUSTOM))))),
+                                        editorReloadTimeoutMax),
+                                Setting.of("preferEditorTabs", preferEditorTabsField, preferEditorTabs))),
+                Category.of("terminal",
+                            Group.of(
+                                    Setting.of("terminalProgram", terminalTypeControl, terminalType),
+                                    Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
+                                            .applyVisibility(VisibilityProperty.of(
+                                                    terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
+                                    Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs))),
                 Category.of(
                         "developer",
                         Setting.of(

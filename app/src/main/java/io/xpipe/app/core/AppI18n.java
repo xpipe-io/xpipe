@@ -168,7 +168,7 @@ public class AppI18n {
         var key = getKey(s);
 
         if (translations == null) {
-            TrackEvent.warn("Translations not initialized for" + key);
+            TrackEvent.warn("Translations not initialized for " + key);
             return s;
         }
 

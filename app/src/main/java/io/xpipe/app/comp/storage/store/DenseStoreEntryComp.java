@@ -31,15 +31,13 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             grid.getColumnConstraints().add(new ColumnConstraints(0));
         }
 
-        var custom = new ColumnConstraints(content != null ? 300 : 0);
+        var customSize = content != null ? 300 : 0;
+        var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
-        custom.setMinWidth(Region.USE_PREF_SIZE);
-        custom.setMaxWidth(Region.USE_PREF_SIZE);
 
-        var info = new ColumnConstraints(content != null ? 300 : 600);
+        var infoSize = content != null ? 300 : 600;
+        var info = new ColumnConstraints(0, infoSize, infoSize);
         info.setHalignment(HPos.LEFT);
-        info.setMinWidth(Region.USE_PREF_SIZE);
-        info.setMaxWidth(Region.USE_PREF_SIZE);
 
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);

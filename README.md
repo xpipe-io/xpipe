@@ -90,7 +90,7 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 ##### Windows (Experimental)
 
 ```
-powershell -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1'))"
+powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
 ## Further information

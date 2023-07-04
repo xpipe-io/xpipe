@@ -175,8 +175,12 @@ public abstract class StoreEntryComp extends SimpleComp {
         var list = new ArrayList<Comp<?>>();
         for (var p : wrapper.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
-            if (!actionProvider.isMajor()
-                    || p.getKey().equals(wrapper.getDefaultActionProvider().getValue())) {
+            if (!actionProvider.isMajor(wrapper.getEntry().getStore().asNeeded())) {
+                continue;
+            }
+
+            var def = p.getKey().getDefaultDataStoreCallSite();
+            if (def != null && def.equals(wrapper.getDefaultActionProvider().getValue())) {
                 continue;
             }
 
@@ -234,7 +238,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         for (var p : wrapper.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
-            if (actionProvider.isMajor()) {
+            if (actionProvider.isMajor(wrapper.getEntry().getStore().asNeeded())) {
                 continue;
             }
 
@@ -269,7 +273,6 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
 
         var refresh = new MenuItem(AppI18n.get("refresh"), new FontIcon("mdal-360"));
-        refresh.disableProperty().bind(wrapper.getRefreshable().not());
         refresh.setOnAction(event -> {
             DataStorage.get().refreshAsync(wrapper.getEntry(), true);
         });

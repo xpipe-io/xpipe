@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.actions;
+package io.xpipe.ext.base.action;
 
 import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppI18n;
@@ -57,7 +57,7 @@ public class EditStoreAction implements ActionProvider {
         return new DataStoreCallSite<>() {
 
             @Override
-            public boolean isMajor() {
+            public boolean isMajor(DataStore o) {
                 return false;
             }
 
@@ -74,11 +74,6 @@ public class EditStoreAction implements ActionProvider {
             @Override
             public Class<DataStore> getApplicableClass() {
                 return DataStore.class;
-            }
-
-            @Override
-            public boolean isApplicable(DataStore o) {
-                return DataStorage.get().getStoreEntry(o).getConfiguration().isEditable();
             }
 
             @Override

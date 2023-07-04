@@ -4,14 +4,14 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchanges;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MessageExchangeImpls {
 
-    private static Set<MessageExchangeImpl<?, ?>> ALL;
+    private static List<MessageExchangeImpl<?, ?>> ALL;
 
     public static void loadAll() {
         ALL = ServiceLoader.load(MessageExchangeImpl.class).stream()
@@ -20,7 +20,7 @@ public class MessageExchangeImpls {
                     // TrackEvent.trace("init", "Loaded exchange implementation " + ex.getId());
                     return ex;
                 })
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
         ALL.forEach(messageExchange -> {
             if (MessageExchanges.byId(messageExchange.getId()).isEmpty()) {
@@ -51,7 +51,7 @@ public class MessageExchangeImpls {
         return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
     }
 
-    public static Set<MessageExchangeImpl<?, ?>> getAll() {
+    public static List<MessageExchangeImpl<?, ?>> getAll() {
         return ALL;
     }
 }

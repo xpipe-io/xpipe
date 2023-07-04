@@ -4,13 +4,13 @@ import com.dlsc.formsfx.model.structure.Field;
 import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableBooleanValue;
 
+import java.util.List;
 import java.util.ServiceLoader;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class PrefsProvider {
 
-    private static Set<PrefsProvider> ALL;
+    private static List<PrefsProvider> ALL;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -18,7 +18,7 @@ public abstract class PrefsProvider {
         public void init(ModuleLayer layer) {
             ALL = ServiceLoader.load(layer, PrefsProvider.class).stream()
                     .map(ServiceLoader.Provider::get)
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
         }
 
         @Override
@@ -32,7 +32,7 @@ public abstract class PrefsProvider {
         }
     }
 
-    public static Set<PrefsProvider> getAll() {
+    public static List<PrefsProvider> getAll() {
         return ALL;
     }
 

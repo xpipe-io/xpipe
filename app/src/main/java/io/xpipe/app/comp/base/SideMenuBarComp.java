@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -10,7 +11,6 @@ import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Priority;
@@ -21,10 +21,10 @@ import java.util.List;
 
 public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
-    private final Property<SideMenuBarComp.Entry> value;
-    private final List<Entry> entries;
+    private final Property<AppLayoutModel.Entry> value;
+    private final List<AppLayoutModel.Entry> entries;
 
-    public SideMenuBarComp(Property<Entry> value, List<Entry> entries) {
+    public SideMenuBarComp(Property<AppLayoutModel.Entry> value, List<AppLayoutModel.Entry> entries) {
         this.value = value;
         this.entries = entries;
     }
@@ -42,14 +42,15 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             b.apply(struc -> {
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
                 value.addListener((c, o, n) -> {
-                    struc.get().pseudoClassStateChanged(selected, n.equals(e));
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        struc.get().pseudoClassStateChanged(selected, n.equals(e));
+                    });
                 });
             });
             vbox.getChildren().add(b.createRegion());
         });
 
         {
-            // vbox.getChildren().add(new Spacer(Orientation.VERTICAL));
             var fi = new FontIcon("mdi2u-update");
             var b = new BigIconButton(AppI18n.observable("update"), fi, () -> UpdateAvailableAlert.showIfNeeded());
             b.apply(GrowAugment.create(true, false));
@@ -76,5 +77,4 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    public record Entry(ObservableValue<String> name, String icon, Comp<?> comp) {}
 }

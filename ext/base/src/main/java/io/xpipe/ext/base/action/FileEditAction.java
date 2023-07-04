@@ -1,17 +1,15 @@
-package io.xpipe.ext.base.actions;
+package io.xpipe.ext.base.action;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.DataFlow;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-public class FileBrowseAction implements ActionProvider {
+public class FileEditAction implements ActionProvider {
 
     @Value
     static class Action implements ActionProvider.Action {
@@ -25,7 +23,9 @@ public class FileBrowseAction implements ActionProvider {
 
         @Override
         public void execute() {
-            DesktopHelper.browseFileInDirectory(Path.of(store.getPath()));
+            if (store.getFileSystem().equals(new LocalStore())) {
+                FileOpener.openInTextEditor(store.getPath());
+            }
         }
     }
 
@@ -45,17 +45,17 @@ public class FileBrowseAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(FileStore o) {
-                return o.getFileSystem().equals(new LocalStore()) && Files.exists(Path.of(o.getPath()));
+                return o.getFlow().equals(DataFlow.INPUT_OUTPUT);
             }
 
             @Override
             public ObservableValue<String> getName(FileStore store) {
-                return AppI18n.observable("base.browseFile");
+                return AppI18n.observable("base.editFile");
             }
 
             @Override
             public String getIcon(FileStore store) {
-                return "mdi2f-folder-open-outline";
+                return "mdal-edit";
             }
         };
     }

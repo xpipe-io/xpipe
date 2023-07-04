@@ -47,6 +47,12 @@ public class FileSystemHelper {
             return null;
         }
 
+        if (path.startsWith("\"") && path.endsWith("\"")) {
+            path = path.substring(1, path.length() - 1);
+        } else if (path.startsWith("'") && path.endsWith("'")) {
+            path = path.substring(1, path.length() - 1);
+        }
+
         // Handle special case when file system creation has failed
         if (model.getFileSystem() == null) {
             return path;
@@ -98,6 +104,10 @@ public class FileSystemHelper {
 
         if (!FileNames.isAbsolute(resolved)) {
             throw new IllegalArgumentException(String.format("Directory %s is not absolute", resolved));
+        }
+
+        if (model.getFileSystem().fileExists(path)) {
+            return FileNames.toDirectory(FileNames.getParent(path));
         }
 
         return FileNames.toDirectory(resolved);

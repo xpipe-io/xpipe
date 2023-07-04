@@ -43,7 +43,7 @@
 }
 
 .store-entry-section-comp:expanded:even-depth {
--fx-background-color: -color-bg-subtle;
+-fx-background-color: -color-neutral-subtle;
 -fx-background-radius: 4px;
 }
 
