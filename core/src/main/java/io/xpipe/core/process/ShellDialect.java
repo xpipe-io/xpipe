@@ -25,6 +25,10 @@ public interface ShellDialect {
                 .collect(Collectors.joining(" "));
     }
 
+    default boolean isSupported() {
+        return true;
+    }
+
     CommandControl queryVersion(ShellControl shellControl);
 
     CommandControl prepareTempDirectory(ShellControl shellControl, String directory);

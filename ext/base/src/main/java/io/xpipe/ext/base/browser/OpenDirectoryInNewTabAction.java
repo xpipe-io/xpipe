@@ -5,9 +5,6 @@ import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -43,11 +40,6 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     @Override
     public boolean acceptsEmptySelection() {
         return true;
-    }
-
-    @Override
-    public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.ENTER);
     }
 
     @Override

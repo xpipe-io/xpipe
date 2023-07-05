@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -11,6 +12,8 @@ import io.xpipe.core.process.ShellDialects;
 import java.util.List;
 
 public class OpenNativeFileDetailsAction implements LeafAction {
+
+    private static ShellControl powershell;
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
@@ -24,9 +27,14 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                                     $shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')
                                     """,
                             FileNames.getParent(e), FileNames.getFileName(e));
-                    try (var sub = sc.enforcedDialect(ShellDialects.POWERSHELL).start()) {
-                        sub.command(content).notComplex().execute();
+
+                    // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as long as the parent process is running.
+                    // So let's keep one process running
+                    if (powershell == null) {
+                        powershell = new LocalStore().control().subShell(ShellDialects.POWERSHELL).start();
                     }
+
+                    powershell.command(content).notComplex().execute();
                 }
                 case OsType.Linux linux -> {
                     var dbus = String.format(
@@ -62,7 +70,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var sc = model.getFileSystem().getShell();
-        return model.isLocal() && !sc.get().getOsType().equals(OsType.WINDOWS);
+        return model.isLocal();
     }
 
     @Override

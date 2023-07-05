@@ -19,7 +19,6 @@ apply from: "$projectDir/gradle_scripts/richtextfx.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/prettytime.gradle"
 apply from: "$projectDir/gradle_scripts/sentry.gradle"
-apply from: "$projectDir/gradle_scripts/fxtrayicon.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 apply from: "$projectDir/gradle_scripts/github-api.gradle"
 apply from: "$projectDir/gradle_scripts/flexmark.gradle"
@@ -39,6 +38,7 @@ dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.3'
 
+    implementation 'com.dustinredmond.fxtrayicon:FXTrayIcon:4.0.1'
     implementation 'net.java.dev.jna:jna-jpms:5.13.0'
     implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"

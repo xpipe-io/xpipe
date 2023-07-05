@@ -32,6 +32,7 @@ import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -127,6 +128,8 @@ final class BrowserFileListComp extends SimpleComp {
             table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         }
 
+        table.getSelectionModel().setCellSelectionEnabled(false);
+
         table.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             var toSelect = new ArrayList<>(c.getList());
             // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in
@@ -192,7 +195,7 @@ final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableEntries(TableView<BrowserEntry> table) {
-        var emptyEntry = new BrowserFileListCompEntry(table, null, fileList);
+        var emptyEntry = new BrowserFileListCompEntry(table, table, null, fileList);
         table.setOnMouseClicked(e -> {
             emptyEntry.onMouseClick(e);
         });
@@ -213,6 +216,14 @@ final class BrowserFileListComp extends SimpleComp {
         });
         table.setOnDragDropped(event -> {
             emptyEntry.onDragDrop(event);
+        });
+
+        // Don't let the list view see this event
+        // otherwise it unselects everything as it doesn't understand shift clicks
+        table.addEventFilter(MouseEvent.MOUSE_CLICKED, t -> {
+            if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown() && t.getClickCount() == 1) {
+                t.consume();
+            }
         });
 
         table.setRowFactory(param -> {
@@ -257,7 +268,15 @@ final class BrowserFileListComp extends SimpleComp {
                             })
                     .augment(new SimpleCompStructure<>(row));
             var listEntry = Bindings.createObjectBinding(
-                    () -> new BrowserFileListCompEntry(row, row.getItem(), fileList), row.itemProperty());
+                    () -> new BrowserFileListCompEntry(table, row, row.getItem(), fileList), row.itemProperty());
+
+            // Don't let the list view see this event
+            // otherwise it unselects everything as it doesn't understand shift clicks
+            row.addEventFilter(MouseEvent.MOUSE_PRESSED, t -> {
+                if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
+                    listEntry.get().onMouseShiftClick(t);
+                }
+            });
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(DRAG, false);

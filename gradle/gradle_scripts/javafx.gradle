@@ -24,4 +24,5 @@ dependencies {
     dep "org.openjfx:javafx-graphics:20.0.1:${platform}"
     dep "org.openjfx:javafx-media:20.0.1:${platform}"
     dep "org.openjfx:javafx-web:20.0.1:${platform}"
+    dep "org.openjfx:javafx-swing:20.0.1:${platform}"
 }

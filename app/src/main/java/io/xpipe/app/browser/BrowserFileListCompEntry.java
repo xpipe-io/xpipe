@@ -9,6 +9,7 @@ import javafx.scene.input.*;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -17,6 +18,7 @@ public class BrowserFileListCompEntry {
 
     public static final Timer DROP_TIMER = new Timer("dnd", true);
 
+    private final TableView<BrowserEntry> tv;
     private final Node row;
     private final BrowserEntry item;
     private final BrowserFileListModel model;
@@ -24,46 +26,52 @@ public class BrowserFileListCompEntry {
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
 
-    public BrowserFileListCompEntry(Node row, BrowserEntry item, BrowserFileListModel model) {
+    public BrowserFileListCompEntry(TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
+        this.tv = tv;
         this.row = row;
         this.item = item;
         this.model = model;
     }
 
-    @SuppressWarnings("unchecked")
     public void onMouseClick(MouseEvent t) {
-        t.consume();
-
         if (item == null) {
             model.getSelection().clear();
+            t.consume();
             return;
         }
 
         if (t.getClickCount() == 2 && t.getButton() == MouseButton.PRIMARY) {
             model.onDoubleClick(item);
-            return;
+            t.consume();
         }
 
+        t.consume();
+    }
+
+    public void onMouseShiftClick(MouseEvent t) {
         if (isSynthetic()) {
             return;
         }
 
-        if (t.getButton() == MouseButton.PRIMARY && t.isShiftDown()) {
-            var tv = ((TableView<BrowserEntry>)
-                    row.getParent().getParent().getParent().getParent());
-            var all = tv.getItems();
-            var min = tv.getSelectionModel().getSelectedIndices().stream()
-                    .mapToInt(value -> value)
-                    .min()
-                    .orElse(1);
-            var max = tv.getSelectionModel().getSelectedIndices().stream()
-                    .mapToInt(value -> value)
-                    .max()
-                    .orElse(all.size() - 1);
-            var end = tv.getSelectionModel().getFocusedIndex();
-            var start = end > min ? min : max;
-            tv.getSelectionModel().selectRange(Math.min(start, end), Math.max(start, end) + 1);
+        var all = tv.getItems();
+        var index = item != null ? all.indexOf(item) : all.size() - 1;
+        var min = Math.min(index, tv.getSelectionModel().getSelectedIndices().stream()
+                .mapToInt(value -> value)
+                .min()
+                .orElse(1));
+        var max = Math.max(index, tv.getSelectionModel().getSelectedIndices().stream()
+                .mapToInt(value -> value)
+                .max()
+                .orElse(all.indexOf(item)));
+
+        var toSelect = new ArrayList<BrowserEntry>();
+        for (int i = min; i <= max; i++) {
+            if (!model.getSelection().contains(model.getShown().getValue().get(i))) {
+                toSelect.add(model.getShown().getValue().get(i));
+            }
         }
+        model.getSelection().addAll(toSelect);
+        t.consume();
     }
 
     public boolean isSynthetic() {

@@ -513,7 +513,6 @@ public class AppPrefs {
 
         var categories = new ArrayList<>(List.of(
                 Category.of("about", Group.of(about)),
-                Category.of("troubleshoot", Group.of(troubleshoot)),
                 Category.of(
                         "system",
                         Group.of(
@@ -586,7 +585,8 @@ public class AppPrefs {
                         Setting.of(
                                 "developerShowHiddenProviders",
                                 developerShowHiddenProvidersField,
-                                developerShowHiddenProviders))));
+                                developerShowHiddenProviders)),
+                Category.of("troubleshoot", Group.of(troubleshoot))));
 
         categories.get(categories.size() - 1).setVisibilityProperty(VisibilityProperty.of(developerMode()));
 
