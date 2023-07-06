@@ -1,9 +1,10 @@
 package io.xpipe.app.fxcomps.impl;
 
+import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
@@ -13,6 +14,8 @@ import javafx.scene.layout.StackPane;
 import lombok.Builder;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.Objects;
 
 public class FilterComp extends Comp<FilterComp.Structure> {
 
@@ -31,9 +34,20 @@ public class FilterComp extends Comp<FilterComp.Structure> {
         filter.setAccessibleText("Filter");
 
         SimpleChangeListener.apply(filterText, val -> {
-            PlatformThread.runLaterIfNeeded(() -> filter.setText(val));
+            Platform.runLater(() -> {
+                if (!Objects.equals(filter.getText(), val)) {
+                    filter.setText(val);
+                }
+            });
         });
         filter.textProperty().addListener((observable, oldValue, newValue) -> {
+            // Handle pasted xpipe URLs
+            if (newValue != null && newValue.startsWith("xpipe://")) {
+                AppActionLinkDetector.handle(newValue, false);
+                filter.setText(null);
+                return;
+            }
+
             filterText.setValue(newValue);
         });
 

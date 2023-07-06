@@ -43,6 +43,6 @@
 }
 
 .loading-comp {
--fx-background-color: #0002;
+  -fx-background-color: -color-modal-pane-overlay;
 }
 

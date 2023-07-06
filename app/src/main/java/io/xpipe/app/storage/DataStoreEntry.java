@@ -182,6 +182,7 @@ public class DataStoreEntry extends StorageElement {
     public void setExpanded(boolean expanded) {
         this.dirty = true;
         this.expanded = expanded;
+        listeners.forEach(l -> l.onUpdate());
     }
 
     public DataStore getStore() {

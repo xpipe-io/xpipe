@@ -94,9 +94,8 @@ public class StandardStorage extends DataStorage {
 
                         storeEntries.add(entry);
                     } catch (Exception e) {
-                        // We only keep invalid entries in developer mode as there's no point in keeping them in
-                        // production.
-                        if (AppPrefs.get().developerMode().getValue()) {
+                        // We only keep invalid entries in developer mode as there's no point in keeping them in production.
+                        if (AppPrefs.get().isDevelopmentEnvironment()) {
                             directoriesToKeep.add(path);
                         }
                         ErrorEvent.fromThrowable(e).omitted(true).build().handle();
@@ -107,7 +106,7 @@ public class StandardStorage extends DataStorage {
                 storeEntries.forEach(dataStoreEntry -> dataStoreEntry.simpleRefresh());
 
                 // Remove even incomplete stores when in production
-                if (!AppPrefs.get().developerMode().getValue()) {
+                if (!AppPrefs.get().isDevelopmentEnvironment()) {
                     storeEntries.removeIf(entry -> {
                         return !entry.getState().isUsable();
                     });

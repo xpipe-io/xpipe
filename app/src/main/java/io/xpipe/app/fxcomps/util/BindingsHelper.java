@@ -139,7 +139,7 @@ public class BindingsHelper {
             ObservableList<V> l2, ObservableValue<Predicate<V>> predicate) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
-            setContent(l1, l2.stream().filter(predicate.getValue()).toList());
+            setContent(l1, predicate.getValue() != null ? l2.stream().filter(predicate.getValue()).toList() : l2);
         };
         runnable.run();
         l2.addListener((ListChangeListener<? super V>) c -> {

@@ -7,7 +7,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.impl.LocalStore;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -29,7 +28,7 @@ public class StoreIntroComp extends SimpleComp {
 
         var introDesc = new Label(AppI18n.get("storeIntroDescription"));
 
-        var mfi = new FontIcon("mdi2m-magnify");
+        var mfi = new FontIcon("mdi2p-playlist-plus");
         var machine = new Label(AppI18n.get("storeMachineDescription"), mfi);
         machine.heightProperty().addListener((c, o, n) -> {
             mfi.iconSizeProperty().set(n.intValue());
@@ -67,9 +66,8 @@ public class StoreIntroComp extends SimpleComp {
         v.getStyleClass().add("intro");
 
         var sp = new StackPane(v);
-        sp.setAlignment(Pos.BOTTOM_CENTER);
+        sp.setAlignment(Pos.CENTER);
         sp.setPickOnBounds(false);
-        sp.setPadding(new Insets(0, 0, 40, 0));
         return sp;
     }
 }

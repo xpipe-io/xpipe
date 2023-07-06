@@ -46,7 +46,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default boolean shouldHaveSubShells() {
+    default boolean shouldHaveChildren() {
         return canHaveSubShells();
     }
 

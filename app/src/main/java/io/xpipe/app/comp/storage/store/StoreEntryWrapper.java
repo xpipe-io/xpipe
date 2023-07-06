@@ -206,7 +206,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
 
     @Override
     public boolean shouldShow(String filter) {
-        return getName().toLowerCase().contains(filter.toLowerCase())
+        return filter == null || getName().toLowerCase().contains(filter.toLowerCase())
                 || (summary.get() != null && summary.get().toLowerCase().contains(filter.toLowerCase()))
                 || (information.get() != null && information.get().toLowerCase().contains(filter.toLowerCase()));
     }

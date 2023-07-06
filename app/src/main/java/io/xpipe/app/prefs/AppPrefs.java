@@ -19,6 +19,7 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LockChangeAlert;
 import io.xpipe.app.util.LockedSecretValue;
+import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -34,6 +35,10 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class AppPrefs {
+
+    public boolean isDevelopmentEnvironment() {
+        return developerMode().getValue() && !ModuleHelper.isImage();
+    }
 
     private static ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
@@ -588,7 +593,7 @@ public class AppPrefs {
                                 developerShowHiddenProviders)),
                 Category.of("troubleshoot", Group.of(troubleshoot))));
 
-        categories.get(categories.size() - 1).setVisibilityProperty(VisibilityProperty.of(developerMode()));
+        categories.get(categories.size() - 2).setVisibilityProperty(VisibilityProperty.of(developerMode()));
 
         var handler = new PrefsHandlerImpl(categories);
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(handler));

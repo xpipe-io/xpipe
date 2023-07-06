@@ -20,7 +20,7 @@ public class AppActionLinkDetector {
         return content != null ? content.toString() : null;
     }
 
-    private static void handle(String content, boolean showAlert) {
+    public static void handle(String content, boolean showAlert) {
         var detected = LauncherInput.of(content);
         if (detected.size() == 0) {
             return;

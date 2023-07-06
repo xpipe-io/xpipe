@@ -31,6 +31,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
         var loadingBg = new StackPane(loading);
         loadingBg.getStyleClass().add("loading-comp");
+        loadingBg.getStyleClass().add("modal-pane");
 
         loadingBg.setVisible(showLoading.getValue());
 

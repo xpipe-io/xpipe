@@ -5,7 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DesktopShortcuts;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.LaunchableStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -29,30 +29,30 @@ public class LaunchShortcutAction implements ActionProvider {
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<ShellStore>() {
+        return new DataStoreCallSite<LaunchableStore>() {
 
             @Override
-            public Action createAction(ShellStore store) {
+            public Action createAction(LaunchableStore store) {
                 return new Action(DataStorage.get().getStoreEntry(store));
             }
 
             @Override
-            public Class<ShellStore> getApplicableClass() {
-                return ShellStore.class;
+            public Class<LaunchableStore> getApplicableClass() {
+                return LaunchableStore.class;
             }
 
             @Override
-            public ObservableValue<String> getName(ShellStore store) {
+            public ObservableValue<String> getName(LaunchableStore store) {
                 return AppI18n.observable("createShortcut");
             }
 
             @Override
-            public String getIcon(ShellStore store) {
+            public String getIcon(LaunchableStore store) {
                 return "mdi2c-code-greater-than";
             }
 
             @Override
-            public boolean isMajor(ShellStore o) {
+            public boolean isMajor(LaunchableStore o) {
                 return false;
             }
         };

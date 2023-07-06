@@ -34,7 +34,7 @@ public class ScanAction implements ActionProvider {
 
             @Override
             public boolean isMajor(ShellStore o) {
-                return DataStoreProviders.byStore(o).shouldHaveSubShells();
+                return DataStoreProviders.byStore(o).shouldHaveChildren();
             }
 
             @Override

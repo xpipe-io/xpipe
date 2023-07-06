@@ -123,7 +123,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 e -> {
                     try {
                         DataStorage.get().addStoreEntry(e);
-                        if (e.getProvider().shouldHaveSubShells()) {
+                        if (e.getProvider().shouldHaveChildren()) {
                             ScanAlert.showAsync(e);
                         }
                     } catch (Exception ex) {

@@ -11,8 +11,7 @@ public class DesktopShortcuts {
 
     private static void createWindowsShortcut(String target, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
-        var shortcutTarget = XPipeInstallation.getCurrentInstallationBasePath()
-                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.WINDOWS));
+        var shortcutTarget = XPipeInstallation.getLocalDefaultCliExecutable();
         var content = String.format(
                 """
                         set "TARGET=%s"
@@ -26,8 +25,7 @@ public class DesktopShortcuts {
     }
 
     private static void createLinuxShortcut(String target, String name) throws Exception {
-        var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.LINUX));
+        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                 """
@@ -47,8 +45,7 @@ public class DesktopShortcuts {
     }
 
     private static void createMacOSShortcut(String target, String name) throws Exception {
-        var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.MACOS));
+        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var base = System.getProperty("user.home") + "/Desktop/" + name + ".app";
         var content = String.format(

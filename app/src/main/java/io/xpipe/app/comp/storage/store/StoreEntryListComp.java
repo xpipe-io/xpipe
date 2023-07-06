@@ -2,7 +2,6 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
-import io.xpipe.app.core.AppState;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
@@ -33,11 +32,10 @@ public class StoreEntryListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var initialCount = StoreViewState.get().getAllEntries().size();
+        var initialCount = 1;
         var showIntro = Bindings.createBooleanBinding(
                 () -> {
-                    return initialCount == StoreViewState.get().getAllEntries().size()
-                            && AppState.get().isInitialLaunch();
+                    return initialCount == StoreViewState.get().getAllEntries().size();
                 },
                 StoreViewState.get().getAllEntries());
         var map = new LinkedHashMap<Comp<?>, ObservableBooleanValue>();

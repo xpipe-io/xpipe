@@ -40,7 +40,7 @@ public class ScanAlert {
     }
 
     private static void showForOtherStore(DataStoreEntry entry) {
-        showIfNeeded(() -> {
+        show(entry, () -> {
             var providers = ScanProvider.getAll();
             var applicable = providers.stream()
                     .map(scanProvider -> scanProvider.create(entry.getStore()))
@@ -51,7 +51,7 @@ public class ScanAlert {
     }
 
     private static void showForShellStore(DataStoreEntry entry) {
-        showIfNeeded(() -> {
+        show(entry, () -> {
             try (var sc = ((ShellStore) entry.getStore()).control().start()) {
                 var providers = ScanProvider.getAll();
                 var applicable = new ArrayList<ScanProvider.ScanOperation>();
@@ -69,7 +69,7 @@ public class ScanAlert {
         });
     }
 
-    private static void showIfNeeded(Supplier<List<ScanProvider.ScanOperation>> applicable) {
+    private static void show(DataStoreEntry entry, Supplier<List<ScanProvider.ScanOperation>> applicable) {
         var busy = new SimpleBooleanProperty();
         var selected = new SimpleListProperty<ScanProvider.ScanOperation>(FXCollections.observableArrayList());
         AppWindowHelper.showAlert(
@@ -103,6 +103,8 @@ public class ScanAlert {
                                         ErrorEvent.fromThrowable(ex).handle();
                                     }
                                 }
+
+                                entry.setExpanded(true);
 
                                 Platform.runLater(() -> {
                                     alert.setResult(ButtonType.OK);
