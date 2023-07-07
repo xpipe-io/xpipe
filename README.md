@@ -27,7 +27,7 @@ You have more questions? Then check out the new [FAQ](/FAQ.md).
 - Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
 - Can create desktop shortcuts that automatically open remote connections in your terminal
 
-![connections](https://github.com/xpipe-io/xpipe/assets/72509152/802f91a5-ad51-4139-8841-0b93087202e1)
+![connections](https://github.com/xpipe-io/xpipe/assets/72509152/ef19aa85-1b66-45e0-a051-5a4658758626)
 
 ## Remote File Manager
 
