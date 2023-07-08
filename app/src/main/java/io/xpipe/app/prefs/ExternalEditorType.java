@@ -79,13 +79,17 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
+            var execFile = getApplicationPath();
+            if (execFile.isEmpty()) {
+                throw new IOException("Application " + applicationName + ".app not found");
+            }
+
             ApplicationHelper.executeLocalApplication(
                     shellControl -> String.format(
                             "open -a %s %s",
                             shellControl
                                     .getShellDialect()
-                                    .fileArgument(
-                                            getApplicationPath().orElseThrow().toString()),
+                                    .fileArgument(execFile.orElseThrow().toString()),
                             shellControl.getShellDialect().fileArgument(file.toString())),
                     false);
         }
