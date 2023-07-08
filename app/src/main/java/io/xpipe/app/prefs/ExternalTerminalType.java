@@ -410,7 +410,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                pc.osascriptCommand(String.format(
+                pc.command(String.format(
                                 """
                         %s/Contents/MacOS/Tabby run %s
                         """,
