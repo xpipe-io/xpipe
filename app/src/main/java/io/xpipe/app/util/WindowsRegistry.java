@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
+import io.xpipe.app.issue.ErrorEvent;
 
 import java.util.Optional;
 
@@ -15,12 +16,18 @@ public class WindowsRegistry {
     }
 
     public static Optional<String> readString(int hkey, String key, String valueName) {
-        if (!Advapi32Util.registryValueExists(
-                hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName)) {
+        // This can fail even with errors in case the jna native library extraction fails
+        try {
+            if (!Advapi32Util.registryValueExists(
+                    hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName)) {
+                return Optional.empty();
+            }
+
+            return Optional.ofNullable(Advapi32Util.registryGetStringValue(
+                    hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName));
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
             return Optional.empty();
         }
-
-        return Optional.ofNullable(Advapi32Util.registryGetStringValue(
-                hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName));
     }
 }
