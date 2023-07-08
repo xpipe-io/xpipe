@@ -1,8 +1,8 @@
 <img src="https://github.com/xpipe-io/xpipe/assets/72509152/88d750f3-8469-4c51-bb64-5b264b0e9d47" alt="drawing" width="250"/>
 
-### A shell connection hub and remote file manager
+### A brand-new shell connection hub and remote file manager
 
-XPipe is a brand-new type of shell connection hub and remote file manager that allows you to access your entire sever infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.
+XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire sever infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.
 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
@@ -22,9 +22,9 @@ You have more questions? Then check out the new [FAQ](/FAQ.md).
 
 ## Connection Hub
 
-- Easily create and manage all kinds of remote connections, all in one place
-- Allows you to fully customize the init environment of the launched shell sessions with custom scripts
+- Easily connect to and access all kinds of remote connections in one place
 - Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
+- Allows you to fully customize the init environment of the launched shell sessions with custom scripts
 - Can create desktop shortcuts that automatically open remote connections in your terminal
 
 ![connections](https://github.com/xpipe-io/xpipe/assets/72509152/ef19aa85-1b66-45e0-a051-5a4658758626)
@@ -87,7 +87,7 @@ You can also install XPipe by pasting the installation command into your termina
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
 
-##### Windows (Experimental)
+##### Windows
 
 ```
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
