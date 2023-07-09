@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
@@ -70,6 +69,8 @@ public class AppFont {
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         try (var in = Files.newInputStream(file)) {
                             Font.loadFont(in, 12);
+                        } catch (Throwable t) {
+                            // Font loading can fail in rare cases. This is however not important, so we can just ignore it
                         }
                         return FileVisitResult.CONTINUE;
                     }
