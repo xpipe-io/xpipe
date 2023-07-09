@@ -26,7 +26,7 @@ public class TerminalHelper {
         } catch (Exception ex) {
             throw new IOException(
                     "Unable to launch terminal " + type.toTranslatedString() + ": " + ex.getMessage()
-                            + ". Maybe try to use a different one in the settings.",
+                            + ".\nMaybe try to use a different terminal in the settings.",
                     ex);
         }
     }

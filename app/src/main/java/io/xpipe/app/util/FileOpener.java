@@ -62,7 +62,7 @@ public class FileOpener {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e)
                     .description("Unable to launch editor " + editor.toTranslatedString()
-                            + ". Maybe try to use a different one in the settings.")
+                            + ".\nMaybe try to use a different editor in the settings.")
                     .handle();
         }
     }
