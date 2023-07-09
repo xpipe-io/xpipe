@@ -18,6 +18,10 @@ public class LocalStore extends JacksonizedValue implements ShellStore {
         localFileSystem = new LocalStore().createFileSystem();
     }
 
+    public static boolean isLocalShellInitialized() {
+        return local != null;
+    }
+
     public static ShellControl getShell() {
         if (local == null) {
             throw new IllegalStateException("Local shell not initialized yet");
