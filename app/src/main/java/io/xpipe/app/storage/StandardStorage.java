@@ -24,8 +24,6 @@ public class StandardStorage extends DataStorage {
     }
 
     private void deleteLeftovers() {
-        var entriesDir = getSourcesDir().resolve("entries");
-        var collectionsDir = getSourcesDir().resolve("collections");
         var storesDir = getStoresDir();
 
         // Delete leftover directories in entries dir
@@ -63,14 +61,10 @@ public class StandardStorage extends DataStorage {
 
     public synchronized void load() {
         var newSession = isNewSession();
-        var entriesDir = getSourcesDir().resolve("entries");
-        var collectionsDir = getSourcesDir().resolve("collections");
         var storesDir = getStoresDir();
         var streamsDir = getStreamsDir();
 
         try {
-            FileUtils.forceMkdir(entriesDir.toFile());
-            FileUtils.forceMkdir(collectionsDir.toFile());
             FileUtils.forceMkdir(storesDir.toFile());
             FileUtils.forceMkdir(streamsDir.toFile());
         } catch (Exception e) {
@@ -120,14 +114,10 @@ public class StandardStorage extends DataStorage {
     }
 
     public synchronized void save() {
-        var entriesDir = getSourcesDir().resolve("entries");
-        var collectionsDir = getSourcesDir().resolve("collections");
-
         try {
-            FileUtils.forceMkdir(entriesDir.toFile());
-            FileUtils.forceMkdir(collectionsDir.toFile());
+            FileUtils.forceMkdir(getStoresDir().toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
+            ErrorEvent.fromThrowable(e).description("Unable to create storage directory " + getStoresDir()).terminal(true).build().handle();
         }
 
         // Save stores

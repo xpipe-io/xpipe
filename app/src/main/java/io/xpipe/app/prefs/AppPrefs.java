@@ -205,24 +205,19 @@ public class AppPrefs {
 
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
 
-    // External startup behaviour
-    // ==========================
-    private final ObjectProperty<Path> internalStorageDirectory =
+    // Storage
+    // =======
+    private final ObjectProperty<Path> storageDirectory =
             typed(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), Path.class);
-    private final ObjectProperty<Path> effectiveStorageDirectory = STORAGE_DIR_FIXED
-            ? new SimpleObjectProperty<>(AppProperties.get().getDataDir().resolve("storage"))
-            : internalStorageDirectory;
-    private final StringField storageDirectoryControl = PrefFields.ofPath(effectiveStorageDirectory)
-            .editable(!STORAGE_DIR_FIXED)
+    private final StringField storageDirectoryControl = PrefFields.ofPath(storageDirectory)
             .validate(
                     CustomValidators.absolutePath(),
-                    CustomValidators.directory(),
-                    CustomValidators.emptyStorageDirectory());
-    private final ObjectProperty<String> internalLogLevel =
-            typed(new SimpleObjectProperty<>(DEFAULT_LOG_LEVEL), String.class);
+                    CustomValidators.directory());
 
     // Log level
     // =========
+    private final ObjectProperty<String> internalLogLevel =
+            typed(new SimpleObjectProperty<>(DEFAULT_LOG_LEVEL), String.class);
     private final ObjectProperty<String> effectiveLogLevel = LOG_LEVEL_FIXED
             ? new SimpleObjectProperty<>(System.getProperty(LOG_LEVEL_PROP).toLowerCase())
             : internalLogLevel;
@@ -230,6 +225,7 @@ public class AppPrefs {
                     logLevelList, effectiveLogLevel)
             .editable(!LOG_LEVEL_FIXED)
             .render(() -> new SimpleComboBoxControl<>());
+
     // Developer mode
     // ==============
     private final BooleanProperty internalDeveloperMode = typed(new SimpleBooleanProperty(false), Boolean.class);
@@ -335,7 +331,7 @@ public class AppPrefs {
     }
 
     public ObservableValue<Path> storageDirectory() {
-        return effectiveStorageDirectory;
+        return storageDirectory;
     }
 
     public ReadOnlyProperty<String> logLevel() {
@@ -535,9 +531,9 @@ public class AppPrefs {
                                         automaticallyCheckForUpdatesField,
                                         automaticallyCheckForUpdates),
                                 Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
-                        Group.of(
+                        group(
                                 "advanced",
-                                Setting.of("storageDirectory", storageDirectoryControl, internalStorageDirectory),
+                                STORAGE_DIR_FIXED ? null : Setting.of("storageDirectory", storageDirectoryControl, storageDirectory),
                                 Setting.of("logLevel", logLevelField, internalLogLevel),
                                 Setting.of("developerMode", developerModeField, internalDeveloperMode))),
                 Category.of(
@@ -600,6 +596,10 @@ public class AppPrefs {
 
         var cats = handler.getCategories().toArray(Category[]::new);
         return AppPreferencesFx.of(cats);
+    }
+
+    private Group group(String name, Setting<?,?>... settings) {
+        return Group.of(name, Arrays.stream(settings).filter(setting -> setting != null).toArray(Setting[]::new));
     }
 
     private class PrefsHandlerImpl implements PrefsHandler {

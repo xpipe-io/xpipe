@@ -145,10 +145,6 @@ public abstract class DataStorage {
         }
     }
 
-    protected Path getSourcesDir() {
-        return dir.resolve("sources");
-    }
-
     protected Path getStoresDir() {
         return dir.resolve("stores");
     }

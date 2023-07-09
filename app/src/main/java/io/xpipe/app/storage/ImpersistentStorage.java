@@ -17,14 +17,10 @@ public class ImpersistentStorage extends DataStorage {
 
     @Override
     public void save() {
-        var sourcesDir = getSourcesDir();
         var storesDir = getStoresDir();
 
         TrackEvent.info("Storage persistence is disabled. Deleting storage contents ...");
         try {
-            if (Files.exists(sourcesDir)) {
-                FileUtils.cleanDirectory(sourcesDir.toFile());
-            }
             if (Files.exists(storesDir)) {
                 FileUtils.cleanDirectory(storesDir.toFile());
             }
