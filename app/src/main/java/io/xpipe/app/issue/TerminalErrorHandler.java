@@ -43,13 +43,19 @@ public class TerminalErrorHandler implements ErrorHandler {
                 } catch (InterruptedException ignored) {
                 }
             } catch (Throwable r) {
-                if (!"Toolkit already initialized".equals(r.getMessage())) {
-                    // Check if platform initialization has failed
+                // Check if we already exited
+                if ("Platform.exit has been called".equals(r.getMessage())) {
+                    PlatformState.setCurrent(PlatformState.EXITED);
+                    return;
+                }
+
+                if ("Toolkit already initialized".equals(r.getMessage())) {
+                    PlatformState.setCurrent(PlatformState.RUNNING);
+                } else {
+                    // Platform initialization has failed in this case
                     event.clearAttachments();
                     handleSecondaryException(event, r);
                     return;
-                } else {
-                    PlatformState.setCurrent(PlatformState.RUNNING);
                 }
             }
         }
