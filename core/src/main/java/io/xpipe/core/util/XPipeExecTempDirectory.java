@@ -27,7 +27,7 @@ public class XPipeExecTempDirectory {
             return dir;
         }
 
-        var existsCommand = proc.getShellDialect().createFileExistsCommand(proc, dir);
+        var existsCommand = proc.getShellDialect().directoryExists(proc, dir);
         if (existsCommand.executeAndCheck() && !usedSystems.contains(proc.getSystemId())) {
             proc.executeSimpleCommand(proc.getShellDialect().getFileDeleteCommand(dir));
         }
