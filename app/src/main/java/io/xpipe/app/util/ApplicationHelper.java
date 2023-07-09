@@ -10,12 +10,11 @@ import java.util.function.Function;
 public class ApplicationHelper {
 
     public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {
-        TrackEvent.withDebug("proc", "Executing local application")
-                .tag("command", s)
-                .handle();
-
         try (var sc = LocalStore.getShell().start()) {
             var cmd = detach ? ScriptHelper.createDetachCommand(sc, s.apply(sc)) : s.apply(sc);
+            TrackEvent.withDebug("proc", "Executing local application")
+                    .tag("command", cmd)
+                    .handle();
             try (var c = sc.command(cmd).start()) {
                 c.discardOrThrow();
             }
