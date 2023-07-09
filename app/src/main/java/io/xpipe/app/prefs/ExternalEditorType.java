@@ -117,8 +117,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             }
 
             var format = customCommand.contains("$file") ? customCommand : customCommand + " $file";
-            var fileString = file.toString().contains(" ") ? "\"" + file + "\"" : file.toString();
-            ApplicationHelper.executeLocalApplication(sc -> format.replace("$file", fileString), true);
+            ApplicationHelper.executeLocalApplication(sc -> ApplicationHelper.replaceFileArgument(format, "file", file.toString()), true);
         }
 
         @Override

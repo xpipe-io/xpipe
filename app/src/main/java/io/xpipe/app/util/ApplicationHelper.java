@@ -9,6 +9,13 @@ import java.util.function.Function;
 
 public class ApplicationHelper {
 
+    public static String replaceFileArgument(String format, String variable, String file) {
+        var fileString = file.contains(" ") ? "\"" + file + "\"" : file;
+        // Check if the variable is already quoted
+        var replaced = format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);
+        return replaced;
+    }
+
     public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {
         try (var sc = LocalStore.getShell().start()) {
             var cmd = detach ? ScriptHelper.createDetachCommand(sc, s.apply(sc)) : s.apply(sc);

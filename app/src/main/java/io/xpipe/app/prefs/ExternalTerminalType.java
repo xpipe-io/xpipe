@@ -349,7 +349,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             var format = custom.contains("$cmd") ? custom : custom + " $cmd";
             try (var pc = LocalStore.getShell()) {
-                var toExecute = format.replace("$cmd", "\"" + file + "\"");
+                var toExecute = ApplicationHelper.replaceFileArgument(format, "cmd", file);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + name + "\" " + toExecute;
                 } else {
