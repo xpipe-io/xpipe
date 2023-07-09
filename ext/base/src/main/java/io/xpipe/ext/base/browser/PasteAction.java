@@ -26,6 +26,10 @@ public class PasteAction implements LeafAction {
                 ? entries.get(0).getRawFileEntry()
                 : model.getCurrentDirectory();
         var files = clipboard.getEntries();
+        if (files.size() == 0) {
+            return;
+        }
+
         model.dropFilesIntoAsync(target, files, true);
     }
 

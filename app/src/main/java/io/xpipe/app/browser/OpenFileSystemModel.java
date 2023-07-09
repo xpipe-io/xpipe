@@ -236,6 +236,11 @@ public final class OpenFileSystemModel {
 
     public void dropFilesIntoAsync(
             FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
+        // We don't have to do anything in this case
+        if (files.isEmpty()) {
+            return;
+        }
+
         ThreadHelper.runFailableAsync(() -> {
             BusyProperty.execute(busy, () -> {
                 if (fileSystem == null) {
