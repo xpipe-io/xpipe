@@ -6,6 +6,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformState;
+import io.xpipe.core.impl.LocalStore;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
@@ -83,6 +84,11 @@ public class TerminalErrorHandler implements ErrorHandler {
     }
 
     private static void handleProbableUpdate() {
+        // If a terminal error occurred before local shell initialization, we can't make use of any functionality to update
+        if (!LocalStore.isLocalShellInitialized()) {
+            return;
+        }
+
         try {
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
             if (rel != null && rel.isUpdate()) {
