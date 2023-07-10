@@ -28,6 +28,7 @@ public class ProcessOutputException extends Exception {
                             .START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed"
                             + errorSuffix;
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
+                    case CommandControl.UNASSIGNED_EXIT_CODE -> "Process exited with unknown state" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
                 };
         return new ProcessOutputException(message, exitCode, combinedError);
