@@ -68,7 +68,7 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
 
         text.textProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == null || "".equals(newValue) || (minValue < 0 && "-".equals(newValue))) {
-                value.setValue(0);
+                value.setValue(null);
                 return;
             }
 
