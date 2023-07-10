@@ -133,7 +133,9 @@ public class BrowserModel {
                 selected.setValue(null);
             }
             open.closeSync();
-            openFileSystems.remove(open);
+            synchronized (BrowserModel.this) {
+                openFileSystems.remove(open);
+            }
         });
     }
 
