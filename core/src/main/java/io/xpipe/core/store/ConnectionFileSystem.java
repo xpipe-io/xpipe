@@ -92,9 +92,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void delete(String file) throws Exception {
-        try (var pc = shellControl
-                .command(proc -> proc.getShellDialect().getFileDeleteCommand(file))
-                .complex()
+        try (var pc = shellControl.getShellDialect().deleteFile(shellControl, file)
                 .start()) {
             pc.discardOrThrow();
         }

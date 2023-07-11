@@ -153,7 +153,7 @@ public interface ShellDialect {
 
     CommandControl createScriptTextFileWriteCommand(ShellControl parent, String content, String file);
 
-    String getFileDeleteCommand(String file);
+    CommandControl deleteFile(ShellControl sc, String file);
 
     CommandControl createFileExistsCommand(ShellControl sc, String file);
 
