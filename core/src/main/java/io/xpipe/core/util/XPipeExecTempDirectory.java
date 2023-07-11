@@ -1,6 +1,7 @@
 package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.Arrays;
@@ -22,17 +23,25 @@ public class XPipeExecTempDirectory {
         var arr = Stream.of(base, "xpipe", "exec").toArray(String[]::new);
         var dir = FileNames.join(arr);
 
+        var d = proc.getShellDialect();
+        if (proc.getOsType() == OsType.LINUX
+                && !proc.executeSimpleBooleanCommand("test -r %s && test -w %s && test -x %s"
+                        .formatted(d.fileArgument(base), d.fileArgument(base), d.fileArgument(base)))) {
+            dir = FileNames.join(Stream.of(proc.getOsType().getHomeDirectory(proc), "xpipe", "exec")
+                    .toArray(String[]::new));
+        }
+
         // We don't want to modify the temp directory if it is possibly in use
         if (usedSystems.contains(proc.getSystemId())) {
             return dir;
         }
 
-        var existsCommand = proc.getShellDialect().directoryExists(proc, dir);
+        var existsCommand = d.directoryExists(proc, dir);
         if (existsCommand.executeAndCheck() && !usedSystems.contains(proc.getSystemId())) {
-            proc.executeSimpleCommand(proc.getShellDialect().getFileDeleteCommand(dir));
+            proc.executeSimpleCommand(d.getFileDeleteCommand(dir));
         }
 
-        proc.getShellDialect().prepareTempDirectory(proc, dir).execute();
+        d.prepareTempDirectory(proc, dir).execute();
         usedSystems.add(proc.getSystemId());
 
         return dir;
