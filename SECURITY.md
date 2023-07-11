@@ -163,8 +163,8 @@ an identical application can be flagged on one system but not the other, even th
 and the Microsoft services.
 In summary, don't rely on Windows Defender to be accurate when it comes to false-positives.
 
-All artifacts of every release are automatically analyzed on VirusTotal
-and you can find the results linked at the bottom of every release.
+All artifacts of every release are automatically analyzed on VirusTotal,
+so uploading the release you downloaded to VirusTotal should instantly show results.
 From there you should be able to get a better overview over the actual
 threat level of XPipe instead of purely relying on Windows Defender.
 
