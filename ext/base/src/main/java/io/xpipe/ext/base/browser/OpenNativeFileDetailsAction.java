@@ -22,16 +22,24 @@ public class OpenNativeFileDetailsAction implements LeafAction {
             var e = entry.getRawFileEntry().getPath();
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
-                    var content = String.format(
-                            """
-                                    $shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')
-                                    """,
-                            FileNames.getParent(e), FileNames.getFileName(e));
+                    var parent = FileNames.getParent(e);
+                    // If we execute this on a drive root there will be no parent, so we have to check for that!
+                    var content = parent != null
+                            ? String.format(
+                                    "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')",
+                                    FileNames.getParent(e), FileNames.getFileName(e))
+                            : String.format(
+                                    "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
+                                    e);
 
-                    // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as long as the parent process is running.
+                    // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as
+                    // long as the parent process is running.
                     // So let's keep one process running
                     if (powershell == null) {
-                        powershell = new LocalStore().control().subShell(ShellDialects.POWERSHELL).start();
+                        powershell = new LocalStore()
+                                .control()
+                                .subShell(ShellDialects.POWERSHELL)
+                                .start();
                     }
 
                     powershell.command(content).notComplex().execute();
