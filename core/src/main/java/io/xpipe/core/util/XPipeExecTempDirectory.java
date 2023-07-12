@@ -19,53 +19,46 @@ public class XPipeExecTempDirectory {
         return proc.getOsType().getTempDirectory(proc);
     }
 
-    public static synchronized String initXPipeTempDirectory(ShellControl proc) throws Exception {
+    public static synchronized String initExecTempDirectory(ShellControl proc) throws Exception {
         var d = proc.getShellDialect();
-        var tempBase = proc.getOsType().getTempDirectory(proc);
-        var xpipeTemp = FileNames.join(tempBase, "xpipe");
+        var home = proc.getOsType().getHomeDirectory(proc);
 
-        // Check permissions for system temp directory
-        if (!checkDirectoryPermissions(proc, tempBase)) {
-            var home = proc.getOsType().getHomeDirectory(proc);
+        // We assume that this exists now as the systemid should have been created in this
+        var xpipeHome = FileNames.join(home, ".xpipe");
+        var targetTemp = FileNames.join(xpipeHome, "temp");
 
-            // We assume that this exists now as the systemid should have been created in this
-            var xpipeHome = FileNames.join(home, ".xpipe");
+        var systemTemp = proc.getOsType().getTempDirectory(proc);
+        var legacyTemp = FileNames.join(systemTemp, "xpipe");
+        var legacyExecTemp = FileNames.join(legacyTemp, "exec");
 
-            if (!d.directoryExists(proc, xpipeHome).executeAndCheck() || !checkDirectoryPermissions(proc, xpipeHome)) {
-                throw new IOException("No permissions to create scripts in either %s or %s".formatted(tempBase, xpipeHome));
+        // Always delete legacy directory and do not care whether it partially fails
+        d.deleteFile(proc, legacyExecTemp).executeAndCheck();
+
+        // Check permissions for home temp directory
+        // If this is somehow messed up, we can still default back to the system directory
+        if (!checkDirectoryPermissions(proc, targetTemp)) {
+            if (!d.directoryExists(proc, systemTemp).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp)) {
+                throw new IOException("No permissions to create scripts in either %s or %s".formatted(systemTemp, targetTemp));
             }
 
-            tempBase = xpipeHome;
-            xpipeTemp = FileNames.join(tempBase, "temp");
-        }
+            targetTemp = systemTemp;
+        } else {
+            // Create and set all access permissions if not existent
+            if (!d.directoryExists(proc, targetTemp).executeAndCheck()) {
+                d.prepareUserTempDirectory(proc, targetTemp).execute();
+            } else if (!usedSystems.contains(proc.getSystemId())) {
+                // Try to clear directory and do not care about errors
+                d.deleteFile(proc, targetTemp).executeAndCheck();
+                d.prepareUserTempDirectory(proc, targetTemp).executeAndCheck();
+            } else {
+                // Still attempt to properly set permissions every time
+                d.prepareUserTempDirectory(proc, targetTemp).executeAndCheck();
+            }
 
-        var execTemp = FileNames.join(xpipeTemp, "exec");
-
-        // Create and set all access permissions if not existent
-        if (!d.directoryExists(proc, xpipeTemp).executeAndCheck()) {
-            d.prepareTempDirectory(proc, xpipeTemp).execute();
-        }
-
-        // Check permissions for xpipe directory
-        // If they don't match, delete it. We can do this as we are guaranteed to have all permissions in the parent directory
-        else if (!checkDirectoryPermissions(proc, xpipeTemp)) {
-            d.deleteFile(proc, xpipeTemp).execute();
-            d.prepareTempDirectory(proc, xpipeTemp).execute();
-        }
-
-        // Create and set all access permissions if not existent
-        if (!d.directoryExists(proc, execTemp).executeAndCheck()) {
-            d.prepareTempDirectory(proc, execTemp).execute();
-        }
-
-        // Clear directory if it exists and is definitely not in use or the permissions do not match
-        else if (!usedSystems.contains(proc.getSystemId()) || !checkDirectoryPermissions(proc, execTemp)) {
-            d.deleteFile(proc, execTemp).execute();
-            d.prepareTempDirectory(proc, execTemp).execute();
         }
 
         usedSystems.add(proc.getSystemId());
-        return execTemp;
+        return targetTemp;
     }
 
     private static boolean checkDirectoryPermissions(ShellControl proc, String dir) throws Exception {
@@ -89,7 +82,7 @@ public class XPipeExecTempDirectory {
         var dir = FileNames.join(arr);
 
         // We assume that this directory does not exist yet and therefore don't perform any checks
-        proc.getShellDialect().prepareTempDirectory(proc, dir).execute();
+        proc.getShellDialect().prepareUserTempDirectory(proc, dir).execute();
 
         return dir;
     }

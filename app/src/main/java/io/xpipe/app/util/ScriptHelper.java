@@ -110,14 +110,13 @@ public class ScriptHelper {
                 .tag("content", content)
                 .handle();
 
-        // processControl.executeSimpleCommand(type.getFileTouchCommand(file), "Failed to create script " + file);
         processControl
                 .getShellDialect()
                 .createScriptTextFileWriteCommand(processControl, content, file)
                 .execute();
-        var e = type.getMakeExecutableCommand(file);
+        var e = type.getScriptPermissionsCommand(file);
         if (e != null) {
-            processControl.executeSimpleCommand(e, "Failed to make script " + file + " executable");
+            processControl.executeSimpleCommand(e, "Failed to set script permissions of " + file);
         }
         return file;
     }

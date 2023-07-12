@@ -31,7 +31,7 @@ public interface ShellDialect {
 
     CommandControl queryVersion(ShellControl shellControl);
 
-    CommandControl prepareTempDirectory(ShellControl shellControl, String directory);
+    CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
     String initFileName(ShellControl sc) throws Exception;
 
@@ -99,7 +99,7 @@ public interface ShellDialect {
         return "||";
     }
 
-    String getMakeExecutableCommand(String file);
+    String getScriptPermissionsCommand(String file);
 
     String prepareAskpassContent(ShellControl sc, String fileName, List<String> s) throws Exception;
 
