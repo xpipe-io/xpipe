@@ -163,13 +163,23 @@ an identical application can be flagged on one system but not the other, even th
 and the Microsoft services.
 In summary, don't rely on Windows Defender to be accurate when it comes to false-positives.
 
-All artifacts of every release are automatically analyzed on VirusTotal,
-so uploading the release you downloaded to VirusTotal should instantly show results.
-From there you should be able to get a better overview over the actual
-threat level of XPipe instead of purely relying on Windows Defender.
-
 ### macOS
 
 On macOS the application bundle is signed and notarized and will therefore not emit any warnings.
 For macOS this process does not require a company to be
 set up and also only costs 125$ per year and is therefore much easier to accomplish.
+
+### Malware detection
+
+In some cases, it might occur that your antivirus program flags XPipe as malware.
+This is due to the fact that XPipe launches shells and executes various commands in them,
+which can be interpreted as malicious activity as some viruses use
+the same approach and does lead to some false-positives.
+
+For this reason, all artifacts of every release are automatically uploaded and analyzed on VirusTotal,
+so uploading the release you downloaded to VirusTotal should instantly show analysis results.
+From there you should be able to get a more accurate overview over the actual threat level of XPipe.
+
+If such a detection also happens on your end, you might have to
+explicitly whitelist XPipe in order for it to work correctly.
+Having access to shells is necessary for XPipe, there is no fallback alternative built in that does not launch shells.
