@@ -105,7 +105,7 @@ public class UpdateCheckComp extends SimpleComp {
         var name = Bindings.createStringBinding(
                 () -> {
                     if (updateReady.getValue()) {
-                        return AppI18n.get("updateReady");
+                        return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ?  AppI18n.get("updateReadyPortable") : AppI18n.get("updateReady");
                     }
 
                     return AppI18n.get("checkForUpdates");
@@ -114,7 +114,7 @@ public class UpdateCheckComp extends SimpleComp {
         var description = Bindings.createStringBinding(
                 () -> {
                     if (updateReady.getValue()) {
-                        return AppI18n.get("updateReadyDescription");
+                        return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ?  AppI18n.get("updateReadyDescriptionPortable") : AppI18n.get("updateReadyDescription");
                     }
 
                     return AppI18n.get("checkForUpdatesDescription");
