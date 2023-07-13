@@ -36,6 +36,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -332,7 +333,12 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     .get(0)
                     .getText();
             TrackEvent.info(msg);
-            messageProp.setValue(msg);
+            var newMessage = msg;
+            // Temporary fix for equal error message not showing up again
+            if (Objects.equals(newMessage, messageProp.getValue())) {
+                newMessage = newMessage + " ";
+            }
+            messageProp.setValue(newMessage);
             changedSinceError.setValue(false);
             return false;
         }
@@ -343,7 +349,12 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);
             } catch (Exception ex) {
-                messageProp.setValue(ExceptionConverter.convertMessage(ex));
+                var newMessage = ExceptionConverter.convertMessage(ex);
+                // Temporary fix for equal error message not showing up again
+                if (Objects.equals(newMessage, messageProp.getValue())) {
+                    newMessage = newMessage + " ";
+                }
+                messageProp.setValue(newMessage);
                 changedSinceError.setValue(false);
                 ErrorEvent.fromThrowable(ex).omit().handle();
             }

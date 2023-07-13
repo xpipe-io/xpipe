@@ -7,8 +7,6 @@ repositories {
     mavenCentral()
 }
 
-def appVersion = rootProject.versionString
-
 configurations {
     dep
 }

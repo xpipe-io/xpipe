@@ -45,8 +45,9 @@ public class ModalOverlayComp extends SimpleComp {
         var pane = new StackPane(bgRegion, modal);
         pane.setPickOnBounds(false);
         PlatformThread.sync(overlayContent).addListener((observable, oldValue, newValue) -> {
-            if (oldValue != null) {
+            if (oldValue != null && newValue == null && modal.isDisplay()) {
                 modal.hide(true);
+                return;
             }
 
             if (newValue != null) {
@@ -72,6 +73,7 @@ public class ModalOverlayComp extends SimpleComp {
                 var modalBox = new ModalBox(box);
                 modalBox.setOnClose(event -> {
                     overlayContent.setValue(null);
+                    modal.hide(true);
                     event.consume();
                 });
                 modalBox.prefWidthProperty().bind(box.widthProperty());

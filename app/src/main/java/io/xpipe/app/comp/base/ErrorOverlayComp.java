@@ -2,6 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TextArea;
@@ -24,17 +25,20 @@ public class ErrorOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var content = new SimpleObjectProperty<ModalOverlayComp.OverlayContent>();
         this.text.addListener((observable, oldValue, newValue) -> {
-            var comp = Comp.of(() -> {
-                var l = new TextArea();
-                l.textProperty().bind(text);
-                l.setWrapText(false);
-                l.getStyleClass().add("error-overlay-comp");
-                l.setEditable(false);
-                return l;
+            PlatformThread.runLaterIfNeeded(() -> {
+                var comp = Comp.of(() -> {
+                    var l = new TextArea();
+                    l.textProperty().bind(PlatformThread.sync(text));
+                    l.setWrapText(false);
+                    l.getStyleClass().add("error-overlay-comp");
+                    l.setEditable(false);
+                    return l;
+                });
+                content.set(new ModalOverlayComp.OverlayContent("error", comp, null, () -> {}));
             });
-            content.set(new ModalOverlayComp.OverlayContent("error", comp, null, () -> {}));
         });
         content.addListener((observable, oldValue, newValue) -> {
+            // Handle close
             if (newValue == null) {
                 this.text.setValue(null);
             }
