@@ -3,8 +3,8 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.Node;
@@ -34,7 +34,7 @@ public class FilterComp extends Comp<FilterComp.Structure> {
         filter.setAccessibleText("Filter");
 
         SimpleChangeListener.apply(filterText, val -> {
-            Platform.runLater(() -> {
+            PlatformThread.runLaterIfNeeded(() -> {
                 if (!Objects.equals(filter.getText(), val)) {
                     filter.setText(val);
                 }
