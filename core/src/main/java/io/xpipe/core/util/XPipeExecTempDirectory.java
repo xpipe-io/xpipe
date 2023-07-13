@@ -34,9 +34,9 @@ public class XPipeExecTempDirectory {
         // Always delete legacy directory and do not care whether it partially fails
         d.deleteFile(proc, legacyExecTemp).executeAndCheck();
 
-        // Check permissions for home temp directory
+        // Check permissions for home directory
         // If this is somehow messed up, we can still default back to the system directory
-        if (!checkDirectoryPermissions(proc, targetTemp)) {
+        if (!checkDirectoryPermissions(proc, xpipeHome)) {
             if (!d.directoryExists(proc, systemTemp).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp)) {
                 throw new IOException("No permissions to create scripts in either %s or %s".formatted(systemTemp, targetTemp));
             }
