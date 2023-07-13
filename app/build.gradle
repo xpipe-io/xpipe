@@ -47,7 +47,7 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
+    implementation group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.3.1"
     implementation (name: 'preferencesfx-core-11.15.0')
     implementation (group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0') {
         exclude group: 'org.openjfx', module: 'javafx-controls'
