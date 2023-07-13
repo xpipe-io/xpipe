@@ -252,7 +252,7 @@ public final class OpenFileSystemModel {
                 }
 
                 var same = files.get(0).getFileSystem().equals(target.getFileSystem());
-                if (same) {
+                if (same && !explicitCopy) {
                     if (!BrowserAlerts.showMoveAlert(files, target)) {
                         return;
                     }
