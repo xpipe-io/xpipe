@@ -100,6 +100,10 @@ public final class OpenFileSystemModel {
             return null;
         }
 
+        if (fileSystem == null) {
+            return null;
+        }
+
         return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, false, false, 0, null, FileKind.DIRECTORY);
     }
 
