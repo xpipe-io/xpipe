@@ -341,6 +341,40 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType TABBY_MAC_OS = new TabbyMacOsType();
 
+    ExternalTerminalType ALACRITTY_MACOS = new MacOsType("app.alacrittyMacOs", "Alacritty") {
+
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                pc.command(String.format(
+                                """
+                                %s/Contents/MacOS/alacritty -t "%s" -e %s
+                                """,
+                                getApplicationPath().orElseThrow(),
+                                name,
+                                pc.getShellDialect().fileArgument(file)))
+                        .execute();
+            }
+        }
+    };
+
+    ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "Kitty") {
+
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                pc.command(String.format(
+                                """
+                                %s/Contents/MacOS/kitty -T "%s" %s
+                                """,
+                                getApplicationPath().orElseThrow(),
+                                name,
+                                pc.getShellDialect().fileArgument(file)))
+                        .execute();
+            }
+        }
+    };
+
     ExternalTerminalType CUSTOM = new CustomType();
 
     List<ExternalTerminalType> ALL = Stream.of(
@@ -362,6 +396,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     TILDA,
                     ITERM2,
                     TABBY_MAC_OS,
+                    ALACRITTY_MACOS,
+                    KITTY_MACOS,
                     WARP,
                     MACOS_TERMINAL,
                     CUSTOM)
@@ -487,40 +523,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
         }
     }
-
-    ExternalTerminalType ALACRITTY_MACOS = new MacOsType("app.alacrittyMacOs", "Alacritty") {
-
-        @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
-                pc.command(String.format(
-                                """
-                                %s/Contents/MacOS/alacritty -t "%s" -e %s
-                                """,
-                                getApplicationPath().orElseThrow(),
-                                name,
-                                pc.getShellDialect().fileArgument(file)))
-                        .execute();
-            }
-        }
-    };
-
-    ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "Kitty") {
-
-        @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
-                pc.command(String.format(
-                                """
-                                %s/Contents/MacOS/kitty -T "%s" %s
-                                """,
-                                getApplicationPath().orElseThrow(),
-                                name,
-                                pc.getShellDialect().fileArgument(file)))
-                        .execute();
-            }
-        }
-    };
 
     class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
