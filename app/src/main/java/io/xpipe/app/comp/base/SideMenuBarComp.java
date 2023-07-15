@@ -1,11 +1,14 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
@@ -37,9 +40,9 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         var selected = PseudoClass.getPseudoClass("selected");
         entries.forEach(e -> {
             var fi = new FontIcon(e.icon());
-            var b = new BigIconButton(e.name(), fi, () -> value.setValue(e));
-            b.apply(GrowAugment.create(true, false));
+            var b = new IconButtonComp(e.icon(), () -> value.setValue(e)).apply(new FancyTooltipAugment<>(e.name()));
             b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
                 struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
                 value.addListener((c, o, n) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
@@ -53,7 +56,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         {
             var fi = new FontIcon("mdi2u-update");
             var b = new BigIconButton(AppI18n.observable("update"), fi, () -> UpdateAvailableAlert.showIfNeeded());
-            b.apply(GrowAugment.create(true, false));
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
                         return XPipeDistributionType.get()
@@ -71,7 +73,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         filler.setMaxHeight(3000);
         vbox.getChildren().add(filler);
         VBox.setVgrow(filler, Priority.ALWAYS);
-        filler.prefWidthProperty().bind(vbox.widthProperty());
+        GrowAugment.create(true, false).augment(filler);
 
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);

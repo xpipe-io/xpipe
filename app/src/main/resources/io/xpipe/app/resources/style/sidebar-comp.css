@@ -1,32 +1,39 @@
 .sidebar-comp {
--fx-pref-width: 8em;
  -fx-border-width: 0 0 0 1px;
 -fx-border-color: -color-neutral-emphasis;
 -fx-padding: 0;
     -fx-background-insets: 0;
 }
 
-.sidebar-comp .big-icon-button-comp, .sidebar-comp .button {
+.sidebar-comp .icon-button-comp {
+-fx-border-width: 0 3px 0 0;
+-fx-border-color: -color-neutral-muted;
+}
+
+.sidebar-comp .icon-button-comp, .sidebar-comp .button {
 -fx-background-radius: 0;
 -fx-background-insets: 0;
+-fx-background-color: -color-neutral-subtle;
 }
 
 .sidebar-comp .button:disabled {
 -fx-opacity: 1.0;
 }
 
-.sidebar-comp .big-icon-button-comp:selected {
--fx-background-color: -color-accent-subtle;
+.sidebar-comp .icon-button-comp:hover {
+-fx-border-color: -color-accent-muted;
+-fx-background-color: -color-neutral-muted;
 }
 
-.sidebar-comp .big-icon-button-comp .icon {
--fx-font-size: 1.4em;
+.sidebar-comp .icon-button-comp:selected {
+-fx-border-color: -color-accent-emphasis;
+-fx-background-color: -color-neutral-muted;
 }
 
-.sidebar-comp .big-icon-button-comp {
-  -fx-padding: 1.1em 0.6em 1.1em 0.6em;
+.sidebar-comp .icon-button-comp {
+  -fx-padding: 1.1em;
 }
 
-.sidebar-comp .big-icon-button-comp .vbox  {
+.sidebar-comp .icon-button-comp .vbox  {
 -fx-spacing: 0.5em;
 }
