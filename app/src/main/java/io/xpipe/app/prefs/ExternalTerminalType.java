@@ -358,7 +358,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "Kitty") {
+    ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "kitty") {
 
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
