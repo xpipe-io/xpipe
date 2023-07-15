@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
 
-    ExternalTerminalType CMD = new SimpleType("app.cmd", "cmd.exe") {
+    ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -35,7 +35,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType POWERSHELL_WINDOWS = new SimpleType("app.powershell", "powershell") {
+    ExternalTerminalType POWERSHELL_WINDOWS = new SimplePathType("app.powershell", "powershell") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -48,7 +48,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType PWSH_WINDOWS = new SimpleType("app.pwsh", "pwsh") {
+    ExternalTerminalType PWSH_WINDOWS = new SimplePathType("app.pwsh", "pwsh") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -63,7 +63,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType WINDOWS_TERMINAL = new SimpleType("app.windowsTerminal", "wt.exe") {
+    ExternalTerminalType WINDOWS_TERMINAL = new SimplePathType("app.windowsTerminal", "wt.exe") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -80,6 +80,25 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
+    ExternalTerminalType ALACRITTY_WINDOWS = new SimplePathType("app.alacrittyWindows", "alacritty") {
+
+        @Override
+        protected String toCommand(String name, String file) {
+            return CommandBuilder.of()
+                    .add("-t")
+                    .addQuoted(name)
+                    .add("-e")
+                    .add("cmd")
+                    .add("/c")
+                    .addQuoted(file.replaceAll(" ", "^$0"))
+                    .build();
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
+        }
+    };
     abstract class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
             implements ExternalTerminalType {
 
@@ -121,7 +140,27 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType GNOME_TERMINAL = new SimpleType("app.gnomeTerminal", "gnome-terminal") {
+//    ExternalTerminalType HYPER_WINDOWS = new WindowsFullPathType("app.hyperWindows") {
+//
+//        @Override
+//        protected String createCommand(ShellControl shellControl, String name, String path, String file) {
+//            return shellControl.getShellDialect().fileArgument(path) + " "
+//                    + shellControl.getShellDialect().fileArgument(file);
+//        }
+//
+//        @Override
+//        protected Optional<Path> determinePath() {
+//            Optional<String> launcherDir;
+//            launcherDir = WindowsRegistry.readString(
+//                            WindowsRegistry.HKEY_CURRENT_USER,
+//                            "SOFTWARE\\ac619139-e2f9-5cb9-915f-69b22e7bff50",
+//                            "InstallLocation")
+//                    .map(p -> p + "\\Hyper.exe");
+//            return launcherDir.map(Path::of);
+//        }
+//    };
+
+    ExternalTerminalType GNOME_TERMINAL = new SimplePathType("app.gnomeTerminal", "gnome-terminal") {
 
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
@@ -147,7 +186,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType KONSOLE = new SimpleType("app.konsole", "konsole") {
+    ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -163,7 +202,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType XFCE = new SimpleType("app.xfce", "xfce4-terminal") {
+    ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -176,11 +215,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType TERMINATOR = new SimpleType("app.terminator", "terminator") {
+    ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator") {
 
         @Override
         protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-e").addQuoted(file).add("-T").addQuoted(name).add("--new-tab").build();
+            return CommandBuilder.of()
+                    .add("-e")
+                    .addQuoted(file)
+                    .add("-T")
+                    .addQuoted(name)
+                    .add("--new-tab")
+                    .build();
         }
 
         @Override
@@ -189,7 +234,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType KITTY = new SimpleType("app.kitty", "kitty") {
+    ExternalTerminalType KITTY = new SimplePathType("app.kitty", "kitty") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -202,11 +247,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType TERMINOLOGY = new SimpleType("app.terminology", "terminology") {
+    ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology") {
 
         @Override
         protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-T").addQuoted(name).add("-2").add("-e").addQuoted(file).build();
+            return CommandBuilder.of()
+                    .add("-T")
+                    .addQuoted(name)
+                    .add("-2")
+                    .add("-e")
+                    .addQuoted(file)
+                    .build();
         }
 
         @Override
@@ -215,11 +266,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType COOL_RETRO_TERM = new SimpleType("app.coolRetroTerm", "cool-retro-term") {
+    ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term") {
 
         @Override
         protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-T").addQuoted(name).add("-e").addQuoted(file).build();
+            return CommandBuilder.of()
+                    .add("-T")
+                    .addQuoted(name)
+                    .add("-e")
+                    .addQuoted(file)
+                    .build();
         }
 
         @Override
@@ -228,11 +284,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType GUAKE = new SimpleType("app.guake", "guake") {
+    ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake") {
 
         @Override
         protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-r").addQuoted(name).add("-e").addQuoted(file).build();
+            return CommandBuilder.of()
+                    .add("-r")
+                    .addQuoted(name)
+                    .add("-e")
+                    .addQuoted(file)
+                    .build();
         }
 
         @Override
@@ -241,11 +302,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType ALACRITTY = new SimpleType("app.alacritty", "alacritty") {
+    ExternalTerminalType ALACRITTY = new SimplePathType("app.alacritty", "alacritty") {
 
         @Override
         protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-t").addQuoted(name).add("-e").addQuoted(file).build();
+            return CommandBuilder.of()
+                    .add("-t")
+                    .addQuoted(name)
+                    .add("-e")
+                    .addQuoted(file)
+                    .build();
         }
 
         @Override
@@ -254,7 +320,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    ExternalTerminalType TILDA = new SimpleType("app.tilda", "tilda") {
+    ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda") {
 
         @Override
         protected String toCommand(String name, String file) {
@@ -279,6 +345,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     List<ExternalTerminalType> ALL = Stream.of(
                     TABBY_WINDOWS,
+                    ALACRITTY_WINDOWS,
                     WINDOWS_TERMINAL,
                     PWSH_WINDOWS,
                     POWERSHELL_WINDOWS,
@@ -411,7 +478,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(String name, String file, boolean elevated) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 pc.command(String.format(
-                                """
+                        """
                         %s/Contents/MacOS/Tabby run %s
                         """,
                                 getApplicationPath().orElseThrow(),
@@ -420,6 +487,40 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
         }
     }
+
+    ExternalTerminalType ALACRITTY_MACOS = new MacOsType("app.alacrittyMacOs", "Alacritty") {
+
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                pc.command(String.format(
+                                """
+                                %s/Contents/MacOS/alacritty -t "%s" -e %s
+                                """,
+                                getApplicationPath().orElseThrow(),
+                                name,
+                                pc.getShellDialect().fileArgument(file)))
+                        .execute();
+            }
+        }
+    };
+
+    ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "Kitty") {
+
+        @Override
+        public void launch(String name, String file, boolean elevated) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                pc.command(String.format(
+                                """
+                                %s/Contents/MacOS/kitty -T "%s" %s
+                                """,
+                                getApplicationPath().orElseThrow(),
+                                name,
+                                pc.getShellDialect().fileArgument(file)))
+                        .execute();
+            }
+        }
+    };
 
     class WarpType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
@@ -453,10 +554,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    @Getter
-    abstract class SimpleType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
+    abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
-        public SimpleType(String id, String executable) {
+        public MacOsType(String id, String applicationName) {
+            super(id, applicationName);
+        }
+    }
+
+    @Getter
+    abstract class SimplePathType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
+
+        public SimplePathType(String id, String executable) {
             super(id, executable);
         }
 

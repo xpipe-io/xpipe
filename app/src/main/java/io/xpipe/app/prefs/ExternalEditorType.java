@@ -116,6 +116,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     ExternalEditorType TEXT_EDIT = new MacOsEditor("app.textEdit", "TextEdit");
 
+    ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit");
+
     ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
 
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
@@ -202,7 +204,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
-    List<ExternalEditorType> MACOS_EDITORS = List.of(VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+    List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();

@@ -108,6 +108,10 @@ public class AppLogs {
 
         var shouldLogToSysout = shouldWriteSysout();
 
+        if (shouldLogToFile && !shouldLogToSysout) {
+            TrackEvent.info("Writing log output to " + usedLogsDir + " from now on");
+        }
+
         INSTANCE = new AppLogs(usedLogsDir, shouldLogToSysout, shouldLogToFile);
     }
 
