@@ -148,7 +148,8 @@ public class AppExtensionManager {
             return;
         }
 
-        try (var s = Files.list(dir)) {
+        // Order results as on unix systems the file list order is not deterministic
+        try (var s = Files.list(dir).sorted(Comparator.comparing(path -> path.toString()))) {
             s.forEach(sub -> {
                 if (Files.isDirectory(sub)) {
                     // TODO: Better detection for x modules

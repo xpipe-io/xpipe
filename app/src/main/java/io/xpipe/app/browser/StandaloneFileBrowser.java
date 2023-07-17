@@ -12,6 +12,7 @@ import javafx.stage.Window;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class StandaloneFileBrowser {
 
@@ -35,7 +36,7 @@ public class StandaloneFileBrowser {
         });
     }
 
-    public static void openSingleFile(Property<FileStore> file) {
+    public static void openSingleFile(Consumer<FileStore> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER);
             var comp = new BrowserComp(model)
@@ -43,7 +44,7 @@ public class StandaloneFileBrowser {
                     .apply(struc -> AppFont.normal(struc.get()));
             var window = AppWindowHelper.sideWindow(AppI18n.get("openFileTitle"), stage -> comp, true, null);
             model.setOnFinish(fileStores -> {
-                file.setValue(fileStores.size() > 0 ? fileStores.get(0) : null);
+                file.accept(fileStores.size() > 0 ? fileStores.get(0) : null);
                 window.close();
             });
             window.show();

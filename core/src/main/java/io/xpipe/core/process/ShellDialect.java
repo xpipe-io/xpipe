@@ -127,7 +127,9 @@ public interface ShellDialect {
 
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
 
-    String runScript(ShellControl parent, String file);
+    String runScriptCommand(ShellControl parent, String file);
+
+    String runScriptSilentlyCommand(ShellControl parent, String file);
 
     String sourceScript(String file);
 
@@ -153,11 +155,13 @@ public interface ShellDialect {
 
     CommandControl createScriptTextFileWriteCommand(ShellControl parent, String content, String file);
 
-    CommandControl deleteFile(ShellControl sc, String file);
+    CommandControl deleteFileOrDirectory(ShellControl sc, String file);
 
     CommandControl createFileExistsCommand(ShellControl sc, String file);
 
     CommandControl symbolicLink(ShellControl sc, String linkFile, String targetFile);
+
+    String getFileDeleteCommand(String file);
 
     String getFileTouchCommand(String file);
 

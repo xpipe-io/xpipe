@@ -4,11 +4,10 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -18,42 +17,43 @@ import java.util.List;
 
 public class FileStoreChoiceComp extends SimpleComp {
 
-    private final boolean onlyLocal;
-    private final Property<FileStore> selected;
+    private final boolean hideFileSystem;
+    private final Property<FileSystemStore> fileSystem;
+    private final Property<String> filePath;
 
-    public FileStoreChoiceComp(boolean onlyLocal, Property<FileStore> selected) {
-        this.onlyLocal = onlyLocal;
-        this.selected = selected;
+    public FileStoreChoiceComp(Property<String> filePath) {
+        this(true, new SimpleObjectProperty<>(), filePath);
     }
 
-    private void setSelected(FileSystemStore fileSystem, String file) {
-        selected.setValue(fileSystem != null && file != null ? new FileStore(fileSystem, file) : null);
+    public FileStoreChoiceComp(boolean hideFileSystem, Property<FileSystemStore> fileSystem, Property<String> filePath) {
+        this.hideFileSystem = hideFileSystem;
+        this.fileSystem = fileSystem;
+        this.filePath = filePath;
     }
 
     @Override
     protected Region createSimple() {
-        var filePathProperty = new SimpleStringProperty(
-                selected.getValue() != null ? selected.getValue().getPath() : null);
-        filePathProperty.addListener((observable, oldValue, newValue) -> {
-            setSelected(selected.getValue() != null ? selected.getValue().getFileSystem() : null, newValue);
-        });
-        selected.addListener((observable, oldValue, newValue) -> {
-            filePathProperty.setValue(newValue != null ? newValue.getPath() : null);
-        });
-
         var fileSystemChoiceComp =
-                new FileSystemStoreChoiceComp(selected).grow(false, true).styleClass(Styles.LEFT_PILL);
-        if (onlyLocal) {
+                new FileSystemStoreChoiceComp(fileSystem).grow(false, true).styleClass(Styles.LEFT_PILL);
+        if (hideFileSystem) {
             fileSystemChoiceComp.hide(new SimpleBooleanProperty(true));
         }
 
-        var fileNameComp = new TextFieldComp(filePathProperty)
+        var fileNameComp = new TextFieldComp(filePath)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
-                .styleClass(onlyLocal ? Styles.LEFT_PILL : Styles.CENTER_PILL)
+                .styleClass(hideFileSystem ? Styles.LEFT_PILL : Styles.CENTER_PILL)
                 .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    StandaloneFileBrowser.openSingleFile(selected);
+                    StandaloneFileBrowser.openSingleFile(fileStore -> {
+                        if (fileStore == null) {
+                            filePath.setValue(null);
+                            fileSystem.setValue(null);
+                        } else {
+                            filePath.setValue(fileStore.getPath());
+                            fileSystem.setValue(fileStore.getFileSystem());
+                        }
+                    });
                 })
                 .styleClass(Styles.RIGHT_PILL)
                 .grow(false, true);

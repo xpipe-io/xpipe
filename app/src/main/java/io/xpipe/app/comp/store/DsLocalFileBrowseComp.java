@@ -30,7 +30,9 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
         var button = new AtomicReference<Button>();
         button.set(new ButtonComp(null, getGraphic(), () -> {
                     if (mode == DsStreamStoreChoiceComp.Mode.OPEN) {
-                        StandaloneFileBrowser.openSingleFile(chosenFile);
+                        StandaloneFileBrowser.openSingleFile(fileStore -> {
+                            chosenFile.setValue(fileStore);
+                        });
                     } else {
                         StandaloneFileBrowser.saveSingleFile(chosenFile);
                     }

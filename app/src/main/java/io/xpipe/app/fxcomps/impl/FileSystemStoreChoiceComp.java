@@ -4,10 +4,8 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
-import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
@@ -16,9 +14,9 @@ import javafx.scene.layout.Region;
 
 public class FileSystemStoreChoiceComp extends SimpleComp {
 
-    private final Property<FileStore> selected;
+    private final Property<FileSystemStore> selected;
 
-    public FileSystemStoreChoiceComp(Property<FileStore> selected) {
+    public FileSystemStoreChoiceComp(Property<FileSystemStore> selected) {
         this.selected = selected;
     }
 
@@ -45,20 +43,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var fileSystemProperty = new SimpleObjectProperty<>(
-                selected.getValue() != null ? selected.getValue().getFileSystem() : null);
-        fileSystemProperty.addListener((observable, oldValue, newValue) -> {
-            selected.setValue(FileStore.builder()
-                    .fileSystem(newValue)
-                    .path(selected.getValue() != null ? selected.getValue().getPath() : null)
-                    .build());
-        });
-
-        selected.addListener((observable, oldValue, newValue) -> {
-            fileSystemProperty.setValue(newValue != null ? newValue.getFileSystem() : null);
-        });
-
-        var comboBox = new CustomComboBoxBuilder<>(fileSystemProperty, this::createGraphic, null, v -> true);
+        var comboBox = new CustomComboBoxBuilder<>(selected, this::createGraphic, null, v -> true);
         comboBox.setAccessibleNames(store -> getName(store));
         comboBox.setSelectedDisplay(this::createDisplayGraphic);
         DataStorage.get().getUsableStores().stream()

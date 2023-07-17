@@ -32,7 +32,7 @@ public class XPipeExecTempDirectory {
         var legacyExecTemp = FileNames.join(legacyTemp, "exec");
 
         // Always delete legacy directory and do not care whether it partially fails
-        d.deleteFile(proc, legacyExecTemp).executeAndCheck();
+        d.deleteFileOrDirectory(proc, legacyExecTemp).executeAndCheck();
 
         // Check permissions for home directory
         // If this is somehow messed up, we can still default back to the system directory
@@ -48,7 +48,7 @@ public class XPipeExecTempDirectory {
                 d.prepareUserTempDirectory(proc, targetTemp).execute();
             } else if (!usedSystems.contains(proc.getSystemId())) {
                 // Try to clear directory and do not care about errors
-                d.deleteFile(proc, targetTemp).executeAndCheck();
+                d.deleteFileOrDirectory(proc, targetTemp).executeAndCheck();
                 d.prepareUserTempDirectory(proc, targetTemp).executeAndCheck();
             } else {
                 // Still attempt to properly set permissions every time
