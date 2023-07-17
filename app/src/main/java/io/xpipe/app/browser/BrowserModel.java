@@ -66,7 +66,7 @@ public class BrowserModel {
 
     private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
-    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel();
+    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
 
     public void restoreState(BrowserSavedState state) {

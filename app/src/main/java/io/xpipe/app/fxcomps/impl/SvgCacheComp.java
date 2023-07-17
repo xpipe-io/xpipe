@@ -3,6 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -50,7 +51,7 @@ public class SvgCacheComp extends SimpleComp {
         var back = SvgView.create(webViewContent).createWebview();
         back.prefWidthProperty().bind(width);
         back.prefHeightProperty().bind(height);
-        svgFile.addListener((observable, oldValue, newValue) -> {
+        SimpleChangeListener.apply(svgFile, newValue -> {
             if (newValue == null) {
                 back.setVisible(false);
                 front.setVisible(false);
@@ -121,6 +122,8 @@ public class SvgCacheComp extends SimpleComp {
                 //                timer.start();
                 //                active.set(timer);
             });
+        });
+        svgFile.addListener((observable, oldValue, newValue) -> {
         });
 
         var stack = new StackPane(back, front);

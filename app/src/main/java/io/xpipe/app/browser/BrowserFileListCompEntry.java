@@ -35,7 +35,10 @@ public class BrowserFileListCompEntry {
 
     public void onMouseClick(MouseEvent t) {
         if (item == null) {
-            model.getSelection().clear();
+            // Only clear for normal clicks
+            if (t.isStillSincePress()) {
+                model.getSelection().clear();
+            }
             t.consume();
             return;
         }
@@ -85,7 +88,8 @@ public class BrowserFileListCompEntry {
             return true;
         }
 
-        if (BrowserClipboard.currentDragClipboard == null) {
+        BrowserClipboard.Instance cb = BrowserClipboard.currentDragClipboard;
+        if (cb == null) {
             return false;
         }
 
@@ -94,7 +98,7 @@ public class BrowserFileListCompEntry {
         }
 
         // Prevent drag and drops of files into the current directory
-        if (BrowserClipboard.currentDragClipboard
+        if (cb.getBaseDirectory() != null && cb
                         .getBaseDirectory()
                         .getPath()
                         .equals(model.getFileSystemModel().getCurrentDirectory().getPath())
@@ -103,7 +107,7 @@ public class BrowserFileListCompEntry {
         }
 
         // Prevent dropping items onto themselves
-        if (item != null && BrowserClipboard.currentDragClipboard.getEntries().contains(item.getRawFileEntry())) {
+        if (item != null && cb.getEntries().contains(item.getRawFileEntry())) {
             return false;
         }
 

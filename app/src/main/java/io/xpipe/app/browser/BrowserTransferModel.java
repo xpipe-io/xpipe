@@ -11,7 +11,9 @@ import javafx.collections.ObservableList;
 import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,8 +39,19 @@ public class BrowserTransferModel {
         BooleanProperty finishedDownload = new SimpleBooleanProperty();
     }
 
+    BrowserModel browserModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
     BooleanProperty downloading = new SimpleBooleanProperty();
+    BooleanProperty allDownloaded = new SimpleBooleanProperty();
+
+    public void clear() {
+        try {
+            FileUtils.deleteDirectory(TEMP.toFile());
+        } catch (IOException e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
+        items.clear();
+    }
 
     public void drop(List<FileSystem.FileEntry> entries) {
         entries.forEach(entry -> {
@@ -50,18 +63,34 @@ public class BrowserTransferModel {
             Path file = TEMP.resolve(name);
             var item = new Item(name, entry, file);
             items.add(item);
-            executor.submit(() -> {
+            allDownloaded.set(false);
+        });
+    }
+
+    public void download() {
+        executor.submit(() -> {
+            try {
+                FileUtils.forceMkdir(TEMP.toFile());
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).handle();
+                return;
+            }
+
+            for (Item item : new ArrayList<>(items)) {
                 try {
-                    FileUtils.forceMkdir(TEMP.toFile());
                     try (var b = new BusyProperty(downloading)) {
-                        FileSystemHelper.dropFilesInto(FileSystemHelper.getLocal(TEMP), List.of(entry), false);
+                        FileSystemHelper.dropFilesInto(
+                                FileSystemHelper.getLocal(TEMP),
+                                List.of(item.getFileEntry()),
+                                true);
                     }
                     item.finishedDownload.set(true);
                 } catch (Throwable t) {
                     ErrorEvent.fromThrowable(t).handle();
                     items.remove(item);
                 }
-            });
+            }
+            allDownloaded.set(true);
         });
     }
 }
