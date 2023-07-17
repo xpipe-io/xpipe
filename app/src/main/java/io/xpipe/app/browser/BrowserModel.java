@@ -168,6 +168,10 @@ public class BrowserModel {
         //            return;
         //        }
 
+        if (store == null) {
+            return;
+        }
+
         ThreadHelper.runFailableAsync(() -> {
             OpenFileSystemModel model;
 

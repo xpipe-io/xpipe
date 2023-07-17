@@ -40,22 +40,22 @@ public class AppPrefs {
         return developerMode().getValue() && !ModuleHelper.isImage();
     }
 
-    private static ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
+    private ObservableBooleanValue bindDeveloperTrue(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
                 () -> {
-                    return AppPrefs.get().developerMode().getValue() && o.get();
+                    return developerMode().getValue() && o.get();
                 },
                 o,
-                AppPrefs.get().developerMode());
+                developerMode());
     }
 
-    private static ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
+    private ObservableBooleanValue bindDeveloperFalse(ObservableBooleanValue o) {
         return Bindings.createBooleanBinding(
                 () -> {
-                    return !AppPrefs.get().developerMode().getValue() && o.get();
+                    return !developerMode().getValue() && o.get();
                 },
                 o,
-                AppPrefs.get().developerMode());
+                developerMode());
     }
 
     private static final int tooltipDelayMin = 0;
@@ -240,25 +240,30 @@ public class AppPrefs {
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableUpdateVersionCheckField =
             BooleanField.ofBooleanType(developerDisableUpdateVersionCheck).render(() -> new CustomToggleControl());
+    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective = bindDeveloperTrue(developerDisableUpdateVersionCheck);
 
     private final BooleanProperty developerDisableGuiRestrictions =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableGuiRestrictionsField =
             BooleanField.ofBooleanType(developerDisableGuiRestrictions).render(() -> new CustomToggleControl());
+    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective = bindDeveloperTrue(developerDisableGuiRestrictions);
 
     private final BooleanProperty developerShowHiddenProviders = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerShowHiddenProvidersField =
             BooleanField.ofBooleanType(developerShowHiddenProviders).render(() -> new CustomToggleControl());
+    private final ObservableBooleanValue developerShowHiddenProvidersEffective = bindDeveloperTrue(developerShowHiddenProviders);
 
     private final BooleanProperty developerShowHiddenEntries = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerShowHiddenEntriesField =
             BooleanField.ofBooleanType(developerShowHiddenEntries).render(() -> new CustomToggleControl());
+    private final ObservableBooleanValue developerShowHiddenEntriesEffective = bindDeveloperTrue(developerShowHiddenEntries);
 
     private final BooleanProperty developerDisableConnectorInstallationVersionCheck =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableConnectorInstallationVersionCheckField = BooleanField.ofBooleanType(
                     developerDisableConnectorInstallationVersionCheck)
             .render(() -> new CustomToggleControl());
+    private final ObservableBooleanValue developerDisableConnectorInstallationVersionCheckEffective = bindDeveloperTrue(developerDisableConnectorInstallationVersionCheck);
 
     public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {
         return closeBehaviour;
@@ -343,23 +348,23 @@ public class AppPrefs {
     }
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
-        return bindDeveloperTrue(developerDisableUpdateVersionCheck);
+        return developerDisableUpdateVersionCheckEffective;
     }
 
     public ObservableBooleanValue developerDisableGuiRestrictions() {
-        return bindDeveloperTrue(developerDisableGuiRestrictions);
+        return developerDisableGuiRestrictionsEffective;
     }
 
     public ObservableBooleanValue developerDisableConnectorInstallationVersionCheck() {
-        return bindDeveloperTrue(developerDisableConnectorInstallationVersionCheck);
+        return developerDisableConnectorInstallationVersionCheckEffective;
     }
 
     public ObservableBooleanValue developerShowHiddenProviders() {
-        return bindDeveloperTrue(developerShowHiddenProviders);
+        return developerShowHiddenProvidersEffective;
     }
 
     public ObservableBooleanValue developerShowHiddenEntries() {
-        return bindDeveloperTrue(developerShowHiddenEntries);
+        return developerShowHiddenEntriesEffective;
     }
 
     private AppPreferencesFx preferencesFx;

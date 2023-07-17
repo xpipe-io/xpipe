@@ -140,7 +140,9 @@ public class BrowserComp extends SimpleComp {
                 Comp.of(() -> createTabPane()),
                 BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
-                BindingsHelper.persist(Bindings.isEmpty(model.getOpenFileSystems()))));
+                Bindings.createBooleanBinding(() -> {
+                    return model.getOpenFileSystems().size() == 0 && !model.getMode().isChooser();
+                }, model.getOpenFileSystems())));
         return multi.createRegion();
     }
 

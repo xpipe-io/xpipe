@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.core.impl.FileStore;
+import io.xpipe.core.impl.LocalStore;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
@@ -30,7 +31,7 @@ public class DsLocalFileBrowseComp extends Comp<CompStructure<Button>> {
         var button = new AtomicReference<Button>();
         button.set(new ButtonComp(null, getGraphic(), () -> {
                     if (mode == DsStreamStoreChoiceComp.Mode.OPEN) {
-                        StandaloneFileBrowser.openSingleFile(fileStore -> {
+                        StandaloneFileBrowser.openSingleFile(() -> new LocalStore(), fileStore -> {
                             chosenFile.setValue(fileStore);
                         });
                     } else {
