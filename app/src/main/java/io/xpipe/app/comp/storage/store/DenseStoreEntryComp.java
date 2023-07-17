@@ -3,6 +3,7 @@ package io.xpipe.app.comp.storage.store;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 
@@ -35,8 +36,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
 
-        var infoSize = content != null ? 300 : 600;
-        var info = new ColumnConstraints(0, infoSize, infoSize);
+        var info = new ColumnConstraints();
+        info.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
         info.setHalignment(HPos.LEFT);
 
         var nameCC = new ColumnConstraints();
@@ -54,6 +55,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         controls.setFillHeight(true);
         controls.setAlignment(Pos.CENTER_RIGHT);
         controls.setSpacing(10);
+        controls.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(cr, Priority.ALWAYS);
         grid.add(controls, 3, 0);
 

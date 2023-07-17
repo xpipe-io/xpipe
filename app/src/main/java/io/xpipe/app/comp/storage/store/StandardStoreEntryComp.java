@@ -2,6 +2,7 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.fxcomps.Comp;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 
@@ -31,8 +32,8 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
 
         grid.add(createInformation(), 2, 0, 1, 2);
-        var infoSize = content != null ? 300 : 600;
-        var info = new ColumnConstraints(0, infoSize, infoSize);
+        var info = new ColumnConstraints();
+        info.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
         info.setHalignment(HPos.LEFT);
         grid.getColumnConstraints().add(info);
 
@@ -46,6 +47,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         HBox.setHgrow(cr, Priority.ALWAYS);
         controls.setAlignment(Pos.CENTER_RIGHT);
         controls.setSpacing(10);
+        controls.setPadding(new Insets(0, 0, 0, 10));
         grid.add(controls, 3, 0, 1, 2);
         grid.getColumnConstraints().add(custom);
 

@@ -42,6 +42,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         () -> {
                             section.getWrapper().toggleExpanded();
                         })
+                .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
                 .focusTraversable()
                 .accessibleText("Expand")

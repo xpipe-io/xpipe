@@ -3,6 +3,7 @@ package io.xpipe.app.comp.storage.store;
 import atlantafx.base.theme.Styles;
 import com.jfoenix.controls.JFXButton;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
+import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
@@ -20,6 +21,7 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -45,6 +47,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
+    public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = App.getApp().getStage().widthProperty().divide(2.2);
+    public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = App.getApp().getStage().widthProperty().divide(2.2).add(-300);
     protected final StoreEntryWrapper wrapper;
     protected final Comp<?> content;
 
@@ -62,7 +66,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(r));
         button.getStyleClass().add("store-entry-comp");
         button.setPadding(Insets.EMPTY);
-        button.setMaxWidth(2000);
+        button.setMaxWidth(3000);
         button.setFocusTraversable(true);
         button.accessibleTextProperty()
                 .bind(Bindings.createStringBinding(
