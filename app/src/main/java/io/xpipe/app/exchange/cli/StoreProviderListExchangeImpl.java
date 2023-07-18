@@ -15,12 +15,12 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {
-        var categories = DataStoreProvider.DataCategory.values();
+        var categories = DataStoreProvider.DisplayCategory.values();
         var all = DataStoreProviders.getAll();
         var map = Arrays.stream(categories)
                 .collect(Collectors.toMap(category -> getName(category), category -> all.stream()
                         .filter(dataStoreProvider ->
-                                dataStoreProvider.getCategory().equals(category))
+                                dataStoreProvider.getDisplayCategory().equals(category))
                         .map(p -> ProviderEntry.builder()
                                 .id(p.getId())
                                 .description(p.getDisplayDescription())
@@ -31,7 +31,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
         return Response.builder().entries(map).build();
     }
 
-    private String getName(DataStoreProvider.DataCategory category) {
+    private String getName(DataStoreProvider.DisplayCategory category) {
         return category.name().substring(0, 1).toUpperCase()
                 + category.name().substring(1).toLowerCase();
     }

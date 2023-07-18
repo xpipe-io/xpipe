@@ -92,6 +92,7 @@ public abstract class DataStorage {
         Collections.reverse(ordered);
 
         synchronized (this) {
+            ordered.forEach(entry -> entry.finalizeEntry());
             this.storeEntries.removeAll(ordered);
             this.listeners.forEach(l -> l.onStoreRemove(ordered.toArray(DataStoreEntry[]::new)));
         }
@@ -213,6 +214,12 @@ public abstract class DataStorage {
         }
     }
 
+    public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
+        newEntry.finalizeEntry();
+        entry.applyChanges(newEntry);
+        entry.initializeEntry();
+    }
+
     public void refreshAsync(DataStoreEntry element, boolean deep) {
         ThreadHelper.runAsync(() -> {
             try {
@@ -233,6 +240,8 @@ public abstract class DataStorage {
     }
 
     public void addStoreEntry(@NonNull DataStoreEntry e) {
+        e.getProvider().preAdd(e.getStore());
+
         synchronized (this) {
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
             this.storeEntries.add(e);
@@ -241,16 +250,22 @@ public abstract class DataStorage {
         save();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
+        e.initializeEntry();
     }
 
     public void addStoreEntries(@NonNull DataStoreEntry... es) {
         synchronized (this) {
             for (DataStoreEntry e : es) {
+                e.getProvider().preAdd(e.getStore());
+
                 e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
                 this.storeEntries.add(e);
                 propagateUpdate(e);
             }
             this.listeners.forEach(l -> l.onStoreAdd(es));
+            for (DataStoreEntry e : es) {
+                e.initializeEntry();
+            }
         }
         save();
     }
@@ -284,6 +299,7 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
+        store.finalizeEntry();
         synchronized (this) {
             this.storeEntries.remove(store);
         }
@@ -297,13 +313,6 @@ public abstract class DataStorage {
     }
 
     public abstract void load();
-
-    public void refresh() {
-        getStoreEntries().forEach(entry -> {
-            entry.simpleRefresh();
-        });
-        save();
-    }
 
     public abstract void save();
 

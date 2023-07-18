@@ -25,5 +25,7 @@ public abstract class DataStateProvider {
 
     public abstract <T> T getState(DataStore store, String key, Class<T> c, Supplier<T> def);
 
+    public abstract boolean isInStorage(DataStore store);
+
     public abstract Path getInternalStreamStore(UUID id);
 }

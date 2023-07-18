@@ -5,10 +5,6 @@ import io.xpipe.core.impl.StdinDataStore;
 import io.xpipe.core.impl.StdoutDataStore;
 import io.xpipe.core.source.DataSource;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.Optional;
-
 /**
  * A data store represents some form of a location where data is stored, e.g. a file or a database.
  * It does not contain any information on what data is stored,
@@ -77,6 +73,10 @@ public interface DataStore {
      */
     default void validate() throws Exception {}
 
+    default void initializeValidate() throws Exception {}
+
+    default void finalizeValidate() throws Exception {}
+
     default void checkComplete() throws Exception {}
 
     default boolean delete() {
@@ -89,20 +89,5 @@ public interface DataStore {
     @SuppressWarnings("unchecked")
     default <DS extends DataStore> DS asNeeded() {
         return (DS) this;
-    }
-
-    /**
-     * Determines on optional default name for this data store that is
-     * used when determining a suitable default name for a data source.
-     */
-    default Optional<String> determineDefaultName() {
-        return Optional.empty();
-    }
-
-    /**
-     * Determines the last modified of this data store if this data store supports it.
-     */
-    default Optional<Instant> determineLastModified() throws IOException {
-        return Optional.empty();
     }
 }

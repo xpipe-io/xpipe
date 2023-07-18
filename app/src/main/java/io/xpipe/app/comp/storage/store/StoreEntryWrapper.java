@@ -197,6 +197,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
             found.createAction(entry.getStore().asNeeded()).execute();
         } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
             refreshWithChildrenAsync();
+        } else {
         }
     }
 

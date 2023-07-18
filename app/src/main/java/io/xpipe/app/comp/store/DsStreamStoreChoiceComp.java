@@ -121,7 +121,7 @@ public class DsStreamStoreChoiceComp extends SimpleComp implements Validatable {
         var other = new TabPaneComp.Entry(
                 AppI18n.observable("other"),
                 "mdrmz-web_asset",
-                new DataStoreSelectorComp(DataStoreProvider.DataCategory.STREAM, otherStore));
+                new DataStoreSelectorComp(DataStoreProvider.DisplayCategory.HOST, otherStore));
 
         var selectedTab = new SimpleObjectProperty<TabPaneComp.Entry>();
         if (localStore.get() != null) {

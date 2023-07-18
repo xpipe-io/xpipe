@@ -6,6 +6,10 @@ import java.util.function.Supplier;
 
 public interface StatefulDataStore extends DataStore {
 
+    default boolean isInStorage() {
+        return DataStateProvider.get().isInStorage(this);
+    }
+
     default <T> T getState(String key, Class<T> c, T def) {
         return DataStateProvider.get().getState(this, key, c, () -> def);
     }

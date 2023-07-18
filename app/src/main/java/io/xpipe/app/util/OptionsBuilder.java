@@ -42,6 +42,12 @@ public class OptionsBuilder {
         entries.add(entry);
     }
 
+    public OptionsBuilder sub(OptionsBuilder builder) {
+        props.addAll(builder.props);
+        pushComp(builder.buildComp());
+        return this;
+    }
+
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(

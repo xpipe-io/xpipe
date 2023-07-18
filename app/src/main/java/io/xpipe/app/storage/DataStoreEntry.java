@@ -288,6 +288,36 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
+    @SneakyThrows
+    public void initializeEntry() {
+        try {
+            state = State.VALIDATING;
+            listeners.forEach(l -> l.onUpdate());
+            store.initializeValidate();
+            state = State.COMPLETE_AND_VALID;
+        } catch (Exception e) {
+            state = State.COMPLETE_BUT_INVALID;
+            ErrorEvent.fromThrowable(e).handle();
+        } finally {
+            propagateUpdate();
+        }
+    }
+
+    @SneakyThrows
+    public void finalizeEntry() {
+        try {
+            state = State.VALIDATING;
+            listeners.forEach(l -> l.onUpdate());
+            store.finalizeValidate();
+            state = State.COMPLETE_AND_VALID;
+        } catch (Exception e) {
+            state = State.COMPLETE_BUT_INVALID;
+            ErrorEvent.fromThrowable(e).handle();
+        } finally {
+            propagateUpdate();
+        }
+    }
+
     @Override
     protected boolean shouldSave() {
         return getStore() == null || getStore().shouldSave();

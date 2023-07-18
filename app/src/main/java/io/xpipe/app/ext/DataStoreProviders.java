@@ -35,6 +35,20 @@ public class DataStoreProviders {
         }
     }
 
+    public static void postInit(ModuleLayer layer) {
+        ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
+                .map(ServiceLoader.Provider::get)
+                .sorted(Comparator.comparing(DataStoreProvider::getId))
+                .collect(Collectors.toList());
+        ALL.forEach(p -> {
+            try {
+                p.postInit();
+            } catch (Throwable e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        });
+    }
+
     public static Optional<DataStoreProvider> byName(String name) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");

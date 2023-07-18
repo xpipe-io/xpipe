@@ -1,6 +1,7 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
@@ -105,6 +106,11 @@ public abstract class OperationMode {
         setup(args);
         LauncherCommand.runLauncher(usedArgs);
         inStartup = false;
+        postInit(args);
+    }
+
+    public static void postInit(String[] args) {
+        DataStoreProviders.postInit(AppExtensionManager.getInstance().getExtendedLayer());
     }
 
     public static boolean isInStartup() {

@@ -42,6 +42,11 @@ public class DataStateProviderImpl extends DataStateProvider {
         return c.cast(result);
     }
 
+    public boolean isInStorage(DataStore store) {
+        var entry = DataStorage.get().getStoreEntryIfPresent(store);
+        return entry.isPresent();
+    }
+
     @Override
     public Path getInternalStreamStore(UUID id) {
         return DataStorage.get().getInternalStreamPath(id);
