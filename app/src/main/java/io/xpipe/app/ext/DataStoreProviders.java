@@ -17,7 +17,6 @@ public class DataStoreProviders {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
                     .map(ServiceLoader.Provider::get)
-                    .sorted(Comparator.comparing(DataStoreProvider::getId))
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
