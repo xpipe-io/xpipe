@@ -409,12 +409,14 @@ final class BrowserFileListComp extends SimpleComp {
         double dragY = event.getSceneY();
         double topYProximity = tableBounds.getMinY() + proximity;
         double bottomYProximity = tableBounds.getMaxY() - proximity;
+
+        // clamp new values between 0 and 1 to prevent scrollbar flicking around at the edges
         if (dragY < topYProximity) {
             var scrollValue = Math.min(topYProximity - dragY, 100) / 10000.0;
-            vbar.setValue(vbar.getValue() - scrollValue);
+            vbar.setValue(Math.max(vbar.getValue() - scrollValue, 0));
         } else if (dragY > bottomYProximity) {
             var scrollValue = Math.min(dragY - bottomYProximity, 100) / 10000.0;
-            vbar.setValue(vbar.getValue() + scrollValue);
+            vbar.setValue(Math.min(vbar.getValue() + scrollValue, 1.0));
         }
     }
 

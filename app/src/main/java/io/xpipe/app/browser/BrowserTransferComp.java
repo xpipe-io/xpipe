@@ -34,7 +34,7 @@ public class BrowserTransferComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var background = new LabelComp(AppI18n.observable("download"))
+        var background = new LabelComp(AppI18n.observable("transferDescription"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
                 .visible(BindingsHelper.persist(Bindings.isEmpty(stage.getItems())));
         var backgroundStack =

@@ -77,6 +77,10 @@ public class BrowserTransferModel {
             }
 
             for (Item item : new ArrayList<>(items)) {
+                if (item.getFinishedDownload().get()) {
+                    continue;
+                }
+
                 try {
                     try (var b = new BusyProperty(downloading)) {
                         FileSystemHelper.dropFilesInto(
