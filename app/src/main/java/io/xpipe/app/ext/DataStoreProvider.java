@@ -25,7 +25,6 @@ public interface DataStoreProvider {
     }
 
     default void validate() {
-        getCategory();
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
                 throw new ExtensionException(
@@ -33,6 +32,8 @@ public interface DataStoreProvider {
             }
         }
     }
+
+    default void preAdd(DataStore store) {}
 
     default Comp<?> customDisplay(StoreSection s) {
         return new StandardStoreEntryComp(s.getWrapper(), null);
@@ -90,27 +91,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default DataCategory getCategory() {
-        var c = getStoreClasses().get(0);
-        if (StreamDataStore.class.isAssignableFrom(c)) {
-            return DataCategory.STREAM;
-        }
-
-        if (FileSystem.class.isAssignableFrom(c) || ShellStore.class.isAssignableFrom(c)) {
-            return DataCategory.SHELL;
-        }
-
-        throw new ExtensionException("Provider " + getId() + " has no set category");
-    }
-
     default DisplayCategory getDisplayCategory() {
-        var category = getCategory();
-        if (category.equals(DataCategory.SHELL)) {
-            return DisplayCategory.HOST;
-        }
-        if (category.equals(DataCategory.DATABASE)) {
-            return DisplayCategory.DATABASE;
-        }
         return DisplayCategory.OTHER;
     }
 
@@ -130,19 +111,26 @@ public interface DataStoreProvider {
         return true;
     }
 
+    default void postInit(){
+    }
+
     default void storageInit() throws Exception {}
 
     default boolean isShareable() {
         return false;
     }
 
-    String queryInformationString(DataStore store, int length) throws Exception;
+    default String queryInformationString(DataStore store, int length) throws Exception {
+        return null;
+    }
 
     default String queryInvalidInformationString(DataStore store, int length) throws Exception {
         return null;
     }
 
-    String toSummaryString(DataStore store, int length);
+    default String toSummaryString(DataStore store, int length) {
+        return null;
+    }
 
     default String i18n(String key) {
         return AppI18n.get(getId() + "." + key);
@@ -205,6 +193,7 @@ public interface DataStoreProvider {
         DATABASE,
         SHELL,
         COMMAND,
+        TUNNEL,
         OTHER
     }
 }

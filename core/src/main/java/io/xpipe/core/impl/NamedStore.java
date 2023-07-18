@@ -6,9 +6,6 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.Instant;
-import java.util.Optional;
-
 /**
  * A store that refers to another store in the XPipe storage.
  * The referenced store has to be resolved by the caller manually, as this class does not act as a resolver.
@@ -36,13 +33,4 @@ public final class NamedStore implements DataStore {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Optional<String> determineDefaultName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Optional<Instant> determineLastModified() {
-        throw new UnsupportedOperationException();
-    }
 }

@@ -25,7 +25,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Optional;
 
 @JsonTypeName("http")
 @SuperBuilder
@@ -99,11 +98,6 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
         Validators.nonNull(uriString, "URL");
         URI.create(uriString);
         Validators.nonNull(headers, "Headers");
-    }
-
-    @Override
-    public Optional<String> determineDefaultName() {
-        return Optional.ofNullable(getURL().getHost());
     }
 
     @Override

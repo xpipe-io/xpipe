@@ -71,11 +71,6 @@ public class InMemoryStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public DataCategory getCategory() {
-        return DataCategory.STREAM;
-    }
-
-    @Override
     public DataStore defaultStore() {
         return new InMemoryStore(new byte[0]);
     }

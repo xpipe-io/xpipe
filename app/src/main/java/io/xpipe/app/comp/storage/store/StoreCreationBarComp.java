@@ -55,7 +55,15 @@ public class StoreCreationBarComp extends SimpleComp {
                 .shortcut(new KeyCodeCombination(KeyCode.D, KeyCombination.SHORTCUT_DOWN))
                 .apply(new FancyTooltipAugment<>("addDatabase"));
 
-        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore))
+        var newTunnelStore = new ButtonComp(AppI18n.observable("addTunnel"), new FontIcon("mdi2v-vector-polyline-plus"), () -> {
+            GuiDsStoreCreator.showCreation(
+                    v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.TUNNEL));
+        })
+                .styleClass(Styles.FLAT)
+                .shortcut(new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN))
+                .apply(new FancyTooltipAugment<>("addTunnel"));
+
+        var box = new VerticalComp(List.of(newHostStore, newShellStore, newStreamStore, newDbStore, newTunnelStore))
                 .apply(struc -> struc.get().setFillWidth(true));
         box.apply(s -> AppFont.medium(s.get()));
         var bar = box.createRegion();

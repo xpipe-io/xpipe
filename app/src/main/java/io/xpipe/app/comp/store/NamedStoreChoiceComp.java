@@ -146,7 +146,7 @@ public class NamedStoreChoiceComp extends SimpleComp implements Validatable {
         var text = new LabelComp(AppI18n.observable("noMatchingStoreFound"))
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
         var addButton = new ButtonComp(AppI18n.observable("addStore"), null, () -> {
-            GuiDsStoreCreator.showCreation(v -> v.getCategory().equals(category));
+            // GuiDsStoreCreator.showCreation(v -> v.getCategory().equals(category));
         });
         var notice = new VerticalComp(List.of(text, addButton))
                 .apply(struc -> {

@@ -195,6 +195,10 @@ public class AppI18n {
     }
 
     public String getMarkdownDocumentation(String name) {
+        if (!markdownDocumentations.containsKey(name)) {
+            TrackEvent.withWarn("Markdown documentation for key " + name + " not found").handle();
+        }
+
         return markdownDocumentations.getOrDefault(name, "");
     }
 
