@@ -80,8 +80,6 @@ public class AppPrefs {
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(CloseBehaviour.class)));
     private final SimpleListProperty<ExternalEditorType> externalEditorList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalEditorType.class)));
-    private final SimpleListProperty<ExternalStartupBehaviour> externalStartupBehaviourList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalStartupBehaviour.class)));
     private final SimpleListProperty<String> logLevelList =
             new SimpleListProperty<>(FXCollections.observableArrayList("trace", "debug", "info", "warn", "error"));
     private final Map<Object, Class<?>> classMap = new HashMap<>();
@@ -160,11 +158,13 @@ public class AppPrefs {
 
     // Start behaviour
     // ===============
-    private final ObjectProperty<ExternalStartupBehaviour> externalStartupBehaviour =
-            typed(new SimpleObjectProperty<>(ExternalStartupBehaviour.TRAY), ExternalStartupBehaviour.class);
+    private final SimpleListProperty<StartupBehaviour> startupBehaviourList = new SimpleListProperty<>(
+            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(StartupBehaviour.class)));
+    private final ObjectProperty<StartupBehaviour> startupBehaviour =
+            typed(new SimpleObjectProperty<>(StartupBehaviour.GUI), StartupBehaviour.class);
 
-    private final SingleSelectionField<ExternalStartupBehaviour> externalStartupBehaviourControl =
-            Field.ofSingleSelectionType(externalStartupBehaviourList, externalStartupBehaviour)
+    private final SingleSelectionField<StartupBehaviour> startupBehaviourControl =
+            Field.ofSingleSelectionType(startupBehaviourList, startupBehaviour)
                     .render(() -> new TranslatableComboBoxControl<>());
 
     // Close behaviour
@@ -311,8 +311,8 @@ public class AppPrefs {
         return editorReloadTimeout;
     }
 
-    public ReadOnlyProperty<ExternalStartupBehaviour> externalStartupBehaviour() {
-        return externalStartupBehaviour;
+    public ReadOnlyProperty<StartupBehaviour> startupBehaviour() {
+        return startupBehaviour;
     }
 
     public ReadOnlyBooleanProperty automaticallyUpdate() {
@@ -524,9 +524,10 @@ public class AppPrefs {
                         Group.of(
                                 "appBehaviour",
                                 Setting.of(
-                                        "externalStartupBehaviour",
-                                        externalStartupBehaviourControl,
-                                        externalStartupBehaviour),
+                                        "startupBehaviour",
+                                        startupBehaviourControl,
+                                        startupBehaviour
+                                ),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
                         Group.of("security", Setting.of("workspaceLock", lockCryptControl, lockCrypt)),
                         Group.of(
