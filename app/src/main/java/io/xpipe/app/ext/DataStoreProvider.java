@@ -35,6 +35,10 @@ public interface DataStoreProvider {
 
     default void preAdd(DataStore store) {}
 
+    default boolean shouldEdit() {
+        return false;
+    }
+
     default Comp<?> customDisplay(StoreSection s) {
         return new StandardStoreEntryComp(s.getWrapper(), null);
     }

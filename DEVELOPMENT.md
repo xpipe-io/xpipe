@@ -26,7 +26,7 @@ are also not included to prevent attackers from easily impersonating the XPipe a
 
 ## Modularity
 
-All XPipe components target [Java 19](https://openjdk.java.net/projects/jdk/19/) and make full use of the Java Module System (JPMS).
+All XPipe components target [Java 20](https://openjdk.java.net/projects/jdk/20/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [moditect](https://github.com/moditect/moditect-gradle-plugin).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
@@ -41,6 +41,10 @@ run XPipe in a development environment.
 This is due to the fact that some components are only included in the release version and not in this repository.
 XPipe is able to automatically detect your local installation and fetch the required
 components from it when it is run in a development environment.
+
+You need to have GraalVM Community Edition for Java 20 installed as a JDK to compile the project.
+If you are on Linux or macOS, you can easily accomplish that by running the `setup.sh` script.
+On Windows, you have to manually install the JDK.
 
 ## Building and Running
 

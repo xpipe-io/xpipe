@@ -3,6 +3,7 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.store.DataStore;
@@ -58,7 +59,8 @@ public class EditStoreAction implements ActionProvider {
 
             @Override
             public boolean isMajor(DataStore o) {
-                return false;
+                var provider = DataStoreProviders.byStore(o);
+                return provider.shouldEdit();
             }
 
             @Override
