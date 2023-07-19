@@ -4,7 +4,8 @@ which sdk
 if [ $? -ne 0 ]; then
     curl -s "https://get.sdkman.io" | bash
     if [ $? -ne 0 ]; then
-        die "sdkman failed"
+        echo "sdkman failed"
+        exit 1
     fi;
     . "$HOME/.sdkman/bin/sdkman-init.sh"
 fi;
