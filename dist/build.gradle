@@ -37,11 +37,11 @@ apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
 if (rootProject.fullVersion) {
-    apply from: 'aur.gradle'
     apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
     apply from: 'jreleaser.gradle'
+    apply from: 'aur.gradle'
     apply from: 'choco.gradle'
     //apply from: 'flatpak.gradle'
 
