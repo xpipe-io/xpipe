@@ -190,7 +190,7 @@ if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(comma
   info "Installing from AUR"
   git clone "https://aur.archlinux.org/xpipe.git" /tmp/xpipe_aur
   cd "/tmp/xpipe_aur"
-  pkgbuild -si
+  makepkg -si
   exit 0
 fi
 
