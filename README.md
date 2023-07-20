@@ -93,6 +93,13 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
+### Notes for Bitdefender users
+
+Right now, for some reason, only Bitdefender really does not like XPipe doing anything on your system.
+It will instantly quarantine the application when it opens a shell *plus the system shells itself*,
+so it can prevent you from opening any shell on your own afterward.
+For more information, see the [security page](https://github.com/xpipe-io/xpipe/blob/master/SECURITY.md#antivirus-programs).
+
 ## Further information
 
 For information about the security model of XPipe, see the [security page](/SECURITY.md).
