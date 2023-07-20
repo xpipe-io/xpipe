@@ -186,6 +186,20 @@ return 0 2>/dev/null
 
 check_architecture "$(uname -m)" || exit 1
 
+if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
+  info "Installing from AUR"
+  git clone "https://aur.archlinux.org/xpipe.git" /tmp/xpipe_aur
+  cd "/tmp/xpipe_aur"
+  pkgbuild -si
+  exit 0
+fi
+
+if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && ! [ -x "$(command -v pacman)" ]; then
+  info "Installation is not supported on this system (no apt, rpm, pacman). Can you try a portable version of XPipe?"
+  info "https://github.com/xpipe-io/xpipe#portable"
+  exit 1
+fi
+
 repo="https://github.com/xpipe-io/xpipe"
 version=
 while getopts 'sv:' OPTION; do

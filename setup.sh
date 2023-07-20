@@ -12,3 +12,5 @@ fi;
 
 sdk install java 20.0.1-graalce
 sdk default java 20.0.1-graalce
+
+./gradlew app:run
