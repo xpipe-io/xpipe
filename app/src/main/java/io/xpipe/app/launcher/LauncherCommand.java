@@ -41,17 +41,17 @@ public class LauncherCommand implements Callable<Integer> {
 
         var cmd = new CommandLine(new LauncherCommand());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-            new LogErrorHandler()
-                    .handle(ErrorEvent.fromThrowable("Launcher command error occurred", ex)
-                            .build());
-            OperationMode.halt(1);
+            var event = ErrorEvent.fromThrowable("Launcher command error occurred", ex).term().build();
+            // Print error in case we launched from the command-line
+            new LogErrorHandler().handle(event);
+            event.handle();
             return 1;
         });
         cmd.setParameterExceptionHandler((ex, args1) -> {
-            new LogErrorHandler()
-                    .handle(ErrorEvent.fromThrowable("Launcher parameter error occurred", ex)
-                            .build());
-            OperationMode.halt(1);
+            var event = ErrorEvent.fromThrowable("Launcher parameter error occurred", ex).term().build();
+            // Print error in case we launched from the command-line
+            new LogErrorHandler().handle(event);
+            event.handle();
             return 1;
         });
 
