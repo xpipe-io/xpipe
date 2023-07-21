@@ -6,7 +6,6 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.LogErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.exchange.FocusExchange;
@@ -113,7 +112,7 @@ public class LauncherCommand implements Callable<Integer> {
             return XPipeDaemonMode.get(opModeName);
         }
 
-        return AppPrefs.get().startupBehaviour().getValue().getMode();
+        return XPipeDaemonMode.GUI;
     }
 
     @Override

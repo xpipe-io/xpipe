@@ -1,9 +1,12 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialects;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,14 +17,14 @@ import java.util.function.Supplier;
 
 public interface ExternalEditorType extends PrefsChoiceValue {
 
-    ExternalEditorType NOTEPAD = new WindowsType("app.notepad", "notepad") {
+    ExternalEditorType NOTEPAD = new WindowsFullPathType("app.notepad") {
         @Override
-        protected Optional<Path> determineInstallationPath() {
+        protected Optional<Path> determinePath() {
             return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
         }
     };
 
-    ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd") {
+    ExternalEditorType VSCODE_WINDOWS = new WindowsFullPathType("app.vscode") {
 
         @Override
         public boolean canOpenDirectory() {
@@ -29,7 +32,23 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
-        protected Optional<Path> determineInstallationPath() {
+        protected Optional<Path> determinePath() {
+            // Try to locate if it is in the Path
+            try (var cc = LocalStore.getShell()
+                    .command(ShellDialects.getPlatformDefault().getWhichCommand("code.cmd"))
+                    .start()) {
+                var out = cc.readStdoutDiscardErr();
+                var exit = cc.getExitCode();
+                if (exit == 0) {
+                    var first = out.lines().findFirst();
+                    if (first.isPresent()) {
+                        return first.map(Path::of);
+                    }
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+            }
+
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                     .resolve("Programs")
                     .resolve("Microsoft VS Code")
@@ -42,10 +61,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return false;
         }
     };
-    ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsType("app.notepad++", "notepad++") {
+    ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsFullPathType("app.notepad++") {
 
         @Override
-        protected Optional<Path> determineInstallationPath() {
+        protected Optional<Path> determinePath() {
             Optional<String> launcherDir;
             launcherDir = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null)
                     .map(p -> p + "\\notepad++.exe");
@@ -156,14 +175,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    abstract class WindowsType extends ExternalApplicationType.WindowsType
+    abstract class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
             implements ExternalEditorType {
 
-        private final String executable;
-
-        public WindowsType(String id, String executable) {
-            super(id, executable);
-            this.executable = executable;
+        public WindowsFullPathType(String id) {
+            super(id);
         }
 
         public boolean detach() {
@@ -172,7 +188,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            var path = determineInstallationPath();
+            var path = determinePath();
             if (path.isEmpty()) {
                 throw new IOException("Unable to find installation of " + toTranslatedString());
             }

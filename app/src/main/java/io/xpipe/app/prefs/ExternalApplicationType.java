@@ -5,7 +5,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -91,35 +90,13 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
     }
 
-    public abstract static class WindowsType extends ExternalApplicationType {
+    public abstract static class WindowsFullPathType extends ExternalApplicationType {
 
-        private final String executable;
-
-        public WindowsType(String id, String executable) {
+        public WindowsFullPathType(String id) {
             super(id);
-            this.executable = executable;
         }
 
-        protected abstract Optional<Path> determineInstallationPath();
-
-        private Optional<Path> determineFromPath() {
-            // Try to locate if it is in the Path
-            try (var cc = LocalStore.getShell()
-                    .command(ShellDialects.getPlatformDefault().getWhichCommand("code.cmd"))
-                    .start()) {
-                var out = cc.readStdoutDiscardErr();
-                var exit = cc.getExitCode();
-                if (exit == 0) {
-                    var first = out.lines().findFirst();
-                    if (first.isPresent()) {
-                        return first.map(Path::of);
-                    }
-                }
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
-            }
-            return Optional.empty();
-        }
+        protected abstract Optional<Path> determinePath();
 
         @Override
         public boolean isSelectable() {
@@ -128,7 +105,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         @Override
         public boolean isAvailable() {
-            var path = determineInstallationPath();
+            var path = determinePath();
             return path.isPresent() && Files.exists(path.get());
         }
     }
