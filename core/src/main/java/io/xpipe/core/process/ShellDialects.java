@@ -17,6 +17,7 @@ public class ShellDialects {
     public static ShellDialect BASH;
     public static ShellDialect ZSH;
     public static ShellDialect CSH;
+    public static ShellDialect FISH;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -29,6 +30,7 @@ public class ShellDialects {
             CMD = byName("cmd");
             POWERSHELL = byName("powershell");
             POWERSHELL_CORE = byName("pwsh");
+            FISH = byName("fish");
             DASH = byName("dash");
             BASH = byName("bash");
             ZSH = byName("zsh");
