@@ -99,16 +99,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.WINDOWS);
         }
     };
-    abstract class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
+    abstract class WindowsType extends ExternalApplicationType.WindowsType
             implements ExternalTerminalType {
 
-        public WindowsFullPathType(String id) {
-            super(id);
+        public WindowsType(String id, String executable) {
+            super(id, executable);
         }
 
         @Override
         public void launch(String name, String file, boolean elevated) throws Exception {
-            var path = determinePath();
+            var path = determineInstallationPath();
             if (path.isEmpty()) {
                 throw new IOException("Unable to find installation of " + toTranslatedString());
             }
@@ -120,7 +120,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected abstract String createCommand(ShellControl shellControl, String name, String path, String file);
     }
 
-    ExternalTerminalType TABBY_WINDOWS = new WindowsFullPathType("app.tabbyWindows") {
+    ExternalTerminalType TABBY_WINDOWS = new WindowsType("app.tabbyWindows", "tabby") {
 
         @Override
         protected String createCommand(ShellControl shellControl, String name, String path, String file) {
@@ -129,7 +129,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected Optional<Path> determinePath() {
+        protected Optional<Path> determineInstallationPath() {
             Optional<String> launcherDir;
             launcherDir = WindowsRegistry.readString(
                             WindowsRegistry.HKEY_CURRENT_USER,
