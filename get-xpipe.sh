@@ -187,10 +187,12 @@ return 0 2>/dev/null
 check_architecture "$(uname -m)" || exit 1
 
 if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
-  info "Installing from AUR"
+  info "Installing from AUR at https://aur.archlinux.org/xpipe.git"
+  rm -rf "/tmp/xpipe_aur" || true
   git clone "https://aur.archlinux.org/xpipe.git" /tmp/xpipe_aur
   cd "/tmp/xpipe_aur"
   makepkg -si
+  launch
   exit 0
 fi
 

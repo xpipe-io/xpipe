@@ -51,12 +51,12 @@ public abstract class StorageElement {
     public void updateLastUsed() {
         this.lastUsed = Instant.now();
         this.dirty = true;
-        this.listeners.forEach(l -> l.onUpdate());
+        notifyListeners();
     }
 
     protected abstract boolean shouldSave();
 
-    protected void propagateUpdate() {
+    protected void notifyListeners() {
         listeners.forEach(l -> l.onUpdate());
     }
 
@@ -102,7 +102,7 @@ public abstract class StorageElement {
         this.name = name;
         this.dirty = true;
         this.lastModified = Instant.now();
-        propagateUpdate();
+        notifyListeners();
     }
 
     public Instant getLastUsed() {

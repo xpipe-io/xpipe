@@ -73,10 +73,6 @@ public interface DataStore {
      */
     default void validate() throws Exception {}
 
-    default void initializeValidate() throws Exception {}
-
-    default void finalizeValidate() throws Exception {}
-
     default void checkComplete() throws Exception {}
 
     default boolean delete() {

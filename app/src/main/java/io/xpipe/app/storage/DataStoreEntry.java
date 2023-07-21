@@ -10,6 +10,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.ExpandedLifecycleStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -182,7 +183,7 @@ public class DataStoreEntry extends StorageElement {
     public void setExpanded(boolean expanded) {
         this.dirty = true;
         this.expanded = expanded;
-        listeners.forEach(l -> l.onUpdate());
+        notifyListeners();
     }
 
     public DataStore getStore() {
@@ -238,7 +239,7 @@ public class DataStoreEntry extends StorageElement {
             information = null;
             provider = null;
             dirty = dirty || oldStore != null;
-            listeners.forEach(l -> l.onUpdate());
+            notifyListeners();
         } else {
             var newNode = DataStorageWriter.storeToNode(newStore);
             var nodesEqual = Objects.equals(storeNode, newNode);
@@ -259,7 +260,7 @@ public class DataStoreEntry extends StorageElement {
 
                 if (complete && deep) {
                     state = State.VALIDATING;
-                    listeners.forEach(l -> l.onUpdate());
+                    notifyListeners();
                     store.validate();
                     state = State.COMPLETE_AND_VALID;
                     information = getProvider().queryInformationString(getStore(), 50);
@@ -283,38 +284,42 @@ public class DataStoreEntry extends StorageElement {
                 information = getProvider().queryInvalidInformationString(getStore(), 50);
                 throw e;
             } finally {
-                propagateUpdate();
+                notifyListeners();
             }
         }
     }
 
     @SneakyThrows
     public void initializeEntry() {
-        try {
-            state = State.VALIDATING;
-            listeners.forEach(l -> l.onUpdate());
-            store.initializeValidate();
-            state = State.COMPLETE_AND_VALID;
-        } catch (Exception e) {
-            state = State.COMPLETE_BUT_INVALID;
-            ErrorEvent.fromThrowable(e).handle();
-        } finally {
-            propagateUpdate();
+        if (store instanceof ExpandedLifecycleStore lifecycleStore) {
+            try {
+                state = State.VALIDATING;
+                notifyListeners();
+                lifecycleStore.initializeValidate();
+                state = State.COMPLETE_AND_VALID;
+            } catch (Exception e) {
+                state = State.COMPLETE_BUT_INVALID;
+                ErrorEvent.fromThrowable(e).handle();
+            } finally {
+                notifyListeners();
+            }
         }
     }
 
     @SneakyThrows
     public void finalizeEntry() {
-        try {
-            state = State.VALIDATING;
-            listeners.forEach(l -> l.onUpdate());
-            store.finalizeValidate();
-            state = State.COMPLETE_AND_VALID;
-        } catch (Exception e) {
-            state = State.COMPLETE_BUT_INVALID;
-            ErrorEvent.fromThrowable(e).handle();
-        } finally {
-            propagateUpdate();
+        if (store instanceof ExpandedLifecycleStore lifecycleStore) {
+            try {
+                state = State.VALIDATING;
+                notifyListeners();
+                lifecycleStore.finalizeValidate();
+                state = State.COMPLETE_AND_VALID;
+            } catch (Exception e) {
+                state = State.COMPLETE_BUT_INVALID;
+                ErrorEvent.fromThrowable(e).handle();
+            } finally {
+                notifyListeners();
+            }
         }
     }
 

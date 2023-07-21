@@ -213,6 +213,10 @@ public class FileSystemHelper {
 
     private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry source)
             throws Exception {
+        if (target.getKind() != FileKind.DIRECTORY) {
+            throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
+        }
+
         var flatFiles = new LinkedHashMap<FileSystem.FileEntry, String>();
 
         // Prevent dropping directory into itself
