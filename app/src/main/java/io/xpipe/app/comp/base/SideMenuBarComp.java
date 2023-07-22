@@ -6,7 +6,6 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -17,6 +16,7 @@ import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -73,7 +73,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         filler.setMaxHeight(3000);
         vbox.getChildren().add(filler);
         VBox.setVgrow(filler, Priority.ALWAYS);
-        GrowAugment.create(true, false).augment(filler);
+        filler.prefWidthProperty().bind(((Region) vbox.getChildren().get(0)).widthProperty());
 
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);
