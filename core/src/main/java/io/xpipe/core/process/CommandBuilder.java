@@ -17,6 +17,13 @@ public class CommandBuilder {
     private final boolean noQuoting;
     private final StringBuilder builder = new StringBuilder();
 
+    public CommandBuilder prepend(String... s) {
+        for (String s1 : s) {
+            add(s1);
+        }
+        return this;
+    }
+
     public CommandBuilder add(String... s) {
         for (String s1 : s) {
             add(s1);
@@ -37,6 +44,27 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder prependRaw(String s) {
+        if (!builder.isEmpty()) {
+            builder.insert(0, ' ');
+        }
+
+        builder.insert(0, s);
+        return this;
+    }
+
+    public CommandBuilder prepend(String s) {
+        if (s.contains(" ") || s.contains("\t")) {
+            if (noQuoting) {
+                throw new IllegalArgumentException("No quoting rule conflicts with spaces an argument");
+            }
+
+            s = "\"" + s + "\"";
+        }
+
+        return prependRaw(s);
+    }
+
     public CommandBuilder add(String s) {
         if (!builder.isEmpty()) {
             builder.append(' ');
@@ -48,6 +76,15 @@ public class CommandBuilder {
             }
 
             s = "\"" + s + "\"";
+        }
+
+        builder.append(s);
+        return this;
+    }
+
+    public CommandBuilder addRaw(String s) {
+        if (!builder.isEmpty()) {
+            builder.append(' ');
         }
 
         builder.append(s);

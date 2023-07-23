@@ -10,6 +10,8 @@ import javafx.beans.property.Property;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.util.Objects;
+
 public class SecretFieldComp extends Comp<CompStructure<TextField>> {
 
     private final Property<SecretValue> value;
@@ -32,6 +34,11 @@ public class SecretFieldComp extends Comp<CompStructure<TextField>> {
         });
         value.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
+                // Check if control value is the same. Then don't set it as that might cause bugs
+                if ((n == null && text.getText().isEmpty()) || Objects.equals(text.getText(), n != null ? n.getSecretValue() : null)) {
+                    return;
+                }
+
                 text.setText(n != null ? n.getSecretValue() : null);
             });
         });

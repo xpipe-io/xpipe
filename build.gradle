@@ -30,7 +30,7 @@ project.ext {
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
-    versionString = file('version').text + (isFullRelease || isStage ? '' : '-SNAPSHOT')
+    versionString = file('version').text.trim() + (isFullRelease || isStage ? '' : '-SNAPSHOT')
     canonicalVersionString = file('version').text
     buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
     obfuscate = true
