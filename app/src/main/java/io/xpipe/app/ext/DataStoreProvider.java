@@ -65,12 +65,7 @@ public interface DataStoreProvider {
                                     : SystemStateComp.State.OTHER;
                 },
                 w.getState());
-        var name = Bindings.createStringBinding(
-                () -> {
-                    return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID ? "stop" : "start";
-                },
-                w.getState());
-        return new SystemStateComp(name, state);
+        return new SystemStateComp(state);
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {

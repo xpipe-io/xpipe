@@ -16,7 +16,7 @@ import io.xpipe.core.data.node.TupleNode;
 import io.xpipe.core.data.type.TupleType;
 import io.xpipe.core.data.typed.TypedDataStreamWriter;
 import io.xpipe.core.impl.InternalStreamStore;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class DataTableAccumulatorImpl implements DataTableAccumulator {
     }
 
     @Override
-    public synchronized DataTable finish(DataSourceId id) {
+    public synchronized DataTable finish(DataStoreId id) {
         try {
             bodyOutput.close();
         } catch (IOException e) {

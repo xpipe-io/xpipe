@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.dialog.DialogReference;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
@@ -35,6 +35,6 @@ public class EditExchange implements MessageExchange {
         @NonNull
         DialogReference config;
 
-        DataSourceId id;
+        DataStoreId id;
     }
 }

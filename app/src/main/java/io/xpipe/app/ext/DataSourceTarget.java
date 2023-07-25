@@ -2,7 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
@@ -47,11 +47,11 @@ public interface DataSourceTarget {
         return ALL;
     }
 
-    default InstructionsDisplay createRetrievalInstructions(DataSource<?> source, ObservableValue<DataSourceId> id) {
+    default InstructionsDisplay createRetrievalInstructions(DataSource<?> source, ObservableValue<DataStoreId> id) {
         return null;
     }
 
-    default InstructionsDisplay createUpdateInstructions(DataSource<?> source, ObservableValue<DataSourceId> id) {
+    default InstructionsDisplay createUpdateInstructions(DataSource<?> source, ObservableValue<DataStoreId> id) {
         return null;
     }
 

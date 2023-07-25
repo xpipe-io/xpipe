@@ -4,6 +4,8 @@ import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.impl.FileNames;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,6 +14,8 @@ import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import java.util.function.Consumer;
 
 public class PrettyImageComp extends SimpleComp {
 
@@ -58,7 +62,8 @@ public class PrettyImageComp extends SimpleComp {
             var storeIcon = SvgView.create(svgImageContent);
             SimpleChangeListener.apply(image, newValue -> {
                 if (AppImages.hasSvgImage(newValue)) {
-                    svgImageContent.set(AppImages.svgImage(newValue));
+                    var svg = FileNames.getBaseName(newValue) + (AppPrefs.get().theme.get().getTheme().isDarkMode() ? "-dark" : "") + ".svg";
+                    svgImageContent.set(AppImages.hasSvgImage(svg) ? AppImages.svgImage(svg) : AppImages.svgImage(newValue));
                 }
             });
             var ar = Bindings.createDoubleBinding(
@@ -110,7 +115,7 @@ public class PrettyImageComp extends SimpleComp {
             stack.getChildren().add(storeIcon);
         }
 
-        SimpleChangeListener.apply(PlatformThread.sync(value), val -> {
+        Consumer<String> update = val -> {
             image.set(val);
             aspectRatioProperty.unbind();
 
@@ -126,6 +131,11 @@ public class PrettyImageComp extends SimpleComp {
                 stack.getChildren().get(0).setOpacity(0.0);
                 stack.getChildren().get(1).setOpacity(1.0);
             }
+        };
+
+        SimpleChangeListener.apply(PlatformThread.sync(value), val -> update.accept(val));
+        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            update.accept(value.getValue());
         });
 
         stack.setFocusTraversable(false);

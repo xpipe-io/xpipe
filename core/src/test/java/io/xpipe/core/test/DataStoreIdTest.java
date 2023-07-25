@@ -1,43 +1,43 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class DataSourceIdTest {
+public class DataStoreIdTest {
 
     @Test
     public void testCreateInvalidParameters() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("a:bc", "abc");
+            DataStoreId.create("a:bc", "abc");
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("  \t", "abc");
+            DataStoreId.create("  \t", "abc");
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("", "abc");
+            DataStoreId.create("", "abc");
         });
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("abc", null);
+            DataStoreId.create("abc", null);
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("abc", "a:bc");
+            DataStoreId.create("abc", "a:bc");
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("abc", "  \t");
+            DataStoreId.create("abc", "  \t");
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.create("abc", "");
+            DataStoreId.create("abc", "");
         });
     }
 
     @Test
     public void testFromStringNullParameters() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.fromString(null);
+            DataStoreId.fromString(null);
         });
     }
 
@@ -45,14 +45,14 @@ public class DataSourceIdTest {
     @ValueSource(strings = {"abc", "abc:", "ab::c", "::abc", "  ab", "::::", "", " "})
     public void testFromStringInvalidParameters(String arg) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            DataSourceId.fromString(arg);
+            DataStoreId.fromString(arg);
         });
     }
 
     @Test
     public void testFromStringValidParameters() {
-        Assertions.assertEquals(DataSourceId.fromString("ab:c"), DataSourceId.fromString(" ab: c "));
-        Assertions.assertEquals(DataSourceId.fromString("ab:c"), DataSourceId.fromString(" AB: C "));
-        Assertions.assertEquals(DataSourceId.fromString("ab:c"), DataSourceId.fromString("ab:c "));
+        Assertions.assertEquals(DataStoreId.fromString("ab:c"), DataStoreId.fromString(" ab: c "));
+        Assertions.assertEquals(DataStoreId.fromString("ab:c"), DataStoreId.fromString(" AB: C "));
+        Assertions.assertEquals(DataStoreId.fromString("ab:c"), DataStoreId.fromString("ab:c "));
     }
 }

@@ -15,10 +15,11 @@ import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.LockChangeAlert;
-import io.xpipe.app.util.LockedSecretValue;
+import io.xpipe.app.util.*;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
@@ -26,10 +27,12 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.SneakyThrows;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -163,9 +166,9 @@ public class AppPrefs {
     private final ObjectProperty<StartupBehaviour> startupBehaviour =
             typed(new SimpleObjectProperty<>(StartupBehaviour.GUI), StartupBehaviour.class);
 
-    private final SingleSelectionField<StartupBehaviour> startupBehaviourControl =
-            Field.ofSingleSelectionType(startupBehaviourList, startupBehaviour)
-                    .render(() -> new TranslatableComboBoxControl<>());
+    private final SingleSelectionField<StartupBehaviour> startupBehaviourControl = Field.ofSingleSelectionType(
+                    startupBehaviourList, startupBehaviour)
+            .render(() -> new TranslatableComboBoxControl<>());
 
     // Close behaviour
     // ===============
@@ -209,10 +212,8 @@ public class AppPrefs {
     // =======
     private final ObjectProperty<Path> storageDirectory =
             typed(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), Path.class);
-    private final StringField storageDirectoryControl = PrefFields.ofPath(storageDirectory)
-            .validate(
-                    CustomValidators.absolutePath(),
-                    CustomValidators.directory());
+    private final StringField storageDirectoryControl =
+            PrefFields.ofPath(storageDirectory).validate(CustomValidators.absolutePath(), CustomValidators.directory());
 
     // Log level
     // =========
@@ -240,30 +241,35 @@ public class AppPrefs {
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableUpdateVersionCheckField =
             BooleanField.ofBooleanType(developerDisableUpdateVersionCheck).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective = bindDeveloperTrue(developerDisableUpdateVersionCheck);
+    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
+            bindDeveloperTrue(developerDisableUpdateVersionCheck);
 
     private final BooleanProperty developerDisableGuiRestrictions =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableGuiRestrictionsField =
             BooleanField.ofBooleanType(developerDisableGuiRestrictions).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective = bindDeveloperTrue(developerDisableGuiRestrictions);
+    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
+            bindDeveloperTrue(developerDisableGuiRestrictions);
 
     private final BooleanProperty developerShowHiddenProviders = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerShowHiddenProvidersField =
             BooleanField.ofBooleanType(developerShowHiddenProviders).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerShowHiddenProvidersEffective = bindDeveloperTrue(developerShowHiddenProviders);
+    private final ObservableBooleanValue developerShowHiddenProvidersEffective =
+            bindDeveloperTrue(developerShowHiddenProviders);
 
     private final BooleanProperty developerShowHiddenEntries = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerShowHiddenEntriesField =
             BooleanField.ofBooleanType(developerShowHiddenEntries).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerShowHiddenEntriesEffective = bindDeveloperTrue(developerShowHiddenEntries);
+    private final ObservableBooleanValue developerShowHiddenEntriesEffective =
+            bindDeveloperTrue(developerShowHiddenEntries);
 
     private final BooleanProperty developerDisableConnectorInstallationVersionCheck =
             typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanField developerDisableConnectorInstallationVersionCheckField = BooleanField.ofBooleanType(
                     developerDisableConnectorInstallationVersionCheck)
             .render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerDisableConnectorInstallationVersionCheckEffective = bindDeveloperTrue(developerDisableConnectorInstallationVersionCheck);
+    private final ObservableBooleanValue developerDisableConnectorInstallationVersionCheckEffective =
+            bindDeveloperTrue(developerDisableConnectorInstallationVersionCheck);
 
     public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {
         return closeBehaviour;
@@ -514,8 +520,42 @@ public class AppPrefs {
     private AppPreferencesFx createPreferences() {
         var ctr = Setting.class.getDeclaredConstructor(String.class, Element.class, Property.class);
         ctr.setAccessible(true);
+        var terminalTest = ctr.newInstance(
+                null,
+                new LazyNodeElement<>(() -> new StackComp(
+                                List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+                                    ThreadHelper.runFailableAsync(() -> {
+                                        var term = AppPrefs.get().terminalType().getValue();
+                                        if (term != null) {
+                                            TerminalHelper.open(
+                                                    "Test",
+                                                    new LocalStore().control().command("echo Test"));
+                                        }
+                                    });
+                                })))
+                        .padding(new Insets(15, 0, 0, 0))
+                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                        .createRegion()),
+                null);
+        var editorTest = ctr.newInstance(
+                null,
+                new LazyNodeElement<>(() -> new StackComp(
+                                List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+                                    ThreadHelper.runFailableAsync(() -> {
+                                        var editor =
+                                                AppPrefs.get().externalEditor().getValue();
+                                        if (editor != null) {
+                                            FileOpener.openReadOnlyString("Test");
+                                        }
+                                    });
+                                })))
+                        .padding(new Insets(15, 0, 0, 0))
+                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                        .createRegion()),
+                null);
         var about = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
-        var troubleshoot = ctr.newInstance(null, new LazyNodeElement<>(() -> new TroubleshootComp().createRegion()), null);
+        var troubleshoot =
+                ctr.newInstance(null, new LazyNodeElement<>(() -> new TroubleshootComp().createRegion()), null);
 
         var categories = new ArrayList<>(List.of(
                 Category.of("about", Group.of(about)),
@@ -523,11 +563,7 @@ public class AppPrefs {
                         "system",
                         Group.of(
                                 "appBehaviour",
-                                Setting.of(
-                                        "startupBehaviour",
-                                        startupBehaviourControl,
-                                        startupBehaviour
-                                ),
+                                Setting.of("startupBehaviour", startupBehaviourControl, startupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
                         Group.of("security", Setting.of("workspaceLock", lockCryptControl, lockCrypt)),
                         Group.of(
@@ -539,7 +575,9 @@ public class AppPrefs {
                                 Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
                         group(
                                 "advanced",
-                                STORAGE_DIR_FIXED ? null : Setting.of("storageDirectory", storageDirectoryControl, storageDirectory),
+                                STORAGE_DIR_FIXED
+                                        ? null
+                                        : Setting.of("storageDirectory", storageDirectoryControl, storageDirectory),
                                 Setting.of("logLevel", logLevelField, internalLogLevel),
                                 Setting.of("developerMode", developerModeField, internalDeveloperMode))),
                 Category.of(
@@ -555,6 +593,7 @@ public class AppPrefs {
                         "editor",
                         Group.of(
                                 Setting.of("editorProgram", externalEditorControl, externalEditor),
+                                editorTest,
                                 Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand)
                                         .applyVisibility(VisibilityProperty.of(
                                                 externalEditor.isEqualTo(ExternalEditorType.CUSTOM))),
@@ -564,13 +603,15 @@ public class AppPrefs {
                                         editorReloadTimeoutMin,
                                         editorReloadTimeoutMax),
                                 Setting.of("preferEditorTabs", preferEditorTabsField, preferEditorTabs))),
-                Category.of("terminal",
-                            Group.of(
-                                    Setting.of("terminalProgram", terminalTypeControl, terminalType),
-                                    Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
-                                            .applyVisibility(VisibilityProperty.of(
-                                                    terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
-                                    Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs))),
+                Category.of(
+                        "terminal",
+                        Group.of(
+                                Setting.of("terminalProgram", terminalTypeControl, terminalType),
+                                terminalTest,
+                                Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
+                                        .applyVisibility(VisibilityProperty.of(
+                                                terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
+                                Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs))),
                 Category.of(
                         "developer",
                         Setting.of(
@@ -604,8 +645,9 @@ public class AppPrefs {
         return AppPreferencesFx.of(cats);
     }
 
-    private Group group(String name, Setting<?,?>... settings) {
-        return Group.of(name, Arrays.stream(settings).filter(setting -> setting != null).toArray(Setting[]::new));
+    private Group group(String name, Setting<?, ?>... settings) {
+        return Group.of(
+                name, Arrays.stream(settings).filter(setting -> setting != null).toArray(Setting[]::new));
     }
 
     private class PrefsHandlerImpl implements PrefsHandler {

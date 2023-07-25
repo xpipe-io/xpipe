@@ -1,6 +1,6 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ public class DataSourceReferenceTest {
         Assertions.assertEquals(DataSourceReference.parse("abc").getType(), DataSourceReference.Type.NAME);
         Assertions.assertEquals(DataSourceReference.parse(" abc_ d e").getName(), "abc_ d e");
 
-        Assertions.assertEquals(DataSourceReference.parse("ab:c").getId(), DataSourceId.fromString(" AB: C "));
-        Assertions.assertEquals(DataSourceReference.parse("  ab:c ").getId(), DataSourceId.fromString("ab:c "));
+        Assertions.assertEquals(DataSourceReference.parse("ab:c").getId(), DataStoreId.fromString(" AB: C "));
+        Assertions.assertEquals(DataSourceReference.parse("  ab:c ").getId(), DataStoreId.fromString("ab:c "));
     }
 
     @ParameterizedTest

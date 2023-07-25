@@ -1,18 +1,18 @@
-package io.xpipe.beacon.exchange.cli;
+package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
-import io.xpipe.beacon.exchange.MessageExchange;
+import io.xpipe.core.source.DataStoreId;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class ReadDrainExchange implements MessageExchange {
+public class SinkExchange implements MessageExchange {
 
     @Override
     public String getId() {
-        return "readDrain";
+        return "sink";
     }
 
     @Jacksonized
@@ -20,11 +20,15 @@ public class ReadDrainExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        String name;
+        DataStoreId source;
+
+        @NonNull
+        String path;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {}
+    public static class Response implements ResponseMessage {
+    }
 }
