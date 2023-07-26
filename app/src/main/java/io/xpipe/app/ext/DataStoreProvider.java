@@ -7,6 +7,7 @@ import io.xpipe.app.comp.storage.store.StoreSectionComp;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.comp.storage.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.dialog.Dialog;
@@ -154,7 +155,13 @@ public interface DataStoreProvider {
     }
 
     default String getDisplayIconFileName(DataStore store) {
-        return getModuleName() + ":" + getId() + "_icon.png";
+        var png = getModuleName() + ":" + getId() + "_icon.png";
+        if (AppImages.hasNormalImage(png)) {
+            return png;
+        }
+
+        var svg = getModuleName() + ":" + getId() + "_icon.svg";
+        return svg;
     }
 
     default Dialog dialogForStore(DataStore store) {

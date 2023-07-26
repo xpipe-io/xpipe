@@ -143,6 +143,12 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder description(ObservableValue<String> description) {
+        finishCurrent();
+        this.description = description;
+        return this;
+    }
+
     public OptionsBuilder longDescription(String descriptionKey) {
         finishCurrent();
         longDescription = AppI18n.getInstance().getMarkdownDocumentation(descriptionKey);
