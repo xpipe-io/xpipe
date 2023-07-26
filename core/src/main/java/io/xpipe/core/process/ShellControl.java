@@ -107,12 +107,8 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getOpenCommand(), new TerminalOpenFunction() {
-                    @Override
-                    public boolean changesEnvironment() {
-                        return false;
-                    }
 
-                    @Override
+            @Override
                     public String prepare(ShellControl sc, String command) {
                         return command;
                     }
@@ -122,19 +118,13 @@ public interface ShellControl extends ProcessControl {
 
     interface TerminalOpenFunction {
 
-        boolean changesEnvironment();
-
         String prepare(ShellControl sc, String command) throws Exception;
     }
 
     default ShellControl identicalSubShell() {
         return subShell(p -> p.getShellDialect().getOpenCommand(), new TerminalOpenFunction() {
-                    @Override
-                    public boolean changesEnvironment() {
-                        return false;
-                    }
 
-                    @Override
+            @Override
                     public String prepare(ShellControl sc, String command) {
                         return command;
                     }
@@ -144,10 +134,6 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl subShell(@NonNull String command) {
         return subShell(processControl -> command, new TerminalOpenFunction() {
-            @Override
-            public boolean changesEnvironment() {
-                return false;
-            }
 
             @Override
             public String prepare(ShellControl sc, String command) {
