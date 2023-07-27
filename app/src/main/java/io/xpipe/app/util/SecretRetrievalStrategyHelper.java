@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.LinkedHashMap;
@@ -12,7 +13,7 @@ public class SecretRetrievalStrategyHelper {
         var secretProperty = new SimpleObjectProperty<>(
                 p.getValue() != null ? p.getValue().getValue() : null);
         return new OptionsBuilder()
-                .name("keyPassword")
+                .name("password")
                 .addComp(new SecretFieldComp(secretProperty), secretProperty)
                 .bind(
                         () -> {
@@ -27,23 +28,21 @@ public class SecretRetrievalStrategyHelper {
         var map = new LinkedHashMap<String, OptionsBuilder>();
         map.put("none", new OptionsBuilder());
         map.put("password", inPlace(inPlace));
-        map.put("command", new OptionsBuilder());
+        map.put("prompt", new OptionsBuilder());
+        // map.put("command", new OptionsBuilder());
         map.put("keepass", new OptionsBuilder());
-        var selected = new SimpleObjectProperty<Integer>();
+        var selected = new SimpleIntegerProperty();
         return new OptionsBuilder()
-                .name("keyAuthentication")
-                .description("keyAuthenticationDescription")
-                .longDescription("proc:sshKey")
                 .choice(selected, map)
-                .nonNull()
                 .bindChoice(
                         () -> {
                             return switch (selected.get()) {
                                 case 0 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.None());
                                 case 1 -> inPlace;
-                                case 2 -> command;
+                                case 2 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
+                                // case 3 -> command;
                                 case 3 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.KeePass());
-                                case null, default -> new SimpleObjectProperty<>();
+                                default -> new SimpleObjectProperty<>();
                             };
                         },
                         s);

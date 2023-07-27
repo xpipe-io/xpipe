@@ -165,7 +165,7 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    default <T> T enforceDialect(@NonNull ShellDialect type, Function<ShellControl, T> sc) throws Exception {
+    default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc) throws Exception {
         if (isRunning() && getShellDialect().equals(type)) {
             return sc.apply(this);
         } else {
@@ -198,6 +198,10 @@ public interface ShellControl extends ProcessControl {
 
     default CommandControl command(List<String> command) {
         return command(shellProcessControl -> ShellDialect.flatten(command));
+    }
+
+    default CommandControl command(CommandBuilder builder) {
+        return command(shellProcessControl -> builder.build(shellProcessControl));
     }
 
     void exitAndWait() throws IOException;

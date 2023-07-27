@@ -6,6 +6,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.core.util.SecretValue;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -44,15 +45,14 @@ public class OptionsBuilder {
         this.allValidators.add(ownValidator);
     }
 
-    public OptionsBuilder choice(Property<Integer> selectedIndex, Map<String, OptionsBuilder> options) {
+    public OptionsBuilder choice(IntegerProperty selectedIndex, Map<String, OptionsBuilder> options) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
                         AppI18n.observable(e.getKey()), e.getValue().buildComp()))
                 .toList();
         var validatorList =
                 options.values().stream().map(builder -> builder.buildEffectiveValidator()).toList();
-        var selected = new SimpleObjectProperty<>(
-                selectedIndex.getValue() != null ? list.get(selectedIndex.getValue()) : null);
+        var selected = new SimpleObjectProperty<>(list.get(selectedIndex.getValue()));
         selected.addListener((observable, oldValue, newValue) -> {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
         });
@@ -91,6 +91,15 @@ public class OptionsBuilder {
         pushComp(builder.buildComp());
         return this;
     }
+
+    public OptionsBuilder sub(OptionsBuilder builder, Property<?> prop) {
+        props.addAll(builder.props);
+        allValidators.add(builder.buildEffectiveValidator());
+        props.add(prop);
+        pushComp(builder.buildComp());
+        return this;
+    }
+
 
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();

@@ -14,7 +14,7 @@ public interface Validator {
     static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
         return v.createCheck().dependsOn("val", s).withMethod(c -> {
             if (c.get("val") == null) {
-                c.error(AppI18n.get("app.mustNotBeEmpty", name.getValue()));
+                c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
             }
         });
     }

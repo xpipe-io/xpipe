@@ -25,8 +25,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType CMD = new SimplePathType("app.cmd", "cmd.exe") {
 
         @Override
-        protected String toCommand(String name, String file) {
-            return "/C \"" + file + "\"";
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("/C").addFile(file);
         }
 
         @Override
@@ -38,8 +38,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType POWERSHELL_WINDOWS = new SimplePathType("app.powershell", "powershell") {
 
         @Override
-        protected String toCommand(String name, String file) {
-            return "-ExecutionPolicy Bypass -NoProfile -Command cmd /C '" + file + "'";
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass", "-NoProfile", "-Command", "cmd", "/C").addFile(file);
         }
 
         @Override
@@ -51,10 +51,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType PWSH_WINDOWS = new SimplePathType("app.pwsh", "pwsh") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-            var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
-            return "-ExecutionPolicy Bypass -NoProfile -Command cmd /C '" + script + "'";
+            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass", "-NoProfile", "-Command", "cmd", "/C").add(sc -> {
+                var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
+                return sc.getShellDialect().fileArgument(script);
+            });
         }
 
         @Override
@@ -66,12 +68,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType WINDOWS_TERMINAL = new SimplePathType("app.windowsTerminal", "wt.exe") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             // A weird behavior in Windows Terminal causes the trailing
             // backslash of a filepath to escape the closing quote in the title argument
             // So just remove that slash
             var fixedName = FileNames.removeTrailingSlash(name);
-            return "-w 1 nt --title \"" + fixedName + "\" \"" + file + "\"";
+            return CommandBuilder.of().add("-w", "1", "nt", "--title").addQuoted(fixedName).addFile(file);
         }
 
         @Override
@@ -83,15 +85,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType ALACRITTY_WINDOWS = new SimplePathType("app.alacrittyWindows", "alacritty") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-t")
                     .addQuoted(name)
                     .add("-e")
                     .add("cmd")
                     .add("/c")
-                    .addQuoted(file.replaceAll(" ", "^$0"))
-                    .build();
+                    .addQuoted(file.replaceAll(" ", "^$0"));
         }
 
         @Override
@@ -167,7 +168,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
 
-                var toExecute = executable + " " + toCommand(name, file);
+                var toExecute = executable + " " + toCommand(name, file).build(pc);
                 // In order to fix this bug which also affects us:
                 // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                 toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
@@ -176,8 +177,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected String toCommand(String name, String file) {
-            return "-v --title \"" + name + "\" -- \"" + file + "\"";
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-v", "--title").addQuoted(name).add("--").addFile(file);
         }
 
         @Override
@@ -189,11 +190,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             // Note for later: When debugging konsole launches, it will always open as a child process of
             // IntelliJ/XPipe even though we try to detach it.
             // This is not the case for production where it works as expected
-            return "--new-tab -e \"" + file + "\"";
+            return CommandBuilder.of().add("--new-tab", "-e").add("--").addFile(file);
         }
 
         @Override
@@ -205,8 +206,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal") {
 
         @Override
-        protected String toCommand(String name, String file) {
-            return "--tab --title \"" + name + "\" --command \"" + file + "\"";
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("--tab", "--title").addQuoted(name).add("--command").addFile(file);
         }
 
         @Override
@@ -218,14 +219,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-e")
                     .addQuoted(file)
                     .add("-T")
                     .addQuoted(name)
-                    .add("--new-tab")
-                    .build();
+                    .add("--new-tab");
         }
 
         @Override
@@ -237,8 +237,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType KITTY = new SimplePathType("app.kitty", "kitty") {
 
         @Override
-        protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-T").addQuoted(name).addQuoted(file).build();
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-T").addQuoted(name).addQuoted(file);
         }
 
         @Override
@@ -250,14 +250,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-T")
                     .addQuoted(name)
                     .add("-2")
                     .add("-e")
-                    .addQuoted(file)
-                    .build();
+                    .addQuoted(file);
         }
 
         @Override
@@ -269,13 +268,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-T")
                     .addQuoted(name)
                     .add("-e")
-                    .addQuoted(file)
-                    .build();
+                    .addQuoted(file);
         }
 
         @Override
@@ -287,13 +285,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-r")
                     .addQuoted(name)
                     .add("-e")
-                    .addQuoted(file)
-                    .build();
+                    .addQuoted(file);
         }
 
         @Override
@@ -305,13 +302,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType ALACRITTY = new SimplePathType("app.alacritty", "alacritty") {
 
         @Override
-        protected String toCommand(String name, String file) {
+        protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-t")
                     .addQuoted(name)
                     .add("-e")
-                    .addQuoted(file)
-                    .build();
+                    .addQuoted(file);
         }
 
         @Override
@@ -323,8 +319,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda") {
 
         @Override
-        protected String toCommand(String name, String file) {
-            return CommandBuilder.of().add("-c").addQuoted(file).build();
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-c").addQuoted(file);
         }
 
         @Override
@@ -579,7 +575,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                             .start()) {
                         ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
                         var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \""
-                                + toCommand(name, file).replaceAll("\"", "`\"") + "\"";
+                                + toCommand(name, file).build(pc).replaceAll("\"", "`\"") + "\"";
                         pc.executeSimpleCommand(toExecute);
                     }
                     return;
@@ -589,7 +585,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
 
-                var toExecute = executable + " " + toCommand(name, file);
+                var toExecute = executable + " " + toCommand(name, file).build(pc);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + name + "\" " + toExecute;
                 } else {
@@ -599,7 +595,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
         }
 
-        protected abstract String toCommand(String name, String file);
+        protected abstract CommandBuilder toCommand(String name, String file);
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalStore.getShell()) {

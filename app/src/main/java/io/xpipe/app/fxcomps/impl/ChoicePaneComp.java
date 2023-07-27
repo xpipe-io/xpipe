@@ -33,6 +33,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
     public CompStructure<VBox> createBase() {
         var list = FXCollections.observableArrayList(entries);
         var cb = new ComboBox<>(list);
+        cb.getSelectionModel().select(selected.getValue());
         cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(Entry object) {
