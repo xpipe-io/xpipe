@@ -5,8 +5,12 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretValue;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.function.Supplier;
 
@@ -20,30 +24,30 @@ import java.util.function.Supplier;
         @JsonSubTypes.Type(value = SecretRetrievalStrategy.Command.class),
         @JsonSubTypes.Type(value = SecretRetrievalStrategy.KeePass.class)
 })
-public abstract class SecretRetrievalStrategy {
+public interface SecretRetrievalStrategy {
 
-    public abstract SecretValue retrieve(String displayName) throws Exception;
+    SecretValue retrieve(String displayName, DataStore store) throws Exception;
 
     @JsonTypeName("none")
-    public static class None extends SecretRetrievalStrategy {
+    public static class None implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName) {
+        public SecretValue retrieve(String displayName, DataStore store) {
             return null;
         }
     }
 
     @JsonTypeName("unsupported")
-    public static class Unsupported extends SecretRetrievalStrategy {
+    public static class Unsupported implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName) {
+        public SecretValue retrieve(String displayName, DataStore store) {
             throw new UnsupportedOperationException();
         }
     }
 
     @JsonTypeName("reference")
-    public static class Reference extends SecretRetrievalStrategy {
+    public static class Reference implements SecretRetrievalStrategy {
 
         @JsonIgnore
         private final Supplier<SecretValue> supplier;
@@ -53,43 +57,49 @@ public abstract class SecretRetrievalStrategy {
         }
 
         @Override
-        public SecretValue retrieve(String displayName) {
+        public SecretValue retrieve(String displayName, DataStore store) {
             return supplier.get();
         }
     }
 
     @JsonTypeName("inPlace")
     @Getter
-    public static class InPlace extends SecretRetrievalStrategy {
+    @Builder
+    @Value
+    @Jacksonized
+    public static class InPlace implements SecretRetrievalStrategy {
 
-        private final SecretValue value;
+        SecretValue value;
 
         public InPlace(SecretValue value) {
             this.value = value;
         }
 
         @Override
-        public SecretValue retrieve(String displayName) {
+        public SecretValue retrieve(String displayName, DataStore store) {
             return value;
         }
     }
 
     @JsonTypeName("prompt")
-    public static class Prompt extends SecretRetrievalStrategy {
+    public static class Prompt implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName) {
-            return AskpassAlert.query(displayName);
+        public SecretValue retrieve(String displayName, DataStore store) {
+            return AskpassAlert.query(displayName, store);
         }
     }
 
     @JsonTypeName("command")
-    public static class Command extends SecretRetrievalStrategy {
+    @Builder
+    @Jacksonized
+    @Value
+    public static class Command implements SecretRetrievalStrategy {
 
         String command;
 
         @Override
-        public SecretValue retrieve(String displayName) throws Exception {
+        public SecretValue retrieve(String displayName, DataStore store) throws Exception {
             try (var cc = new LocalStore().createBasicControl().command(command).start()) {
                 var read = cc.readStdoutDiscardErr();
                 return SecretHelper.encrypt(read);
@@ -98,13 +108,16 @@ public abstract class SecretRetrievalStrategy {
     }
 
     @JsonTypeName("keepass")
-    public static class KeePass extends SecretRetrievalStrategy {
+    @Builder
+    @Jacksonized
+    @Value
+    public static class KeePass implements SecretRetrievalStrategy {
 
-        String command;
+        String entry;
 
         @Override
-        public SecretValue retrieve(String displayName) throws Exception {
-            try (var cc = new LocalStore().createBasicControl().command(command).start()) {
+        public SecretValue retrieve(String displayName, DataStore store) throws Exception {
+            try (var cc = new LocalStore().createBasicControl().command(entry).start()) {
                 var read = cc.readStdoutDiscardErr();
                 return SecretHelper.encrypt(read);
             }

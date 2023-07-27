@@ -41,7 +41,7 @@ public class SecretRetrievalStrategyHelper {
                                 case 1 -> inPlace;
                                 case 2 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
                                 // case 3 -> command;
-                                case 3 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.KeePass());
+                                case 3 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.KeePass("a"));
                                 default -> new SimpleObjectProperty<>();
                             };
                         },

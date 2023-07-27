@@ -17,6 +17,7 @@ import lombok.Getter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -446,7 +447,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 throw new IllegalStateException("No custom terminal command specified");
             }
 
-            var format = custom.contains("$cmd") ? custom : custom + " $cmd";
+            var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $cmd";
             try (var pc = LocalStore.getShell()) {
                 var toExecute = ApplicationHelper.replaceFileArgument(format, "cmd", file);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
