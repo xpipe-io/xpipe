@@ -2,6 +2,7 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
+import io.xpipe.core.source.DataStoreId;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -21,7 +22,7 @@ public class LaunchExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        String name;
+        DataStoreId id;
     }
 
     @Jacksonized

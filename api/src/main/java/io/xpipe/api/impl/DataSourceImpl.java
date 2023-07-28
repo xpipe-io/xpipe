@@ -4,7 +4,7 @@ import io.xpipe.api.DataSource;
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.connector.XPipeApiConnection;
 import io.xpipe.beacon.exchange.*;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.StreamDataStore;
@@ -13,12 +13,12 @@ import java.io.InputStream;
 
 public abstract class DataSourceImpl implements DataSource {
 
-    private final DataSourceId sourceId;
+    private final DataStoreId sourceId;
     private final DataSourceConfig config;
     private final io.xpipe.core.source.DataSource<?> internalSource;
 
     public DataSourceImpl(
-            DataSourceId sourceId, DataSourceConfig config, io.xpipe.core.source.DataSource<?> internalSource) {
+            DataStoreId sourceId, DataSourceConfig config, io.xpipe.core.source.DataSource<?> internalSource) {
         this.sourceId = sourceId;
         this.config = config;
         this.internalSource = internalSource;
@@ -48,7 +48,7 @@ public abstract class DataSourceImpl implements DataSource {
         });
     }
 
-    public static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
+    public static DataSource create(DataStoreId id, io.xpipe.core.source.DataSource<?> source) {
         var startReq =
                 AddSourceExchange.Request.builder().source(source).target(id).build();
         var returnedId = XPipeApiConnection.execute(con -> {
@@ -60,7 +60,7 @@ public abstract class DataSourceImpl implements DataSource {
         return get(ref);
     }
 
-    public static DataSource create(DataSourceId id, String type, DataStore store) {
+    public static DataSource create(DataStoreId id, String type, DataStore store) {
         if (store instanceof StreamDataStore s && s.isContentExclusivelyAccessible()) {
             store = XPipeApiConnection.execute(con -> {
                 var internal = con.createInternalStreamStore();
@@ -94,7 +94,7 @@ public abstract class DataSourceImpl implements DataSource {
         return get(ref);
     }
 
-    public static DataSource create(DataSourceId id, String type, InputStream in) {
+    public static DataSource create(DataStoreId id, String type, InputStream in) {
         var store = XPipeApiConnection.execute(con -> {
             var internal = con.createInternalStreamStore();
             var req = WriteStreamExchange.Request.builder()
@@ -152,7 +152,7 @@ public abstract class DataSourceImpl implements DataSource {
     }
 
     @Override
-    public DataSourceId getId() {
+    public DataStoreId getId() {
         return sourceId;
     }
 

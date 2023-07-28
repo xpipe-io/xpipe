@@ -11,6 +11,8 @@ import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.util.ThreadHelper;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
@@ -42,8 +44,10 @@ public class BrowserNavBar extends SimpleComp {
             path.set(newValue);
         });
         path.addListener((observable, oldValue, newValue) -> {
-            var changed = model.cdOrRetry(newValue, true);
-            changed.ifPresent(path::set);
+            ThreadHelper.runFailableAsync(() -> {
+                var changed = model.cdSyncOrRetry(newValue, true);
+                changed.ifPresent(s -> Platform.runLater(() -> path.set(s)));
+            });
         });
 
         var pathBar = new TextFieldComp(path, true)

@@ -128,7 +128,7 @@ public final class BrowserFileListModel {
         }
 
         if (entry.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-            fileSystemModel.cd(entry.getRawFileEntry().resolved().getPath());
+            fileSystemModel.cdSync(entry.getRawFileEntry().resolved().getPath());
         }
     }
 }

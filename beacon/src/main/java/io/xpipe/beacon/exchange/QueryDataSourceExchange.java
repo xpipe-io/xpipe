@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.core.source.DataSource;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class QueryDataSourceExchange implements MessageExchange {
     @Value
     public static class Response implements ResponseMessage {
         @NonNull
-        DataSourceId id;
+        DataStoreId id;
 
         String information;
 

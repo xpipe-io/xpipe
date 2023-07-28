@@ -200,7 +200,7 @@ public class BrowserFileListCompEntry {
                     return;
                 }
 
-                model.getFileSystemModel().cd(item.getRawFileEntry().getPath());
+                model.getFileSystemModel().cdSync(item.getRawFileEntry().getPath());
             }
         };
         DROP_TIMER.schedule(activeTask, 1000);

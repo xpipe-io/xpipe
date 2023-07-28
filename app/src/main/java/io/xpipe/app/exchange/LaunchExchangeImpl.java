@@ -12,7 +12,7 @@ public class LaunchExchangeImpl extends LaunchExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        var store = getStoreEntryByName(msg.getName(), false);
+        var store = getStoreEntryById(msg.getId(), false);
         if (store.getStore() instanceof LaunchableStore s) {
             var command = s.prepareLaunchCommand(store.getName());
             var split = CommandLine.parse(command);

@@ -3,7 +3,6 @@ package io.xpipe.app.core.mode;
 import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import io.xpipe.app.core.AppTray;
 import io.xpipe.app.issue.*;
-import io.xpipe.app.util.PlatformState;
 
 public class TrayMode extends PlatformMode {
 
@@ -18,10 +17,8 @@ public class TrayMode extends PlatformMode {
     }
 
     @Override
-    public void onSwitchTo() {
-        if (PlatformState.getCurrent() == PlatformState.NOT_INITIALIZED) {
-            super.platformSetup();
-        }
+    public void onSwitchTo() throws Throwable {
+        super.platformSetup();
 
         if (AppTray.get() == null) {
             TrackEvent.info("mode", "Initializing tray");

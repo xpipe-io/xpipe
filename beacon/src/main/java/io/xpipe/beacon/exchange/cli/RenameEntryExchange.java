@@ -3,7 +3,7 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import lombok.Builder;
 import lombok.NonNull;
@@ -25,7 +25,7 @@ public class RenameEntryExchange implements MessageExchange {
         DataSourceReference ref;
 
         @NonNull
-        DataSourceId newId;
+        DataStoreId newId;
     }
 
     @Jacksonized

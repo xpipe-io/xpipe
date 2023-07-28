@@ -6,7 +6,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.PlatformState;
 import io.xpipe.core.process.OsType;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -29,7 +28,6 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         TrackEvent.info("Application launched");
         APP = this;
-        PlatformState.setCurrent(PlatformState.RUNNING);
         stage = primaryStage;
 
         // Set dock icon explicitly on mac
@@ -47,7 +45,6 @@ public class App extends Application {
         }
 
         AppWindowHelper.addIcons(stage);
-        Platform.setImplicitExit(false);
     }
 
     public void close() {

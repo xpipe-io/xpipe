@@ -39,6 +39,10 @@ public class AppLayoutModel {
         selected.setValue(entries.get(0));
     }
 
+    public void selectSettings() {
+        selected.setValue(entries.get(2));
+    }
+
     public void selectConnections() {
         selected.setValue(entries.get(1));
     }

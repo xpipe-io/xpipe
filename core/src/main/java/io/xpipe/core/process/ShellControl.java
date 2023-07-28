@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.XPipeSystemId;
@@ -95,7 +96,10 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
-    ShellControl elevationPassword(SecretValue value);
+    default ShellControl elevationPassword(SecretValue value) {
+        return elevationPassword(() -> value);
+    }
+    ShellControl elevationPassword(Dialog.FailableSupplier<SecretValue> value);
 
     ShellControl initWith(String cmds);
 
@@ -103,16 +107,12 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl startTimeout(int ms);
 
-    SecretValue getElevationPassword();
+    Dialog.FailableSupplier<SecretValue> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getOpenCommand(), new TerminalOpenFunction() {
-                    @Override
-                    public boolean changesEnvironment() {
-                        return false;
-                    }
 
-                    @Override
+            @Override
                     public String prepare(ShellControl sc, String command) {
                         return command;
                     }
@@ -122,19 +122,13 @@ public interface ShellControl extends ProcessControl {
 
     interface TerminalOpenFunction {
 
-        boolean changesEnvironment();
-
         String prepare(ShellControl sc, String command) throws Exception;
     }
 
     default ShellControl identicalSubShell() {
         return subShell(p -> p.getShellDialect().getOpenCommand(), new TerminalOpenFunction() {
-                    @Override
-                    public boolean changesEnvironment() {
-                        return false;
-                    }
 
-                    @Override
+            @Override
                     public String prepare(ShellControl sc, String command) {
                         return command;
                     }
@@ -144,10 +138,6 @@ public interface ShellControl extends ProcessControl {
 
     default ShellControl subShell(@NonNull String command) {
         return subShell(processControl -> command, new TerminalOpenFunction() {
-            @Override
-            public boolean changesEnvironment() {
-                return false;
-            }
 
             @Override
             public String prepare(ShellControl sc, String command) {
@@ -165,7 +155,7 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    default <T> T enforceDialect(@NonNull ShellDialect type, Function<ShellControl, T> sc) throws Exception {
+    default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc) throws Exception {
         if (isRunning() && getShellDialect().equals(type)) {
             return sc.apply(this);
         } else {
@@ -198,6 +188,10 @@ public interface ShellControl extends ProcessControl {
 
     default CommandControl command(List<String> command) {
         return command(shellProcessControl -> ShellDialect.flatten(command));
+    }
+
+    default CommandControl command(CommandBuilder builder) {
+        return command(shellProcessControl -> builder.build(shellProcessControl));
     }
 
     void exitAndWait() throws IOException;

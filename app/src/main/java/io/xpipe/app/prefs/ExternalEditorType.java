@@ -1,30 +1,28 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 public interface ExternalEditorType extends PrefsChoiceValue {
 
-    ExternalEditorType NOTEPAD = new WindowsFullPathType("app.notepad") {
+    ExternalEditorType NOTEPAD = new WindowsType("app.notepad", "notepad") {
         @Override
-        protected Optional<Path> determinePath() {
+        protected Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
         }
     };
 
-    ExternalEditorType VSCODE_WINDOWS = new WindowsFullPathType("app.vscode") {
+    ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd") {
 
         @Override
         public boolean canOpenDirectory() {
@@ -32,23 +30,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
-        protected Optional<Path> determinePath() {
-            // Try to locate if it is in the Path
-            try (var cc = LocalStore.getShell()
-                    .command(ShellDialects.getPlatformDefault().getWhichCommand("code.cmd"))
-                    .start()) {
-                var out = cc.readStdoutDiscardErr();
-                var exit = cc.getExitCode();
-                if (exit == 0) {
-                    var first = out.lines().findFirst();
-                    if (first.isPresent()) {
-                        return first.map(Path::of);
-                    }
-                }
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
-            }
-
+        protected Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                     .resolve("Programs")
                     .resolve("Microsoft VS Code")
@@ -61,10 +43,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return false;
         }
     };
-    ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsFullPathType("app.notepad++") {
+    ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsType("app.notepad++", "notepad++") {
 
         @Override
-        protected Optional<Path> determinePath() {
+        protected Optional<Path> determineInstallation() {
             Optional<String> launcherDir;
             launcherDir = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null)
                     .map(p -> p + "\\notepad++.exe");
@@ -137,8 +119,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw new IllegalStateException("No custom editor command specified");
             }
 
-            var format = customCommand.contains("$file") ? customCommand : customCommand + " $file";
-            ApplicationHelper.executeLocalApplication(sc -> ApplicationHelper.replaceFileArgument(format, "file", file.toString()), true);
+            var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+            ApplicationHelper.executeLocalApplication(sc -> ApplicationHelper.replaceFileArgument(format, "FILE", file.toString()), true);
         }
 
         @Override
@@ -175,11 +157,14 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    abstract class WindowsFullPathType extends ExternalApplicationType.WindowsFullPathType
+    abstract class WindowsType extends ExternalApplicationType.WindowsType
             implements ExternalEditorType {
 
-        public WindowsFullPathType(String id) {
-            super(id);
+        private final String executable;
+
+        public WindowsType(String id, String executable) {
+            super(id, executable);
+            this.executable = executable;
         }
 
         public boolean detach() {
@@ -188,7 +173,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            var path = determinePath();
+            var path = determineInstallation();
             if (path.isEmpty()) {
                 throw new IOException("Unable to find installation of " + toTranslatedString());
             }

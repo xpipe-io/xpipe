@@ -8,8 +8,6 @@ import io.xpipe.beacon.exchange.ReadExchange;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 
-import java.util.UUID;
-
 public class ReadExchangeImpl extends ReadExchange
         implements MessageExchangeImpl<ReadExchange.Request, ReadExchange.Response> {
 
@@ -45,11 +43,6 @@ public class ReadExchangeImpl extends ReadExchange
             var defaultDesc = provider.createDefaultSource(store);
             return toCompleteConfig(defaultDesc, provider, msg.isConfigureAll());
         });
-
-        var noTarget = msg.getTarget() == null;
-        var colName = noTarget ? null : msg.getTarget().getCollectionName();
-        var entryName =
-                noTarget ? UUID.randomUUID().toString() : msg.getTarget().getEntryName();
 
         return Response.builder().build();
     }

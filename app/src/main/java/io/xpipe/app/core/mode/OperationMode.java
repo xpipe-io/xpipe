@@ -215,20 +215,20 @@ public abstract class OperationMode {
         OperationMode.halt(hasError ? 1 : 0);
     }
 
-    public static synchronized void reload() {
-        ThreadHelper.create("reloader", false, () -> {
-                    try {
-                        switchTo(BACKGROUND);
-                        CURRENT.finalTeardown();
-                        CURRENT.initialSetup();
-                        switchTo(GUI);
-                    } catch (Throwable t) {
-                        ErrorEvent.fromThrowable(t).build().handle();
-                        OperationMode.halt(1);
-                    }
-                })
-                .start();
-    }
+//    public static synchronized void reload() {
+//        ThreadHelper.create("reloader", false, () -> {
+//                    try {
+//                        switchTo(BACKGROUND);
+//                        CURRENT.finalTeardown();
+//                        CURRENT.onSwitchTo();
+//                        switchTo(GUI);
+//                    } catch (Throwable t) {
+//                        ErrorEvent.fromThrowable(t).build().handle();
+//                        OperationMode.halt(1);
+//                    }
+//                })
+//                .start();
+//    }
 
     private static synchronized void set(OperationMode newMode) {
         if (CURRENT == null && newMode == null) {
@@ -240,17 +240,17 @@ public abstract class OperationMode {
         }
 
         try {
-            if (CURRENT == null) {
-                CURRENT = newMode;
-                newMode.initialSetup();
-            } else if (newMode == null) {
+            if (newMode == null) {
                 shutdown(false, false);
-            } else {
-                var cur = CURRENT;
-                cur.onSwitchFrom();
-                CURRENT = newMode;
-                newMode.onSwitchTo();
+                return;
             }
+
+            if (CURRENT != null) {
+                CURRENT.onSwitchFrom();
+            }
+
+            newMode.onSwitchTo();
+            CURRENT = newMode;
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
@@ -268,11 +268,9 @@ public abstract class OperationMode {
 
     public abstract String getId();
 
-    public abstract void onSwitchTo();
+    public abstract void onSwitchTo() throws Throwable;
 
     public abstract void onSwitchFrom();
-
-    public abstract void initialSetup() throws Throwable;
 
     public abstract void finalTeardown() throws Throwable;
 

@@ -28,7 +28,7 @@ public class FileStoreChoiceComp extends SimpleComp {
 
     public FileStoreChoiceComp(boolean hideFileSystem, Property<FileSystemStore> fileSystem, Property<String> filePath) {
         this.hideFileSystem = hideFileSystem;
-        this.fileSystem = fileSystem;
+        this.fileSystem = fileSystem != null ? fileSystem : new SimpleObjectProperty<>();
         this.filePath = filePath;
     }
 

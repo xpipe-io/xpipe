@@ -1,7 +1,7 @@
 package io.xpipe.api;
 
 import io.xpipe.api.impl.DataSourceImpl;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 import io.xpipe.core.store.DataStore;
@@ -96,16 +96,16 @@ public interface DataSource {
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
+     * Wrapper for {@link #create(DataStoreId, String, InputStream)} that creates an anonymous data source.
      */
     static DataSource createAnonymous(String type, Path path) {
         return create(null, type, path);
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, InputStream)}.
+     * Wrapper for {@link #create(DataStoreId, String, InputStream)}.
      */
-    static DataSource create(DataSourceId id, String type, Path path) {
+    static DataSource create(DataStoreId id, String type, Path path) {
         try (var in = Files.newInputStream(path)) {
             return create(id, type, in);
         } catch (IOException e) {
@@ -114,16 +114,16 @@ public interface DataSource {
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
+     * Wrapper for {@link #create(DataStoreId, String, InputStream)} that creates an anonymous data source.
      */
     static DataSource createAnonymous(String type, URL url) {
         return create(null, type, url);
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, InputStream)}.
+     * Wrapper for {@link #create(DataStoreId, String, InputStream)}.
      */
-    static DataSource create(DataSourceId id, String type, URL url) {
+    static DataSource create(DataStoreId id, String type, URL url) {
         try (var in = url.openStream()) {
             return create(id, type, in);
         } catch (IOException e) {
@@ -132,7 +132,7 @@ public interface DataSource {
     }
 
     /**
-     * Wrapper for {@link #create(DataSourceId, String, InputStream)} that creates an anonymous data source.
+     * Wrapper for {@link #create(DataStoreId, String, InputStream)} that creates an anonymous data source.
      */
     static DataSource createAnonymous(String type, InputStream in) {
         return create(null, type, in);
@@ -146,7 +146,7 @@ public interface DataSource {
      * @param in   the input stream to read
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    static DataSource create(DataSourceId id, String type, InputStream in) {
+    static DataSource create(DataStoreId id, String type, InputStream in) {
         return DataSourceImpl.create(id, type, in);
     }
 
@@ -156,7 +156,7 @@ public interface DataSource {
      * @param id the data source id
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    static DataSource create(DataSourceId id, io.xpipe.core.source.DataSource<?> source) {
+    static DataSource create(DataStoreId id, io.xpipe.core.source.DataSource<?> source) {
         return DataSourceImpl.create(id, source);
     }
 
@@ -169,7 +169,7 @@ public interface DataSource {
      * @param in   the data store to add
      * @return a {@link DataSource} instances that can be used to access the underlying data
      */
-    static DataSource create(DataSourceId id, String type, DataStore in) {
+    static DataSource create(DataStoreId id, String type, DataStore in) {
         return DataSourceImpl.create(id, type, in);
     }
 
@@ -182,7 +182,7 @@ public interface DataSource {
     /**
      * Returns the id of this data source.
      */
-    DataSourceId getId();
+    DataStoreId getId();
 
     /**
      * Returns the type of this data source.

@@ -15,12 +15,13 @@ public class ListStoresExchangeImpl extends ListStoresExchange
     public Response handleRequest(BeaconHandler handler, Request msg) {
         DataStorage s = DataStorage.get();
         var e = s.getStoreEntries().stream()
-                .filter(entry -> !entry.isDisabled() && entry.getProvider().canManuallyCreate())
-                .sorted(Comparator.comparing(dataStoreEntry -> dataStoreEntry.getLastUsed()))
+                .filter(entry -> !entry.isDisabled())
                 .map(col -> StoreListEntry.builder()
-                        .name(col.getName())
+                        .id(DataStorage.get().getId(col))
                         .type(col.getProvider().getId())
+                        .information(col.getInformation())
                         .build())
+                .sorted(Comparator.comparing(en -> en.getId().toString()))
                 .toList();
         return Response.builder().entries(e).build();
     }

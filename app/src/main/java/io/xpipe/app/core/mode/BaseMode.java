@@ -25,19 +25,17 @@ public class BaseMode extends OperationMode {
     }
 
     @Override
-    public void onSwitchTo() {}
-
-    @Override
-    public void onSwitchFrom() {}
-
-    @Override
-    public void initialSetup() throws Exception {
+    public void onSwitchTo() throws Throwable {
         TrackEvent.info("mode", "Initializing base mode components ...");
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
         JacksonMapper.configure(objectMapper -> {
             objectMapper.registerSubtypes(LockedSecretValue.class, DefaultSecretValue.class);
         });
+        // Load translations before storage initialization to localize store error messages
+        // Also loaded before antivirus alert to localize that
+        AppI18n.init();
+        AppAntivirusAlert.showIfNeeded();
         LocalStore.init();
         AppPrefs.init();
         AppCharsets.init();
@@ -48,6 +46,9 @@ public class BaseMode extends OperationMode {
         AppSocketServer.init();
         TrackEvent.info("mode", "Finished base components initialization");
     }
+
+    @Override
+    public void onSwitchFrom() {}
 
     @Override
     public void finalTeardown() {

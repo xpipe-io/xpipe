@@ -10,54 +10,28 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Application;
 import javafx.application.Platform;
 
-import java.awt.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public abstract class PlatformMode extends OperationMode {
 
-    private static boolean stateInitialized;
-    public static boolean HAS_GRAPHICS;
-    public static boolean PLATFORM_LOADED;
+    @Override
+    public boolean isSupported() {
+        PlatformState.initPlatform();
+        return PlatformState.getCurrent() == PlatformState.RUNNING;
+    }
 
-    private static void initState() {
-        if (stateInitialized) {
+    protected void platformSetup() throws Throwable {
+        if (App.getApp() != null) {
             return;
         }
 
-        try {
-            GraphicsDevice[] screenDevices =
-                    GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-            HAS_GRAPHICS = screenDevices != null && screenDevices.length > 0;
-        } catch (HeadlessException e) {
-            TrackEvent.warn(e.getMessage());
-            HAS_GRAPHICS = false;
-        }
-
-        try {
-            Platform.startup(() -> {});
-            PLATFORM_LOADED = true;
-        } catch (Throwable t) {
-            TrackEvent.warn(t.getMessage());
-            PLATFORM_LOADED = false;
-        }
-
-        stateInitialized = true;
-    }
-
-    @Override
-    public boolean isSupported() {
-        initState();
-        return HAS_GRAPHICS && PLATFORM_LOADED;
-    }
-
-    protected void platformSetup() {
-        if (App.getApp() != null) {
-            throw new AssertionError();
-        }
-
         TrackEvent.info("mode", "Platform mode initial setup");
-        AppI18n.init();
+        var r = PlatformState.initPlatform();
+        if (r.isPresent()) {
+            throw r.get();
+        }
+
         AppFont.loadFonts();
         AppTheme.init();
         AppStyle.init();
@@ -108,17 +82,10 @@ public abstract class PlatformMode extends OperationMode {
     }
 
     @Override
-    public void initialSetup() throws Throwable {
-        BACKGROUND.initialSetup();
-        onSwitchTo();
-    }
-
-    @Override
     public void finalTeardown() throws Throwable {
         TrackEvent.info("mode", "Shutting down platform components");
         onSwitchFrom();
-        Platform.exit();
-        PlatformState.setCurrent(PlatformState.EXITED);
+        PlatformState.teardown();
         TrackEvent.info("mode", "Platform shutdown finished");
         BACKGROUND.finalTeardown();
     }

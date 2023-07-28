@@ -63,7 +63,6 @@ open module io.xpipe.ext.base {
             XpbtProvider,
             XpbsProvider;
     provides DataStoreProvider with
-            SinkDrainStoreProvider,
             HttpStoreProvider,
             InternalStreamProvider,
             FileStoreProvider,

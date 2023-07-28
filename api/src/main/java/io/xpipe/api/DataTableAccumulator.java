@@ -4,14 +4,14 @@ import io.xpipe.api.impl.DataTableAccumulatorImpl;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.DataStructureNodeAcceptor;
 import io.xpipe.core.data.type.TupleType;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 
 /**
  * An accumulator for table data.
  * <p>
  * This class can be used to construct new table data sources by
  * accumulating the rows using {@link #add(DataStructureNode)} or {@link #acceptor()} and then calling
- * {@link #finish(DataSourceId)} to complete the construction process and create a new data source.
+ * {@link #finish(DataStoreId)} to complete the construction process and create a new data source.
  */
 public interface DataTableAccumulator {
 
@@ -20,10 +20,10 @@ public interface DataTableAccumulator {
     }
 
     /**
-     * Wrapper for {@link #finish(DataSourceId)}.
+     * Wrapper for {@link #finish(DataStoreId)}.
      */
     default DataTable finish(String id) {
-        return finish(DataSourceId.fromString(id));
+        return finish(DataStoreId.fromString(id));
     }
 
     /**
@@ -31,7 +31,7 @@ public interface DataTableAccumulator {
      *
      * @param id the data source id to assign
      */
-    DataTable finish(DataSourceId id);
+    DataTable finish(DataStoreId id);
 
     /**
      * Adds a row to the table.

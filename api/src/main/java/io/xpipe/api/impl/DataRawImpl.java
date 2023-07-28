@@ -2,7 +2,7 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataRaw;
 import io.xpipe.api.DataSourceConfig;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceType;
 
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import java.io.InputStream;
 public class DataRawImpl extends DataSourceImpl implements DataRaw {
 
     public DataRawImpl(
-            DataSourceId sourceId, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
+            DataStoreId sourceId, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
         super(sourceId, sourceConfig, internalSource);
     }
 

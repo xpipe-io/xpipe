@@ -18,11 +18,8 @@ public class GuiMode extends PlatformMode {
     }
 
     @Override
-    public void onSwitchTo() {
-        if (PlatformState.getCurrent() == PlatformState.NOT_INITIALIZED) {
-            super.platformSetup();
-        }
-
+    public void onSwitchTo() throws Throwable {
+        super.platformSetup();
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             try {

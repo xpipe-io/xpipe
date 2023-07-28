@@ -44,10 +44,13 @@ public class ScriptHelper {
         }
     }
 
-    public static String constructInitFile(
-            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
+    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
             throws Exception {
-        ShellDialect t = processControl.getShellDialect();
+        return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, login, displayName);
+    }
+
+    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
+            throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
 
@@ -73,7 +76,7 @@ public class ScriptHelper {
             content += t.getExitCommand() + nl;
         }
 
-        var initFile = createExecScript(processControl, t.initFileName(processControl), content);
+        var initFile = createExecScript(t, processControl, t.initFileName(processControl), content);
         return initFile;
     }
 
@@ -97,12 +100,11 @@ public class ScriptHelper {
         ShellDialect type = processControl.getShellDialect();
         var temp = processControl.getSubTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
-        return createExecScript(processControl, file, content);
+        return createExecScript(processControl.getShellDialect(), processControl, file, content);
     }
 
     @SneakyThrows
-    public static String createExecScript(ShellControl processControl, String file, String content) {
-        ShellDialect type = processControl.getShellDialect();
+    public static String createExecScript(ShellDialect type, ShellControl processControl, String file, String content) {
         content = type.prepareScriptContent(content);
 
         TrackEvent.withTrace("proc", "Writing exec script")
@@ -114,7 +116,7 @@ public class ScriptHelper {
                 .getShellDialect()
                 .createScriptTextFileWriteCommand(processControl, content, file)
                 .execute();
-        var e = type.getScriptPermissionsCommand(file);
+        var e = processControl.getShellDialect().getScriptPermissionsCommand(file);
         if (e != null) {
             processControl.executeSimpleCommand(e, "Failed to set script permissions of " + file);
         }
@@ -152,7 +154,7 @@ public class ScriptHelper {
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
                                         .toList());
-                var exec = createExecScript(sub, file, content);
+                var exec = createExecScript(sub.getShellDialect(), sub, file, content);
                 return exec;
             }
         } else {
@@ -163,7 +165,7 @@ public class ScriptHelper {
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
                                     .toList());
-            var exec = createExecScript(parent, file, content);
+            var exec = createExecScript(parent.getShellDialect(), parent, file, content);
             return exec;
         }
     }
