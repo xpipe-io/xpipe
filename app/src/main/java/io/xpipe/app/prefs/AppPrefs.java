@@ -591,7 +591,8 @@ public class AppPrefs {
                 new LazyNodeElement<>(() -> new HorizontalComp(List.of(
                                 new TextFieldComp(testPasswordManagerValue)
                                         .apply(struc -> struc.get().setPromptText("Test password key"))
-                                        .styleClass(Styles.LEFT_PILL),
+                                        .styleClass(Styles.LEFT_PILL)
+                                        .grow(false, true),
                                 new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
                                             var cmd = passwordManagerString(testPasswordManagerValue.get());
                                             if (cmd == null) {
@@ -618,6 +619,7 @@ public class AppPrefs {
                                         .grow(false, true)))
                         .padding(new Insets(15, 0, 0, 0))
                         .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                        .apply(struc -> struc.get().setFillHeight(true))
                         .createRegion()),
                 null);
 
@@ -674,6 +676,7 @@ public class AppPrefs {
                         "terminal",
                         Group.of(
                                 Setting.of("terminalProgram", terminalTypeControl, terminalType),
+                                terminalTest,
                                 Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
                                         .applyVisibility(VisibilityProperty.of(
                                                 terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),

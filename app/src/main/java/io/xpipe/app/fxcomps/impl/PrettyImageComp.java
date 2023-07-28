@@ -61,9 +61,17 @@ public class PrettyImageComp extends SimpleComp {
             var svgImageContent = new SimpleStringProperty();
             var storeIcon = SvgView.create(svgImageContent);
             SimpleChangeListener.apply(image, newValue -> {
+                if (newValue == null) {
+                    svgImageContent.set(null);
+                    return;
+                }
+
                 if (AppImages.hasSvgImage(newValue)) {
-                    var svg = FileNames.getBaseName(newValue) + (AppPrefs.get().theme.get().getTheme().isDarkMode() ? "-dark" : "") + ".svg";
-                    svgImageContent.set(AppImages.hasSvgImage(svg) ? AppImages.svgImage(svg) : AppImages.svgImage(newValue));
+                    svgImageContent.set(AppImages.svgImage(newValue));
+                } else if (AppImages.hasSvgImage(newValue.replace("-dark", ""))) {
+                    svgImageContent.set(AppImages.svgImage(newValue.replace("-dark", "")));
+                } else {
+                    svgImageContent.set(null);
                 }
             });
             var ar = Bindings.createDoubleBinding(
@@ -91,11 +99,17 @@ public class PrettyImageComp extends SimpleComp {
                     .imageProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> {
-                                if (!AppImages.hasNormalImage(image.getValue())) {
+                                if (image.get() == null) {
                                     return null;
                                 }
 
-                                return AppImages.image(image.getValue());
+                                if (AppImages.hasNormalImage(image.getValue())) {
+                                    return AppImages.image(image.getValue());
+                                } else if (AppImages.hasNormalImage(image.getValue().replace("-dark", ""))) {
+                                    return AppImages.image(image.getValue().replace("-dark", ""));
+                                } else {
+                                    return null;
+                                }
                             },
                             image));
             var ar = Bindings.createDoubleBinding(
@@ -116,7 +130,8 @@ public class PrettyImageComp extends SimpleComp {
         }
 
         Consumer<String> update = val -> {
-            image.set(val);
+            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().getTheme().isDarkMode() ? "-dark" : "") + "." + FileNames.getExtension(val) : null;
+            image.set(fixed);
             aspectRatioProperty.unbind();
 
             if (val == null) {

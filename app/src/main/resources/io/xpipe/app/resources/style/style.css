@@ -1,8 +1,8 @@
 .prefs * {
 -fx-text-fill: -color-fg-default;
--fx-highlight-text-fill:  -color-fg-default;
+-fx-highlight-text-fill: -color-fg-default;
 -fx-highlight-fill: -color-neutral-muted;
--fx-prompt-text-fill: -color-neutral-muted;
+-fx-prompt-text-fill: -color-fg-subtle;
 -fx-text-box-border:-color-neutral-muted;
 -fx-control-inner-background: -color-neutral-muted;
 -fx-body-color: -color-neutral-muted;

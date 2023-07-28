@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
+import lombok.Getter;
 import lombok.Value;
 
 import java.nio.file.InvalidPathException;
@@ -27,6 +28,7 @@ public class AppProperties {
     String arch;
     boolean image;
     boolean staging;
+    @Getter
     Path dataDir;
     boolean showcase;
 
@@ -102,10 +104,6 @@ public class AppProperties {
         }
 
         return Path.of(System.getProperty("user.home"), ".xpipe");
-    }
-
-    public Path getDataDir() {
-        return dataDir;
     }
 
     public String getVersion() {

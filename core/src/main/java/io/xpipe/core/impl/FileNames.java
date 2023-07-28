@@ -83,12 +83,11 @@ public class FileNames {
             return null;
         }
 
-        var name = FileNames.getFileName(file);
         var split = file.lastIndexOf(".");
         if (split == -1) {
-            return name;
+            return file;
         }
-        return name.substring(0, split);
+        return file.substring(0, split);
     }
 
     public static String getExtension(String file) {
