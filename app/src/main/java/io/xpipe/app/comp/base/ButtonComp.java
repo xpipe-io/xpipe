@@ -11,8 +11,10 @@ import javafx.css.Size;
 import javafx.css.SizeUnits;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+@Getter
 public class ButtonComp extends Comp<CompStructure<Button>> {
 
     private final ObservableValue<String> name;
@@ -31,20 +33,12 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
         this.listener = listener;
     }
 
-    public ObservableValue<String> getName() {
-        return name;
-    }
-
     public Node getGraphic() {
         return graphic.get();
     }
 
     public ObjectProperty<Node> graphicProperty() {
         return graphic;
-    }
-
-    public Runnable getListener() {
-        return listener;
     }
 
     @Override

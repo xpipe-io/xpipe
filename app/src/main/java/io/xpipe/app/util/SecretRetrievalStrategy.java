@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretValue;
@@ -21,8 +22,8 @@ import java.util.function.Supplier;
         @JsonSubTypes.Type(value = SecretRetrievalStrategy.Reference.class),
         @JsonSubTypes.Type(value = SecretRetrievalStrategy.InPlace.class),
         @JsonSubTypes.Type(value = SecretRetrievalStrategy.Prompt.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.Command.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.KeePass.class)
+        @JsonSubTypes.Type(value = SecretRetrievalStrategy.CustomCommand.class),
+        @JsonSubTypes.Type(value = SecretRetrievalStrategy.PasswordManager.class)
 })
 public interface SecretRetrievalStrategy {
 
@@ -90,34 +91,39 @@ public interface SecretRetrievalStrategy {
         }
     }
 
-    @JsonTypeName("command")
+    @JsonTypeName("passwordManager")
     @Builder
     @Jacksonized
     @Value
-    public static class Command implements SecretRetrievalStrategy {
+    public static class PasswordManager implements SecretRetrievalStrategy {
 
-        String command;
+        String key;
 
         @Override
         public SecretValue retrieve(String displayName, DataStore store) throws Exception {
-            try (var cc = new LocalStore().createBasicControl().command(command).start()) {
+            var cmd = AppPrefs.get().passwordManagersString(key);
+            if (cmd == null) {
+                return null;
+            }
+
+            try (var cc = new LocalStore().createBasicControl().command(cmd).start()) {
                 var read = cc.readStdoutDiscardErr();
                 return SecretHelper.encrypt(read);
             }
         }
     }
 
-    @JsonTypeName("keepass")
+    @JsonTypeName("customCommand")
     @Builder
     @Jacksonized
     @Value
-    public static class KeePass implements SecretRetrievalStrategy {
+    public static class CustomCommand implements SecretRetrievalStrategy {
 
-        String entry;
+        String command;
 
         @Override
         public SecretValue retrieve(String displayName, DataStore store) throws Exception {
-            try (var cc = new LocalStore().createBasicControl().command(entry).start()) {
+            try (var cc = new LocalStore().createBasicControl().command(command).start()) {
                 var read = cc.readStdoutDiscardErr();
                 return SecretHelper.encrypt(read);
             }

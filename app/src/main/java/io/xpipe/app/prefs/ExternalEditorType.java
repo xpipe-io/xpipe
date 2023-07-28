@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -137,8 +138,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw new IllegalStateException("No custom editor command specified");
             }
 
-            var format = customCommand.contains("$file") ? customCommand : customCommand + " $file";
-            ApplicationHelper.executeLocalApplication(sc -> ApplicationHelper.replaceFileArgument(format, "file", file.toString()), true);
+            var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+            ApplicationHelper.executeLocalApplication(sc -> ApplicationHelper.replaceFileArgument(format, "FILE", file.toString()), true);
         }
 
         @Override

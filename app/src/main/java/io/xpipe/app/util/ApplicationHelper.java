@@ -12,7 +12,9 @@ public class ApplicationHelper {
 
     public static String replaceFileArgument(String format, String variable, String file) {
         // Support for legacy variables that were not upper case
+        variable = variable.toUpperCase(Locale.ROOT);
         format = format.replace("$" + variable.toLowerCase(Locale.ROOT), "$" + variable.toUpperCase(Locale.ROOT));
+
         var fileString = file.contains(" ") ? "\"" + file + "\"" : file;
         // Check if the variable is already quoted
         var replaced = format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);

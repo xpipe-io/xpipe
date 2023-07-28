@@ -447,9 +447,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 throw new IllegalStateException("No custom terminal command specified");
             }
 
-            var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $cmd";
+            var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $CMD";
             try (var pc = LocalStore.getShell()) {
-                var toExecute = ApplicationHelper.replaceFileArgument(format, "cmd", file);
+                var toExecute = ApplicationHelper.replaceFileArgument(format, "CMD", file);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + name + "\" " + toExecute;
                 } else {

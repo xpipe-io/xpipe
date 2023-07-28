@@ -13,10 +13,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.control.ScrollPane;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.util.List;
 
+@Getter
 public class AppPreferencesFx {
 
     private final PreferencesFxModel preferencesFxModel;
