@@ -100,11 +100,11 @@ public class StandardStorage extends DataStorage {
                 storeEntries.forEach(dataStoreEntry -> dataStoreEntry.simpleRefresh());
 
                 // Remove even incomplete stores when in production
-                if (!AppPrefs.get().isDevelopmentEnvironment()) {
-                    storeEntries.removeIf(entry -> {
-                        return !entry.getState().isUsable();
-                    });
-                }
+//                if (!AppPrefs.get().isDevelopmentEnvironment()) {
+//                    storeEntries.removeIf(entry -> {
+//                        return !entry.getState().isUsable();
+//                    });
+//                }
             }
         } catch (IOException ex) {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();

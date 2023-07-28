@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.XPipeSystemId;
@@ -95,7 +96,10 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
-    ShellControl elevationPassword(SecretValue value);
+    default ShellControl elevationPassword(SecretValue value) {
+        return elevationPassword(() -> value);
+    }
+    ShellControl elevationPassword(Dialog.FailableSupplier<SecretValue> value);
 
     ShellControl initWith(String cmds);
 
@@ -103,7 +107,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl startTimeout(int ms);
 
-    SecretValue getElevationPassword();
+    Dialog.FailableSupplier<SecretValue> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getOpenCommand(), new TerminalOpenFunction() {
