@@ -107,8 +107,7 @@ public interface SecretRetrievalStrategy {
             }
 
             try (var cc = new LocalStore().createBasicControl().command(cmd).start()) {
-                var read = cc.readStdoutDiscardErr();
-                return SecretHelper.encrypt(read);
+                return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
         }
     }
@@ -124,8 +123,7 @@ public interface SecretRetrievalStrategy {
         @Override
         public SecretValue retrieve(String displayName, DataStore store) throws Exception {
             try (var cc = new LocalStore().createBasicControl().command(command).start()) {
-                var read = cc.readStdoutDiscardErr();
-                return SecretHelper.encrypt(read);
+                return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
         }
     }

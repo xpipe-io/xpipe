@@ -74,7 +74,7 @@ public class AppPrefs {
     private static final Path DEFAULT_STORAGE_DIR =
             AppProperties.get().getDataDir().resolve("storage");
     private static final boolean STORAGE_DIR_FIXED =
-            !AppProperties.get().getDataDir().equals(AppProperties.DEFAULT_DATA_DIR);
+            !AppProperties.get().getDataDir().equals(Path.of(System.getProperty("user.home"), AppProperties.get().isStaging() ? ".xpipe_stage" : ".xpipe"));
     private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
     // Lets keep this at trace for now, at least for the alpha
     private static final String DEFAULT_LOG_LEVEL = "debug";

@@ -26,7 +26,7 @@ public class AppAntivirusAlert {
 
     public static void showIfNeeded() throws Throwable {
         // Only show this on first launch on windows
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.getLocal() != OsType.WINDOWS || !AppState.get().isInitialLaunch()) {
             return;
         }
 
