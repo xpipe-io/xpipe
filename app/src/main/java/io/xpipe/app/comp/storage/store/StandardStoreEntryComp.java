@@ -20,9 +20,9 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.setHgap(10);
         grid.setVgap(0);
 
-        var storeIcon = createIcon(60, 45);
+        var storeIcon = createIcon(45, 35);
         grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(60));
+        grid.getColumnConstraints().add(new ColumnConstraints(50));
 
         grid.add(name, 1, 0);
         grid.add(createSummary(), 1, 1);

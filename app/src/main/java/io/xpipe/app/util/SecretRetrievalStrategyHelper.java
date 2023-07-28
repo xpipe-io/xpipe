@@ -56,7 +56,7 @@ public class SecretRetrievalStrategyHelper {
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
         var content = new TextFieldComp(cmdProperty).apply(struc -> struc.get().setPromptText("Password key"));
         return new OptionsBuilder()
-                .name("key")
+                .name("command")
                 .addComp(content, cmdProperty)
                 .bind(
                         () -> {
