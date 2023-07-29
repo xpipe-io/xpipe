@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
@@ -39,7 +38,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         var selected = PseudoClass.getPseudoClass("selected");
         entries.forEach(e -> {
-            var fi = new FontIcon(e.icon());
             var b = new IconButtonComp(e.icon(), () -> value.setValue(e)).apply(new FancyTooltipAugment<>(e.name()));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
@@ -55,7 +53,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var fi = new FontIcon("mdi2u-update");
-            var b = new BigIconButton(AppI18n.observable("update"), fi, () -> UpdateAvailableAlert.showIfNeeded());
+            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded());
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
                         return XPipeDistributionType.get()
