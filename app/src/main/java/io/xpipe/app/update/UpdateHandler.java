@@ -203,6 +203,14 @@ public abstract class UpdateHandler {
             return;
         }
 
+        // Check if prepared update is still the latest.
+        // We only do that here to minimize the sent requests by only executing when it's really necessary
+        var available = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent();
+        if (available != null && !available.getVersion().equals(preparedUpdate.getValue().getVersion())) {
+            preparedUpdate.setValue(null);
+            return;
+        }
+
         event("Executing update ...");
         OperationMode.executeAfterShutdown(() -> {
             try {

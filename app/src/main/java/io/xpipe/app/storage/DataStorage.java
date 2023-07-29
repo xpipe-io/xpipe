@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedHierarchyStore;
 import lombok.Getter;
@@ -111,6 +112,10 @@ public abstract class DataStorage {
     }
 
     public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry, boolean display, boolean deep) {
+        if (!entry.getState().isUsable()) {
+            return List.of();
+        }
+
         var children = new ArrayList<>(getStoreEntries().stream()
                 .filter(other -> {
                     if (!other.getState().isUsable()) {
@@ -180,12 +185,43 @@ public abstract class DataStorage {
         return entry;
     }
 
+    public DataStoreId getId(DataStoreEntry entry) {
+        var names = new ArrayList<String>();
+        names.add(entry.getName());
+
+        DataStoreEntry current = entry;
+        while ((current = getParent(current, false).orElse(null)) != null) {
+            names.add(0, current.getName());
+        }
+
+        return DataStoreId.create(names.toArray(String[]::new));
+    }
+
     public synchronized DataStoreEntry getStoreEntry(@NonNull DataStore store) {
         var entry = storeEntries.stream()
                 .filter(n -> n.getStore() != null && Objects.equals(store.getClass(), n.getStore().getClass()) && store.equals(n.getStore()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
         return entry;
+    }
+
+    public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
+        var current = getStoreEntryIfPresent(id.getNames().get(0));
+        if (current.isPresent()) {
+            for (int i = 1; i < id.getNames().size(); i++) {
+                var children = getStoreChildren(current.get(), false, false);
+                int finalI = i;
+                current = children.stream().filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(id.getNames().get(finalI))).findFirst();
+                if (current.isEmpty()) {
+                    break;
+                }
+            }
+
+            if (current.isPresent()) {
+                return current;
+            }
+        }
+        return Optional.empty();
     }
 
     public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {

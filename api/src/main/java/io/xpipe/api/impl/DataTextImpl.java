@@ -2,7 +2,7 @@ package io.xpipe.api.impl;
 
 import io.xpipe.api.DataSourceConfig;
 import io.xpipe.api.DataText;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceType;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class DataTextImpl extends DataSourceImpl implements DataText {
 
     DataTextImpl(
-            DataSourceId sourceId, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
+            DataStoreId sourceId, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
         super(sourceId, sourceConfig, internalSource);
     }
 

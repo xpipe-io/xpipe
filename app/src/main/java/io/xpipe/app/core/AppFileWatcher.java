@@ -39,6 +39,11 @@ public class AppFileWatcher {
     }
 
     public void startWatchersInDirectories(List<Path> dirs, BiConsumer<Path, WatchEvent.Kind<Path>> listener) {
+        // Check in case initialization failed
+        if (watchService == null) {
+            return;
+        }
+
         dirs.forEach(d -> watchedDirectories.add(new WatchedDirectory(d, listener)));
     }
 
@@ -78,6 +83,11 @@ public class AppFileWatcher {
     }
 
     private void stopWatcher() {
+        // Check in case initialization failed
+        if (watchService == null) {
+            return;
+        }
+
         active = false;
         watchedDirectories.clear();
 

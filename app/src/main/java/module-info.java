@@ -145,6 +145,8 @@ open module io.xpipe.app {
             FocusExchangeImpl,
             ProxyReadConnectionExchangeImpl,
             StatusExchangeImpl,
+            DrainExchangeImpl,
+            SinkExchangeImpl,
             StopExchangeImpl,
             ModeExchangeImpl,
             DialogExchangeImpl,

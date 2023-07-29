@@ -33,6 +33,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
     public CompStructure<VBox> createBase() {
         var list = FXCollections.observableArrayList(entries);
         var cb = new ComboBox<>(list);
+        cb.getSelectionModel().select(selected.getValue());
         cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(Entry object) {
@@ -52,7 +53,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         var vbox = new VBox(transformer.apply(cb));
         vbox.setFillWidth(true);
         cb.prefWidthProperty().bind(vbox.widthProperty());
-        cb.valueProperty().addListener((c, o, n) -> {
+        SimpleChangeListener.apply(cb.valueProperty(), n-> {
             if (n == null) {
                 vbox.getChildren().remove(1);
             } else {

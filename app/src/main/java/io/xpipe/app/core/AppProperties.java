@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
+import lombok.Getter;
 import lombok.Value;
 
 import java.nio.file.InvalidPathException;
@@ -27,6 +28,7 @@ public class AppProperties {
     String arch;
     boolean image;
     boolean staging;
+    @Getter
     Path dataDir;
     boolean showcase;
 
@@ -43,10 +45,10 @@ public class AppProperties {
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
         arch = System.getProperty("io.xpipe.app.arch");
-        dataDir = parseDataDir();
         staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        dataDir = parseDataDir();
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -93,7 +95,7 @@ public class AppProperties {
         return INSTANCE;
     }
 
-    private static Path parseDataDir() {
+    private Path parseDataDir() {
         if (System.getProperty(DATA_DIR_PROP) != null) {
             try {
                 return Path.of(System.getProperty(DATA_DIR_PROP));
@@ -101,11 +103,7 @@ public class AppProperties {
             }
         }
 
-        return Path.of(System.getProperty("user.home"), ".xpipe");
-    }
-
-    public Path getDataDir() {
-        return dataDir;
+        return Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe_stage" : ".xpipe");
     }
 
     public String getVersion() {

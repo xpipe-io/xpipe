@@ -57,6 +57,10 @@ public class BrowserWelcomeComp extends SimpleComp {
                 return;
             }
 
+            if (!entry.get().getState().isUsable()) {
+                return;
+            }
+
             var graphic =
                     entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
             var view = new PrettyImageComp(new SimpleStringProperty(graphic), 45, 45);

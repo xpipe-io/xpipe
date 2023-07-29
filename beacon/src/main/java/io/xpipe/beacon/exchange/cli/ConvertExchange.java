@@ -4,7 +4,7 @@ import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.dialog.DialogReference;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
 import io.xpipe.core.source.DataSourceType;
 import lombok.Builder;
@@ -30,7 +30,7 @@ public class ConvertExchange implements MessageExchange {
 
         DataSourceType newCategory;
 
-        DataSourceId copyId;
+        DataStoreId copyId;
     }
 
     @Jacksonized

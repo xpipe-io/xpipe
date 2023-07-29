@@ -4,6 +4,8 @@ import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.impl.FileNames;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,6 +14,8 @@ import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
+import java.util.function.Consumer;
 
 public class PrettyImageComp extends SimpleComp {
 
@@ -57,8 +61,17 @@ public class PrettyImageComp extends SimpleComp {
             var svgImageContent = new SimpleStringProperty();
             var storeIcon = SvgView.create(svgImageContent);
             SimpleChangeListener.apply(image, newValue -> {
+                if (newValue == null) {
+                    svgImageContent.set(null);
+                    return;
+                }
+
                 if (AppImages.hasSvgImage(newValue)) {
                     svgImageContent.set(AppImages.svgImage(newValue));
+                } else if (AppImages.hasSvgImage(newValue.replace("-dark", ""))) {
+                    svgImageContent.set(AppImages.svgImage(newValue.replace("-dark", "")));
+                } else {
+                    svgImageContent.set(null);
                 }
             });
             var ar = Bindings.createDoubleBinding(
@@ -86,11 +99,17 @@ public class PrettyImageComp extends SimpleComp {
                     .imageProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> {
-                                if (!AppImages.hasNormalImage(image.getValue())) {
+                                if (image.get() == null) {
                                     return null;
                                 }
 
-                                return AppImages.image(image.getValue());
+                                if (AppImages.hasNormalImage(image.getValue())) {
+                                    return AppImages.image(image.getValue());
+                                } else if (AppImages.hasNormalImage(image.getValue().replace("-dark", ""))) {
+                                    return AppImages.image(image.getValue().replace("-dark", ""));
+                                } else {
+                                    return null;
+                                }
                             },
                             image));
             var ar = Bindings.createDoubleBinding(
@@ -110,8 +129,9 @@ public class PrettyImageComp extends SimpleComp {
             stack.getChildren().add(storeIcon);
         }
 
-        SimpleChangeListener.apply(PlatformThread.sync(value), val -> {
-            image.set(val);
+        Consumer<String> update = val -> {
+            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().getTheme().isDarkMode() ? "-dark" : "") + "." + FileNames.getExtension(val) : null;
+            image.set(fixed);
             aspectRatioProperty.unbind();
 
             if (val == null) {
@@ -126,6 +146,11 @@ public class PrettyImageComp extends SimpleComp {
                 stack.getChildren().get(0).setOpacity(0.0);
                 stack.getChildren().get(1).setOpacity(1.0);
             }
+        };
+
+        SimpleChangeListener.apply(PlatformThread.sync(value), val -> update.accept(val));
+        AppPrefs.get().theme.addListener((observable, oldValue, newValue) -> {
+            update.accept(value.getValue());
         });
 
         stack.setFocusTraversable(false);

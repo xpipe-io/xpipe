@@ -24,6 +24,10 @@ public class AppImages {
     private static final Map<String, String> svgImages = new HashMap<>();
 
     public static void init() {
+        if (images.size() > 0 || svgImages.size() > 0) {
+            return;
+        }
+
         TrackEvent.info("Loading images ...");
         for (var module : AppExtensionManager.getInstance().getContentModules()) {
             loadDirectory(module.getName(), "img");

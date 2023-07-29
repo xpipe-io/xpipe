@@ -2,9 +2,11 @@ package io.xpipe.app.util;
 
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.core.util.SecretValue;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,13 +16,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import net.synedra.validatorfx.Check;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class OptionsBuilder {
 
+    private final Validator ownValidator;
+    private final List<Validator> allValidators = new ArrayList<>();
     private final List<OptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
 
@@ -28,6 +30,47 @@ public class OptionsBuilder {
     private ObservableValue<String> description;
     private String longDescription;
     private Comp<?> comp;
+
+    public Validator buildEffectiveValidator() {
+        return new ChainedValidator(allValidators);
+    }
+
+    public OptionsBuilder() {
+        this.ownValidator = new SimpleValidator();
+        this.allValidators.add(ownValidator);
+    }
+
+    public OptionsBuilder(Validator validator) {
+        this.ownValidator = validator;
+        this.allValidators.add(ownValidator);
+    }
+
+    public OptionsBuilder choice(IntegerProperty selectedIndex, Map<String, OptionsBuilder> options) {
+        var list = options.entrySet().stream()
+                .map(e -> new ChoicePaneComp.Entry(
+                        AppI18n.observable(e.getKey()), e.getValue().buildComp()))
+                .toList();
+        var validatorList =
+                options.values().stream().map(builder -> builder.buildEffectiveValidator()).toList();
+        var selected = new SimpleObjectProperty<>(list.get(selectedIndex.getValue()));
+        selected.addListener((observable, oldValue, newValue) -> {
+            selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
+        });
+        var pane = new ChoicePaneComp(list, selected);
+
+        var validatorMap = new LinkedHashMap<ChoicePaneComp.Entry, Validator>();
+        for (int i = 0; i < list.size(); i++) {
+            validatorMap.put(list.get(i), validatorList.get(i));
+        }
+        validatorMap.put(null, new SimpleValidator());
+        var orVal = new ExclusiveValidator<>(validatorMap, selected);
+
+        options.values().forEach(builder -> props.addAll(builder.props));
+        props.add(selectedIndex);
+        allValidators.add(orVal);
+        pushComp(pane);
+        return this;
+    }
 
     private void finishCurrent() {
         if (comp == null) {
@@ -44,9 +87,19 @@ public class OptionsBuilder {
 
     public OptionsBuilder sub(OptionsBuilder builder) {
         props.addAll(builder.props);
+        allValidators.add(builder.buildEffectiveValidator());
         pushComp(builder.buildComp());
         return this;
     }
+
+    public OptionsBuilder sub(OptionsBuilder builder, Property<?> prop) {
+        props.addAll(builder.props);
+        allValidators.add(builder.buildEffectiveValidator());
+        props.add(prop);
+        pushComp(builder.buildComp());
+        return this;
+    }
+
 
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
@@ -74,6 +127,12 @@ public class OptionsBuilder {
     public OptionsBuilder disable() {
         comp.disable(new SimpleBooleanProperty(true));
         return this;
+    }
+
+    public OptionsBuilder nonNull() {
+        var e = name;
+        var p = props.get(props.size() - 1);
+        return decorate(Validator.nonNull(ownValidator, e, p));
     }
 
     public OptionsBuilder nonNull(Validator v) {
@@ -130,7 +189,6 @@ public class OptionsBuilder {
         return addComp(Comp.separator());
     }
 
-
     public OptionsBuilder name(String nameKey) {
         finishCurrent();
         name = AppI18n.observable(nameKey);
@@ -140,6 +198,12 @@ public class OptionsBuilder {
     public OptionsBuilder description(String descriptionKey) {
         finishCurrent();
         description = AppI18n.observable(descriptionKey);
+        return this;
+    }
+
+    public OptionsBuilder description(ObservableValue<String> description) {
+        finishCurrent();
+        this.description = description;
         return this;
     }
 
@@ -206,5 +270,9 @@ public class OptionsBuilder {
 
     public Region build() {
         return buildComp().createRegion();
+    }
+
+    public GuiDialog buildDialog() {
+        return new GuiDialog(buildComp(), buildEffectiveValidator());
     }
 }

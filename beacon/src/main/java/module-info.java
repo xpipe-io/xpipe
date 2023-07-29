@@ -38,6 +38,8 @@ module io.xpipe.beacon {
     provides Module with
             BeaconJacksonModule;
     provides io.xpipe.beacon.exchange.MessageExchange with
+            SinkExchange,
+            DrainExchange,
             LaunchExchange,
             InstanceExchange,
             EditStoreExchange,

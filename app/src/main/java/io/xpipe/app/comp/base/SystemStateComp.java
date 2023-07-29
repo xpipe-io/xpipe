@@ -1,10 +1,11 @@
 package io.xpipe.app.comp.base;
 
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -15,8 +16,7 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
 public class SystemStateComp extends SimpleComp {
 
 
-    public SystemStateComp(ObservableValue<String> name, ObservableValue<State> state) {
-        this.name = name;
+    public SystemStateComp(ObservableValue<State> state) {
         this.state = state;
     }
 
@@ -26,8 +26,20 @@ public class SystemStateComp extends SimpleComp {
         OTHER
     }
 
-    private final ObservableValue<String> name;
     private final ObservableValue<State> state;
+
+    public SystemStateComp(StoreEntryWrapper w) {
+        var state = Bindings.createObjectBinding(
+                () -> {
+                    return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID
+                            ? SystemStateComp.State.FAILURE
+                            : w.getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
+                            ? SystemStateComp.State.SUCCESS
+                            : SystemStateComp.State.OTHER;
+                },
+                w.getState());
+        this.state = state;
+    }
 
     @Override
     protected Region createSimple() {
@@ -69,7 +81,6 @@ public class SystemStateComp extends SimpleComp {
             pane.getStylesheets().add(val == State.SUCCESS ? success : val == State.FAILURE ? failure: other);
         });
 
-        new FancyTooltipAugment<>(PlatformThread.sync(name)).augment(pane);
         return pane;
     }
 }

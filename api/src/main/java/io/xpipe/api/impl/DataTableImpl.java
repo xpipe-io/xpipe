@@ -5,7 +5,7 @@ import io.xpipe.api.DataTable;
 import io.xpipe.core.data.node.ArrayNode;
 import io.xpipe.core.data.node.DataStructureNode;
 import io.xpipe.core.data.node.TupleNode;
-import io.xpipe.core.source.DataSourceId;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.source.DataSourceType;
 
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class DataTableImpl extends DataSourceImpl implements DataTable {
 
-    DataTableImpl(DataSourceId id, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
+    DataTableImpl(DataStoreId id, DataSourceConfig sourceConfig, io.xpipe.core.source.DataSource<?> internalSource) {
         super(id, sourceConfig, internalSource);
     }
 

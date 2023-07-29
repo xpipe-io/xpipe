@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,23 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                     if (c.getExitCode() != 0 || path.isBlank()) {
                         return Optional.empty();
                     }
-                    return Optional.of(Path.of(path));
+
+                    // Check if returned paths are actually valid
+                    var valid = path.lines().filter(s -> {
+                        try {
+                            return Files.exists(Path.of(s));
+                        } catch (Exception ex) {
+                            return false;
+                        }
+                    }).toList();
+
+                    // Prefer app in proper applications directory
+                    var app = valid.stream().filter(s -> s.startsWith("/Applications")).findFirst();
+                    if (app.isPresent()) {
+                        return app.map(Path::of);
+                    }
+
+                    return valid.stream().findFirst().map(Path::of);
                 }
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
@@ -90,13 +107,35 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
     }
 
-    public abstract static class WindowsFullPathType extends ExternalApplicationType {
+    public abstract static class WindowsType extends ExternalApplicationType {
 
-        public WindowsFullPathType(String id) {
+        private final String executable;
+
+        public WindowsType(String id, String executable) {
             super(id);
+            this.executable = executable;
         }
 
-        protected abstract Optional<Path> determinePath();
+        protected abstract Optional<Path> determineInstallation();
+
+        private Optional<Path> determineFromPath() {
+            // Try to locate if it is in the Path
+            try (var cc = LocalStore.getShell()
+                    .command(ShellDialects.getPlatformDefault().getWhichCommand("code.cmd"))
+                    .start()) {
+                var out = cc.readStdoutDiscardErr();
+                var exit = cc.getExitCode();
+                if (exit == 0) {
+                    var first = out.lines().findFirst();
+                    if (first.isPresent()) {
+                        return first.map(Path::of);
+                    }
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).omit().handle();
+            }
+            return Optional.empty();
+        }
 
         @Override
         public boolean isSelectable() {
@@ -105,8 +144,13 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         @Override
         public boolean isAvailable() {
-            var path = determinePath();
-            return path.isPresent() && Files.exists(path.get());
+            var path = determineFromPath();
+            if (path.isPresent() && Files.exists(path.get())) {
+                return true;
+            }
+
+            var installation = determineInstallation();
+            return installation.isPresent() && Files.exists(installation.get());
         }
     }
 }

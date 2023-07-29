@@ -1,60 +1,93 @@
 package io.xpipe.core.process;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class CommandBuilder {
 
     public static CommandBuilder of() {
-        return new CommandBuilder(false);
+        return new CommandBuilder();
     }
 
-    public static CommandBuilder ofNoQuotes() {
-        return new CommandBuilder(true);
+    private CommandBuilder() {}
+
+    private final List<Element> elements = new ArrayList<>();
+
+    public static interface Element {
+
+        String evaluate(ShellControl sc) throws Exception;
     }
 
-    private CommandBuilder(boolean noQuoting) {
-        this.noQuoting = noQuoting;
+    static class Fixed implements Element {
+
+        private final String string;
+
+        Fixed(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String evaluate(ShellControl sc) {
+            return string;
+        }
     }
 
-    private final boolean noQuoting;
-    private final StringBuilder builder = new StringBuilder();
+    public CommandBuilder addSeparator(String s) {
+        elements.add(sc -> sc.getShellDialect().getConcatenationOperator());
+        return this;
+    }
 
     public CommandBuilder add(String... s) {
         for (String s1 : s) {
-            add(s1);
+            elements.add(new Fixed(s1));
         }
         return this;
     }
 
     public CommandBuilder addQuoted(String s) {
-        if (!builder.isEmpty()) {
-            builder.append(' ');
-        }
-
-        if (noQuoting) {
-            throw new IllegalArgumentException("No quoting rule conflicts with spaces an argument");
-        }
-
-        builder.append("\"").append(s).append("\"");
+        elements.add(new Fixed("\"" + s + "\""));
         return this;
     }
 
-    public CommandBuilder add(String s) {
-        if (!builder.isEmpty()) {
-            builder.append(' ');
-        }
+    public CommandBuilder prepend(Element e) {
+        elements.add(0, e);
+        return this;
+    }
 
-        if (s.contains(" ") || s.contains("\t")) {
-            if (noQuoting) {
-                throw new IllegalArgumentException("No quoting rule conflicts with spaces an argument");
+    public CommandBuilder add(Element e) {
+        elements.add(e);
+        return this;
+    }
+
+    public CommandBuilder prepend(String... s) {
+        elements.addAll(0, Arrays.stream(s).map(s2 -> new Fixed(s2)).toList());
+        return this;
+    }
+
+    public CommandBuilder prependQuoted(String s) {
+        return prepend("\"" + s + "\"");
+    }
+
+    public CommandBuilder addFile(String s) {
+        elements.add(sc -> sc.getShellDialect().fileArgument(s));
+        return this;
+    }
+
+    public String build(ShellControl sc) throws Exception {
+        List<String> list = new ArrayList<>();
+        for (Element element : elements) {
+            String evaluate = element.evaluate(sc);
+            if (evaluate == null) {
+                continue;
             }
 
-            s = "\"" + s + "\"";
+            list.add(evaluate);
         }
-
-        builder.append(s);
-        return this;
+        return String.join(" ", list);
     }
 
-    public String build() {
-        return builder.toString();
+    public String buildSimple() {
+        return String.join(" ", elements.stream().map(element -> ((Fixed) element).string).toList());
     }
 }

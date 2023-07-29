@@ -12,6 +12,7 @@ import io.xpipe.beacon.exchange.MessageExchange;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.NamedStore;
 import io.xpipe.core.source.DataSource;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.store.DataStore;
 import lombok.NonNull;
 
@@ -55,6 +56,18 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
         var store = DataStorage.get().getStoreEntryIfPresent(name);
         if (store.isEmpty()) {
             throw new ClientException("No store with name " + name + " was found");
+        }
+        if (store.get().isDisabled() && !acceptDisabled) {
+            throw new ClientException(
+                    String.format("Store %s is disabled", store.get().getName()));
+        }
+        return store.get();
+    }
+
+    default DataStoreEntry getStoreEntryById(@NonNull DataStoreId id, boolean acceptDisabled) throws ClientException {
+        var store = DataStorage.get().getStoreEntryIfPresent(id);
+        if (store.isEmpty()) {
+            throw new ClientException("No store with id " + id + " was found");
         }
         if (store.get().isDisabled() && !acceptDisabled) {
             throw new ClientException(

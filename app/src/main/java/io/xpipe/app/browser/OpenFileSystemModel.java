@@ -107,11 +107,11 @@ public final class OpenFileSystemModel {
         return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, false, false, 0, null, FileKind.DIRECTORY);
     }
 
-    public void cd(String path) {
-        cdOrRetry(path, false).ifPresent(s -> cdOrRetry(s, false));
+    public void cdSync(String path) {
+        cdSyncOrRetry(path, false).ifPresent(s -> cdSyncOrRetry(s, false));
     }
 
-    public Optional<String> cdOrRetry(String path, boolean allowCommands) {
+    public Optional<String> cdSyncOrRetry(String path, boolean allowCommands) {
         if (Objects.equals(path, currentPath.get())) {
             return Optional.empty();
         }
@@ -179,16 +179,12 @@ public final class OpenFileSystemModel {
 
         try {
             FileSystemHelper.validateDirectoryPath(this, resolvedPath);
+            cdSyncWithoutCheck(path);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return Optional.ofNullable(currentPath.get());
         }
 
-        ThreadHelper.runFailableAsync(() -> {
-            try (var ignored = new BusyProperty(busy)) {
-                cdSyncWithoutCheck(path);
-            }
-        });
         return Optional.empty();
     }
 

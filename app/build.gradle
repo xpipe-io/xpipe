@@ -156,11 +156,12 @@ run {
 
     // systemProperty "io.xpipe.beacon.localProxy", "true"
 
-    systemProperties System.getProperties()
     systemProperty 'java.library.path', "./lib"
+    workingDir = rootDir
 }
 
 task runAttachedDebugger(type: JavaExec) {
+    workingDir = rootDir
     classpath = run.classpath
     mainModule = 'io.xpipe.app'
     mainClass = 'io.xpipe.app.Main'

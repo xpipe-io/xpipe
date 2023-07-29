@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.validators.CustomValidator;
 import com.dlsc.formsfx.model.validators.Validator;
+import io.xpipe.app.core.AppI18n;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +19,7 @@ public class CustomValidators {
                         return false;
                     }
                 },
-                "notAnAbsolutePath");
+                AppI18n.get("notAnAbsolutePath"));
     }
 
     public static Validator<String> directory() {
@@ -27,6 +28,6 @@ public class CustomValidators {
                     var p = Path.of(s);
                     return Files.exists(p) && Files.isDirectory(p);
                 },
-                "notADirectory");
+                AppI18n.get("notADirectory"));
     }
 }

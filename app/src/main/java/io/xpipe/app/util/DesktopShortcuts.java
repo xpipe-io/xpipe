@@ -5,22 +5,22 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class DesktopShortcuts {
 
     private static void createWindowsShortcut(String target, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var shortcutTarget = XPipeInstallation.getLocalDefaultCliExecutable();
+        var shortcutPath = DesktopHelper.getDesktopDirectory().resolve(name + ".lnk");
         var content = String.format(
                 """
                         set "TARGET=%s"
-                        set "SHORTCUT=%%HOMEDRIVE%%%%HOMEPATH%%\\Desktop\\%s.lnk"
+                        set "SHORTCUT=%s"
                         set PWS=powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile
 
                         %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.WindowStyle=7; $S.TargetPath = '%%TARGET%%'; $S.Arguments = 'open %s'; $S.Save()"
                         """,
-                shortcutTarget, name, icon, target);
+                shortcutTarget, shortcutPath, icon, target);
         LocalStore.getShell().executeSimpleCommand(content);
     }
 
@@ -39,7 +39,7 @@ public class DesktopShortcuts {
                         Categories=Utility;Development;Office;
                         """,
                 name, exec, target, icon);
-        var file = Path.of(System.getProperty("user.home") + "/Desktop/" + name + ".desktop");
+        var file = DesktopHelper.getDesktopDirectory().resolve(name + ".desktop");
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
     }
@@ -47,7 +47,7 @@ public class DesktopShortcuts {
     private static void createMacOSShortcut(String target, String name) throws Exception {
         var exec = XPipeInstallation.getLocalDefaultCliExecutable();
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
-        var base = System.getProperty("user.home") + "/Desktop/" + name + ".app";
+        var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
                 """
                         #!/bin/bash

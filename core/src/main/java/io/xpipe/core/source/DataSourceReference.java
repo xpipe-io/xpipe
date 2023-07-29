@@ -8,10 +8,10 @@ import java.util.Objects;
 
 /**
  * Represents a reference to an XPipe data source.
- * Using {@link DataSourceReference} instances instead of {@link DataSourceId}
+ * Using {@link DataSourceReference} instances instead of {@link DataStoreId}
  * instances is mainly done for user convenience purposes.
  * <p>
- * While a {@link DataSourceId} represents a unique and canonical identifier for an XPipe data source,
+ * While a {@link DataStoreId} represents a unique and canonical identifier for an XPipe data source,
  * there also exist easier and shorter ways to address a data source.
  * This convenience comes at the price of ambiguity and instability for other types of references.
  */
@@ -36,12 +36,12 @@ public interface DataSourceReference {
     }
 
     /**
-     * Convenience method for {@link #id(DataSourceId)}
+     * Convenience method for {@link #id(DataStoreId)}
      *
-     * @see DataSourceId#fromString(String)
+     * @see DataStoreId#fromString(String)
      */
     static DataSourceReference id(String id) {
-        return new Id(DataSourceId.fromString(id));
+        return new Id(DataStoreId.fromString(id));
     }
 
     /**
@@ -49,7 +49,7 @@ public interface DataSourceReference {
      *
      * @see Id
      */
-    static DataSourceReference id(DataSourceId id) {
+    static DataSourceReference id(DataStoreId id) {
         return new Id(id);
     }
 
@@ -59,7 +59,7 @@ public interface DataSourceReference {
         }
 
         if (s.contains(":")) {
-            return new Id(DataSourceId.fromString(s));
+            return new Id(DataStoreId.fromString(s));
         }
 
         return new Name(s.trim());
@@ -67,7 +67,7 @@ public interface DataSourceReference {
 
     Type getType();
 
-    DataSourceId getId();
+    DataStoreId getId();
 
     String getName();
 
@@ -85,13 +85,13 @@ public interface DataSourceReference {
     }
 
     /**
-     * A wrapper class for {@link DataSourceId} instances.
+     * A wrapper class for {@link DataStoreId} instances.
      */
     @Value
     @AllArgsConstructor
     class Id implements DataSourceReference {
         @NonNull
-        DataSourceId value;
+        DataStoreId value;
 
         @Override
         public String toString() {
@@ -126,7 +126,7 @@ public interface DataSourceReference {
         }
 
         @Override
-        public DataSourceId getId() {
+        public DataStoreId getId() {
             return value;
         }
 
@@ -180,7 +180,7 @@ public interface DataSourceReference {
         }
 
         @Override
-        public DataSourceId getId() {
+        public DataStoreId getId() {
             throw new UnsupportedOperationException();
         }
 
@@ -226,7 +226,7 @@ public interface DataSourceReference {
         }
 
         @Override
-        public DataSourceId getId() {
+        public DataStoreId getId() {
             throw new UnsupportedOperationException();
         }
 

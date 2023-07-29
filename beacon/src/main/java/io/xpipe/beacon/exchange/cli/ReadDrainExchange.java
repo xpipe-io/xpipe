@@ -3,7 +3,6 @@ package io.xpipe.beacon.exchange.cli;
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
 import io.xpipe.beacon.exchange.MessageExchange;
-import io.xpipe.core.impl.SinkDrainStore;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -22,9 +21,6 @@ public class ReadDrainExchange implements MessageExchange {
     public static class Request implements RequestMessage {
         @NonNull
         String name;
-
-        @NonNull
-        SinkDrainStore store;
     }
 
     @Jacksonized
