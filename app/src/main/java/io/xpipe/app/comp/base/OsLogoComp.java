@@ -35,24 +35,25 @@ public class OsLogoComp extends SimpleComp {
     }
 
     private static final Map<String, String> ICONS = new HashMap<>();
+    private static final String LINUX_DEFAULT = "linux.svg";
 
     private String getImage(String name) {
         if (name == null) {
             return null;
         }
 
-        if (ICONS.size() == 0) {
+        if (ICONS.isEmpty()) {
             AppResources.withResource(AppResources.XPIPE_MODULE, "img/os", ModuleLayer.boot(), file -> {
                 try (var list = Files.list(file)) {
-                    list.forEach(path -> {
-                        var fileName = path.getFileName().toString();
-                        ICONS.put(FileNames.getBaseName(fileName).split("-")[0], "os/" + fileName);
+                    list.filter(path -> !path.toString().endsWith(LINUX_DEFAULT)).map(path -> FileNames.getFileName(path.toString())).forEach(path -> {
+                        var base = FileNames.getBaseName(path).replace("-dark", "") + ".svg";
+                        ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
                     });
                 }
             });
         }
 
-        var found = ICONS.entrySet().stream().filter(e->name.toLowerCase().contains(e.getKey())).findAny().map(e->e.getValue()).orElse(null);
+        var found = ICONS.entrySet().stream().filter(e->name.toLowerCase().contains(e.getKey())).findAny().map(e->e.getValue()).orElse("os/" + LINUX_DEFAULT);
         return found;
     }
 }
