@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Singular;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Builder
 @Getter
@@ -34,11 +34,13 @@ public class ErrorEvent {
     }
 
     public static ErrorEventBuilder fromThrowable(Throwable t) {
-        return builder().throwable(t).description(ExceptionConverter.convertMessage(t));
+        var unreportable = UNREPORTABLE.remove(t);
+        return builder().throwable(t).reportable(!unreportable).description(ExceptionConverter.convertMessage(t));
     }
 
     public static ErrorEventBuilder fromThrowable(String msg, Throwable t) {
-        return builder().throwable(t).description(msg);
+        var unreportable = UNREPORTABLE.remove(t);
+        return builder().throwable(t).reportable(!unreportable).description(msg);
     }
 
     public static ErrorEventBuilder fromMessage(String msg) {
@@ -72,5 +74,27 @@ public class ErrorEvent {
         public void handle() {
             build().handle();
         }
+    }
+
+    private static Set<Throwable> UNREPORTABLE = new CopyOnWriteArraySet<>();
+
+    public static <T extends Throwable> T unreportableIfEndsWith(T t, String... s) {
+        return unreportableIf(t, t.getMessage() != null && Arrays.stream(s).anyMatch(string->t.getMessage().toLowerCase(Locale.ROOT).endsWith(string)));
+    }
+
+    public static <T extends Throwable> T unreportableIfContains(T t, String... s) {
+        return unreportableIf(t, t.getMessage() != null && Arrays.stream(s).anyMatch(string->t.getMessage().toLowerCase(Locale.ROOT).contains(string)));
+    }
+
+    public static <T extends Throwable> T unreportableIf(T t, boolean b) {
+        if (b) {
+            UNREPORTABLE.add(t);
+        }
+        return t;
+    }
+
+    public static <T extends Throwable> T unreportable(T t) {
+        UNREPORTABLE.add(t);
+        return t;
     }
 }

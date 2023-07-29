@@ -41,19 +41,20 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setTag("os", System.getProperty("os.name"));
                     options.setTag("osVersion", System.getProperty("os.version"));
                     options.setTag("arch", System.getProperty("os.arch"));
-                    options.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
                     options.setDist(XPipeDistributionType.get().getId());
-                    if (AppProperties.get().isStaging()) {
-                        options.setTag("staging", "true");
-                    }
+                    options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
                 });
             }
             init = true;
         }
 
         var id = createReport(ee);
+        if (id == null) {
+            return;
+        }
+
         var text = ee.getUserReport();
-        if (text != null && text.length() > 0) {
+        if (text != null && !text.isEmpty()) {
             var fb = new UserFeedback(id);
             fb.setComments(text);
             Sentry.captureUserFeedback(fb);
@@ -61,6 +62,10 @@ public class SentryErrorHandler implements ErrorHandler {
     }
 
     private static SentryId createReport(ErrorEvent ee) {
+        if (!ee.isReportable()) {
+            return null;
+        }
+
         /*
         TODO: Ignore breadcrumbs for now
          */
@@ -100,6 +105,7 @@ public class SentryErrorHandler implements ErrorHandler {
                 .toList();
         atts.forEach(attachment -> s.addAttachment(attachment));
 
+        s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
         s.setTag(
                 "developerMode",

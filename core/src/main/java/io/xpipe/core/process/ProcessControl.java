@@ -15,8 +15,6 @@ public interface ProcessControl extends Closeable, AutoCloseable {
 
     ExecutorService getStderrReader();
 
-    ProcessControl sensitive();
-
     String prepareTerminalOpen(String displayName) throws Exception;
 
     void closeStdin() throws IOException;

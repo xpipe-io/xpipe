@@ -21,14 +21,13 @@ public interface CommandControl extends ProcessControl {
         CLOSE
     }
 
+    CommandControl withExceptionConverter(Function<Exception, Exception> converter);
+
     CommandControl withMessageFormatter(Function<String, String> formatter);
 
     CommandControl terminalExitMode(TerminalExitMode mode);
 
     CommandControl doesNotObeyReturnValueConvention();
-
-    @Override
-    CommandControl sensitive();
 
     CommandControl complex();
 

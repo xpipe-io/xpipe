@@ -118,7 +118,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         protected abstract Optional<Path> determineInstallation();
 
-        private Optional<Path> determineFromPath() {
+        protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var cc = LocalStore.getShell()
                     .command(ShellDialects.getPlatformDefault().getWhichCommand("code.cmd"))

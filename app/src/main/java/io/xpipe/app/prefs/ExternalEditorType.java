@@ -173,15 +173,19 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            var path = determineInstallation();
-            if (path.isEmpty()) {
-                throw new IOException("Unable to find installation of " + toTranslatedString());
+            var location = determineFromPath();
+            if (location.isEmpty()) {
+                location = determineInstallation();
+                if (location.isEmpty()) {
+                    throw new IOException("Unable to find installation of " + toTranslatedString());
+                }
             }
 
+            Optional<Path> finalLocation = location;
             ApplicationHelper.executeLocalApplication(
                     sc -> String.format(
                             "%s %s",
-                            sc.getShellDialect().fileArgument(path.get().toString()),
+                            sc.getShellDialect().fileArgument(finalLocation.get().toString()),
                             sc.getShellDialect().fileArgument(file.toString())),
                     detach());
         }
