@@ -93,7 +93,7 @@ public class SvgView {
 
     private WebView createWebView() {
         var wv = new WebView();
-        // Sometimes a web view might not render when the background is said to transparent, at least according to stack
+        // Sometimes a web view might not render when the background is set to transparent, at least according to stack
         // overflow
         wv.setPageFill(Color.valueOf("#00000001"));
         // wv.setPageFill(Color.BLACK);

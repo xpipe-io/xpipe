@@ -17,10 +17,10 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var name = createName().createRegion();
 
         var grid = new GridPane();
-        grid.setHgap(10);
+        grid.setHgap(7);
         grid.setVgap(0);
 
-        var storeIcon = createIcon(45, 35);
+        var storeIcon = createIcon(50, 39);
         grid.add(storeIcon, 0, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(50));
 

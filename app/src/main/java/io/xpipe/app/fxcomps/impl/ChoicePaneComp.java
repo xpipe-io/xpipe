@@ -1,6 +1,5 @@
 package io.xpipe.app.fxcomps.impl;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -37,8 +36,8 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(Entry object) {
-                if (object == null) {
-                    return AppI18n.get("app.none");
+                if (object == null || object.name() == null) {
+                    return "";
                 }
 
                 return object.name().getValue();
@@ -53,9 +52,11 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
         var vbox = new VBox(transformer.apply(cb));
         vbox.setFillWidth(true);
         cb.prefWidthProperty().bind(vbox.widthProperty());
-        SimpleChangeListener.apply(cb.valueProperty(), n-> {
+        SimpleChangeListener.apply(cb.valueProperty(), n -> {
             if (n == null) {
-                vbox.getChildren().remove(1);
+                if (vbox.getChildren().size() > 1) {
+                    vbox.getChildren().remove(1);
+                }
             } else {
                 var region = n.comp().createRegion();
                 region.setPadding(new Insets(0, 0, 0, 10));

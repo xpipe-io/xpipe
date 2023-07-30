@@ -86,7 +86,7 @@ public class SecretRetrievalStrategyHelper {
                                 ? 1
                                 : strat instanceof SecretRetrievalStrategy.PasswordManager
                                         ? 2
-                                        : strat instanceof SecretRetrievalStrategy.CustomCommand ? 3 : strat instanceof SecretRetrievalStrategy.Prompt ? 4 : 0);
+                                        : strat instanceof SecretRetrievalStrategy.CustomCommand ? 3 : strat instanceof SecretRetrievalStrategy.Prompt ? 4 : strat == null ? -1 : 0);
         return new OptionsBuilder()
                 .choice(selected, map)
                 .bindChoice(
@@ -97,6 +97,7 @@ public class SecretRetrievalStrategyHelper {
                                 case 2 -> passwordManager;
                                 case 3 -> customCommand;
                                 case 4 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
+                                case 5 -> new SimpleObjectProperty<>();
                                 default -> new SimpleObjectProperty<>();
                             };
                         },

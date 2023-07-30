@@ -48,11 +48,11 @@ public class OptionsBuilder {
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<String, OptionsBuilder> options) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        AppI18n.observable(e.getKey()), e.getValue().buildComp()))
+                        AppI18n.observable(e.getKey()), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
                 .toList();
         var validatorList =
-                options.values().stream().map(builder -> builder.buildEffectiveValidator()).toList();
-        var selected = new SimpleObjectProperty<>(list.get(selectedIndex.getValue()));
+                options.values().stream().map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator()).toList();
+        var selected = new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
         selected.addListener((observable, oldValue, newValue) -> {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
         });
@@ -65,7 +65,11 @@ public class OptionsBuilder {
         validatorMap.put(null, new SimpleValidator());
         var orVal = new ExclusiveValidator<>(validatorMap, selected);
 
-        options.values().forEach(builder -> props.addAll(builder.props));
+        options.values().forEach(builder -> {
+            if (builder != null) {
+                props.addAll(builder.props);
+            }
+        });
         props.add(selectedIndex);
         allValidators.add(orVal);
         pushComp(pane);

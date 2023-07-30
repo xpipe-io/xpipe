@@ -69,12 +69,12 @@ public class JfxHelper {
             return text;
         }
 
-        var size = AppFont.getPixelSize(1) + AppFont.getPixelSize(-2) + 2;
+        var size = AppFont.getPixelSize(1) + AppFont.getPixelSize(-2) + 8;
         var graphic = new PrettyImageComp(new SimpleStringProperty(image), size, size).createRegion();
 
         var hbox = new HBox(graphic, text);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        hbox.setSpacing(8);
+        hbox.setSpacing(10);
 
         //        graphic.fitWidthProperty().bind(Bindings.createDoubleBinding(() -> header.getHeight() +
         // desc.getHeight() + 2,

@@ -1,6 +1,7 @@
 package io.xpipe.core.dialog;
 
 import io.xpipe.core.charsetter.Charsetter;
+import io.xpipe.core.util.FailableSupplier;
 import io.xpipe.core.util.SecretValue;
 
 import java.util.ArrayList;
@@ -456,11 +457,6 @@ public abstract class Dialog {
     }
 
     protected abstract DialogElement next(String answer) throws Exception;
-
-    public interface FailableSupplier<T> {
-
-        T get() throws Exception;
-    }
 
     public static class Choice extends Dialog {
 
