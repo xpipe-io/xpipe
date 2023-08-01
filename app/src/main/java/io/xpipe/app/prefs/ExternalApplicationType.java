@@ -9,6 +9,7 @@ import io.xpipe.core.process.ShellDialects;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Optional;
 
 public abstract class ExternalApplicationType implements PrefsChoiceValue {
@@ -55,13 +56,14 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                     }
 
                     // Check if returned paths are actually valid
+                    // Also sort them by length to prevent finding a deeply buried app
                     var valid = path.lines().filter(s -> {
                         try {
                             return Files.exists(Path.of(s));
                         } catch (Exception ex) {
                             return false;
                         }
-                    }).toList();
+                    }).sorted(Comparator.comparingInt(value -> value.length())).toList();
 
                     // Prefer app in proper applications directory
                     var app = valid.stream().filter(s -> s.startsWith("/Applications")).findFirst();

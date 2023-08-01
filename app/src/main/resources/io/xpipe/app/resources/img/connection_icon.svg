@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 198.72 199.16"
+   version="1.1"
+   sodipodi:docname="connection_icon.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview11"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.1515364"
+     inkscape:cx="49.034727"
+     inkscape:cy="110.61863"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" />
+  <defs
+     id="defs4">
+    <style
+       id="style2">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title6">connection</title>
+  <path
+     class="cls-1"
+     d="M340.72,273H279.48a14.66,14.66,0,0,0-14.64,14.64v34.79a14.66,14.66,0,0,0,14.64,14.64h24.4v6.07H297.4a6.22,6.22,0,1,0,0,12.44h25.4a6.22,6.22,0,0,0,0-12.44h-6.48v-6.07h24.4a14.66,14.66,0,0,0,14.64-14.64V287.64A14.66,14.66,0,0,0,340.72,273Zm2.2,49.43a2.21,2.21,0,0,1-2.2,2.2H279.48a2.21,2.21,0,0,1-2.2-2.2V287.64a2.21,2.21,0,0,1,2.2-2.2h61.24a2.21,2.21,0,0,1,2.2,2.2Zm-122.1-89.65a6.22,6.22,0,0,0-6.22-6.22h-6.48v-6.07h24.4a14.66,14.66,0,0,0,14.64-14.64V171.06a14.66,14.66,0,0,0-14.64-14.64H171.28a14.66,14.66,0,0,0-14.64,14.64v34.79a14.66,14.66,0,0,0,14.64,14.64h24.4v6.07H189.2a6.22,6.22,0,1,0,0,12.44h25.4a6.22,6.22,0,0,0,6.22-6.22Zm-51.74-26.93V171.06a2.21,2.21,0,0,1,2.2-2.2h61.24a2.21,2.21,0,0,1,2.2,2.2v34.79a2.21,2.21,0,0,1-2.2,2.2H171.28A2.21,2.21,0,0,1,169.08,205.85Zm83,99.15a6.22,6.22,0,0,1-6.22,6.22h-44a6.22,6.22,0,0,1-6.22-6.22V257.27a6.22,6.22,0,0,1,12.44,0v41.5h37.77A6.22,6.22,0,0,1,252.11,305Zm13.13-111.26a6.22,6.22,0,0,1,0-12.44h44a6.22,6.22,0,0,1,6.22,6.22V252A6.22,6.22,0,1,1,303,252v-58.3Z"
+     transform="translate(-156.64 -156.42)"
+     id="path8"
+     style="fill:#2e2e2e;fill-opacity:1" />
+  <metadata
+     id="metadata828">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>connection</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

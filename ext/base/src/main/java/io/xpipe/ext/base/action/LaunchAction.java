@@ -57,13 +57,14 @@ public class LaunchAction implements ActionProvider {
     @Override
     public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
         return new DefaultDataStoreCallSite<LaunchableStore>() {
+
             @Override
             public boolean isApplicable(LaunchableStore o) {
                 return DataStorage.get()
                         .getStoreEntryIfPresent(o)
                         .orElseThrow()
                         .getState()
-                        .isUsable();
+                        .isUsable() && o.canLaunch();
             }
 
             @Override

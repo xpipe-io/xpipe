@@ -88,6 +88,8 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
+    ElevationResult elevateCommand(String input) throws Exception;
+
     void restart() throws Exception;
 
     OsType getOsType();

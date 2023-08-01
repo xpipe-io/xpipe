@@ -22,12 +22,15 @@ public class ErrorEvent {
     @Builder.Default
     private final boolean reportable = true;
 
-    private Throwable throwable;
+    private final Throwable throwable;
 
     @Singular
     private List<Path> attachments;
 
     private String userReport;
+
+    @Singular
+    private final List<ErrorAction> customActions;
 
     public void attachUserReport(String text) {
         userReport = text;

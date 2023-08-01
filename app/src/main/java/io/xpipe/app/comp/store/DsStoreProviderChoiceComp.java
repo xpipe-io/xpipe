@@ -26,10 +26,11 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
 
     Predicate<DataStoreProvider> filter;
     Property<DataStoreProvider> provider;
+    boolean staticDisplay;
 
     private Region createDefaultNode() {
         return JfxHelper.createNamedEntry(
-                AppI18n.get("selectType"), AppI18n.get("selectTypeDescription"), "machine_icon.png");
+                AppI18n.get("selectType"), AppI18n.get("selectTypeDescription"), "connection_icon.svg");
     }
 
     private List<DataStoreProvider> getProviders() {
@@ -50,7 +51,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
         var comboBox = new CustomComboBoxBuilder<>(provider, this::createGraphic, createDefaultNode(), v -> true);
         comboBox.setAccessibleNames(dataStoreProvider -> dataStoreProvider.getDisplayName());
         getProviders().stream()
-                .filter(p -> AppPrefs.get().developerShowHiddenProviders().get() || p.canManuallyCreate())
+                .filter(p -> AppPrefs.get().developerShowHiddenProviders().get() || p.canManuallyCreate() || staticDisplay)
                 .forEach(comboBox::add);
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("data-source-type");

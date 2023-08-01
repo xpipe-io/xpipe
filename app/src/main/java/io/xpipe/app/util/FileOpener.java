@@ -22,10 +22,11 @@ public class FileOpener {
         }
 
         var file = entry.getPath();
+        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
-                        file,
+                        key,
                         () -> {
                             return entry.getFileSystem().openInput(file);
                         },
@@ -40,10 +41,11 @@ public class FileOpener {
         }
 
         var file = entry.getPath();
+        var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
         FileBridge.get()
                 .openIO(
                         FileNames.getFileName(file),
-                        file,
+                        key,
                         () -> {
                             return entry.getFileSystem().openInput(file);
                         },

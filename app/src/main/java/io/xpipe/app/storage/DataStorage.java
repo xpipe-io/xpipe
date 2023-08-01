@@ -101,14 +101,18 @@ public abstract class DataStorage {
     }
 
     public synchronized Optional<DataStoreEntry> getParent(DataStoreEntry entry, boolean display) {
-        if (!entry.getState().isUsable()) {
+        if (entry.getState() == DataStoreEntry.State.LOAD_FAILED) {
             return Optional.empty();
         }
 
-        var provider = entry.getProvider();
-        var parent =
-                display ? provider.getDisplayParent(entry.getStore()) : provider.getLogicalParent(entry.getStore());
-        return parent != null ? getStoreEntryIfPresent(parent) : Optional.empty();
+        try {
+            var provider = entry.getProvider();
+            var parent =
+                    display ? provider.getDisplayParent(entry.getStore()) : provider.getLogicalParent(entry.getStore());
+            return parent != null ? getStoreEntryIfPresent(parent) : Optional.empty();
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
     }
 
     public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry, boolean display, boolean deep) {

@@ -17,17 +17,18 @@ import java.util.function.Supplier;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.None.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.Unsupported.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.Reference.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.InPlace.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.Prompt.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.CustomCommand.class),
-        @JsonSubTypes.Type(value = SecretRetrievalStrategy.PasswordManager.class)
+    @JsonSubTypes.Type(value = SecretRetrievalStrategy.None.class),
+    @JsonSubTypes.Type(value = SecretRetrievalStrategy.Reference.class),
+    @JsonSubTypes.Type(value = SecretRetrievalStrategy.InPlace.class),
+    @JsonSubTypes.Type(value = SecretRetrievalStrategy.Prompt.class),
+    @JsonSubTypes.Type(value = SecretRetrievalStrategy.CustomCommand.class),
+    @JsonSubTypes.Type(value = SecretRetrievalStrategy.PasswordManager.class)
 })
 public interface SecretRetrievalStrategy {
 
     SecretValue retrieve(String displayName, DataStore store) throws Exception;
+
+    boolean supportsLocalAskpass();
 
     @JsonTypeName("none")
     public static class None implements SecretRetrievalStrategy {
@@ -36,14 +37,10 @@ public interface SecretRetrievalStrategy {
         public SecretValue retrieve(String displayName, DataStore store) {
             return null;
         }
-    }
-
-    @JsonTypeName("unsupported")
-    public static class Unsupported implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) {
-            throw new UnsupportedOperationException();
+        public boolean supportsLocalAskpass() {
+            return true;
         }
     }
 
@@ -60,6 +57,11 @@ public interface SecretRetrievalStrategy {
         @Override
         public SecretValue retrieve(String displayName, DataStore store) {
             return supplier.get();
+        }
+
+        @Override
+        public boolean supportsLocalAskpass() {
+            return false;
         }
     }
 
@@ -80,6 +82,11 @@ public interface SecretRetrievalStrategy {
         public SecretValue retrieve(String displayName, DataStore store) {
             return value;
         }
+
+        @Override
+        public boolean supportsLocalAskpass() {
+            return false;
+        }
     }
 
     @JsonTypeName("prompt")
@@ -88,6 +95,11 @@ public interface SecretRetrievalStrategy {
         @Override
         public SecretValue retrieve(String displayName, DataStore store) {
             return AskpassAlert.query(displayName, store);
+        }
+
+        @Override
+        public boolean supportsLocalAskpass() {
+            return true;
         }
     }
 
@@ -110,6 +122,11 @@ public interface SecretRetrievalStrategy {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
         }
+
+        @Override
+        public boolean supportsLocalAskpass() {
+            return false;
+        }
     }
 
     @JsonTypeName("customCommand")
@@ -125,6 +142,11 @@ public interface SecretRetrievalStrategy {
             try (var cc = new LocalStore().createBasicControl().command(command).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
+        }
+
+        @Override
+        public boolean supportsLocalAskpass() {
+            return false;
         }
     }
 }

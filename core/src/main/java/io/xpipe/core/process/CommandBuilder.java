@@ -45,6 +45,11 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder remove(String s) {
+        elements.removeIf(element -> element instanceof Fixed fixed && s.equals(fixed.string));
+        return this;
+    }
+
     public CommandBuilder addQuoted(String s) {
         elements.add(new Fixed("\"" + s + "\""));
         return this;

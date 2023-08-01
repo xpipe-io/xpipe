@@ -31,7 +31,7 @@ public class BrowserFileOverviewComp extends SimpleComp {
                 var icon = BrowserIcons.createIcon(entry);
                 var l = new Button(entry.getPath(), icon.createRegion());
                 l.setOnAction(event -> {
-                    model.cdSync(entry.getPath());
+                    model.cdAsync(entry.getPath());
                     event.consume();
                 });
                 l.setAlignment(Pos.CENTER_LEFT);

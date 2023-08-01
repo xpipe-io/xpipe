@@ -4,7 +4,6 @@ import atlantafx.base.controls.Breadcrumbs;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -81,9 +80,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
         }
 
         breadcrumbs.selectedCrumbProperty().addListener((obs, old, val) -> {
-            ThreadHelper.runFailableAsync(() -> {
-                model.cdSync(val != null ? val.getValue() : null);
-            });
+            model.cdAsync(val != null ? val.getValue() : null);
         });
 
         return breadcrumbs;

@@ -240,7 +240,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         layout.setPadding(new Insets(20));
-        var providerChoice = new DsStoreProviderChoiceComp(filter, provider);
+        var providerChoice = new DsStoreProviderChoiceComp(filter, provider, provider.getValue() != null);
         if (provider.getValue() != null) {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }

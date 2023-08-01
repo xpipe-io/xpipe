@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
-import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
@@ -19,9 +18,9 @@ public class AskpassAlert {
     private static final Map<UUID, UUID> requestToId = new HashMap<>();
     private static final Map<UUID, SecretValue> passwords = new HashMap<>();
 
-    public static SecretValue query(String prompt, DataStore store) {
+    public static SecretValue query(String prompt, Object key) {
         var rid = UUID.randomUUID();
-        var secretId = UUID.nameUUIDFromBytes(ByteBuffer.allocate(4).putInt(store.hashCode()).array());
+        var secretId = UUID.nameUUIDFromBytes(ByteBuffer.allocate(4).putInt(key.hashCode()).array());
         return query(prompt, rid, secretId);
     }
 
@@ -39,6 +38,8 @@ public class AskpassAlert {
         var r = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);
+//                    alert.getDialogPane().setHeader(
+//                            AppWindowHelper.alertContentText(prompt));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
                     var text = new SecretFieldComp(prop).createRegion();

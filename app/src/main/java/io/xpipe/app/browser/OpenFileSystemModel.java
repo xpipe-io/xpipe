@@ -107,6 +107,14 @@ public final class OpenFileSystemModel {
         return new FileSystem.FileEntry(fileSystem, currentPath.get(), null, false, false, 0, null, FileKind.DIRECTORY);
     }
 
+    public void cdAsync(String path) {
+        ThreadHelper.runFailableAsync(() -> {
+            BusyProperty.execute(busy, () -> {
+                cdSync(path);
+            });
+        });
+    }
+
     public void cdSync(String path) {
         cdSyncOrRetry(path, false).ifPresent(s -> cdSyncOrRetry(s, false));
     }

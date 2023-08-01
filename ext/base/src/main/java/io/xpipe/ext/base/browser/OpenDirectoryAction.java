@@ -16,7 +16,7 @@ public class OpenDirectoryAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        model.cdSync(entries.get(0).getRawFileEntry().getPath());
+        model.cdAsync(entries.get(0).getRawFileEntry().getPath());
     }
 
     @Override

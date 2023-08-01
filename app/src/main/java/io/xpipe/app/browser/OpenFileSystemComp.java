@@ -43,7 +43,7 @@ public class OpenFileSystemComp extends SimpleComp {
 
     private Region createContent() {
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
-        overview.setOnAction(e -> model.cdSync(null));
+        overview.setOnAction(e -> model.cdAsync(null));
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
 

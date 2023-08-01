@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.util.BusyProperty;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -45,8 +46,10 @@ public class BrowserNavBar extends SimpleComp {
         });
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {
-                var changed = model.cdSyncOrRetry(newValue, true);
-                changed.ifPresent(s -> Platform.runLater(() -> path.set(s)));
+                BusyProperty.execute(model.getBusy(), () -> {
+                    var changed = model.cdSyncOrRetry(newValue, true);
+                    changed.ifPresent(s -> Platform.runLater(() -> path.set(s)));
+                });
             });
         });
 
@@ -88,7 +91,7 @@ public class BrowserNavBar extends SimpleComp {
                 () -> {
                     var icon = model.getCurrentDirectory() != null
                             ? FileIconManager.getFileIcon(model.getCurrentDirectory(), false)
-                            : "home_icon.png";
+                            : "home_icon.svg";
                     return icon;
                 },
                 model.getCurrentPath());

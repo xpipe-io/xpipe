@@ -7,6 +7,8 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.UUID;
+
 public class AskpassExchange implements MessageExchange {
 
     @Override
@@ -19,10 +21,10 @@ public class AskpassExchange implements MessageExchange {
     @Value
     public static class Request implements RequestMessage {
         @NonNull
-        String id;
+        UUID id;
 
         @NonNull
-        String request;
+        UUID request;
 
         String prompt;
     }
