@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.impl.LocalStore;
-import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -26,20 +26,20 @@ import java.util.function.Supplier;
 })
 public interface SecretRetrievalStrategy {
 
-    SecretValue retrieve(String displayName, DataStore store) throws Exception;
+    SecretValue retrieve(String displayName, UUID id) throws Exception;
 
-    boolean supportsLocalAskpass();
+    boolean isLocalAskpassCompatible();
 
     @JsonTypeName("none")
     public static class None implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) {
+        public SecretValue retrieve(String displayName, UUID id) {
             return null;
         }
 
         @Override
-        public boolean supportsLocalAskpass() {
+        public boolean isLocalAskpassCompatible() {
             return true;
         }
     }
@@ -55,12 +55,12 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) {
+        public SecretValue retrieve(String displayName, UUID id) {
             return supplier.get();
         }
 
         @Override
-        public boolean supportsLocalAskpass() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
     }
@@ -79,12 +79,12 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) {
+        public SecretValue retrieve(String displayName, UUID id) {
             return value;
         }
 
         @Override
-        public boolean supportsLocalAskpass() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
     }
@@ -93,12 +93,12 @@ public interface SecretRetrievalStrategy {
     public static class Prompt implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) {
-            return AskpassAlert.query(displayName, store);
+        public SecretValue retrieve(String displayName, UUID id) {
+            return AskpassAlert.query(displayName, UUID.randomUUID(), id);
         }
 
         @Override
-        public boolean supportsLocalAskpass() {
+        public boolean isLocalAskpassCompatible() {
             return true;
         }
     }
@@ -112,7 +112,7 @@ public interface SecretRetrievalStrategy {
         String key;
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) throws Exception {
+        public SecretValue retrieve(String displayName, UUID id) throws Exception {
             var cmd = AppPrefs.get().passwordManagerString(key);
             if (cmd == null) {
                 return null;
@@ -124,7 +124,7 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public boolean supportsLocalAskpass() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
     }
@@ -138,14 +138,14 @@ public interface SecretRetrievalStrategy {
         String command;
 
         @Override
-        public SecretValue retrieve(String displayName, DataStore store) throws Exception {
+        public SecretValue retrieve(String displayName, UUID id) throws Exception {
             try (var cc = new LocalStore().createBasicControl().command(command).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
         }
 
         @Override
-        public boolean supportsLocalAskpass() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
     }

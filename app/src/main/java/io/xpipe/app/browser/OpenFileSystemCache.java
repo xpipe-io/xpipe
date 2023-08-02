@@ -14,7 +14,6 @@ public class OpenFileSystemCache {
     private final OpenFileSystemModel model;
     private final Map<String, Boolean> installedApplications = new HashMap<>();
     private String username;
-    private boolean canElevate;
 
     public OpenFileSystemCache(OpenFileSystemModel model) {
         this.model = model;
@@ -24,7 +23,6 @@ public class OpenFileSystemCache {
         ShellControl sc = model.getFileSystem().getShell().get();
         ShellDialect d = sc.getShellDialect();
         username = sc.executeSimpleStringCommand(d.getPrintVariableCommand(d.getUsernameVariableName()));
-        canElevate = sc.checkCanElevate();
     }
 
     public boolean isRoot() {

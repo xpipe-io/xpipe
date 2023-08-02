@@ -8,7 +8,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.StackPane;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,22 +15,16 @@ import java.util.UUID;
 public class AskpassAlert {
 
     private static final Map<UUID, UUID> requestToId = new HashMap<>();
-    private static final Map<UUID, SecretValue> passwords = new HashMap<>();
-
-    public static SecretValue query(String prompt, Object key) {
-        var rid = UUID.randomUUID();
-        var secretId = UUID.nameUUIDFromBytes(ByteBuffer.allocate(4).putInt(key.hashCode()).array());
-        return query(prompt, rid, secretId);
-    }
 
     public static SecretValue query(String prompt, UUID requestId, UUID secretId) {
         if (requestToId.containsKey(requestId)) {
             var id = requestToId.remove(requestId);
-            passwords.remove(id);
+            SecretCache.clear(id);
         }
 
-        if (passwords.containsKey(secretId)) {
-            return passwords.get(secretId);
+        var found = SecretCache.get(secretId);
+        if (found.isPresent()) {
+            return found.get();
         }
 
         var prop = new SimpleObjectProperty<SecretValue>();
@@ -54,8 +47,8 @@ public class AskpassAlert {
 
         // If the result is null, assume that the operation was aborted by the user
         if (r != null) {
-            passwords.put(secretId, r);
             requestToId.put(requestId, secretId);
+            SecretCache.set(secretId, r);
         }
 
         return r;

@@ -42,7 +42,7 @@ public class SecretRetrievalStrategyHelper {
                                 .grow(false, true)))
                 .apply(struc -> struc.get().setSpacing(10));
         return new OptionsBuilder()
-                .name("command")
+                .name("passwordKey")
                 .addComp(content, keyProperty)
                 .bind(
                         () -> {
