@@ -92,6 +92,10 @@ public class CommandBuilder {
         return String.join(" ", list);
     }
 
+    public CommandControl buildCommand(ShellControl sc) {
+        return sc.command(this);
+    }
+
     public String buildSimple() {
         return String.join(" ", elements.stream().map(element -> ((Fixed) element).string).toList());
     }
