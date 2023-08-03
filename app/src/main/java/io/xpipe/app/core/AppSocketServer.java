@@ -230,8 +230,10 @@ public class AppSocketServer {
                 Deobfuscator.deobfuscate(ex);
                 sendServerErrorResponse(clientSocket, ex);
             }
-        } // Omit it, as this might happen often
-        catch (Throwable ex) {
+        } catch (SocketException ex) {
+            // Omit it, as this might happen often
+            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+        } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).build().handle();
         } finally {
             try {

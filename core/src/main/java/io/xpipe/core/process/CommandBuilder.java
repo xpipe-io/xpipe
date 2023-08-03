@@ -38,6 +38,15 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder addIf(boolean b, String... s) {
+        if (b) {
+            for (String s1 : s) {
+                elements.add(new Fixed(s1));
+            }
+        }
+        return this;
+    }
+
     public CommandBuilder add(String... s) {
         for (String s1 : s) {
             elements.add(new Fixed(s1));
@@ -51,7 +60,24 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addQuoted(String s) {
-        elements.add(new Fixed("\"" + s + "\""));
+        elements.add(sc -> {
+            if (sc == null) {
+                return "\"" + s + "\"";
+            }
+
+            return sc.getShellDialect().quoteArgument(s);
+        });
+        return this;
+    }
+
+    public CommandBuilder addSub(CommandBuilder sub) {
+        elements.add(sc -> {
+            if (sc == null) {
+                return sub.buildSimple();
+            }
+
+            return sub.build(sc);
+        });
         return this;
     }
 
@@ -75,7 +101,13 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addFile(String s) {
-        elements.add(sc -> sc.getShellDialect().fileArgument(s));
+        elements.add(sc -> {
+            if (sc == null) {
+                return "\"" + s + "\"";
+            }
+
+            return sc.getShellDialect().fileArgument(s);
+        });
         return this;
     }
 
@@ -97,6 +129,12 @@ public class CommandBuilder {
     }
 
     public String buildSimple() {
-        return String.join(" ", elements.stream().map(element -> ((Fixed) element).string).toList());
+        return String.join(" ", elements.stream().map(element -> {
+            try {
+                return element.evaluate(null);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).toList());
     }
 }

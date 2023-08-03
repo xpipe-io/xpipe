@@ -125,7 +125,7 @@ public interface DataStoreProvider {
     }
 
     default String queryInvalidInformationString(DataStore store, int length) throws Exception {
-        return null;
+        return "Connection failed";
     }
 
     default String toSummaryString(DataStore store, int length) {

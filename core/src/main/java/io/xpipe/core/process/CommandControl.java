@@ -23,7 +23,7 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl withExceptionConverter(Function<Exception, Exception> converter);
 
-    CommandControl withMessageFormatter(Function<String, String> formatter);
+    CommandControl withErrorFormatter(Function<String, String> formatter);
 
     CommandControl terminalExitMode(TerminalExitMode mode);
 

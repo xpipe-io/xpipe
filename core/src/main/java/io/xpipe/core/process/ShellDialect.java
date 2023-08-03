@@ -29,6 +29,8 @@ public interface ShellDialect {
         return true;
     }
 
+    String getCatchAllVariable();
+
     CommandControl queryVersion(ShellControl shellControl);
 
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
@@ -42,6 +44,8 @@ public interface ShellDialect {
     CommandControl resolveDirectory(ShellControl shellControl, String directory);
 
     String fileArgument(String s);
+
+    String quoteArgument(String s);
 
     String executeWithNoInitFiles(ShellDialect parentDialect, String file);
 

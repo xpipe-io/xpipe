@@ -96,6 +96,8 @@ public class ScanAlert {
                     btOk.addEventFilter(ActionEvent.ACTION, event -> {
                         ThreadHelper.runAsync(() -> {
                             BusyProperty.execute(busy, () -> {
+                                entry.setExpanded(true);
+
                                 for (var a : selected) {
                                     try {
                                         a.getScanner().run();
@@ -103,8 +105,6 @@ public class ScanAlert {
                                         ErrorEvent.fromThrowable(ex).handle();
                                     }
                                 }
-
-                                entry.setExpanded(true);
 
                                 Platform.runLater(() -> {
                                     alert.setResult(ButtonType.OK);

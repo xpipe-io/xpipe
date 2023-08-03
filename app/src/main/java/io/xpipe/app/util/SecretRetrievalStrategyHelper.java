@@ -34,7 +34,7 @@ public class SecretRetrievalStrategyHelper {
         var keyProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
         var content = new HorizontalComp(List.<Comp<?>>of(
-                        new TextFieldComp(keyProperty).hgrow(),
+                        new TextFieldComp(keyProperty).apply(struc -> struc.get().setPromptText("Password key")).hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory(3);
                                     App.getApp().getStage().requestFocus();
@@ -54,7 +54,7 @@ public class SecretRetrievalStrategyHelper {
     private static OptionsBuilder customCommand(Property<SecretRetrievalStrategy.CustomCommand> p) {
         var cmdProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
-        var content = new TextFieldComp(cmdProperty).apply(struc -> struc.get().setPromptText("Password key"));
+        var content = new TextFieldComp(cmdProperty);
         return new OptionsBuilder()
                 .name("command")
                 .addComp(content, cmdProperty)
@@ -86,7 +86,11 @@ public class SecretRetrievalStrategyHelper {
                                 ? 1
                                 : strat instanceof SecretRetrievalStrategy.PasswordManager
                                         ? 2
-                                        : strat instanceof SecretRetrievalStrategy.CustomCommand ? 3 : strat instanceof SecretRetrievalStrategy.Prompt ? 4 : strat == null ? -1 : 0);
+                                        : strat instanceof SecretRetrievalStrategy.CustomCommand
+                                                ? 3
+                                                : strat instanceof SecretRetrievalStrategy.Prompt
+                                                        ? 4
+                                                        : strat == null ? -1 : 0);
         return new OptionsBuilder()
                 .choice(selected, map)
                 .bindChoice(

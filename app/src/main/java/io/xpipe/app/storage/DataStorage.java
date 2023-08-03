@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FixedHierarchyStore;
@@ -195,6 +196,10 @@ public abstract class DataStorage {
 
         DataStoreEntry current = entry;
         while ((current = getParent(current, false).orElse(null)) != null) {
+            if (new LocalStore().equals(current.getStore())) {
+                break;
+            }
+
             names.add(0, current.getName());
         }
 

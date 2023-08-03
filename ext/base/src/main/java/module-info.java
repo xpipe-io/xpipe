@@ -53,6 +53,7 @@ open module io.xpipe.ext.base {
             LaunchShortcutAction,
             AddStoreAction,
             EditStoreAction,
+            DeleteStoreChildrenAction,
             ShareStoreAction,
             FileBrowseAction,
             BrowseStoreAction,
