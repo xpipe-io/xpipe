@@ -1,5 +1,7 @@
 package io.xpipe.core.process;
 
+import lombok.SneakyThrows;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,6 +63,10 @@ public class CommandBuilder {
 
     public CommandBuilder addQuoted(String s) {
         elements.add(sc -> {
+            if (s == null) {
+                return null;
+            }
+
             if (sc == null) {
                 return "\"" + s + "\"";
             }
@@ -102,6 +108,10 @@ public class CommandBuilder {
 
     public CommandBuilder addFile(String s) {
         elements.add(sc -> {
+            if (s == null) {
+                return null;
+            }
+
             if (sc == null) {
                 return "\"" + s + "\"";
             }
@@ -128,13 +138,17 @@ public class CommandBuilder {
         return sc.command(this);
     }
 
+    @SneakyThrows
     public String buildSimple() {
-        return String.join(" ", elements.stream().map(element -> {
-            try {
-                return element.evaluate(null);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        List<String> list = new ArrayList<>();
+        for (Element element : elements) {
+            String evaluate = element.evaluate(null);
+            if (evaluate == null) {
+                continue;
             }
-        }).toList());
+
+            list.add(evaluate);
+        }
+        return String.join(" ", list);
     }
 }
