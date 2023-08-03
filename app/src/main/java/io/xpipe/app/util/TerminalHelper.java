@@ -22,7 +22,7 @@ public class TerminalHelper {
         command = ScriptHelper.createLocalExecScript(command);
 
         try {
-            type.launch(title, command, false);
+            type.launch(title, command);
         } catch (Exception ex) {
             throw new IOException(
                     "Unable to launch terminal " + type.toTranslatedString() + ": " + ex.getMessage()

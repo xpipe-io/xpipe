@@ -11,7 +11,6 @@ import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -109,7 +108,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
+        public void launch(String name, String file) throws Exception {
             var path = determineInstallation();
             if (path.isEmpty()) {
                 throw new IOException("Unable to find installation of " + toTranslatedString());
@@ -165,7 +164,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType GNOME_TERMINAL = new SimplePathType("app.gnomeTerminal", "gnome-terminal") {
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
 
@@ -341,8 +340,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType ALACRITTY_MACOS = new MacOsType("app.alacrittyMacOs", "Alacritty") {
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
+        public void launch(String name, String file) throws Exception {
+            try (ShellControl pc = new LocalStore().control().start()) {
                 pc.command(String.format(
                                 """
                                 %s/Contents/MacOS/alacritty -t "%s" -e %s
@@ -358,8 +357,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "kitty") {
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
+        public void launch(String name, String file) throws Exception {
+            try (ShellControl pc = new LocalStore().control().start()) {
                 pc.command(String.format(
                                 """
                                 %s/Contents/MacOS/kitty -T "%s" %s
@@ -409,7 +408,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 .orElse(null);
     }
 
-    void launch(String name, String file, boolean elevated) throws Exception;
+    void launch(String name, String file) throws Exception;
 
     class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
@@ -418,7 +417,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 var suffix = file.equals(pc.getShellDialect().getOpenCommand())
                         ? "\"\""
@@ -441,7 +440,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
+        public void launch(String name, String file) throws Exception {
             var custom = AppPrefs.get().customTerminalCommand().getValue();
             if (custom == null || custom.isBlank()) {
                 throw new IllegalStateException("No custom terminal command specified");
@@ -477,7 +476,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 // TODO: Wait for launch. But how?
                 pc.osascriptCommand(String.format(
@@ -508,8 +507,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
+        public void launch(String name, String file) throws Exception {
+            try (ShellControl pc = new LocalStore().control().start()) {
                 pc.command(String.format(
                         """
                         %s/Contents/MacOS/Tabby run %s
@@ -528,7 +527,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
+        public void launch(String name, String file) throws Exception {
             if (!MacOsPermissions.waitForAccessibilityPermissions()) {
                 return;
             }
@@ -568,21 +567,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public void launch(String name, String file, boolean elevated) throws Exception {
-            if (elevated) {
-                if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                    try (ShellControl pc = LocalStore.getShell()
-                            .subShell(ShellDialects.POWERSHELL)
-                            .start()) {
-                        ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
-                        var toExecute = "Start-Process \"" + executable + "\" -Verb RunAs -ArgumentList \""
-                                + toCommand(name, file).build(pc).replaceAll("\"", "`\"") + "\"";
-                        pc.executeSimpleCommand(toExecute);
-                    }
-                    return;
-                }
-            }
-
+        public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
 
