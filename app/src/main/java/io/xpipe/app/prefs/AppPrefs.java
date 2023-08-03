@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import com.dlsc.formsfx.model.structure.*;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleComboBoxControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
@@ -17,15 +16,11 @@ import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.impl.LocalStore;
-import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
@@ -167,7 +162,7 @@ public class AppPrefs {
 
     // Password manager
     // ================
-    private final StringProperty passwordManagerCommand = typed(new SimpleStringProperty(""), String.class);
+    final StringProperty passwordManagerCommand = typed(new SimpleStringProperty(""), String.class);
 
     // Start behaviour
     // ===============
@@ -552,6 +547,7 @@ public class AppPrefs {
                 null,
                 new LazyNodeElement<>(() -> new StackComp(
                                 List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+                                    save();
                                     ThreadHelper.runFailableAsync(() -> {
                                         var term = AppPrefs.get().terminalType().getValue();
                                         if (term != null) {
@@ -569,6 +565,7 @@ public class AppPrefs {
                 null,
                 new LazyNodeElement<>(() -> new StackComp(
                                 List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+                                    save();
                                     ThreadHelper.runFailableAsync(() -> {
                                         var editor =
                                                 AppPrefs.get().externalEditor().getValue();
@@ -584,44 +581,6 @@ public class AppPrefs {
         var about = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
         var troubleshoot =
                 ctr.newInstance(null, new LazyNodeElement<>(() -> new TroubleshootComp().createRegion()), null);
-
-        var testPasswordManagerValue = new SimpleStringProperty();
-        var testPasswordManager = ctr.newInstance(
-                "passwordManagerCommandTest",
-                new LazyNodeElement<>(() -> new HorizontalComp(List.of(
-                                new TextFieldComp(testPasswordManagerValue)
-                                        .apply(struc -> struc.get().setPromptText("Test password key"))
-                                        .styleClass(Styles.LEFT_PILL)
-                                        .grow(false, true),
-                                new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
-                                            var cmd = passwordManagerString(testPasswordManagerValue.get());
-                                            if (cmd == null) {
-                                                return;
-                                            }
-
-                                            try {
-                                                TerminalHelper.open(
-                                                        "Password test",
-                                                        new LocalStore()
-                                                                        .control()
-                                                                        .command(cmd
-                                                                                         + "\n" + ShellDialects.getPlatformDefault()
-                                                                                .getEchoCommand(
-                                                                                        "Is this your password?", false))
-                                                                        .terminalExitMode(
-                                                                                CommandControl.TerminalExitMode
-                                                                                        .KEEP_OPEN));
-                                            } catch (Exception e) {
-                                                ErrorEvent.fromThrowable(e).handle();
-                                            }
-                                        })
-                                        .styleClass(Styles.RIGHT_PILL)
-                                        .grow(false, true)))
-                        .padding(new Insets(15, 0, 0, 0))
-                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                        .apply(struc -> struc.get().setFillHeight(true))
-                        .createRegion()),
-                null);
 
         var categories = new ArrayList<>(List.of(
                 Category.of("about", Group.of(about)),
@@ -655,9 +614,7 @@ public class AppPrefs {
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
                                 Setting.of("language", languageControl, languageInternal)),
                         Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
-                Category.of(
-                        "passwordManager",
-                        Group.of(Setting.of("passwordManagerCommand", passwordManagerCommand), testPasswordManager)),
+                new PasswordCategory(this).create(),
                 Category.of(
                         "editor",
                         Group.of(
