@@ -89,7 +89,7 @@ public abstract class UpdateHandler {
     }
 
     private void startBackgroundUpdater() {
-        ThreadHelper.create("updater", true, () -> {
+        ThreadHelper.createPlatformThread("updater", true, () -> {
                     ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
                     event("Starting background updater thread");
                     while (true) {

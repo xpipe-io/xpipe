@@ -53,7 +53,7 @@ public class AppMainWindow {
     private synchronized void onChange() {
         lastUpdate = Instant.now();
         if (thread == null) {
-            thread = ThreadHelper.create("window change timeout", true, () -> {
+            thread = ThreadHelper.createPlatformThread("window change timeout", true, () -> {
                 while (true) {
                     var toStop = lastUpdate.plus(Duration.of(1, ChronoUnit.SECONDS));
                     if (Instant.now().isBefore(toStop)) {

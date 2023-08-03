@@ -122,7 +122,7 @@ public abstract class OperationMode {
     }
 
     public static void switchToAsync(OperationMode newMode) {
-        ThreadHelper.create("mode switcher", false, () -> switchTo(newMode)).start();
+        ThreadHelper.createPlatformThread("mode switcher", false, () -> switchTo(newMode)).start();
     }
 
     public static void switchTo(OperationMode newMode) {

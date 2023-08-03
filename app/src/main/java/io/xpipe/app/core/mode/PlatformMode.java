@@ -40,7 +40,7 @@ public abstract class PlatformMode extends OperationMode {
         TrackEvent.info("mode", "Finished essential component initialization before platform");
 
         TrackEvent.info("mode", "Launching application ...");
-        ThreadHelper.create("app", false, () -> {
+        ThreadHelper.createPlatformThread("app", false, () -> {
                     TrackEvent.info("mode", "Application thread started");
                     Application.launch(App.class);
                 })

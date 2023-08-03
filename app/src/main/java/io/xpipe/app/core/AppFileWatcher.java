@@ -56,7 +56,7 @@ public class AppFileWatcher {
         }
 
         active = true;
-        watcherThread = ThreadHelper.create("file watcher", true, () -> {
+        watcherThread = ThreadHelper.createPlatformThread("file watcher", true, () -> {
             while (active) {
                 WatchKey key;
                 try {

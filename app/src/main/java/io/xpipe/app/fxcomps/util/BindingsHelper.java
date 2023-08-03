@@ -43,7 +43,7 @@ public class BindingsHelper {
     }
 
     static {
-        ThreadHelper.create("referenceGC", true, () -> {
+        ThreadHelper.createPlatformThread("referenceGC", true, () -> {
                     while (true) {
                         for (ReferenceEntry reference : REFERENCES) {
                             if (reference.canGc()) {
