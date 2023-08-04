@@ -8,7 +8,7 @@ import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class AppLock {
+public class AppDataLock {
 
     private static FileChannel channel;
     private static FileLock lock;

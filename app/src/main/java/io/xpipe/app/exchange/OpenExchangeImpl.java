@@ -10,7 +10,7 @@ public class OpenExchangeImpl extends OpenExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {
-        if (msg.getArguments().size() == 0) {
+        if (msg.getArguments().isEmpty()) {
             OperationMode.switchToAsync(OperationMode.GUI);
         }
 

@@ -1,6 +1,6 @@
 package io.xpipe.app.launcher;
 
-import io.xpipe.app.core.AppLock;
+import io.xpipe.app.core.AppDataLock;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
@@ -74,7 +74,7 @@ public class LauncherCommand implements Callable<Integer> {
                 con.constructSocket();
                 con.performSimpleExchange(
                         FocusExchange.Request.builder().mode(getEffectiveMode()).build());
-                if (inputs.size() > 0) {
+                if (!inputs.isEmpty()) {
                     con.performSimpleExchange(
                             OpenExchange.Request.builder().arguments(inputs).build());
                 }
@@ -95,7 +95,7 @@ public class LauncherCommand implements Callable<Integer> {
         // Even in case we are unable to reach another beacon server
         // there might be another instance running, for example
         // starting up or listening on another port
-        if (!AppLock.lock()) {
+        if (!AppDataLock.lock()) {
             TrackEvent.info("Data directory is already locked. Quitting ...");
             OperationMode.halt(0);
         }
