@@ -6,23 +6,47 @@ import lombok.Getter;
 
 @Getter
 public enum CloseBehaviour implements PrefsChoiceValue {
-    QUIT("app.quit", () -> {
-        OperationMode.shutdown(false, false);
-    }),
+    QUIT("app.quit") {
+        @Override
+        public void run() {
+            OperationMode.shutdown(false, false);
+        }
 
-    MINIMIZE_TO_TRAY("app.minimizeToTray", () -> {
-        OperationMode.switchToAsync(OperationMode.TRAY);
-    });
+        @Override
+        public boolean isSelectable() {
+            return true;
+        }
+    },
+
+    MINIMIZE_TO_TRAY("app.minimizeToTray") {
+        @Override
+        public void run() {
+            OperationMode.switchToAsync(OperationMode.TRAY);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OperationMode.TRAY.isSupported();
+        }
+    },
+
+    CONTINUE_IN_BACKGROUND("app.continueInBackground") {
+        @Override
+        public void run() {
+            OperationMode.switchToAsync(OperationMode.BACKGROUND);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return !OperationMode.TRAY.isSupported();
+        }
+    };
 
     private final String id;
-    private final Runnable exit;
 
-    CloseBehaviour(String id, Runnable exit) {
+    CloseBehaviour(String id) {
         this.id = id;
-        this.exit = exit;
     }
 
-    public boolean isSelectable() {
-        return true;
-    }
+    public abstract void run();
 }

@@ -14,6 +14,8 @@ import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
 
+    private boolean initialized;
+
     @Override
     public boolean isSupported() {
         return true;
@@ -26,6 +28,10 @@ public class BaseMode extends OperationMode {
 
     @Override
     public void onSwitchTo() throws Throwable {
+        if (initialized) {
+            return;
+        }
+
         TrackEvent.info("mode", "Initializing base mode components ...");
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
@@ -45,6 +51,7 @@ public class BaseMode extends OperationMode {
         FileBridge.init();
         AppSocketServer.init();
         TrackEvent.info("mode", "Finished base components initialization");
+        initialized = true;
     }
 
     @Override

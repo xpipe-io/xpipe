@@ -194,7 +194,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             // Note for later: When debugging konsole launches, it will always open as a child process of
             // IntelliJ/XPipe even though we try to detach it.
             // This is not the case for production where it works as expected
-            return CommandBuilder.of().add("--new-tab", "-e").add("--").addFile(file);
+            return CommandBuilder.of().add("--new-tab", "-e").addFile(file);
         }
 
         @Override

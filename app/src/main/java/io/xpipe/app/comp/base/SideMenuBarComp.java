@@ -53,7 +53,11 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var fi = new FontIcon("mdi2u-update");
-            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded());
+            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
+                    .apply(new FancyTooltipAugment<>("updateAvailableTooltip"));
+            b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
+            });
             b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
                     () -> {
                         return XPipeDistributionType.get()
@@ -76,5 +80,4 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);
     }
-
 }

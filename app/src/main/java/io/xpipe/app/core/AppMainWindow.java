@@ -148,7 +148,7 @@ public class AppMainWindow {
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
             stage.close();
 
-            AppPrefs.get().closeBehaviour().getValue().getExit().run();
+            AppPrefs.get().closeBehaviour().getValue().run();
             e.consume();
         });
 
