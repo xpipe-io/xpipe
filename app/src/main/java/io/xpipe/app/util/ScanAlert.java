@@ -88,7 +88,7 @@ public class ScanAlert {
                                     busy)
                             .createRegion();
                     content.setPrefWidth(500);
-                    content.setPrefHeight(300);
+                    content.setPrefHeight(450);
                     alert.getDialogPane().setContent(content);
 
                     // Custom behavior for ok button
@@ -133,7 +133,8 @@ public class ScanAlert {
                                     var r = new ListSelectorComp<>(
                                                     a,
                                                     scanOperation -> AppI18n.get(scanOperation.getNameKey()),
-                                                    selected)
+                                                    selected,
+                                                    a.size() > 3)
                                             .createRegion();
                                     ((VBox) ((StackPane) alert.getDialogPane().getContent())
                                                     .getChildren()
