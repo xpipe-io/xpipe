@@ -14,6 +14,7 @@ import io.xpipe.beacon.exchange.MessageExchanges;
 import io.xpipe.beacon.exchange.data.ClientErrorMessage;
 import io.xpipe.beacon.exchange.data.ServerErrorMessage;
 import io.xpipe.core.util.Deobfuscator;
+import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.JacksonMapper;
 
 import java.io.IOException;
@@ -132,12 +133,12 @@ public class AppSocketServer {
         if (prov.isEmpty()) {
             throw new IllegalArgumentException("Unknown request id: " + req.getClass());
         }
-        AtomicReference<BeaconClient.FailableRunnable<Exception>> post = new AtomicReference<>();
+        AtomicReference<FailableRunnable<Exception>> post = new AtomicReference<>();
         var res = prov.get()
                 .handleRequest(
                         new BeaconHandler() {
                             @Override
-                            public void postResponse(BeaconClient.FailableRunnable<Exception> r) {
+                            public void postResponse(FailableRunnable<Exception> r) {
                                 post.set(r);
                             }
 

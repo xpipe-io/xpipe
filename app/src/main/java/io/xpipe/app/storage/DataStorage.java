@@ -7,7 +7,10 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.FixedHierarchyStore;
+import io.xpipe.core.util.FailableRunnable;
+import javafx.util.Pair;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -69,23 +72,81 @@ public abstract class DataStorage {
         return INSTANCE;
     }
 
-    public synchronized boolean refreshChildren(DataStoreEntry e) {
+    public boolean refreshChildren(DataStoreEntry e) {
+        return refreshChildren(e, null);
+    }
+
+    public synchronized boolean refreshChildren(DataStoreEntry e, DataStore newValue) {
         if (!(e.getStore() instanceof FixedHierarchyStore)) {
             return false;
         }
 
+        var oldChildren = getStoreChildren(e, false, false);
+        Map<String, FixedChildStore> newChildren;
         try {
-            deleteChildren(e, true);
-            var newChildren = ((FixedHierarchyStore) e.getStore()).listChildren();
-            addStoreEntries(newChildren.entrySet().stream()
-                    .map(stringDataStoreEntry -> DataStoreEntry.createNew(
-                            UUID.randomUUID(), stringDataStoreEntry.getKey(), stringDataStoreEntry.getValue()))
-                    .toArray(DataStoreEntry[]::new));
-            return newChildren.size() > 0;
+            newChildren = ((FixedHierarchyStore) (newValue != null ? newValue : e.getStore())).listChildren();
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return false;
         }
+
+        var toRemove = oldChildren.stream()
+                .filter(entry -> newChildren.entrySet().stream()
+                        .noneMatch(
+                                nc -> nc.getValue().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId()))
+                .toList();
+        var toAdd = newChildren.entrySet().stream()
+                .filter(entry -> oldChildren.stream()
+                        .noneMatch(oc -> ((FixedChildStore) oc.getStore()).getFixedId()
+                                == entry.getValue().getFixedId()))
+                .toList();
+        var toUpdate = oldChildren.stream()
+                .map(entry -> {
+                    FixedChildStore found = newChildren.values().stream()
+                            .filter(nc -> nc.getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId())
+                            .findFirst()
+                            .orElse(null);
+                    return new Pair<>(entry, found);
+                })
+                .filter(en -> en.getValue() != null)
+                .toList();
+
+        if (newValue != null) {
+            e.setStoreInternal(newValue, false);
+        }
+
+        deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
+        addStoreEntries(toAdd.stream()
+                .map(stringDataStoreEntry -> DataStoreEntry.createNew(
+                        UUID.randomUUID(), stringDataStoreEntry.getKey(), stringDataStoreEntry.getValue()))
+                .toArray(DataStoreEntry[]::new));
+        toUpdate.forEach(entry -> {
+            propagateUpdate(
+                    () -> {
+                        entry.getKey().setStoreInternal(entry.getValue(), false);
+                    },
+                    entry.getKey());
+        });
+        save();
+        return !newChildren.isEmpty();
+    }
+
+    public synchronized void deleteWithChildren(DataStoreEntry... entries) {
+        var toDelete = Arrays.stream(entries)
+                .flatMap(entry -> {
+                    // Reverse to delete deepest children first
+                    var ordered = getStoreChildren(entry, false, true);
+                    Collections.reverse(ordered);
+                    return ordered.stream();
+                })
+                .toList();
+
+        synchronized (this) {
+            toDelete.forEach(entry -> entry.finalizeEntry());
+            this.storeEntries.removeAll(toDelete);
+            this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
+        }
+        save();
     }
 
     public synchronized void deleteChildren(DataStoreEntry e, boolean deep) {
@@ -117,23 +178,22 @@ public abstract class DataStorage {
     }
 
     public synchronized List<DataStoreEntry> getStoreChildren(DataStoreEntry entry, boolean display, boolean deep) {
-        if (!entry.getState().isUsable()) {
+        if (entry.getState() == DataStoreEntry.State.LOAD_FAILED) {
             return List.of();
         }
 
         var children = new ArrayList<>(getStoreEntries().stream()
                 .filter(other -> {
-                    if (!other.getState().isUsable()) {
+                    if (other.getState() == DataStoreEntry.State.LOAD_FAILED) {
                         return false;
                     }
 
-                    var provider = other.getProvider();
-                    var parent = display
-                            ? provider.getDisplayParent(other.getStore())
-                            : provider.getLogicalParent(other.getStore());
-                    return parent != null
-                            && entry.getStore().getClass().equals(parent.getClass())
-                            && entry.getStore().equals(parent);
+                    var parent = getParent(other, display);
+                    return parent.isPresent()
+                            && entry.getStore()
+                                    .getClass()
+                                    .equals(parent.get().getStore().getClass())
+                            && entry.getStore().equals(parent.get().getStore());
                 })
                 .toList());
 
@@ -208,7 +268,9 @@ public abstract class DataStorage {
 
     public synchronized DataStoreEntry getStoreEntry(@NonNull DataStore store) {
         var entry = storeEntries.stream()
-                .filter(n -> n.getStore() != null && Objects.equals(store.getClass(), n.getStore().getClass()) && store.equals(n.getStore()))
+                .filter(n -> n.getStore() != null
+                        && Objects.equals(store.getClass(), n.getStore().getClass())
+                        && store.equals(n.getStore()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
         return entry;
@@ -220,7 +282,11 @@ public abstract class DataStorage {
             for (int i = 1; i < id.getNames().size(); i++) {
                 var children = getStoreChildren(current.get(), false, false);
                 int finalI = i;
-                current = children.stream().filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(id.getNames().get(finalI))).findFirst();
+                current = children.stream()
+                        .filter(dataStoreEntry -> dataStoreEntry
+                                .getName()
+                                .equalsIgnoreCase(id.getNames().get(finalI)))
+                        .findFirst();
                 if (current.isEmpty()) {
                     break;
                 }
@@ -234,8 +300,13 @@ public abstract class DataStorage {
     }
 
     public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
-        var entry =
-                storeEntries.stream().filter(n -> store.equals(n.getStore())).findFirst();
+        var entry = storeEntries.stream()
+                .filter(n -> {
+                    return n.getStore() != null
+                            && store.getClass().equals(n.getStore().getClass())
+                            && store.equals(n.getStore());
+                })
+                .findFirst();
         return entry;
     }
 
@@ -251,7 +322,7 @@ public abstract class DataStorage {
         try {
             entry.setStoreInternal(s, false);
             entry.refresh(true);
-            return DataStorage.get().refreshChildren(entry);
+            return DataStorage.get().refreshChildren(entry, s);
         } catch (Exception e) {
             entry.setStoreInternal(old, false);
             entry.simpleRefresh();
@@ -260,16 +331,19 @@ public abstract class DataStorage {
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
-        newEntry.finalizeEntry();
-        entry.applyChanges(newEntry);
-        entry.initializeEntry();
+        propagateUpdate(
+                () -> {
+                    newEntry.finalizeEntry();
+                    entry.applyChanges(newEntry);
+                    entry.initializeEntry();
+                },
+                entry);
     }
 
     public void refreshAsync(DataStoreEntry element, boolean deep) {
         ThreadHelper.runAsync(() -> {
             try {
-                element.refresh(deep);
-                propagateUpdate(element);
+                propagateUpdate(() -> element.refresh(deep), element);
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).reportable(false).handle();
             }
@@ -277,21 +351,20 @@ public abstract class DataStorage {
         });
     }
 
-    void propagateUpdate(DataStoreEntry origin) {
-        getStoreChildren(origin, false, false).forEach(entry -> {
+    <T extends Throwable> void propagateUpdate(FailableRunnable<T> runnable, DataStoreEntry origin) throws T {
+        var children = getStoreChildren(origin, false, true);
+        runnable.run();
+        children.forEach(entry -> {
             entry.simpleRefresh();
-            propagateUpdate(entry);
         });
     }
 
     public void addStoreEntry(@NonNull DataStoreEntry e) {
         e.getProvider().preAdd(e.getStore());
-
         synchronized (this) {
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
             this.storeEntries.add(e);
         }
-        propagateUpdate(e);
         save();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
@@ -302,10 +375,8 @@ public abstract class DataStorage {
         synchronized (this) {
             for (DataStoreEntry e : es) {
                 e.getProvider().preAdd(e.getStore());
-
                 e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
                 this.storeEntries.add(e);
-                propagateUpdate(e);
             }
             this.listeners.forEach(l -> l.onStoreAdd(es));
             for (DataStoreEntry e : es) {
@@ -344,11 +415,14 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
-        store.finalizeEntry();
-        synchronized (this) {
-            this.storeEntries.remove(store);
-        }
-        propagateUpdate(store);
+        propagateUpdate(
+                () -> {
+                    store.finalizeEntry();
+                    synchronized (this) {
+                        this.storeEntries.remove(store);
+                    }
+                },
+                store);
         save();
         this.listeners.forEach(l -> l.onStoreRemove(store));
     }

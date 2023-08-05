@@ -4,6 +4,8 @@ import io.xpipe.beacon.exchange.WriteStreamExchange;
 import io.xpipe.beacon.exchange.cli.StoreAddExchange;
 import io.xpipe.beacon.util.QuietDialogHandler;
 import io.xpipe.core.impl.InternalStreamStore;
+import io.xpipe.core.util.FailableBiConsumer;
+import io.xpipe.core.util.FailableConsumer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +37,7 @@ public abstract class BeaconConnection implements AutoCloseable {
         }
     }
 
-    public void withOutputStream(BeaconClient.FailableConsumer<OutputStream, IOException> ex) {
+    public void withOutputStream(FailableConsumer<OutputStream, IOException> ex) {
         try {
             ex.accept(getOutputStream());
         } catch (IOException e) {
@@ -43,7 +45,7 @@ public abstract class BeaconConnection implements AutoCloseable {
         }
     }
 
-    public void withInputStream(BeaconClient.FailableConsumer<InputStream, IOException> ex) {
+    public void withInputStream(FailableConsumer<InputStream, IOException> ex) {
         try {
             ex.accept(getInputStream());
         } catch (IOException e) {
@@ -78,7 +80,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
-            REQ req, BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
+            REQ req, FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
         checkClosed();
 
         performInputOutputExchange(req, null, responseConsumer);
@@ -86,8 +88,8 @@ public abstract class BeaconConnection implements AutoCloseable {
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputOutputExchange(
             REQ req,
-            BeaconClient.FailableConsumer<OutputStream, IOException> reqWriter,
-            BeaconClient.FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
+            FailableConsumer<OutputStream, IOException> reqWriter,
+            FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
         checkClosed();
 
         try {
@@ -149,7 +151,7 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performOutputExchange(
-            REQ req, BeaconClient.FailableConsumer<OutputStream, Exception> reqWriter) {
+            REQ req, FailableConsumer<OutputStream, Exception> reqWriter) {
         checkClosed();
 
         try {

@@ -83,7 +83,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         new ContextMenuAugment<>(() -> this.createContextMenu()).augment(new SimpleCompStructure<>(button));
 
-        var loading = new LoadingOverlayComp(Comp.of(() -> button), wrapper.getLoading());
+        var loading = new LoadingOverlayComp(Comp.of(() -> button), wrapper.getValidating());
         var region = loading.createRegion();
         return region;
     }

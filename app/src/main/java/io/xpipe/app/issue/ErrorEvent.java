@@ -6,7 +6,7 @@ import lombok.Singular;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Builder
 @Getter
@@ -37,13 +37,19 @@ public class ErrorEvent {
     }
 
     public static ErrorEventBuilder fromThrowable(Throwable t) {
-        var unreportable = UNREPORTABLE.remove(t);
-        return builder().throwable(t).reportable(!unreportable).description(ExceptionConverter.convertMessage(t));
+        if (EVENT_BASES.containsKey(t)) {
+            return EVENT_BASES.remove(t).description(ExceptionConverter.convertMessage(t));
+        }
+
+        return builder().throwable(t).description(ExceptionConverter.convertMessage(t));
     }
 
     public static ErrorEventBuilder fromThrowable(String msg, Throwable t) {
-        var unreportable = UNREPORTABLE.remove(t);
-        return builder().throwable(t).reportable(!unreportable).description(msg);
+        if (EVENT_BASES.containsKey(t)) {
+            return EVENT_BASES.remove(t).description(msg);
+        }
+
+        return builder().throwable(t).description(msg);
     }
 
     public static ErrorEventBuilder fromMessage(String msg) {
@@ -74,12 +80,20 @@ public class ErrorEvent {
             return omitted(true);
         }
 
+        public ErrorEventBuilder unreportable() {
+            return reportable(false);
+        }
+
+        public ErrorEventBuilder discard() {
+            return omit().unreportable();
+        }
+
         public void handle() {
             build().handle();
         }
     }
 
-    private static Set<Throwable> UNREPORTABLE = new CopyOnWriteArraySet<>();
+    private static Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
 
     public static <T extends Throwable> T unreportableIfEndsWith(T t, String... s) {
         return unreportableIf(t, t.getMessage() != null && Arrays.stream(s).anyMatch(string->t.getMessage().toLowerCase(Locale.ROOT).endsWith(string)));
@@ -91,13 +105,13 @@ public class ErrorEvent {
 
     public static <T extends Throwable> T unreportableIf(T t, boolean b) {
         if (b) {
-            UNREPORTABLE.add(t);
+            EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         }
         return t;
     }
 
     public static <T extends Throwable> T unreportable(T t) {
-        UNREPORTABLE.add(t);
+        EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         return t;
     }
 }

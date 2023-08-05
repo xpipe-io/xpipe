@@ -26,7 +26,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final DataStoreEntry entry;
     private final Property<Instant> lastAccess;
     private final BooleanProperty disabled = new SimpleBooleanProperty();
-    private final BooleanProperty loading = new SimpleBooleanProperty();
+    private final BooleanProperty validating = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.State> state = new SimpleObjectProperty<>();
     private final StringProperty information = new SimpleStringProperty();
     private final StringProperty summary = new SimpleStringProperty();
@@ -96,7 +96,7 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         expanded.setValue(entry.isExpanded());
         information.setValue(entry.getInformation());
 
-        loading.setValue(entry.getState() == DataStoreEntry.State.VALIDATING);
+        validating.setValue(entry.isValidating());
         if (entry.getState().isUsable()) {
             try {
                 summary.setValue(entry.getProvider().toSummaryString(entry.getStore(), 50));

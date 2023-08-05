@@ -10,6 +10,8 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
@@ -25,34 +27,35 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
     @Override
     public CompStructure<StackPane> createBase() {
         var compStruc = comp.createStructure();
+        var r = compStruc.get();
 
         var loading = new RingProgressIndicator(0, false);
         loading.setProgress(-1);
 
-        var loadingBg = new StackPane(loading);
-        loadingBg.getStyleClass().add("loading-comp");
-        loadingBg.getStyleClass().add("modal-pane");
+        var loadingOverlay = new StackPane(loading);
+        loadingOverlay.getStyleClass().add("loading-comp");
+        loadingOverlay.getStyleClass().add("modal-pane");
+        loadingOverlay.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            r.setOpacity(newValue ? r.getOpacity() * 0.25 : Math.min(1.0, r.getOpacity() * 4));
+        });
 
-        loadingBg.setVisible(showLoading.getValue());
+        loadingOverlay.setVisible(showLoading.getValue());
 
         var listener = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean busy) {
                 if (!busy) {
                     // Reduce flickering for consecutive loads
-                    Thread t = new Thread(() -> {
+                    ThreadHelper.runAsync(() -> {
                         try {
                             Thread.sleep(50);
                         } catch (InterruptedException ignored) {
                         }
 
                         if (!showLoading.getValue()) {
-                            Platform.runLater(() -> loadingBg.setVisible(false));
+                            Platform.runLater(() -> loadingOverlay.setVisible(false));
                         }
                     });
-                    t.setDaemon(true);
-                    t.setName("loading delay");
-                    t.start();
                 } else {
                     ThreadHelper.runAsync(() -> {
                         try {
@@ -61,7 +64,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         }
 
                         if (showLoading.getValue()) {
-                            Platform.runLater(() -> loadingBg.setVisible(true));
+                            Platform.runLater(() -> loadingOverlay.setVisible(true));
                         }
                     });
                 }
@@ -69,12 +72,23 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         };
         PlatformThread.sync(showLoading).addListener(listener);
 
-        var r = compStruc.get();
-        var stack = new StackPane(r, loadingBg);
+        var stack = new StackPane(r, loadingOverlay);
 
-        loading.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> {
-            return Math.min(r.getHeight() - 20, 50);
-        }, r.heightProperty()));
+        r.backgroundProperty().addListener((observable, oldValue, newValue) -> {
+            loadingOverlay.setBackground(new Background(new BackgroundFill(
+                    loadingOverlay.getBackground() != null ? loadingOverlay.getBackground().getFills().get(
+                            0
+                    ).getFill() : null,
+                    newValue.getFills().get(0).getRadii(),
+                    newValue.getFills().get(0).getInsets())));
+        });
+
+        loading.prefWidthProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            return Math.min(r.getHeight() - 20, 50);
+                        },
+                        r.heightProperty()));
         loading.prefHeightProperty().bind(loading.prefWidthProperty());
 
         return new SimpleCompStructure<>(stack);

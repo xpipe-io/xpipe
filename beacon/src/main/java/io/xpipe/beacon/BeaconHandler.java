@@ -1,5 +1,7 @@
 package io.xpipe.beacon;
 
+import io.xpipe.core.util.FailableRunnable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,7 +16,7 @@ public interface BeaconHandler {
      *
      * @param r the runnable to execute
      */
-    void postResponse(BeaconClient.FailableRunnable<Exception> r);
+    void postResponse(FailableRunnable<Exception> r);
 
     /**
      * Prepares to attach a body to a response.

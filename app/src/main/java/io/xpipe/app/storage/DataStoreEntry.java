@@ -48,6 +48,9 @@ public class DataStoreEntry extends StorageElement {
     boolean expanded;
 
     @NonFinal
+    boolean validating;
+
+    @NonFinal
     DataStoreProvider provider;
 
     private DataStoreEntry(
@@ -102,13 +105,6 @@ public class DataStoreEntry extends StorageElement {
             State state,
             Configuration configuration,
             boolean expanded) {
-
-        // The validation must be stuck if that happens
-        var stateToUse = state;
-        if (state == State.VALIDATING) {
-            stateToUse = State.COMPLETE_BUT_INVALID;
-        }
-
         var entry = new DataStoreEntry(
                 directory,
                 uuid,
@@ -118,7 +114,7 @@ public class DataStoreEntry extends StorageElement {
                 information,
                 storeNode,
                 false,
-                stateToUse,
+                state,
                 configuration,
                 expanded);
         return entry;
@@ -259,9 +255,10 @@ public class DataStoreEntry extends StorageElement {
                 }
 
                 if (complete && deep) {
-                    state = State.VALIDATING;
+                    validating = true;
                     notifyListeners();
                     store.validate();
+                    validating = false;
                     state = State.COMPLETE_AND_VALID;
                     information = getProvider().queryInformationString(getStore(), 50);
                     dirty = true;
@@ -280,6 +277,7 @@ public class DataStoreEntry extends StorageElement {
                     state = stateToUse;
                 }
             } catch (Exception e) {
+                validating = false;
                 state = State.COMPLETE_BUT_INVALID;
                 information = getProvider().queryInvalidInformationString(getStore(), 50);
                 throw e;
@@ -293,12 +291,12 @@ public class DataStoreEntry extends StorageElement {
     public void initializeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
-                state = State.VALIDATING;
+                validating = true;
                 notifyListeners();
                 lifecycleStore.initializeValidate();
-                state = State.COMPLETE_AND_VALID;
+                validating = false;
             } catch (Exception e) {
-                state = State.COMPLETE_BUT_INVALID;
+                validating = false;
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
                 notifyListeners();
@@ -310,12 +308,10 @@ public class DataStoreEntry extends StorageElement {
     public void finalizeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
-                state = State.VALIDATING;
+                validating = true;
                 notifyListeners();
                 lifecycleStore.finalizeValidate();
-                state = State.COMPLETE_AND_VALID;
             } catch (Exception e) {
-                state = State.COMPLETE_BUT_INVALID;
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
                 notifyListeners();
@@ -379,8 +375,6 @@ public class DataStoreEntry extends StorageElement {
         COMPLETE_NOT_VALIDATED(true),
         @JsonProperty("completeButInvalid")
         COMPLETE_BUT_INVALID(true),
-        @JsonProperty("validating")
-        VALIDATING(true),
         @JsonProperty("completeAndValid")
         COMPLETE_AND_VALID(true);
 

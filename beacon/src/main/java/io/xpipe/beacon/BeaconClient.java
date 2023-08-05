@@ -276,24 +276,6 @@ public class BeaconClient implements AutoCloseable {
         return out;
     }
 
-    @FunctionalInterface
-    public interface FailableBiConsumer<T, U, E extends Throwable> {
-
-        void accept(T var1, U var2) throws E;
-    }
-
-    @FunctionalInterface
-    public interface FailableConsumer<T, E extends Throwable> {
-
-        void accept(T var1) throws E;
-    }
-
-    @FunctionalInterface
-    public interface FailableRunnable<E extends Throwable> {
-
-        void run() throws E;
-    }
-
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public abstract static class ClientInformation {
 

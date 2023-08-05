@@ -32,10 +32,11 @@ public class StoreToggleComp extends SimpleComp {
         var visible = BindingsHelper.persist(Bindings.createBooleanBinding(
                 () -> {
                     return (section.getWrapper().getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
-                                    || section.getWrapper().getState().getValue() == DataStoreEntry.State.VALIDATING)
+                                    || section.getWrapper().getValidating().get())
                             && section.getShowDetails().get();
                 },
                 section.getWrapper().getState(),
+                section.getWrapper().getValidating(),
                 section.getShowDetails()));
         var t = new NamedToggleComp(value, AppI18n.observable(nameKey))
                 .visible(visible)

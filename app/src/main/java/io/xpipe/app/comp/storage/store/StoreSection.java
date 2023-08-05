@@ -4,6 +4,7 @@ import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -68,7 +69,7 @@ public class StoreSection implements StorageFilter.Filterable {
     }
 
     private static StoreSection create(StoreEntryWrapper e, int depth) {
-        if (!e.getEntry().getState().isUsable()) {
+        if (e.getEntry().getState() == DataStoreEntry.State.LOAD_FAILED) {
             return new StoreSection(e, FXCollections.observableArrayList(), depth);
         }
 

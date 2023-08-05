@@ -137,7 +137,7 @@ public abstract class UpdateHandler {
         try {
             return refreshUpdateCheck();
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omit().handle();
+            ErrorEvent.fromThrowable(ex).discard().handle();
             return null;
         }
     }
