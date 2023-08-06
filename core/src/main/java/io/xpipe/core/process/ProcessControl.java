@@ -9,6 +9,13 @@ import java.util.concurrent.ExecutorService;
 
 public interface ProcessControl extends Closeable, AutoCloseable {
 
+    @FunctionalInterface
+    interface ExceptionConverter {
+        <T extends Throwable> T convert(T t);
+    }
+
+    ProcessControl withExceptionConverter(ExceptionConverter converter);
+
     void resetData();
 
     ExecutorService getStdoutReader();

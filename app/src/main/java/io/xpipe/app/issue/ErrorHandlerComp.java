@@ -11,7 +11,6 @@ import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
@@ -19,7 +18,9 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -163,35 +164,22 @@ public class ErrorHandlerComp extends SimpleComp {
             desc = AppI18n.get("errorNoDetail");
         }
 
-        var header = new Label(AppI18n.get(headerId));
-        AppFont.header(header);
+        var graphic = new FontIcon("mdomz-warning");
+        graphic.setIconColor(Color.RED);
+
+        var header = new Label(AppI18n.get(headerId), graphic);
+        header.setGraphicTextGap(6);
+        AppFont.setSize(header, 3);
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(4);
+        descriptionField.setPrefRowCount(6);
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
         AppFont.small(descriptionField);
         var text = new VBox(header, descriptionField);
         text.setFillWidth(true);
-        text.setSpacing(2);
-
-        var graphic = new FontIcon("mdomz-warning");
-        graphic.setIconColor(Color.RED);
-        var graphicPane = new StackPane(graphic);
-        var hbox = new HBox(graphicPane, text);
-        HBox.setHgrow(text, Priority.ALWAYS);
-        hbox.setSpacing(8);
-        graphicPane
-                .prefHeightProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> header.getHeight() + descriptionField.getHeight() + 2,
-                        header.heightProperty(),
-                        descriptionField.heightProperty()));
-        graphicPane.prefHeightProperty().addListener((c, o, n) -> {
-            var size = Math.min(n.intValue(), 100);
-            graphic.setIconSize(size);
-        });
-        return hbox;
+        text.setSpacing(8);
+        return text;
     }
 
     @Override

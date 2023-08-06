@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.impl.TabPaneComp;
 import io.xpipe.core.util.Deobfuscator;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
@@ -33,6 +34,7 @@ public class ErrorDetailsComp extends SimpleComp {
             AppFont.verySmall(tf);
             tf.setWrapText(false);
             tf.setEditable(false);
+            tf.setPadding(new Insets(10));
             return tf;
         }
 

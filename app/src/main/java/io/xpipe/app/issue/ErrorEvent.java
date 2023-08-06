@@ -96,22 +96,32 @@ public class ErrorEvent {
     private static Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
 
     public static <T extends Throwable> T unreportableIfEndsWith(T t, String... s) {
-        return unreportableIf(t, t.getMessage() != null && Arrays.stream(s).anyMatch(string->t.getMessage().toLowerCase(Locale.ROOT).endsWith(string)));
+        return unreportableIf(
+                t,
+                t.getMessage() != null
+                        && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> t.getMessage()
+                                .toLowerCase(Locale.ROOT)
+                                .endsWith(string)));
     }
 
     public static <T extends Throwable> T unreportableIfContains(T t, String... s) {
-        return unreportableIf(t, t.getMessage() != null && Arrays.stream(s).anyMatch(string->t.getMessage().toLowerCase(Locale.ROOT).contains(string)));
+        return unreportableIf(
+                t,
+                t.getMessage() != null
+                        && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> t.getMessage()
+                                .toLowerCase(Locale.ROOT)
+                                .contains(string)));
     }
 
     public static <T extends Throwable> T unreportableIf(T t, boolean b) {
         if (b) {
-            EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
+            // EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         }
         return t;
     }
 
     public static <T extends Throwable> T unreportable(T t) {
-        EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
+        // EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         return t;
     }
 }

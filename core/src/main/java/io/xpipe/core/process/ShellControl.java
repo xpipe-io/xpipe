@@ -28,7 +28,9 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl onExit(Consumer<ShellControl> pc);
 
-    ShellControl withMessageFormatter(Function<String, String> formatter);
+    ShellControl withExceptionConverter(ExceptionConverter converter);
+
+    ShellControl withErrorFormatter(Function<String, String> formatter);
 
     String prepareTerminalOpen(String displayName) throws Exception;
 

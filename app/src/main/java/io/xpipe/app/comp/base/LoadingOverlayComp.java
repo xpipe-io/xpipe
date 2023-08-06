@@ -10,8 +10,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
@@ -73,15 +71,6 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         PlatformThread.sync(showLoading).addListener(listener);
 
         var stack = new StackPane(r, loadingOverlay);
-
-        r.backgroundProperty().addListener((observable, oldValue, newValue) -> {
-            loadingOverlay.setBackground(new Background(new BackgroundFill(
-                    loadingOverlay.getBackground() != null ? loadingOverlay.getBackground().getFills().get(
-                            0
-                    ).getFill() : null,
-                    newValue.getFills().get(0).getRadii(),
-                    newValue.getFills().get(0).getInsets())));
-        });
 
         loading.prefWidthProperty()
                 .bind(Bindings.createDoubleBinding(

@@ -21,7 +21,7 @@ public interface CommandControl extends ProcessControl {
         CLOSE
     }
 
-    CommandControl withExceptionConverter(Function<Exception, Exception> converter);
+    CommandControl withExceptionConverter(ExceptionConverter converter);
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
 
