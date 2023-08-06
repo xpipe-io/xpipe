@@ -8,18 +8,20 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.StackPane;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class AskpassAlert {
 
-    private static final Map<UUID, UUID> requestToId = new HashMap<>();
+    private static final Set<UUID> cancelledRequests = new HashSet<>();
+    private static final Set<UUID> requests = new HashSet<>();
 
     public static SecretValue query(String prompt, UUID requestId, UUID secretId) {
-        if (requestToId.containsKey(requestId)) {
-            var id = requestToId.remove(requestId);
-            SecretCache.clear(id);
+        if (cancelledRequests.contains(requestId)) {
+            return null;
+        }
+
+        if (SecretCache.get(secretId).isPresent() && requests.contains(requestId)) {
+            SecretCache.clear(secretId);
         }
 
         var found = SecretCache.get(secretId);
@@ -40,15 +42,16 @@ public class AskpassAlert {
                 })
                 .filter(b -> b.getButtonData().isDefaultButton() && prop.getValue() != null)
                 .map(t -> {
-                    // AppCache.update(msg.getId(), prop.getValue());
-                    return prop.getValue();
+                    return prop.getValue() != null ? prop.getValue() : SecretHelper.encryptInPlace("");
                 })
                 .orElse(null);
 
         // If the result is null, assume that the operation was aborted by the user
         if (r != null) {
-            requestToId.put(requestId, secretId);
+            requests.add(requestId);
             SecretCache.set(secretId, r);
+        } else {
+            cancelledRequests.add(requestId);
         }
 
         return r;

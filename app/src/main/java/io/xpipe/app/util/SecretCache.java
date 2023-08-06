@@ -23,6 +23,10 @@ public class SecretCache {
         }
 
         var pass = strategy.retrieve(prompt, id);
+        if (pass == null) {
+            return null;
+        }
+
         passwords.put(id, pass);
         return pass;
     }

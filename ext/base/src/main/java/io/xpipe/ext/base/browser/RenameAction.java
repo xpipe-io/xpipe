@@ -3,6 +3,7 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -19,6 +20,11 @@ public class RenameAction implements LeafAction {
     }
 
     @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
+    }
+
+    @Override
     public Category getCategory() {
         return Category.MUTATION;
     }
@@ -30,7 +36,7 @@ public class RenameAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1;
+        return entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() != FileKind.LINK;
     }
 
     @Override
