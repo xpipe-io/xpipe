@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
+import io.xpipe.app.core.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.util.PlatformState;
@@ -22,15 +23,20 @@ public class GuiMode extends PlatformMode {
         super.platformSetup();
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
-            try {
-                TrackEvent.info("mode", "Setting up window ...");
-                UnlockAlert.showIfNeeded();
-                App.getApp().setupWindow();
-                AppGreetings.showIfNeeded();
-                UpdateChangelogAlert.showIfNeeded();
+            if (AppMainWindow.getInstance() == null) {
+                try {
+                    TrackEvent.info("mode", "Setting up window ...");
+                    UnlockAlert.showIfNeeded();
+                    App.getApp().setupWindow();
+                    AppGreetings.showIfNeeded();
+                    UpdateChangelogAlert.showIfNeeded();
+                    latch.countDown();
+                } catch (Throwable t) {
+                    ErrorEvent.fromThrowable(t).terminal(true).handle();
+                }
+            } else {
+                AppMainWindow.getInstance().show();
                 latch.countDown();
-            } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).terminal(true).handle();
             }
         });
 

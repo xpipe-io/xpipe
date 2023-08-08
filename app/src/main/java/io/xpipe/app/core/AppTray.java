@@ -5,7 +5,9 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
 import javafx.application.Platform;
+import lombok.SneakyThrows;
 
+import javax.swing.*;
 import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
@@ -15,11 +17,13 @@ public class AppTray {
     private static AppTray INSTANCE;
     private final FXTrayIcon icon;
     private final ErrorHandler errorHandler;
+    private final TrayIcon privateTrayIcon;
 
+    @SneakyThrows
     private AppTray() {
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo/logo_48x48.png");
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo/logo_48x48.png").orElseThrow();
 
-        var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url.orElse(null))
+        var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url)
                 .menuItem(AppI18n.get("open"), e -> {
                     OperationMode.switchToAsync(OperationMode.GUI);
                 });
@@ -44,6 +48,11 @@ public class AppTray {
                 .toolTip("XPipe")
                 .build();
         this.errorHandler = new TrayErrorHandler();
+
+        var tray = SystemTray.getSystemTray();
+        var f = icon.getClass().getDeclaredField("trayIcon");
+        f.setAccessible(true);
+        privateTrayIcon = (TrayIcon) f.get(this.icon);
     }
 
     public static void init() {
@@ -56,17 +65,22 @@ public class AppTray {
 
     public void show() {
         icon.show();
+
+        // Remove functionality to show stage when primary clicked and replace it with our own
+        SwingUtilities.invokeLater(() -> {
+            privateTrayIcon.removeActionListener(privateTrayIcon.getActionListeners()[0]);
+            privateTrayIcon.addActionListener(e -> {
+                OperationMode.switchToAsync(OperationMode.GUI);
+            });
+        });
     }
 
     public void hide() {
         // Ugly fix to prevent platform exit in icon.hide()
         try {
             var tray = SystemTray.getSystemTray();
-            var f = icon.getClass().getDeclaredField("trayIcon");
-            f.setAccessible(true);
-            var ti = (TrayIcon) f.get(this.icon);
             EventQueue.invokeLater(() -> {
-                tray.remove(ti);
+                tray.remove(privateTrayIcon);
             });
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

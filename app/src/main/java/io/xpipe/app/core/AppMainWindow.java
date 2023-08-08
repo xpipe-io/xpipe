@@ -50,6 +50,10 @@ public class AppMainWindow {
         return INSTANCE;
     }
 
+    public static AppMainWindow getInstance() {
+        return INSTANCE;
+    }
+
     private synchronized void onChange() {
         lastUpdate = Instant.now();
         if (thread == null) {
