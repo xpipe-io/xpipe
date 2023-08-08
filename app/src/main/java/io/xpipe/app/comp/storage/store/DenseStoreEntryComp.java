@@ -22,14 +22,13 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var grid = new GridPane();
         grid.setHgap(8);
 
+        int index = 0;
         if (showIcon) {
             var storeIcon = createIcon(26, 21);
             grid.getColumnConstraints().add(new ColumnConstraints(26));
             grid.add(storeIcon, 0, 0);
             GridPane.setHalignment(storeIcon, HPos.CENTER);
-        } else {
-            grid.add(new Region(), 0, 0);
-            grid.getColumnConstraints().add(new ColumnConstraints(0));
+            index++;
         }
 
         var customSize = content != null ? 300 : 0;
@@ -44,9 +43,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
-        grid.add(name, 1, 0);
+        grid.addRow(0, name);
 
-        grid.add(createInformation(), 2, 0);
+        grid.addRow(0, createInformation());
         grid.getColumnConstraints().addAll(info, custom);
 
         var cr = content != null ? content.createRegion() : new Region();
@@ -57,7 +56,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         controls.setSpacing(10);
         controls.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(cr, Priority.ALWAYS);
-        grid.add(controls, 3, 0);
+        grid.addRow(0, controls);
 
         GrowAugment.create(true, false).augment(grid);
 

@@ -21,7 +21,6 @@ public class SecretRetrievalStrategyHelper {
         var secretProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getValue() : null);
         return new OptionsBuilder()
-                .name("password")
                 .addComp(new SecretFieldComp(secretProperty), secretProperty)
                 .bind(
                         () -> {

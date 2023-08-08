@@ -8,7 +8,6 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -59,7 +58,6 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
                 }
             } else {
                 var region = n.comp().createRegion();
-                region.setPadding(new Insets(0, 0, 0, 10));
                 if (vbox.getChildren().size() == 1) {
                     vbox.getChildren().add(region);
                 } else {
