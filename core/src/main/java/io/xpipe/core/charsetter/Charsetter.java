@@ -61,8 +61,7 @@ public abstract class Charsetter {
     }
 
     public OutputStreamWriter writer(StreamDataStore store, StreamCharset charset) throws Exception {
-        var out = new OutputStreamWriter(store.openOutput(), charset.getCharset());
-        return out;
+        return new OutputStreamWriter(store.openOutput(), charset.getCharset());
     }
 
     public BufferedReader reader(InputStream stream, StreamCharset charset) throws Exception {

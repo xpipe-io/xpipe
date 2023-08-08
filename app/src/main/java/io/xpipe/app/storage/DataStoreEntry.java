@@ -105,7 +105,7 @@ public class DataStoreEntry extends StorageElement {
             State state,
             Configuration configuration,
             boolean expanded) {
-        var entry = new DataStoreEntry(
+        return new DataStoreEntry(
                 directory,
                 uuid,
                 name,
@@ -117,7 +117,6 @@ public class DataStoreEntry extends StorageElement {
                 state,
                 configuration,
                 expanded);
-        return entry;
     }
 
     public static DataStoreEntry fromDirectory(Path dir) throws Exception {
@@ -263,18 +262,16 @@ public class DataStoreEntry extends StorageElement {
                     information = getProvider().queryInformationString(getStore(), 50);
                     dirty = true;
                 } else if (complete) {
-                    var stateToUse = state == State.LOAD_FAILED || state == State.INCOMPLETE
+                    state = state == State.LOAD_FAILED || state == State.INCOMPLETE
                             ? State.COMPLETE_NOT_VALIDATED
                             : state;
-                    state = stateToUse;
                     information = state == State.COMPLETE_AND_VALID
                             ? information
                             : state == State.COMPLETE_BUT_INVALID
                                     ? getProvider().queryInvalidInformationString(getStore(), 50)
                                     : null;
                 } else {
-                    var stateToUse = state == State.LOAD_FAILED ? State.COMPLETE_BUT_INVALID : State.INCOMPLETE;
-                    state = stateToUse;
+                    state = state == State.LOAD_FAILED ? State.COMPLETE_BUT_INVALID : State.INCOMPLETE;
                 }
             } catch (Exception e) {
                 validating = false;
@@ -322,10 +319,6 @@ public class DataStoreEntry extends StorageElement {
     @Override
     protected boolean shouldSave() {
         return getStore() == null || getStore().shouldSave();
-    }
-
-    public void addListener(Listener l) {
-        this.listeners.add(l);
     }
 
     public void writeDataToDisk() throws Exception {

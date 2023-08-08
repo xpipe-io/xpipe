@@ -61,8 +61,7 @@ public class DataStructureNodeIO {
             return null;
         }
 
-        var name = new String(in.readNBytes(nameLength), StandardCharsets.UTF_8);
-        return name;
+        return new String(in.readNBytes(nameLength), StandardCharsets.UTF_8);
     }
 
     public static Map<Integer, String> parseAttributes(InputStream in) throws IOException {

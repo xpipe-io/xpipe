@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -12,7 +13,7 @@ import java.util.function.Consumer;
 public class HttpHelper {
 
     public static Path downloadFile(String urlS) throws Exception {
-        var url = new URL(urlS);
+        var url = URI.create(urlS).toURL();
         var bytes = HttpHelper.executeGet(url, aFloat -> {});
         var downloadFile = Files.createTempFile(null, null);
         Files.write(downloadFile, bytes);

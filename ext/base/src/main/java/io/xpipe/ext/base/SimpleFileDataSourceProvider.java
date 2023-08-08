@@ -82,8 +82,7 @@ public interface SimpleFileDataSourceProvider<T extends DataSource<?>> extends D
 
             @Override
             public Map<String, List<String>> getFileExtensions() {
-                var map = new LinkedHashMap<>(getSupportedExtensions());
-                return map;
+                return new LinkedHashMap<>(getSupportedExtensions());
             }
         };
     }

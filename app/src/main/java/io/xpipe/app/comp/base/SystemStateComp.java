@@ -20,7 +20,7 @@ public class SystemStateComp extends SimpleComp {
         this.state = state;
     }
 
-    public static enum State {
+    public enum State {
         FAILURE,
         SUCCESS,
         OTHER
@@ -29,16 +29,15 @@ public class SystemStateComp extends SimpleComp {
     private final ObservableValue<State> state;
 
     public SystemStateComp(StoreEntryWrapper w) {
-        var state = Bindings.createObjectBinding(
+        this.state = Bindings.createObjectBinding(
                 () -> {
                     return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID
-                            ? SystemStateComp.State.FAILURE
+                            ? State.FAILURE
                             : w.getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
-                            ? SystemStateComp.State.SUCCESS
-                            : SystemStateComp.State.OTHER;
+                            ? State.SUCCESS
+                            : State.OTHER;
                 },
                 w.getState());
-        this.state = state;
     }
 
     @Override

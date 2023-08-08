@@ -35,6 +35,7 @@ public abstract class ArrayNode extends DataStructureNode {
                 getNodes().equals(that.getNodes()) && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
 
         // Useful for debugging
+        //noinspection PointlessBooleanExpression
         if (toReturn == false) {
             return false;
         }

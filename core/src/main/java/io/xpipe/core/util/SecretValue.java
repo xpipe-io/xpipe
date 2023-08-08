@@ -15,8 +15,7 @@ public interface SecretValue {
     }
 
     static byte[] fromBase64e(String s) {
-        var bytes = Base64.getDecoder().decode(s.replace("-", "/"));
-        return bytes;
+        return Base64.getDecoder().decode(s.replace("-", "/"));
     }
 
     default void withSecretValue(Consumer<char[]> con) {

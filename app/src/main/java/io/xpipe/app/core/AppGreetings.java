@@ -67,6 +67,7 @@ public class AppGreetings {
 
     public static void showIfNeeded() {
         // TODO
+        //noinspection PointlessBooleanExpression
         if (!AppProperties.get().isImage() || true) {
             return;
         }

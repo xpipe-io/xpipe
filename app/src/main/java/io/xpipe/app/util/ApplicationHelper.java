@@ -17,8 +17,7 @@ public class ApplicationHelper {
 
         var fileString = file.contains(" ") ? "\"" + file + "\"" : file;
         // Check if the variable is already quoted
-        var replaced = format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);
-        return replaced;
+        return format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);
     }
 
     public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {

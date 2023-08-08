@@ -83,8 +83,7 @@ public abstract class DataSourceImpl implements DataSource {
                 .configureAll(false)
                 .build();
         var startRes = XPipeApiConnection.execute(con -> {
-            ReadExchange.Response r = con.performSimpleExchange(startReq);
-            return r;
+            return con.<ReadExchange.Request, ReadExchange.Response>performSimpleExchange(startReq);
         });
 
         var configInstance = startRes.getConfig();
@@ -113,8 +112,7 @@ public abstract class DataSourceImpl implements DataSource {
                 .configureAll(false)
                 .build();
         var startRes = XPipeApiConnection.execute(con -> {
-            ReadExchange.Response r = con.performSimpleExchange(startReq);
-            return r;
+            return con.<ReadExchange.Request, ReadExchange.Response>performSimpleExchange(startReq);
         });
 
         var configInstance = startRes.getConfig();

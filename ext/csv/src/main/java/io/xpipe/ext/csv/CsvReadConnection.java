@@ -57,8 +57,7 @@ public class CsvReadConnection extends StreamReadConnection implements TableRead
                             return ValueNode.nullValue();
                         }
                         var quotesRemoved = CsvQuoteChar.strip(s, source.getQuote());
-                        var value = ValueNode.of(quotesRemoved);
-                        return value;
+                        return ValueNode.of(quotesRemoved);
                     })
                     .toList();
 

@@ -28,8 +28,7 @@ public class ExtensionTest {
         if (url == null) {
             throw new IllegalArgumentException(String.format("File %s does not exist", name));
         }
-        var file = Path.of(url.toURI());
-        return file;
+        return Path.of(url.toURI());
     }
 
     @SneakyThrows

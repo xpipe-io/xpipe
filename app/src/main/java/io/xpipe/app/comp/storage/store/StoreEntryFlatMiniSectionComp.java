@@ -57,7 +57,6 @@ public class StoreEntryFlatMiniSectionComp extends SimpleComp {
         var label =
                 new Label(entry.getName(), new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion());
         var spacer = new Spacer(depth * 10, Orientation.HORIZONTAL);
-        var box = new HBox(spacer, label);
-        return box;
+        return new HBox(spacer, label);
     }
 }

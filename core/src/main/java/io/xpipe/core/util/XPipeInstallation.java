@@ -164,8 +164,7 @@ public class XPipeInstallation {
 
     public static String getInstallationExecutable(ShellControl p, String installation) {
         var executable = getDaemonExecutablePath(p.getOsType());
-        var file = FileNames.join(installation, executable);
-        return file;
+        return FileNames.join(installation, executable);
     }
 
     public static String getDataBasePath(ShellControl p) throws Exception {

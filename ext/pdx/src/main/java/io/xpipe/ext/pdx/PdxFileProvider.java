@@ -28,10 +28,9 @@ public abstract class PdxFileProvider<T extends DataSource<?>>
     @Override
     public DataSource<?> convert(T in, DataSourceType t) throws Exception {
         Source d = in.asNeeded();
-        CollectionDataSource<?> ds = DataSourceProviders.byId("zip")
+        return DataSourceProviders.byId("zip")
                 .createDefaultSource(in.getStore())
                 .asNeeded();
-        return ds;
     }
 
     @Override

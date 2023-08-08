@@ -59,11 +59,10 @@ public class UserReportComp extends SimpleComp {
                         includedDiagnostics,
                         false)
                 .styleClass("attachment-list");
-        var tp = new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
+        return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
                 .apply(struc -> struc.get().setExpanded(true))
                 .apply(s -> AppFont.medium(s.get()))
                 .styleClass("attachments");
-        return tp;
     }
 
     @Override

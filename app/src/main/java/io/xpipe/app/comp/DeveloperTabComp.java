@@ -43,12 +43,11 @@ public class DeveloperTabComp extends SimpleComp {
 
         var button5 = new ButtonComp(AppI18n.observable("Operation mode null"), null, OperationMode::close);
 
-        var box = new HBox(
+        return new HBox(
                 button.createRegion(),
                 button2.createRegion(),
                 button3.createRegion(),
                 button4.createRegion(),
                 button5.createRegion());
-        return box;
     }
 }

@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     public static <T extends DataStore> DataStoreChoiceComp<T> other(Property<T> selected, Class<T> clazz, Predicate<T> filter) {
-        return new DataStoreChoiceComp<T>(Mode.OTHER, null, selected, clazz, filter);
+        return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter);
     }
 
     public static DataStoreChoiceComp<ShellStore> proxy(Property<ShellStore> selected) {

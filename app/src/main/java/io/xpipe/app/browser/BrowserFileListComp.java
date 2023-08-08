@@ -65,8 +65,7 @@ final class BrowserFileListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        TableView<BrowserEntry> table = createTable();
-        return table;
+        return createTable();
     }
 
     @SuppressWarnings("unchecked")

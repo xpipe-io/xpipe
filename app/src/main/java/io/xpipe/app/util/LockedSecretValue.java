@@ -39,7 +39,6 @@ public class LockedSecretValue extends AesSecretValue {
         var salt = new byte[16];
         new Random(keysize).nextBytes(salt);
         KeySpec spec = new PBEKeySpec(chars, salt, 8192, keysize);
-        SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-        return secret;
+        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 }

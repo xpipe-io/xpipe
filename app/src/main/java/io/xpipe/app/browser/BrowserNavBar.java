@@ -89,10 +89,9 @@ public class BrowserNavBar extends SimpleComp {
 
         var graphic = Bindings.createStringBinding(
                 () -> {
-                    var icon = model.getCurrentDirectory() != null
+                    return model.getCurrentDirectory() != null
                             ? FileIconManager.getFileIcon(model.getCurrentDirectory(), false)
                             : "home_icon.svg";
-                    return icon;
                 },
                 model.getCurrentPath());
         var breadcrumbsGraphic = new PrettyImageComp(graphic, 22, 22)

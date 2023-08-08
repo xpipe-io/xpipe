@@ -25,9 +25,7 @@ public class BeaconServer {
     }
 
     private static List<String> toProcessCommand(String toExec) {
-        var command =
-                OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec) : List.of("sh", "-c", toExec);
-        return command;
+        return OsType.getLocal().equals(OsType.WINDOWS) ? List.of("cmd", "/c", toExec) : List.of("sh", "-c", toExec);
     }
 
     public static Process tryStartCustom() throws Exception {

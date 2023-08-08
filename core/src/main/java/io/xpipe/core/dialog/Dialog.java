@@ -374,8 +374,7 @@ public abstract class Dialog {
             @Override
             protected DialogElement next(String answer) throws Exception {
                 if (choiceMade != null) {
-                    var r = choiceMade.receive(answer);
-                    return r;
+                    return choiceMade.receive(answer);
                 }
 
                 if (choice.apply(answer)) {

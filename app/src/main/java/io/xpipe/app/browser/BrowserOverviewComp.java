@@ -33,10 +33,9 @@ public class BrowserOverviewComp extends SimpleComp {
                 .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
                 .filter(entry -> {
                     try {
-                        var b = sc.getShellDialect()
+                        return sc.getShellDialect()
                                 .directoryExists(sc, entry.getPath())
                                 .executeAndCheck();
-                        return b;
                     } catch (Exception e) {
                         ErrorEvent.fromThrowable(e).handle();
                         return false;

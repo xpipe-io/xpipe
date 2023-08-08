@@ -8,7 +8,6 @@ public class StoreNotFoundComp extends SimpleComp {
 
     @Override
     public Region createSimple() {
-        var sp = new StackPane();
-        return sp;
+        return new StackPane();
     }
 }

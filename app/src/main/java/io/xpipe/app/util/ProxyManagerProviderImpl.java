@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ProxyManagerProviderImpl extends ProxyManagerProvider {
 
     private static boolean showAlert() {
-        var okay = AppWindowHelper.showBlockingAlert(alert -> {
+        return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.setTitle(AppI18n.get("connectorInstallationTitle"));
                     alert.setHeaderText(AppI18n.get("connectorInstallationHeader"));
@@ -27,7 +27,6 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
                 })
                 .filter(buttonType -> buttonType.getButtonData().isDefaultButton())
                 .isPresent();
-        return okay;
     }
 
     @Override

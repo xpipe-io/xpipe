@@ -16,7 +16,7 @@ public class CommandBuilder {
 
     private final List<Element> elements = new ArrayList<>();
 
-    public static interface Element {
+    public interface Element {
 
         String evaluate(ShellControl sc) throws Exception;
     }

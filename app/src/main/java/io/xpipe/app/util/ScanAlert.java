@@ -42,11 +42,10 @@ public class ScanAlert {
     private static void showForOtherStore(DataStoreEntry entry) {
         show(entry, () -> {
             var providers = ScanProvider.getAll();
-            var applicable = providers.stream()
+            return providers.stream()
                     .map(scanProvider -> scanProvider.create(entry.getStore()))
                     .filter(scanOperation -> scanOperation != null)
                     .toList();
-            return applicable;
         });
     }
 

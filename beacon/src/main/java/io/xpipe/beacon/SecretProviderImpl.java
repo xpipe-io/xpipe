@@ -36,8 +36,7 @@ public class SecretProviderImpl extends SecretProvider {
         var salt = new byte[16];
         new Random(keysize).nextBytes(salt);
         KeySpec spec = new PBEKeySpec(new char[] {'X', 'P', 'E' << 1}, salt, 65536, keysize);
-        SecretKey secret = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-        return secret;
+        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 
     @Override

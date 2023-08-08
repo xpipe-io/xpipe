@@ -93,7 +93,7 @@ public class ErrorEvent {
         }
     }
 
-    private static Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
+    private static final Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
 
     public static <T extends Throwable> T unreportableIfEndsWith(T t, String... s) {
         return unreportableIf(

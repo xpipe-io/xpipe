@@ -60,7 +60,7 @@ public class AppActionLinkDetector {
     }
 
     private static boolean showAlert() {
-        var paste = AppWindowHelper.showBlockingAlert(alert -> {
+        return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.setTitle(AppI18n.get("clipboardActionDetectedTitle"));
                     alert.setHeaderText(AppI18n.get("clipboardActionDetectedHeader"));
@@ -70,6 +70,5 @@ public class AppActionLinkDetector {
                 })
                 .map(buttonType -> buttonType.getButtonData().isDefaultButton())
                 .orElse(false);
-        return paste;
     }
 }

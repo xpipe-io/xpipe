@@ -24,11 +24,6 @@ public class RefreshDirectoryAction implements LeafAction {
     }
 
     @Override
-    public BrowserAction.Category getCategory() {
-        return null;
-    }
-
-    @Override
     public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return !model.getInOverview().get();
     }

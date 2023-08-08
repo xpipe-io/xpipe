@@ -140,6 +140,7 @@ public abstract class ValueNode extends DataStructureNode {
                 && Objects.equals(getMetaAttributes(), that.getMetaAttributes());
 
         // Useful for debugging
+        //noinspection PointlessBooleanExpression
         if (toReturn == false) {
             return false;
         }

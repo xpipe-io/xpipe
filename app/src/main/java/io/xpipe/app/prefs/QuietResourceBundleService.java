@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.util.ResourceBundleService;
 import io.xpipe.app.core.AppI18n;
+import lombok.NonNull;
 
 import java.util.Enumeration;
 import java.util.ResourceBundle;
@@ -11,7 +12,7 @@ public class QuietResourceBundleService extends ResourceBundleService {
     public QuietResourceBundleService() {
         super(new ResourceBundle() {
             @Override
-            protected Object handleGetObject(String key) {
+            protected Object handleGetObject(@NonNull String key) {
                 return null;
             }
 
@@ -24,7 +25,6 @@ public class QuietResourceBundleService extends ResourceBundleService {
 
     @Override
     public String translate(String key) {
-        var value = AppI18n.get(key);
-        return value;
+        return AppI18n.get(key);
     }
 }

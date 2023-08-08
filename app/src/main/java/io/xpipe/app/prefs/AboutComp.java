@@ -17,8 +17,7 @@ import java.util.List;
 public class AboutComp extends Comp<CompStructure<?>> {
 
     private Region createDepsList() {
-        var deps = new ThirdPartyDependencyListComp().createRegion();
-        return deps;
+        return new ThirdPartyDependencyListComp().createRegion();
     }
 
     private Comp<?> createLinks() {

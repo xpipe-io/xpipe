@@ -40,8 +40,7 @@ public class BrowserSelectionListComp extends SimpleComp {
         AppStyle.addStylesheets(scene);
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);
-        WritableImage image = r.snapshot(parameters, null);
-        return image;
+        return r.snapshot(parameters, null);
     }
 
     ObservableList<FileSystem.FileEntry> list;

@@ -31,7 +31,7 @@ public class CountComp<T> extends Comp<CompStructure<Label>> {
                             if (sub.size() == all.size()) {
                                 return all.size() + "";
                             } else {
-                                return "" + sub.size() + "/" + all.size();
+                                return sub.size() + "/" + all.size();
                             }
                         },
                         sub,

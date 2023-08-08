@@ -16,18 +16,8 @@ public class InternalStreamProvider implements DataStoreProvider {
     }
 
     @Override
-    public GuiDialog guiDialog(Property<DataStore> store) {
-        return null;
-    }
-
-    @Override
     public String queryInformationString(DataStore store, int length) {
         return getDisplayName();
-    }
-
-    @Override
-    public String toSummaryString(DataStore store, int length) {
-        return null;
     }
 
     @Override

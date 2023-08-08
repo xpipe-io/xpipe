@@ -152,12 +152,11 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
             var nameWidthBinding = Bindings.createDoubleBinding(
                     () -> {
-                        var m = nameRegions.stream()
+                        return nameRegions.stream()
                                 .map(Region::getWidth)
                                 .filter(aDouble -> aDouble > 0.0)
                                 .max(Double::compareTo)
                                 .orElse(Region.USE_COMPUTED_SIZE);
-                        return m;
                     },
                     nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
             nameRegions.forEach(r -> r.minWidthProperty().bind(nameWidthBinding));

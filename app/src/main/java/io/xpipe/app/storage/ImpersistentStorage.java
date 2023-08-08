@@ -31,7 +31,6 @@ public class ImpersistentStorage extends DataStorage {
 
     @Override
     public Path getInternalStreamPath(@NonNull UUID uuid) {
-        var newDir = FileUtils.getTempDirectory().toPath().resolve(uuid.toString());
-        return newDir;
+        return FileUtils.getTempDirectory().toPath().resolve(uuid.toString());
     }
 }

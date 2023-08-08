@@ -24,7 +24,7 @@ import lombok.SneakyThrows;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.function.UnaryOperator;
 
@@ -87,7 +87,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                     if (toBeopen.contains("http://") || toBeopen.contains("https://")) {
                         engine.getLoadWorker().cancel();
                         try {
-                            Desktop.getDesktop().browse(new URL(toBeopen).toURI());
+                            Desktop.getDesktop().browse(URI.create(toBeopen));
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).omit().handle();
                         }

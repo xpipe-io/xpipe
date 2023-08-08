@@ -83,7 +83,7 @@ dependencies {
     testImplementation project(':core')
 }
 
-project.allExtensions.forEach(p -> {
+project.allExtensions.forEach((Project p) -> {
     dependencies {
         testCompileOnly p
     }

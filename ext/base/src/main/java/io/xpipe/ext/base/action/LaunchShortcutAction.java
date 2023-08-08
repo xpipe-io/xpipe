@@ -51,10 +51,6 @@ public class LaunchShortcutAction implements ActionProvider {
                 return "mdi2c-code-greater-than";
             }
 
-            @Override
-            public boolean isMajor(LaunchableStore o) {
-                return false;
-            }
         };
     }
 }

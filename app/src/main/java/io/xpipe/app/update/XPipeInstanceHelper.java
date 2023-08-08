@@ -26,8 +26,7 @@ public class XPipeInstanceHelper {
         }
 
         try {
-            var read = UUID.fromString(Files.readString(file));
-            return read;
+            return UUID.fromString(Files.readString(file));
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return UUID.randomUUID();
@@ -56,7 +55,7 @@ public class XPipeInstanceHelper {
         //        } catch (Exception e) {
         //            return Optional.empty();
         //        }
-        return null;
+        return Optional.empty();
     }
 
     public static XPipeInstance refresh() {

@@ -81,10 +81,9 @@ public interface DataStoreProvider {
                     return createInsightsMarkdown(store.getValue());
                 },
                 store);
-        var markdown = new MarkdownComp(content, s -> s)
+        return new MarkdownComp(content, s -> s)
                 .apply(struc -> struc.get().setPrefWidth(450))
                 .apply(struc -> struc.get().setPrefHeight(200));
-        return markdown;
     }
 
     default String createInsightsMarkdown(DataStore store) {
@@ -124,7 +123,7 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default String queryInvalidInformationString(DataStore store, int length) throws Exception {
+    default String queryInvalidInformationString(DataStore store, int length) {
         return "Connection failed";
     }
 
@@ -160,8 +159,7 @@ public interface DataStoreProvider {
             return png;
         }
 
-        var svg = getModuleName() + ":" + getId() + "_icon.svg";
-        return svg;
+        return getModuleName() + ":" + getId() + "_icon.svg";
     }
 
     default Dialog dialogForStore(DataStore store) {

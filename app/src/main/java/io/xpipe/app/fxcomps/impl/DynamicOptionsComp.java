@@ -100,11 +100,10 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
                             return Region.USE_COMPUTED_SIZE;
                         }
 
-                        var m = compRegions.stream()
+                        return compRegions.stream()
                                 .map(Region::getWidth)
                                 .max(Double::compareTo)
                                 .orElse(0.0);
-                        return m;
                     },
                     compRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
             compRegions.forEach(r -> r.prefWidthProperty().bind(compWidthBinding));
@@ -117,11 +116,10 @@ public class DynamicOptionsComp extends Comp<CompStructure<Pane>> {
                             return Region.USE_COMPUTED_SIZE;
                         }
 
-                        var m = nameRegions.stream()
+                        return nameRegions.stream()
                                 .map(Region::getWidth)
                                 .max(Double::compareTo)
                                 .orElse(0.0);
-                        return m;
                     },
                     nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
             nameRegions.forEach(r -> r.prefWidthProperty().bind(nameWidthBinding));

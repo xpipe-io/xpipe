@@ -21,12 +21,11 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
     }
 
     private static String getName(FileSystemStore store) {
-        var name = DataStorage.get().getUsableStores().stream()
+        return DataStorage.get().getUsableStores().stream()
                 .filter(e -> e.equals(store))
                 .findAny()
                 .map(e -> DataStorage.get().getStoreDisplayName(e).orElse("?"))
                 .orElse("?");
-        return name;
     }
 
     private Region createGraphic(FileSystemStore s) {

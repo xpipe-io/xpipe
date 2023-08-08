@@ -76,8 +76,7 @@ public class ScriptHelper {
             content += t.getExitCommand() + nl;
         }
 
-        var initFile = createExecScript(t, processControl, t.initFileName(processControl), content);
-        return initFile;
+        return createExecScript(t, processControl, t.initFileName(processControl), content);
     }
 
     @SneakyThrows
@@ -90,8 +89,7 @@ public class ScriptHelper {
     public static String getExecScriptFile(ShellControl processControl, String fileEnding) {
         var fileName = "exec-" + getScriptId();
         var temp = processControl.getSubTemporaryDirectory();
-        var file = FileNames.join(temp, fileName + "." + fileEnding);
-        return file;
+        return FileNames.join(temp, fileName + "." + fileEnding);
     }
 
     @SneakyThrows
@@ -154,8 +152,7 @@ public class ScriptHelper {
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
                                         .toList());
-                var exec = createExecScript(sub.getShellDialect(), sub, file, content);
-                return exec;
+                return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
             var content = parent.getShellDialect()
@@ -165,8 +162,7 @@ public class ScriptHelper {
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
                                     .toList());
-            var exec = createExecScript(parent.getShellDialect(), parent, file, content);
-            return exec;
+            return createExecScript(parent.getShellDialect(), parent, file, content);
         }
     }
 }

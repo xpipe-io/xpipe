@@ -66,7 +66,7 @@ public class AppFont {
                 "fonts",
                 path -> Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try (var in = Files.newInputStream(file)) {
                             Font.loadFont(in, 12);
                         } catch (Throwable t) {

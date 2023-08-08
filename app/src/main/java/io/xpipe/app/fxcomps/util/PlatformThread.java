@@ -7,6 +7,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -151,17 +152,17 @@ public class PlatformThread {
             }
 
             @Override
-            public Iterator<T> iterator() {
+            public @NonNull Iterator<T> iterator() {
                 return ol.iterator();
             }
 
             @Override
-            public Object[] toArray() {
+            public Object @NonNull [] toArray() {
                 return ol.toArray();
             }
 
             @Override
-            public <T1> T1[] toArray(T1[] a) {
+            public <T1> T1 @NonNull [] toArray(T1 @NonNull [] a) {
                 return ol.toArray(a);
             }
 
@@ -176,27 +177,27 @@ public class PlatformThread {
             }
 
             @Override
-            public boolean containsAll(Collection<?> c) {
+            public boolean containsAll(@NonNull Collection<?> c) {
                 return ol.containsAll(c);
             }
 
             @Override
-            public boolean addAll(Collection<? extends T> c) {
+            public boolean addAll(@NonNull Collection<? extends T> c) {
                 return ol.addAll(c);
             }
 
             @Override
-            public boolean addAll(int index, Collection<? extends T> c) {
+            public boolean addAll(int index, @NonNull Collection<? extends T> c) {
                 return ol.addAll(index, c);
             }
 
             @Override
-            public boolean removeAll(Collection<?> c) {
+            public boolean removeAll(@NonNull Collection<?> c) {
                 return ol.removeAll(c);
             }
 
             @Override
-            public boolean retainAll(Collection<?> c) {
+            public boolean retainAll(@NonNull Collection<?> c) {
                 return ol.retainAll(c);
             }
 
@@ -236,17 +237,17 @@ public class PlatformThread {
             }
 
             @Override
-            public ListIterator<T> listIterator() {
+            public @NonNull ListIterator<T> listIterator() {
                 return ol.listIterator();
             }
 
             @Override
-            public ListIterator<T> listIterator(int index) {
+            public @NonNull ListIterator<T> listIterator(int index) {
                 return ol.listIterator(index);
             }
 
             @Override
-            public List<T> subList(int fromIndex, int toIndex) {
+            public @NonNull List<T> subList(int fromIndex, int toIndex) {
                 return ol.subList(fromIndex, toIndex);
             }
 

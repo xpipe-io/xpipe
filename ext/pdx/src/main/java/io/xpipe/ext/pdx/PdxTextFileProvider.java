@@ -85,8 +85,7 @@ public class PdxTextFileProvider
                 public DataStructureNode read() throws Exception {
                     try (var in = store.openInput()) {
                         var bytes = in.readAllBytes();
-                        var node = TextFormatParser.text().parse(store.toString(), bytes, 0, false);
-                        return node;
+                        return TextFormatParser.text().parse(store.toString(), bytes, 0, false);
                     }
                 }
             };

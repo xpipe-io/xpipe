@@ -49,7 +49,7 @@ public class IntegratedTextAreaComp extends SimpleComp {
     }
 
     private Region createOpenButton(Region container) {
-        var button = new IconButtonComp(
+        return new IconButtonComp(
                         "mdal-edit",
                         () -> FileOpener.openString(
                                 identifier + (fileType.getValue() != null ? "." + fileType.getValue() : ""),
@@ -59,6 +59,5 @@ public class IntegratedTextAreaComp extends SimpleComp {
                                     Platform.runLater(() -> value.setValue(s));
                                 }))
                 .createRegion();
-        return button;
     }
 }

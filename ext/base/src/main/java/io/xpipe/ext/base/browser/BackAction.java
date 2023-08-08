@@ -23,11 +23,6 @@ public class BackAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return null;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("fth-arrow-left");
     }

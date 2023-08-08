@@ -16,9 +16,8 @@ public class MessageExchangeImpls {
     public static void loadAll() {
         ALL = ServiceLoader.load(MessageExchangeImpl.class).stream()
                 .map(s -> {
-                    var ex = (MessageExchangeImpl<?, ?>) s.get();
                     // TrackEvent.trace("init", "Loaded exchange implementation " + ex.getId());
-                    return ex;
+                    return (MessageExchangeImpl<?, ?>) s.get();
                 })
                 .collect(Collectors.toList());
 

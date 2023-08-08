@@ -33,7 +33,7 @@ public interface SecretRetrievalStrategy {
     boolean shouldCache();
 
     @JsonTypeName("none")
-    public static class None implements SecretRetrievalStrategy {
+    class None implements SecretRetrievalStrategy {
 
         @Override
         public SecretValue retrieve(String displayName, UUID id, int sub) {
@@ -52,7 +52,7 @@ public interface SecretRetrievalStrategy {
     }
 
     @JsonTypeName("reference")
-    public static class Reference implements SecretRetrievalStrategy {
+    class Reference implements SecretRetrievalStrategy {
 
         @JsonIgnore
         private final Supplier<SecretValue> supplier;
@@ -82,7 +82,7 @@ public interface SecretRetrievalStrategy {
     @Builder
     @Value
     @Jacksonized
-    public static class InPlace implements SecretRetrievalStrategy {
+    class InPlace implements SecretRetrievalStrategy {
 
         SecretValue value;
 
@@ -106,7 +106,7 @@ public interface SecretRetrievalStrategy {
     }
 
     @JsonTypeName("prompt")
-    public static class Prompt implements SecretRetrievalStrategy {
+    class Prompt implements SecretRetrievalStrategy {
 
         @Override
         public SecretValue retrieve(String displayName, UUID id, int sub) {
@@ -127,7 +127,7 @@ public interface SecretRetrievalStrategy {
     @Builder
     @Jacksonized
     @Value
-    public static class PasswordManager implements SecretRetrievalStrategy {
+    class PasswordManager implements SecretRetrievalStrategy {
 
         String key;
 
@@ -158,7 +158,7 @@ public interface SecretRetrievalStrategy {
     @Builder
     @Jacksonized
     @Value
-    public static class CustomCommand implements SecretRetrievalStrategy {
+    class CustomCommand implements SecretRetrievalStrategy {
 
         String command;
 

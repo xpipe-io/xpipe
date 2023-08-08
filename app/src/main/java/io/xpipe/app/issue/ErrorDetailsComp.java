@@ -43,7 +43,7 @@ public class ErrorDetailsComp extends SimpleComp {
 
     private Comp<?> createTrackEventHistory() {
         var list = FXCollections.observableList(event.getTrackEvents());
-        var comp = new ListViewComp<>(list, list, null, te -> {
+        return new ListViewComp<>(list, list, null, te -> {
             var label = new Label(te.getMessage());
             var i = DateTimeFormatter.ofPattern("HH:mm:ss:SSS")
                     .withZone(ZoneId.systemDefault())
@@ -54,7 +54,6 @@ public class ErrorDetailsComp extends SimpleComp {
             HBox.setHgrow(spacer, Priority.ALWAYS);
             return Comp.of(() -> c);
         });
-        return comp;
     }
 
     @Override

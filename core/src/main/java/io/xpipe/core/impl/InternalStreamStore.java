@@ -27,11 +27,6 @@ public class InternalStreamStore extends JacksonizedValue implements StreamDataS
         this.uuid = UUID.randomUUID();
     }
 
-    @Override
-    public DataFlow getFlow() {
-        return DataFlow.INPUT_OUTPUT;
-    }
-
     private Path getFile() {
         return DataStateProvider.get().getInternalStreamStore(uuid);
     }

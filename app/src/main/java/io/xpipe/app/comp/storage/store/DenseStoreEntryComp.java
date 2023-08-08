@@ -22,13 +22,11 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var grid = new GridPane();
         grid.setHgap(8);
 
-        int index = 0;
         if (showIcon) {
             var storeIcon = createIcon(26, 21);
             grid.getColumnConstraints().add(new ColumnConstraints(26));
             grid.add(storeIcon, 0, 0);
             GridPane.setHalignment(storeIcon, HPos.CENTER);
-            index++;
         }
 
         var customSize = content != null ? 300 : 0;

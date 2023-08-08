@@ -18,7 +18,7 @@ public class DialogReference {
     DialogElement start;
 
     @JsonCreator
-    public DialogReference(UUID dialogId, DialogElement start) {
+    public DialogReference(@NonNull UUID dialogId, DialogElement start) {
         this.dialogId = dialogId;
         this.start = start;
     }

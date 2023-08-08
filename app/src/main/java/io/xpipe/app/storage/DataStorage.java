@@ -267,13 +267,12 @@ public abstract class DataStorage {
     }
 
     public synchronized DataStoreEntry getStoreEntry(@NonNull DataStore store) {
-        var entry = storeEntries.stream()
+        return storeEntries.stream()
                 .filter(n -> n.getStore() != null
                         && Objects.equals(store.getClass(), n.getStore().getClass())
                         && store.equals(n.getStore()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Store not found"));
-        return entry;
     }
 
     public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
@@ -300,14 +299,13 @@ public abstract class DataStorage {
     }
 
     public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
-        var entry = storeEntries.stream()
+        return storeEntries.stream()
                 .filter(n -> {
                     return n.getStore() != null
                             && store.getClass().equals(n.getStore().getClass())
                             && store.equals(n.getStore());
                 })
                 .findFirst();
-        return entry;
     }
 
     public synchronized Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull String name) {

@@ -53,7 +53,6 @@ public class OsLogoComp extends SimpleComp {
             });
         }
 
-        var found = ICONS.entrySet().stream().filter(e->name.toLowerCase().contains(e.getKey())).findAny().map(e->e.getValue()).orElse("os/" + LINUX_DEFAULT);
-        return found;
+        return ICONS.entrySet().stream().filter(e->name.toLowerCase().contains(e.getKey())).findAny().map(e->e.getValue()).orElse("os/" + LINUX_DEFAULT);
     }
 }

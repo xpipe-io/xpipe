@@ -17,10 +17,9 @@ import java.util.UUID;
 public class BrowserSavedState {
 
     static BrowserSavedState load() {
-        BrowserSavedState state = AppCache.get("browser-state", BrowserSavedState.class, () -> {
+        return AppCache.get("browser-state", BrowserSavedState.class, () -> {
             return null;
         });
-        return state;
     }
 
     @Value

@@ -12,10 +12,6 @@ public enum CloseBehaviour implements PrefsChoiceValue {
             OperationMode.shutdown(false, false);
         }
 
-        @Override
-        public boolean isSelectable() {
-            return true;
-        }
     },
 
     MINIMIZE_TO_TRAY("app.minimizeToTray") {

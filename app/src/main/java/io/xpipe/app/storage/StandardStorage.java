@@ -135,7 +135,6 @@ public class StandardStorage extends DataStorage {
 
     @Override
     public Path getInternalStreamPath(@NonNull UUID uuid) {
-        var newDir = getStreamsDir().resolve(uuid.toString());
-        return newDir;
+        return getStreamsDir().resolve(uuid.toString());
     }
 }

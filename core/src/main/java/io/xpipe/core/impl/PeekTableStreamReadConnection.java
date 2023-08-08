@@ -39,15 +39,6 @@ public abstract class PeekTableStreamReadConnection extends StreamReadConnection
     }
 
     @Override
-    public void close() throws Exception {
-        if (inputStream == null) {
-            throw new IllegalStateException("Not initialized");
-        }
-
-        inputStream.close();
-    }
-
-    @Override
     public TupleType getDataType() {
         return type;
     }

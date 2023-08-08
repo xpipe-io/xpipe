@@ -85,7 +85,7 @@ final class BrowserContextMenu extends ContextMenu {
     }
 
     private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
-        var used = action.automaticallyResolveLinks()
+        return action.automaticallyResolveLinks()
                 ? selected.stream()
                 .map(browserEntry -> new BrowserEntry(
                         browserEntry.getRawFileEntry().resolved(),
@@ -93,6 +93,5 @@ final class BrowserContextMenu extends ContextMenu {
                         browserEntry.isSynthetic()))
                 .toList()
                 : selected;
-        return used;
     }
 }

@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.App;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
@@ -32,7 +31,7 @@ public class SecretRetrievalStrategyHelper {
     private static OptionsBuilder passwordManager(Property<SecretRetrievalStrategy.PasswordManager> p) {
         var keyProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
-        var content = new HorizontalComp(List.<Comp<?>>of(
+        var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty).apply(struc -> struc.get().setPromptText("Password key")).hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory(3);

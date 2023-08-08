@@ -109,17 +109,15 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
     }
 
     private HttpClient createClient() {
-        var client = HttpClient.newBuilder()
+        return HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
-        return client;
     }
 
     private HttpRequest createRequest() {
         var b = HttpRequest.newBuilder().uri(getURL());
         headers.forEach(b::setHeader);
-        var req = b.GET().build();
-        return req;
+        return b.GET().build();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class DataTableImpl extends DataSourceImpl implements DataTable {
 
     @Override
     public Iterator<TupleNode> iterator() {
-        return new Iterator<TupleNode>() {
+        return new Iterator<>() {
             @Override
             public boolean hasNext() {
                 return false;

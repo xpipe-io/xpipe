@@ -52,7 +52,7 @@ The feature set is the same for all supported connection types. It of course als
 
 <br>
 <p align="center">
-  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" />
+  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" alt="Terminal launcher"/>
 </p>
 <br>
 

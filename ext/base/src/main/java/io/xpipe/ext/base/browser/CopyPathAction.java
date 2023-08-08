@@ -51,11 +51,6 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                     }
 
                     @Override
-                    public boolean automaticallyResolveLinks() {
-                        return true;
-                    }
-
-                    @Override
                     public KeyCombination getShortcut() {
                         return new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN, KeyCombination.SHORTCUT_DOWN);
                     }

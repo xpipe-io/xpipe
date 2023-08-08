@@ -32,11 +32,6 @@ public class DeleteStoreChildrenAction implements ActionProvider {
         return new DataStoreCallSite<>() {
 
             @Override
-            public boolean isMajor(DataStore o) {
-                return false;
-            }
-
-            @Override
             public ActionProvider.Action createAction(DataStore store) {
                 return new Action(DataStorage.get().getStoreEntry(store));
             }

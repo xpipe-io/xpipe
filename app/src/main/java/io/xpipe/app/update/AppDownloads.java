@@ -13,7 +13,7 @@ import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.github.authorization.AuthorizationProvider;
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +53,7 @@ public class AppDownloads {
                 return Optional.empty();
             }
 
-            var url = new URL(asset.get().getBrowserDownloadUrl());
+            var url = URI.create(asset.get().getBrowserDownloadUrl()).toURL();
             var bytes = HttpHelper.executeGet(url, aFloat -> {});
             var downloadFile =
                     FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
@@ -88,7 +88,7 @@ public class AppDownloads {
                 return Optional.empty();
             }
 
-            var url = new URL(asset.get().getBrowserDownloadUrl());
+            var url = URI.create(asset.get().getBrowserDownloadUrl()).toURL();
             var bytes = HttpHelper.executeGet(url, aFloat -> {});
             return Optional.of(new String(bytes, StandardCharsets.UTF_8));
         } catch (Throwable t) {

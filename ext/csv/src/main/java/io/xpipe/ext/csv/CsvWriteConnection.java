@@ -58,13 +58,12 @@ public class CsvWriteConnection extends StreamWriteConnection implements SimpleT
         var array = CsvSplitter.splitRaw(lines, source.getQuote(), source.getDelimiter());
         var headerState = CsvHeaderState.determine(array, source.getQuote());
         var quoteStates = CsvQuoteState.determine(array, headerState, source.getQuote());
-        var rawHeader = headerState == CsvHeaderState.INCLUDED
+
+        this.rawColumnNames = headerState == CsvHeaderState.INCLUDED
                 ? array.at(0).getNodes().stream()
                         .map(DataStructureNode::asString)
                         .toList()
                 : null;
-
-        this.rawColumnNames = rawHeader;
         this.quoteStates = quoteStates;
     }
 

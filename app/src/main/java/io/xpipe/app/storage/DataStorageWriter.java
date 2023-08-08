@@ -64,8 +64,7 @@ public class DataStorageWriter {
 
         var value = function.apply(node).orElse(null);
         if (value != null) {
-            var idReplacement = JsonNodeFactory.instance.objectNode().set(key, new TextNode(value.toString()));
-            return idReplacement;
+            return JsonNodeFactory.instance.objectNode().set(key, new TextNode(value.toString()));
         }
 
         var replacement = JsonNodeFactory.instance.objectNode();

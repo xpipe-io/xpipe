@@ -40,8 +40,7 @@ public class BrowserClipboard {
     }
 
     public static Instance retrieveCopy() {
-        var current = currentCopyClipboard;
-        return current.getValue();
+        return currentCopyClipboard.getValue();
     }
 
     public static Instance retrieveDrag(Dragboard dragboard) {

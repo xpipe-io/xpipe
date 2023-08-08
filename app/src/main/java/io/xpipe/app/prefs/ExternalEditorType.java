@@ -124,11 +124,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
-            return true;
-        }
-
-        @Override
         public String getId() {
             return "app.custom";
         }
@@ -195,6 +190,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
     List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
+    @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();
                 if (OsType.getLocal().equals(OsType.WINDOWS)) {

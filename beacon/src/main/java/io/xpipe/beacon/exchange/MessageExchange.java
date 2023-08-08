@@ -16,7 +16,6 @@ public interface MessageExchange {
      * Returns the request class, needed for serialization.
      */
     @SneakyThrows
-    @SuppressWarnings("unchecked")
     default Class<?> getRequestClass() {
         var c = getClass().getSuperclass();
         var name = (MessageExchange.class.isAssignableFrom(c) ? c : getClass()).getName() + "$Request";
@@ -27,7 +26,6 @@ public interface MessageExchange {
      * Returns the response class, needed for serialization.
      */
     @SneakyThrows
-    @SuppressWarnings("unchecked")
     default Class<?> getResponseClass() {
         var c = getClass().getSuperclass();
         var name = (MessageExchange.class.isAssignableFrom(c) ? c : getClass()).getName() + "$Response";

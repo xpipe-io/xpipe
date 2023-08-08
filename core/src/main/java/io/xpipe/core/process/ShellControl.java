@@ -116,13 +116,7 @@ public interface ShellControl extends ProcessControl {
     FailableSupplier<SecretValue> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getOpenCommand(), new TerminalOpenFunction() {
-
-            @Override
-                    public String prepare(ShellControl sc, String command) {
-                        return command;
-                    }
-                })
+        return subShell(p -> type.getOpenCommand(), (sc, command) -> command)
                 .elevationPassword(getElevationPassword());
     }
 
@@ -132,24 +126,12 @@ public interface ShellControl extends ProcessControl {
     }
 
     default ShellControl identicalSubShell() {
-        return subShell(p -> p.getShellDialect().getOpenCommand(), new TerminalOpenFunction() {
-
-            @Override
-                    public String prepare(ShellControl sc, String command) {
-                        return command;
-                    }
-                })
+        return subShell(p -> p.getShellDialect().getOpenCommand(), (sc, command) -> command)
                 .elevationPassword(getElevationPassword());
     }
 
     default ShellControl subShell(@NonNull String command) {
-        return subShell(processControl -> command, new TerminalOpenFunction() {
-
-            @Override
-            public String prepare(ShellControl sc, String command) {
-                return command;
-            }
-        });
+        return subShell(processControl -> command, (sc, command1) -> command1);
     }
 
     default ShellControl enforcedDialect(ShellDialect type) throws Exception {
@@ -179,7 +161,7 @@ public interface ShellControl extends ProcessControl {
     void cd(String directory) throws Exception;
 
     @Override
-    ShellControl start() throws Exception;
+    ShellControl start();
 
     CommandControl command(FailableFunction<ShellControl, String, Exception> command);
 

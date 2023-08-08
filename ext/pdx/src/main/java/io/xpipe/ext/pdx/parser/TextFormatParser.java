@@ -114,10 +114,9 @@ public final class TextFormatParser {
                     tokenizer.getScalarCount());
 
             // now = Instant.now();
-            TupleNode r = parseArray(name, strict);
             // System.out.println("Node creator took " + ChronoUnit.MILLIS.between(now, Instant.now()) + "ms");
 
-            return r;
+            return parseArray(name, strict);
         } catch (ParseException ex) {
             throw ex;
         } catch (Throwable t) {
