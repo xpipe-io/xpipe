@@ -15,16 +15,17 @@ public class AskpassAlert {
     private static final Set<UUID> cancelledRequests = new HashSet<>();
     private static final Set<UUID> requests = new HashSet<>();
 
-    public static SecretValue query(String prompt, UUID requestId, UUID secretId) {
+    public static SecretValue query(String prompt, UUID requestId, UUID secretId, int sub) {
         if (cancelledRequests.contains(requestId)) {
             return null;
         }
 
-        if (SecretCache.get(secretId).isPresent() && requests.contains(requestId)) {
-            SecretCache.clear(secretId);
+        var ref = new SecretManager.SecretReference(secretId, sub);
+        if (SecretManager.get(ref).isPresent() && requests.contains(requestId)) {
+            SecretManager.clear(ref);
         }
 
-        var found = SecretCache.get(secretId);
+        var found = SecretManager.get(ref);
         if (found.isPresent()) {
             return found.get();
         }
@@ -49,7 +50,7 @@ public class AskpassAlert {
         // If the result is null, assume that the operation was aborted by the user
         if (r != null) {
             requests.add(requestId);
-            SecretCache.set(secretId, r);
+            SecretManager.set(ref, r);
         } else {
             cancelledRequests.add(requestId);
         }

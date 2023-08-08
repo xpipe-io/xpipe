@@ -26,21 +26,28 @@ import java.util.function.Supplier;
 })
 public interface SecretRetrievalStrategy {
 
-    SecretValue retrieve(String displayName, UUID id) throws Exception;
+    SecretValue retrieve(String displayName, UUID id, int sub) throws Exception;
 
     boolean isLocalAskpassCompatible();
+
+    boolean shouldCache();
 
     @JsonTypeName("none")
     public static class None implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id) {
+        public SecretValue retrieve(String displayName, UUID id, int sub) {
             return null;
         }
 
         @Override
         public boolean isLocalAskpassCompatible() {
             return true;
+        }
+
+        @Override
+        public boolean shouldCache() {
+            return false;
         }
     }
 
@@ -55,12 +62,17 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id) {
+        public SecretValue retrieve(String displayName, UUID id, int sub) {
             return supplier.get();
         }
 
         @Override
         public boolean isLocalAskpassCompatible() {
+            return false;
+        }
+
+        @Override
+        public boolean shouldCache() {
             return false;
         }
     }
@@ -79,10 +91,14 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id) {
+        public SecretValue retrieve(String displayName, UUID id, int sub) {
             return value;
         }
 
+        @Override
+        public boolean shouldCache() {
+            return false;
+        }
         @Override
         public boolean isLocalAskpassCompatible() {
             return false;
@@ -93,10 +109,14 @@ public interface SecretRetrievalStrategy {
     public static class Prompt implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id) {
-            return AskpassAlert.query(displayName, UUID.randomUUID(), id);
+        public SecretValue retrieve(String displayName, UUID id, int sub) {
+            return AskpassAlert.query(displayName, UUID.randomUUID(), id, sub);
         }
 
+        @Override
+        public boolean shouldCache() {
+            return true;
+        }
         @Override
         public boolean isLocalAskpassCompatible() {
             return true;
@@ -112,7 +132,7 @@ public interface SecretRetrievalStrategy {
         String key;
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id) throws Exception {
+        public SecretValue retrieve(String displayName, UUID id, int sub) throws Exception {
             var cmd = AppPrefs.get().passwordManagerString(key);
             if (cmd == null) {
                 return null;
@@ -121,6 +141,11 @@ public interface SecretRetrievalStrategy {
             try (var cc = new LocalStore().createBasicControl().command(cmd).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
+        }
+
+        @Override
+        public boolean shouldCache() {
+            return false;
         }
 
         @Override
@@ -138,10 +163,15 @@ public interface SecretRetrievalStrategy {
         String command;
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id) throws Exception {
+        public SecretValue retrieve(String displayName, UUID id, int sub) throws Exception {
             try (var cc = new LocalStore().createBasicControl().command(command).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
+        }
+
+        @Override
+        public boolean shouldCache() {
+            return false;
         }
 
         @Override

@@ -14,7 +14,7 @@ public class AskpassExchangeImpl extends AskpassExchange
             OperationMode.switchTo(OperationMode.TRAY);
         }
 
-        var r = AskpassAlert.query(msg.getPrompt(), msg.getRequest(), msg.getId());
+        var r = AskpassAlert.query(msg.getPrompt(), msg.getRequest(), msg.getStoreId(), msg.getSubId());
         return Response.builder().value(r != null ? r.getSecretValue() : null).build();
     }
 }
