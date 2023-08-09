@@ -3,16 +3,14 @@ package io.xpipe.core.util;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
 @SuperBuilder
-@Jacksonized
 @EqualsAndHashCode
-public class EncryptedSecretValue implements SecretValue {
+public abstract class EncryptedSecretValue implements SecretValue {
 
     @Getter
     String encryptedValue;

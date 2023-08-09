@@ -6,7 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.DefaultSecretValue;
+import io.xpipe.core.util.DefaultSecretValue;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LockedSecretValue;
 import io.xpipe.core.impl.LocalStore;
@@ -36,7 +36,7 @@ public class BaseMode extends OperationMode {
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
         JacksonMapper.configure(objectMapper -> {
-            objectMapper.registerSubtypes(LockedSecretValue.class, DefaultSecretValue.class);
+            objectMapper.registerSubtypes(LockedSecretValue.class);
         });
         // Load translations before storage initialization to localize store error messages
         // Also loaded before antivirus alert to localize that

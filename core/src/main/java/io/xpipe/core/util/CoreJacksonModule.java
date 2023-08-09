@@ -36,6 +36,7 @@ public class CoreJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
+                new NamedType(DefaultSecretValue.class),
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
                 new NamedType(LocalDirectoryDataStore.class),

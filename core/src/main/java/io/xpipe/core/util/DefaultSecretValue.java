@@ -1,7 +1,6 @@
-package io.xpipe.app.util;
+package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.util.AesSecretValue;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -23,6 +22,11 @@ public class DefaultSecretValue extends AesSecretValue {
 
     public DefaultSecretValue(char[] secret) {
         super(secret);
+    }
+
+    @Override
+    public SecretValue inPlace() {
+        return this;
     }
 
     protected SecretKey getAESKey(int keysize) throws NoSuchAlgorithmException, InvalidKeySpecException {

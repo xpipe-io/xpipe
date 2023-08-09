@@ -3,7 +3,6 @@ package io.xpipe.core.util;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.jackson.Jacksonized;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -15,9 +14,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 
 @SuperBuilder
-@Jacksonized
 @EqualsAndHashCode(callSuper = true)
-public class AesSecretValue extends EncryptedSecretValue {
+public abstract class AesSecretValue extends EncryptedSecretValue {
 
     private static final String ENCRYPT_ALGO = "AES/GCM/NoPadding";
     private static final int TAG_LENGTH_BIT = 128;

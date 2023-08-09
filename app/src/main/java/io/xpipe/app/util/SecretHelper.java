@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.util.DefaultSecretValue;
 import io.xpipe.core.util.EncryptedSecretValue;
 
 public class SecretHelper {

@@ -2,6 +2,7 @@ package io.xpipe.beacon.exchange;
 
 import io.xpipe.beacon.RequestMessage;
 import io.xpipe.beacon.ResponseMessage;
+import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -35,6 +36,6 @@ public class AskpassExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        String value;
+        SecretValue value;
     }
 }

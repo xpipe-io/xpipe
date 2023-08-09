@@ -3,6 +3,8 @@ package io.xpipe.app.util;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.AesSecretValue;
+import io.xpipe.core.util.DefaultSecretValue;
+import io.xpipe.core.util.SecretValue;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -24,6 +26,11 @@ public class LockedSecretValue extends AesSecretValue {
 
     public LockedSecretValue(char[] secret) {
         super(secret);
+    }
+
+    @Override
+    public SecretValue inPlace() {
+        return new DefaultSecretValue(getSecret());
     }
 
     @Override

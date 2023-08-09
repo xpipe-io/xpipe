@@ -3,7 +3,7 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DefaultSecretValue;
+import io.xpipe.core.util.DefaultSecretValue;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Value;
