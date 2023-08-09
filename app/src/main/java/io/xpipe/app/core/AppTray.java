@@ -13,6 +13,7 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 
 public class AppTray {
 
@@ -76,9 +77,13 @@ public class AppTray {
 
         // Remove functionality to show stage when primary clicked and replace it with our own
         SwingUtilities.invokeLater(() -> {
-            privateTrayIcon.removeActionListener(privateTrayIcon.getActionListeners()[0]);
+            for (var l : Arrays.stream(privateTrayIcon.getActionListeners()).toList()) {
+                privateTrayIcon.removeActionListener(l);
+            }
             privateTrayIcon.addActionListener(e -> {
-                OperationMode.switchToAsync(OperationMode.GUI);
+                if (OsType.getLocal() != OsType.MACOS) {
+                    OperationMode.switchToAsync(OperationMode.GUI);
+                }
             });
         });
 
