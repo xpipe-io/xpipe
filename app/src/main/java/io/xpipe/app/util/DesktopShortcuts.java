@@ -50,7 +50,7 @@ public class DesktopShortcuts {
         var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
                 """
-                        #!/bin/bash
+                        #!/usr/bin/env sh
                         "%s" open %s
                         """,
                 exec, target);

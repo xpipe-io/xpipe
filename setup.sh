@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 which sdk
 if [ $? -ne 0 ]; then

@@ -39,14 +39,14 @@ public class Shortcuts {
             }
 
             if (scene.get() != null) {
-                scene.get().removeEventHandler(KeyEvent.KEY_PRESSED, filter);
+                scene.get().removeEventFilter(KeyEvent.KEY_PRESSED, filter);
                 SHORTCUTS.remove(region);
                 scene.set(null);
             }
 
             if (s != null) {
                 scene.set(s);
-                s.addEventHandler(KeyEvent.KEY_PRESSED, filter);
+                s.addEventFilter(KeyEvent.KEY_PRESSED, filter);
             }
         });
     }

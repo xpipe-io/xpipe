@@ -153,6 +153,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
                 .apply(struc -> struc.get().setPadding(new Insets(5, 5, 5, 0)));
         name.apply(s -> AppFont.header(s.get()));
+        name.styleClass("name");
         return name;
     }
 

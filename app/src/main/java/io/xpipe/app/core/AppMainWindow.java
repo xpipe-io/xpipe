@@ -1,11 +1,13 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourAlert;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.OsType;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Rectangle2D;
@@ -246,6 +248,15 @@ public class AppMainWindow {
 
         contentR.prefWidthProperty().bind(stage.getScene().widthProperty());
         contentR.prefHeightProperty().bind(stage.getScene().heightProperty());
+
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            stage.getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode().equals(KeyCode.W) && event.isControlDown()) {
+                    event.consume();
+                    OperationMode.close();
+                }
+            });
+        }
 
         stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
