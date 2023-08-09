@@ -4,11 +4,13 @@ import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -46,6 +48,7 @@ public class AppTray {
                     OperationMode.close();
                 })
                 .toolTip("XPipe")
+                .applicationTitle("XPipe")
                 .build();
         this.errorHandler = new TrayErrorHandler();
 
@@ -63,6 +66,7 @@ public class AppTray {
         return INSTANCE;
     }
 
+    @SneakyThrows
     public void show() {
         icon.show();
 
@@ -73,6 +77,25 @@ public class AppTray {
                 OperationMode.switchToAsync(OperationMode.GUI);
             });
         });
+
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    Field peerField = null;
+                    peerField = TrayIcon.class.getDeclaredField("peer");
+                    peerField.setAccessible(true);
+                    var peer = peerField.get(this.privateTrayIcon);
+
+                    var canvasField = peer.getClass().getDeclaredField("canvas");
+                    canvasField.setAccessible(true);
+                    Component canvas = (Component) canvasField.get(peer);
+
+                    canvas.setBackground(new Color(0, 0, 0, 0));
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).omit().handle();
+                }
+            });
+        }
     }
 
     public void hide() {
