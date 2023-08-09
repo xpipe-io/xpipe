@@ -23,7 +23,12 @@ public class AppTray {
 
     @SneakyThrows
     private AppTray() {
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo/logo_128x128.png").orElseThrow();
+        var image = switch (OsType.getLocal()) {
+            case OsType.Windows windows -> "img/logo/logo_16x16.png";
+            case OsType.Linux linux -> "img/logo/logo_24x24.png";
+            case OsType.MacOs macOs -> "img/logo/logo_24x24.png";
+        };
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
         var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url)
                 .menuItem(AppI18n.get("open"), e -> {
@@ -48,7 +53,6 @@ public class AppTray {
                     OperationMode.close();
                 })
                 .toolTip("XPipe")
-                .applicationTitle("XPipe")
                 .build();
         this.errorHandler = new TrayErrorHandler();
 
@@ -90,8 +94,12 @@ public class AppTray {
                     var canvasField = peer.getClass().getDeclaredField("canvas");
                     canvasField.setAccessible(true);
                     Component canvas = (Component) canvasField.get(peer);
-
                     canvas.setBackground(new Color(0, 0, 0, 0));
+
+                    var frameField = peer.getClass().getDeclaredField("eframe");
+                    frameField.setAccessible(true);
+                    Frame frame = (Frame) frameField.get(peer);
+                    frame.setTitle("XPipe");
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).omit().handle();
                 }
