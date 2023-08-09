@@ -23,7 +23,7 @@ public class AppTray {
 
     @SneakyThrows
     private AppTray() {
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo/logo_48x48.png").orElseThrow();
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "img/logo/logo_128x128.png").orElseThrow();
 
         var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url)
                 .menuItem(AppI18n.get("open"), e -> {
@@ -78,6 +78,7 @@ public class AppTray {
             });
         });
 
+        // Ugly fix to show a transparent background on Linux
         if (OsType.getLocal().equals(OsType.LINUX)) {
             SwingUtilities.invokeLater(() -> {
                 try {
