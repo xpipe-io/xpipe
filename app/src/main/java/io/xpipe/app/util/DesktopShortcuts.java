@@ -36,7 +36,7 @@ public class DesktopShortcuts {
                         Exec="%s" open %s
                         Icon=%s
                         Terminal=false
-                        Categories=Utility;Development;Office;
+                        Categories=Utility;Development;
                         """,
                 name, exec, target, icon);
         var file = DesktopHelper.getDesktopDirectory().resolve(name + ".desktop");
