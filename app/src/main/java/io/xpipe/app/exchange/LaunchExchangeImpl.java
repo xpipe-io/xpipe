@@ -19,6 +19,6 @@ public class LaunchExchangeImpl extends LaunchExchange
             return Response.builder().command(List.of(split.toStrings())).build();
         }
 
-        throw new IllegalArgumentException("Not launchable");
+        throw new IllegalArgumentException(store.getName() + " is not launchable");
     }
 }
