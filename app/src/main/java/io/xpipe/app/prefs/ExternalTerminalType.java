@@ -109,13 +109,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String file) throws Exception {
-            var path = determineInstallation();
-            if (path.isEmpty()) {
-                throw new IOException("Unable to find installation of " + toTranslatedString());
+            var location = determineFromPath();
+            if (location.isEmpty()) {
+                location = determineInstallation();
+                if (location.isEmpty()) {
+                    throw new IOException("Unable to find installation of " + toTranslatedString());
+                }
             }
 
+            Optional<Path> finalLocation = location;
             ApplicationHelper.executeLocalApplication(
-                    sc -> createCommand(sc, name, path.get().toString(), file), false);
+                    sc -> createCommand(sc, name, finalLocation.get().toString(), file), false);
         }
 
         protected abstract String createCommand(ShellControl shellControl, String name, String path, String file);
