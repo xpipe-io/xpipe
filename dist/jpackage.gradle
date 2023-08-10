@@ -5,7 +5,6 @@ def distDir = "$buildDir/dist"
 def distJvmArgs = new ArrayList<String>(project(':app').application.applicationDefaultJvmArgs)
 
 def releaseArguments = distJvmArgs + [
-        '-Dio.xpipe.app.writeLogs=true',
         "-Dio.xpipe.app.version=$rootProject.versionString",
         "-Dio.xpipe.app.build=$rootProject.versionString-${new Date().format('yyyyMMddHHmm')}",
         "-Dio.xpipe.app.buildId=$rootProject.buildId",

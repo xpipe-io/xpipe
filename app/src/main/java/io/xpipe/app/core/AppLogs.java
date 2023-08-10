@@ -73,7 +73,7 @@ public class AppLogs {
             return Boolean.parseBoolean(System.getProperty(WRITE_LOGS_PROP));
         }
 
-        return false;
+        return true;
     }
 
     private static boolean shouldWriteSysout() {
