@@ -6,11 +6,11 @@ XPipe is a new type of shell connection hub and remote file manager that allows 
 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
-The full feature set is currently supported for:
+It currently supports:
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
-- [Docker](https://www.docker.com/) and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
-- [SSH](https://www.ssh.com/academy/ssh/protocol) connections
-- [Windows Subsystem for Linux](https://ubuntu.com/wsl) instances
+- [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
+- [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config file connections, and tunnels
+- [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
 - Any other custom remote connection methods that work through the command-line
 
@@ -83,6 +83,8 @@ You can also install XPipe by pasting the installation command into your termina
 
 #####  Linux / MacOS
 
+The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
+
 ```
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
@@ -92,13 +94,6 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 ```
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
-
-### Notes for Bitdefender users
-
-Right now, for some reason, only Bitdefender really does not like XPipe doing anything on your system.
-It will instantly quarantine the application when it opens a shell *plus the system shells itself*,
-so it can prevent you from opening any shell on your own afterward.
-For more information, see the [security page](https://github.com/xpipe-io/xpipe/blob/master/SECURITY.md#antivirus-programs).
 
 ## Further information
 
