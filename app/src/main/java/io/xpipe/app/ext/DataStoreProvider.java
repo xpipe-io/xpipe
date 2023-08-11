@@ -34,6 +34,10 @@ public interface DataStoreProvider {
         }
     }
 
+    default boolean shouldShowInSelectionTree() {
+        return true;
+    }
+
     default void preAdd(DataStore store) {}
 
     default boolean shouldEdit() {

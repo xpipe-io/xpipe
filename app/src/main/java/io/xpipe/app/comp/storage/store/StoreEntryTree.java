@@ -26,6 +26,10 @@ public class StoreEntryTree {
     }
 
     private static void add(TreeItem<StoreEntryWrapper> parent, StoreSection section) {
+        if (section.getWrapper().getEntry().getState().isUsable() && !section.getWrapper().getEntry().getProvider().shouldShowInSelectionTree()) {
+            return;
+        }
+
         var item = new TreeItem<>(section.getWrapper());
         item.setExpanded(section.getWrapper().getExpanded().getValue());
         parent.getChildren().add(item);
