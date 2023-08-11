@@ -226,7 +226,7 @@ public abstract class DataStorage {
 
     public synchronized List<DataStore> getUsableStores() {
         return new ArrayList<>(getStoreEntries().stream()
-                .filter(entry -> !entry.isDisabled())
+                .filter(entry -> entry.getState().isUsable())
                 .map(DataStoreEntry::getStore)
                 .toList());
     }

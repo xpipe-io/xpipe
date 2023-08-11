@@ -34,10 +34,17 @@ public class UserReportComp extends SimpleComp {
     private final ErrorEvent event;
     private final Stage stage;
 
+    private boolean sent;
+
     public UserReportComp(ErrorEvent event, Stage stage) {
         this.event = event;
         this.includedDiagnostics = new SimpleListProperty<>(FXCollections.observableArrayList());
         this.stage = stage;
+        stage.setOnHidden(event1 -> {
+            if (!sent) {
+                ErrorAction.ignore().handle(event);
+            }
+        });
     }
 
     public static void show(ErrorEvent event) {
@@ -115,6 +122,7 @@ public class UserReportComp extends SimpleComp {
         includedDiagnostics.forEach(event::addAttachment);
         event.attachUserReport(text.get());
         SentryErrorHandler.getInstance().handle(event);
+        sent = true;
         stage.close();
     }
 }
