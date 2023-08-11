@@ -119,6 +119,29 @@ public class BindingsHelper {
         return l1;
     }
 
+    public static <T, V> ObservableList<T> cachedMappedContentBinding(ObservableList<V> l2, Function<V, T> map) {
+        var cache = new HashMap<V, T>();
+
+        ObservableList<T> l1 = FXCollections.observableList(new ArrayList<>());
+        Runnable runnable = () -> {
+            cache.keySet().removeIf(t -> !l2.contains(t));
+            setContent(l1, l2.stream()
+                    .map(v -> {
+                        if (!cache.containsKey(v)) {
+                            cache.put(v, map.apply(v));
+                        }
+
+                        return cache.get(v);
+                    }).toList());
+        };
+        runnable.run();
+        l2.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
+        });
+        linkPersistently(l2, l1);
+        return l1;
+    }
+
     public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, Comparator<V> comp) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {

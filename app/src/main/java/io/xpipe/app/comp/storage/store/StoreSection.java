@@ -57,7 +57,7 @@ public class StoreSection implements StorageFilter.Filterable {
                     storeEntrySection -> storeEntrySection.wrapper.getEntry().getName());
 
     public static StoreSection createTopLevel() {
-        var topLevel = BindingsHelper.mappedContentBinding(
+        var topLevel = BindingsHelper.cachedMappedContentBinding(
                 StoreViewState.get().getAllEntries(), storeEntryWrapper -> create(storeEntryWrapper, 1));
         var filtered = BindingsHelper.filteredContentBinding(topLevel, section -> {
             return DataStorage.get()
@@ -80,7 +80,7 @@ public class StoreSection implements StorageFilter.Filterable {
                             .map(found -> found.equals(e.getEntry()))
                             .orElse(false);
                 });
-        var children = BindingsHelper.mappedContentBinding(filtered, entry1 -> create(entry1, depth + 1));
+        var children = BindingsHelper.cachedMappedContentBinding(filtered, entry1 -> create(entry1, depth + 1));
         var ordered = BindingsHelper.orderedContentBinding(children, COMPARATOR);
         return new StoreSection(e, ordered, depth);
     }

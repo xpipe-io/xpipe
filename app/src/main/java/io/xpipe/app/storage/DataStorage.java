@@ -16,6 +16,7 @@ import lombok.NonNull;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Stream;
 
 public abstract class DataStorage {
 
@@ -329,11 +330,26 @@ public abstract class DataStorage {
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
+        var oldParent = DataStorage.get().getParent(entry, false);
+        var newParent = DataStorage.get().getParent(newEntry, false);
+
         propagateUpdate(
                 () -> {
                     newEntry.finalizeEntry();
+
+                    var children = getStoreChildren(entry, false, true);
+                    if (!Objects.equals(oldParent, newParent)) {
+                        var toRemove = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
+                        listeners.forEach(storageListener -> storageListener.onStoreRemove(toRemove));
+                    }
+
                     entry.applyChanges(newEntry);
                     entry.initializeEntry();
+
+                    if (!Objects.equals(oldParent, newParent)) {
+                        var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
+                        listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
+                    }
                 },
                 entry);
     }
