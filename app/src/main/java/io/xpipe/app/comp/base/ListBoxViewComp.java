@@ -12,7 +12,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,7 +34,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
     @Override
     public CompStructure<ScrollPane> createBase() {
-        Map<T, Region> cache = new HashMap<>();
+        Map<T, Region> cache = new IdentityHashMap<>();
 
         VBox vbox = new VBox();
         vbox.getStyleClass().add("content");

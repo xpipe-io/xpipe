@@ -142,13 +142,16 @@ public class BindingsHelper {
         return l1;
     }
 
-    public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, Comparator<V> comp) {
+    public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, ObservableValue<Comparator<V>> comp) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
-            setContent(l1, l2.stream().sorted(comp).toList());
+            setContent(l1, l2.stream().sorted(comp.getValue()).toList());
         };
         runnable.run();
         l2.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
+        });
+        comp.addListener((observable, oldValue, newValue) -> {
             runnable.run();
         });
         linkPersistently(l2, l1);

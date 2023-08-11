@@ -1,15 +1,18 @@
 package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.comp.storage.StorageFilter;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 import javafx.application.Platform;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -28,7 +31,17 @@ public class StoreViewState {
     private final ObservableList<StoreEntryWrapper> shownEntries =
             FXCollections.observableList(new CopyOnWriteArrayList<>());
 
+    @Getter
+    private final Property<StoreSortMode> sortMode;
+
+
     private StoreViewState() {
+        var val = AppCache.getIfPresent("sortMode", StoreSortMode.class).orElse(StoreSortMode.ALPHABETICAL_DESC);
+        this.sortMode = new SimpleObjectProperty<>(val);
+        this.sortMode.addListener((observable, oldValue, newValue) -> {
+            AppCache.update("sortMode", newValue.getId());
+        });
+
         try {
             addStorageGroupListeners();
             addShownContentChangeListeners();
