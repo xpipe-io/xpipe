@@ -186,22 +186,33 @@ public class ErrorHandlerComp extends SimpleComp {
     protected Region createSimple() {
         var top = createTop();
         var content = new VBox(top, new Separator(Orientation.HORIZONTAL));
-        if (event.isReportable()) {
-            var header = new Label(AppI18n.get("possibleActions"));
-            AppFont.header(header);
-            var actionBox = new VBox(header);
-            actionBox.getStyleClass().add("actions");
-            actionBox.setFillWidth(true);
+        var header = new Label(AppI18n.get("possibleActions"));
+        AppFont.header(header);
+        var actionBox = new VBox(header);
+        actionBox.getStyleClass().add("actions");
+        actionBox.setFillWidth(true);
 
-            for (var action :
-                    List.of(ErrorAction.sendDiagnostics(), ErrorAction.reportOnGithub(), ErrorAction.ignore())) {
+        var custom = event.getCustomActions();
+        for (var c : custom) {
+            var ac = createActionComp(c);
+            actionBox.getChildren().add(ac);
+        }
+
+        if (event.isReportable()) {
+            for (var action : List.of(ErrorAction.sendDiagnostics(), ErrorAction.reportOnGithub())) {
                 var ac = createActionComp(action);
                 actionBox.getChildren().add(ac);
             }
-            actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
-
-            content.getChildren().addAll(actionBox, new Separator(Orientation.HORIZONTAL));
         }
+
+        for (var action :
+                List.of(ErrorAction.ignore())) {
+            var ac = createActionComp(action);
+            actionBox.getChildren().add(ac);
+        }
+        actionBox.getChildren().get(1).getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
+
+        content.getChildren().addAll(actionBox, new Separator(Orientation.HORIZONTAL));
 
         var details = createDetails();
         content.getStyleClass().add("top");
