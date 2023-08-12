@@ -423,9 +423,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                var suffix = file.equals(pc.getShellDialect().getOpenCommand())
-                        ? "\"\""
-                        : "\"" + file.replaceAll("\"", "\\\\\"") + "\"";
+                var clearscript = ScriptHelper.createLocalExecScript("printf \"\\e[1;1H\\e[2J\"\n" + file);
+                var suffix = "\"" + clearscript.replaceAll("\"", "\\\\\"") + "\"";
                 pc.osascriptCommand(String.format(
                                 """
                                 activate application "Terminal"
