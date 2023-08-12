@@ -34,9 +34,10 @@ public class StoreViewState {
     @Getter
     private final Property<StoreSortMode> sortMode;
 
-
     private StoreViewState() {
-        var val = AppCache.getIfPresent("sortMode", StoreSortMode.class).orElse(StoreSortMode.ALPHABETICAL_DESC);
+        var val = AppCache.getIfPresent("sortMode", String.class)
+                .flatMap(StoreSortMode::fromId)
+                .orElse(StoreSortMode.ALPHABETICAL_DESC);
         this.sortMode = new SimpleObjectProperty<>(val);
         this.sortMode.addListener((observable, oldValue, newValue) -> {
             AppCache.update("sortMode", newValue.getId());
@@ -79,7 +80,9 @@ public class StoreViewState {
             @Override
             public void onStoreRemove(DataStoreEntry... entry) {
                 var a = Arrays.stream(entry).collect(Collectors.toSet());
-                var l = StoreViewState.get().getAllEntries().stream().filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry())).toList();
+                var l = StoreViewState.get().getAllEntries().stream()
+                        .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
+                        .toList();
                 Platform.runLater(() -> {
                     allEntries.removeAll(l);
                 });

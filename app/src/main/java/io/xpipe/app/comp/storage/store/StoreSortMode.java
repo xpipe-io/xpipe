@@ -2,7 +2,9 @@ package io.xpipe.app.comp.storage.store;
 
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 public interface StoreSortMode {
 
@@ -59,6 +61,11 @@ public interface StoreSortMode {
         }
     };
 
+    static List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
+
+    static Optional<StoreSortMode> fromId(String id) {
+        return ALL.stream().filter(storeSortMode -> storeSortMode.getId().equals(id)).findFirst();
+    }
     String getId();
 
     Comparator<StoreSection> comparator();
