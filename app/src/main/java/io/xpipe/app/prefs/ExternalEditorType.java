@@ -62,6 +62,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor");
+
     LinuxPathType KATE = new LinuxPathType("app.kate", "kate");
 
     LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit");
@@ -187,7 +189,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     }
 
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD);
+    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
