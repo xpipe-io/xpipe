@@ -125,7 +125,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected abstract String createCommand(ShellControl shellControl, String name, String path, String file);
     }
 
-    ExternalTerminalType TABBY_WINDOWS = new WindowsType("app.tabbyWindows", "tabby") {
+    ExternalTerminalType TABBY_WINDOWS = new WindowsType("app.tabbyWindows", "Tabby") {
 
         @Override
         protected String createCommand(ShellControl shellControl, String name, String path, String file) {
