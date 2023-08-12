@@ -535,6 +535,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
+            var clearscript = ScriptHelper.createLocalExecScript("printf \"\\e[1;1H\\e[2J\"\n" + file);
             try (ShellControl pc = LocalStore.getShell()) {
                 pc.osascriptCommand(String.format(
                                 """
@@ -549,7 +550,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                             end tell
                         end tell
                         """,
-                                file.replaceAll("\"", "\\\\\"")))
+                                clearscript.replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }
