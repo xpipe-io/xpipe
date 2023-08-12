@@ -1,17 +1,18 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 def currentOS = DefaultNativePlatform.currentOperatingSystem;
-def platform
+def platform = null
 if (currentOS.isWindows()) {
     platform = 'win'
 } else if (currentOS.isLinux()) {
     platform = 'linux'
 } else if (currentOS.isMacOsX()) {
     platform = 'mac'
-    def macArch = System.getProperty ("os.arch");
-    if (macArch == 'aarch64') {
-        platform = 'mac-aarch64'
-    }
+}
+
+def arch = System.getProperty ("os.arch");
+if (arch == 'aarch64') {
+    platform += '-aarch64'
 }
 
 configurations {
