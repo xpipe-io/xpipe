@@ -115,13 +115,13 @@ public class ErrorEvent {
 
     public static <T extends Throwable> T unreportableIf(T t, boolean b) {
         if (b) {
-            // EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
+            EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         }
         return t;
     }
 
     public static <T extends Throwable> T unreportable(T t) {
-        // EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
+        EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         return t;
     }
 }

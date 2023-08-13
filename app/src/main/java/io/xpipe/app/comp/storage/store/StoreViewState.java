@@ -37,7 +37,7 @@ public class StoreViewState {
     private StoreViewState() {
         var val = AppCache.getIfPresent("sortMode", String.class)
                 .flatMap(StoreSortMode::fromId)
-                .orElse(StoreSortMode.ALPHABETICAL_DESC);
+                .orElse(StoreSortMode.DATE_ASC);
         this.sortMode = new SimpleObjectProperty<>(val);
         this.sortMode.addListener((observable, oldValue, newValue) -> {
             AppCache.update("sortMode", newValue.getId());
