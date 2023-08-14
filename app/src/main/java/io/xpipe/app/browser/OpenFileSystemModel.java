@@ -269,7 +269,7 @@ public final class OpenFileSystemModel {
     }
 
     public void createDirectoryAsync(String name) {
-        if (name.isBlank()) {
+        if (name == null || name.isBlank()) {
             return;
         }
 
