@@ -44,6 +44,17 @@ public class App extends Application {
             }
         }
 
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            try {
+                Toolkit xToolkit = Toolkit.getDefaultToolkit();
+                java.lang.reflect.Field awtAppClassNameField = xToolkit.getClass().getDeclaredField("awtAppClassName");
+                awtAppClassNameField.setAccessible(true);
+                awtAppClassNameField.set(xToolkit, "XPipe");
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
+            }
+        }
+
         AppWindowHelper.addIcons(stage);
     }
 
