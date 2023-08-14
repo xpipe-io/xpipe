@@ -40,6 +40,14 @@ public class StoreEntryFlatMiniSectionComp extends SimpleComp {
     }
 
     private static void add(int depth, StoreSection section) {
+        if (!section.getWrapper().getState().getValue().isUsable()) {
+            return;
+        }
+
+        if (!section.getWrapper().getEntry().getProvider().shouldShowInSelectionTree()) {
+            return;
+        }
+
         ALL.add(new StoreEntryFlatMiniSectionComp(depth, section.getWrapper().getEntry()));
         for (StoreSection child : section.getChildren()) {
             add(depth + 1, child);

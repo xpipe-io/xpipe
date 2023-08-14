@@ -26,7 +26,11 @@ public class StoreEntryTree {
     }
 
     private static void add(TreeItem<StoreEntryWrapper> parent, StoreSection section) {
-        if (section.getWrapper().getEntry().getState().isUsable() && !section.getWrapper().getEntry().getProvider().shouldShowInSelectionTree()) {
+        if (!section.getWrapper().getEntry().getState().isUsable()) {
+            return;
+        }
+
+        if (!section.getWrapper().getEntry().getProvider().shouldShowInSelectionTree()) {
             return;
         }
 
