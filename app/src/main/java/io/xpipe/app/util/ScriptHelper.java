@@ -52,23 +52,25 @@ public class ScriptHelper {
     public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
-        var content = String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
-
-        if (displayName != null) {
-            content = t.changeTitleCommand(displayName) + "\n" + content;
-        }
+        var content = "";
 
         var applyRcCommand = t.applyRcFileCommand();
         if (applyRcCommand != null) {
-            content = content + "\n" + applyRcCommand + "\n";
+            content = content + nl + applyRcCommand + nl;
         }
 
         // We just apply the profile files always, as we can't be sure that they definitely have been applied.
         // Especially if we launch something that is not the system default shell
         var applyProfilesCommand = t.applyProfileFilesCommand();
         if (applyProfilesCommand != null) {
-            content = content + "\n" + applyProfilesCommand + "\n";
+            content = content + nl + applyProfilesCommand + nl;
         }
+
+        if (displayName != null) {
+            content = t.changeTitleCommand(displayName) + nl + content;
+        }
+
+        content += String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
 
         if (toExecuteInShell != null) {
             // Normalize line endings
