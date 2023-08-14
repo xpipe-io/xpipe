@@ -15,6 +15,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Separator;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -222,6 +223,14 @@ public class CustomComboBoxBuilder<T> {
     }
 
     private class Cell extends ListCell<Node> {
+
+        public Cell() {
+            addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                if (!nodeMap.containsKey(getItem())) {
+                    event.consume();
+                }
+            });
+        }
 
         @Override
         protected void updateItem(Node item, boolean empty) {

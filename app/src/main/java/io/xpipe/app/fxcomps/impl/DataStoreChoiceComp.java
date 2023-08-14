@@ -16,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -91,7 +92,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
     @SuppressWarnings("unchecked")
     protected Region createSimple() {
         var list = StoreEntryFlatMiniSectionComp.ALL;
-        var comboBox = new CustomComboBoxBuilder<>(
+        var comboBox = new CustomComboBoxBuilder<T>(
                 selected,
                 t -> list.stream()
                         .filter(e -> t.equals(e.getEntry().getStore()))
@@ -100,6 +101,14 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         .createRegion(),
                 new Label(AppI18n.get("none")),
                 n -> true);
+
+        if (list.size() > 5) {
+            comboBox.addFilter((t, s) -> {
+                var entry = DataStorage.get().getStoreDisplayName(t).orElse("?");
+                return entry.toLowerCase(Locale.ROOT).contains(s.toLowerCase(Locale.ROOT));
+            });
+        }
+
         comboBox.setAccessibleNames(t -> toName(t));
         comboBox.setSelectedDisplay(t -> createGraphic(t));
         comboBox.setUnknownNode(t -> createGraphic(t));

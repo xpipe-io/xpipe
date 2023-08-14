@@ -15,10 +15,11 @@ public class StoreSidebarComp extends SimpleComp {
     protected Region createSimple() {
         var sideBar = new VerticalComp(List.of(
                 new StoreEntryListHeaderComp(),
+                new StoreScanBarComp(),
                 new StoreCreationBarComp(),
                 new StoreOrganizationComp(),
                 Comp.of(() -> new Region()).styleClass("bar").styleClass("filler-bar")));
-        sideBar.apply(s -> VBox.setVgrow(s.get().getChildren().get(3), Priority.ALWAYS));
+        sideBar.apply(s -> VBox.setVgrow(s.get().getChildren().get(4), Priority.ALWAYS));
         sideBar.styleClass("sidebar");
         return sideBar.createRegion();
     }
