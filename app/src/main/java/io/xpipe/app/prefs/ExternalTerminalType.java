@@ -423,8 +423,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                var clearscript = ScriptHelper.createLocalExecScript("printf \"\\e[1;1H\\e[2J\"\n" + file);
-                var suffix = "\"" + clearscript.replaceAll("\"", "\\\\\"") + "\"";
+                var suffix = "\"" + file.replaceAll("\"", "\\\\\"") + "\"";
                 pc.osascriptCommand(String.format(
                                 """
                                 activate application "Terminal"
@@ -480,24 +479,29 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(String name, String file) throws Exception {
+            var app = this.getApplicationPath();
+            if (app.isEmpty()) {
+                throw new IllegalStateException("iTerm installation not found");
+            }
+
             try (ShellControl pc = LocalStore.getShell()) {
-                // TODO: Wait for launch. But how?
+                var a = app.get().toString();
                 pc.osascriptCommand(String.format(
                                 """
-                                if application "iTerm" is not running then
-                                    launch application "iTerm"
+                                if application "%s" is not running then
+                                    launch application "%s"
                                     delay 1
-                                    tell application "iTerm"
+                                    tell application "%s"
                                         tell current tab of current window
                                             close
                                         end tell
                                     end tell
                                 end if
-                                tell application "iTerm"
+                                tell application "%s"
                                     create window with default profile command "%s"
                                 end tell
                                 """,
-                                file.replaceAll("\"", "\\\\\"")))
+                                a, a, a, a, file.replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }
@@ -535,7 +539,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
-            var clearscript = ScriptHelper.createLocalExecScript("printf \"\\e[1;1H\\e[2J\"\n" + file);
             try (ShellControl pc = LocalStore.getShell()) {
                 pc.osascriptCommand(String.format(
                                 """
@@ -550,7 +553,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                             end tell
                         end tell
                         """,
-                                clearscript.replaceAll("\"", "\\\\\"")))
+                                file.replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }

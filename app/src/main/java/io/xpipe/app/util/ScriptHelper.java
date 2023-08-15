@@ -54,6 +54,11 @@ public class ScriptHelper {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
 
+        var clear = t.clearDisplayCommand();
+        if (clear != null) {
+            content += clear + nl;
+        }
+
         var applyRcCommand = t.applyRcFileCommand();
         if (applyRcCommand != null) {
             content = content + nl + applyRcCommand + nl;
