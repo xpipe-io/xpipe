@@ -30,6 +30,8 @@ public class OptionsBuilder {
     private ObservableValue<String> description;
     private String longDescription;
     private Comp<?> comp;
+    private Comp<?> lastCompHeadReference;
+    private ObservableValue<String> lastNameReference;
 
     public Validator buildEffectiveValidator() {
         return new ChainedValidator(allValidators);
@@ -85,22 +87,31 @@ public class OptionsBuilder {
         description = null;
         longDescription = null;
         name = null;
+        lastNameReference = null;
         comp = null;
+        lastCompHeadReference = null;
         entries.add(entry);
     }
 
     public OptionsBuilder sub(OptionsBuilder builder) {
-        props.addAll(builder.props);
-        allValidators.add(builder.buildEffectiveValidator());
-        pushComp(builder.buildComp());
-        return this;
+        return sub(builder, null);
     }
 
     public OptionsBuilder sub(OptionsBuilder builder, Property<?> prop) {
         props.addAll(builder.props);
         allValidators.add(builder.buildEffectiveValidator());
-        props.add(prop);
+        if (prop != null) {
+            props.add(prop);
+        }
+        var c = builder.lastCompHeadReference;
+        var n = builder.lastNameReference;
         pushComp(builder.buildComp());
+        if (c != null) {
+            lastCompHeadReference = c;
+        }
+        if (n != null) {
+            lastNameReference = n;
+        }
         return this;
     }
 
@@ -124,23 +135,23 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder decorate(Check c) {
-        comp.apply(s -> c.decorates(s.get()));
+        lastCompHeadReference.apply(s -> c.decorates(s.get()));
         return this;
     }
 
     public OptionsBuilder disable() {
-        comp.disable(new SimpleBooleanProperty(true));
+        lastCompHeadReference.disable(new SimpleBooleanProperty(true));
         return this;
     }
 
     public OptionsBuilder nonNull() {
-        var e = name;
+        var e = lastNameReference;
         var p = props.get(props.size() - 1);
         return decorate(Validator.nonNull(ownValidator, e, p));
     }
 
     public OptionsBuilder nonNull(Validator v) {
-        var e = name;
+        var e = lastNameReference;
         var p = props.get(props.size() - 1);
         return decorate(Validator.nonNull(v, e, p));
     }
@@ -148,6 +159,7 @@ public class OptionsBuilder {
     private void pushComp(Comp<?> comp) {
         finishCurrent();
         this.comp = comp;
+        this.lastCompHeadReference = comp;
     }
 
     public OptionsBuilder stringArea(Property<String> prop, boolean lazy) {
@@ -196,6 +208,7 @@ public class OptionsBuilder {
     public OptionsBuilder name(String nameKey) {
         finishCurrent();
         name = AppI18n.observable(nameKey);
+        lastNameReference = name;
         return this;
     }
 
