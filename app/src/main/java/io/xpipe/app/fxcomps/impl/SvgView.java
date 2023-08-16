@@ -7,9 +7,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.css.Size;
-import javafx.css.SizeUnits;
-import javafx.geometry.Point2D;
 import javafx.scene.AccessibleRole;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -21,7 +18,6 @@ import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.util.Set;
-import java.util.regex.Pattern;
 
 @Getter
 public class SvgView {
@@ -36,18 +32,6 @@ public class SvgView {
         this.svgContent = PlatformThread.sync(svgContent);
     }
 
-    private static Size parseSize(String string) {
-        for (SizeUnits unit : SizeUnits.values()) {
-            if (string.endsWith(unit.toString())) {
-                return new Size(
-                        Double.parseDouble(string.substring(
-                                0, string.length() - unit.toString().length())),
-                        unit);
-            }
-        }
-        return new Size(Double.parseDouble(string), SizeUnits.PX);
-    }
-
     @SneakyThrows
     public static SvgView create(ObservableValue<String> content) {
         var widthProperty = new SimpleIntegerProperty();
@@ -57,34 +41,11 @@ public class SvgView {
                 return;
             }
 
-            var dim = getDimensions(val);
+            var dim = SvgHelper.getDimensions(val);
             widthProperty.set((int) Math.ceil(dim.getX()));
             heightProperty.set((int) Math.ceil(dim.getY()));
         });
         return new SvgView(widthProperty, heightProperty, content);
-    }
-
-    private static Point2D getDimensions(String val) {
-        var regularExpression = Pattern.compile("<svg[^>]+?width=\"([^ ]+)\"", Pattern.DOTALL);
-        var matcher = regularExpression.matcher(val);
-
-        if (!matcher.find()) {
-            var viewBox = Pattern.compile(
-                    "<svg.+?viewBox=\"([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\"", Pattern.DOTALL);
-            matcher = viewBox.matcher(val);
-            if (matcher.find()) {
-                return new Point2D(
-                        parseSize(matcher.group(3)).pixels(),
-                        parseSize(matcher.group(4)).pixels());
-            }
-        }
-
-        var width = matcher.group(1);
-        regularExpression = Pattern.compile("<svg.+?height=\"([^ ]+)\"", Pattern.DOTALL);
-        matcher = regularExpression.matcher(val);
-        matcher.find();
-        var height = matcher.group(1);
-        return new Point2D(parseSize(width).pixels(), parseSize(height).pixels());
     }
 
     private String getHtml(String content) {
@@ -101,6 +62,7 @@ public class SvgView {
         wv.setContextMenuEnabled(false);
         wv.setFocusTraversable(false);
         wv.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
+        wv.setDisable(true);
 
         wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
         svgContent.addListener((c, o, n) -> {
