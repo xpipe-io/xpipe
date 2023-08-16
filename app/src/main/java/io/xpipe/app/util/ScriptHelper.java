@@ -61,26 +61,26 @@ public class ScriptHelper {
 
         var applyRcCommand = t.applyRcFileCommand();
         if (applyRcCommand != null) {
-            content = content + nl + applyRcCommand + nl;
+            content += nl + applyRcCommand + nl;
         }
 
         // We just apply the profile files always, as we can't be sure that they definitely have been applied.
         // Especially if we launch something that is not the system default shell
         var applyProfilesCommand = t.applyProfileFilesCommand();
         if (applyProfilesCommand != null) {
-            content = content + nl + applyProfilesCommand + nl;
+            content += nl + applyProfilesCommand + nl;
         }
 
         if (displayName != null) {
-            content = t.changeTitleCommand(displayName) + nl + content;
+            content += nl + t.changeTitleCommand(displayName)  + nl;
         }
 
-        content += String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
+        content += nl + String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
 
         if (toExecuteInShell != null) {
             // Normalize line endings
             content += String.join(nl, toExecuteInShell.lines().toList()) + nl;
-            content += t.getExitCommand() + nl;
+            content += nl + t.getExitCommand() + nl;
         }
 
         return createExecScript(t, processControl, t.initFileName(processControl), content);
