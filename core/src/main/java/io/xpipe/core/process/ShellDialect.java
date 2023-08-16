@@ -161,6 +161,8 @@ public interface ShellDialect {
 
     CommandControl deleteFileOrDirectory(ShellControl sc, String file);
 
+    String clearDisplayCommand();
+
     CommandControl createFileExistsCommand(ShellControl sc, String file);
 
     CommandControl symbolicLink(ShellControl sc, String linkFile, String targetFile);

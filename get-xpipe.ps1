@@ -175,7 +175,15 @@ $env:Path=(
     [System.Environment]::GetEnvironmentVariable("Path", "User")
 ) -match '.' -join ';'
 
+Write-Host
+Write-Host 'XPipe has been successfully installed. You should be able to find it in your applications. The ' -NoNewline
+Write-Host -ForegroundColor Green 'xpipe' -NoNewline
+Write-Host ' cli executable was also added to your PATH. You can use ' -NoNewline
+Write-Host -ForegroundColor Green 'xpipe --help' -NoNewline
+Write-Host ' for help.'
+Write-Host
+
 # Use absolute path as we can't assume that the user has selected to put XPipe into the Path
-& "$env:LOCALAPPDATA\XPipe\app\xpiped.exe"
+& "$env:LOCALAPPDATA\XPipe\cli\bin\xpipe.exe" open
 
 #endregion Install XPipe

@@ -92,7 +92,9 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void delete(String file) throws Exception {
-        try (var pc = shellControl.getShellDialect().deleteFileOrDirectory(shellControl, file)
+        try (var pc = shellControl
+                .getShellDialect()
+                .deleteFileOrDirectory(shellControl, file)
                 .start()) {
             pc.discardOrThrow();
         }
@@ -139,14 +141,21 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void symbolicLink(String linkFile, String targetFile) throws Exception {
-        try (var pc = shellControl.getShellDialect().symbolicLink(shellControl,linkFile, targetFile)
+        try (var pc = shellControl
+                .getShellDialect()
+                .symbolicLink(shellControl, linkFile, targetFile)
                 .start()) {
             pc.discardOrThrow();
         }
     }
 
     @Override
-    public void close() throws IOException {
-        shellControl.close();
+    public void close() {
+        // In case the shell control is already in an invalid state, this operation might fail
+        // Since we are only closing, just swallow all exceptions
+        try {
+            shellControl.close();
+        } catch (IOException ignored) {
+        }
     }
 }

@@ -34,4 +34,5 @@ project.ext {
     canonicalVersionString = file('version').text
     buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
     obfuscate = true
+    changelog = file("dist/changelogs/${version}.md").exists() ? file("dist/changelogs/${version}.md").text.trim() + '\n' : ""
 }

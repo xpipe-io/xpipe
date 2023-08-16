@@ -171,9 +171,7 @@ check_architecture() {
     return 0
     ;;
   arm64)
-    if [ "$(uname -s)" = "Darwin" ]; then
-      return 0
-    fi
+    return 0
     ;;
   esac
 
@@ -237,4 +235,13 @@ fi
 
 uninstall
 install "$download_archive"
+
+printf "XPipe was successfully installed. You should be able to find XPipe in your desktop environment now. The "
+bold "xpipe"
+printf " cli executable was also added to your path. You can ether use "
+bold "man xpipe"
+printf " or "
+bold "xpipe --help"
+printf " for help.\n"
+
 launch
