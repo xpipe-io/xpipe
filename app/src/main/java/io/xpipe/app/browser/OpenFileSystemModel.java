@@ -9,6 +9,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.source.DataStoreId;
 import io.xpipe.core.store.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -39,12 +40,14 @@ public final class OpenFileSystemModel {
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final String name;
+    private final DataStoreId id;
     private boolean local;
 
     public OpenFileSystemModel(String name, BrowserModel browserModel, FileSystemStore store) {
         this.browserModel = browserModel;
         this.store = store;
         this.name = name != null ? name : DataStorage.get().getStoreEntry(store).getName();
+        this.id = name != null ? null : DataStorage.get().getId(DataStorage.get().getStoreEntry(store));
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
                     return currentPath.get() == null;
@@ -121,6 +124,10 @@ public final class OpenFileSystemModel {
 
     public Optional<String> cdSyncOrRetry(String path, boolean allowCommands) {
         if (Objects.equals(path, currentPath.get())) {
+            return Optional.empty();
+        }
+
+        if (fileSystem == null) {
             return Optional.empty();
         }
 
