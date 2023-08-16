@@ -33,12 +33,12 @@ import static io.xpipe.beacon.BeaconConfig.BODY_SEPARATOR;
 public class BeaconClient implements AutoCloseable {
 
     @Getter
-    private final Closeable base;
+    private final AutoCloseable base;
 
     private final InputStream in;
     private final OutputStream out;
 
-    private BeaconClient(Closeable base, InputStream in, OutputStream out) {
+    private BeaconClient(AutoCloseable base, InputStream in, OutputStream out) {
         this.base = base;
         this.in = in;
         this.out = out;
@@ -107,7 +107,7 @@ public class BeaconClient implements AutoCloseable {
     public void close() throws ConnectorException {
         try {
             base.close();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             throw new ConnectorException("Couldn't close client", ex);
         }
     }

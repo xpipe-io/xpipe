@@ -268,7 +268,7 @@ public class BrowserComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
 
         tab.setGraphic(label);
-        new FancyTooltipAugment<>(new SimpleStringProperty(model.getId() != null ? model.getId().toString() : null)).augment(label);
+        new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(label);
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
         tab.setContent(new OpenFileSystemComp(model).createSimple());
         tab.setText(model.getName());

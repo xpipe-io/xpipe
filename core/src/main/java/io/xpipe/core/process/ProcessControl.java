@@ -1,13 +1,12 @@
 package io.xpipe.core.process;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 
-public interface ProcessControl extends Closeable, AutoCloseable {
+public interface ProcessControl extends AutoCloseable {
 
     @FunctionalInterface
     interface ExceptionConverter {
@@ -37,7 +36,7 @@ public interface ProcessControl extends Closeable, AutoCloseable {
     void write(byte[] b) throws IOException;
 
     @Override
-    void close() throws IOException;
+    void close() throws Exception;
 
     void kill() throws Exception;
 

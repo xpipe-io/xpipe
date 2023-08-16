@@ -155,7 +155,7 @@ public class ConnectionFileSystem implements FileSystem {
         // Since we are only closing, just swallow all exceptions
         try {
             shellControl.close();
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
     }
 }
