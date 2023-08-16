@@ -89,7 +89,7 @@ public class LauncherCommand implements Callable<Integer> {
                 }
             }
             TrackEvent.info("Another instance is already running on this port. Quitting ...");
-            OperationMode.halt(0);
+            OperationMode.halt(1);
         }
 
         // Even in case we are unable to reach another beacon server
@@ -97,7 +97,7 @@ public class LauncherCommand implements Callable<Integer> {
         // starting up or listening on another port
         if (!AppDataLock.lock()) {
             TrackEvent.info("Data directory is already locked. Quitting ...");
-            OperationMode.halt(0);
+            OperationMode.halt(1);
         }
     }
 
