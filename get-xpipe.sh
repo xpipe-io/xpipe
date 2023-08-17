@@ -34,9 +34,9 @@ download_release_from_repo() {
   local tmpdir="$2"
   local repo="$3"
   local version="$4"
+  local arch="$5"
 
   local ending=$(get_file_ending)
-  local arch="$(uname -m)"
   local release_url=$(release_url "$repo" "$version")
 
   local filename="xpipe-installer-$os_info-$arch.$ending"
@@ -158,34 +158,39 @@ download_release() {
   local download_dir="$(mktemp -d)"
   local repo="$1"
   local version="$2"
-  download_release_from_repo "$os_info" "$download_dir" "$repo" "$version"
+  download_release_from_repo "$os_info" "$download_dir" "$repo" "$version" "$arch"
 }
 
 check_architecture() {
-  local arch="$1"
+  local arch="$(uname -m)"
   case "$arch" in
   x86_64)
-    return 0
+    echo x86_64
     ;;
   amd64)
-    return 0
+    echo x86_64
     ;;
   arm64)
-    return 0
+    echo arm64
     ;;
   aarch64)
-    return 0
+    echo arm64
+    ;;
+  *)
+    exit 1
     ;;
   esac
-
-  error "Sorry! XPipe currently does not provide your processor architecture."
-  return 1
 }
 
 # return if sourced (for testing the functions above)
 return 0 2>/dev/null
 
-check_architecture "$(uname -m)" || exit 1
+arch=$(check_architecture)
+exit_status="$?"
+if [ "$exit_status" != 0 ]; then
+  error "Sorry! XPipe currently does not support your processor architecture."
+  exit "$exit_status"
+fi
 
 repo="https://github.com/xpipe-io/xpipe"
 version=
@@ -227,7 +232,7 @@ if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && ! [ -x "$(com
 fi
 
 download_archive="$(
-  download_release "$repo" "$version"
+  download_release "$repo" "$version" "$arch"
   exit "$?"
 )"
 exit_status="$?"
@@ -238,6 +243,12 @@ fi
 
 uninstall
 install "$download_archive"
+
+exit_status="$?"
+if [ "$exit_status" != 0 ]; then
+  error "Installation failed."
+  exit "$exit_status"
+fi
 
 printf "XPipe was successfully installed. You should be able to find XPipe in your desktop environment now. The "
 bold "xpipe"
