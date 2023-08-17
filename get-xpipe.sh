@@ -173,6 +173,9 @@ check_architecture() {
   arm64)
     return 0
     ;;
+  aarch64)
+    return 0
+    ;;
   esac
 
   error "Sorry! XPipe currently does not provide your processor architecture."
