@@ -106,7 +106,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 newE -> {
                     ThreadHelper.runAsync(() -> {
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
-                            DataStorage.get().addStoreEntry(e);
+                            DataStorage.get().addStoreEntry(newE);
                         } else {
                             DataStorage.get().updateEntry(e, newE);
                         }

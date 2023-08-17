@@ -29,7 +29,7 @@ public class ErrorOverlayComp extends SimpleComp {
                 var comp = Comp.of(() -> {
                     var l = new TextArea();
                     l.textProperty().bind(PlatformThread.sync(text));
-                    l.setWrapText(false);
+                    l.setWrapText(true);
                     l.getStyleClass().add("error-overlay-comp");
                     l.setEditable(false);
                     return l;
