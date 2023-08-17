@@ -29,6 +29,7 @@ public class ProcessOutputException extends Exception {
                             + errorSuffix;
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
                     case CommandControl.UNASSIGNED_EXIT_CODE -> "Process exited with unknown state. Did an external process interfere?" + errorSuffix;
+                    case CommandControl.INTERNAL_ERROR_EXIT_CODE -> "Process execution failed" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
                 };
         return new ProcessOutputException(message, exitCode, combinedError);

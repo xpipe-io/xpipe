@@ -250,6 +250,7 @@ if [ "$exit_status" != 0 ]; then
   exit "$exit_status"
 fi
 
+echo ""
 printf "XPipe was successfully installed. You should be able to find XPipe in your desktop environment now. The "
 bold "xpipe"
 printf " cli executable was also added to your path. You can ether use "
@@ -257,5 +258,6 @@ bold "man xpipe"
 printf " or "
 bold "xpipe --help"
 printf " for help.\n"
+echo ""
 
 launch

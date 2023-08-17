@@ -15,6 +15,7 @@ public interface CommandControl extends ProcessControl {
     int UNASSIGNED_EXIT_CODE = -1;
     int EXIT_TIMEOUT_EXIT_CODE = -2;
     int START_FAILED_EXIT_CODE = -3;
+    int INTERNAL_ERROR_EXIT_CODE = -4;
 
     enum TerminalExitMode {
         KEEP_OPEN,
