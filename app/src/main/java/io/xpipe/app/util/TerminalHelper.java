@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandControl;
 
@@ -24,10 +25,10 @@ public class TerminalHelper {
         try {
             type.launch(title, command);
         } catch (Exception ex) {
-            throw new IOException(
+            throw ErrorEvent.unreportable(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString() + ": " + ex.getMessage()
                             + ".\nMaybe try to use a different terminal in the settings.",
-                    ex);
+                    ex));
         }
     }
 }

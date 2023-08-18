@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.OsType;
@@ -23,11 +24,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd") {
-
-        @Override
-        public boolean canOpenDirectory() {
-            return true;
-        }
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -56,10 +52,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
 
-        @Override
-        public boolean canOpenDirectory() {
-            return true;
-        }
     };
 
     LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor");
@@ -106,10 +98,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
 
-        @Override
-        public boolean canOpenDirectory() {
-            return true;
-        }
     };
 
     ExternalEditorType CUSTOM = new ExternalEditorType() {
@@ -132,10 +120,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     void launch(Path file) throws Exception;
-
-    default boolean canOpenDirectory() {
-        return false;
-    }
 
     class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
@@ -174,7 +158,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             if (location.isEmpty()) {
                 location = determineInstallation();
                 if (location.isEmpty()) {
-                    throw new IOException("Unable to find installation of " + toTranslatedString());
+                    throw ErrorEvent.unreportable(new IOException("Unable to find installation of " + toTranslatedString()));
                 }
             }
 
