@@ -12,6 +12,8 @@ import javafx.scene.layout.StackPane;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.Objects;
+
 public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
 
     private final Property<String> currentValue;
@@ -53,9 +55,8 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         });
 
         // Handles external updates
-        PlatformThread.sync(appliedValue).addListener((observable, oldValue, newValue) -> {
-            r.setText(newValue);
-            currentValue.setValue(newValue);
+        PlatformThread.sync(appliedValue).addListener((observable, oldValue, n) -> {
+            currentValue.setValue(n);
         });
 
         r.setPrefWidth(0);
@@ -64,8 +65,16 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         sp.prefHeightProperty().bind(r.prefHeightProperty());
         r.setDisable(true);
 
-        SimpleChangeListener.apply(currentValue, val -> {
-            PlatformThread.runLaterIfNeeded(() -> r.setText(val));
+        SimpleChangeListener.apply(currentValue, n -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                // Check if control value is the same. Then don't set it as that might cause bugs
+                if (Objects.equals(r.getText(), n)
+                        || (n == null && r.getText().isEmpty())) {
+                    return;
+                }
+
+                r.setText(n);
+            });
         });
         r.textProperty().addListener((observable, oldValue, newValue) -> {
             currentValue.setValue(newValue);
