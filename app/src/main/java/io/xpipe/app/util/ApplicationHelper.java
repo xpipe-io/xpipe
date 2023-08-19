@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.ShellControl;
@@ -41,8 +42,8 @@ public class ApplicationHelper {
             ShellControl processControl, String executable, String displayName, String connectionName)
             throws Exception {
         if (!isInPath(processControl, executable)) {
-            throw new IOException(displayName + " executable " + executable + " not found in PATH"
-                    + (connectionName != null ? " on system " + connectionName : ""));
+            throw ErrorEvent.unreportable(new IOException(displayName + " executable " + executable + " not found in PATH"
+                    + (connectionName != null ? " on system " + connectionName : "")));
         }
     }
 }
