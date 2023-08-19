@@ -98,7 +98,7 @@ public class ScanAlert {
                     // Custom behavior for ok button
                     var btOk = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
                     btOk.addEventFilter(ActionEvent.ACTION, event -> {
-                        if (store.get() == null) {
+                        if (store.get() == null || busy.get()) {
                             event.consume();
                             return;
                         }
@@ -125,13 +125,14 @@ public class ScanAlert {
                     });
 
                     store.addListener((observable, oldValue, newValue) -> {
+                        selected.clear();
+                        ((VBox) ((StackPane) alert.getDialogPane().getContent())
+                                .getChildren()
+                                .get(0))
+                                .getChildren()
+                                .set(3, new Region());
+
                         if (newValue == null) {
-                            selected.clear();
-                            ((VBox) ((StackPane) alert.getDialogPane().getContent())
-                                            .getChildren()
-                                            .get(0))
-                                    .getChildren()
-                                    .set(3, new Region());
                             return;
                         }
 
