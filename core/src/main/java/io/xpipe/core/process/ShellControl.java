@@ -29,7 +29,7 @@ public interface ShellControl extends ProcessControl {
     ShellControl onExit(Consumer<ShellControl> pc);
 
     ShellControl onFail(Consumer<Throwable> t);
-    ElevationResult elevateCommand(String input) throws Exception;
+
     ShellControl withExceptionConverter(ExceptionConverter converter);
 
     ShellControl withErrorFormatter(Function<String, String> formatter);
@@ -92,13 +92,13 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    ElevationResult buildElevatedCommand(String input) throws Exception;
+    ElevationResult buildElevatedCommand(String input, String prefix) throws Exception;
 
     void restart() throws Exception;
 
     OsType getOsType();
 
-    ElevationConfig getElevationConfig();
+    ElevationConfig getElevationConfig() throws Exception;
 
     ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
