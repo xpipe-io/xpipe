@@ -54,12 +54,18 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             def debugAttachArguments = file("$projectDir/debug/windows/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
                     Collectors.joining(' '))
             file("$distDir/base/app/scripts").mkdirs()
-            file("$distDir/base/app/scripts/xpiped_debug.bat").text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replaceAll(
+
+            def debug = file("$distDir/base/app/scripts/xpiped_debug.bat")
+            debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replaceAll(
                     'JVM-ARGS',
                     debugArguments)
-            file("$distDir/base/app/scripts/xpiped_debug_attach.bat").text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replaceAll(
+            debug.setExecutable(true, false)
+
+            def debugAttach = file("$distDir/base/app/scripts/xpiped_debug_attach.bat")
+            debugAttach.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replaceAll(
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
+            debugAttach.setExecutable(true, false)
 
             copy {
                 from "$distDir/cli"
