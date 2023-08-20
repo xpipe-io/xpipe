@@ -44,6 +44,15 @@ public class App extends Application {
             }
         }
 
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            Desktop.getDesktop().setAboutHandler(e -> {
+                AppLayoutModel.get().selectSettings();
+            });
+            Desktop.getDesktop().setPreferencesHandler(e -> {
+                AppLayoutModel.get().selectSettings();
+            });
+        }
+
         if (OsType.getLocal().equals(OsType.LINUX)) {
             try {
                 Toolkit xToolkit = Toolkit.getDefaultToolkit();
