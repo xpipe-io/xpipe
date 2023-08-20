@@ -89,6 +89,7 @@ public abstract class OperationMode {
             AppState.init();
             XPipeSession.init(AppProperties.get().getBuildUuid());
             AppChecks.checkDirectoryPermissions();
+            AppChecks.checkTemp();
             AppLogs.init();
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
