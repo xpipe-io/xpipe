@@ -116,7 +116,9 @@ final class BrowserBookmarkList extends SimpleComp {
                     return;
                 }
 
-                handleHoverTimer(getItem().getEntry().getStore(), mouseEvent);
+                // Disable this for now
+                // handleHoverTimer(getItem().getEntry().getStore(), mouseEvent);
+
                 mouseEvent.consume();
             });
             addEventHandler(DragEvent.DRAG_EXITED, mouseEvent -> {
