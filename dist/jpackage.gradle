@@ -35,6 +35,12 @@ dependencies {
     implementation files(appModuleOutputFiles.toArray())
 }
 
+// Mac does not like a zero major version
+def macVersion = rootProject.canonicalVersionString
+if (Integer.parseInt(macVersion.substring(0, 1)) == 0) {
+    macVersion = "1" + macVersion.substring(1)
+}
+
 jlink {
     imageDir = file("$buildDir/image")
     options = [
@@ -81,13 +87,7 @@ jlink {
             ]
 
             resourceDir = file("$buildDir/macos_resources")
-
-            // Mac does not like a zero major version
-            def modifiedVersion = rootProject.canonicalVersionString
-            if (Integer.parseInt(modifiedVersion.substring(0, 1)) == 0) {
-                modifiedVersion = "1" + modifiedVersion.substring(1)
-            }
-            appVersion = modifiedVersion
+            appVersion = macVersion
         }
         skipInstaller = true
         applicationName = 'XPipe'
@@ -118,17 +118,17 @@ task prepareMacOSInfo(type: DefaultTask) {
     doLast {
         file("$buildDir/macos_resources").mkdirs()
         copy {
-            from file("$projectDir/mist/mac/Info.plist")
+            from file("$projectDir/misc/mac/Info.plist")
             into file("$buildDir/macos_resources")
         }
         exec {
-            commandLine "$projectDir/mist/mac/modify_version.sh", rootProject.versionString, "$buildDir/macos_resources/Info.plist"
+            commandLine "$projectDir/misc/mac/modify_version.sh", macVersion, "$buildDir/macos_resources/Info.plist"
         }
     }
 }
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    jpackage.dependsOn(prepareMacOSInfo)
+    jpackageImage.dependsOn(prepareMacOSInfo)
 }
 
 jpackage.finalizedBy(copyBundledExtensions)
