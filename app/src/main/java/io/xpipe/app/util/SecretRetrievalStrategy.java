@@ -42,7 +42,7 @@ public interface SecretRetrievalStrategy {
 
         @Override
         public boolean isLocalAskpassCompatible() {
-            return true;
+            return false;
         }
 
         @Override
