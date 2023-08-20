@@ -35,13 +35,16 @@ public class ChocoUpdater extends UpdateHandler {
                     .lines()
                     .filter(s -> s.startsWith("xpipe"))
                     .findAny()
-                    .orElseThrow()
-                    .split("\\|")[2];
-            var isUpdate = isUpdate(latest);
+                    .map(string -> string.split("\\|")[2]);
+            if (latest.isEmpty()) {
+                return null;
+            }
+
+            var isUpdate = isUpdate(latest.get());
             var rel = new AvailableRelease(
                     AppProperties.get().getVersion(),
                     XPipeDistributionType.get().getId(),
-                    latest,
+                    latest.get(),
                     "https://community.chocolatey.org/packages/xpipe/" + latest,
                     null,
                     null,
