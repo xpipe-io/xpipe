@@ -43,6 +43,7 @@ public class EditFileAction implements LeafAction {
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Edit with " + AppPrefs.get().externalEditor().getValue().toTranslatedString();
+        var e = AppPrefs.get().externalEditor().getValue();
+        return "Edit with " + (e != null ? e.toTranslatedString() : "?");
     }
 }
