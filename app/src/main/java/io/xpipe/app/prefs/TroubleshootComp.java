@@ -19,7 +19,7 @@ import java.util.List;
 public class TroubleshootComp extends Comp<CompStructure<?>> {
 
     private Comp<?> createActions() {
-        return new OptionsBuilder()
+        OptionsBuilder b = new OptionsBuilder()
                 .addTitle("troubleshootingOptions")
                 .spacer(13)
                 .addComp(
@@ -34,25 +34,27 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .separator()
-//                .addComp(
-//                        new TileButtonComp("restart", "restartDescription", "mdmz-refresh", e -> {
-//                                    OperationMode.executeAfterShutdown(() -> {
-//                                        try (var sc = ShellStore.createLocal()
-//                                                .control()
-//                                                .start()) {
-//                                            var script = FileNames.join(
-//                                                    XPipeInstallation.getCurrentInstallationBasePath()
-//                                                            .toString(),
-//                                                    XPipeInstallation.getDaemonExecutablePath(sc.getOsType()));
-//                                            sc.executeSimpleCommand(
-//                                                    ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
-//                                        }
-//                                    });
-//                                    e.consume();
-//                                })
-//                                .grow(true, false),
-//                        null)
-//                .separator()
+                //                .addComp(
+                //                        new TileButtonComp("restart", "restartDescription", "mdmz-refresh", e -> {
+                //                                    OperationMode.executeAfterShutdown(() -> {
+                //                                        try (var sc = ShellStore.createLocal()
+                //                                                .control()
+                //                                                .start()) {
+                //                                            var script = FileNames.join(
+                //                                                    XPipeInstallation.getCurrentInstallationBasePath()
+                //                                                            .toString(),
+                //
+                // XPipeInstallation.getDaemonExecutablePath(sc.getOsType()));
+                //                                            sc.executeSimpleCommand(
+                //                                                    ScriptHelper.createDetachCommand(sc, "\"" + script
+                // + "\""));
+                //                                        }
+                //                                    });
+                //                                    e.consume();
+                //                                })
+                //                                .grow(true, false),
+                //                        null)
+                //                .separator()
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
@@ -75,23 +77,27 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                                 })
                                 .grow(true, false),
                         null)
-                .separator()
-                .addComp(
-                        new TileButtonComp(
-                                        "openCurrentLogFile",
-                                        "openCurrentLogFileDescription",
-                                        "mdmz-text_snippet",
-                                        e -> {
-                                            FileOpener.openInTextEditor(AppLogs.get()
-                                                    .getSessionLogsDirectory()
-                                                    .resolve("xpipe.log")
-                                                    .toString());
-                                            e.consume();
-                                        })
-                                .grow(true, false),
-                        null)
-                .separator()
-                .addComp(
+                .separator();
+
+        if (AppLogs.get().isWriteToFile()) {
+            b.addComp(
+                            new TileButtonComp(
+                                            "openCurrentLogFile",
+                                            "openCurrentLogFileDescription",
+                                            "mdmz-text_snippet",
+                                            e -> {
+                                                FileOpener.openInTextEditor(AppLogs.get()
+                                                        .getSessionLogsDirectory()
+                                                        .resolve("xpipe.log")
+                                                        .toString());
+                                                e.consume();
+                                            })
+                                    .grow(true, false),
+                            null)
+                    .separator();
+        }
+
+        b.addComp(
                         new TileButtonComp(
                                         "openInstallationDirectory",
                                         "openInstallationDirectoryDescription",
@@ -110,8 +116,8 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                                     e.consume();
                                 })
                                 .grow(true, false),
-                        null)
-                .buildComp();
+                        null);
+        return b.buildComp();
     }
 
     @Override
