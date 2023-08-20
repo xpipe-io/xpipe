@@ -104,6 +104,11 @@ public class AppPrefs {
     private final BooleanProperty useSystemFontInternal = typed(new SimpleBooleanProperty(true), Boolean.class);
     public final ReadOnlyBooleanProperty useSystemFont = useSystemFontInternal;
     private final IntegerProperty tooltipDelayInternal = typed(new SimpleIntegerProperty(1000), Integer.class);
+    private final IntegerProperty connectionTimeOut = typed(new SimpleIntegerProperty(10), Integer.class);
+
+    public ReadOnlyIntegerProperty connectionTimeout() {
+        return connectionTimeOut;
+    }
 
     private final BooleanProperty saveWindowLocationInternal = typed(new SimpleBooleanProperty(false), Boolean.class);
     public final ReadOnlyBooleanProperty saveWindowLocation = saveWindowLocationInternal;
@@ -614,6 +619,14 @@ public class AppPrefs {
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
                                 Setting.of("language", languageControl, languageInternal)),
                         Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
+                Category.of(
+                        "connections",
+                        Group.of(
+                                Setting.of(
+                                        "connectionTimeout",
+                                        connectionTimeOut,
+                                        5,
+                                        50))),
                 new PasswordCategory(this).create(),
                 Category.of(
                         "editor",
