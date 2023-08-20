@@ -20,7 +20,7 @@ public class AppTray {
     private static AppTray INSTANCE;
     private final FXTrayIcon icon;
     private final ErrorHandler errorHandler;
-    private final TrayIcon privateTrayIcon;
+    private TrayIcon privateTrayIcon = null;
 
     @SneakyThrows
     private AppTray() {
@@ -33,6 +33,8 @@ public class AppTray {
 
         var builder = new FXTrayIcon.Builder(App.getApp().getStage(), url)
                 .menuItem(AppI18n.get("open"), e -> {
+                    var tray = SystemTray.getSystemTray();
+                    tray.remove(privateTrayIcon);
                     OperationMode.switchToAsync(OperationMode.GUI);
                 });
         if (AppProperties.get().isDeveloperMode()) {
@@ -82,6 +84,8 @@ public class AppTray {
             }
             privateTrayIcon.addActionListener(e -> {
                 if (OsType.getLocal() != OsType.MACOS) {
+                    var tray = SystemTray.getSystemTray();
+                    tray.remove(privateTrayIcon);
                     OperationMode.switchToAsync(OperationMode.GUI);
                 }
             });
