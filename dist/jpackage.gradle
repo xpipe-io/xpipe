@@ -80,7 +80,7 @@ jlink {
                     // '--mac-entitlements', "$projectDir/misc/mac/Entitlements.plist"
             ]
 
-            resourceDir = file("$projectDir/misc/mac")
+            resourceDir = file("$buildDir/macos_resources")
 
             // Mac does not like a zero major version
             def modifiedVersion = rootProject.canonicalVersionString
@@ -113,4 +113,22 @@ task copyBundledExtensions(type: DefaultTask,
         }
     }
 }
+
+task prepareMacOSInfo(type: DefaultTask) {
+    doLast {
+        file("$buildDir/macos_resources").mkdirs()
+        copy {
+            from file("$projectDir/mist/mac/Info.plist")
+            into file("$buildDir/macos_resources")
+        }
+        exec {
+            commandLine "$projectDir/mist/mac/modify_version.sh", rootProject.versionString, "$buildDir/macos_resources/Info.plist"
+        }
+    }
+}
+
+if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    jpackage.dependsOn(prepareMacOSInfo)
+}
+
 jpackage.finalizedBy(copyBundledExtensions)
