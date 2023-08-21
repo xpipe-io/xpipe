@@ -147,7 +147,7 @@ public class ScriptHelper {
 
     private static String createAskPassScript(List<SecretValue> pass, ShellControl parent, ShellDialect type)
             throws Exception {
-        var fileName = "askpass-" + getScriptId() + "." + type.getScriptFileEnding();
+        var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSubTemporaryDirectory();
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
