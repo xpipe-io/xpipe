@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
 import lombok.Getter;
@@ -140,6 +142,8 @@ public interface SecretRetrievalStrategy {
 
             try (var cc = new LocalStore().createBasicControl().command(cmd).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
+            } catch (ProcessOutputException ex) {
+                throw ErrorEvent.unreportable(ProcessOutputException.withPrefix("Unable to retrieve password with command " + cmd, ex));
             }
         }
 
