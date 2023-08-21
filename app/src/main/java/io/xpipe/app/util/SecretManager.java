@@ -34,7 +34,7 @@ public class SecretManager {
             return false;
         }
 
-        return false;
+        return true;
     }
 
     public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, Object key) throws Exception {
