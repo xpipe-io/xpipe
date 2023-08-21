@@ -30,7 +30,8 @@ public class SecretManager {
     private static final Map<SecretReference, SecretValue> passwords = new HashMap<>();
 
     public static boolean shouldCacheForPrompt(String prompt) {
-        if (prompt.toLowerCase(Locale.ROOT).contains("passcode")) {
+        var l = prompt.toLowerCase(Locale.ROOT);
+        if (l.contains("passcode") || l.contains("verification code")) {
             return false;
         }
 
