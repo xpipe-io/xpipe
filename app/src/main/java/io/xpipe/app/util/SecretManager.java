@@ -29,6 +29,14 @@ public class SecretManager {
 
     private static final Map<SecretReference, SecretValue> passwords = new HashMap<>();
 
+    public static boolean shouldCacheForPrompt(String prompt) {
+        if (prompt.toLowerCase(Locale.ROOT).contains("passcode")) {
+            return false;
+        }
+
+        return false;
+    }
+
     public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, Object key) throws Exception {
         return retrieve(strategy, prompt,key, 0);
     }

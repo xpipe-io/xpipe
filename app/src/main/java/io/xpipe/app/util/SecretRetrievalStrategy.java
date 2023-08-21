@@ -125,6 +125,25 @@ public interface SecretRetrievalStrategy {
         }
     }
 
+    @JsonTypeName("dynamicPrompt")
+    class DynamicPrompt implements SecretRetrievalStrategy {
+
+        @Override
+        public SecretValue retrieve(String displayName, UUID id, int sub) {
+            return AskpassAlert.query(displayName, UUID.randomUUID(), id, sub);
+        }
+
+        @Override
+        public boolean shouldCache() {
+            return false;
+        }
+
+        @Override
+        public boolean isLocalAskpassCompatible() {
+            return true;
+        }
+    }
+
     @JsonTypeName("passwordManager")
     @Builder
     @Jacksonized

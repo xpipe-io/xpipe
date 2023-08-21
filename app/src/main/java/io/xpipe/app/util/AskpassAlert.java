@@ -48,7 +48,7 @@ public class AskpassAlert {
                 .orElse(null);
 
         // If the result is null, assume that the operation was aborted by the user
-        if (r != null) {
+        if (r != null && SecretManager.shouldCacheForPrompt(prompt)) {
             requests.add(requestId);
             SecretManager.set(ref, r);
         } else {
