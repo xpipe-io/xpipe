@@ -56,13 +56,13 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             file("$distDir/base/app/scripts").mkdirs()
 
             def debug = file("$distDir/base/app/scripts/xpiped_debug.bat")
-            debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replaceAll(
+            debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true)
 
             def debugAttach = file("$distDir/base/app/scripts/xpiped_debug_attach.bat")
-            debugAttach.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replaceAll(
+            debugAttach.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
             debugAttach.setExecutable(true)
@@ -115,13 +115,13 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
 
 
             def debug = file("$distDir/base/app/scripts/xpiped_debug.sh")
-            debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replaceAll(
+            debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)
 
             def debugAttach = file("$distDir/base/app/scripts/xpiped_debug_attach.sh")
-            debugAttach.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replaceAll(
+            debugAttach.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
             debugAttach.setExecutable(true, false)
@@ -195,13 +195,13 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             file("$distDir/XPipe.app/Contents/Resources/scripts").mkdirs()
 
             def debug = file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug.sh")
-            debug.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replaceAll(
+            debug.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)
 
             def debugAttach = file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh")
-            debugAttach.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replaceAll(
+            debugAttach.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
             debugAttach.setExecutable(true, false)
