@@ -39,6 +39,24 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return false;
         }
     };
+
+    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType("app.vscodeInsiders", "code-insiders.cmd") {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                                       .resolve("Programs")
+                                       .resolve("Microsoft VS Code Insiders")
+                                       .resolve("bin")
+                                       .resolve("code-insiders.cmd"));
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+    };
+
     ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsType("app.notepad++", "notepad++") {
 
         @Override
@@ -175,7 +193,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
+    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
 
