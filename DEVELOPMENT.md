@@ -14,16 +14,6 @@ There are no real formal contribution guidelines right now, they will maybe come
 - [dist](dist) - Tools to create a distributable package of XPipe
 - [ext](ext) - Available XPipe extensions. Essentially every feature is implemented as an extension
 
-### Open source model
-
-XPipe utilizes an open core model, which essentially means that
-the main application is open source while certain other components are not.
-Select parts are not open source yet, but may be added to this repository in the future.
-Some tests and especially test environments and that run on private servers
-are also not included in this repository (Don't want to leak server information).
-Finally, scripts and workflows to create and publish installers and packages
-are also not included to prevent attackers from easily impersonating the XPipe application.
-
 ## Modularity
 
 All XPipe components target [Java 20](https://openjdk.java.net/projects/jdk/20/) and make full use of the Java Module System (JPMS).

@@ -98,6 +98,10 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
+### Open source model
+
+XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future. This mainly concerns the shell handling library implementation and extensions for configuring and handling shell connections. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository. Finally, scripts and workflows to create and publish installers and packages are also not included to prevent attackers from easily impersonating the XPipe application.
+
 ## Further information
 
 For information about the security model of XPipe, see the [security page](/SECURITY.md).
