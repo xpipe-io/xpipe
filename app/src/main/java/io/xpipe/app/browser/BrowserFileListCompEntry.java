@@ -132,7 +132,12 @@ public class BrowserFileListCompEntry {
 
         // Accept drops from inside the app window
         if (event.getGestureSource() != null) {
-            var files = BrowserClipboard.retrieveDrag(event.getDragboard()).getEntries();
+            var db = BrowserClipboard.retrieveDrag(event.getDragboard());
+            if (db == null) {
+                return;
+            }
+
+            var files = db.getEntries();
             var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();
