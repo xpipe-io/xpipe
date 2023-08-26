@@ -1,5 +1,7 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.core.util.FailableRunnable;
+import io.xpipe.core.util.FailableSupplier;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
@@ -123,5 +125,23 @@ public class ErrorEvent {
     public static <T extends Throwable> T unreportable(T t) {
         EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
         return t;
+    }
+
+    public static <T extends Throwable> void unreportableScope(FailableRunnable<T> t) throws T {
+        try {
+            t.run();
+        } catch (Throwable ex) {
+            unreportable(ex);
+            throw ex;
+        }
+    }
+
+    public static <V, T extends Throwable> V unreportableScope(FailableSupplier<V, T> t) throws T {
+        try {
+            return t.get();
+        } catch (Throwable ex) {
+            unreportable(ex);
+            throw ex;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.MessageFormatter;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -9,46 +10,69 @@ import java.util.stream.Collectors;
 public class ProcessOutputException extends Exception {
 
     public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
-        var messageSuffix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ":\n" + ex.getOutput() : "";
+        var messageSuffix = ex.getRawOutput() != null && !ex.getRawOutput().isBlank() ? ":\n" + ex.getRawOutput() : "";
         var message = customPrefix + messageSuffix;
-        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
+        return new ProcessOutputException(message, ex.getExitCode(), ex.getRawOutput());
     }
 
-    public static ProcessOutputException of(int exitCode, String... messages) {
+    public static ProcessOutputException ofCommand(CommandControl commandControl, String rawOutput) {
+        var fmt = commandControl.getMessageFormatter();
+        if (commandControl.getParent() != null && commandControl.getParent().getShellDialect() != null) {
+            fmt = fmt.or(commandControl.getParent().getShellDialect().defaultCommandFormatter());
+        }
+        fmt = fmt.or(ExitCode.commandMessageFormatter());
+        return new ProcessOutputException(fmt.format(commandControl, rawOutput), commandControl.getExitCode(), rawOutput);
+    }
+
+    public static ProcessOutputException ofShell(ShellControl shellControl, String rawOutput) {
+        var fmt = shellControl.getMessageFormatter();
+        if (shellControl.getShellDialect() != null) {
+            fmt = fmt.or(shellControl.getShellDialect().defaultShellFormatter());
+        }
+        fmt = fmt.or((sc, message) -> "Shell startup failed:\n" + message);
+        return new ProcessOutputException(fmt.format(shellControl, rawOutput), ExitCode.UNASSIGNED_EXIT_CODE, rawOutput);
+    }
+
+    public static ProcessOutputException ofFormatted(MessageFormatter formatter, String... messages) {
+        var combinedError = toMessage(messages);
+        return new ProcessOutputException(formatter.format(combinedError), ExitCode.UNASSIGNED_EXIT_CODE, combinedError);
+    }
+
+    public static ProcessOutputException ofShell(ShellControl shellControl, String... messages) {
+        var combinedError = toMessage(messages);
+        return ofShell(shellControl, combinedError);
+    }
+
+    public static ProcessOutputException ofCommand(CommandControl commandControl, String... messages) {
+        var combinedError = toMessage(messages);
+        return ofCommand(commandControl, combinedError);
+    }
+
+    public static String toMessage(String... messages) {
         var combinedError = Arrays.stream(messages)
                 .filter(s -> s != null && !s.isBlank())
                 .map(s -> s.strip())
                 .collect(Collectors.joining("\n\n"))
                 .replaceAll("\r\n", "\n");
-        var hasMessage = !combinedError.isBlank();
-        var errorSuffix = hasMessage ? ":\n" + combinedError : "";
-        var message =
-                switch (exitCode) {
-                    case CommandControl
-                            .START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed"
-                            + errorSuffix;
-                    case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
-                    case CommandControl.UNASSIGNED_EXIT_CODE -> "Process exited with unknown state. Did an external process interfere?" + errorSuffix;
-                    case CommandControl.INTERNAL_ERROR_EXIT_CODE -> "Process execution failed" + errorSuffix;
-                    default -> "Process returned exit code " + exitCode + errorSuffix;
-                };
-        return new ProcessOutputException(message, exitCode, combinedError);
+        return combinedError;
     }
 
     private final int exitCode;
-    private final String output;
+    private final String rawOutput;
+    private final String formattedMessage;
 
-    private ProcessOutputException(String message, int exitCode, String output) {
-        super(message);
+    private ProcessOutputException(String message, int exitCode, String rawOutput) {
+        super(rawOutput);
         this.exitCode = exitCode;
-        this.output = output;
+        this.rawOutput = rawOutput;
+        this.formattedMessage = message;
     }
 
     public boolean isTimeOut() {
-        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
+        return exitCode == ExitCode.EXIT_TIMEOUT_EXIT_CODE;
     }
 
     public boolean isKill() {
-        return exitCode == CommandControl.START_FAILED_EXIT_CODE;
+        return exitCode == ExitCode.START_FAILED_EXIT_CODE;
     }
 }

@@ -124,7 +124,7 @@ public class FileSystemHelper {
         }
 
         if (!model.getFileSystem().directoryExists(path)) {
-            throw new IllegalArgumentException(String.format("Directory %s does not exist", path));
+            throw ErrorEvent.unreportable(new IllegalArgumentException(String.format("Directory %s does not exist", path)));
         }
 
         model.getFileSystem().directoryAccessible(path);

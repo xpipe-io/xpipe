@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.ShellMessageFormatter;
 import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.FailableSupplier;
 import io.xpipe.core.util.SecretValue;
@@ -12,13 +13,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
     default boolean isLocal() {
         return getSystemId().equals(XPipeSystemId.getLocal());
     }
+
+    ShellMessageFormatter getMessageFormatter();
+
+    ShellControl withMessageFormatter(ShellMessageFormatter formatter);
 
     UUID getSystemId();
 
@@ -31,8 +35,6 @@ public interface ShellControl extends ProcessControl {
     ShellControl onFail(Consumer<Throwable> t);
 
     ShellControl withExceptionConverter(ExceptionConverter converter);
-
-    ShellControl withErrorFormatter(Function<String, String> formatter);
 
     String prepareTerminalOpen(String displayName) throws Exception;
 
@@ -78,14 +80,6 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    default void executeSimpleCommand(String command, String failMessage) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            c.discardOrThrow();
-        } catch (ProcessOutputException out) {
-            throw ProcessOutputException.withPrefix(failMessage, out);
-        }
-    }
-
     default String executeSimpleStringCommand(ShellDialect type, String command) throws Exception {
         try (var sub = subShell(type).start()) {
             return sub.executeSimpleStringCommand(command);
@@ -105,7 +99,7 @@ public interface ShellControl extends ProcessControl {
     default ShellControl elevationPassword(SecretValue value) {
         return elevationPassword(() -> value);
     }
-    ShellControl elevationPassword(FailableSupplier<SecretValue> value);
+    ShellControl elevationPassword(FailableSupplier<SecretValue, Exception> value);
 
     ShellControl initWith(String cmds);
 
@@ -113,7 +107,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl additionalTimeout(int ms);
 
-    FailableSupplier<SecretValue> getElevationPassword();
+    FailableSupplier<SecretValue, Exception> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
         return subShell(p -> type.getOpenCommand(), (sc, command) -> command)

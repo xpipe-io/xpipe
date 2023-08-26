@@ -236,7 +236,7 @@ public abstract class Dialog {
      * Creates a dialogue that will only evaluate when needed.
      * This allows a dialogue to incorporate completion information about a previous dialogue.
      */
-    public static Dialog lazy(FailableSupplier<Dialog> d) {
+    public static Dialog lazy(FailableSupplier<Dialog, Exception> d) {
         return new Dialog() {
 
             Dialog dialog;

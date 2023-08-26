@@ -20,7 +20,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.With;
 
 import java.awt.*;
 import java.io.IOException;
@@ -28,10 +30,14 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.util.function.UnaryOperator;
 
+@AllArgsConstructor
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
+
+    @With
+    private boolean padding = true;
 
     public MarkdownComp(String markdown, UnaryOperator<String> htmlTransformation) {
         this.markdown = new SimpleStringProperty(markdown);
@@ -50,7 +56,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         Document document = parser.parse(markdown.getValue());
         var html = renderer.render(document);
         var result = htmlTransformation.apply(html);
-        return "<article class=\"markdown-body\">" + result + "</article>";
+        return ("<article class=\"markdown-body\" style=\"padding: %s;\">" + result + "</article>").formatted(padding ? "1em" : "0");
     }
 
     @SneakyThrows

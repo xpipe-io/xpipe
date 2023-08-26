@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.util.FailableSupplier;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 

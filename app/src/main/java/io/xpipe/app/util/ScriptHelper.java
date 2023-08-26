@@ -7,6 +7,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.MessageFormatter;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -123,7 +124,7 @@ public class ScriptHelper {
                 .execute();
         var e = processControl.getShellDialect().getScriptPermissionsCommand(file);
         if (e != null) {
-            processControl.executeSimpleCommand(e, "Failed to set script permissions of " + file);
+            processControl.command(e).withMessageFormatter(MessageFormatter.explanation("Failed to set script permissions of " + file).command()).execute();
         }
         return file;
     }

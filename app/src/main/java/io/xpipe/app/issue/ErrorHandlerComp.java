@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
@@ -10,6 +11,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.PlatformState;
+import io.xpipe.core.process.ProcessOutputException;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -17,7 +19,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -156,6 +157,9 @@ public class ErrorHandlerComp extends SimpleComp {
     private Region createTop() {
         var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
         var desc = event.getDescription();
+        if (event.getThrowable() instanceof ProcessOutputException exception) {
+            desc = exception.getFormattedMessage();
+        }
         if (desc == null && event.getThrowable() != null) {
             var tName = event.getThrowable().getClass().getSimpleName();
             desc = AppI18n.get("errorTypeOccured", tName);
@@ -170,10 +174,7 @@ public class ErrorHandlerComp extends SimpleComp {
         var header = new Label(AppI18n.get(headerId), graphic);
         header.setGraphicTextGap(6);
         AppFont.setSize(header, 3);
-        var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(6);
-        descriptionField.setWrapText(true);
-        descriptionField.setEditable(false);
+        var descriptionField = new MarkdownComp(desc, s -> s).withPadding(false).prefHeight(200).createRegion();
         descriptionField.setPadding(Insets.EMPTY);
         AppFont.small(descriptionField);
         var text = new VBox(header, descriptionField);

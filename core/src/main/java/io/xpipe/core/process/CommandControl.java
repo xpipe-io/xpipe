@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.charsetter.Charsetter;
+import io.xpipe.core.store.CommandMessageFormatter;
 import io.xpipe.core.util.FailableFunction;
 
 import java.io.InputStream;
@@ -8,23 +9,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public interface CommandControl extends ProcessControl {
-
-    int UNASSIGNED_EXIT_CODE = -1;
-    int EXIT_TIMEOUT_EXIT_CODE = -2;
-    int START_FAILED_EXIT_CODE = -3;
-    int INTERNAL_ERROR_EXIT_CODE = -4;
 
     enum TerminalExitMode {
         KEEP_OPEN,
         CLOSE
     }
 
+    CommandMessageFormatter getMessageFormatter();
+
     CommandControl withExceptionConverter(ExceptionConverter converter);
 
-    CommandControl withErrorFormatter(Function<String, String> formatter);
+    CommandControl withMessageFormatter(CommandMessageFormatter formatter);
 
     CommandControl terminalExitMode(TerminalExitMode mode);
 

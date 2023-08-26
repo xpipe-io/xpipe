@@ -187,9 +187,15 @@ public interface SecretRetrievalStrategy {
 
         @Override
         public SecretValue retrieve(String displayName, UUID id, int sub) throws Exception {
-            try (var cc = new LocalStore().createBasicControl().command(command).start()) {
-                return SecretHelper.encrypt(cc.readStdoutOrThrow());
-            }
+            return ErrorEvent.unreportableScope(() -> {
+                if (command == null || command.isBlank()) {
+                    throw new IllegalArgumentException("No password retrieval command was specified");
+                }
+
+                try (var cc = new LocalStore().createBasicControl().command(command).start()) {
+                    return SecretHelper.encrypt(cc.readStdoutOrThrow());
+                }
+            });
         }
 
         @Override

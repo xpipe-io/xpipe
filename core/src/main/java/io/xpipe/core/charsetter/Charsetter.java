@@ -3,6 +3,7 @@ package io.xpipe.core.charsetter;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StreamDataStore;
+import io.xpipe.core.util.FailableSupplier;
 import lombok.Value;
 
 import java.io.BufferedReader;
@@ -165,11 +166,6 @@ public abstract class Charsetter {
         }
 
         return StandardCharsets.UTF_8;
-    }
-
-    @FunctionalInterface
-    public interface FailableSupplier<R, E extends Throwable> {
-        R get() throws E;
     }
 
     @FunctionalInterface

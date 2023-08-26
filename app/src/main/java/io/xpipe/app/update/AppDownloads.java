@@ -29,12 +29,14 @@ public class AppDownloads {
             return repository;
         }
 
-        var github = new GitHubBuilder()
-                .withRateLimitHandler(RateLimitHandler.FAIL)
-                .withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
-                .build();
-        repository = github.getRepository(AppProperties.get().isStaging() ? "xpipe-io/xpipe_staging" : "xpipe-io/xpipe");
-        return repository;
+        return ErrorEvent.unreportableScope(() -> {
+            var github = new GitHubBuilder()
+                    .withRateLimitHandler(RateLimitHandler.FAIL)
+                    .withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
+                    .build();
+            repository = github.getRepository(AppProperties.get().isStaging() ? "xpipe-io/xpipe_staging" : "xpipe-io/xpipe");
+            return repository;
+        });
     }
 
     public static Optional<Path> downloadInstaller(
@@ -68,7 +70,7 @@ public class AppDownloads {
 
             return Optional.of(downloadFile);
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).unreportable().handle();
             return Optional.empty();
         }
     }
@@ -92,7 +94,7 @@ public class AppDownloads {
             var bytes = HttpHelper.executeGet(url, aFloat -> {});
             return Optional.of(new String(bytes, StandardCharsets.UTF_8));
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).unreportable().handle();
             return Optional.empty();
         }
     }
@@ -139,7 +141,7 @@ public class AppDownloads {
             var repo = getRepository();
             return Optional.ofNullable(repo.getReleaseByTagName(version));
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omitted(omitErrors).handle();
+            ErrorEvent.fromThrowable(e).omitted(omitErrors).unreportable().handle();
             return Optional.empty();
         }
     }

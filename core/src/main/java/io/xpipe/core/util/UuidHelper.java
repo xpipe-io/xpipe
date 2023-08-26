@@ -18,7 +18,7 @@ public class UuidHelper {
         }
     }
 
-    public static Optional<UUID> parse(FailableSupplier<String> supplier) {
+    public static Optional<UUID> parse(FailableSupplier<String, Exception> supplier) {
         try {
             var s = supplier.get();
             return Optional.of(UUID.fromString(s));

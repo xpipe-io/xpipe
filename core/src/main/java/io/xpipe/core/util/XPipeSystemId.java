@@ -2,6 +2,7 @@ package io.xpipe.core.util;
 
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.MessageFormatter;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,9 +50,10 @@ public class XPipeSystemId {
     }
 
     private static UUID writeRandom(ShellControl proc, String file) throws Exception {
-        proc.executeSimpleCommand(
-                proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)),
-                "Unable to access or create directory " + file);
+        proc.command(proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)))
+                .withMessageFormatter(MessageFormatter.explanation("Unable to access or create directory " + file)
+                        .command())
+                .execute();
         var id = UUID.randomUUID();
         proc.getShellDialect()
                 .createTextFileWriteCommand(proc, id.toString(), file)

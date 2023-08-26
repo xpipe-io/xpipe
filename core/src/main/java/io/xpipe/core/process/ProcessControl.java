@@ -10,7 +10,7 @@ public interface ProcessControl extends AutoCloseable {
 
     @FunctionalInterface
     interface ExceptionConverter {
-        <T extends Throwable> T convert(T t);
+        Exception convert(Exception t);
     }
 
     ProcessControl withExceptionConverter(ExceptionConverter converter);

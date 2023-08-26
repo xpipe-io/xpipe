@@ -3,7 +3,9 @@ package io.xpipe.core.process;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.store.CommandMessageFormatter;
 import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.ShellMessageFormatter;
 import io.xpipe.core.util.SecretValue;
 
 import java.nio.charset.Charset;
@@ -45,6 +47,10 @@ public interface ShellDialect {
 
     String fileArgument(String s);
 
+    CommandMessageFormatter defaultCommandFormatter();
+
+    ShellMessageFormatter defaultShellFormatter();
+
     String quoteArgument(String s);
 
     String executeWithNoInitFiles(ShellDialect parentDialect, String file);
@@ -67,14 +73,6 @@ public interface ShellDialect {
 
     default String getCdCommand(String directory) {
         return "cd \"" + directory + "\"";
-    }
-
-    default String getPushdCommand(String directory) {
-        return "pushd \"" + directory + "\"";
-    }
-
-    default String getPopdCommand() {
-        return "popd";
     }
 
     String getScriptFileEnding();
