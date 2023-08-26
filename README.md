@@ -58,6 +58,8 @@ The feature set is the same for all supported connection types. It of course als
 
 ## Downloads
 
+Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure with ease from your local machine.
+
 ### Installers
 
 Installers are the easiest way to get started and come with an optional automatic update functionality. The following installers are available:
