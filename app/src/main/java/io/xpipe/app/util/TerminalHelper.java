@@ -17,7 +17,7 @@ public class TerminalHelper {
     public static void open(String title, String command) throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
-            throw new IllegalStateException(AppI18n.get("noTerminalSet"));
+            throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
         command = ScriptHelper.createLocalExecScript(command);

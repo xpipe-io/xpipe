@@ -204,6 +204,11 @@ public class FileSystemHelper {
 
         var sourceFile = source.getPath();
         var targetFile = FileNames.join(target.getPath(), FileNames.getFileName(sourceFile));
+
+        if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
+            throw ErrorEvent.unreportable(new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
+        }
+
         if (explicitCopy) {
             target.getFileSystem().copy(sourceFile, targetFile);
         } else {

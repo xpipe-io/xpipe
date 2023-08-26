@@ -110,6 +110,21 @@ public final class BrowserFileListModel {
     public boolean rename(String filename, String newName) {
         var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), filename);
         var newFullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), newName);
+
+        boolean exists;
+        try {
+            exists = fileSystemModel.getFileSystem().fileExists(newFullPath) || fileSystemModel.getFileSystem().directoryExists(newFullPath);
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+            return false;
+        }
+
+        if (exists) {
+            ErrorEvent.fromMessage("Target " + newFullPath + " does already exist").unreportable().handle();
+            fileSystemModel.refresh();
+            return false;
+        }
+
         try {
             fileSystemModel.getFileSystem().move(fullPath, newFullPath);
             fileSystemModel.refresh();
