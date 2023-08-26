@@ -220,6 +220,19 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
+    ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal") {
+
+        @Override
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("--new-tab").add("-e").addFile(file);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator") {
 
         @Override
@@ -386,6 +399,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     CMD,
                     KONSOLE,
                     XFCE,
+                    ELEMENTARY,
                     GNOME_TERMINAL,
                     TERMINATOR,
                     KITTY,
