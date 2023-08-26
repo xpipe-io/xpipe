@@ -23,12 +23,18 @@ public interface MessageFormatter {
     }
 
     static MessageFormatter explanation(String explanation) {
-        return (message) -> """
-                %s
-                ```
-                %s
-                ```
-                """.formatted(explanation, message);
+        return (message) -> {
+            if (message.isBlank()) {
+                return explanation;
+            }
+
+            return """
+                            %s
+                            ```
+                            %s
+                            ```
+                            """.formatted(explanation, message);
+        };
     }
 
 
