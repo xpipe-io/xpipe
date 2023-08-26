@@ -122,19 +122,6 @@ if (OperatingSystem.current() == OperatingSystem.LINUX) {
     jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=io.xpipe.app")
 }
 
-test {
-    jvmArgs += jvmRunArgs
-    systemProperty 'io.xpipe.app.mode', 'background'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_test/"
-    systemProperty 'io.xpipe.app.writeLogs', "false"
-    systemProperty 'io.xpipe.app.writeSysOut', "true"
-    systemProperty 'io.xpipe.app.developerMode', "true"
-    systemProperty 'io.xpipe.app.logLevel', "trace"
-    systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
-    //systemProperty "io.xpipe.beacon.port", "21722"
-}
-
-
 def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList();
 
 jar {

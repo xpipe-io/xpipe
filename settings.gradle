@@ -5,8 +5,10 @@ include 'core'
 include 'beacon'
 
 for (def ext : file("ext").list()) {
-    include "$ext"
-    project(":$ext").projectDir = file("ext/$ext")
+    if (file("ext/$ext/build.gradle").exists()) {
+        include "$ext"
+        project(":$ext").projectDir = file("ext/$ext")
+    }
 }
 
 include 'app'
