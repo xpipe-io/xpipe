@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="800" height="800" id="svg2" version="1.1" inkscape:version="0.48.3.1 r9886" sodipodi:docname="e-monogram_v3_post-spiro.svg">
+  <defs id="defs4">
+    <inkscape:path-effect is_visible="true" id="path-effect2991" effect="spiro"/>
+    <inkscape:path-effect effect="spiro" id="path-effect3177" is_visible="true"/>
+  </defs>
+  <sodipodi:namedview id="base" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:pageopacity="0.0" inkscape:pageshadow="2" inkscape:zoom="0.97625" inkscape:cx="485.53137" inkscape:cy="393.85403" inkscape:document-units="px" inkscape:current-layer="layer1" showgrid="false" showguides="true" inkscape:guide-bbox="true" inkscape:window-width="1615" inkscape:window-height="1026" inkscape:window-x="65" inkscape:window-y="24" inkscape:window-maximized="1">
+    <sodipodi:guide orientation="1,0" position="100,100" id="guide2985"/>
+    <sodipodi:guide orientation="1,0" position="700,555.18566" id="guide2987"/>
+    <sodipodi:guide orientation="0,1" position="-102.43278,100" id="guide2989"/>
+    <sodipodi:guide orientation="0,1" position="-169.01408,700" id="guide2991"/>
+  </sodipodi:namedview>
+  <metadata id="metadata7">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g inkscape:label="Layer 1" inkscape:groupmode="layer" id="layer1" transform="translate(0,-252.36218)">
+    <path style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:7.50000000000000000;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" d="M 400 100 C 234.31458 100 100 234.31458 100 400 C 100 565.68542 234.31458 700 400 700 C 565.68542 700 700 565.68542 700 400 C 700 234.31458 565.68542 100 400 100 z M 400 125 C 525.96744 125 632.15388 209.69851 664.71875 325.25 C 636.6706 383.10233 596.76011 435.18982 548.15625 477.28125 C 524.80752 497.50148 499.31541 515.52691 471.15625 528.21875 C 442.9971 540.91059 412.02407 548.11213 381.1875 546.34375 C 358.01936 545.01513 335.13297 538.5614 314.84375 527.3125 C 368.61386 498.17635 417.12964 459.32908 456.84375 412.8125 C 482.91128 382.27997 505.71839 347.58066 514.5 308.40625 C 518.89081 288.81904 519.63488 268.30563 515.53125 248.65625 C 511.42762 229.00687 502.34256 210.28185 488.59375 195.65625 C 475.16198 181.36791 457.52918 171.24668 438.625 166.03125 C 419.72081 160.81582 399.60344 160.41208 380.3125 163.9375 C 341.73062 170.98834 307.28404 193.41152 279.65625 221.25 C 230.95825 270.31936 200.85262 339.5572 206.375 408.46875 C 209.13618 442.92452 220.6828 476.78173 240.46875 505.125 C 244.88526 511.45162 249.74063 517.47756 254.9375 523.1875 C 226.11357 533.27523 196.26878 540.45584 166 544.5 C 140.01219 502.50734 125 453.01265 125 400 C 125 248.12169 248.12169 125 400 125 z M 401.75 180.5625 C 421.08142 180.58867 440.54415 186.44102 455.96875 198.09375 C 469.86554 208.59227 480.16267 223.52819 486 239.9375 C 491.83733 256.3468 493.33536 274.16634 491.34375 291.46875 C 487.36053 326.07355 469.90341 357.80884 448.8125 385.53125 C 411.46844 434.6172 361.83069 473.9046 306.625 501.40625 C 300.97426 504.22126 295.23397 506.8969 289.46875 509.46875 C 277.45642 498.95684 267.16054 486.48909 259.3125 472.59375 C 242.91376 443.55899 237.5059 409.06858 240.6875 375.875 C 243.8691 342.68143 255.2603 310.68983 270.5625 281.0625 C 288.30472 246.71092 312.48887 214.17257 346.34375 195.5 C 363.27119 186.16371 382.41858 180.5363 401.75 180.5625 z M 672.53125 363.1875 C 674.14242 375.22998 675 387.51657 675 400 C 675 551.87831 551.87831 675 400 675 C 314.70359 675 238.47226 636.17001 188.03125 575.21875 C 219.16487 568.14767 249.5942 557.99093 278.78125 545.0625 C 291.54496 554.78297 305.64099 562.75549 320.625 568.5 C 363.77602 585.04306 412.76684 582.64935 456.4375 567.53125 C 500.10815 552.41316 538.83419 525.27782 572.59375 493.71875 C 612.81014 456.12373 646.71783 411.81166 672.53125 363.1875 z " transform="translate(0,252.36218)" id="path2993"/>
+  </g>
+</svg>
