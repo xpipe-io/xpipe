@@ -1,6 +1,7 @@
 package io.xpipe.app.test;
 
 import io.xpipe.api.DataSource;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.XPipeServiceProviders;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.beacon.BeaconDaemonController;
@@ -28,6 +29,7 @@ public class DaemonExtensionTest extends ExtensionTest {
 
     @BeforeAll
     public static void setup() throws Exception {
+        AppProperties.init();
         JacksonMapper.initModularized(ModuleLayer.boot());
         XPipeServiceProviders.load(ModuleLayer.boot());
         XPipeSession.init(UUID.randomUUID());

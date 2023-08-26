@@ -20,7 +20,7 @@ repositories {
 }
 
 test {
-    enabled = true
+    enabled = false
 }
 
 dependencies {

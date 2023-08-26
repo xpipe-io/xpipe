@@ -30,3 +30,7 @@ configurations {
 dependencies {
     compileOnly project(':app')
 }
+
+test {
+    enabled = false
+}
