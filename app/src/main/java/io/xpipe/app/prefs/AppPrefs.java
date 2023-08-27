@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.structure.*;
-import com.dlsc.preferencesfx.formsfx.view.controls.SimpleComboBoxControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
 import com.dlsc.preferencesfx.model.Category;
@@ -70,10 +69,6 @@ public class AppPrefs {
             AppProperties.get().getDataDir().resolve("storage");
     private static final boolean STORAGE_DIR_FIXED =
             !AppProperties.get().getDataDir().equals(Path.of(System.getProperty("user.home"), AppProperties.get().isStaging() ? ".xpipe_stage" : ".xpipe"));
-    private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
-    // Lets keep this at trace for now, at least for the alpha
-    private static final String DEFAULT_LOG_LEVEL = "debug";
-    private static final boolean LOG_LEVEL_FIXED = System.getProperty(LOG_LEVEL_PROP) != null;
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
     private final SimpleListProperty<SupportedLocale> languageList =
@@ -225,18 +220,6 @@ public class AppPrefs {
     private final StringField storageDirectoryControl =
             PrefFields.ofPath(storageDirectory).validate(CustomValidators.absolutePath(), CustomValidators.directory());
 
-    // Log level
-    // =========
-    private final ObjectProperty<String> internalLogLevel =
-            typed(new SimpleObjectProperty<>(DEFAULT_LOG_LEVEL), String.class);
-    private final ObjectProperty<String> effectiveLogLevel = LOG_LEVEL_FIXED
-            ? new SimpleObjectProperty<>(System.getProperty(LOG_LEVEL_PROP).toLowerCase())
-            : internalLogLevel;
-    private final SingleSelectionField<String> logLevelField = Field.ofSingleSelectionType(
-                    logLevelList, effectiveLogLevel)
-            .editable(!LOG_LEVEL_FIXED)
-            .render(() -> new SimpleComboBoxControl<>());
-
     // Developer mode
     // ==============
     private final BooleanProperty internalDeveloperMode = typed(new SimpleBooleanProperty(false), Boolean.class);
@@ -353,10 +336,6 @@ public class AppPrefs {
 
     public ObservableValue<Path> storageDirectory() {
         return storageDirectory;
-    }
-
-    public ReadOnlyProperty<String> logLevel() {
-        return effectiveLogLevel;
     }
 
     public ObservableValue<Boolean> developerMode() {
@@ -608,7 +587,6 @@ public class AppPrefs {
                                 STORAGE_DIR_FIXED
                                         ? null
                                         : Setting.of("storageDirectory", storageDirectoryControl, storageDirectory),
-                                Setting.of("logLevel", logLevelField, internalLogLevel),
                                 Setting.of("developerMode", developerModeField, internalDeveloperMode))),
                 Category.of(
                         "appearance",

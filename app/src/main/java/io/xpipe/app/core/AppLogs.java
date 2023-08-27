@@ -2,7 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.Deobfuscator;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
@@ -35,10 +34,14 @@ public class AppLogs {
     private static final String WRITE_SYSOUT_PROP = "io.xpipe.app.writeSysOut";
     private static final String WRITE_LOGS_PROP = "io.xpipe.app.writeLogs";
     private static final String DEBUG_PLATFORM_PROP = "io.xpipe.app.debugPlatform";
+    private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
+    private static final String DEFAULT_LOG_LEVEL = "debug";
+
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
     private static final DateTimeFormatter MESSAGE_FORMATTER =
             DateTimeFormatter.ofPattern("HH:mm:ss:SSS").withZone(ZoneId.systemDefault());
+
     private static AppLogs INSTANCE;
     private final PrintStream originalSysOut;
     private final PrintStream originalSysErr;
@@ -50,13 +53,17 @@ public class AppLogs {
     @Getter
     private final boolean writeToFile;
 
+    @Getter
+    private final String logLevel;
+
     private final PrintStream outStream;
     private final Map<String, PrintStream> categoryWriters;
 
-    public AppLogs(Path logDir, boolean writeToSysout, boolean writeToFile) {
+    public AppLogs(Path logDir, boolean writeToSysout, boolean writeToFile, String logLevel) {
         this.logDir = logDir;
         this.writeToSysout = writeToSysout;
         this.writeToFile = writeToFile;
+        this.logLevel = logLevel;
         this.outStream = System.out;
         this.categoryWriters = new HashMap<>();
 
@@ -112,7 +119,8 @@ public class AppLogs {
             TrackEvent.info("Writing log output to " + usedLogsDir + " from now on");
         }
 
-        INSTANCE = new AppLogs(usedLogsDir, shouldLogToSysout, shouldLogToFile);
+        var level = determineLogLevel();
+        INSTANCE = new AppLogs(usedLogsDir, shouldLogToSysout, shouldLogToFile, level);
     }
 
     public static void teardown() {
@@ -224,12 +232,13 @@ public class AppLogs {
         }));
     }
 
-    private String getLogLevel() {
-        if (AppPrefs.get() == null) {
-            return "trace";
+    private static String determineLogLevel() {
+        if (System.getProperty(LOG_LEVEL_PROP) != null) {
+            String p = System.getProperty(WRITE_SYSOUT_PROP);
+            return DEFAULT_LEVELS.contains(p) ? p : "trace";
         }
 
-        return AppPrefs.get().logLevel().getValue();
+        return DEFAULT_LOG_LEVEL;
     }
 
     public void logException(String description, Throwable e) {
@@ -242,7 +251,7 @@ public class AppLogs {
     }
 
     public synchronized void logEvent(TrackEvent event) {
-        var li = DEFAULT_LEVELS.indexOf(getLogLevel());
+        var li = DEFAULT_LEVELS.indexOf(determineLogLevel());
         int i = li == -1 ? 5 : li;
         int current = DEFAULT_LEVELS.indexOf(event.getType());
         if (current <= i) {
