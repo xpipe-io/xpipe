@@ -475,7 +475,7 @@ final class BrowserFileListComp extends SimpleComp {
 
             try (var ignored = new BusyProperty(updating)) {
                 super.updateItem(newName, empty);
-                if (empty || newName == null) {
+                if (empty || newName == null || getTableRow().getItem() == null) {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
