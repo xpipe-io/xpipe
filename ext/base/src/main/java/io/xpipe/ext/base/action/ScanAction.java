@@ -44,7 +44,7 @@ public class ScanAction implements ActionProvider {
 
             @Override
             public String getIcon(ShellStore store) {
-                return "mdi2p-playlist-plus";
+                return "mdi2m-magnify-scan";
             }
 
             @Override

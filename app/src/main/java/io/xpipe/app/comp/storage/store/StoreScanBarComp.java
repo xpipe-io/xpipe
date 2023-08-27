@@ -20,7 +20,7 @@ public class StoreScanBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var newTunnelStore = new ButtonComp(AppI18n.observable("addAutomatically"), new FontIcon("mdi2e-eye-plus-outline"), () -> {
+        var newTunnelStore = new ButtonComp(AppI18n.observable("addAutomatically"), new FontIcon("mdi2m-magnify-scan"), () -> {
             ScanAlert.showAsync(null);
         })
                 .styleClass(Styles.FLAT)
