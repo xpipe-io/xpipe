@@ -47,10 +47,10 @@ public class OpenFileSystemComp extends SimpleComp {
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
 
-        var backBtn = BrowserAction.byId("back").toButton(model, List.of());
-        var forthBtn = BrowserAction.byId("forward").toButton(model, List.of());
-        var refreshBtn = BrowserAction.byId("refresh").toButton(model, List.of());
-        var terminalBtn = BrowserAction.byId("openTerminal").toButton(model, List.of());
+        var backBtn = BrowserAction.byId("back", model, List.of()).toButton(model, List.of());
+        var forthBtn = BrowserAction.byId("forward", model, List.of()).toButton(model, List.of());
+        var refreshBtn = BrowserAction.byId("refresh", model, List.of()).toButton(model, List.of());
+        var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(model, List.of());
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(

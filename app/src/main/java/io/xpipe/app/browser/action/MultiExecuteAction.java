@@ -20,7 +20,7 @@ public abstract class MultiExecuteAction implements BranchAction {
     protected abstract String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry);
 
     @Override
-    public List<LeafAction> getBranchingActions() {
+    public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return List.of(
                 new LeafAction() {
 

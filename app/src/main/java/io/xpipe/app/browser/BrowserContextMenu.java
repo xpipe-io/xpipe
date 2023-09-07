@@ -66,7 +66,7 @@ final class BrowserContextMenu extends ContextMenu {
 
                 if (a instanceof BranchAction la) {
                     var m = new Menu(a.getName(model, used) + " ...");
-                    for (LeafAction sub : la.getBranchingActions()) {
+                    for (LeafAction sub : la.getBranchingActions(model, used)) {
                         var subUsed = resolveIfNeeded(sub, selected);
                         if (!sub.isApplicable(model, subUsed)) {
                             continue;

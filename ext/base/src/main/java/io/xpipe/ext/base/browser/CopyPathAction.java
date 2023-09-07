@@ -36,7 +36,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public List<LeafAction> getBranchingActions() {
+    public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return List.of(
                 new LeafAction() {
                     @Override

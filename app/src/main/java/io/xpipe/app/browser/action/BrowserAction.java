@@ -23,17 +23,17 @@ public interface BrowserAction {
 
     List<BrowserAction> ALL = new ArrayList<>();
 
-    static List<LeafAction> getFlattened() {
+    static List<LeafAction> getFlattened(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return ALL.stream()
                 .map(browserAction -> browserAction instanceof LeafAction
                         ? List.of((LeafAction) browserAction)
-                        : ((BranchAction) browserAction).getBranchingActions())
+                        : ((BranchAction) browserAction).getBranchingActions(model, entries))
                 .flatMap(List::stream)
                 .toList();
     }
 
-    static LeafAction byId(String id) {
-        return getFlattened().stream()
+    static LeafAction byId(String id, OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return getFlattened(model, entries).stream()
                 .filter(browserAction -> id.equals(browserAction.getId()))
                 .findAny()
                 .orElseThrow();

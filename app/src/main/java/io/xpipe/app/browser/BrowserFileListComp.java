@@ -179,7 +179,7 @@ final class BrowserFileListComp extends SimpleComp {
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.setOnKeyPressed(event -> {
             var selected = fileList.getSelection();
-            BrowserAction.getFlattened().stream()
+            BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
                             && browserAction.isActive(fileList.getFileSystemModel(), selected))
                     .filter(browserAction -> browserAction.getShortcut() != null)
