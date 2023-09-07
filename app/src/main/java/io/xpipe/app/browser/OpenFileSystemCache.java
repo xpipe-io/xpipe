@@ -13,10 +13,20 @@ public class OpenFileSystemCache {
 
     private final OpenFileSystemModel model;
     private final Map<String, Boolean> installedApplications = new HashMap<>();
+    private final Map<String, Object> multiPurposeCache = new HashMap<>();
     private String username;
 
     public OpenFileSystemCache(OpenFileSystemModel model) {
         this.model = model;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(String key) {
+        return (T) multiPurposeCache.get(key);
+    }
+
+    public void set(String key, Object value) {
+        multiPurposeCache.put(key, value);
     }
 
     public void init() throws Exception {
