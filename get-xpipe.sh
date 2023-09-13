@@ -99,19 +99,19 @@ uninstall() {
   local uname_str="$(uname -s)"
   case "$uname_str" in
   Linux)
-    if [ -d "/opt/xpipe" ]; then
+    if [ -d "/opt/$kebap_product_name" ]; then
       info "Uninstalling previous version"
       if [ -f "/etc/debian_version" ]; then
-        DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe
+        DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy "$kebap_product_name"
       else
-        sudo rpm -e xpipe
+        sudo rpm -e "$kebap_product_name"
       fi
     fi
     ;;
   Darwin)
-    if [ -d "/Applications/XPipe.app" ]; then
+    if [ -d "/Applications/$product_name.app" ]; then
       info "Uninstalling previous version"
-      sudo /Applications/XPipe.app/Contents/Resources/scripts/uninstall.sh
+      sudo "/Applications/$product_name.app/Contents/Resources/scripts/uninstall.sh"
     fi
     ;;
   *)
@@ -188,16 +188,22 @@ return 0 2>/dev/null
 arch=$(check_architecture)
 exit_status="$?"
 if [ "$exit_status" != 0 ]; then
-  error "Sorry! XPipe currently does not support your processor architecture."
+  error "Sorry! $product_name currently does not support your processor architecture."
   exit "$exit_status"
 fi
 
 repo="https://github.com/xpipe-io/xpipe"
+aur="https://aur.archlinux.org/xpipe.git"
+product_name="XPipe"
+kebap_product_name="xpipe"
 version=
 while getopts 'sv:' OPTION; do
   case "$OPTION" in
     s)
       repo="https://github.com/xpipe-io/xpipe-ptb"
+      aur="https://aur.archlinux.org/xpipe-ptb.git"
+      product_name="XPipe PTB"
+      kebap_product_name="xpipe-ptb"
       ;;
 
     v)
@@ -212,12 +218,12 @@ while getopts 'sv:' OPTION; do
 done
 
 if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(command -v pacman)" ]; then
-  info "Installing from AUR at https://aur.archlinux.org/xpipe.git"
+  info "Installing from AUR at $aur"
   rm -rf "/tmp/xpipe_aur" || true
   if [[ -z "$version" ]] ; then
-    git clone "https://aur.archlinux.org/xpipe.git" /tmp/xpipe_aur
+    git clone "$aur" /tmp/xpipe_aur
   else
-    git clone --branch "$version" "https://aur.archlinux.org/xpipe.git" /tmp/xpipe_aur
+    git clone --branch "$version" "$aur" /tmp/xpipe_aur
   fi
   cd "/tmp/xpipe_aur"
   makepkg -si
@@ -226,7 +232,7 @@ if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && [ -x "$(comma
 fi
 
 if ! [ -x "$(command -v apt)" ] && ! [ -x "$(command -v rpm)" ] && ! [ -x "$(command -v pacman)" ]; then
-  info "Installation is not supported on this system (no apt, rpm, pacman). Can you try a portable version of XPipe?"
+  info "Installation is not supported on this system (no apt, rpm, pacman). Can you try a portable version of $product_name?"
   info "https://github.com/xpipe-io/xpipe#portable"
   exit 1
 fi
@@ -237,7 +243,7 @@ download_archive="$(
 )"
 exit_status="$?"
 if [ "$exit_status" != 0 ]; then
-  error "Could not download XPipe release."
+  error "Could not download $product_name release."
   exit "$exit_status"
 fi
 
@@ -251,13 +257,6 @@ if [ "$exit_status" != 0 ]; then
 fi
 
 echo ""
-printf "XPipe was successfully installed. You should be able to find XPipe in your desktop environment now. The "
-bold "xpipe"
-printf " cli executable was also added to your path. You can ether use "
-bold "man xpipe"
-printf " or "
-bold "xpipe --help"
-printf " for help.\n"
-echo ""
+echo "$product_name was successfully installed. You should be able to find $product_name in your desktop environment now."
 
 launch
