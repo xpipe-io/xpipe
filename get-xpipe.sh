@@ -197,7 +197,7 @@ version=
 while getopts 'sv:' OPTION; do
   case "$OPTION" in
     s)
-      repo="https://github.com/xpipe-io/xpipe_staging"
+      repo="https://github.com/xpipe-io/xpipe-ptb"
       ;;
 
     v)

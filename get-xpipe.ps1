@@ -127,7 +127,7 @@ Uninstall
 #region Setup
 
 if ($UseStageDownloads) {
-    $XPipeRepoUrl = "https://github.com/xpipe-io/xpipe_staging"
+    $XPipeRepoUrl = "https://github.com/xpipe-io/xpipe-ptb"
 } else {
     $XPipeRepoUrl = "https://github.com/xpipe-io/xpipe"
 }
