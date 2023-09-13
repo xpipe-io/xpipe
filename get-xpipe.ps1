@@ -178,7 +178,7 @@ $env:Path=(
 ) -match '.' -join ';'
 
 Write-Host
-Write-Host '$ProductName has been successfully installed. You should be able to find it in your applications. The ' -NoNewline
+Write-Host "$ProductName has been successfully installed. You should be able to find it in your applications. The " -NoNewline
 Write-Host -ForegroundColor Green 'xpipe' -NoNewline
 Write-Host ' cli executable was also added to your PATH. You can use ' -NoNewline
 Write-Host -ForegroundColor Green 'xpipe --help' -NoNewline
