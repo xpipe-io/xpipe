@@ -100,16 +100,16 @@ function Uninstall {
     param()
 
     # Quick heuristic to see whether is can be possibly installed
-    if (-not (Test-Path "$env:LOCALAPPDATA\XPipe" -PathType Container)) {
+    if (-not (Test-Path "$env:LOCALAPPDATA\$ProductName" -PathType Container)) {
         return
     }
 
-    Write-Host "Looking for previous XPipe installations ..."
+    Write-Host "Looking for previous $ProductName installations ..."
 
-    $cim = Get-CimInstance Win32_Product | Where {$_.Name -match 'XPipe' } | Select-Object -First 1
+    $cim = Get-CimInstance Win32_Product | Where {$_.Name -match "$ProductName" } | Select-Object -First 1
     if ($cim) {
         $message = @(
-            "Uninstalling existing XPipe $($cim.Version) installation ..."
+            "Uninstalling existing $ProductName $($cim.Version) installation ..."
         ) -join [Environment]::NewLine
         Write-Host $message
         $cimResult = Invoke-CimMethod -InputObject $cim -Name Uninstall
@@ -120,16 +120,12 @@ function Uninstall {
 
 #region Pre-check
 
-Uninstall
-
-#endregion Pre-check
-
-#region Setup
-
 if ($UseStageDownloads) {
     $XPipeRepoUrl = "https://github.com/xpipe-io/xpipe-ptb"
+    $ProductName = "XPipe PTB"
 } else {
     $XPipeRepoUrl = "https://github.com/xpipe-io/xpipe"
+    $ProductName = "XPipe"
 }
 
 if ($XPipeVersion) {
@@ -137,6 +133,12 @@ if ($XPipeVersion) {
 } else {
     $XPipeDownloadUrl = "$XPipeRepoUrl/releases/latest/download"
 }
+
+Uninstall
+
+#endregion Pre-check
+
+#region Setup
 
 $XPipeDownloadUrl = "$XPipeDownloadUrl/xpipe-installer-windows-x86_64.msi"
 
@@ -156,14 +158,14 @@ if (-not (Test-Path $tempDir -PathType Container)) {
 #region Download
 
 $file = Join-Path $tempDir "xpipe-installer.msi"
-Write-Host "Getting XPipe from $XPipeRepoUrl."
+Write-Host "Getting $ProductName from $XPipeRepoUrl."
 Request-File -Url $XPipeDownloadUrl -File $file
 
 #endregion Download
 
 #region Install XPipe
 
-Write-Host "Installing XPipe ..."
+Write-Host "Installing $ProductName ..."
 
 # Wait for completion
 # The file variable can contain spaces, so we have to accommodate for that
@@ -176,7 +178,7 @@ $env:Path=(
 ) -match '.' -join ';'
 
 Write-Host
-Write-Host 'XPipe has been successfully installed. You should be able to find it in your applications. The ' -NoNewline
+Write-Host '$ProductName has been successfully installed. You should be able to find it in your applications. The ' -NoNewline
 Write-Host -ForegroundColor Green 'xpipe' -NoNewline
 Write-Host ' cli executable was also added to your PATH. You can use ' -NoNewline
 Write-Host -ForegroundColor Green 'xpipe --help' -NoNewline
@@ -184,6 +186,6 @@ Write-Host ' for help.'
 Write-Host
 
 # Use absolute path as we can't assume that the user has selected to put XPipe into the Path
-& "$env:LOCALAPPDATA\XPipe\cli\bin\xpipe.exe" open
+& "$env:LOCALAPPDATA\$ProductName\cli\bin\xpipe.exe" open
 
 #endregion Install XPipe
