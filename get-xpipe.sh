@@ -142,7 +142,7 @@ install() {
 }
 
 launch() {
-  xpipe open
+  "$kebap_product_name" open
 }
 
 download_release() {
