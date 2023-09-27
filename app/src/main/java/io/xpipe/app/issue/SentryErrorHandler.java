@@ -57,7 +57,7 @@ public class SentryErrorHandler implements ErrorHandler {
         var email = ee.getEmail();
         var hasEmail = email != null && !email.isBlank();
         var text = ee.getUserReport();
-        var hasText = text != null && !text.isEmpty();
+        var hasText = text != null && !text.isBlank();
         if (hasText || hasEmail) {
             var fb = new UserFeedback(id);
             if (hasEmail) {
