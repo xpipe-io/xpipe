@@ -11,7 +11,7 @@ I think a lot of software users have been scarred by such announcements of proje
 
 ## What does this mean for me?
 
-Essentially, you can use all current features without any limitation for free, unless you use it for commercial purposes, which now requires a professional license upgrade. Furthermore, most upcoming features will also be included in the free version. The only exception are features purposefully made for team collaboration and tools only used in enterprises. For now, the only professional-exclusive feature is the newly added git repository storage, which allows you to share your XPipe configurations via your own git remote repositories. The open source model and license also won't change. Some professional-exclusive features will probably not be included in the repository though.
+Essentially, you can use all current features without any limitation for free, unless you use it for commercial purposes, which now requires a professional license upgrade. Furthermore, most upcoming features will also be included in the free version. The only exception are features purposefully made for team collaboration and tools only used in enterprises. For now, the only professional-exclusive feature is the newly added git repository storage, which allows you to share your XPipe configurations with others via your own git remote repositories. The open source model and license also won't change. Some professional-exclusive features will probably not be included in the repository though.
 
 So if you intend to use XPipe in commercial contexts, I would like you to ask to buy a professional license for that. You can of course also do that if you want to support the project without any commercial intentions.
 
