@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -18,6 +19,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import lombok.Builder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -25,11 +27,7 @@ import java.util.function.BiConsumer;
 public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     public static Comp<?> createList(StoreSection top, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment) {
-        var content = new ListBoxViewComp<>(top.getShownChildren(), top.getAllChildren(), (StoreSection e) -> {
-            var custom = StoreSectionMiniComp.builder().section(e).augment(augment).build().hgrow();
-            return new HorizontalComp(List.of(custom)).styleClass("top");
-        });
-        return content.styleClass("store-mini-list-comp");
+        return new StoreSectionMiniComp(top, augment);
     }
 
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
@@ -43,59 +41,66 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = new ButtonComp(section.getWrapper().nameProperty(), () -> {})
-                .apply(struc -> struc.get()
-                        .setGraphic(PrettyImageHelper.ofFixedSmallSquare(section.getWrapper()
-                                                .getEntry()
-                                                .getProvider()
-                                                .getDisplayIconFileName(section.getWrapper()
-                                                        .getEntry()
-                                                        .getStore()))
-                                .createRegion()))
-                .apply(struc -> {
-                    struc.get().setAlignment(Pos.CENTER_LEFT);
-                })
-                .grow(true, false)
-                .styleClass("item");
-        augment.accept(section, root);
-
-        var expanded = new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
-                                                         && section.getAllChildren().size() > 0);
-        var button = new IconButtonComp(
-                        Bindings.createStringBinding(
-                                () -> expanded.get()
-                                        ? "mdal-keyboard_arrow_down"
-                                        : "mdal-keyboard_arrow_right",
-                                expanded),
-                        () -> {
-                            expanded.set(!expanded.get());
-                        })
-                .apply(struc -> struc.get().setMinWidth(20))
-                .apply(struc -> struc.get().setPrefWidth(20))
-                .focusTraversable()
-                .accessibleText("Expand")
-                .disable(BindingsHelper.persist(
-                        Bindings.size(section.getAllChildren()).isEqualTo(0)))
-                .grow(false, true)
-                .styleClass("expand-button");
-        List<Comp<?>> topEntryList = List.of(button, root);
-
         var content = new ListBoxViewComp<>(section.getShownChildren(), section.getAllChildren(), (StoreSection e) -> {
-                    return StoreSectionMiniComp.builder().section(e).augment(this.augment).build();
-                })
+            return StoreSectionMiniComp.builder().section(e).augment(this.augment).build();
+        })
                 .hgrow();
 
-        return new VerticalComp(List.of(
-                        new HorizontalComp(topEntryList)
-                                .apply(struc -> struc.get().setFillHeight(true)),
-                        Comp.separator().visible(expanded),
-                        new HorizontalComp(List.of(content))
-                                .styleClass("content")
-                                .apply(struc -> struc.get().setFillHeight(true))
-                                .hide(BindingsHelper.persist(Bindings.or(
-                                        Bindings.not(expanded),
-                                        Bindings.size(section.getAllChildren()).isEqualTo(0))))))
+        var list = new ArrayList<Comp<?>>();
+        BooleanProperty expanded;
+        if (section.getWrapper() != null) {
+            var root = new ButtonComp(section.getWrapper().nameProperty(), () -> {})
+                    .apply(struc -> struc.get()
+                            .setGraphic(PrettyImageHelper.ofFixedSmallSquare(section.getWrapper()
+                                            .getEntry()
+                                            .getProvider()
+                                            .getDisplayIconFileName(section.getWrapper()
+                                                    .getEntry()
+                                                    .getStore()))
+                                    .createRegion()))
+                    .apply(struc -> {
+                        struc.get().setAlignment(Pos.CENTER_LEFT);
+                    })
+                    .grow(true, false)
+                    .styleClass("item");
+            augment.accept(section, root);
+
+            expanded =
+                    new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
+                            && section.getAllChildren().size() > 0);
+            var button = new IconButtonComp(
+                            Bindings.createStringBinding(
+                                    () -> expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right",
+                                    expanded),
+                            () -> {
+                                expanded.set(!expanded.get());
+                            })
+                    .apply(struc -> struc.get().setMinWidth(20))
+                    .apply(struc -> struc.get().setPrefWidth(20))
+                    .focusTraversable()
+                    .accessibleText("Expand")
+                    .disable(BindingsHelper.persist(
+                            Bindings.size(section.getAllChildren()).isEqualTo(0)))
+                    .grow(false, true)
+                    .styleClass("expand-button");
+            List<Comp<?>> topEntryList = List.of(button, root);
+            list.add(new HorizontalComp(topEntryList)
+                             .apply(struc -> struc.get().setFillHeight(true)));
+            list.add(Comp.separator().visible(expanded));
+        } else {
+            expanded = new SimpleBooleanProperty(true);
+        }
+
+        list.add(new HorizontalComp(List.of(content))
+                         .styleClass("content")
+                         .apply(struc -> struc.get().setFillHeight(true))
+                         .hide(BindingsHelper.persist(Bindings.or(
+                                 Bindings.not(expanded),
+                                 Bindings.size(section.getAllChildren()).isEqualTo(0)))));
+
+        return new VerticalComp(list)
                 .styleClass("store-section-mini-comp")
+                .styleClass(section.getWrapper() != null ? "sub" : "top")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
                     SimpleChangeListener.apply(expanded, val -> {

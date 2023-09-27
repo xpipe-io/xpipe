@@ -98,7 +98,7 @@ final class BrowserBookmarkList extends SimpleComp {
                 new FilterComp(filterText).styleClass(Styles.RIGHT_PILL).hgrow().apply(struc -> {});
 
         var top = new HorizontalComp(List.of(category, filter.hgrow()))
-                .styleClass("top")
+                .styleClass("categories")
                 .apply(struc -> {
                     AppFont.medium(struc.get());
                     struc.get().setFillHeight(true);

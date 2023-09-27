@@ -15,9 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -134,40 +132,54 @@ public class StoreViewState {
     }
 
     private void addStorageListeners() {
+        // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
                 var l = Arrays.stream(entry).map(StoreEntryWrapper::new).toList();
                 Platform.runLater(() -> {
-                    allEntries.addAll(l);
-                    categories.stream()
-                            .filter(storeCategoryWrapper -> allEntries.stream()
-                                    .anyMatch(storeEntryWrapper -> storeEntryWrapper
-                                            .getEntry()
-                                            .getCategoryUuid()
-                                            .equals(storeCategoryWrapper
-                                                            .getCategory()
-                                                            .getUuid())))
-                            .forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    synchronized (allEntries) {
+                        allEntries.addAll(l);
+                    }
+                    synchronized (categories) {
+                        categories.stream()
+                                .filter(storeCategoryWrapper -> allEntries.stream()
+                                        .anyMatch(storeEntryWrapper -> storeEntryWrapper
+                                                .getEntry()
+                                                .getCategoryUuid()
+                                                .equals(storeCategoryWrapper
+                                                        .getCategory()
+                                                        .getUuid())))
+                                .forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+                    }
                 });
             }
 
             @Override
             public void onStoreRemove(DataStoreEntry... entry) {
                 var a = Arrays.stream(entry).collect(Collectors.toSet());
-                var l = StoreViewState.get().getAllEntries().stream()
-                        .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
-                        .toList();
-                var cats = categories.stream()
-                        .filter(storeCategoryWrapper -> allEntries.stream()
-                                .anyMatch(storeEntryWrapper -> storeEntryWrapper
-                                        .getEntry()
-                                        .getCategoryUuid()
-                                        .equals(storeCategoryWrapper
-                                                        .getCategory()
-                                                        .getUuid()))).toList();
+                List<StoreEntryWrapper> l;
+                synchronized (allEntries) {
+                    l = allEntries.stream()
+                            .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
+                            .toList();
+                }
+                List<StoreCategoryWrapper> cats;
+                synchronized (categories) {
+                    cats = categories.stream()
+                            .filter(storeCategoryWrapper -> allEntries.stream()
+                                    .anyMatch(storeEntryWrapper -> storeEntryWrapper
+                                            .getEntry()
+                                            .getCategoryUuid()
+                                            .equals(storeCategoryWrapper
+                                                    .getCategory()
+                                                    .getUuid())))
+                            .toList();
+                }
                 Platform.runLater(() -> {
-                    allEntries.removeAll(l);
+                    synchronized (allEntries) {
+                        allEntries.removeAll(l);
+                    }
                     cats.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
                 });
             }
@@ -176,23 +188,30 @@ public class StoreViewState {
             public void onCategoryAdd(DataStoreCategory category) {
                 var l = new StoreCategoryWrapper(category);
                 Platform.runLater(() -> {
-                    categories.add(l);
+                    synchronized (categories) {
+                        categories.add(l);
+                    }
                     l.update();
                 });
             }
 
             @Override
             public void onCategoryRemove(DataStoreCategory category) {
-                var found = categories.stream()
-                        .filter(storeCategoryWrapper ->
-                                        storeCategoryWrapper.getCategory().equals(category))
-                        .findFirst();
+                Optional<StoreCategoryWrapper> found;
+                synchronized (categories) {
+                    found = categories.stream()
+                            .filter(storeCategoryWrapper ->
+                                    storeCategoryWrapper.getCategory().equals(category))
+                            .findFirst();
+                }
                 if (found.isEmpty()) {
                     return;
                 }
 
                 Platform.runLater(() -> {
-                    categories.remove(found.get());
+                    synchronized (categories) {
+                        categories.remove(found.get());
+                    }
                     var p = found.get().getParent();
                     if (p != null) {
                         p.update();
