@@ -6,6 +6,7 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
+import io.xpipe.app.util.FeatureProvider;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.core.util.DataStateProvider;
@@ -72,7 +73,6 @@ open module io.xpipe.app {
     requires com.jfoenix;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.material;
-    requires commons.exec;
     requires org.controlsfx.controls;
     requires io.sentry;
     requires io.xpipe.beacon;
@@ -86,7 +86,6 @@ open module io.xpipe.app {
     requires versioncompare;
 
     // Required by extensions
-    requires commons.math3;
     requires java.security.jgss;
     requires java.security.sasl;
     requires java.xml;
@@ -121,12 +120,14 @@ open module io.xpipe.app {
     uses ModuleLayerLoader;
     uses ScanProvider;
     uses BrowserAction;
+    uses io.xpipe.app.util.FeatureProvider;
 
     provides ModuleLayerLoader with
             DataSourceTarget.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
             BrowserAction.Loader,
+            FeatureProvider.Loader,
             ScanProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;

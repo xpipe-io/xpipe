@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.store.DataFlow;
-import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.core.store.InternalCacheDataStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.JacksonizedValue;
 import lombok.AccessLevel;
@@ -32,7 +32,7 @@ import java.util.Map;
 @AllArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
-public class HttpStore extends JacksonizedValue implements StreamDataStore, StatefulDataStore {
+public class HttpStore extends JacksonizedValue implements StreamDataStore, InternalCacheDataStore {
 
     String method;
     String uriString;
@@ -94,10 +94,10 @@ public class HttpStore extends JacksonizedValue implements StreamDataStore, Stat
 
     @Override
     public void checkComplete() throws Exception {
-        Validators.nonNull(method, "Method");
-        Validators.nonNull(uriString, "URL");
+        Validators.nonNull(method);
+        Validators.nonNull(uriString);
         URI.create(uriString);
-        Validators.nonNull(headers, "Headers");
+        Validators.nonNull(headers);
     }
 
     @Override

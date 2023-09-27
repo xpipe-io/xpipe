@@ -96,6 +96,11 @@ public class AppTray {
                     peerField.setAccessible(true);
                     var peer = peerField.get(this.privateTrayIcon);
 
+                    // If tray initialization fails, this can be null
+                    if (peer == null) {
+                        return;
+                    }
+
                     var canvasField = peer.getClass().getDeclaredField("canvas");
                     canvasField.setAccessible(true);
                     Component canvas = (Component) canvasField.get(peer);

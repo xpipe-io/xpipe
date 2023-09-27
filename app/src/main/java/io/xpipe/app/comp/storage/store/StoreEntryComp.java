@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.storage.store;
 
 import atlantafx.base.theme.Styles;
-import com.jfoenix.controls.JFXButton;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
@@ -13,11 +13,14 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.DesktopHelper;
+import io.xpipe.app.util.DesktopShortcuts;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,20 +29,37 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
-    public static Comp<?> customSection(StoreSection e) {
+    public static StoreEntryComp create(
+            StoreEntryWrapper entry, boolean showIcon, Comp<?> content, boolean preferLarge) {
+        if (!preferLarge) {
+            return new DenseStoreEntryComp(entry, showIcon, content);
+        } else {
+            return new StandardStoreEntryComp(entry, content);
+        }
+    }
+
+    public static Comp<?> customSection(StoreSection e, boolean topLevel) {
         var prov = e.getWrapper().getEntry().getProvider();
         if (prov != null) {
-            return prov.customDisplay(e);
+            return prov.customEntryComp(e, topLevel);
         } else {
             return new StandardStoreEntryComp(e.getWrapper(), null);
         }
@@ -47,8 +67,10 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
-    public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = App.getApp().getStage().widthProperty().divide(2.2);
-    public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = App.getApp().getStage().widthProperty().divide(2.2).add(-300);
+    public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH =
+            App.getApp().getStage().widthProperty().divide(2.2);
+    public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH =
+            App.getApp().getStage().widthProperty().divide(2.2).add(-300);
     protected final StoreEntryWrapper wrapper;
     protected final Comp<?> content;
 
@@ -61,7 +83,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected final Region createSimple() {
         var r = createContent();
 
-        var button = new JFXButton();
+        var button = new Button();
         button.setGraphic(r);
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(r));
         button.getStyleClass().add("store-entry-comp");
@@ -83,7 +105,10 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         new ContextMenuAugment<>(() -> this.createContextMenu()).augment(new SimpleCompStructure<>(button));
 
-        var loading = new LoadingOverlayComp(Comp.of(() -> button), wrapper.getValidating());
+        var loading = new LoadingOverlayComp(
+                Comp.of(() -> button),
+                BindingsHelper.persist(
+                        wrapper.getInRefresh().and(wrapper.getObserving().not())));
         return loading.createRegion();
     }
 
@@ -163,16 +188,22 @@ public abstract class StoreEntryComp extends SimpleComp {
                 : wrapper.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(wrapper.getEntry().getStore());
-        var imageComp = new PrettyImageComp(new SimpleStringProperty(img), w, h);
+        var imageComp = PrettyImageHelper.ofFixed(img, w, h);
         var storeIcon = imageComp.createRegion();
-        storeIcon.getStyleClass().add("icon");
         if (wrapper.getState().getValue().isUsable()) {
             new FancyTooltipAugment<>(new SimpleStringProperty(
-                    wrapper.getEntry().getProvider().getDisplayName()))
+                            wrapper.getEntry().getProvider().getDisplayName()))
                     .augment(storeIcon);
         }
-        storeIcon.setPadding(new Insets(3, 0, 0, 0));
-        return storeIcon;
+
+        var stack = new StackPane(storeIcon);
+        stack.setMinHeight(w + 7);
+        stack.setMinWidth(w + 7);
+        stack.setMaxHeight(w + 7);
+        stack.setMaxWidth(w + 7);
+        stack.getStyleClass().add("icon");
+        stack.setAlignment(Pos.CENTER);
+        return stack;
     }
 
     protected Comp<?> createButtonBar() {
@@ -227,9 +258,9 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createSettingsButton() {
-        var settingsButton = new IconButtonComp("mdomz-settings");
+        var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", () -> {});
         settingsButton.styleClass("settings");
-        settingsButton.accessibleText("Settings");
+        settingsButton.accessibleText("More");
         settingsButton.apply(new ContextMenuAugment<>(
                 event -> event.getButton() == MouseButton.PRIMARY, () -> StoreEntryComp.this.createContextMenu()));
         settingsButton.apply(new FancyTooltipAugment<>("more"));
@@ -240,22 +271,38 @@ public abstract class StoreEntryComp extends SimpleComp {
         var contextMenu = new ContextMenu();
         AppFont.normal(contextMenu.getStyleableNode());
 
+        var hasSep = false;
         for (var p : wrapper.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
             if (actionProvider.isMajor(wrapper.getEntry().getStore().asNeeded())) {
                 continue;
             }
 
+            if (actionProvider.isSystemAction() && !hasSep) {
+                if (contextMenu.getItems().size() > 0) {
+                    contextMenu.getItems().add(new SeparatorMenuItem());
+                }
+                hasSep = true;
+            }
+
             var name = actionProvider.getName(wrapper.getEntry().getStore().asNeeded());
             var icon = actionProvider.getIcon(wrapper.getEntry().getStore().asNeeded());
-            var item = new MenuItem(null, new FontIcon(icon));
-            item.setOnAction(event -> {
-                ThreadHelper.runFailableAsync(() -> {
-                    var action = actionProvider.createAction(
-                            wrapper.getEntry().getStore().asNeeded());
-                    action.execute();
+            var item = actionProvider.canLinkTo()
+                    ? new Menu(null, new FontIcon(icon))
+                    : new MenuItem(null, new FontIcon(icon));
+            Menu menu = actionProvider.canLinkTo() ? (Menu) item : null;
+                item.setOnAction(event -> {
+                    if (menu != null && !event.getTarget().equals(menu)) {
+                        return;
+                    }
+
+                    contextMenu.hide();
+                    ThreadHelper.runFailableAsync(() -> {
+                        var action = actionProvider.createAction(
+                                wrapper.getEntry().getStore().asNeeded());
+                        action.execute();
+                    });
                 });
-            });
             item.textProperty().bind(name);
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 item.visibleProperty().bind(p.getValue());
@@ -263,18 +310,56 @@ public abstract class StoreEntryComp extends SimpleComp {
                 item.disableProperty().bind(Bindings.not(p.getValue()));
             }
             contextMenu.getItems().add(item);
+
+            if (menu != null) {
+                var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
+                var url = "xpipe://action/" + p.getKey().getId() + "/"
+                        + wrapper.getEntry().getUuid();
+                sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
+                sc.setOnAction(event -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        DesktopShortcuts.create(url,
+                                wrapper.getName() + " (" + p.getKey().getDataStoreCallSite().getName(wrapper.getEntry().getStore().asNeeded()).getValue() + ")");
+                    });
+                });
+                menu.getItems().add(sc);
+
+                if (XPipeDistributionType.get().isSupportsUrls()) {
+                    var l = new MenuItem(null, new FontIcon("mdi2c-clipboard-list-outline"));
+                    l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
+                    l.setOnAction(event -> {
+                        ThreadHelper.runFailableAsync(() -> {
+                            var selection = new StringSelection(url);
+                            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                            AppActionLinkDetector.setLastDetectedAction(url);
+                            clipboard.setContents(selection, selection);
+                        });
+                    });
+                    menu.getItems().add(l);
+                }
+            }
         }
 
-        if (wrapper.getActionProviders().size() > 0) {
+        if (contextMenu.getItems().size() > 0 && !hasSep) {
             contextMenu.getItems().add(new SeparatorMenuItem());
         }
 
         if (AppPrefs.get().developerMode().getValue()) {
-            var browse = new MenuItem(AppI18n.get("browse"), new FontIcon("mdi2f-folder-open-outline"));
+            var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(
                     event -> DesktopHelper.browsePath(wrapper.getEntry().getDirectory()));
             contextMenu.getItems().add(browse);
         }
+
+        var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+        StoreViewState.get().getSortedCategories().forEach(storeCategoryWrapper -> {
+            MenuItem m = new MenuItem(storeCategoryWrapper.getName());
+            m.setOnAction(event -> {
+                wrapper.moveTo(storeCategoryWrapper.getCategory());
+            });
+            move.getItems().add(m);
+        });
+        contextMenu.getItems().add(move);
 
         var refresh = new MenuItem(AppI18n.get("refresh"), new FontIcon("mdal-360"));
         refresh.setOnAction(event -> {

@@ -1,6 +1,6 @@
 .download-background {
--fx-border-color: -color-neutral-muted;
--fx-border-width: 3px 0 0 0;
+-fx-border-color: -color-border-default;
+-fx-border-width: 1px 0 0 0;
 -fx-padding: 1em;
 }
 
@@ -24,7 +24,7 @@
 
 .selected-file-list.drag {
 -fx-border-width: 1px;
--fx-border-color: -color-neutral-emphasis;
+-fx-border-color: -color-border-default;
 -fx-background-color: -color-neutral-muted;
 -fx-background-radius: 1px;
 -fx-border-radius: 1px;
@@ -55,11 +55,27 @@
 .bookmark-list .tree-cell.first {
     -fx-padding: 12px 8px 8px 3px;
     -fx-background-insets: 9px 5px 5px 5px;
-
 }
 
-.browser .bookmark-list {
+.bookmark-list .combo-box {
+    -fx-padding: 0px;
+}
+
+.bookmark-list .item {
     -fx-border-width: 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+}
+
+.bookmark-list .item:selected {
+    -fx-padding: 5px;
+}
+
+.browser .bookmark-tree {
+    -fx-border-width: 0;
+    -fx-padding: 5px;
+    -fx-spacing: 5px;
 }
 
 .browser .bookmark-list *.scroll-bar:horizontal,
@@ -79,12 +95,13 @@
 
 .browser .tool-bar {
     -fx-border-width: 1 0 1 0;
+-fx-border-color: -color-border-default;
     -fx-padding: 5px 10px ;
 }
 
 .browser .status-bar {
     -fx-border-width: 1 0 0 0;
--fx-border-color: -color-neutral-muted;
+-fx-border-color: -color-border-default;
 }
 
 .browser .breadcrumbs >.divider {
@@ -153,11 +170,11 @@
 
 .browser .tab-pane {
  -fx-border-width: 0 0 0 1px;
--fx-border-color: -color-neutral-emphasis;
+-fx-border-color: -color-border-default;
 }
 
 .chooser-bar {
--fx-border-color: -color-neutral-emphasis;
+-fx-border-color: -color-border-default;
 -fx-border-width: 0.1em 0 0 0;
 -fx-padding: 1em;
 -fx-background-color: -color-neutral-muted;
@@ -178,6 +195,10 @@
     -color-cell-bg-selected: -color-neutral-emphasis;
     -color-cell-fg-selected: -color-fg-emphasis;
     -fx-border-width: 0;
+}
+
+.browser .table-row-cell:empty {
+    -fx-opacity: 0.7;
 }
 
 /* setting opacity directly to the .table-cell or .table-row-cell

@@ -12,6 +12,7 @@ import com.dlsc.preferencesfx.view.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -49,7 +50,7 @@ public class AppPreferencesFx {
     private void configure() {
         preferencesFxModel.setSaveSettings(true);
         preferencesFxModel.setHistoryDebugState(true);
-        preferencesFxModel.setInstantPersistent(false);
+        preferencesFxModel.setInstantPersistent(true);
         preferencesFxModel.setButtonsVisible(false);
     }
 
@@ -58,6 +59,7 @@ public class AppPreferencesFx {
         preferencesFxModel.loadSettingValues();
     }
 
+    @SneakyThrows
     public void setupControls() {
         undoRedoBox = new UndoRedoBox(preferencesFxModel.getHistory());
 
@@ -79,6 +81,11 @@ public class AppPreferencesFx {
         categoryController.setView(preferencesFxModel.getDisplayedCategory());
 
         navigationView = new NavigationView(preferencesFxModel);
+        var searchField = navigationView.getClass().getDeclaredField("searchFld");
+        searchField.setAccessible(true);
+        Node search = (Node) searchField.get(navigationView);
+        search.setManaged(false);
+        search.setVisible(false);
         navigationPresenter = new NavigationPresenter(preferencesFxModel, navigationView);
 
         preferencesFxView =

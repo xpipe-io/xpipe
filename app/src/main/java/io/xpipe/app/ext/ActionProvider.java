@@ -6,7 +6,9 @@ import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableValue;
 
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -49,6 +51,10 @@ public interface ActionProvider {
         void execute() throws Exception;
     }
 
+    default String getId() {
+        return null;
+    }
+
     default boolean isActive() {
         return true;
     }
@@ -56,6 +62,19 @@ public interface ActionProvider {
     interface LauncherCallSite {
 
         String getId();
+
+        Action createAction(URI uri) throws Exception;
+    }
+
+    interface XPipeLauncherCallSite extends LauncherCallSite {
+
+        String getId();
+
+        default Action createAction(URI uri) throws Exception {
+            var args = new ArrayList<>(Arrays.asList(uri.getPath().substring(1).split("/")));
+            args.add(0, uri.getHost());
+            return createAction(args);
+        }
 
         Action createAction(List<String> args) throws Exception;
     }
@@ -93,6 +112,14 @@ public interface ActionProvider {
             ONLY_SHOW_IF_ENABLED,
             ALWAYS_SHOW,
             ALWAYS_ENABLE
+        }
+
+        default boolean isSystemAction() {
+            return false;
+        }
+
+        default boolean canLinkTo() {
+            return false;
         }
 
         Action createAction(T store);

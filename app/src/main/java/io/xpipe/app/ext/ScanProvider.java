@@ -3,9 +3,9 @@ package io.xpipe.app.ext;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.ModuleLayerLoader;
 import lombok.Value;
-import org.apache.commons.lang3.function.FailableRunnable;
 
 import java.util.Comparator;
 import java.util.List;

@@ -1,27 +1,29 @@
 package io.xpipe.app.issue;
 
+import atlantafx.base.controls.Popover;
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
+import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.TitledPaneComp;
-import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.*;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.util.Hyperlinks;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static atlantafx.base.theme.Styles.ACCENT;
@@ -29,6 +31,7 @@ import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
 
 public class UserReportComp extends SimpleComp {
 
+    private final StringProperty email = new SimpleStringProperty();
     private final StringProperty text = new SimpleStringProperty();
     private final ListProperty<Path> includedDiagnostics;
     private final ErrorEvent event;
@@ -74,12 +77,18 @@ public class UserReportComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var emailHeader = new Label(AppI18n.get("provideEmail"));
+        AppFont.medium(emailHeader);
+        var email = new TextField();
+        this.email.bind(email.textProperty());
+        VBox.setVgrow(email, Priority.ALWAYS);
+
         var header = new Label(AppI18n.get("additionalErrorInfo"));
         AppFont.medium(header);
         var tf = new TextArea();
         text.bind(tf.textProperty());
         VBox.setVgrow(tf, Priority.ALWAYS);
-        var reportSection = new VBox(header, tf);
+        var reportSection = new VBox(emailHeader, email, new Spacer(8, Orientation.VERTICAL), header, tf);
         reportSection.setSpacing(5);
         reportSection.getStyleClass().add("report");
 
@@ -96,20 +105,33 @@ public class UserReportComp extends SimpleComp {
         layout.setBottom(buttons);
         layout.getStyleClass().add("error-report");
         layout.setPrefWidth(AppFont.em(35));
-        layout.setPrefHeight(AppFont.em(25));
+        layout.setPrefHeight(AppFont.em(30));
         return layout;
     }
 
     private Region createBottomBarNavigation() {
         var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
+        AppFont.small(dataPolicyButton);
         dataPolicyButton.setOnAction(event1 -> {
-            Hyperlinks.open(Hyperlinks.DOCS_PRIVACY);
+            AppResources.with(AppResources.XPIPE_MODULE, "misc/report_privacy_policy.md", file -> {
+                var markDown = new MarkdownComp(Files.readString(file), s -> s)
+                        .apply(struc -> struc.get().setMaxWidth(500))
+                        .apply(struc -> struc.get().setMaxHeight(400));
+                var popover = new Popover(markDown.createRegion());
+                popover.setCloseButtonEnabled(true);
+                popover.setHeaderAlwaysVisible(false);
+                popover.setDetachable(true);
+                AppFont.small(popover.getContentNode());
+                popover.show(dataPolicyButton);
+            });
+            event1.consume();
         });
         var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send)
                 .apply(struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT))
                 .createRegion();
         var spacer = new Region();
-        var buttons = new HBox(spacer, sendButton);
+        var agree = new Label("Note the issue reporter ");
+        var buttons = new HBox(agree, dataPolicyButton, spacer, sendButton);
         buttons.setAlignment(Pos.CENTER);
         buttons.getStyleClass().add("buttons");
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -119,8 +141,9 @@ public class UserReportComp extends SimpleComp {
 
     private void send() {
         event.clearAttachments();
+        event.setShouldSendDiagnostics(true);
         includedDiagnostics.forEach(event::addAttachment);
-        event.attachUserReport(text.get());
+        event.attachUserReport(email.get(), text.get());
         SentryErrorHandler.getInstance().handle(event);
         sent = true;
         stage.close();

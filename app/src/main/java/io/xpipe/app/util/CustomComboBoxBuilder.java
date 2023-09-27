@@ -15,6 +15,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.Separator;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -227,6 +229,11 @@ public class CustomComboBoxBuilder<T> {
         public Cell() {
             addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 if (!nodeMap.containsKey(getItem())) {
+                    event.consume();
+                }
+            });
+            addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.ENTER && !nodeMap.containsKey(getItem())) {
                     event.consume();
                 }
             });

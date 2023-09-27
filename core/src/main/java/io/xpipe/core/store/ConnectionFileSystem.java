@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.core.process.ShellControl;
 import lombok.Getter;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -67,7 +66,8 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public InputStream openInput(String file) throws Exception {
         return shellControl
-                .command(proc -> proc.getShellDialect().getFileReadCommand(file))
+                .getShellDialect()
+                .getFileReadCommand(shellControl, file)
                 .startExternalStdout();
     }
 
@@ -103,8 +103,8 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void copy(String file, String newFile) throws Exception {
         try (var pc = shellControl
-                .command(proc -> proc.getShellDialect().getFileCopyCommand(file, newFile))
-                .complex()
+                .getShellDialect()
+                .getFileCopyCommand(shellControl, file, newFile)
                 .start()) {
             pc.discardOrThrow();
         }
@@ -113,8 +113,8 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void move(String file, String newFile) throws Exception {
         try (var pc = shellControl
-                .command(proc -> proc.getShellDialect().getFileMoveCommand(file, newFile))
-                .complex()
+                .getShellDialect()
+                .getFileMoveCommand(shellControl, file, newFile)
                 .start()) {
             pc.discardOrThrow();
         }
@@ -133,7 +133,8 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void touch(String file) throws Exception {
         try (var pc = shellControl
-                .command(proc -> proc.getShellDialect().getFileTouchCommand(file))
+                .getShellDialect()
+                .getFileTouchCommand(shellControl, file)
                 .start()) {
             pc.discardOrThrow();
         }

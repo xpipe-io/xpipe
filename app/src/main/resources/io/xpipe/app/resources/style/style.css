@@ -9,12 +9,29 @@
 -fx-inner-border: -color-accent-fg;
 }
 
-.window-content {
+.root .window-content {
 -fx-padding: 1.2em;
 }
 
 .layout {
+
+}
+
+.root:dark .background {
+-fx-opacity: 0.06;
+}
+
+.root:light .background {
+-fx-opacity: 0.2;
+}
+
+.scan-list {
+-fx-background-radius: 4px;
+ -fx-border-width: 0.05em;
+-fx-border-radius: 4px;
+-fx-padding: 1em;
 -fx-background-color: -color-bg-default;
+-fx-border-color: -color-neutral-emphasis;
 }
 
 .text {
@@ -29,10 +46,6 @@
  -fx-padding: 0.05em;
 }
 
-.background {
--fx-transparency: 10%;
-}
-
 .scroll-pane {
 -fx-background-color:transparent;
 }
@@ -40,9 +53,5 @@
 .jfx-list-view {
  -fx-background-insets: 0;
  -fx-padding: 0;
-}
-
-.loading-comp {
-  -fx-background-color: -color-modal-pane-overlay;
 }
 

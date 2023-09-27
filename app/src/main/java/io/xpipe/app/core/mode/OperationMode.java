@@ -2,15 +2,15 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.ErrorHandler;
-import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
+import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.core.util.XPipeSystemId;
-import org.apache.commons.lang3.function.FailableRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -170,25 +170,41 @@ public abstract class OperationMode {
         return ALL;
     }
 
+    public static void restart() {
+        OperationMode.executeAfterShutdown(() -> {
+            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(XPipeInstallation.getLocalDefaultInstallationBasePath(), XPipeDaemonMode.GUI, "");
+            LocalStore.getShell().executeSimpleCommand(exec);
+        });
+    }
+
     public static void executeAfterShutdown(FailableRunnable<Exception> r) {
-        if (inShutdown) {
-            return;
-        }
-
-        inShutdown = true;
-        inShutdownHook = false;
-        try {
-            if (CURRENT != null) {
-                CURRENT.finalTeardown();
+        // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
+        var t = new Thread(() -> {
+            if (inShutdown) {
+                return;
             }
-            CURRENT = null;
-            r.run();
-        } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).build().handle();
-            OperationMode.halt(1);
-        }
 
-        OperationMode.halt(0);
+            inShutdown = true;
+            inShutdownHook = false;
+            try {
+                if (CURRENT != null) {
+                    CURRENT.finalTeardown();
+                }
+                CURRENT = null;
+                r.run();
+            } catch (Throwable ex) {
+                ErrorEvent.fromThrowable(ex).build().handle();
+                OperationMode.halt(1);
+            }
+
+            OperationMode.halt(0);
+        });
+        t.setDaemon(false);
+        t.start();
+        try {
+            t.join();
+        } catch (InterruptedException ignored) {
+        }
     }
 
     public static void halt(int code) {
@@ -275,5 +291,7 @@ public abstract class OperationMode {
 
     public abstract void finalTeardown() throws Throwable;
 
-    public abstract ErrorHandler getErrorHandler();
+    public ErrorHandler getErrorHandler() {
+        return new SyncErrorHandler(new GuiErrorHandler());
+    }
 }

@@ -198,11 +198,9 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        if (event.isReportable()) {
-            for (var action : List.of(ErrorAction.sendDiagnostics(), ErrorAction.reportOnGithub())) {
-                var ac = createActionComp(action);
-                actionBox.getChildren().add(ac);
-            }
+        for (var action : List.of(ErrorAction.automaticallyReport(), ErrorAction.reportOnGithub())) {
+            var ac = createActionComp(action);
+            actionBox.getChildren().add(ac);
         }
 
         for (var action :

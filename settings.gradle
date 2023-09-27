@@ -4,8 +4,16 @@ include 'api'
 include 'core'
 include 'beacon'
 
+include "base"
+project(":base").projectDir = file("ext/base")
+
 for (def ext : file("ext").list()) {
+    if (ext == 'base') {
+        continue
+    }
+
     if (file("ext/$ext/build.gradle").exists()) {
+
         include "$ext"
         project(":$ext").projectDir = file("ext/$ext")
     }

@@ -1,8 +1,8 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.modulefs.ModuleFileSystem;
-import org.apache.commons.lang3.function.FailableConsumer;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -52,7 +52,7 @@ public class AppResources {
         withResource(module, file, con);
     }
 
-    public static void withResource(
+    public static void withResourceInLayer(
             String module, String file, ModuleLayer layer, FailableConsumer<Path, IOException> con) {
         try (var fs = FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer))) {
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);

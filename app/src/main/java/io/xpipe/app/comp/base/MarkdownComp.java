@@ -1,9 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.ast.Document;
-import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
@@ -12,6 +8,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.MarkdownHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -44,13 +41,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     }
 
     private String getHtml() {
-        MutableDataSet options = new MutableDataSet();
-        Parser parser = Parser.builder(options).build();
-        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
-        Document document = parser.parse(markdown.getValue());
-        var html = renderer.render(document);
-        var result = htmlTransformation.apply(html);
-        return "<article class=\"markdown-body\">" + result + "</article>";
+        return MarkdownHelper.toHtml(markdown.getValue(), htmlTransformation);
     }
 
     @SneakyThrows

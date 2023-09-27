@@ -1,10 +1,9 @@
 tasks.withType(JavaCompile).configureEach {
-    sourceCompatibility = JavaVersion.VERSION_20
-    targetCompatibility = JavaVersion.VERSION_20
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     modularity.inferModulePath = true
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:unchecked"
-    options.compilerArgs << "--enable-preview"
 
     // These settings are explicitly specified as they can cause problems with annotation processors
     options.compilerArgs << "-implicit:none"
@@ -18,8 +17,8 @@ tasks.withType(JavaExec).configureEach {
 javadoc{
     source = sourceSets.main.allJava
     options {
-        addStringOption('-release', '20')
-        addStringOption('link', 'https://docs.oracle.com/en/java/javase/19/docs/api/')
+        addStringOption('-release', '21')
+        addStringOption('link', 'https://docs.oracle.com/en/java/javase/21/docs/api/')
         addBooleanOption('html5', true)
         addStringOption('Xdoclint:none', '-quiet')
         addBooleanOption('-enable-preview', true)

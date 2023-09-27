@@ -33,6 +33,10 @@ public class DeveloperTabComp extends SimpleComp {
             System.exit(0);
         });
 
+        var button6 = new ButtonComp(AppI18n.observable("Restart"), null, () -> {
+            OperationMode.restart();
+        });
+
         var button4 = new ButtonComp(AppI18n.observable("Throw terminal exception"), null, () -> {
             try {
                 throw new IllegalStateException();
@@ -48,6 +52,7 @@ public class DeveloperTabComp extends SimpleComp {
                 button2.createRegion(),
                 button3.createRegion(),
                 button4.createRegion(),
-                button5.createRegion());
+                button5.createRegion(),
+                button6.createRegion());
     }
 }

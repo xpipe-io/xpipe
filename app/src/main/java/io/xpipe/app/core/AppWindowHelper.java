@@ -41,17 +41,19 @@ public class AppWindowHelper {
 
     public static void addIcons(Stage stage) {
         stage.getIcons().clear();
-        for (String s : List.of(
-                "logo_16x16.png",
-                "logo_24x24.png",
-                "logo_32x32.png",
-                "logo_48x48.png",
-                "logo_128x128.png",
-                "logo_256x256.png")) {
-            if (AppImages.hasNormalImage("logo/" + s)) {
-                stage.getIcons().add(AppImages.image("logo/" + s));
+
+        // This allows for assigning logos even if AppImages has not been initialized yet
+        AppResources.with(AppResources.XPIPE_MODULE, "img/logo", path -> {
+            for (String s : List.of(
+                    "logo_16x16.png",
+                    "logo_24x24.png",
+                    "logo_32x32.png",
+                    "logo_48x48.png",
+                    "logo_128x128.png",
+                    "logo_256x256.png")) {
+                stage.getIcons().add(AppImages.loadImage(path.resolve(s)));
             }
-        }
+        });
     }
 
     public static Stage sideWindow(

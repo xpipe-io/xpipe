@@ -1,11 +1,14 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import javafx.application.Platform;
+import javafx.scene.input.Clipboard;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
@@ -22,6 +25,13 @@ public enum PlatformState {
     public static boolean PLATFORM_LOADED;
 
     public static void teardown() {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            // Fix to preserve clipboard contents after shutdown
+            var string = Clipboard.getSystemClipboard().getString();
+            var s = new StringSelection(string);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
+        });
+
         Platform.exit();
         setCurrent(PlatformState.EXITED);
     }

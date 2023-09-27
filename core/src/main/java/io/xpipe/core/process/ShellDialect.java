@@ -135,21 +135,21 @@ public interface ShellDialect {
 
     String runScriptSilentlyCommand(ShellControl parent, String file);
 
-    String sourceScript(String file);
+    String sourceScriptCommand(ShellControl parent, String file);
 
     String executeCommandWithShell(String cmd);
 
     String getMkdirsCommand(String dirs);
 
-    String getFileReadCommand(String file);
+    CommandControl getFileReadCommand(ShellControl parent, String file);
 
     String getPrintWorkingDirectoryCommand();
 
     StreamCharset getScriptCharset();
 
-    String getFileCopyCommand(String oldFile, String newFile);
+    CommandControl getFileCopyCommand(ShellControl parent, String oldFile, String newFile);
 
-    String getFileMoveCommand(String oldFile, String newFile);
+    CommandControl getFileMoveCommand(ShellControl parent, String oldFile, String newFile);
 
     default boolean requiresScript(String content) {
         return content.contains("\n");
@@ -167,9 +167,9 @@ public interface ShellDialect {
 
     CommandControl symbolicLink(ShellControl sc, String linkFile, String targetFile);
 
-    String getFileDeleteCommand(String file);
+    CommandControl getFileDeleteCommand(ShellControl parent, String file);
 
-    String getFileTouchCommand(String file);
+    CommandControl getFileTouchCommand(ShellControl parent, String file);
 
     String getWhichCommand(String executable);
 

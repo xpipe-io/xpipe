@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import lombok.Builder;
@@ -93,7 +94,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
     @Builder
     public static class Structure implements CompStructure<StackPane> {
         StackPane pane;
-        JFXTextField textField;
+        TextField textField;
 
         @Override
         public StackPane get() {

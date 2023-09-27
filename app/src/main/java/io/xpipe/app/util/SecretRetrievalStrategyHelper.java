@@ -34,7 +34,7 @@ public class SecretRetrievalStrategyHelper {
         var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty).apply(struc -> struc.get().setPromptText("Password key")).hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-                                    AppPrefs.get().selectCategory(3);
+                                    AppPrefs.get().selectCategory(4);
                                     App.getApp().getStage().requestFocus();
                                 })
                                 .grow(false, true)))

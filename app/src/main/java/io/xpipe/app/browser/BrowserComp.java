@@ -10,13 +10,12 @@ import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.SimpleCompStructure;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -34,6 +33,7 @@ import javafx.scene.layout.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
@@ -88,7 +88,7 @@ public class BrowserComp extends SimpleComp {
                 .widthProperty()
                 .addListener(
                         // set sidebar width in pixels depending on split pane width
-                        (obs, old, val) -> splitPane.setDividerPosition(0, 320 / splitPane.getWidth()));
+                        (obs, old, val) -> splitPane.setDividerPosition(0, 360 / splitPane.getWidth()));
 
         var r = addBottomBar(splitPane);
         r.getStyleClass().add("browser");
@@ -149,7 +149,8 @@ public class BrowserComp extends SimpleComp {
     private TabPane createTabPane() {
         var tabs = new TabPane();
         tabs.setTabDragPolicy(TabPane.TabDragPolicy.REORDER);
-        tabs.setTabMinWidth(Region.USE_COMPUTED_SIZE);
+        tabs.setTabMinWidth(Region.USE_PREF_SIZE);
+        tabs.setTabMaxWidth(400);
         tabs.setTabClosingPolicy(ALL_TABS);
         Styles.toggleStyleClass(tabs, TabPane.STYLE_CLASS_FLOATING);
         toggleStyleClass(tabs, DENSE);
@@ -200,7 +201,7 @@ public class BrowserComp extends SimpleComp {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        try (var b = new BusyProperty(modifying)) {
+                        try (var b = new BooleanScope(modifying).start()) {
                             var t = map.remove(r);
                             tabs.getTabs().remove(t);
                         }
@@ -209,7 +210,7 @@ public class BrowserComp extends SimpleComp {
 
                 for (var a : c.getAddedSubList()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        try (var b = new BusyProperty(modifying)) {
+                        try (var b = new BooleanScope(modifying).start()) {
                             var t = createTab(tabs, a);
                             map.put(a, t);
                             tabs.getTabs().add(t);
@@ -244,34 +245,51 @@ public class BrowserComp extends SimpleComp {
         var tab = new Tab();
 
         var ring = new RingProgressIndicator(0, false);
-        ring.setMinSize(14, 14);
-        ring.setPrefSize(14, 14);
-        ring.setMaxSize(14, 14);
+        ring.setMinSize(16, 16);
+        ring.setPrefSize(16, 16);
+        ring.setMaxSize(16, 16);
         ring.progressProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
 
         var image = DataStoreProviders.byStore(model.getStore()).getDisplayIconFileName(model.getStore());
-        var logo = new PrettyImageComp(new SimpleStringProperty(image), 20, 20).createRegion();
+        var logo = PrettyImageHelper.ofFixedSquare(image, 16).createRegion();
 
-        var label = new Label(model.getName());
-        label.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-        label.addEventHandler(
-                DragEvent.DRAG_ENTERED,
-                mouseEvent -> Platform.runLater(() -> tabs.getSelectionModel().select(tab)));
-
-        label.graphicProperty()
+        tab.graphicProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
                             return model.getBusy().get() ? ring : logo;
                         },
                         PlatformThread.sync(model.getBusy())));
-
-        tab.setGraphic(label);
-        new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(label);
-        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(label));
-        tab.setContent(new OpenFileSystemComp(model).createSimple());
         tab.setText(model.getName());
+
+        // new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(tab);
+        tab.setContent(new OpenFileSystemComp(model).createSimple());
+
+        var id = UUID.randomUUID().toString();
+        tab.setId(id);
+
+        var found = tabs.lookupAll("tab-header-area");
+        SimpleChangeListener.apply(tabs.skinProperty(), newValue -> {
+            if (newValue != null) {
+                Platform.runLater(() -> {
+                    Label l = (Label) tabs.lookup("#" + id + " .tab-label");
+                    var w = l.maxWidthProperty();
+                    l.minWidthProperty().bind(w);
+                    l.prefWidthProperty().bind(w);
+
+                    var close = (StackPane) tabs.lookup("#" + id + " .tab-close-button");
+                    close.setPrefWidth(30);
+
+                    StackPane c = (StackPane) tabs.lookup("#" + id + " .tab-container");
+                    new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
+                    c.addEventHandler(
+                            DragEvent.DRAG_ENTERED,
+                            mouseEvent -> Platform.runLater(() -> tabs.getSelectionModel().select(tab)));
+                });
+            }
+        });
+
         return tab;
     }
 }

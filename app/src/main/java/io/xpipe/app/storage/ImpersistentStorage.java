@@ -16,6 +16,11 @@ public class ImpersistentStorage extends DataStorage {
     }
 
     @Override
+    public boolean supportsSharing() {
+        return false;
+    }
+
+    @Override
     public void save() {
         var storesDir = getStoresDir();
 

@@ -1,13 +1,13 @@
 .sidebar-comp {
  -fx-border-width: 0 0 0 1px;
--fx-border-color: -color-neutral-emphasis;
+-fx-border-color: -color-border-default;
 -fx-padding: 0;
     -fx-background-insets: 0;
 }
 
 .sidebar-comp .icon-button-comp {
 -fx-border-width: 0 3px 0 0;
--fx-border-color: -color-neutral-muted;
+-fx-border-color: -color-border-default;
 }
 
 .sidebar-comp .icon-button-comp, .sidebar-comp .button {

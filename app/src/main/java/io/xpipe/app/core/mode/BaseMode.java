@@ -6,7 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.util.DefaultSecretValue;
+import io.xpipe.app.util.FeatureProvider;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LockedSecretValue;
 import io.xpipe.core.impl.LocalStore;
@@ -41,6 +41,7 @@ public class BaseMode extends OperationMode {
         // Load translations before storage initialization to localize store error messages
         // Also loaded before antivirus alert to localize that
         AppI18n.init();
+        FeatureProvider.get().init();
         AppAntivirusAlert.showIfNeeded();
         LocalStore.init();
         AppPrefs.init();
@@ -61,20 +62,12 @@ public class BaseMode extends OperationMode {
     public void finalTeardown() {
         TrackEvent.info("mode", "Background mode shutdown started");
         BrowserModel.DEFAULT.reset();
-        AppSocketServer.reset();
         StoreViewState.reset();
         DataStorage.reset();
         AppPrefs.reset();
         AppExtensionManager.reset();
+        // Shut down socket server last to keep a non-daemon thread running
+        AppSocketServer.reset();
         TrackEvent.info("mode", "Background mode shutdown finished");
-    }
-
-    @Override
-    public ErrorHandler getErrorHandler() {
-        var log = new LogErrorHandler();
-        return new SyncErrorHandler(event -> {
-            log.handle(event);
-            ErrorAction.ignore().handle(event);
-        });
     }
 }

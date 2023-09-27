@@ -244,6 +244,7 @@ public class AppMainWindow {
         var contentR = content.createRegion();
         contentR.requestFocus();
         stage.getScene().setRoot(contentR);
+        AppTheme.initTheme(stage);
         TrackEvent.debug("Set content scene");
 
         contentR.prefWidthProperty().bind(stage.getScene().widthProperty());
@@ -262,6 +263,7 @@ public class AppMainWindow {
             if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
                 var newR = content.createRegion();
                 stage.getScene().setRoot(newR);
+                AppTheme.initTheme(stage);
                 newR.requestFocus();
 
                 TrackEvent.debug("Rebuilt content");

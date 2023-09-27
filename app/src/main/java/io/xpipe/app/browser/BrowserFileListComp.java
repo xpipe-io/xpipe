@@ -7,9 +7,9 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.impl.SvgCacheComp;
+import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
@@ -423,8 +423,7 @@ final class BrowserFileListComp extends SimpleComp {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
-        private final Node imageView = new SvgCacheComp(
-                        new SimpleDoubleProperty(24), new SimpleDoubleProperty(24), img, FileIconManager.getSvgCache())
+        private final Node imageView = new PrettySvgComp(img, 24, 24)
                 .createRegion();
         private final StackPane textField =
                 new LazyTextFieldComp(text).createStructure().get();
@@ -473,7 +472,7 @@ final class BrowserFileListComp extends SimpleComp {
                 return;
             }
 
-            try (var ignored = new BusyProperty(updating)) {
+            try (var ignored = new BooleanScope(updating).start()) {
                 super.updateItem(newName, empty);
                 if (empty || newName == null || getTableRow().getItem() == null) {
                     // Don't set image as that would trigger image comp update

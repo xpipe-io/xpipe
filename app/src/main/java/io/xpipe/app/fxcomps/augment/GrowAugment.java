@@ -27,9 +27,17 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
         if (width) {
             r.prefWidthProperty()
                     .bind(Bindings.createDoubleBinding(
-                            () -> p.getWidth()
-                                    - p.getInsets().getLeft()
-                                    - p.getInsets().getRight(),
+                            () -> {
+                                var val = p.getWidth()
+                                        - p.getInsets().getLeft()
+                                        - p.getInsets().getRight();
+                                if (val <= 0) {
+                                    return Region.USE_COMPUTED_SIZE;
+                                }
+
+                                // Floor to prevent rounding issues which cause an infinite growing
+                                return Math.floor(val);
+                            },
                             p.widthProperty(),
                             p.insetsProperty()));
         }
@@ -43,7 +51,9 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
                                 if (val <= 0) {
                                     return Region.USE_COMPUTED_SIZE;
                                 }
-                                return val;
+
+                                // Floor to prevent rounding issues which cause an infinite growing
+                                return Math.floor(val);
                             },
                             p.heightProperty(),
                             p.insetsProperty()));

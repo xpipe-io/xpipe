@@ -1,3 +1,5 @@
+import java.util.stream.Stream
+
 plugins {
     id "io.codearte.nexus-staging" version "0.30.0"
 }
@@ -22,18 +24,47 @@ def getArchName() {
 project.ext {
     ci = System.getenv('CI') != null
     os = org.gradle.internal.os.OperatingSystem.current()
-    allExtensions = Arrays.stream(file("$rootDir/ext").list())
-    .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
-            .filter(s -> !s.equals('csv') && !s.equals('office') && !s.equals('pdx') && !s.equals('jackson') && !s.equals('collections'))
-            .map(l -> project(":$l")).toList()
+    allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
+            .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
+            .filter(s -> !s.equals('base') && !s.equals('csv') && !s.equals('office') && !s.equals('pdx') && !s.equals('jackson') && !s.equals(
+                    'collections'))
+            .map(l -> project(":$l"))).toList()
     fullVersion = file("$rootDir/private_files.txt").exists()
     arch = getArchName()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
-    versionString = file('version').text.trim() + (isFullRelease || isStage ? '' : '-SNAPSHOT')
-    canonicalVersionString = file('version').text
+    rawVersion = file('version').text.trim()
+    versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
+    versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
+    canonicalVersionString = rawVersion.split('-').length == 2 ? rawVersion.split('-')[0] : rawVersion
     buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
     obfuscate = true
-    changelog = file("dist/changelogs/${version}.md").exists() ? file("dist/changelogs/${version}.md").text.trim() + '\n' : ""
+    changelog = file("dist/changelogs/${canonicalVersionString}.md").exists() ? file("dist/changelogs/${canonicalVersionString}.md").text.trim() + '\n' : ""
+    productName = isStage ? 'XPipe PTB' : 'XPipe'
+    kebapProductName = isStage ? 'xpipe-ptb' : 'xpipe'
+    publisher = 'XPipe UG (haftungsbeschränkt)'
+    shortDescription = 'The shell connection hub and remote file browser for your entire infrastructure'
+    longDescription = 'XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire sever infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.'
+    website = 'https://xpipe.io'
+    sourceWebsite = 'https://github.com/xpipe-io/xpipe'
+    authors = 'Christopher Schnick'
+}
+
+def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {
+    def fileName = file(f).getName()
+    def text = file(f).text
+    def replaced = text.replace(replacements)
+    return replaced
+}
+
+def replaceVariablesInFile(String f, Map<String, String> replacements) {
+    def fileName = file(f).getName()
+    def text = file(f).text
+    def replaced = text.replace(replacements)
+    def build = "${project.layout.buildDirectory.get()}/${UUID.randomUUID()}"
+    file(build).mkdirs()
+    def temp = "$build/$fileName"
+    file(temp).text = replaced
+    return file(temp)
 }

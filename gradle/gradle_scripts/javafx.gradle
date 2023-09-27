@@ -20,10 +20,10 @@ configurations {
 }
 
 dependencies {
-    dep "org.openjfx:javafx-base:20.0.1:${platform}"
-    dep "org.openjfx:javafx-controls:20.0.1:${platform}"
-    dep "org.openjfx:javafx-graphics:20.0.1:${platform}"
-    dep "org.openjfx:javafx-media:20.0.1:${platform}"
-    dep "org.openjfx:javafx-web:20.0.1:${platform}"
-    dep "org.openjfx:javafx-swing:20.0.1:${platform}"
+    dep "org.openjfx:javafx-base:21:${platform}"
+    dep "org.openjfx:javafx-controls:21:${platform}"
+    dep "org.openjfx:javafx-graphics:21:${platform}"
+    dep "org.openjfx:javafx-media:21:${platform}"
+    dep "org.openjfx:javafx-web:21:${platform}"
+    dep "org.openjfx:javafx-swing:21:${platform}"
 }

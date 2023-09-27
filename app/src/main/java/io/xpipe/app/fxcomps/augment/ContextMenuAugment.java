@@ -37,7 +37,6 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
             if (show.test(event)) {
                 var cm = contextMenu.get();
                 if (cm != null) {
-                    cm.setAutoHide(true);
                     cm.show(r, event.getScreenX(), event.getScreenY());
                     currentContextMenu = cm;
                 }

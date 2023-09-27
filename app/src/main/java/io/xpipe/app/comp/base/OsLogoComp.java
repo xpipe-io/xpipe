@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.impl.FileNames;
@@ -31,7 +31,7 @@ public class OsLogoComp extends SimpleComp {
                             ? getImage(wrapper.getInformation().get()) : null;
                 },
                 wrapper.getState(), wrapper.getInformation());
-        return new StackComp(List.of(new SystemStateComp(wrapper).hide(img.isNotNull()), new PrettyImageComp(img, 24, 24))).createRegion();
+        return new StackComp(List.of(new SystemStateComp(wrapper).hide(img.isNotNull()), PrettyImageHelper.ofSvg(img, 24, 24))).createRegion();
     }
 
     private static final Map<String, String> ICONS = new HashMap<>();
@@ -43,7 +43,7 @@ public class OsLogoComp extends SimpleComp {
         }
 
         if (ICONS.isEmpty()) {
-            AppResources.withResource(AppResources.XPIPE_MODULE, "img/os", ModuleLayer.boot(), file -> {
+            AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
                     list.filter(path -> !path.toString().endsWith(LINUX_DEFAULT)).map(path -> FileNames.getFileName(path.toString())).forEach(path -> {
                         var base = FileNames.getBaseName(path).replace("-dark", "") + ".svg";

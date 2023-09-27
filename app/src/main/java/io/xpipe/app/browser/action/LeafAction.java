@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
@@ -21,7 +21,7 @@ public interface LeafAction extends BrowserAction {
         var b = new Button();
         b.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
-                BusyProperty.execute(model.getBusy(), () -> {
+                BooleanScope.execute(model.getBusy(), () -> {
                     execute(model, selected);
                 });
             });
@@ -50,7 +50,7 @@ public interface LeafAction extends BrowserAction {
         var mi = new MenuItem(nameFunc.apply(getName(model, selected)));
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
-                BusyProperty.execute(model.getBusy(), () -> {
+                BooleanScope.execute(model.getBusy(), () -> {
                     execute(model, selected);
                 });
             });

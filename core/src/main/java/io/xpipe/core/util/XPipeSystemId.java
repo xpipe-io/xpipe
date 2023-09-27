@@ -4,7 +4,6 @@ import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.UUID;
 
 public class XPipeSystemId {
@@ -14,7 +13,7 @@ public class XPipeSystemId {
     public static void init() {
         try {
             var file =
-                    Path.of(System.getProperty("user.home")).resolve(".xpipe").resolve("system_id");
+                    XPipeInstallation.getDataDir().resolve("system_id");
             if (!Files.exists(file)) {
                 Files.writeString(file, UUID.randomUUID().toString());
             }
@@ -29,7 +28,7 @@ public class XPipeSystemId {
     }
 
     public static UUID getSystemId(ShellControl proc) throws Exception {
-        var file = proc.getOsType().getSystemIdFile(proc);
+        var file = FileNames.join(XPipeInstallation.getDataDir(proc), "system_id");
         if (file == null) {
             return UUID.randomUUID();
         }
@@ -39,8 +38,7 @@ public class XPipeSystemId {
         }
 
         try {
-            return UUID.fromString(
-                    proc.executeSimpleStringCommand(proc.getShellDialect().getFileReadCommand(file))
+            return UUID.fromString(proc.getShellDialect().getFileReadCommand(proc, file).readStdoutOrThrow()
                             .trim());
         } catch (IllegalArgumentException ex) {
             // Handle invalid UUID content case

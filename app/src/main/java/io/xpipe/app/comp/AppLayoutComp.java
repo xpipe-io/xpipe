@@ -1,7 +1,9 @@
 package io.xpipe.app.comp;
 
+import io.xpipe.app.comp.base.BackgroundImageComp;
 import io.xpipe.app.comp.base.SideMenuBarComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
@@ -10,17 +12,17 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
+public class AppLayoutComp extends Comp<CompStructure<StackPane>> {
 
     private final AppLayoutModel model = AppLayoutModel.get();
 
-
     @Override
-    public CompStructure<BorderPane> createBase() {
+    public CompStructure<StackPane> createBase() {
         var map = new HashMap<AppLayoutModel.Entry, Region>();
         getRegion(model.getEntries().get(0), map);
         getRegion(model.getEntries().get(1), map);
@@ -39,7 +41,12 @@ public class AppLayoutComp extends Comp<CompStructure<BorderPane>> {
             });
         });
         AppFont.normal(pane);
-        return new SimpleCompStructure<>(pane);
+
+        var bg = new BackgroundImageComp(AppImages.image("bg.png"))
+                .styleClass("background")
+                .hide(AppPrefs.get().performanceMode());
+
+        return new SimpleCompStructure<>(new StackPane(bg.createRegion(), pane));
     }
 
     private Region getRegion(AppLayoutModel.Entry entry, Map<AppLayoutModel.Entry, Region> map) {

@@ -74,7 +74,7 @@ apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
 
 sourceSets {
     main {
-        output.resourcesDir("$buildDir/classes/java/main")
+        output.resourcesDir("${project.layout.buildDirectory.get()}/classes/java/main")
     }
 }
 
@@ -100,6 +100,7 @@ List<String> jvmRunArgs = [
         "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
         "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
         "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.app",
+        "--add-opens", "java.base/java.lang=io.xpipe.app",
         "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
         "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
         "--add-opens", "java.base/java.lang=io.xpipe.core",
@@ -110,9 +111,9 @@ List<String> jvmRunArgs = [
         "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.model=io.xpipe.app',
         "-Xmx8g",
         "-Dio.xpipe.app.arch=$rootProject.arch",
-        "--enable-preview",
         //  "-XX:+ExitOnOutOfMemoryError",
         "-Dfile.encoding=UTF-8",
+        '-XX:+UseZGC',
         "-Dvisualvm.display.name=XPipe"
 ]
 
@@ -137,7 +138,7 @@ application {
 run {
     systemProperty 'io.xpipe.app.useVirtualThreads', 'false'
     systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local7/"
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_git2/"
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"

@@ -18,7 +18,6 @@ open module io.xpipe.ext.base {
     requires static javafx.controls;
     requires static net.synedra.validatorfx;
     requires static io.xpipe.app;
-    requires org.apache.commons.lang3;
     requires org.kordamp.ikonli.javafx;
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -50,11 +49,10 @@ open module io.xpipe.ext.base {
     provides ActionProvider with
             ScanAction,
             LaunchAction,
-            LaunchShortcutAction,
-            AddStoreAction,
+            GroupToggleAction,
+            XPipeUrlAction,
             EditStoreAction,
             DeleteStoreChildrenAction,
-            ShareStoreAction,
             FileBrowseAction,
             BrowseStoreAction,
             FileEditAction;

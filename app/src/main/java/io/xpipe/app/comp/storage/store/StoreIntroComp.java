@@ -3,16 +3,19 @@ package io.xpipe.app.comp.storage.store;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ScanAlert;
 import io.xpipe.core.impl.LocalStore;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -29,7 +32,7 @@ public class StoreIntroComp extends SimpleComp {
         var introDesc = new Label(AppI18n.get("storeIntroDescription"));
 
         var mfi = new FontIcon("mdi2p-playlist-plus");
-        var machine = new Label(AppI18n.get("storeMachineDescription"), mfi);
+        var machine = new Label(AppI18n.get("storeMachineDescription"));
         machine.heightProperty().addListener((c, o, n) -> {
             mfi.iconSizeProperty().set(n.intValue());
         });
@@ -51,8 +54,15 @@ public class StoreIntroComp extends SimpleComp {
         var docLinkPane = new StackPane(docLink);
         docLinkPane.setAlignment(Pos.CENTER);
 
+        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 180).createRegion();
+        var hbox = new HBox(img, new VBox(
+                title, introDesc, new Separator(Orientation.HORIZONTAL), machine
+        ));
+        hbox.setSpacing(35);
+        hbox.setAlignment(Pos.CENTER);
+
         var v = new VBox(
-                title, introDesc, new Separator(Orientation.HORIZONTAL), machine, scanPane
+                hbox, scanPane
                 //                new Separator(Orientation.HORIZONTAL),
                 //                documentation,
                 //                docLinkPane

@@ -1,12 +1,12 @@
 package io.xpipe.app.comp.storage.store;
 
-import io.xpipe.app.comp.storage.StorageFilter;
 import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -16,17 +16,19 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Getter
-public class StoreEntryWrapper implements StorageFilter.Filterable {
+public class StoreEntryWrapper {
 
     private final Property<String> name;
     private final DataStoreEntry entry;
     private final Property<Instant> lastAccess;
     private final BooleanProperty disabled = new SimpleBooleanProperty();
-    private final BooleanProperty validating = new SimpleBooleanProperty();
+    private final BooleanProperty inRefresh = new SimpleBooleanProperty();
+    private final BooleanProperty observing = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.State> state = new SimpleObjectProperty<>();
     private final StringProperty information = new SimpleStringProperty();
     private final StringProperty summary = new SimpleStringProperty();
@@ -34,6 +36,9 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
+    private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
+    private final Property<StoreEntryWrapper> displayParent = new SimpleObjectProperty<>();
+    private final IntegerProperty depth = new SimpleIntegerProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -49,12 +54,31 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
+                .sorted(Comparator.comparing(actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction()))
                 .forEach(dataStoreActionProvider -> {
                     actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
                 });
         this.defaultActionProvider = new SimpleObjectProperty<>();
         setupListeners();
         update();
+    }
+
+    public void moveTo(DataStoreCategory category) {
+        ThreadHelper.runAsync(() -> {
+            DataStorage.get().updateCategory(entry, category);
+        });
+    }
+
+    private StoreEntryWrapper computeDisplayParent() {
+        if (StoreViewState.get() == null) {
+            return null;
+        }
+
+        var p = DataStorage.get().getParent(entry, true).orElse(null);
+        return StoreViewState.get().getAllEntries().stream()
+                .filter(storeEntryWrapper -> storeEntryWrapper.getEntry().equals(p))
+                .findFirst()
+                .orElse(null);
     }
 
     public boolean isInStorage() {
@@ -66,8 +90,10 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     }
 
     public void delete() {
-        DataStorage.get().deleteChildren(this.entry, true);
-        DataStorage.get().deleteStoreEntry(this.entry);
+        ThreadHelper.runAsync(() -> {
+            DataStorage.get().deleteChildren(this.entry, true);
+            DataStorage.get().deleteStoreEntry(this.entry);
+        });
     }
 
     private void setupListeners() {
@@ -85,6 +111,12 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
     }
 
     public void update() {
+        //        var cat = StoreViewState.get().getCategories().stream()
+        //                .filter(storeCategoryWrapper ->
+        //                        Objects.equals(storeCategoryWrapper.getCategory().getUuid(), entry.getCategoryUuid()))
+        //                .findFirst();
+        //        category.setValue(cat.orElseThrow());
+
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
@@ -94,9 +126,11 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         disabled.setValue(entry.isDisabled());
         state.setValue(entry.getState());
         expanded.setValue(entry.isExpanded());
+        observing.setValue(entry.isObserving());
         information.setValue(entry.getInformation());
+        displayParent.setValue(computeDisplayParent());
 
-        validating.setValue(entry.isValidating());
+        inRefresh.setValue(entry.isInRefresh());
         if (entry.getState().isUsable()) {
             try {
                 summary.setValue(entry.getProvider().toSummaryString(entry.getStore(), 50));
@@ -107,6 +141,13 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
 
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
+
+        var d = 0;
+        var c = this;
+        while ((c = c.getDisplayParent().getValue()) != null) {
+            d++;
+        }
+        depth.setValue(d);
 
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {
@@ -205,9 +246,9 @@ public class StoreEntryWrapper implements StorageFilter.Filterable {
         this.expanded.set(!expanded.getValue());
     }
 
-    @Override
     public boolean shouldShow(String filter) {
-        return filter == null || getName().toLowerCase().contains(filter.toLowerCase())
+        return filter == null
+                || getName().toLowerCase().contains(filter.toLowerCase())
                 || (summary.get() != null && summary.get().toLowerCase().contains(filter.toLowerCase()))
                 || (information.get() != null && information.get().toLowerCase().contains(filter.toLowerCase()));
     }

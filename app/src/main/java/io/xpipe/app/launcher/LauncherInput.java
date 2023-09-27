@@ -1,6 +1,7 @@
 package io.xpipe.app.launcher;
 
 import io.xpipe.app.browser.BrowserModel;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
@@ -14,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class LauncherInput {
@@ -70,25 +70,19 @@ public abstract class LauncherInput {
                     return List.of(new LocalFileInput(path));
                 }
 
-                if (scheme.equalsIgnoreCase("xpipe")) {
-                    var action = uri.getAuthority();
-                    var args = Arrays.asList(uri.getPath().substring(1).split("/"));
-                    var found = ActionProvider.ALL.stream()
-                            .filter(actionProvider -> actionProvider.getLauncherCallSite() != null
-                                    && actionProvider
-                                            .getLauncherCallSite()
-                                            .getId()
-                                            .equalsIgnoreCase(action))
-                            .findFirst();
-                    if (found.isPresent()) {
-                        ActionProvider.Action a;
-                        try {
-                            a = found.get().getLauncherCallSite().createAction(args);
-                        } catch (Exception e) {
-                            return List.of();
-                        }
-                        return List.of(a);
+                var action = uri.getScheme();
+                var found = ActionProvider.ALL.stream()
+                        .filter(actionProvider -> actionProvider.getLauncherCallSite() != null
+                                && actionProvider.getLauncherCallSite().getId().equalsIgnoreCase(action))
+                        .findFirst();
+                if (found.isPresent()) {
+                    ActionProvider.Action a;
+                    try {
+                        a = found.get().getLauncherCallSite().createAction(uri);
+                    } catch (Exception e) {
+                        return List.of();
                     }
+                    return a != null ? List.of(a) : List.of();
                 }
             }
         } catch (IllegalArgumentException ignored) {
@@ -121,6 +115,7 @@ public abstract class LauncherInput {
             }
 
             var dir = Files.isDirectory(file) ? file : file.getParent();
+            AppLayoutModel.get().selectBrowser();
             BrowserModel.DEFAULT.openFileSystemAsync(null, ShellStore.createLocal(), dir.toString(), null);
         }
 

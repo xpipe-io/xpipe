@@ -65,13 +65,15 @@ public class SvgView {
         wv.setDisable(true);
 
         wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
-        svgContent.addListener((c, o, n) -> {
+        SimpleChangeListener.apply(svgContent, n ->  {
             if (n == null) {
-                wv.getEngine().loadContent("");
+                wv.setOpacity(0.0);
                 return;
             }
 
-            wv.getEngine().loadContent(getHtml(n));
+            wv.setOpacity(1.0);
+            var html = getHtml(n);
+            wv.getEngine().loadContent(html);
         });
 
         // Hide scrollbars that popup on every content change. Bug in WebView?

@@ -1,5 +1,6 @@
 package io.xpipe.beacon;
 
+import io.xpipe.core.util.XPipeInstallation;
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;
@@ -9,7 +10,6 @@ public class BeaconConfig {
 
     public static final byte[] BODY_SEPARATOR = "\n\n".getBytes(StandardCharsets.UTF_8);
     public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
-    public static final int DEFAULT_PORT = System.getProperty("os.name").startsWith("Windows") ? 21721 : 21722;
     private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
     private static final String LAUNCH_DAEMON_IN_DEBUG_PROP = "io.xpipe.beacon.launchDebugDaemon";
     private static final String ATTACH_DEBUGGER_PROP = "io.xpipe.beacon.attachDebuggerToDaemon";
@@ -58,7 +58,7 @@ public class BeaconConfig {
             return Integer.parseInt(System.getProperty(BEACON_PORT_PROP));
         }
 
-        return DEFAULT_PORT;
+        return XPipeInstallation.getDefaultBeaconPort();
     }
 
     public static String getCustomDaemonCommand() {

@@ -7,7 +7,7 @@ import io.xpipe.core.process.ShellDialect;
 
 import java.nio.charset.Charset;
 
-public interface ShellStore extends DataStore, StatefulDataStore, LaunchableStore, FileSystemStore {
+public interface ShellStore extends DataStore, InternalCacheDataStore, LaunchableStore, FileSystemStore {
 
     static ShellStore createLocal() {
         return new LocalStore();

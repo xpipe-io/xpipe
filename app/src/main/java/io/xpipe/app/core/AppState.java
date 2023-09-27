@@ -1,6 +1,8 @@
 package io.xpipe.app.core;
 
+import lombok.Setter;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.util.UUID;
 
@@ -11,6 +13,13 @@ public class AppState {
 
     UUID userId;
     boolean initialLaunch;
+
+    @NonFinal
+            @Setter
+    String userName;
+    @NonFinal
+    @Setter
+    String userEmail;
 
     public AppState() {
         UUID id = AppCache.get("userId", UUID.class, null);

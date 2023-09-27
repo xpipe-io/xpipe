@@ -5,6 +5,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -29,6 +30,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
         var loading = new RingProgressIndicator(0, false);
         loading.setProgress(-1);
+        loading.visibleProperty().bind(Bindings.not(AppPrefs.get().performanceMode()));
 
         var loadingOverlay = new StackPane(loading);
         loadingOverlay.getStyleClass().add("loading-comp");

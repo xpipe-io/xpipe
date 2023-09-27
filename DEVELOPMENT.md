@@ -5,14 +5,14 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 ## Repository Structure
 
-- [core](core) - Shared core classes of the XPipe Java API, XPipe extensions, and the XPipe daemon implementation
+- [core](core) - Shared core classes of the XPipe Java API, XPipe extensions, and the XPipe daemon implementation.
+  This mainly concerns API classes not a lot of implementation.
 - [beacon](beacon) - The XPipe beacon component is responsible for handling all communications between the XPipe
-  daemon
-  and the client applications, for example the various programming language APIs and the CLI
+  daemon and the client applications, for example APIs and the CLI
 - [app](app) - Contains the XPipe daemon implementation, the XPipe desktop application, and an
   API to create all different kinds of extensions for the XPipe platform
 - [dist](dist) - Tools to create a distributable package of XPipe
-- [ext](ext) - Available XPipe extensions. Essentially every feature is implemented as an extension
+- [ext](ext) - Available XPipe extensions. Essentially every concrete feature implementation is implemented as an extension
 
 ## Modularity
 
@@ -21,8 +21,11 @@ All components are modularized, including all their dependencies.
 In case a dependency is (sadly) not modularized yet, module information is manually added using [moditect](https://github.com/moditect/moditect-gradle-plugin).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
 many IDEs still have problems building this project properly.
+
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 20)
+is selected both for the project and for gradle itself.
 
 ## Setup
 
@@ -44,8 +47,8 @@ You can use the gradle wrapper to build and run the project:
 - `gradlew <project>:test` will run the tests of the specified project.
 
 You are also able to properly debug the built production application through two different methods:
-- The `app/scripts/xpiped_debug` script will launch the application in debug mode and with a console attached to it
-- The `app/scripts/xpiped_debug_attach` script attaches a debugger with the help of [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme).
+- The `dist/build/dist/base/app/scripts/xpiped_debug` script will launch the application in debug mode and with a console attached to it
+- The `dist/build/dist/base/app/scripts/xpiped_debug_attach` script attaches a debugger with the help of [AttachMe](https://plugins.jetbrains.com/plugin/13263-attachme).
   Just make sure that the attachme process is running within IntelliJ, and the debugger should launch automatically once you start up the application.
 
 Note that when any unit test is run using a debugger, the XPipe daemon process that is started will also attempt

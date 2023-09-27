@@ -6,12 +6,9 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
-import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -46,7 +43,7 @@ public class BrowserNavBar extends SimpleComp {
         });
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {
-                BusyProperty.execute(model.getBusy(), () -> {
+                BooleanScope.execute(model.getBusy(), () -> {
                     var changed = model.cdSyncOrRetry(newValue, true);
                     changed.ifPresent(s -> Platform.runLater(() -> path.set(s)));
                 });
@@ -94,7 +91,7 @@ public class BrowserNavBar extends SimpleComp {
                             : "home_icon.svg";
                 },
                 model.getCurrentPath());
-        var breadcrumbsGraphic = new PrettyImageComp(graphic, 22, 22)
+        var breadcrumbsGraphic = PrettyImageHelper.ofSvg(graphic, 22, 22)
                 .padding(new Insets(0, 0, 1, 0))
                 .styleClass("path-graphic")
                 .createRegion();

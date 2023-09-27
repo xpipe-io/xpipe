@@ -1,5 +1,0 @@
-plugins { id 'java'
-id 'org.moditect.gradleplugin' version '1.0.0-rc3'
-}
-apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/extension.gradle"

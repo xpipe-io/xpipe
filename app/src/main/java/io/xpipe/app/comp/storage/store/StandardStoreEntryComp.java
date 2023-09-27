@@ -22,7 +22,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var storeIcon = createIcon(50, 39);
         grid.add(storeIcon, 0, 0, 1, 2);
-        grid.getColumnConstraints().add(new ColumnConstraints(50));
+        grid.getColumnConstraints().add(new ColumnConstraints(66));
 
         grid.add(name, 1, 0);
         grid.add(createSummary(), 1, 1);

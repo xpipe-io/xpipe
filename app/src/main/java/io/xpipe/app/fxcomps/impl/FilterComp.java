@@ -29,7 +29,7 @@ public class FilterComp extends Comp<FilterComp.Structure> {
     public Structure createBase() {
         var fi = new FontIcon("mdi2m-magnify");
         var bgLabel = new Label("Search ...", fi);
-        bgLabel.getStyleClass().add("background");
+        bgLabel.getStyleClass().add("filter-background");
         var filter = new TextField();
         filter.setAccessibleText("Filter");
 

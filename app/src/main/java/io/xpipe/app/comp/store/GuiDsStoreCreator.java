@@ -56,6 +56,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
     StringProperty name;
     boolean exists;
+    boolean staticDisplay;
 
     public GuiDsStoreCreator(
             MultiStepComp parent,
@@ -63,13 +64,15 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
-            boolean exists) {
+            boolean exists, boolean staticDisplay
+    ) {
         this.parent = parent;
         this.provider = provider;
         this.store = store;
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.exists = exists;
+        this.staticDisplay = staticDisplay;
         this.store.addListener((c, o, n) -> {
             changedSinceError.setValue(true);
         });
@@ -112,14 +115,14 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         }
                     });
                 },
-                true);
+                true, true);
     }
 
-    public static void showCreation(Predicate<DataStoreProvider> filter) {
+    public static void showCreation(DataStoreProvider selected, Predicate<DataStoreProvider> filter) {
         show(
                 null,
-                null,
-                null,
+                selected,
+                selected != null ? selected.defaultStore() : null,
                 filter,
                 e -> {
                     try {
@@ -131,7 +134,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         ErrorEvent.fromThrowable(ex).handle();
                     }
                 },
-                false);
+                false, false);
     }
 
     public static void show(
@@ -140,7 +143,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             DataStore s,
             Predicate<DataStoreProvider> filter,
             Consumer<DataStoreEntry> con,
-            boolean exists) {
+            boolean exists,
+            boolean staticDisplay) {
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
         var loading = new SimpleBooleanProperty();
@@ -152,7 +156,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         return new MultiStepComp() {
 
                             private final GuiDsStoreCreator creator =
-                                    new GuiDsStoreCreator(this, prop, store, filter, initialName, exists);
+                                    new GuiDsStoreCreator(this, prop, store, filter, initialName, exists, staticDisplay);
 
                             @Override
                             protected List<Entry> setup() {
@@ -223,7 +227,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                                 return null;
                             }
 
-                            return DataStoreEntry.createNew(UUID.randomUUID(), name.getValue(), store.getValue());
+                            return DataStoreEntry.createNew(UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name.getValue(), store.getValue());
                         },
                         entry)
                 .build();
@@ -240,8 +244,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         layout.setPadding(new Insets(20));
-        var providerChoice = new DsStoreProviderChoiceComp(filter, provider, provider.getValue() != null);
-        if (provider.getValue() != null) {
+        var providerChoice = new DsStoreProviderChoiceComp(filter, provider, staticDisplay);
+        if (staticDisplay) {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
         providerChoice.apply(GrowAugment.create(true, false));
@@ -286,7 +290,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             var install = provider.getValue().getRequiredAdditionalInstallation();
             if (install != null && !AppExtensionManager.getInstance().isInstalled(install)) {
                 ThreadHelper.runAsync(() -> {
-                    try (var ignored = new BusyProperty(busy)) {
+                    try (var ignored = new BooleanScope(busy).start()) {
                         AppExtensionManager.getInstance().installIfNeeded(install);
                         /*
                         TODO: Use reload
@@ -344,7 +348,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         }
 
         ThreadHelper.runAsync(() -> {
-            try (var b = new BusyProperty(busy)) {
+            try (var b = new BooleanScope(busy).start()) {
                 entry.getValue().refresh(true);
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);

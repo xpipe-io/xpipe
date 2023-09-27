@@ -65,7 +65,7 @@ public class FileOpener {
             ErrorEvent.fromThrowable(e)
                     .description("Unable to launch editor " + editor.toTranslatedString()
                             + ".\nMaybe try to use a different editor in the settings.")
-                    .unreportable()
+                    .expected()
                     .handle();
         }
     }

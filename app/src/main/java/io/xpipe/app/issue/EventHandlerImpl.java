@@ -5,12 +5,8 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.core.util.Deobfuscator;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EventHandlerImpl extends EventHandler {
-
-    private final List<TrackEvent> events = new ArrayList<>();
 
     public static TrackEvent fromErrorEvent(ErrorEvent ee) {
         var te = TrackEvent.builder();
@@ -25,22 +21,13 @@ public class EventHandlerImpl extends EventHandler {
         return te.build();
     }
 
-    public List<TrackEvent> snapshotEvents() {
-        synchronized (events) {
-            return new ArrayList<>(events);
-        }
-    }
-
     @Override
     public void handle(TrackEvent te) {
         if (AppLogs.get() != null) {
             AppLogs.get().logEvent(te);
         } else {
-            EventHandler.DEFAULT.handle(te);
-        }
-
-        synchronized (events) {
-            events.add(te);
+            System.out.println(te);
+            System.out.flush();
         }
     }
 
@@ -62,19 +49,14 @@ public class EventHandlerImpl extends EventHandler {
 
         // Don't block shutdown
         if (OperationMode.isInShutdown()) {
-            handleBasic(ee);
+            handle(fromErrorEvent(ee));
             return;
         }
 
         if (OperationMode.get() == null) {
-            handleBasic(ee);
+            OperationMode.BACKGROUND.getErrorHandler().handle(ee);
         } else {
             OperationMode.get().getErrorHandler().handle(ee);
-        }
-
-        var te = fromErrorEvent(ee);
-        synchronized (events) {
-            events.add(te);
         }
     }
 

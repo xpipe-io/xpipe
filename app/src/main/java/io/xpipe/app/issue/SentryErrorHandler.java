@@ -3,6 +3,7 @@ package io.xpipe.app.issue;
 import io.sentry.*;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
+import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.mode.OperationMode;
@@ -10,8 +11,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import org.apache.commons.io.FileUtils;
 
+import java.io.*;
 import java.nio.file.Files;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {
@@ -53,26 +54,58 @@ public class SentryErrorHandler implements ErrorHandler {
             return;
         }
 
+        var email = ee.getEmail();
+        var hasEmail = email != null && !email.isBlank();
         var text = ee.getUserReport();
-        if (text != null && !text.isEmpty()) {
+        var hasText = text != null && !text.isEmpty();
+        if (hasText || hasEmail) {
             var fb = new UserFeedback(id);
+            if (hasEmail) {
+                fb.setEmail(email);
+            }
             fb.setComments(text);
             Sentry.captureUserFeedback(fb);
+        }
+        Sentry.flush(3000);
+    }
+
+    private static Throwable adjustCopy(Throwable throwable, boolean clear) {
+        if (throwable == null) {
+            return null;
+        }
+
+        if (!clear) {
+            return throwable;
+        }
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(throwable);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            var copy = (Throwable) ois.readObject();
+
+            var msgField = Throwable.class.getDeclaredField("detailMessage");
+            msgField.setAccessible(true);
+            msgField.set(copy, null);
+
+            var causeField = Throwable.class.getDeclaredField("cause");
+            causeField.setAccessible(true);
+            causeField.set(copy, adjustCopy(throwable.getCause(), true));
+
+            return copy;
+        } catch (Exception e) {
+            if (AppLogs.get() != null) AppLogs.get().logException("Unable to adjust exception", e);
+            return throwable;
         }
     }
 
     private static SentryId createReport(ErrorEvent ee) {
-        if (!ee.isReportable()) {
-            return null;
-        }
-
-        /*
-        TODO: Ignore breadcrumbs for now
-         */
-        // ee.getTrackEvents().forEach(t -> s.addBreadcrumb(toBreadcrumb(t)));
-
         if (ee.getThrowable() != null) {
-            return Sentry.captureException(ee.getThrowable(), sc -> fillScope(ee, sc));
+            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics());
+            return Sentry.captureException(adjusted, sc -> fillScope(ee, sc));
         }
 
         if (ee.getDescription() != null) {
@@ -84,26 +117,28 @@ public class SentryErrorHandler implements ErrorHandler {
     }
 
     private static void fillScope(ErrorEvent ee, Scope s) {
-        var atts = ee.getAttachments().stream()
-                .map(d -> {
-                    try {
-                        var toUse = d;
-                        if (Files.isDirectory(d)) {
-                            toUse = AttachmentHelper.compressZipfile(
-                                    d,
-                                    FileUtils.getTempDirectory()
-                                            .toPath()
-                                            .resolve(d.getFileName().toString() + ".zip"));
+        if (ee.isShouldSendDiagnostics()) {
+            var atts = ee.getAttachments().stream()
+                    .map(d -> {
+                        try {
+                            var toUse = d;
+                            if (Files.isDirectory(d)) {
+                                toUse = AttachmentHelper.compressZipfile(
+                                        d,
+                                        FileUtils.getTempDirectory()
+                                                .toPath()
+                                                .resolve(d.getFileName().toString() + ".zip"));
+                            }
+                            return new Attachment(toUse.toString());
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            return null;
                         }
-                        return new Attachment(toUse.toString());
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        return null;
-                    }
-                })
-                .filter(attachment -> attachment != null)
-                .toList();
-        atts.forEach(attachment -> s.addAttachment(attachment));
+                    })
+                    .filter(attachment -> attachment != null)
+                    .toList();
+            atts.forEach(attachment -> s.addAttachment(attachment));
+        }
 
         s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
@@ -114,43 +149,18 @@ public class SentryErrorHandler implements ErrorHandler {
                         : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
-        if (ee.getThrowable() != null) {
-            if (ee.getDescription() != null
-                    && !ee.getDescription().equals(ee.getThrowable().getMessage())) {
+
+        var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
+        if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && ee.isShouldSendDiagnostics()) {
                 s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
-            }
         }
 
         var user = new User();
         user.setId(AppState.get().getUserId().toString());
-        s.setUser(user);
-    }
-
-    private static Breadcrumb toBreadcrumb(TrackEvent te) {
-        var bc = new Breadcrumb(Date.from(te.getInstant()));
-        bc.setLevel(
-                te.getType().equals("trace") || te.getType().equals("debug")
-                        ? SentryLevel.DEBUG
-                        : te.getType().equals("warn")
-                                ? SentryLevel.WARNING
-                                : SentryLevel.valueOf(te.getType().toUpperCase()));
-        bc.setType(bc.getLevel().toString().toLowerCase());
-        bc.setCategory(te.getCategory());
-        // bc.setData("thread", te.getThread().getName());
-        bc.setMessage(te.getMessage());
-        te.getTags().forEach((k, v) -> {
-            var toUse = v;
-            if (v instanceof Double d && (d.isNaN() || d.isInfinite())) {
-                toUse = d.toString();
-            }
-            if (v instanceof Float f && (f.isNaN() || f.isInfinite())) {
-                toUse = f.toString();
-            }
-            bc.setData(k, toUse);
-        });
-        if (te.getElements().size() > 0) {
-            bc.setData("elements", te.getElements());
+        if (ee.isShouldSendDiagnostics()) {
+            user.setEmail(AppState.get().getUserEmail());
+            user.setUsername(AppState.get().getUserName());
         }
-        return bc;
+        s.setUser(user);
     }
 }

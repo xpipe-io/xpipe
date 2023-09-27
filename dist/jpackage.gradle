@@ -1,6 +1,6 @@
 import java.util.stream.Collectors
 
-def distDir = "$buildDir/dist"
+def distDir = "${project.layout.buildDirectory.get()}/dist"
 
 def distJvmArgs = new ArrayList<String>(project(':app').application.applicationDefaultJvmArgs)
 
@@ -42,11 +42,10 @@ if (Integer.parseInt(macVersion.substring(0, 1)) == 0) {
 }
 
 jlink {
-    imageDir = file("$buildDir/image")
+    imageDir = file("${project.layout.buildDirectory.get()}/image")
     options = [
             // Disable this as this removes line numbers from stack traces!
             // '--strip-debug',
-            '--compress', '2',
             '--no-header-files',
             '--no-man-pages',
             // '--strip-native-commands'
@@ -79,14 +78,10 @@ jlink {
             }
 
             imageOptions += [
-                    '--mac-sign',
-                    '--mac-package-signing-prefix', 'io.xpipe.app',
-                    '--mac-package-name', "XPipe Desktop",
-                    '--mac-app-category', 'productivity',
-                    // '--mac-entitlements', "$projectDir/misc/mac/Entitlements.plist"
+                    '--mac-sign'
             ]
 
-            resourceDir = file("$buildDir/macos_resources")
+            resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }
         skipInstaller = true
@@ -116,13 +111,16 @@ task copyBundledExtensions(type: DefaultTask,
 
 task prepareMacOSInfo(type: DefaultTask) {
     doLast {
-        file("$buildDir/macos_resources").mkdirs()
+        file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
-            from file("$projectDir/misc/mac/Info.plist")
-            into file("$buildDir/macos_resources")
-        }
-        exec {
-            commandLine "$projectDir/misc/mac/modify_version.sh", macVersion, "$buildDir/macos_resources/Info.plist"
+            from replaceVariablesInFile("$projectDir/misc/mac/Info.plist",
+                                        Map.of('__NAME__',
+                                               rootProject.productName,
+                                               '__VERSION__',
+                                               rootProject.versionString,
+                                               '__BUNDLE__',
+                                               rootProject.isStage ? 'io.xpipe.ptb-app' : 'io.xpipe.app'))
+            into file("${project.layout.buildDirectory.get()}/macos_resources")
         }
     }
 }

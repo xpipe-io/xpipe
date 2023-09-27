@@ -1,23 +1,24 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.core.store.FileSystem;
-import javafx.beans.property.SimpleStringProperty;
 
 public class BrowserIcons {
-    public static PrettyImageComp createDefaultFileIcon() {
-        return new PrettyImageComp(new SimpleStringProperty("default_file.svg"), 22, 22);
+
+    public static Comp<?> createDefaultFileIcon() {
+        return PrettyImageHelper.ofFixedSquare("default_file.svg", 22);
     }
 
-    public static PrettyImageComp createDefaultDirectoryIcon() {
-        return new PrettyImageComp(new SimpleStringProperty("default_folder.svg"), 22, 22);
+    public static Comp<?> createDefaultDirectoryIcon() {
+        return PrettyImageHelper.ofFixedSquare("default_folder.svg", 22);
     }
 
-    public static PrettyImageComp createIcon(FileType type) {
-        return new PrettyImageComp(new SimpleStringProperty(type.getIcon()), 22, 22);
+    public static Comp<?> createIcon(FileType type) {
+        return PrettyImageHelper.ofFixedSquare(type.getIcon(), 22);
     }
 
-    public static PrettyImageComp createIcon(FileSystem.FileEntry entry) {
-        return new PrettyImageComp(new SimpleStringProperty(FileIconManager.getFileIcon(entry, false)), 22, 22);
+    public static Comp<?> createIcon(FileSystem.FileEntry entry) {
+        return PrettyImageHelper.ofFixedSquare(FileIconManager.getFileIcon(entry, false), 22);
     }
 }

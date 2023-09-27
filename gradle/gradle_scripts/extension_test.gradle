@@ -22,7 +22,7 @@ test {
 
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",
-            " -Dio.xpipe.beacon.port=21723" +
+            " -Dio.xpipe.beacon.port=21725" +
             " -Dio.xpipe.app.mode=tray" +
             " -Dio.xpipe.app.dataDir=$projectDir/local/" +
             " -Dio.xpipe.storage.persist=false" +
@@ -41,7 +41,7 @@ test {
     // Client properties
     // systemProperty 'io.xpipe.beacon.printMessages', "true"
     systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
-    systemProperty "io.xpipe.beacon.port", "21723"
+    systemProperty "io.xpipe.beacon.port", "21725"
     systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
     systemProperty "io.xpipe.beacon.attachDebuggerToDaemon", "$daemonCommand"
 }
@@ -55,7 +55,7 @@ task productionTest(type: Test) {
 
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",
-            " -Dio.xpipe.beacon.port=21723" +
+            " -Dio.xpipe.beacon.port=21725" +
             " -Dio.xpipe.app.dataDir=$projectDir/local/" +
             " -Dio.xpipe.storage.persist=false" +
             " -Dio.xpipe.app.writeSysOut=true" +
@@ -66,5 +66,5 @@ task productionTest(type: Test) {
     // Client properties
     systemProperty 'io.xpipe.beacon.printMessages', "true"
     systemProperty 'io.xpipe.beacon.printDaemonOutput', "true"
-    systemProperty "io.xpipe.beacon.port", "21723"
+    systemProperty "io.xpipe.beacon.port", "21725"
 }

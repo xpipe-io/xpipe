@@ -123,8 +123,8 @@ public class AppInstaller {
             @Override
             public void installRemote(ShellControl shellControl, String file) throws Exception {
                 var exec = XPipeInstallation.getInstallationExecutable(
-                        shellControl, XPipeInstallation.getDefaultInstallationBasePath(shellControl, false));
-                var logsDir = FileNames.join(XPipeInstallation.getDataBasePath(shellControl), "logs");
+                        shellControl, XPipeInstallation.getDefaultInstallationBasePath(shellControl));
+                var logsDir = FileNames.join(XPipeInstallation.getDataDir(shellControl), "logs");
                 var cmd = new ArrayList<>(java.util.List.of(
                         "start",
                         "/wait",
@@ -148,8 +148,8 @@ public class AppInstaller {
                 var shellProcessControl = ShellStore.createLocal().control().start();
                 var exec = XPipeInstallation.getInstallationExecutable(
                         shellProcessControl,
-                        XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl, false));
-                var logsDir = FileNames.join(XPipeInstallation.getDataBasePath(shellProcessControl), "logs");
+                        XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl));
+                var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
                 var script = ScriptHelper.createExecScript(
                         shellProcessControl,

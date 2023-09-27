@@ -26,7 +26,7 @@ public interface ErrorAction {
         };
     }
 
-    static ErrorAction sendDiagnostics() {
+    static ErrorAction automaticallyReport() {
         return new ErrorAction() {
             @Override
             public String getName() {
@@ -60,7 +60,10 @@ public interface ErrorAction {
 
             @Override
             public boolean handle(ErrorEvent event) {
-                event.clearAttachments();
+                if (!event.isReportable()) {
+                    return true;
+                }
+
                 SentryErrorHandler.getInstance().handle(event);
                 return true;
             }

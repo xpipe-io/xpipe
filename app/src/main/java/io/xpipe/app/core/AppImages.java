@@ -123,7 +123,7 @@ public class AppImages {
         return img;
     }
 
-    private static Image loadImage(Path p) {
+    public static Image loadImage(Path p) {
         if (p == null) {
             return DEFAULT_IMAGE;
         }

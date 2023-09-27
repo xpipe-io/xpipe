@@ -2,6 +2,7 @@ package io.xpipe.app.issue;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.Singular;
 
 import java.nio.file.Path;
@@ -12,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public class ErrorEvent {
 
-    private final List<TrackEvent> trackEvents = EventHandler.get().snapshotEvents();
     private String description;
     private boolean terminal;
 
@@ -24,15 +24,20 @@ public class ErrorEvent {
 
     private final Throwable throwable;
 
+    @Setter
+    private boolean shouldSendDiagnostics;
+
     @Singular
     private List<Path> attachments;
 
+    private String email;
     private String userReport;
 
     @Singular
     private final List<ErrorAction> customActions;
 
-    public void attachUserReport(String text) {
+    public void attachUserReport(String email, String text) {
+        this.email = email;
         userReport = text;
     }
 
@@ -61,6 +66,8 @@ public class ErrorEvent {
         EventHandler.get().handle(this);
     }
 
+
+
     public void addAttachment(Path file) {
         attachments = new ArrayList<>(attachments);
         attachments.add(file);
@@ -80,12 +87,12 @@ public class ErrorEvent {
             return omitted(true);
         }
 
-        public ErrorEventBuilder unreportable() {
+        public ErrorEventBuilder expected() {
             return reportable(false);
         }
 
         public ErrorEventBuilder discard() {
-            return omit().unreportable();
+            return omit().expected();
         }
 
         public void handle() {
@@ -115,13 +122,13 @@ public class ErrorEvent {
 
     public static <T extends Throwable> T unreportableIf(T t, boolean b) {
         if (b) {
-            EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
+            EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).expected());
         }
         return t;
     }
 
     public static <T extends Throwable> T unreportable(T t) {
-        EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).unreportable());
+        EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).expected());
         return t;
     }
 }

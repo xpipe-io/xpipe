@@ -43,10 +43,9 @@ public class AppAntivirusAlert {
             alert.setTitle(AppI18n.get("antivirusNoticeTitle"));
             alert.setAlertType(Alert.AlertType.NONE);
 
-            AppResources.withResource(
+            AppResources.with(
                     AppResources.XPIPE_MODULE,
                     "misc/antivirus.md",
-                    AppExtensionManager.getInstance().getExtendedLayer(),
                     file -> {
                         var markdown = new MarkdownComp(Files.readString(file), s -> s.formatted(found.get(), found.get(), AppProperties.get().getVersion(), AppProperties.get().getVersion(), found.get())).prefWidth(550).prefHeight(600).createRegion();
                         alert.getDialogPane().setContent(markdown);

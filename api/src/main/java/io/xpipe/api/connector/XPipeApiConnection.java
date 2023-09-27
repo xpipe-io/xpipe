@@ -132,7 +132,7 @@ public final class XPipeApiConnection extends BeaconConnection {
     }
 
     private void start() throws Exception {
-        var installation = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
+        var installation = XPipeInstallation.getLocalDefaultInstallationBasePath();
         BeaconServer.start(installation, XPipeDaemonMode.TRAY);
     }
 

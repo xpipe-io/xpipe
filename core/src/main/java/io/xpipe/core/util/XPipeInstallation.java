@@ -5,14 +5,55 @@ import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 public class XPipeInstallation {
+
+    public static final String DATA_DIR_PROP = "io.xpipe.app.dataDir";
+    private static final String STAGING_PROP = "io.xpipe.app.staging";
+
+    @Getter
+    private static final boolean staging = Optional.ofNullable(System.getProperty(STAGING_PROP))
+            .map(Boolean::parseBoolean)
+            .orElse(false);
+
+    public static int getDefaultBeaconPort() {
+        var offset = isStaging() ? 1 : 0;
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            return 21721 + offset;
+        } else {
+            return 21721 + 2 + offset;
+        }
+    }
+
+    public static Path getDataDir() {
+        if (System.getProperty(DATA_DIR_PROP) != null) {
+            try {
+                return Path.of(System.getProperty(DATA_DIR_PROP));
+            } catch (InvalidPathException ignored) {
+            }
+        }
+
+        return Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
+    }
+
+    public static String getDataDir(ShellControl p) throws Exception {
+        var name = isStaging() ? ".xpipe-ptb" : ".xpipe";
+        var dir = p.getOsType().getHomeDirectory(p);
+        return FileNames.join(dir, name);
+    }
+
+    private static String getPkgId() {
+        return isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe";
+    }
 
     public static String createExternalAsyncLaunchCommand(
             String installationBase, XPipeDaemonMode mode, String arguments) {
@@ -56,12 +97,12 @@ public class XPipeInstallation {
     public static boolean isInstallationDistribution() {
         var base = getCurrentInstallationBasePath();
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.toString().equals(getLocalDefaultInstallationBasePath(false))) {
+            if (!base.toString().equals(getLocalDefaultInstallationBasePath())) {
                 return false;
             }
 
             try {
-                var process = new ProcessBuilder("pkgutil", "--pkg-info", "io.xpipe.xpipe")
+                var process = new ProcessBuilder("pkgutil", "--pkg-info", getPkgId())
                         .redirectOutput(ProcessBuilder.Redirect.DISCARD)
                         .redirectError(ProcessBuilder.Redirect.DISCARD)
                         .start();
@@ -124,7 +165,7 @@ public class XPipeInstallation {
     }
 
     public static String getLocalInstallationBasePathForCLI(String cliExecutable) {
-        var defaultInstallation = getLocalDefaultInstallationBasePath(true);
+        var defaultInstallation = getLocalDefaultInstallationBasePath();
 
         // Can be empty in development mode
         if (cliExecutable == null) {
@@ -167,19 +208,10 @@ public class XPipeInstallation {
         return FileNames.join(installation, executable);
     }
 
-    public static String getDataBasePath(ShellControl p) throws Exception {
-        if (p.getOsType().equals(OsType.WINDOWS)) {
-            var base = p.executeSimpleStringCommand(p.getShellDialect().getPrintVariableCommand("userprofile"));
-            return FileNames.join(base, ".xpipe");
-        } else {
-            return FileNames.join("~", ".xpipe");
-        }
-    }
-
     public static String getLocalDefaultCliExecutable() {
         Path path = ModuleHelper.isImage()
                 ? getCurrentInstallationBasePath()
-                : Path.of(getLocalDefaultInstallationBasePath(true));
+                : Path.of(getLocalDefaultInstallationBasePath());
         return path.resolve(getRelativeCliExecutablePath(OsType.getLocal())).toString();
     }
 
@@ -206,41 +238,29 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getLocalDefaultInstallationBasePath(boolean acceptCustomHome) {
-        var customHome = System.getenv("XPIPE_HOME");
-        if (customHome != null && !customHome.isEmpty() && acceptCustomHome) {
-            return customHome;
-        }
-
+    public static String getLocalDefaultInstallationBasePath() {
         String path;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             var base = System.getenv("LOCALAPPDATA");
-            path = FileNames.join(base, "XPipe");
+            path = FileNames.join(base, isStaging() ? "XPipe PTB" : "XPipe");
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            path = "/opt/xpipe";
+            path = isStaging() ? "/opt/xpipe-ptb" : "/opt/xpipe";
         } else {
-            path = "/Applications/XPipe.app";
+            path = isStaging() ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";
         }
 
         return path;
     }
 
-    public static String getDefaultInstallationBasePath(ShellControl p, boolean acceptPortable) throws Exception {
-        if (acceptPortable) {
-            var customHome = p.executeSimpleStringCommand(p.getShellDialect().getPrintVariableCommand("XPIPE_HOME"));
-            if (!customHome.isEmpty()) {
-                return customHome;
-            }
-        }
-
+    public static String getDefaultInstallationBasePath(ShellControl p) throws Exception {
         String path;
         if (p.getOsType().equals(OsType.WINDOWS)) {
             var base = p.executeSimpleStringCommand(p.getShellDialect().getPrintVariableCommand("LOCALAPPDATA"));
-            path = FileNames.join(base, "XPipe");
+            path = FileNames.join(base, isStaging() ? "XPipe PTB" : "XPipe");
         } else if (p.getOsType().equals(OsType.LINUX)) {
-            path = "/opt/xpipe";
+            path = isStaging() ? "/opt/xpipe-ptb" : "/opt/xpipe";
         } else {
-            path = "/Applications/XPipe.app";
+            path = isStaging() ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app";
         }
 
         return path;

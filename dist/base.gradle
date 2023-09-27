@@ -1,6 +1,6 @@
 import java.util.stream.Collectors
 
-def distDir = "$buildDir/dist"
+def distDir = "${project.layout.buildDirectory.get()}/dist"
 
 task licenses(type: DefaultTask) {
     doLast {
@@ -151,56 +151,58 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
 } else {
     task baseDist(type: DefaultTask) {
         doLast {
+            def app = "${productName}.app"
             copy {
                 from "$distDir/jpackage/xpiped.app/Contents"
-                into "$distDir/XPipe.app/Contents/"
+                into "$distDir/$app/Contents/"
             }
             copy {
                 from "$projectDir/logo/logo.icns"
-                into "$distDir/XPipe.app/Contents/Resources/"
+                into "$distDir/$app/Contents/Resources/"
             }
             copy {
                 from "$distDir/cli/xpipe"
-                into "$distDir/XPipe.app/Contents/MacOS/"
+                into "$distDir/$app/Contents/MacOS/"
             }
             copy {
                 from "$distDir/licenses"
-                into "$distDir/XPipe.app/Contents/Resources/licenses"
+                into "$distDir/$app/Contents/Resources/licenses"
             }
             copy {
                 from "$distDir/docs/html5"
-                into "$distDir/XPipe.app/Contents/Resources/cli/docs"
+                into "$distDir/$app/Contents/Resources/cli/docs"
             }
             copy {
                 from "$distDir/docs/manpage"
-                into "$distDir/XPipe.app/Contents/Resources/cli/man"
+                into "$distDir/$app/Contents/Resources/cli/man"
             }
             copy {
                 from "$distDir/cli/xpipe_completion"
-                into "$distDir/XPipe.app/Contents/Resources/cli/"
+                into "$distDir/$app/Contents/Resources/cli/"
             }
 
             copy {
                 from "$projectDir/PkgInstaller/darwin/Resources/uninstall.sh"
-                into "$distDir/XPipe.app/Contents/Resources/scripts/"
+                into "$distDir/$app/Contents/Resources/scripts/"
             }
-            file("$distDir/XPipe.app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/XPipe.app/Contents/Resources/scripts/uninstall.sh").text
-                    .replaceAll("__PRODUCT__", "XPipe")
+            file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text
+                    .replaceAll("__PRODUCT__", productName)
+                    .replaceAll("__PACKAGE_ID__", "io.xpipe.$kebapProductName")
                     .replaceAll("__VERSION__", version.toString())
 
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))
             def debugAttachArguments = file("$projectDir/debug/mac/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
                     Collectors.joining(' '))
-            file("$distDir/XPipe.app/Contents/Resources/scripts").mkdirs()
+            file("$distDir/$app/Contents/Resources/scripts").mkdirs()
 
-            def debug = file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug.sh")
+            def debug = file("$distDir/$app/Contents/Resources/scripts/xpiped_debug.sh")
             debug.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)
 
-            def debugAttach = file("$distDir/XPipe.app/Contents/Resources/scripts/xpiped_debug_attach.sh")
+            def debugAttach = file("$distDir/$app/Contents/Resources/scripts/xpiped_debug_attach.sh")
             debugAttach.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugAttachArguments + ' ' + debugArguments)
@@ -208,7 +210,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
 
             if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
                 exec {
-                    commandLine "$projectDir/misc/mac/notarize.sh", "$projectDir", rootProject.arch.toString()
+                    commandLine "$projectDir/misc/mac/notarize.sh", "$projectDir", rootProject.arch.toString(), rootProject.productName
                 }
             }
         }

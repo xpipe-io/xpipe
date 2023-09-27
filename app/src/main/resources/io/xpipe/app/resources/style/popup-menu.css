@@ -11,3 +11,38 @@
     -fx-background-color: white;
     -fx-opacity: 1.0;
 }
+
+.context-menu > * > * {
+    -fx-padding: 5px 15 5px 15;
+    -fx-background-radius: 1px;
+    -fx-spacing: 20px;
+}
+
+.context-menu .separator {
+    -fx-padding: 0;
+}
+
+.context-menu .separator .line {
+    -fx-padding: 0;
+    -fx-border-insets: 0px;
+}
+
+
+.context-menu .accelerator-text {
+    -fx-padding: 3px 0px 3px 50px;
+}
+
+.context-menu > * {
+    -fx-padding: 0;
+}
+
+.context-menu {
+    -fx-padding: 12 0 12 0;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: -color-border-default;
+}
+
+.context-menu * .context-menu {
+    -fx-padding: 0;
+}

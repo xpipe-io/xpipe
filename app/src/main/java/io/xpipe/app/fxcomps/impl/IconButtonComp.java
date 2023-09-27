@@ -21,6 +21,11 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
         this(new SimpleObjectProperty<>(defaultVal), null);
     }
 
+    public IconButtonComp(ObservableValue<String> icon) {
+        this.icon = icon;
+        this.listener = null;
+    }
+
     public IconButtonComp(String defaultVal, Runnable listener) {
         this(new SimpleObjectProperty<>(defaultVal), listener);
     }
@@ -47,9 +52,9 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
         // fi.iconColorProperty().bind(button.textFillProperty());
         button.setGraphic(fi);
         button.setOnAction(e -> {
-            e.consume();
             if (listener != null) {
                 listener.run();
+                e.consume();
             }
         });
         button.getStyleClass().add("icon-button-comp");

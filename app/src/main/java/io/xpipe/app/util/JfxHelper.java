@@ -1,9 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.fxcomps.impl.PrettyImageComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -70,7 +69,7 @@ public class JfxHelper {
         }
 
         var size = AppFont.getPixelSize(1) + AppFont.getPixelSize(-2) + 8;
-        var graphic = new PrettyImageComp(new SimpleStringProperty(image), size, size).createRegion();
+        var graphic = PrettyImageHelper.ofFixedSquare(image, (int) size).createRegion();
 
         var hbox = new HBox(graphic, text);
         hbox.setAlignment(Pos.CENTER_LEFT);

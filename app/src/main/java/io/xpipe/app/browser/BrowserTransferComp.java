@@ -4,7 +4,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.augment.DragPseudoClassAugment;
+import io.xpipe.app.fxcomps.augment.DragOverPseudoClassAugment;
 import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -82,7 +82,7 @@ public class BrowserTransferComp extends SimpleComp {
         var listBox = new VerticalComp(List.of(list, dragNotice)).padding(new Insets(10, 10, 5, 10));
         var stack = new LoadingOverlayComp(
                 new StackComp(List.of(backgroundStack, listBox, clearPane))
-                        .apply(DragPseudoClassAugment.create())
+                        .apply(DragOverPseudoClassAugment.create())
                         .apply(struc -> {
                             struc.get().setOnDragOver(event -> {
                                 // Accept drops from inside the app window

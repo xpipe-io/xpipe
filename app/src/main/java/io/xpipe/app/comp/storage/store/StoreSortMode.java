@@ -75,7 +75,7 @@ public interface StoreSortMode {
     static Stream<DataStoreEntry> flatten(StoreSection section) {
         return Stream.concat(
                 Stream.of(section.getWrapper().getEntry()),
-                section.getChildren().stream().flatMap(section1 -> flatten(section1)));
+                section.getAllChildren().stream().flatMap(section1 -> flatten(section1)));
     }
 
     static List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);

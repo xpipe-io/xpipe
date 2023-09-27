@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.issue.ErrorEvent;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
@@ -9,13 +9,15 @@ import org.apache.commons.io.FileUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public abstract class StorageElement {
 
     protected final UUID uuid;
     protected final List<Listener> listeners = new ArrayList<>();
-    protected final Map<String, Object> elementState = new LinkedHashMap<>();
+    @Getter
     protected boolean dirty;
     protected Path directory;
 
@@ -34,29 +36,16 @@ public abstract class StorageElement {
         this.dirty = dirty;
     }
 
-    public Map<String, Object> getElementState() {
-        return elementState;
-    }
-
-    public void simpleRefresh() {
-        try {
-            refresh(false);
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
-    }
-
-    public abstract void refresh(boolean deep) throws Exception;
+    public abstract Path[] getShareableFiles();
 
     public void updateLastUsed() {
         this.lastUsed = Instant.now();
         this.dirty = true;
-        notifyListeners();
+        notifyUpdate();
     }
 
-    protected abstract boolean shouldSave();
-
-    protected void notifyListeners() {
+    protected void notifyUpdate() {
+        lastModified = Instant.now();
         listeners.forEach(l -> l.onUpdate());
     }
 
@@ -102,7 +91,7 @@ public abstract class StorageElement {
         this.name = name;
         this.dirty = true;
         this.lastModified = Instant.now();
-        notifyListeners();
+        notifyUpdate();
     }
 
     public Instant getLastUsed() {

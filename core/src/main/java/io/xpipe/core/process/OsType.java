@@ -26,21 +26,6 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
     }
 
-    default String getXPipeHomeDirectory(ShellControl pc) throws Exception {
-        return FileNames.join(getHomeDirectory(pc), ".xpipe");
-    }
-
-    default String getSystemIdFile(ShellControl pc) throws Exception {
-        var home = getXPipeHomeDirectory(pc);
-
-        // Sometimes the home variable is not set or empty
-        if (home == null || home.isBlank()) {
-            return null;
-        }
-
-        return FileNames.join(home, "system_id");
-    }
-
     List<String> determineInterestingPaths(ShellControl pc) throws Exception;
 
     String getHomeDirectory(ShellControl pc) throws Exception;

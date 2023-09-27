@@ -23,23 +23,28 @@ import java.util.stream.Stream;
 public class AppExtensionManager {
 
     private static AppExtensionManager INSTANCE;
+    private final boolean loadedProviders;
     private final List<Extension> loadedExtensions = new ArrayList<>();
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
     private final List<Path> extensionBaseDirectories = new ArrayList<>();
     private ModuleLayer baseLayer = ModuleLayer.boot();
     private ModuleLayer extendedLayer;
 
+    public AppExtensionManager(boolean loadedProviders) {
+        this.loadedProviders = loadedProviders;
+    }
+
     public static void init(boolean loadProviders) {
-        if (INSTANCE != null) {
-            return;
-        }
+        var load = INSTANCE == null || !INSTANCE.loadedProviders && loadProviders;
+        
+        if (INSTANCE == null) {
+            INSTANCE = new AppExtensionManager(loadProviders);
+            INSTANCE.determineExtensionDirectories();
+            INSTANCE.loadBaseExtension();
+            INSTANCE.loadAllExtensions();
+}
 
-        INSTANCE = new AppExtensionManager();
-        INSTANCE.determineExtensionDirectories();
-        INSTANCE.loadBaseExtension();
-        INSTANCE.loadAllExtensions();
-
-        if (loadProviders) {
+        if (load) {
             INSTANCE.addNativeLibrariesToPath();
             XPipeServiceProviders.load(INSTANCE.extendedLayer);
             MessageExchangeImpls.loadAll();
@@ -65,7 +70,7 @@ public class AppExtensionManager {
         }
 
         if (!AppProperties.get().isFullVersion()) {
-            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(true);
+            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
@@ -258,7 +263,7 @@ public class AppExtensionManager {
         return l.modules().stream()
                 .map(m -> {
                     AtomicReference<Extension> ext = new AtomicReference<>();
-                    AppResources.withResource(m.getName(), "extension.properties", l, path -> {
+                    AppResources.withResourceInLayer(m.getName(), "extension.properties", l, path -> {
                         if (Files.exists(path)) {
                             var props = new Properties();
                             try (var in = Files.newInputStream(path)) {
@@ -288,7 +293,7 @@ public class AppExtensionManager {
         }
 
         for (var ext : loadedExtensions) {
-            AppResources.withResource(ext.getModule().getName(), "lib", extendedLayer, path -> {
+            AppResources.withResourceInLayer(ext.getModule().getName(), "lib", extendedLayer, path -> {
                 if (Files.exists(path)) {
                     Files.list(path).forEach(lib -> {
                         try {

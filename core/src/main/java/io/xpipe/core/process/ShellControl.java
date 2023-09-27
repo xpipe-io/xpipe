@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -22,7 +22,7 @@ public interface ShellControl extends ProcessControl {
 
     UUID getSystemId();
 
-    Semaphore getCommandLock();
+    ReentrantLock getLock();
 
     ShellControl onInit(Consumer<ShellControl> pc);
 
@@ -69,6 +69,12 @@ public interface ShellControl extends ProcessControl {
     default boolean executeSimpleBooleanCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.discardAndCheckExit();
+        }
+    }
+
+    default void executeSimpleCommand(CommandBuilder command) throws Exception {
+        try (CommandControl c = command(command).start()) {
+            c.discardOrThrow();
         }
     }
 
@@ -172,6 +178,14 @@ public interface ShellControl extends ProcessControl {
     default CommandControl command(String... command) {
         var c = Arrays.stream(command).filter(s -> s != null).toArray(String[]::new);
         return command(shellProcessControl -> String.join("\n", c));
+    }
+
+    default CommandControl buildCommand(Consumer<CommandBuilder> builder) {
+        return command(sc-> {
+            var b = CommandBuilder.of();
+            builder.accept(b);
+            return b.build(sc);
+        });
     }
 
     default CommandControl command(List<String> command) {

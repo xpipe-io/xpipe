@@ -69,6 +69,11 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
+            public boolean isSystemAction() {
+                return true;
+            }
+
+            @Override
             public ActionProvider.Action createAction(DataStore store) {
                 return new Action(DataStorage.get().getStoreEntry(store));
             }

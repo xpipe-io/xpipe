@@ -4,9 +4,10 @@ import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.util.FailableSupplier;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.function.FailableSupplier;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -38,6 +39,14 @@ public class FileBridge {
 
     private static void event(String msg) {
         TrackEvent.builder().category("editor").type("debug").message(msg).handle();
+    }
+
+    private static String getFileSystemCompatibleName(String name) {
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            return name;
+        }
+
+        return name.replaceAll("[\\\\/:*?\"<>|]", "_");
     }
 
     public static void init() {
@@ -160,8 +169,8 @@ public class FileBridge {
     public void openIO(
             String keyName,
             Object key,
-            FailableSupplier<InputStream, Exception> input,
-            FailableSupplier<OutputStream, Exception> output,
+            FailableSupplier<InputStream> input,
+            FailableSupplier<OutputStream> output,
             Consumer<String> consumer) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
@@ -169,7 +178,7 @@ public class FileBridge {
             return;
         }
 
-        Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6)).resolve(keyName);
+        Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6)).resolve(getFileSystemCompatibleName(keyName));
         try {
             FileUtils.forceMkdirParent(file.toFile());
             try (var out = Files.newOutputStream(file);

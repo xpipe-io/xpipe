@@ -5,7 +5,7 @@ import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.cli.DialogExchange;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.DialogReference;
-import org.apache.commons.lang3.function.FailableConsumer;
+import io.xpipe.core.util.FailableConsumer;
 
 import java.util.HashMap;
 import java.util.Map;

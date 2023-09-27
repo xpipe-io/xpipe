@@ -17,15 +17,10 @@ import java.util.List;
 public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
-        var topLevel = StoreSection.createTopLevel();
-        var filtered = BindingsHelper.filteredContentBinding(
-                topLevel.getChildren(),
-                StoreViewState.get()
-                        .getFilterString()
-                        .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
-        var content = new ListBoxViewComp<>(filtered, topLevel.getChildren(), (StoreSection e) -> {
-            var custom = StoreSection.customSection(e).hgrow();
-            return new HorizontalComp(List.of(Comp.spacer(10), custom, Comp.spacer(10))).styleClass("top");
+        var topLevel = StoreViewState.get().getTopLevelSection();
+        var content = new ListBoxViewComp<>(topLevel.getShownChildren(), topLevel.getAllChildren(), (StoreSection e) -> {
+            var custom = StoreSection.customSection(e, true).hgrow();
+            return new HorizontalComp(List.of(Comp.hspacer(10), custom, Comp.hspacer(10))).styleClass("top");
         }).apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(10, 0, 10, 0)));
         return content.styleClass("store-list-comp");
     }
@@ -42,14 +37,14 @@ public class StoreEntryListComp extends SimpleComp {
         map.put(
                 createList(),
                 BindingsHelper.persist(
-                        Bindings.not(Bindings.isEmpty(StoreViewState.get().getShownEntries()))));
+                        Bindings.not(Bindings.isEmpty(StoreViewState.get().getTopLevelSection().getShownChildren()))));
 
         map.put(new StoreIntroComp(), showIntro);
         map.put(
                 new StoreNotFoundComp(),
                 BindingsHelper.persist(Bindings.and(
                         Bindings.not(Bindings.isEmpty(StoreViewState.get().getAllEntries())),
-                        Bindings.isEmpty(StoreViewState.get().getShownEntries()))));
+                        Bindings.isEmpty(StoreViewState.get().getTopLevelSection().getShownChildren()))));
         return new MultiContentComp(map).createRegion();
     }
 }

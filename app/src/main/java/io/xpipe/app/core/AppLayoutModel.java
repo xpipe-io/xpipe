@@ -6,6 +6,7 @@ import io.xpipe.app.comp.DeveloperTabComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.PrefsComp;
+import io.xpipe.app.util.FeatureProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -43,6 +44,10 @@ public class AppLayoutModel {
         selected.setValue(entries.get(2));
     }
 
+    public void selectLicense() {
+        selected.setValue(entries.get(3));
+    }
+
     public void selectConnections() {
         selected.setValue(entries.get(1));
     }
@@ -52,7 +57,6 @@ public class AppLayoutModel {
                 new Entry(
                         AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                // new SideMenuBarComp.Entry(AppI18n.observable("data"), "mdsal-dvr", new SourceCollectionLayoutComp()),
                 new Entry(
                         AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this))));
         // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
@@ -63,13 +67,10 @@ public class AppLayoutModel {
                     AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
         }
 
-        //        l.add(new SideMenuBarComp.Entry(AppI18n.observable("abc"), "mdi2b-book-open-variant", Comp.of(() -> {
-        //            var fi = new FontIcon("mdsal-dvr");
-        //            fi.setIconSize(30);
-        //            fi.setIconColor(Color.valueOf("#111C"));
-        //            JfxHelper.addEffect(fi);
-        //            return new StackPane(fi);
-        //        })));
+        l.add(new Entry(
+                AppI18n.observable("explorePlans"),
+                "mdi2p-professional-hexagon",
+                FeatureProvider.get().overviewPage()));
 
         return l;
     }

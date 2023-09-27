@@ -16,7 +16,7 @@ public class DesktopShortcuts {
                 """
                         set "TARGET=%s"
                         set "SHORTCUT=%s"
-                        set PWS=powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile
+                        set PWS=powershell.exe -ExecutionPolicy Restricted -NoLogo -NonInteractive -NoProfile
 
                         %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.WindowStyle=7; $S.TargetPath = '%%TARGET%%'; $S.Arguments = 'open %s'; $S.Save()"
                         """,

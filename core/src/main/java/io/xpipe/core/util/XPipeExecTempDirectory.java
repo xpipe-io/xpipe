@@ -21,10 +21,9 @@ public class XPipeExecTempDirectory {
 
     public static synchronized String initExecTempDirectory(ShellControl proc) throws Exception {
         var d = proc.getShellDialect();
-        var home = proc.getOsType().getHomeDirectory(proc);
 
         // We assume that this exists now as the systemid should have been created in this
-        var xpipeHome = FileNames.join(home, ".xpipe");
+        var xpipeHome = XPipeInstallation.getDataDir(proc);
         var targetTemp = FileNames.join(xpipeHome, "temp");
 
         var systemTemp = proc.getOsType().getTempDirectory(proc);

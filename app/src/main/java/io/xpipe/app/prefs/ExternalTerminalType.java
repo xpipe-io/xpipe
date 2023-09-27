@@ -39,7 +39,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass", "-NoProfile", "-Command", "cmd", "/C").addFile(file);
+            return CommandBuilder.of().add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C", "'" + file + "'");
         }
 
         @Override
@@ -53,9 +53,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected CommandBuilder toCommand(String name, String file) {
             // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass", "-NoProfile", "-Command", "cmd", "/C").add(sc -> {
+            return CommandBuilder.of().add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C").add(sc -> {
                 var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
-                return sc.getShellDialect().fileArgument(script);
+                return "'" + script + "'";
             });
         }
 

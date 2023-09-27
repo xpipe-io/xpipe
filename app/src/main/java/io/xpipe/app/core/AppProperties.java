@@ -3,10 +3,10 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 import lombok.Value;
 
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -16,8 +16,6 @@ import java.util.UUID;
 @Value
 public class AppProperties {
 
-    public static final Path DEFAULT_DATA_DIR = Path.of(System.getProperty("user.home"), ".xpipe");
-    private static final String DATA_DIR_PROP = "io.xpipe.app.dataDir";
     private static final String EXTENSION_PATHS_PROP = "io.xpipe.app.extensions";
     private static AppProperties INSTANCE;
     boolean fullVersion;
@@ -48,13 +46,11 @@ public class AppProperties {
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
         arch = System.getProperty("io.xpipe.app.arch");
-        staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
+        staging = XPipeInstallation.isStaging();
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
-        dataDir = parseDataDir();
+        dataDir = XPipeInstallation.getDataDir();
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -99,17 +95,6 @@ public class AppProperties {
 
     public static AppProperties get() {
         return INSTANCE;
-    }
-
-    private Path parseDataDir() {
-        if (System.getProperty(DATA_DIR_PROP) != null) {
-            try {
-                return Path.of(System.getProperty(DATA_DIR_PROP));
-            } catch (InvalidPathException ignored) {
-            }
-        }
-
-        return Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe_stage" : ".xpipe");
     }
 
     public boolean isDeveloperMode() {

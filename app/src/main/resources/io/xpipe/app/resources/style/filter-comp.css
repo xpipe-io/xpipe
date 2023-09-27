@@ -1,5 +1,5 @@
 .filter-comp .text-field {
--fx-padding: 0.35em;
+-fx-padding: 0.15em 0.3em 0.15em 0.3em;
 -fx-background-color: transparent;
 }
 

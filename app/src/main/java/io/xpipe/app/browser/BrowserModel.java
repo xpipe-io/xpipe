@@ -2,7 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.store.ShellStore;
@@ -78,8 +78,7 @@ public class BrowserModel {
     public void restoreState(BrowserSavedState.Entry e, BooleanProperty busy) {
         var storageEntry = DataStorage.get().getStoreEntry(e.getUuid());
         storageEntry.ifPresent(entry -> {
-            openFileSystemAsync(
-                    entry.getName(), entry.getStore().asNeeded(), e.getPath(), busy);
+            openFileSystemAsync(null, entry.getStore().asNeeded(), e.getPath(), busy);
         });
     }
 
@@ -177,7 +176,7 @@ public class BrowserModel {
 
             // Prevent multiple calls from interfering with each other
             synchronized (BrowserModel.this) {
-                try (var b = new BusyProperty(externalBusy != null ? externalBusy : new SimpleBooleanProperty())) {
+                try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
                     model = new OpenFileSystemModel(name, this, store);
                     model.initFileSystem();
                     model.initSavedState();

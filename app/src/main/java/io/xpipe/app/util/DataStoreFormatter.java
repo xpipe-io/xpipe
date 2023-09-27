@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
@@ -45,6 +44,10 @@ public class DataStoreFormatter {
         return String.format("%s > %s", atString, fileString);
     }
 
+    public static String toApostropheName(DataStore input) {
+        return toName(input, Integer.MAX_VALUE) + "'s";
+    }
+
     public static String toName(DataStore input) {
         return toName(input, Integer.MAX_VALUE);
     }
@@ -59,7 +62,7 @@ public class DataStoreFormatter {
             return cut(named.get(), length);
         }
 
-        return DataStoreProviders.byStore(input).toSummaryString(input, length);
+        return "?";
     }
 
     public static String split(String left, String separator, String right, int length) {

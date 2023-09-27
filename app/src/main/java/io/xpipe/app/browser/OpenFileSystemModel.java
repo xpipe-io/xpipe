@@ -3,18 +3,18 @@ package io.xpipe.app.browser;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.*;
+import io.xpipe.core.util.FailableConsumer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.function.FailableConsumer;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -46,7 +46,7 @@ public final class OpenFileSystemModel {
         this.browserModel = browserModel;
         this.store = store;
         var e = DataStorage.get().getStoreEntryIfPresent(store);
-        this.name = name != null ? name : e.isPresent() ? e.get().getName() : "?";
+        this.name = name != null ? name : e.isPresent() ? DataStorage.get().getStoreBrowserDisplayName(store) : "?";
         this.tooltip = e.isPresent() ? DataStorage.get().getId(e.get()).toString() : name;
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
@@ -62,7 +62,7 @@ public final class OpenFileSystemModel {
                 return;
             }
 
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (store instanceof ShellStore s) {
                     c.accept(fileSystem.getShell().orElseThrow());
                     if (refresh) {
@@ -75,7 +75,7 @@ public final class OpenFileSystemModel {
 
     @SneakyThrows
     public void refresh() {
-        BusyProperty.execute(busy, () -> {
+        BooleanScope.execute(busy, () -> {
             cdSyncWithoutCheck(currentPath.get());
         });
     }
@@ -112,7 +112,7 @@ public final class OpenFileSystemModel {
 
     public void cdAsync(String path) {
         ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 cdSync(path);
             });
         });
@@ -238,7 +238,7 @@ public final class OpenFileSystemModel {
 
     public void dropLocalFilesIntoAsync(FileSystem.FileEntry entry, List<Path> files) {
         ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -257,7 +257,7 @@ public final class OpenFileSystemModel {
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -285,7 +285,7 @@ public final class OpenFileSystemModel {
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -307,7 +307,7 @@ public final class OpenFileSystemModel {
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -329,7 +329,7 @@ public final class OpenFileSystemModel {
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (fileSystem == null) {
                     return;
                 }
@@ -363,7 +363,7 @@ public final class OpenFileSystemModel {
     }
 
     public void initFileSystem() throws Exception {
-        BusyProperty.execute(busy, () -> {
+        BooleanScope.execute(busy, () -> {
             var fs = store.createFileSystem();
             fs.open();
             this.fileSystem = fs;
@@ -392,7 +392,7 @@ public final class OpenFileSystemModel {
                 return;
             }
 
-            BusyProperty.execute(busy, () -> {
+            BooleanScope.execute(busy, () -> {
                 if (store instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.control()

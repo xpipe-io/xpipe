@@ -14,16 +14,18 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 public enum XPipeDistributionType {
-    DEVELOPMENT("development", () -> new GitHubUpdater(false)),
-    PORTABLE("portable", () -> new PortableUpdater()),
-    NATIVE_INSTALLATION("install", () -> new GitHubUpdater(true)),
-    HOMEBREW("homebrew", () -> new HomebrewUpdater()),
-    CHOCO("choco", () -> new ChocoUpdater());
+    UNKNOWN("unknown", false, () -> new GitHubUpdater(false)),
+    DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
+    PORTABLE("portable", false, () -> new PortableUpdater()),
+    NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
+    HOMEBREW("homebrew", true, () -> new HomebrewUpdater()),
+    CHOCO("choco", true, () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
 
-    XPipeDistributionType(String id, Supplier<UpdateHandler> updateHandlerSupplier) {
+    XPipeDistributionType(String id, boolean supportsUrls, Supplier<UpdateHandler> updateHandlerSupplier) {
         this.id = id;
+        this.supportsUrls = supportsUrls;
         this.updateHandlerSupplier = updateHandlerSupplier;
     }
 
@@ -48,7 +50,13 @@ public enum XPipeDistributionType {
             }
         }
 
-        type = determine();
+        var det = determine();
+        // Don't cache unknown type
+        if (det == UNKNOWN) {
+            return UNKNOWN;
+        }
+
+        type = det;
         AppCache.update("dist", type.getId());
         return type;
     }
@@ -56,6 +64,10 @@ public enum XPipeDistributionType {
     public static XPipeDistributionType determine() {
         if (!XPipeInstallation.isInstallationDistribution()) {
             return PORTABLE;
+        }
+
+        if (!LocalStore.isLocalShellInitialized()) {
+            return UNKNOWN;
         }
 
         try (var sc = LocalStore.getShell()) {
@@ -99,6 +111,8 @@ public enum XPipeDistributionType {
 
     @Getter
     private final String id;
+    @Getter
+    private final boolean supportsUrls;
 
     private UpdateHandler updateHandler;
     private final Supplier<UpdateHandler> updateHandlerSupplier;

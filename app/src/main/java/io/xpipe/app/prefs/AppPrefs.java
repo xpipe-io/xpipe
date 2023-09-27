@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.structure.*;
-import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
@@ -29,8 +28,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import lombok.SneakyThrows;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -67,8 +64,6 @@ public class AppPrefs {
     private static final int editorReloadTimeoutMax = 1500;
     private static final Path DEFAULT_STORAGE_DIR =
             AppProperties.get().getDataDir().resolve("storage");
-    private static final boolean STORAGE_DIR_FIXED =
-            !AppProperties.get().getDataDir().equals(Path.of(System.getProperty("user.home"), AppProperties.get().isStaging() ? ".xpipe_stage" : ".xpipe"));
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
     private final SimpleListProperty<SupportedLocale> languageList =
@@ -92,6 +87,14 @@ public class AppPrefs {
     private final SingleSelectionField<SupportedLocale> languageControl = Field.ofSingleSelectionType(
                     languageList, languageInternal)
             .render(() -> new TranslatableComboBoxControl<>());
+
+
+
+    final BooleanProperty performanceMode = typed(new SimpleBooleanProperty(false), Boolean.class);
+
+    public ObservableBooleanValue performanceMode() {
+        return performanceMode;
+    }
 
     public final ObjectProperty<AppTheme.Theme> theme = typed(new SimpleObjectProperty<>(), AppTheme.Theme.class);
     private final SingleSelectionField<AppTheme.Theme> themeControl =
@@ -123,31 +126,13 @@ public class AppPrefs {
 
     private final Property<SecretValue> lockPassword = new SimpleObjectProperty<>();
     private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
-    private final StringField lockCryptControl = StringField.ofStringType(lockCrypt)
-            .render(() -> new SimpleControl<StringField, StackPane>() {
 
-                private Region button;
+    // Window transparency
+    // ===================
+    private final BooleanProperty enableWindowTransparency = typed(new SimpleBooleanProperty(false), Boolean.class);
+    private final BooleanField enableWindowTransparencyField =
+            BooleanField.ofBooleanType(enableWindowTransparency).render(() -> new CustomToggleControl());
 
-                @Override
-                public void initializeParts() {
-                    super.initializeParts();
-                    this.node = new StackPane();
-                    button = new ButtonComp(
-                                    Bindings.createStringBinding(() -> {
-                                        return lockCrypt.getValue() != null
-                                                ? AppI18n.get("changeLock")
-                                                : AppI18n.get("createLock");
-                                    }),
-                                    () -> LockChangeAlert.show())
-                            .createRegion();
-                }
-
-                @Override
-                public void layoutParts() {
-                    this.node.getChildren().addAll(this.button);
-                    this.node.setAlignment(Pos.CENTER_LEFT);
-                }
-            });
 
     // Custom terminal
     // ===============
@@ -215,9 +200,9 @@ public class AppPrefs {
 
     // Storage
     // =======
-    private final ObjectProperty<Path> storageDirectory =
+    final ObjectProperty<Path> storageDirectory =
             typed(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), Path.class);
-    private final StringField storageDirectoryControl =
+    final StringField storageDirectoryControl =
             PrefFields.ofPath(storageDirectory).validate(CustomValidators.absolutePath(), CustomValidators.directory());
 
     // Developer mode
@@ -340,6 +325,10 @@ public class AppPrefs {
 
     public ObservableValue<Boolean> developerMode() {
         return effectiveDeveloperMode;
+    }
+
+    public ObservableValue<Boolean> enableWindowTransparency() {
+        return enableWindowTransparency;
     }
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
@@ -574,7 +563,6 @@ public class AppPrefs {
                                 "appBehaviour",
                                 Setting.of("startupBehaviour", startupBehaviourControl, startupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
-                        Group.of("security", Setting.of("workspaceLock", lockCryptControl, lockCrypt)),
                         Group.of(
                                 "updates",
                                 Setting.of(
@@ -582,21 +570,21 @@ public class AppPrefs {
                                         automaticallyCheckForUpdatesField,
                                         automaticallyCheckForUpdates),
                                 Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
-                        group(
+                        Group.of(
                                 "advanced",
-                                STORAGE_DIR_FIXED
-                                        ? null
-                                        : Setting.of("storageDirectory", storageDirectoryControl, storageDirectory),
                                 Setting.of("developerMode", developerModeField, internalDeveloperMode))),
+                new VaultCategory(this).create(),
                 Category.of(
                         "appearance",
                         Group.of(
                                 "uiOptions",
                                 Setting.of("theme", themeControl, theme),
-                                Setting.of("useSystemFont", useSystemFontInternal),
+                                Setting.of("performanceMode", BooleanField.ofBooleanType(performanceMode).render(() -> new CustomToggleControl()), performanceMode),
+                                Setting.of("enableWindowTransparency", enableWindowTransparencyField, enableWindowTransparency),
+                                Setting.of("useSystemFont", BooleanField.ofBooleanType(useSystemFontInternal).render(() -> new CustomToggleControl()), useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
                                 Setting.of("language", languageControl, languageInternal)),
-                        Group.of("windowOptions", Setting.of("saveWindowLocation", saveWindowLocationInternal))),
+                        Group.of("windowOptions", Setting.of("saveWindowLocation", BooleanField.ofBooleanType(saveWindowLocationInternal).render(() -> new CustomToggleControl()), saveWindowLocationInternal))),
                 Category.of(
                         "connections",
                         Group.of(
@@ -662,7 +650,7 @@ public class AppPrefs {
         return AppPreferencesFx.of(cats);
     }
 
-    private Group group(String name, Setting<?, ?>... settings) {
+    static Group group(String name, Setting<?, ?>... settings) {
         return Group.of(
                 name, Arrays.stream(settings).filter(setting -> setting != null).toArray(Setting[]::new));
     }

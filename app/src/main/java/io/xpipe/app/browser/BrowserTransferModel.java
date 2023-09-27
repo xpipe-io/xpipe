@@ -1,7 +1,7 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.BooleanProperty;
@@ -82,7 +82,7 @@ public class BrowserTransferModel {
                 }
 
                 try {
-                    try (var b = new BusyProperty(downloading)) {
+                    try (var b = new BooleanScope(downloading).start()) {
                         FileSystemHelper.dropFilesInto(
                                 FileSystemHelper.getLocal(TEMP),
                                 List.of(item.getFileEntry()),

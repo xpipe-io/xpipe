@@ -120,7 +120,7 @@ public final class BrowserFileListModel {
         }
 
         if (exists) {
-            ErrorEvent.fromMessage("Target " + newFullPath + " does already exist").unreportable().handle();
+            ErrorEvent.fromMessage("Target " + newFullPath + " does already exist").expected().handle();
             fileSystemModel.refresh();
             return false;
         }

@@ -1,10 +1,14 @@
 package io.xpipe.app.comp.storage.store;
 
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
@@ -16,6 +20,29 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         this.showIcon = showIcon;
     }
 
+    private Label createInformation(GridPane grid) {
+        var information = new Label();
+        information.setGraphicTextGap(7);
+        information.getStyleClass().add("information");
+        AppFont.header(information);
+
+        var state = wrapper.getEntry().getProvider() != null
+                ? wrapper.getEntry().getProvider().stateDisplay(wrapper)
+                : Comp.empty();
+        information.setGraphic(state.createRegion());
+
+        SimpleChangeListener.apply(grid.hoverProperty(), val -> {
+            if (val && wrapper.getSummary().get() != null && wrapper.getEntry().getProvider().alwaysShowSummary()) {
+                information.textProperty().bind(PlatformThread.sync(wrapper.getSummary()));
+            } else {
+                information.textProperty().bind(PlatformThread.sync(wrapper.getInformation()));
+
+            }
+        });
+
+        return information;
+    }
+
     protected Region createContent() {
         var name = createName().createRegion();
 
@@ -24,7 +51,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
         if (showIcon) {
             var storeIcon = createIcon(30, 25);
-            grid.getColumnConstraints().add(new ColumnConstraints(32));
+            grid.getColumnConstraints().add(new ColumnConstraints(46));
             grid.add(storeIcon, 0, 0);
             GridPane.setHalignment(storeIcon, HPos.CENTER);
         }
@@ -33,9 +60,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
 
-        var info = new ColumnConstraints();
-        info.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
-        info.setHalignment(HPos.LEFT);
+        var infoCC = new ColumnConstraints();
+        infoCC.prefWidthProperty().bind(content != null ? INFO_WITH_CONTENT_WIDTH : INFO_NO_CONTENT_WIDTH);
+        infoCC.setHalignment(HPos.LEFT);
 
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);
@@ -43,8 +70,9 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
         grid.addRow(0, name);
 
-        grid.addRow(0, createInformation());
-        grid.getColumnConstraints().addAll(info, custom);
+        var info = createInformation(grid);
+        grid.addRow(0, info);
+        grid.getColumnConstraints().addAll(infoCC, custom);
 
         var cr = content != null ? content.createRegion() : new Region();
         var bb = createButtonBar().createRegion();

@@ -19,9 +19,7 @@ import org.apache.commons.io.FileUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.lang.Integer.MAX_VALUE;
 
@@ -38,6 +36,7 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     JsonNode storeNode;
 
+    @Getter
     @NonFinal
     DataStore store;
 
@@ -48,14 +47,24 @@ public class DataStoreEntry extends StorageElement {
     boolean expanded;
 
     @NonFinal
-    boolean validating;
+    boolean inRefresh;
+
+    @NonFinal
+    @Setter
+    boolean observing;
 
     @NonFinal
     DataStoreProvider provider;
 
+   Map<String, Object> elementState = new LinkedHashMap<>();
+
+    @NonFinal
+    UUID categoryUuid;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
+            UUID categoryUuid,
             String name,
             Instant lastUsed,
             Instant lastModified,
@@ -65,7 +74,8 @@ public class DataStoreEntry extends StorageElement {
             State state,
             Configuration configuration,
             boolean expanded) {
-        super(directory, uuid, name, lastUsed, lastModified, dirty);
+        super(directory, uuid,  name, lastUsed, lastModified, dirty);
+        this.categoryUuid = categoryUuid;
         this.information = information;
         this.store = DataStorageParser.storeFromNode(storeNode);
         this.storeNode = storeNode;
@@ -75,11 +85,20 @@ public class DataStoreEntry extends StorageElement {
         this.provider = store != null ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null) : null;
     }
 
+    public void setInRefresh(boolean newRefresh) {
+        var changed = inRefresh != newRefresh;
+        if (changed) {
+            this.inRefresh = newRefresh;
+            notifyUpdate();
+        }
+    }
+
     @SneakyThrows
-    public static DataStoreEntry createNew(@NonNull UUID uuid, @NonNull String name, @NonNull DataStore store) {
+    public static DataStoreEntry createNew(@NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
         var entry = new DataStoreEntry(
                 null,
                 uuid,
+                categoryUuid,
                 name,
                 Instant.now(),
                 Instant.now(),
@@ -97,6 +116,7 @@ public class DataStoreEntry extends StorageElement {
     private static DataStoreEntry createExisting(
             @NonNull Path directory,
             @NonNull UUID uuid,
+            @NonNull UUID categoryUuid,
             @NonNull String name,
             @NonNull Instant lastUsed,
             @NonNull Instant lastModified,
@@ -108,6 +128,7 @@ public class DataStoreEntry extends StorageElement {
         return new DataStoreEntry(
                 directory,
                 uuid,
+                categoryUuid,
                 name,
                 lastUsed,
                 lastModified,
@@ -124,14 +145,21 @@ public class DataStoreEntry extends StorageElement {
 
         var entryFile = dir.resolve("entry.json");
         var storeFile = dir.resolve("store.json");
+        var stateFile = dir.resolve("state.json");
         if (!Files.exists(entryFile) || !Files.exists(storeFile)) {
             return null;
         }
 
+        if (!Files.exists(stateFile)) {
+            stateFile = entryFile;
+        }
+
         var json = mapper.readTree(entryFile.toFile());
+        var stateJson = mapper.readTree(stateFile.toFile());
         var uuid = UUID.fromString(json.required("uuid").textValue());
+        var categoryUuid = Optional.ofNullable(json.get("categoryUuid")).map(jsonNode -> UUID.fromString(jsonNode.textValue())).orElse(DataStorage.DEFAULT_CATEGORY_UUID);
         var name = json.required("name").textValue();
-        var state = Optional.ofNullable(json.get("state"))
+        var state = Optional.ofNullable(stateJson.get("state"))
                 .map(node -> {
                     try {
                         return mapper.treeToValue(node, State.class);
@@ -140,12 +168,12 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(State.INCOMPLETE);
-        var information = Optional.ofNullable(json.get("information"))
+        var information = Optional.ofNullable(stateJson.get("information"))
                 .map(JsonNode::textValue)
                 .orElse(null);
 
-        var lastUsed = Instant.parse(json.required("lastUsed").textValue());
-        var lastModified = Instant.parse(json.required("lastModified").textValue());
+        var lastUsed = Optional.ofNullable(stateJson.get("lastUsed")).map(jsonNode -> jsonNode.textValue()).map(Instant::parse).orElse(Instant.now());
+        var lastModified = Optional.ofNullable(stateJson.get("lastModified")).map(jsonNode -> jsonNode.textValue()).map(Instant::parse).orElse(Instant.now());
         var configuration = Optional.ofNullable(json.get("configuration"))
                 .map(node -> {
                     try {
@@ -155,7 +183,7 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(Configuration.defaultConfiguration());
-        var expanded = Optional.ofNullable(json.get("expanded"))
+        var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
 
@@ -167,22 +195,33 @@ public class DataStoreEntry extends StorageElement {
             ErrorEvent.fromThrowable(e).handle();
         }
         return createExisting(
-                dir, uuid, name, lastUsed, lastModified, information, storeNode, state, configuration, expanded);
+                dir, uuid, categoryUuid, name, lastUsed, lastModified, information, storeNode, state, configuration, expanded);
     }
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+        this.dirty = true;
         simpleRefresh();
     }
 
-    public void setExpanded(boolean expanded) {
+    public void setCategoryUuid(UUID categoryUuid) {
         this.dirty = true;
-        this.expanded = expanded;
-        notifyListeners();
+        this.categoryUuid = categoryUuid;
+        notifyUpdate();
     }
 
-    public DataStore getStore() {
-        return store;
+    @Override
+    public Path[] getShareableFiles() {
+        return new Path[] {directory.resolve("store.json"), directory.resolve("entry.json")};
+    }
+
+    public void setExpanded(boolean expanded) {
+        var changed = expanded != this.expanded;
+        this.expanded = expanded;
+        if (changed) {
+            dirty = true;
+            notifyUpdate();
+        }
     }
 
     public boolean matches(String filter) {
@@ -234,7 +273,7 @@ public class DataStoreEntry extends StorageElement {
             information = null;
             provider = null;
             dirty = dirty || oldStore != null;
-            notifyListeners();
+            notifyUpdate();
         } else {
             var newNode = DataStorageWriter.storeToNode(newStore);
             var nodesEqual = Objects.equals(storeNode, newNode);
@@ -254,10 +293,10 @@ public class DataStoreEntry extends StorageElement {
                 }
 
                 if (complete && deep) {
-                    validating = true;
-                    notifyListeners();
+                    inRefresh = true;
+                    notifyUpdate();
                     store.validate();
-                    validating = false;
+                    inRefresh = false;
                     state = State.COMPLETE_AND_VALID;
                     information = getProvider().queryInformationString(getStore(), 50);
                     dirty = true;
@@ -274,12 +313,12 @@ public class DataStoreEntry extends StorageElement {
                     state = state == State.LOAD_FAILED ? State.COMPLETE_BUT_INVALID : State.INCOMPLETE;
                 }
             } catch (Exception e) {
-                validating = false;
+                inRefresh = false;
                 state = State.COMPLETE_BUT_INVALID;
                 information = getProvider().queryInvalidInformationString(getStore(), 50);
                 throw e;
             } finally {
-                notifyListeners();
+                notifyUpdate();
             }
         }
     }
@@ -288,15 +327,15 @@ public class DataStoreEntry extends StorageElement {
     public void initializeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
-                validating = true;
-                notifyListeners();
+                inRefresh = true;
+                notifyUpdate();
                 lifecycleStore.initializeValidate();
-                validating = false;
+                inRefresh = false;
             } catch (Exception e) {
-                validating = false;
+                inRefresh = false;
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
-                notifyListeners();
+                notifyUpdate();
             }
         }
     }
@@ -305,20 +344,27 @@ public class DataStoreEntry extends StorageElement {
     public void finalizeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
-                validating = true;
-                notifyListeners();
+                inRefresh = true;
+                notifyUpdate();
                 lifecycleStore.finalizeValidate();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
-                notifyListeners();
+                notifyUpdate();
             }
         }
     }
 
-    @Override
-    protected boolean shouldSave() {
+    public boolean shouldSave() {
         return getStore() == null || getStore().shouldSave();
+    }
+
+    public void simpleRefresh() {
+        try {
+            refresh(false);
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).handle();
+        }
     }
 
     public void writeDataToDisk() throws Exception {
@@ -326,21 +372,25 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        ObjectMapper mapper = JacksonMapper.newMapper();
+        ObjectMapper mapper = JacksonMapper.getDefault();
         ObjectNode obj = JsonNodeFactory.instance.objectNode();
+        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
-        obj.put("information", information);
-        obj.put("lastUsed", lastUsed.toString());
-        obj.put("lastModified", lastModified.toString());
-        obj.set("state", mapper.valueToTree(state));
+        obj.put("categoryUuid", categoryUuid.toString());
+        stateObj.put("information", information);
+        stateObj.put("lastUsed", lastUsed.toString());
+        stateObj.put("lastModified", lastModified.toString());
+        stateObj.set("state", mapper.valueToTree(state));
         obj.set("configuration", mapper.valueToTree(configuration));
-        obj.put("expanded", expanded);
+        stateObj.put("expanded", expanded);
 
         var entryString = mapper.writeValueAsString(obj);
+        var stateString = mapper.writeValueAsString(stateObj);
         var storeString = mapper.writeValueAsString(storeNode);
 
         FileUtils.forceMkdir(directory.toFile());
+        Files.writeString(directory.resolve("state.json"), stateString);
         Files.writeString(directory.resolve("entry.json"), entryString);
         Files.writeString(directory.resolve("store.json"), storeString);
         dirty = false;

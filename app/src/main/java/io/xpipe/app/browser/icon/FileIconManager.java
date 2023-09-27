@@ -2,39 +2,12 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.fxcomps.impl.SvgCache;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
-import javafx.scene.image.Image;
-import lombok.Getter;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 public class FileIconManager {
 
-    @Getter
-    private static final SvgCache svgCache = createCache();
-
     private static boolean loaded;
-
-    private static SvgCache createCache() {
-        return new SvgCache() {
-
-            private final Map<String, Image> images = new HashMap<>();
-
-            @Override
-            public synchronized void put(String image, Image value) {
-                images.put(image, value);
-            }
-
-            @Override
-            public synchronized Optional<Image> getCached(String image) {
-                return Optional.ofNullable(images.get(image));
-            }
-        };
-    }
 
     public static synchronized void loadIfNecessary() {
         if (!loaded) {

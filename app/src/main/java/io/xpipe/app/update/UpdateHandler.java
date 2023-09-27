@@ -6,7 +6,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.BusyProperty;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -166,7 +166,7 @@ public abstract class UpdateHandler {
             }
         }
 
-        try (var ignored = new BusyProperty(busy)) {
+        try (var ignored = new BooleanScope(busy).start()) {
             event("Performing update download ...");
             prepareUpdateImpl();
         }
@@ -241,7 +241,7 @@ public abstract class UpdateHandler {
             return lastUpdateCheckResult.getValue();
         }
 
-        try (var ignored = new BusyProperty(busy)) {
+        try (var ignored = new BooleanScope(busy).start()) {
             return refreshUpdateCheckImpl();
         }
     }

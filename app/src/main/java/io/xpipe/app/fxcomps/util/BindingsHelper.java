@@ -1,7 +1,9 @@
 package io.xpipe.app.fxcomps.util;
 
 import io.xpipe.app.util.ThreadHelper;
+import javafx.beans.Observable;
 import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ListBinding;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -96,6 +98,25 @@ public class BindingsHelper {
         });
     }
 
+    public static <T,U> ObservableValue<U> map(ObservableValue<T> observableValue, Function<? super T, ? extends U> mapper) {
+        return persist(Bindings.createObjectBinding(() -> {
+            return mapper.apply(observableValue.getValue());
+        },observableValue));
+    }
+
+    public static <T,U> ObservableValue<U> flatMap(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
+        var prop = new SimpleObjectProperty<U>();
+        Runnable runnable = () -> {
+            prop.bind(mapper.apply(observableValue.getValue()));
+        };
+        runnable.run();
+        observableValue.addListener((observable, oldValue, newValue) -> {
+            runnable.run();
+        });
+        linkPersistently(observableValue, prop);
+        return prop;
+    }
+
     public static <T, V> void bindMappedContent(ObservableList<T> l1, ObservableList<V> l2, Function<V, T> map) {
         Runnable runnable = () -> {
             setContent(l1, l2.stream().map(map).toList());
@@ -142,6 +163,55 @@ public class BindingsHelper {
         return l1;
     }
 
+    public static <T, V> ObservableList<T> cachedMappedContentBinding(ObservableList<V> all, ObservableList<V> shown, Function<V, T> map) {
+        var cache = new HashMap<V, T>();
+
+        ObservableList<T> l1 = FXCollections.observableList(new ArrayList<>());
+        Runnable runnable = () -> {
+            cache.keySet().removeIf(t -> !all.contains(t));
+            setContent(l1, shown.stream()
+                    .map(v -> {
+                        if (!cache.containsKey(v)) {
+                            cache.put(v, map.apply(v));
+                        }
+
+                        return cache.get(v);
+                    }).toList());
+        };
+        runnable.run();
+        shown.addListener((ListChangeListener<? super V>) c -> {
+            runnable.run();
+        });
+        linkPersistently(all, l1);
+        linkPersistently(shown, l1);
+        return l1;
+    }
+
+    public static <T,U> ObservableValue<U> mappedBinding(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
+        var binding = (Binding<U>) observableValue.flatMap(mapper);
+        return persist(binding);
+    }
+
+//    public static <T,U> ObservableValue<U> mappedBinding(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
+//        var v = new SimpleObjectProperty<U>();
+//        SimpleChangeListener.apply(observableValue, val -> {
+//            v.unbind();
+//            v.bind(mapper.apply(val));
+//        });
+//        return v;
+//    }
+
+    public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, Comparator<V> comp, Observable... observables) {
+        return orderedContentBinding(l2, Bindings.createObjectBinding(() -> {
+            return new Comparator<V>() {
+                @Override
+                public int compare(V o1, V o2) {
+                    return comp.compare(o1, o2);
+                }
+            };
+        }, observables));
+    }
+
     public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, ObservableValue<Comparator<V>> comp) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
@@ -160,6 +230,17 @@ public class BindingsHelper {
 
     public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, Predicate<V> predicate) {
         return filteredContentBinding(l2, new SimpleObjectProperty<>(predicate));
+    }
+
+    public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, Predicate<V> predicate, Observable... observables) {
+        return filteredContentBinding(l2, Bindings.createObjectBinding(() -> {
+            return new Predicate<V>() {
+                @Override
+                public boolean test(V v) {
+                    return predicate.test(v);
+                }
+            };
+        }, observables));
     }
 
     public static <V> ObservableList<V> filteredContentBinding(

@@ -1,4 +1,3 @@
-
 .store-entry-grid .date, .store-entry-grid .summary {
 -fx-text-fill: -color-fg-muted;
 }
@@ -20,6 +19,20 @@
 -fx-opacity: 0.5;
 }
 
+.store-entry-grid .icon {
+-fx-background-color: -color-bg-overlay;
+-fx-background-radius: 5px;
+}
+
+.root:pretty .store-entry-grid .icon {
+-fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.5, 0, 1);
+
+}
+
+.root:pretty .store-entry-grid .icon > * {
+-fx-effect: dropshadow(three-pass-box, -color-accent-muted, 2px, 0.2, 0, 1);
+}
+
 .store-entry-grid {
 -fx-padding: 6px 6px 6px 6px;
 }
@@ -32,6 +45,7 @@
 -fx-border-width: 0 0 0.7em 0;
 -fx-background-insets: 0 0 0.7em 0;
 -fx-border-color: transparent;
+-fx-background-color: transparent;
 }
 
 .store-entry-section-comp:expanded:odd-depth {
@@ -40,16 +54,45 @@
 }
 
 .store-entry-section-comp:expanded:even-depth {
--fx-background-color: -color-neutral-subtle;
 -fx-background-radius: 4px;
+}
+
+.root:light .store-entry-section-comp:expanded:even-depth {
+-fx-background-color: derive(-color-bg-default, -3%);
+}
+
+.root:dark .store-entry-section-comp:expanded:even-depth {
+-fx-background-color: derive(-color-bg-default, 5%);
+-fx-border-color: -color-border-subtle;
+}
+
+.store-entry-comp {
+-fx-border-color: transparent;
+-fx-background-color: transparent;
 }
 
 .store-entry-comp:hover {
 -fx-background-color: -color-neutral-muted;
 }
 
+.store-entry-comp .button-bar {
+-fx-opacity: 0.65;
+}
+
+.store-entry-comp:hover .button-bar {
+-fx-opacity: 1.0;
+}
+
 .expand-button:hover {
 -fx-background-color: -color-neutral-muted;
+}
+
+.expand-button:disabled {
+-fx-opacity: 0.2;
+}
+
+.root:pretty .store-entry-comp .button-bar {
+-fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
 }
 
 .store-entry-comp .button-bar .button {
@@ -73,9 +116,12 @@
 }
 
 .top > .store-entry-section-comp {
--fx-effect: dropshadow(three-pass-box, -color-shadow-default, 6px, 0.5, 0, 1);
 -fx-background-color: -color-bg-default;
 -fx-background-radius: 4px;
+}
+
+.root:pretty .top > .store-entry-section-comp {
+-fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
 }
 
 .store-entry-section-comp:expanded {

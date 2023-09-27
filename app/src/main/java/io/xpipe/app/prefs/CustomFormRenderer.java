@@ -14,6 +14,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,9 +46,14 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                         // if there are no rows yet, getRowCount returns -1, in this case the next row is 0
                         int nextRow = PreferencesFxUtils.getRowCount(grid) + 1;
 
+                        List<Element> elements = preferencesGroup.getElements().stream()
+                                .map(Element.class::cast)
+                                .toList();
+
                         // Only when the preferencesGroup has a title
-                        if (preferencesGroup.getTitle() != null) {
-                            grid.add(titleLabel, 0, nextRow++, 2, 1);
+                        if (preferencesGroup.getTitle() != null && elements.size() > 0) {
+                            titleLabel.setPrefWidth(USE_COMPUTED_SIZE);
+                            grid.add(titleLabel, 0, nextRow++);
                             titleLabel.getStyleClass().add("group-title");
                             AppFont.setSize(titleLabel, 2);
                             // Set margin for all but first group titles to visually separate groups
@@ -58,9 +64,6 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                             }
                         }
 
-                        List<Element> elements = preferencesGroup.getElements().stream()
-                                .map(Element.class::cast)
-                                .toList();
                         styleClass.append("-setting");
 
                         int rowAmount = nextRow;
@@ -76,7 +79,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 AppFont.normal(c.getFieldLabel());
                                 c.getFieldLabel().setPrefHeight(AppFont.getPixelSize(1));
                                 c.getFieldLabel().setMaxHeight(AppFont.getPixelSize(1));
-                                grid.add(c.getFieldLabel(), 0, i + rowAmount, 2, 1);
+                                grid.add(c.getFieldLabel(), 0, i + rowAmount);
 
                                 var canFocus = BindingsHelper.persist(
                                         c.getNode().disabledProperty().not());
@@ -84,7 +87,6 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 var descriptionLabel = new Label();
                                 AppFont.medium(descriptionLabel);
                                 descriptionLabel.setWrapText(true);
-                                descriptionLabel.setMaxWidth(800);
                                 descriptionLabel
                                         .disableProperty()
                                         .bind(c.getFieldLabel().disabledProperty());
@@ -103,15 +105,17 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                     rowAmount++;
                                     descriptionLabel.textProperty().bind(AppI18n.observable(descriptionKey));
                                     descriptionLabel.focusTraversableProperty().bind(canFocus);
-                                    grid.add(descriptionLabel, 0, i + rowAmount, 2, 1);
+                                    grid.add(descriptionLabel, 0, i + rowAmount);
                                 }
 
                                 rowAmount++;
 
                                 var node = c.getNode();
+                                ((Region) node).setMaxWidth(250);
+                                ((Region) node).setMinWidth(250);
                                 AppFont.medium(c.getNode());
                                 c.getFieldLabel().focusTraversableProperty().bind(canFocus);
-                                grid.add(node, 0, i + rowAmount, 1, 1);
+                                grid.add(node, 0, i + rowAmount);
 
                                 if (i == elements.size() - 1) {
                                     // additional styling for the last setting
@@ -135,7 +139,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
 
                             if (element instanceof LazyNodeElement<?> nodeElement) {
                                 var node = nodeElement.getNode();
-                                grid.add(node, 0, i + rowAmount, 2, 1);
+                                grid.add(node, 0, i + rowAmount);
                             }
                         }
                     }

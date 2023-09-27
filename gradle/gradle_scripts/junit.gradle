@@ -40,6 +40,6 @@ sourceSets {
 //                srcDirs = []
 //            }
 //        }
-        output.resourcesDir("$buildDir/classes/java/test")
+        output.resourcesDir("${project.layout.buildDirectory.get()}/classes/java/test")
     }
 }

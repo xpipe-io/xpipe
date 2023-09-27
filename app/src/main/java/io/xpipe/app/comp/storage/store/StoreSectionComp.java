@@ -24,21 +24,23 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
     public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
 
     private final StoreSection section;
+    private final boolean topLevel;
 
-    public StoreSectionComp(StoreSection section) {
+    public StoreSectionComp(StoreSection section, boolean topLevel) {
         this.section = section;
+        this.topLevel = topLevel;
     }
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = StandardStoreEntryComp.customSection(section).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+        var root = StandardStoreEntryComp.customSection(section, topLevel).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var button = new IconButtonComp(
                         Bindings.createStringBinding(
                                 () -> section.getWrapper().getExpanded().get()
-                                                && section.getChildren().size() > 0
+                                                && section.getShownChildren().size() > 0
                                         ? "mdal-keyboard_arrow_down"
                                         : "mdal-keyboard_arrow_right",
-                                section.getWrapper().getExpanded()),
+                                section.getWrapper().getExpanded(), section.getShownChildren()),
                         () -> {
                             section.getWrapper().toggleExpanded();
                         })
@@ -47,24 +49,18 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .focusTraversable()
                 .accessibleText("Expand")
                 .disable(BindingsHelper.persist(
-                        Bindings.size(section.getChildren()).isEqualTo(0)))
+                        Bindings.size(section.getShownChildren()).isEqualTo(0)))
                 .grow(false, true)
                 .styleClass("expand-button");
         List<Comp<?>> topEntryList = List.of(button, root);
 
-        var all = section.getChildren();
-        var shown = BindingsHelper.filteredContentBinding(
-                all,
-                StoreViewState.get()
-                        .getFilterString()
-                        .map(s -> (storeEntrySection -> storeEntrySection.shouldShow(s))));
-        var content = new ListBoxViewComp<>(shown, all, (StoreSection e) -> {
-                    return StoreSection.customSection(e).apply(GrowAugment.create(true, false));
+        var content = new ListBoxViewComp<>(section.getShownChildren(), section.getAllChildren(), (StoreSection e) -> {
+                    return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
                 }).hgrow();
 
         var expanded = Bindings.createBooleanBinding(() -> {
-            return section.getWrapper().getExpanded().get() && section.getChildren().size() > 0;
-        }, section.getWrapper().getExpanded(), section.getChildren());
+            return section.getWrapper().getExpanded().get() && section.getShownChildren().size() > 0;
+        }, section.getWrapper().getExpanded(), section.getShownChildren());
 
         return new VerticalComp(List.of(
                         new HorizontalComp(topEntryList)
@@ -75,7 +71,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                                 .apply(struc -> struc.get().setFillHeight(true))
                                 .hide(BindingsHelper.persist(Bindings.or(
                                         Bindings.not(section.getWrapper().getExpanded()),
-                                        Bindings.size(section.getChildren()).isEqualTo(0))))))
+                                        Bindings.size(section.getAllChildren()).isEqualTo(0))))))
                 .styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);

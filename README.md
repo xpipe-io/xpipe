@@ -9,23 +9,18 @@ XPipe fully integrates with your tools such as your favourite text/code editors,
 It currently supports:
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
 - [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
-- [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config file connections, and tunnels
+- [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config files, and tunnels
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
 - Any other custom remote connection methods that work through the command-line
-
-Furthermore, you can also use any remote shell connection as a proxy when establishing new connections, allowing full flexibility to set up connection routes.
-
-The project is still in a relatively early stage and will benefit massively from your feedback, issue reports, feature request, and more. There are also a lot more features to come in the future.
-
-You have more questions? Then check out the new [FAQ](/FAQ.md).
 
 ## Connection Hub
 
 - Easily connect to and access all kinds of remote connections in one place
 - Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
-- Allows you to fully customize the init environment of the launched shell sessions with custom scripts
+- Allows you to create specific login environments on any system to instantly jump into proper environment for every use case of yours
 - Can create desktop shortcuts that automatically open remote connections in your terminal
+- Group all your connections into hierarchical categories
 
 ![connections](https://github.com/xpipe-io/xpipe/assets/72509152/ef19aa85-1b66-45e0-a051-5a4658758626)
 
@@ -34,10 +29,9 @@ You have more questions? Then check out the new [FAQ](/FAQ.md).
 - Interact with the file system of any remote system using a workflow optimized for professionals
 - Quickly open a terminal into any directory
 - Utilize your favourite local programs to open and edit remote files
-- Has the same feature set for all supported connection types
 - Dynamically elevate sessions with sudo when required
 
-The feature set is the same for all supported connection types. It of course also supports browsing the file system on your local machine.
+The feature set is the same for all supported connection types. It also supports browsing the file system on your local machine.
 
 ![browser](https://github.com/xpipe-io/xpipe/assets/72509152/5631fe50-58b4-4847-a5f4-ad3898a02a9f)
 
@@ -100,11 +94,20 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
+## Tiers
+
+Recently I decided to try to develop XPipe full-time. To finance this, there now is a professional tier intended for commercial users.
+The free community tier comes with the full feature set and no restrictions on anything as long you are using it for non-commercial purposes. For commercial usage, I would like to ask you to purchase an [XPipe professional license](https://buy.xpipe.io/checkout/buy/dbcd37b8-be94-40a5-8c1c-af61979e6537). You can try out XPipe as much as you want in a non-commercial setting or start a free trial if you want to test it in your commercial environments prior to purchasing a license.
+
 ## Open source model
 
-XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future. This mainly concerns the shell handling library implementation and extensions for configuring and handling shell connections. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository. Finally, scripts and workflows to create and publish installers and packages are also not included to prevent attackers from easily impersonating the XPipe application.
+XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
+
+This mainly concerns the features only available in the professional tier and the shell handling library implementation and extensions for configuring and handling shell connections. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository. Finally, scripts and workflows to create and publish installers and packages are also not included to prevent attackers from easily impersonating the XPipe application.
 
 ## Further information
+
+You have more questions? Then check out the new [FAQ](/FAQ.md).
 
 For information about the security model of XPipe, see the [security page](/SECURITY.md).
 

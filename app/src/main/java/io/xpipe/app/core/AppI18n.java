@@ -80,6 +80,18 @@ public class AppI18n {
                 instant);
     }
 
+    public static StringBinding readableDuration(ObservableValue<Instant> instant) {
+        return Bindings.createStringBinding(
+                () -> {
+                    if (instant.getValue() == null) {
+                        return "null";
+                    }
+
+                    return getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1)));
+                },
+                instant);
+    }
+
     public static ObservableValue<String> observable(String s, Object... vars) {
         if (s == null) {
             return null;

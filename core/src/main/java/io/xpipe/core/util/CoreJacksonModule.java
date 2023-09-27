@@ -22,6 +22,7 @@ import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.impl.*;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.source.DataSource;
@@ -30,6 +31,7 @@ import io.xpipe.core.source.DataSourceReference;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 public class CoreJacksonModule extends SimpleModule {
 
@@ -66,6 +68,9 @@ public class CoreJacksonModule extends SimpleModule {
 
         addSerializer(Path.class, new LocalPathSerializer());
         addDeserializer(Path.class, new LocalPathDeserializer());
+
+        addSerializer(OsType.class, new OsTypeSerializer());
+        addDeserializer(OsType.class, new OsTypeDeserializer());
 
         addSerializer(DataSourceReference.class, new DataSourceReferenceSerializer());
         addDeserializer(DataSourceReference.class, new DataSourceReferenceDeserializer());
@@ -174,6 +179,23 @@ public class CoreJacksonModule extends SimpleModule {
         @Override
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return Path.of(p.getValueAsString());
+        }
+    }
+
+    public static class OsTypeSerializer extends JsonSerializer<OsType> {
+
+        @Override
+        public void serialize(OsType value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.getName());
+        }
+    }
+
+    public static class OsTypeDeserializer extends JsonDeserializer<OsType> {
+
+        @Override
+        public OsType deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var n = p.getValueAsString();
+            return Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.MACOS).filter(osType -> osType.getName().equals(n)).findFirst().orElse(null);
         }
     }
 

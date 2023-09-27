@@ -1,21 +1,21 @@
 dependencies {
-    implementation files("$buildDir/generated-modules/flexmark-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-data-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-ast-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-builder-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-sequence-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-misc-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-dependency-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-collection-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-format-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-html-0.64.0.jar")
-    implementation files("$buildDir/generated-modules/flexmark-util-visitor-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-data-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-ast-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-builder-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-sequence-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-misc-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-dependency-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-collection-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-format-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-html-0.64.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flexmark-util-visitor-0.64.0.jar")
 }
 
 addDependenciesModuleInfo {
     overwriteExistingFiles = true
     jdepsExtraArgs = ['-q']
-    outputDirectory = file("$buildDir/generated-modules")
+    outputDirectory = file("${project.layout.buildDirectory.get()}/generated-modules")
     modules {
         module {
             artifact 'com.vladsch.flexmark:flexmark:0.64.0'

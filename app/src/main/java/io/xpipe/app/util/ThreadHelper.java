@@ -2,12 +2,22 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
-import org.apache.commons.lang3.function.FailableRunnable;
+import io.xpipe.core.util.FailableRunnable;
 
 public class ThreadHelper {
 
-    private static Thread unstarted(Runnable r) {
+    public static Thread unstarted(Runnable r) {
         return AppProperties.get().isUseVirtualThreads() ? Thread.ofVirtual().unstarted(r) : Thread.ofPlatform().unstarted(r);
+    }
+
+    public static Thread unstartedFailable(FailableRunnable<Exception> r) {
+        return unstarted(() -> {
+            try {
+                r.run();
+            } catch (Throwable e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        });
     }
 
     public static Thread runAsync(Runnable r) {

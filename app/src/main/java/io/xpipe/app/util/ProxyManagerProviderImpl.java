@@ -38,7 +38,7 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
         }
 
         var defaultInstallationExecutable = FileNames.join(
-                XPipeInstallation.getDefaultInstallationBasePath(s, false),
+                XPipeInstallation.getDefaultInstallationBasePath(s),
                 XPipeInstallation.getDaemonExecutablePath(s.getOsType()));
         if (!s.getShellDialect()
                 .createFileExistsCommand(s, defaultInstallationExecutable)

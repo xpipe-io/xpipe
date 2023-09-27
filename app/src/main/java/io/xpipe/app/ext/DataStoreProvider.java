@@ -2,13 +2,11 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.storage.store.StandardStoreEntryComp;
-import io.xpipe.app.comp.storage.store.StoreSectionComp;
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
-import io.xpipe.app.comp.storage.store.StoreSection;
+import io.xpipe.app.comp.storage.store.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.store.*;
@@ -20,6 +18,10 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public interface DataStoreProvider {
+
+    default boolean alwaysShowSummary() {
+        return false;
+    }
 
     default ModuleInstall getRequiredAdditionalInstallation() {
         return null;
@@ -34,22 +36,23 @@ public interface DataStoreProvider {
         }
     }
 
-    default boolean shouldShowInSelectionTree() {
-        return true;
-    }
-
     default void preAdd(DataStore store) {}
+
+    default String browserDisplayName(DataStore store) {
+        var e = DataStorage.get().getStoreDisplayName(store);
+        return e.orElse("?");
+    }
 
     default boolean shouldEdit() {
         return false;
     }
 
-    default Comp<?> customDisplay(StoreSection s) {
-        return new StandardStoreEntryComp(s.getWrapper(), null);
+    default Comp<?> customEntryComp(StoreSection s, boolean preferLarge) {
+        return StoreEntryComp.create(s.getWrapper(),true, null, preferLarge);
     }
 
-    default Comp<?> customContainer(StoreSection section) {
-        return new StoreSectionComp(section);
+    default Comp<?> customSectionComp(StoreSection section, boolean topLevel) {
+        return new StoreSectionComp(section, topLevel);
     }
 
     default boolean canHaveSubShells() {

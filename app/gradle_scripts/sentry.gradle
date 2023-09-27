@@ -1,14 +1,14 @@
 dependencies {
-    implementation files("$buildDir/generated-modules/sentry-6.16.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/sentry-6.29.0.jar")
 }
 
 addDependenciesModuleInfo {
     overwriteExistingFiles = true
     jdepsExtraArgs = ['-q']
-    outputDirectory = file("$buildDir/generated-modules")
+    outputDirectory = file("${project.layout.buildDirectory.get()}/generated-modules")
     modules {
         module {
-            artifact 'io.sentry:sentry:6.16.0'
+            artifact 'io.sentry:sentry:6.29.0'
             moduleInfoSource = '''
                 module io.sentry {
                     exports io.sentry;

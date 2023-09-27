@@ -6,7 +6,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.CustomComboBoxBuilder;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -30,13 +29,13 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
 
     private Region createGraphic(FileSystemStore s) {
         var provider = DataStoreProviders.byStore(s);
-        var img = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16);
+        var img = PrettyImageHelper.ofFixedSquare(provider.getDisplayIconFileName(s), 16);
         return new Label(getName(s), img.createRegion());
     }
 
     private Region createDisplayGraphic(FileSystemStore s) {
         var provider = DataStoreProviders.byStore(s);
-        var img = new PrettyImageComp(new SimpleStringProperty(provider.getDisplayIconFileName(s)), 16, 16);
+        var img = PrettyImageHelper.ofFixedSquare(provider.getDisplayIconFileName(s), 16);
         return new Label(null, img.createRegion());
     }
 

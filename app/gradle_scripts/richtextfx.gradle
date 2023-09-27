@@ -1,15 +1,15 @@
 dependencies {
-    implementation files("$buildDir/generated-modules/richtextfx-0.10.6.jar")
-    implementation files("$buildDir/generated-modules/flowless-0.6.6.jar")
-    implementation files("$buildDir/generated-modules/undofx-2.1.1.jar")
-    implementation files("$buildDir/generated-modules/wellbehavedfx-0.3.3.jar")
-    implementation files("$buildDir/generated-modules/reactfx-2.0-M5.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/richtextfx-0.10.6.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/flowless-0.6.6.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/undofx-2.1.1.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/wellbehavedfx-0.3.3.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/reactfx-2.0-M5.jar")
 }
 
 addDependenciesModuleInfo {
     overwriteExistingFiles = true
     jdepsExtraArgs = ['-q']
-    outputDirectory = file("$buildDir/generated-modules")
+    outputDirectory = file("${project.layout.buildDirectory.get()}/generated-modules")
     modules {
         module {
             artifact group: 'org.fxmisc.flowless', name: 'flowless', version: '0.6.6'

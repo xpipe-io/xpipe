@@ -2,14 +2,18 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.Hyperlinks;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.css.PseudoClass;
@@ -17,7 +21,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -52,7 +55,32 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         });
 
         {
-            var fi = new FontIcon("mdi2u-update");
+            var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
+                    .apply(new FancyTooltipAugment<>("visitGithubRepository"));
+            b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
+            });
+            vbox.getChildren().add(b.createRegion());
+        }
+
+        {
+            var b = new IconButtonComp(
+                            "mdal-bug_report",
+                            () -> {
+                                var event = ErrorEvent.fromMessage("User Report");
+                                if (AppLogs.get().isWriteToFile()) {
+                                    event.attachment(AppLogs.get().getSessionLogsDirectory());
+                                }
+                                UserReportComp.show(event.build());
+                            })
+                    .apply(new FancyTooltipAugment<>("reportIssue"));
+            b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
+            });
+            vbox.getChildren().add(b.createRegion());
+        }
+
+        {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
                     .apply(new FancyTooltipAugment<>("updateAvailableTooltip"));
             b.apply(struc -> {

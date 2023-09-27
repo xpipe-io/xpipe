@@ -1,11 +1,11 @@
 dependencies {
-    implementation files("$buildDir/generated-modules/prettytime-5.0.2.Final.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/prettytime-5.0.2.Final.jar")
 }
 
 addDependenciesModuleInfo {
     overwriteExistingFiles = true
     jdepsExtraArgs = ['-q']
-    outputDirectory = file("$buildDir/generated-modules")
+    outputDirectory = file("${project.layout.buildDirectory.get()}/generated-modules")
     modules {
         module {
             artifact 'org.ocpsoft.prettytime:prettytime:5.0.2.Final'

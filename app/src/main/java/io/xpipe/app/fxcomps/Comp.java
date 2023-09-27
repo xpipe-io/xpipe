@@ -31,8 +31,16 @@ public abstract class Comp<S extends CompStructure<?>> {
         return of(() -> new Region());
     }
 
-    public static Comp<CompStructure<Spacer>> spacer(double size) {
+    public static Comp<CompStructure<Spacer>> hspacer(double size) {
         return of(() -> new Spacer(size));
+    }
+
+    public static Comp<CompStructure<Spacer>> hspacer() {
+        return of(() -> new Spacer(Orientation.HORIZONTAL));
+    }
+
+    public static Comp<CompStructure<Spacer>> vspacer(double size) {
+        return of(() -> new Spacer(size, Orientation.VERTICAL));
     }
 
     public static <R extends Region> Comp<CompStructure<R>> of(Supplier<R> r) {

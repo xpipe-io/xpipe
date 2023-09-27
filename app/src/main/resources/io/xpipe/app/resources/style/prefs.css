@@ -23,6 +23,14 @@ visibility: hidden;
 -fx-pref-height: 2em;
 }
 
+.root:light .prefs .tree-view {
+  -color-cell-bg: #9992;
+}
+
+.root:dark .prefs .tree-view {
+  -color-cell-bg: #1114;
+}
+
 .integer-slider-control {
 -fx-alignment: CENTER;
 }
@@ -61,6 +69,5 @@ visibility: hidden;
 
 .prefs .split-pane-divider {
 -fx-padding: 0 ;
-dividerPositions: 0.5;
 }
 

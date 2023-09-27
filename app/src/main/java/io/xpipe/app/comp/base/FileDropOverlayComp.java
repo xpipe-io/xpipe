@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.util.FailableConsumer;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.input.Dragboard;
@@ -10,7 +11,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.StackPane;
 import lombok.Builder;
 import lombok.Value;
-import org.apache.commons.lang3.function.FailableConsumer;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;

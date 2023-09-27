@@ -1,16 +1,12 @@
 package io.xpipe.ext.base;
 
-import io.xpipe.app.comp.store.DsStreamStoreChoiceComp;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DialogHelper;
-import io.xpipe.app.util.SimpleValidator;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.impl.FileStore;
 import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.store.DataStore;
-import javafx.beans.property.Property;
 
 import java.util.List;
 
@@ -19,13 +15,6 @@ public class FileStoreProvider implements DataStoreProvider {
     @Override
     public boolean canManuallyCreate() {
         return false;
-    }
-
-    @Override
-    public GuiDialog guiDialog(Property<DataStore> store) {
-        var val = new SimpleValidator();
-        var comp = new DsStreamStoreChoiceComp(store, null, false, false, DsStreamStoreChoiceComp.Mode.WRITE);
-        return new GuiDialog(comp, val);
     }
 
     @Override

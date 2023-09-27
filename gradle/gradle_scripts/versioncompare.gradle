@@ -1,11 +1,11 @@
 dependencies {
-    implementation files("$buildDir/generated-modules/versioncompare-1.5.0.jar")
+    implementation files("${project.layout.buildDirectory.get()}/generated-modules/versioncompare-1.5.0.jar")
 }
 
 addDependenciesModuleInfo {
     overwriteExistingFiles = true
     jdepsExtraArgs = ['-q']
-    outputDirectory = file("$buildDir/generated-modules")
+    outputDirectory = file("${project.layout.buildDirectory.get()}/generated-modules")
     modules {
         module {
             artifact "io.github.g00fy2:versioncompare:1.5.0"

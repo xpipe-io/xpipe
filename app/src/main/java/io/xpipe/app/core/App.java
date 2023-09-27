@@ -66,7 +66,7 @@ public class App extends Application {
 
     public void close() {
         Platform.runLater(() -> {
-            stage.hide();
+            Stage.getWindows().stream().toList().forEach(w -> w.hide());
             TrackEvent.debug("Closed main window");
         });
     }
