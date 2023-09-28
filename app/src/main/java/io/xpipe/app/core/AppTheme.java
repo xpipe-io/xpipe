@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 
 import java.nio.file.Files;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppTheme {
@@ -132,44 +133,58 @@ public class AppTheme {
         });
     }
 
+    public static class DerivedTheme extends Theme {
+
+        private final String name;
+
+        public DerivedTheme(String id, String name, atlantafx.base.theme.Theme theme) {
+            super(id, theme);
+            this.name = name;
+        }
+
+        @Override
+        @SneakyThrows
+        public void apply() {
+            var builder = new StringBuilder();
+            AppResources.with(AppResources.XPIPE_MODULE, "theme/" + id + ".css", path->{
+                var content = Files.readString(path);
+                builder.append(content);
+            });
+
+            AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path->{
+                var baseStyleContent = Files.readString(path);
+                builder.append("\n").append(baseStyleContent.lines().skip(builder.toString().lines().count()).collect(Collectors.joining("\n")));
+            });
+
+            var out = Files.createTempFile(id, ".css");
+            Files.writeString(out, builder.toString());
+
+            Application.setUserAgentStylesheet(out.toUri().toString());
+        }
+
+
+        @Override
+        public String toTranslatedString() {
+            return name;
+        }
+    };
+
     @AllArgsConstructor
-    public enum Theme implements PrefsChoiceValue {
+    public static class Theme implements PrefsChoiceValue {
 
-        CUSTOM("custom", new PrimerDark()) {
-            @Override
-            @SneakyThrows
-            public void apply() {
-                var builder = new StringBuilder();
-                AppResources.with(AppResources.XPIPE_MODULE, "theme/custom.css", path->{
-                    var content = Files.readString(path);
-                    builder.append(content);
-                });
+        public static final Theme PRIMER_LIGHT = new Theme("light", new PrimerLight());
+        public static final Theme PRIMER_DARK = new Theme("dark", new PrimerDark());
+        public static final Theme NORD_LIGHT = new Theme("nordLight", new NordLight());
+        public static final Theme NORD_DARK = new Theme("nordDark", new NordDark());
+        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", new CupertinoLight());
+        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", new CupertinoDark());
+        public static final Theme DRACULA = new Theme("dracula", new Dracula());
 
-                AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path->{
-                    var baseStyleContent = Files.readString(path);
-                    builder.append("\n").append(baseStyleContent.lines().skip(builder.toString().lines().count()).collect(Collectors.joining("\n")));
-                });
+        // Adjust this to create your own theme
+        public static final Theme CUSTOM = new DerivedTheme("custom", "Custom", new PrimerDark());
 
-                var out = Files.createTempFile(id, ".css");
-                Files.writeString(out, builder.toString());
-
-                Application.setUserAgentStylesheet(out.toUri().toString());
-            }
-
-
-            @Override
-            public String toTranslatedString() {
-                return "Custom";
-            }
-
-        },
-        PRIMER_LIGHT("light", new PrimerLight()),
-        PRIMER_DARK("dark", new PrimerDark()),
-        NORD_LIGHT("nordLight", new NordLight()),
-        NORD_DARK("nordDark", new NordDark()),
-        CUPERTINO_LIGHT("cupertinoLight", new CupertinoLight()),
-        CUPERTINO_DARK("cupertinoDark", new CupertinoDark()),
-        DRACULA("dracula", new Dracula());
+        // Also include your custom theme here
+        public static final List<Theme> ALL = List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK);
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {

@@ -71,7 +71,7 @@ public class AppPrefs {
     private final SimpleListProperty<SupportedLocale> languageList =
             new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(SupportedLocale.values())));
     private final SimpleListProperty<AppTheme.Theme> themeList =
-            new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(AppTheme.Theme.values())));
+            new SimpleListProperty<>(FXCollections.observableArrayList(AppTheme.Theme.ALL));
     private final SimpleListProperty<CloseBehaviour> closeBehaviourList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(CloseBehaviour.class)));
     private final SimpleListProperty<ExternalEditorType> externalEditorList = new SimpleListProperty<>(
