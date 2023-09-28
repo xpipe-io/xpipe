@@ -131,7 +131,7 @@ public class AppPrefs {
 
     // Window opacity
     // ==============
-    private final DoubleProperty windowOpacity = typed(new SimpleDoubleProperty(1.0), Boolean.class);
+    private final DoubleProperty windowOpacity = typed(new SimpleDoubleProperty(1.0), Double.class);
     private final DoubleField windowOpacityField =
             Field.ofDoubleType(windowOpacity).render(() -> {
                 var r = new DoubleSliderControl(0.3, 1.0, 2);
