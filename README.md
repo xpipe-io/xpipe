@@ -76,7 +76,7 @@ If you don't like installers, you can also use portable versions that are packag
 - [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
 - [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
 
-### Install Script
+### Command-line
 
 You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
 
@@ -88,13 +88,23 @@ The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
 
+Alternatively on arch, the [xpipe AUR package](https://aur.archlinux.org/packages/xpipe) can also be installed via `yay -S xpipe`.
+
 ##### Windows
+
+This script will automatically install the `.msi` for you.
 
 ```
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
-## Tiers
+If you like chocolatey, you can also install the [xpipe choco package](https://community.chocolatey.org/packages/xpipe/1.6.0):
+
+```
+choco install xpipe
+```
+
+## Commercial usage
 
 Recently I decided to try to develop XPipe full-time. To finance this, there now is a professional tier intended for commercial users.
 The free community tier comes with the full feature set and no restrictions on anything as long you are using it for non-commercial purposes. For commercial usage, I would like to ask you to purchase an [XPipe professional license](https://buy.xpipe.io/checkout/buy/dbcd37b8-be94-40a5-8c1c-af61979e6537). You can try out XPipe as much as you want in a non-commercial setting or start a free trial if you want to test it in your commercial environments prior to purchasing a license.
@@ -107,7 +117,7 @@ This mainly concerns the features only available in the professional tier and th
 
 ## Further information
 
-You have more questions? Then check out the new [FAQ](/FAQ.md).
+You have more questions? Then check out the [FAQ](/FAQ.md).
 
 For information about the security model of XPipe, see the [security page](/SECURITY.md).
 

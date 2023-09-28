@@ -37,13 +37,6 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new TileButtonComp("github", "githubDescription", "mdi2g-github", e -> {
-                                    Hyperlinks.open(Hyperlinks.GITHUB);
-                                    e.consume();
-                                })
-                                .grow(true, false),
-                        null)
-                .addComp(
                         new TileButtonComp("securityPolicy", "securityPolicyDescription", "mdrmz-security", e -> {
                                     Hyperlinks.open(Hyperlinks.SECURITY);
                                     e.consume();
@@ -67,6 +60,13 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                             .show();
                                     e.consume();
                                 })
+                                .grow(true, false),
+                        null)
+                .addComp(
+                        new TileButtonComp("termsOfService", "termsOfServiceDescription", "mdi2c-card-text-outline", e -> {
+                            Hyperlinks.open(Hyperlinks.TOS);
+                            e.consume();
+                        })
                                 .grow(true, false),
                         null)
                 .buildComp();

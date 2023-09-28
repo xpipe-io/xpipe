@@ -8,6 +8,7 @@ public class Hyperlinks {
     public static final String DOCUMENTATION = "https://docs.xpipe.io";
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String PRIVACY = "https://github.com/xpipe-io/xpipe/blob/master/PRIVACY.md";
+    public static final String TOS = "https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/misc/tos.md";
     public static final String SECURITY = "https://github.com/xpipe-io/xpipe/blob/master/SECURITY.md";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String SLACK =
