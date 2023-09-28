@@ -49,6 +49,7 @@ public class EventHandlerImpl extends EventHandler {
 
         // Don't block shutdown
         if (OperationMode.isInShutdown()) {
+            SentryErrorHandler.getInstance().handle(ee);
             handle(fromErrorEvent(ee));
             return;
         }

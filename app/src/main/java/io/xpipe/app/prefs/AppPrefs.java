@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import com.dlsc.formsfx.model.structure.*;
+import com.dlsc.preferencesfx.formsfx.view.controls.DoubleSliderControl;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
@@ -24,6 +25,7 @@ import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -127,11 +129,15 @@ public class AppPrefs {
     private final Property<SecretValue> lockPassword = new SimpleObjectProperty<>();
     private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
 
-    // Window transparency
-    // ===================
-    private final BooleanProperty enableWindowTransparency = typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField enableWindowTransparencyField =
-            BooleanField.ofBooleanType(enableWindowTransparency).render(() -> new CustomToggleControl());
+    // Window opacity
+    // ==============
+    private final DoubleProperty windowOpacity = typed(new SimpleDoubleProperty(1.0), Boolean.class);
+    private final DoubleField windowOpacityField =
+            Field.ofDoubleType(windowOpacity).render(() -> {
+                var r = new DoubleSliderControl(0.3, 1.0, 2);
+                r.setMinWidth(200);
+                return r;
+            });
 
 
     // Custom terminal
@@ -327,8 +333,8 @@ public class AppPrefs {
         return effectiveDeveloperMode;
     }
 
-    public ObservableValue<Boolean> enableWindowTransparency() {
-        return enableWindowTransparency;
+    public ObservableDoubleValue windowOpacity() {
+        return windowOpacity;
     }
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
@@ -580,7 +586,7 @@ public class AppPrefs {
                                 "uiOptions",
                                 Setting.of("theme", themeControl, theme),
                                 Setting.of("performanceMode", BooleanField.ofBooleanType(performanceMode).render(() -> new CustomToggleControl()), performanceMode),
-                                Setting.of("enableWindowTransparency", enableWindowTransparencyField, enableWindowTransparency),
+                                Setting.of("windowOpacity", windowOpacityField, windowOpacity),
                                 Setting.of("useSystemFont", BooleanField.ofBooleanType(useSystemFontInternal).render(() -> new CustomToggleControl()), useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
                                 Setting.of("language", languageControl, languageInternal)),

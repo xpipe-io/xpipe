@@ -56,11 +56,7 @@ public class BrowserClipboard {
                             }
 
                             currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries));
-                        } catch (IllegalStateException ex) {
-                            // Handle awt bug
-                            if (!"cannot open system clipboard".equals(ex.getMessage())) {
-                                throw ex;
-                            }
+                        } catch (IllegalStateException ignored) {
                         }
                     }
                 }));

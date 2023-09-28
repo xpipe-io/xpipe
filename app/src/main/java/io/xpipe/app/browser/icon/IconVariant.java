@@ -22,6 +22,6 @@ public class IconVariant {
             return lightIcon;
         }
 
-        return t.getTheme().isDarkMode() ? darkIcon : lightIcon;
+        return t.isDark() ? darkIcon : lightIcon;
     }
 }

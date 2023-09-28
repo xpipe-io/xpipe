@@ -29,7 +29,10 @@ public enum PlatformState {
             // Fix to preserve clipboard contents after shutdown
             var string = Clipboard.getSystemClipboard().getString();
             var s = new StringSelection(string);
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
+            try {
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
+            } catch (IllegalStateException ignored) {
+            }
         });
 
         Platform.exit();
@@ -80,15 +83,11 @@ public enum PlatformState {
                 PLATFORM_LOADED = true;
                 PlatformState.setCurrent(PlatformState.EXITED);
                 return Optional.of(t);
-            }
-
-            else if ("Toolkit already initialized".equals(t.getMessage())) {
+            } else if ("Toolkit already initialized".equals(t.getMessage())) {
                 PLATFORM_LOADED = true;
                 PlatformState.setCurrent(PlatformState.RUNNING);
                 return Optional.empty();
-            }
-
-            else {
+            } else {
                 // Platform initialization has failed in this case
                 PLATFORM_LOADED = false;
                 PlatformState.setCurrent(PlatformState.EXITED);
@@ -96,5 +95,4 @@ public enum PlatformState {
             }
         }
     }
-
 }

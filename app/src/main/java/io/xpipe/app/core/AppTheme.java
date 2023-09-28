@@ -14,6 +14,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,7 +22,10 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.SneakyThrows;
+
+import java.nio.file.Files;
+import java.util.stream.Collectors;
 
 public class AppTheme {
 
@@ -36,20 +40,17 @@ public class AppTheme {
             return;
         }
 
-        stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.getTheme().isDarkMode());
-        stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.getTheme().isDarkMode());
+        stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
+        stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
         SimpleChangeListener.apply(AppPrefs.get().performanceMode(),val -> {
             stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
             stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
         });
-
-        var transparent = AppPrefs.get().enableWindowTransparency().getValue();
-        stage.setOpacity(transparent ? t.getTransparencyOpacity() : 1.0);
     }
 
     public static void init() {
         if (AppPrefs.get() == null) {
-            Application.setUserAgentStylesheet(Theme.getDefaultLightTheme().getTheme().getUserAgentStylesheet());
+            Theme.getDefaultLightTheme().apply();
             return;
         }
 
@@ -64,16 +65,16 @@ public class AppTheme {
         }
         var t = AppPrefs.get().theme.getValue();
 
-        Application.setUserAgentStylesheet(t.getTheme().getUserAgentStylesheet());
+        t.apply();
         TrackEvent.debug("Set theme " + t.getId() + " for scene");
 
         detector.registerListener(dark -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                if (dark && !AppPrefs.get().theme.getValue().getTheme().isDarkMode()) {
+                if (dark && !AppPrefs.get().theme.getValue().isDark()) {
                     AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
                 }
 
-                if (!dark && AppPrefs.get().theme.getValue().getTheme().isDarkMode()) {
+                if (!dark && AppPrefs.get().theme.getValue().isDark()) {
                     AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
                 }
             });
@@ -83,12 +84,9 @@ public class AppTheme {
             changeTheme(n);
         });
 
-        AppPrefs.get().enableWindowTransparency().addListener((observable, oldValue, newValue) -> {
-            var th = AppPrefs.get().theme;
-            PlatformThread.runLaterIfNeeded(() -> {
-                for (Window window : Window.getWindows()) {
-                    window.setOpacity(newValue ? th.get().getTransparencyOpacity() : 1.0);
-                }
+        Window.getWindows().addListener((ListChangeListener<? super Window>) c -> {
+            c.getList().forEach(window -> {
+                window.opacityProperty().bind(AppPrefs.get().windowOpacity());
             });
         });
     }
@@ -129,21 +127,49 @@ public class AppTheme {
                 transition.play();
             }
 
-            Application.setUserAgentStylesheet(newTheme.getTheme().getUserAgentStylesheet());
+            newTheme.apply();
             TrackEvent.debug("Set theme " + newTheme.getId() + " for scene");
         });
     }
 
     @AllArgsConstructor
-    @Getter
     public enum Theme implements PrefsChoiceValue {
-        PRIMER_LIGHT("light", new PrimerLight(), 0.92),
-        PRIMER_DARK("dark", new PrimerDark(), 0.92),
-        NORD_LIGHT("nordLight", new NordLight(), 0.92),
-        NORD_DARK("nordDark", new NordDark(), 0.92),
-        CUPERTINO_LIGHT("cupertinoLight", new CupertinoLight(), 0.92),
-        CUPERTINO_DARK("cupertinoDark", new CupertinoDark(), 0.92),
-        DRACULA("dracula", new Dracula(), 0.92);
+
+        CUSTOM("custom", new PrimerDark()) {
+            @Override
+            @SneakyThrows
+            public void apply() {
+                var builder = new StringBuilder();
+                AppResources.with(AppResources.XPIPE_MODULE, "theme/custom.css", path->{
+                    var content = Files.readString(path);
+                    builder.append(content);
+                });
+
+                AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path->{
+                    var baseStyleContent = Files.readString(path);
+                    builder.append("\n").append(baseStyleContent.lines().skip(builder.toString().lines().count()).collect(Collectors.joining("\n")));
+                });
+
+                var out = Files.createTempFile(id, ".css");
+                Files.writeString(out, builder.toString());
+
+                Application.setUserAgentStylesheet(out.toUri().toString());
+            }
+
+
+            @Override
+            public String toTranslatedString() {
+                return "Custom";
+            }
+
+        },
+        PRIMER_LIGHT("light", new PrimerLight()),
+        PRIMER_DARK("dark", new PrimerDark()),
+        NORD_LIGHT("nordLight", new NordLight()),
+        NORD_DARK("nordDark", new NordDark()),
+        CUPERTINO_LIGHT("cupertinoLight", new CupertinoLight()),
+        CUPERTINO_DARK("cupertinoDark", new CupertinoDark()),
+        DRACULA("dracula", new Dracula());
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -161,13 +187,25 @@ public class AppTheme {
             };
         }
 
-        private final String id;
-        private final atlantafx.base.theme.Theme theme;
-        private final double transparencyOpacity;
+        protected final String id;
+        protected final atlantafx.base.theme.Theme theme;
+        
+        public boolean isDark() {
+            return theme.isDarkMode();
+        }
+        
+        public void apply() {
+            Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
+        }
 
         @Override
         public String toTranslatedString() {
             return theme.getName();
+        }
+
+        @Override
+        public String getId() {
+            return id;
         }
     }
 }

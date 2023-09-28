@@ -85,7 +85,7 @@ public class PrettySvgComp extends SimpleComp {
         stack.getChildren().add(node);
 
         Consumer<String> update = val -> {
-            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().getTheme().isDarkMode() ? "-dark" : "") + "." + FileNames.getExtension(val) : null;
+            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().isDark() ? "-dark" : "") + "." + FileNames.getExtension(val) : null;
             image.set(fixed);
         };
 

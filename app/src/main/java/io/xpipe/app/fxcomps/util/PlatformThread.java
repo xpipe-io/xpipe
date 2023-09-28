@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps.util;
 
+import io.xpipe.app.issue.ErrorEvent;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -271,18 +272,34 @@ public class PlatformThread {
     }
 
     public static void runLaterIfNeeded(Runnable r) {
+        Runnable catcher = () -> {
+            try {
+                r.run();
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+            }
+        };
+
         if (Platform.isFxApplicationThread()) {
-            r.run();
+            catcher.run();
         } else {
-            Platform.runLater(r);
+            Platform.runLater(catcher);
         }
     }
 
     public static void runLaterIfNeededBlocking(Runnable r) {
+        Runnable catcher = () -> {
+            try {
+                r.run();
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+            }
+        };
+
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
-                r.run();
+                catcher.run();
                 latch.countDown();
             });
             try {
@@ -290,19 +307,7 @@ public class PlatformThread {
             } catch (InterruptedException ignored) {
             }
         } else {
-            r.run();
-        }
-    }
-
-    public static void alwaysRunLaterBlocking(Runnable r) {
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            r.run();
-            latch.countDown();
-        });
-        try {
-            latch.await();
-        } catch (InterruptedException ignored) {
+            catcher.run();
         }
     }
 }

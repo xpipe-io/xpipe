@@ -63,8 +63,9 @@ public class AppResources {
     }
 
     private static void withResource(String module, String file, FailableConsumer<Path, IOException> con) {
+        var path = module.startsWith("io.xpipe") ? module.replace('.', '/') + "/resources/" + file : file;
         try (var fs = openFileSystem(module)) {
-            var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
+            var f = fs.getPath(path);
             con.accept(f);
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).omitted(true).build().handle();

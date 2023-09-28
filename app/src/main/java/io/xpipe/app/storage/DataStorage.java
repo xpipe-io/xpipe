@@ -155,7 +155,7 @@ public abstract class DataStorage {
                         },
                         entry.getKey());
             });
-            saveAsyncIfRequired();
+            saveAsync();
             return !newChildren.isEmpty();
         }
     }
@@ -176,7 +176,7 @@ public abstract class DataStorage {
             this.storeEntries.removeAll(toDelete);
             this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
         }
-        saveAsyncIfRequired();
+        saveAsync();
     }
 
     public void deleteChildren(DataStoreEntry e, boolean deep) {
@@ -189,7 +189,7 @@ public abstract class DataStorage {
             this.storeEntries.removeAll(ordered);
             this.listeners.forEach(l -> l.onStoreRemove(ordered.toArray(DataStoreEntry[]::new)));
         }
-        saveAsyncIfRequired();
+        saveAsync();
     }
 
     public Optional<DataStoreEntry> getParent(DataStoreEntry entry, boolean display) {
@@ -428,7 +428,7 @@ public abstract class DataStorage {
                 ErrorEvent.fromThrowable(e).reportable(false).handle();
                 return false;
             }
-        saveAsyncIfRequired();
+        saveAsync();
         return true;
     }
 
@@ -439,7 +439,7 @@ public abstract class DataStorage {
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).reportable(false).handle();
             }
-            saveAsyncIfRequired();
+            saveAsync();
         });
     }
 
@@ -456,7 +456,7 @@ public abstract class DataStorage {
             cat.setDirectory(getCategoriesDir().resolve(cat.getUuid().toString()));
             this.storeCategories.add(cat);
         }
-        saveAsyncIfRequired();
+        saveAsync();
 
         this.listeners.forEach(l -> l.onCategoryAdd(cat));
     }
@@ -467,7 +467,7 @@ public abstract class DataStorage {
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
             this.storeEntries.add(e);
         }
-        saveAsyncIfRequired();
+        saveAsync();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
         e.initializeEntry();
@@ -485,7 +485,7 @@ public abstract class DataStorage {
                 e.initializeEntry();
             }
         }
-        saveAsyncIfRequired();
+        saveAsync();
     }
 
     public DataStoreEntry addStoreEntryIfNotPresent(@NonNull String name, DataStore store) {
@@ -533,7 +533,7 @@ public abstract class DataStorage {
                     }
                 },
                 store);
-        saveAsyncIfRequired();
+        saveAsync();
         this.listeners.forEach(l -> l.onStoreRemove(store));
     }
 
@@ -549,7 +549,7 @@ public abstract class DataStorage {
         });
 
         storeCategories.remove(cat);
-        saveAsyncIfRequired();
+        saveAsync();
         this.listeners.forEach(l -> l.onCategoryRemove(cat));
     }
 
@@ -559,13 +559,8 @@ public abstract class DataStorage {
 
     public abstract void load();
 
-    public void saveAsyncIfRequired() {
-        // We only save every time in development mode to allow killing the running process without losing data
-        if (!AppPrefs.get().isDevelopmentEnvironment()) {
-            return;
-        }
-
-        // Don't make this a daemon thread to guarantee proper saving
+    public void saveAsync() {
+        // TODO: Don't make this a daemon thread to guarantee proper saving
         ThreadHelper.unstarted(this::save).start();
     }
 

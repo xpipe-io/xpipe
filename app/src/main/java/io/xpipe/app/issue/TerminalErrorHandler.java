@@ -16,7 +16,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     public void handle(ErrorEvent event) {
         log.handle(event);
 
-        if (!OperationMode.GUI.isSupported() || event.isOmitted()) {
+        if (!OperationMode.GUI.isSupported() || event.isOmitted() || OperationMode.isInShutdown()) {
             SentryErrorHandler.getInstance().handle(event);
             OperationMode.halt(1);
             return;
