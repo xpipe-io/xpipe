@@ -176,8 +176,8 @@ public class AppMainWindow {
         } else {
             stage.setX(310);
             stage.setY(178);
-            stage.setWidth(1300);
-            stage.setHeight(730);
+            stage.setWidth(1296);
+            stage.setHeight(759);
         }
     }
 
@@ -271,7 +271,7 @@ public class AppMainWindow {
             }
 
             if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
-                var image = stage.getScene().getRoot().snapshot(null, null);
+                var image = stage.getScene().snapshot(null);
                 var awt = AppImages.toAwtImage(image);
                 var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
                 try {

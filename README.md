@@ -18,7 +18,7 @@ It currently supports:
 
 - Easily connect to and access all kinds of remote connections in one place
 - Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
-- Allows you to create specific login environments on any system to instantly jump into proper environment for every use case of yours
+- Allows you to create specific login environments on any system to instantly jump into a properly set up environment for every use case
 - Can create desktop shortcuts that automatically open remote connections in your terminal
 - Group all your connections into hierarchical categories
 
@@ -30,8 +30,6 @@ It currently supports:
 - Quickly open a terminal into any directory
 - Utilize your favourite local programs to open and edit remote files
 - Dynamically elevate sessions with sudo when required
-
-The feature set is the same for all supported connection types. It also supports browsing the file system on your local machine.
 
 ![browser](https://github.com/xpipe-io/xpipe/assets/72509152/5631fe50-58b4-4847-a5f4-ad3898a02a9f)
 

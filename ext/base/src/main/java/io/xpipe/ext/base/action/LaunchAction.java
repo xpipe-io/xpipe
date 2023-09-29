@@ -96,8 +96,7 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public ActionProvider.Action createAction(LaunchableStore store) {
-                return new Action(
-                        DataStorage.get().getStoreEntryIfPresent(store).orElseThrow());
+                return new Action(DataStorage.get().getStoreEntryIfPresent(store).orElseThrow());
             }
 
             @Override
