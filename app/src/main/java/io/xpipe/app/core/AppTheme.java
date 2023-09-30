@@ -184,7 +184,7 @@ public class AppTheme {
         public static final Theme CUSTOM = new DerivedTheme("custom", "Custom", new PrimerDark());
 
         // Also include your custom theme here
-        public static final List<Theme> ALL = List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK);
+        public static final List<Theme> ALL = List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
