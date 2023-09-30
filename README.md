@@ -78,7 +78,21 @@ If you don't like installers, you can also use portable versions that are packag
 
 You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
 
-#####  Linux / MacOS
+#### Windows
+
+This script will automatically install the `.msi` for you.
+
+```
+powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
+```
+
+If you like chocolatey, you can also install the [xpipe choco package](https://community.chocolatey.org/packages/xpipe):
+
+```
+choco install xpipe
+```
+
+####  Linux / MacOS
 
 The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
 
@@ -87,20 +101,6 @@ bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpip
 ```
 
 Alternatively on arch, the [xpipe AUR package](https://aur.archlinux.org/packages/xpipe) can also be installed via `yay -S xpipe`.
-
-##### Windows
-
-This script will automatically install the `.msi` for you.
-
-```
-powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
-```
-
-If you like chocolatey, you can also install the [xpipe choco package](https://community.chocolatey.org/packages/xpipe/1.6.0):
-
-```
-choco install xpipe
-```
 
 ## Commercial usage
 
