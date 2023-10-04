@@ -5,9 +5,12 @@ import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.process.ShellStoreState;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
 import java.nio.file.Files;
@@ -18,20 +21,38 @@ import java.util.Map;
 public class OsLogoComp extends SimpleComp {
 
     private final StoreEntryWrapper wrapper;
+    private final ObservableValue<SystemStateComp.State> state;
 
     public OsLogoComp(StoreEntryWrapper wrapper) {
+        this(wrapper, new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
+    }
+
+    public OsLogoComp(StoreEntryWrapper wrapper, ObservableValue<SystemStateComp.State> state) {
         this.wrapper = wrapper;
+        this.state = state;
     }
 
     @Override
     protected Region createSimple() {
-        var img = Bindings.createObjectBinding(
+        var img = BindingsHelper.persist(Bindings.createObjectBinding(
                 () -> {
-                    return wrapper.getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
-                            ? getImage(wrapper.getInformation().get()) : null;
+                    if (state.getValue() != SystemStateComp.State.SUCCESS) {
+                        return null;
+                    }
+
+                    var ps = wrapper.getPersistentState().getValue();
+                    if (!(ps instanceof ShellStoreState sss)) {
+                        return null;
+                    }
+
+                    return getImage(sss.getOsName());
                 },
-                wrapper.getState(), wrapper.getInformation());
-        return new StackComp(List.of(new SystemStateComp(wrapper).hide(img.isNotNull()), PrettyImageHelper.ofSvg(img, 24, 24))).createRegion();
+                wrapper.getPersistentState(), state));
+        var hide = BindingsHelper.map(img, s -> s != null);
+        return new StackComp(List.of(
+                        new SystemStateComp(state).hide(hide),
+                        PrettyImageHelper.ofSvg(img, 24, 24).visible(hide)))
+                .createRegion();
     }
 
     private static final Map<String, String> ICONS = new HashMap<>();

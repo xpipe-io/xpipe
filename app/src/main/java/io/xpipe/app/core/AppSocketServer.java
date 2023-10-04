@@ -117,7 +117,7 @@ public class AppSocketServer {
 
         JsonNode node;
         try (InputStream blockIn = BeaconFormat.readBlocks(clientSocket.getInputStream())) {
-            node = JacksonMapper.newMapper().readTree(blockIn);
+            node = JacksonMapper.getDefault().readTree(blockIn);
         }
         if (node.isMissingNode()) {
             TrackEvent.trace("beacon", "Received EOF");
@@ -183,14 +183,14 @@ public class AppSocketServer {
         try {
             JsonNode informationNode;
             try (InputStream blockIn = BeaconFormat.readBlocks(clientSocket.getInputStream())) {
-                informationNode = JacksonMapper.newMapper().readTree(blockIn);
+                informationNode = JacksonMapper.getDefault().readTree(blockIn);
             }
             if (informationNode.isMissingNode()) {
                 TrackEvent.trace("beacon", "Received EOF");
                 return;
             }
             var information =
-                    JacksonMapper.newMapper().treeToValue(informationNode, BeaconClient.ClientInformation.class);
+                    JacksonMapper.getDefault().treeToValue(informationNode, BeaconClient.ClientInformation.class);
 
             TrackEvent.builder()
                     .category("beacon")
@@ -276,7 +276,7 @@ public class AppSocketServer {
     }
 
     public <T extends ResponseMessage> void sendResponse(Socket outSocket, T obj) throws Exception {
-        ObjectNode json = JacksonMapper.newMapper().valueToTree(obj);
+        ObjectNode json = JacksonMapper.getDefault().valueToTree(obj);
         var prov = MessageExchanges.byResponse(obj).get();
         json.set("messageType", new TextNode(prov.getId()));
         json.set("messagePhase", new TextNode("response"));
@@ -284,7 +284,7 @@ public class AppSocketServer {
         msg.set("xPipeMessage", json);
 
         var writer = new StringWriter();
-        var mapper = JacksonMapper.newMapper();
+        var mapper = JacksonMapper.getDefault();
         try (JsonGenerator g = mapper.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
             g.writeTree(msg);
         } catch (IOException ex) {
@@ -300,14 +300,14 @@ public class AppSocketServer {
 
     public void sendClientErrorResponse(Socket outSocket, String message) throws Exception {
         var err = new ClientErrorMessage(message);
-        ObjectNode json = JacksonMapper.newMapper().valueToTree(err);
+        ObjectNode json = JacksonMapper.getDefault().valueToTree(err);
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeClientError", json);
 
         // Don't log this as it clutters the output
         // TrackEvent.trace("beacon", "Sending raw client error:\n" + json.toPrettyString());
 
-        var mapper = JacksonMapper.newMapper();
+        var mapper = JacksonMapper.getDefault();
         try (OutputStream blockOut = BeaconFormat.writeBlocks(outSocket.getOutputStream())) {
             var gen = mapper.createGenerator(blockOut);
             gen.writeTree(msg);
@@ -316,14 +316,14 @@ public class AppSocketServer {
 
     public void sendServerErrorResponse(Socket outSocket, Throwable ex) throws Exception {
         var err = new ServerErrorMessage(UUID.randomUUID(), ex);
-        ObjectNode json = JacksonMapper.newMapper().valueToTree(err);
+        ObjectNode json = JacksonMapper.getDefault().valueToTree(err);
         var msg = JsonNodeFactory.instance.objectNode();
         msg.set("xPipeServerError", json);
 
         // Don't log this as it clutters the output
         // TrackEvent.trace("beacon", "Sending raw server error:\n" + json.toPrettyString());
 
-        var mapper = JacksonMapper.newMapper();
+        var mapper = JacksonMapper.getDefault();
         try (OutputStream blockOut = BeaconFormat.writeBlocks(outSocket.getOutputStream())) {
             var gen = mapper.createGenerator(blockOut);
             gen.writeTree(msg);
@@ -347,7 +347,7 @@ public class AppSocketServer {
             throw new IllegalArgumentException("Unknown request id: " + type);
         }
 
-        var reader = JacksonMapper.newMapper().readerFor(prov.get().getRequestClass());
+        var reader = JacksonMapper.getDefault().readerFor(prov.get().getRequestClass());
         return reader.readValue(content);
     }
 }

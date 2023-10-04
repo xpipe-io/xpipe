@@ -9,9 +9,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FixedHierarchyStore;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -29,16 +29,13 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty inRefresh = new SimpleBooleanProperty();
     private final BooleanProperty observing = new SimpleBooleanProperty();
-    private final Property<DataStoreEntry.State> state = new SimpleObjectProperty<>();
-    private final StringProperty information = new SimpleStringProperty();
-    private final StringProperty summary = new SimpleStringProperty();
+    private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
     private final Map<ActionProvider, BooleanProperty> actionProviders;
     private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
-    private final Property<StoreEntryWrapper> displayParent = new SimpleObjectProperty<>();
-    private final IntegerProperty depth = new SimpleIntegerProperty();
+    private final Property<Object> persistentState = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -54,7 +51,8 @@ public class StoreEntryWrapper {
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass());
                 })
-                .sorted(Comparator.comparing(actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction()))
+                .sorted(Comparator.comparing(
+                        actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction()))
                 .forEach(dataStoreActionProvider -> {
                     actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
                 });
@@ -74,7 +72,7 @@ public class StoreEntryWrapper {
             return null;
         }
 
-        var p = DataStorage.get().getParent(entry, true).orElse(null);
+        var p = DataStorage.get().getDisplayParent(entry).orElse(null);
         return StoreViewState.get().getAllEntries().stream()
                 .filter(storeEntryWrapper -> storeEntryWrapper.getEntry().equals(p))
                 .findFirst()
@@ -94,6 +92,24 @@ public class StoreEntryWrapper {
             DataStorage.get().deleteChildren(this.entry, true);
             DataStorage.get().deleteStoreEntry(this.entry);
         });
+    }
+
+    public ObservableValue<String> summary() {
+        return PlatformThread.sync(Bindings.createStringBinding(
+                () -> {
+                    if (!validity.getValue().isUsable()) {
+                        return null;
+                    }
+
+                    try {
+                        return entry.getProvider().summaryString(this);
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable(ex).handle();
+                        return null;
+                    }
+                },
+                validity,
+                persistentState));
     }
 
     private void setupListeners() {
@@ -124,30 +140,14 @@ public class StoreEntryWrapper {
 
         lastAccess.setValue(entry.getLastAccess());
         disabled.setValue(entry.isDisabled());
-        state.setValue(entry.getState());
+        validity.setValue(entry.getValidity());
         expanded.setValue(entry.isExpanded());
         observing.setValue(entry.isObserving());
-        information.setValue(entry.getInformation());
-        displayParent.setValue(computeDisplayParent());
+        persistentState.setValue(entry.getStorePersistentState());
 
         inRefresh.setValue(entry.isInRefresh());
-        if (entry.getState().isUsable()) {
-            try {
-                summary.setValue(entry.getProvider().toSummaryString(entry.getStore(), 50));
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
-            }
-        }
-
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
-
-        var d = 0;
-        var c = this;
-        while ((c = c.getDisplayParent().getValue()) != null) {
-            d++;
-        }
-        depth.setValue(d);
 
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {
@@ -156,7 +156,7 @@ public class StoreEntryWrapper {
                 return;
             }
 
-            if (!entry.getState().isUsable()
+            if (!entry.getValidity().isUsable()
                     && !dataStoreActionProvider
                             .getDataStoreCallSite()
                             .activeType()
@@ -194,39 +194,10 @@ public class StoreEntryWrapper {
         });
     }
 
-    public void refreshIfNeeded() throws Exception {
-        if (entry.getState().equals(DataStoreEntry.State.COMPLETE_BUT_INVALID)
-                || entry.getState().equals(DataStoreEntry.State.COMPLETE_NOT_VALIDATED)) {
-            getEntry().refresh(true);
-        }
-    }
-
-    public void refreshAsync() {
-        ThreadHelper.runFailableAsync(() -> {
-            getEntry().refresh(true);
-        });
-    }
-
-    public void refreshWithChildren() throws Exception {
-        getEntry().refresh(true);
+    public void refreshChildren() {
         var hasChildren = DataStorage.get().refreshChildren(entry);
         PlatformThread.runLaterIfNeeded(() -> {
             expanded.set(hasChildren);
-        });
-    }
-
-    public void refreshWithChildrenAsync() {
-        ThreadHelper.runFailableAsync(() -> {
-            refreshWithChildren();
-        });
-    }
-
-    public void mutateAsync(DataStore newValue) {
-        ThreadHelper.runAsync(() -> {
-            var hasChildren = DataStorage.get().setAndRefresh(getEntry(), newValue);
-            PlatformThread.runLaterIfNeeded(() -> {
-                expanded.set(hasChildren);
-            });
         });
     }
 
@@ -234,11 +205,9 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.updateLastUsed();
         if (found != null) {
-            refreshIfNeeded();
             found.createAction(entry.getStore().asNeeded()).execute();
-        } else if (getEntry().getStore() instanceof FixedHierarchyStore) {
-            refreshWithChildrenAsync();
         } else {
+            entry.setExpanded(!entry.isExpanded());
         }
     }
 
@@ -247,34 +216,11 @@ public class StoreEntryWrapper {
     }
 
     public boolean shouldShow(String filter) {
-        return filter == null
-                || getName().toLowerCase().contains(filter.toLowerCase())
-                || (summary.get() != null && summary.get().toLowerCase().contains(filter.toLowerCase()))
-                || (information.get() != null && information.get().toLowerCase().contains(filter.toLowerCase()));
-    }
-
-    public String getName() {
-        return name.getValue();
+        return filter == null || nameProperty().getValue().toLowerCase().contains(filter.toLowerCase());
     }
 
     public Property<String> nameProperty() {
         return name;
-    }
-
-    public DataStoreEntry getEntry() {
-        return entry;
-    }
-
-    public Instant getLastAccess() {
-        return lastAccess.getValue();
-    }
-
-    public Property<Instant> lastAccessProperty() {
-        return lastAccess;
-    }
-
-    public boolean isDisabled() {
-        return disabled.get();
     }
 
     public BooleanProperty disabledProperty() {

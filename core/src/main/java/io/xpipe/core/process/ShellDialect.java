@@ -29,6 +29,10 @@ public interface ShellDialect {
         return true;
     }
 
+    default boolean isCompatibleTo(ShellDialect other) {
+        return other.equals(this);
+    }
+
     String getCatchAllVariable();
 
     CommandControl queryVersion(ShellControl shellControl);

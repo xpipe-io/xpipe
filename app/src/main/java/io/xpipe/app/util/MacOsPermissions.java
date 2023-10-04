@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Alert;

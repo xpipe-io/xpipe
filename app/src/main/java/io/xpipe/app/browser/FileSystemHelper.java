@@ -1,8 +1,8 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileKind;

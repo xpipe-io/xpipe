@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 
 import java.awt.*;

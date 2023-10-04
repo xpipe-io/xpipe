@@ -4,7 +4,7 @@ import io.xpipe.api.DataSource;
 import io.xpipe.app.test.DaemonExtensionTest;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
-import io.xpipe.core.impl.FileStore;
+import io.xpipe.core.store.FileStore;
 import io.xpipe.core.impl.TextSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

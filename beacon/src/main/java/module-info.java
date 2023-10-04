@@ -1,12 +1,8 @@
 import com.fasterxml.jackson.databind.Module;
 import io.xpipe.beacon.BeaconJacksonModule;
-import io.xpipe.beacon.BeaconProxyImpl;
-import io.xpipe.beacon.SecretProviderImpl;
 import io.xpipe.beacon.exchange.*;
 import io.xpipe.beacon.exchange.cli.*;
 import io.xpipe.core.util.ProxyFunction;
-import io.xpipe.core.util.ProxyProvider;
-import io.xpipe.core.util.SecretProvider;
 
 module io.xpipe.beacon {
     exports io.xpipe.beacon;
@@ -31,10 +27,6 @@ module io.xpipe.beacon {
     uses MessageExchange;
     uses ProxyFunction;
 
-    provides ProxyProvider with
-            BeaconProxyImpl;
-    provides SecretProvider with
-            SecretProviderImpl;
     provides Module with
             BeaconJacksonModule;
     provides io.xpipe.beacon.exchange.MessageExchange with
@@ -47,8 +39,6 @@ module io.xpipe.beacon {
             ReadStreamExchange,
             StoreProviderListExchange,
             ModeExchange,
-            ProxyWriteConnectionExchange,
-            ProxyFunctionExchange,
             QueryStoreExchange,
             StatusExchange,
             FocusExchange,
@@ -58,7 +48,6 @@ module io.xpipe.beacon {
             RemoveStoreExchange,
             StoreAddExchange,
             ReadDrainExchange,
-            ProxyReadConnectionExchange,
             AskpassExchange,
             ListStoresExchange,
             DialogExchange,

@@ -5,7 +5,7 @@ import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.DataFlow;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileSystem;

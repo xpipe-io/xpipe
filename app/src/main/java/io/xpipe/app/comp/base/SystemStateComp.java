@@ -3,16 +3,19 @@ package io.xpipe.app.comp.base;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.process.ShellStoreState;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
+import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.StackedFontIcon;
 
+@Getter
 public class SystemStateComp extends SimpleComp {
 
 
@@ -23,22 +26,20 @@ public class SystemStateComp extends SimpleComp {
     public enum State {
         FAILURE,
         SUCCESS,
-        OTHER
+        OTHER;
+
+        public static ObservableValue<State> shellState(StoreEntryWrapper w) {
+            return BindingsHelper.map(w.getPersistentState(),o -> {
+                if (o instanceof ShellStoreState shellStoreState) {
+                    return shellStoreState.getRunning() != null ? shellStoreState.getRunning() ? SUCCESS : FAILURE : OTHER;
+                }
+
+                return OTHER;
+            });
+        }
     }
 
     private final ObservableValue<State> state;
-
-    public SystemStateComp(StoreEntryWrapper w) {
-        this.state = Bindings.createObjectBinding(
-                () -> {
-                    return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID
-                            ? State.FAILURE
-                            : w.getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
-                            ? State.SUCCESS
-                            : State.OTHER;
-                },
-                w.getState());
-    }
 
     @Override
     protected Region createSimple() {

@@ -101,7 +101,7 @@ public class BindingsHelper {
     public static <T,U> ObservableValue<U> map(ObservableValue<T> observableValue, Function<? super T, ? extends U> mapper) {
         return persist(Bindings.createObjectBinding(() -> {
             return mapper.apply(observableValue.getValue());
-        },observableValue));
+        }, observableValue));
     }
 
     public static <T,U> ObservableValue<U> flatMap(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
@@ -115,6 +115,12 @@ public class BindingsHelper {
         });
         linkPersistently(observableValue, prop);
         return prop;
+    }
+
+    public static <T,U> ObservableValue<Boolean> anyMatch(List<? extends ObservableValue<Boolean>> l) {
+        return BindingsHelper.persist(Bindings.createBooleanBinding(() -> {
+            return l.stream().anyMatch(booleanObservableValue -> booleanObservableValue.getValue());
+        }, l.toArray(ObservableValue[]::new)));
     }
 
     public static <T, V> void bindMappedContent(ObservableList<T> l1, ObservableList<V> l2, Function<V, T> map) {

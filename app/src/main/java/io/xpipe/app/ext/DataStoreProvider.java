@@ -1,18 +1,21 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.storage.store.*;
+import io.xpipe.app.comp.storage.store.StoreEntryComp;
+import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
+import io.xpipe.app.comp.storage.store.StoreSection;
+import io.xpipe.app.comp.storage.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.dialog.Dialog;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonizedValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -35,8 +38,6 @@ public interface DataStoreProvider {
             }
         }
     }
-
-    default void preAdd(DataStore store) {}
 
     default String browserDisplayName(DataStore store) {
         var e = DataStorage.get().getStoreDisplayName(store);
@@ -64,16 +65,7 @@ public interface DataStoreProvider {
     }
 
     default Comp<?> stateDisplay(StoreEntryWrapper w) {
-        var state = Bindings.createObjectBinding(
-                () -> {
-                    return w.getState().getValue() == DataStoreEntry.State.COMPLETE_BUT_INVALID
-                            ? SystemStateComp.State.FAILURE
-                            : w.getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
-                                    ? SystemStateComp.State.SUCCESS
-                                    : SystemStateComp.State.OTHER;
-                },
-                w.getState());
-        return new SystemStateComp(state);
+        return Comp.empty();
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
@@ -97,19 +89,15 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default DisplayCategory getDisplayCategory() {
-        return DisplayCategory.OTHER;
-    }
-
-    default DataStore getLogicalParent(DataStore store) {
+    default CreationCategory getCreationCategory() {
         return null;
     }
 
-    default DataStore getDisplayParent(DataStore store) {
-        return getLogicalParent(store);
+    default DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        return null;
     }
 
-    default GuiDialog guiDialog(Property<DataStore> store) {
+    default GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         return null;
     }
 
@@ -126,16 +114,12 @@ public interface DataStoreProvider {
         return false;
     }
 
-    default String queryInformationString(DataStore store, int length) throws Exception {
+    default String summaryString(StoreEntryWrapper wrapper) {
         return null;
     }
 
-    default String queryInvalidInformationString(DataStore store, int length) {
-        return "Connection failed";
-    }
-
-    default String toSummaryString(DataStore store, int length) {
-        return null;
+    default ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
+        return new SimpleStringProperty(null);
     }
 
     default String i18n(String key) {
@@ -173,10 +157,6 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default boolean requiresFrequentRefresh() {
-        return getStoreClasses().stream().anyMatch(aClass -> FixedHierarchyStore.class.isAssignableFrom(aClass));
-    }
-
     default DataStore defaultStore() {
         return null;
     }
@@ -189,22 +169,12 @@ public interface DataStoreProvider {
 
     List<Class<?>> getStoreClasses();
 
-    default boolean canManuallyCreate() {
-        return true;
-    }
-
-    enum DataCategory {
-        STREAM,
-        SHELL,
-        DATABASE
-    }
-
-    enum DisplayCategory {
+    enum CreationCategory {
         HOST,
         DATABASE,
         SHELL,
         COMMAND,
         TUNNEL,
-        OTHER
+        SCRIPT
     }
 }

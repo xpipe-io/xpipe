@@ -89,6 +89,15 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
+
+    public StoreCategoryWrapper getScriptsCategory() {
+        return categories.stream()
+                .filter(storeCategoryWrapper ->
+                                storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
     public static void init() {
         new StoreViewState();
     }

@@ -25,7 +25,7 @@ public class BrowseStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            BrowserModel.DEFAULT.openFileSystemAsync(entry.getName(), entry.getStore().asNeeded(),null, new SimpleBooleanProperty());
+            BrowserModel.DEFAULT.openFileSystemAsync(entry.ref(),null, new SimpleBooleanProperty());
             AppLayoutModel.get().selectBrowser();
         }
     }

@@ -138,7 +138,7 @@ application {
 run {
     systemProperty 'io.xpipe.app.useVirtualThreads', 'false'
     systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_git2/"
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_git3/"
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"

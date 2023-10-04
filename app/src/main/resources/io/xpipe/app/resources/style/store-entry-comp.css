@@ -75,11 +75,11 @@
 -fx-background-color: -color-neutral-muted;
 }
 
-.store-entry-comp .button-bar {
+.store-entry-comp .button-bar, .store-entry-comp .dropdown-comp {
 -fx-opacity: 0.65;
 }
 
-.store-entry-comp:hover .button-bar {
+.store-entry-comp:hover .button-bar, .store-entry-comp:hover .dropdown-comp {
 -fx-opacity: 1.0;
 }
 
@@ -91,7 +91,7 @@
 -fx-opacity: 0.2;
 }
 
-.root:pretty .store-entry-comp .button-bar {
+.root:pretty .store-entry-comp .button-bar, .root:pretty .store-entry-comp .dropdown-comp {
 -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
 }
 

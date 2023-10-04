@@ -2,7 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.Property;

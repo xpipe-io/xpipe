@@ -1,7 +1,7 @@
 package io.xpipe.api.test;
 
 import io.xpipe.api.DataSource;
-import io.xpipe.core.source.DataStoreId;
+import io.xpipe.core.store.DataStoreId;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

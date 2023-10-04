@@ -6,7 +6,7 @@ import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.LeafAction;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileKind;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;

@@ -4,7 +4,7 @@ import io.xpipe.app.exchange.MessageExchangeImpl;
 import io.xpipe.app.update.XPipeInstanceHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.cli.InstanceExchange;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 
 public class InstanceExchangeImpl extends InstanceExchange
         implements MessageExchangeImpl<InstanceExchange.Request, InstanceExchange.Response> {

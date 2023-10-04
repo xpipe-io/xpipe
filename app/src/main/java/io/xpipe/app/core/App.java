@@ -5,6 +5,7 @@ import io.xpipe.app.comp.AppLayoutComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.core.process.OsType;
 import javafx.application.Application;
@@ -29,6 +30,7 @@ public class App extends Application {
         TrackEvent.info("Application launched");
         APP = this;
         stage = primaryStage;
+        stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
 
         // Set dock icon explicitly on mac
         // This is necessary in case XPipe was started through a script as it will have no icon otherwise

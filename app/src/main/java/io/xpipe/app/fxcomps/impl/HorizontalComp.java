@@ -16,6 +16,10 @@ public class HorizontalComp extends Comp<CompStructure<HBox>> {
         entries = List.copyOf(comps);
     }
 
+    public Comp<CompStructure<HBox>> spacing(double spacing) {
+        return apply(struc -> struc.get().setSpacing(spacing));
+    }
+
     @Override
     public CompStructure<HBox> createBase() {
         HBox b = new HBox();

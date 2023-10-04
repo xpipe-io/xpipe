@@ -47,7 +47,7 @@ public class BeaconClient implements AutoCloseable {
     public static BeaconClient connect(ClientInformation information) throws Exception {
         var socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
         var client = new BeaconClient(socket, socket.getInputStream(), socket.getOutputStream());
-        client.sendObject(JacksonMapper.newMapper().valueToTree(information));
+        client.sendObject(JacksonMapper.getDefault().valueToTree(information));
         return client;
     }
 
@@ -163,7 +163,7 @@ public class BeaconClient implements AutoCloseable {
 
     public void sendObject(JsonNode node) throws ConnectorException {
         var writer = new StringWriter();
-        var mapper = JacksonMapper.newMapper();
+        var mapper = JacksonMapper.getDefault();
         try (JsonGenerator g = mapper.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
             g.writeTree(node);
         } catch (IOException ex) {
@@ -186,7 +186,7 @@ public class BeaconClient implements AutoCloseable {
     public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
         JsonNode node;
         try (InputStream blockIn = BeaconFormat.readBlocks(in)) {
-            node = JacksonMapper.newMapper().readTree(blockIn);
+            node = JacksonMapper.getDefault().readTree(blockIn);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't read from socket", ex);
         }
@@ -261,7 +261,7 @@ public class BeaconClient implements AutoCloseable {
         }
 
         try {
-            var reader = JacksonMapper.newMapper().readerFor(prov.get().getResponseClass());
+            var reader = JacksonMapper.getDefault().readerFor(prov.get().getResponseClass());
             return reader.readValue(content);
         } catch (IOException ex) {
             throw new ConnectorException("Couldn't parse response", ex);

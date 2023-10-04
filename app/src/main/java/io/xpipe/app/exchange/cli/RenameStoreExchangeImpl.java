@@ -11,7 +11,7 @@ public class RenameStoreExchangeImpl extends RenameStoreExchange
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {
         var s = DataStorage.get().getStoreEntry(msg.getStoreName(), true);
-        DataStorage.get().renameStoreEntry(s, msg.getNewName());
+        s.setName(msg.getNewName());
         return Response.builder().build();
     }
 }

@@ -98,7 +98,7 @@ public class XPipeUrlAction implements ActionProvider {
                     return new AddStoreAction(store);
                 } else if (args.get(0).equals("launch")) {
                     var entry = DataStorage.get()
-                            .getStoreEntry(UUID.fromString(args.get(1)))
+                            .getStoreEntryIfPresent(UUID.fromString(args.get(1)))
                             .orElseThrow();
                     return new LaunchAction(entry);
                 } else if (args.get(0).equals("action")) {
@@ -107,7 +107,7 @@ public class XPipeUrlAction implements ActionProvider {
                         return actionProvider.getDataStoreCallSite() != null && id.equals(actionProvider.getId());
                     }).findFirst().orElseThrow();
                     var entry = DataStorage.get()
-                            .getStoreEntry(UUID.fromString(args.get(2)))
+                            .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
                             .orElseThrow();
                     return new CallAction(provider, entry);
                 } else {

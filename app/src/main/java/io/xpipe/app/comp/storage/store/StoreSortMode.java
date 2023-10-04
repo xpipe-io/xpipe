@@ -20,7 +20,7 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.<StoreSection, String>comparing(
-                    e -> e.getWrapper().getName().toLowerCase(Locale.ROOT));
+                    e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
         }
     };
 
@@ -33,7 +33,7 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.<StoreSection, String>comparing(
-                            e -> e.getWrapper().getName().toLowerCase(Locale.ROOT))
+                            e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT))
                     .reversed();
         }
     };

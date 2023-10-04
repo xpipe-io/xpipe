@@ -4,7 +4,6 @@ import io.xpipe.app.exchange.DialogExchangeImpl;
 import io.xpipe.app.exchange.MessageExchangeImpl;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ClientException;
@@ -51,7 +50,7 @@ public class StoreAddExchangeImpl extends StoreAddExchange
                 return;
             }
 
-            DataStorage.get().addStoreEntry(name.getValue(), store);
+            DataStorage.get().addStoreIfNotPresent(name.getValue(), store);
         });
 
         return StoreAddExchange.Response.builder().config(config).build();
@@ -62,12 +61,6 @@ public class StoreAddExchangeImpl extends StoreAddExchange
                     DataStore store = creator.getResult();
                     if (store == null) {
                         return "Store is null";
-                    }
-
-                    try {
-                        store.validate();
-                    } catch (Exception ex) {
-                        return ExceptionConverter.convertMessage(ex);
                     }
 
                     return null;
@@ -95,7 +88,6 @@ public class StoreAddExchangeImpl extends StoreAddExchange
             DataStore s = creator.getResult();
             String d = "";
             try {
-                d = provider.queryInformationString(s, 50);
             } catch (Exception ignored) {
             }
             if (d != null) {

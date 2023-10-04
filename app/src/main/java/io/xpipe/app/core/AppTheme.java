@@ -14,7 +14,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -83,12 +82,6 @@ public class AppTheme {
 
         AppPrefs.get().theme.addListener((c, o, n) -> {
             changeTheme(n);
-        });
-
-        Window.getWindows().addListener((ListChangeListener<? super Window>) c -> {
-            c.getList().forEach(window -> {
-                window.opacityProperty().bind(AppPrefs.get().windowOpacity());
-            });
         });
     }
 

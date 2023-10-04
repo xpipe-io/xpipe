@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
@@ -58,6 +59,8 @@ public class IntegratedTextAreaComp extends SimpleComp {
                                 (s) -> {
                                     Platform.runLater(() -> value.setValue(s));
                                 }))
+                .styleClass("edit-button")
+                .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
                 .createRegion();
     }
 }

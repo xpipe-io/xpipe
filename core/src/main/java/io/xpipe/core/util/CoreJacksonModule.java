@@ -11,24 +11,22 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.ArrayType;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
-import io.xpipe.core.data.type.ArrayType;
-import io.xpipe.core.data.type.TupleType;
-import io.xpipe.core.data.type.ValueType;
-import io.xpipe.core.data.type.WildcardType;
 import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;
 import io.xpipe.core.dialog.HeaderElement;
-import io.xpipe.core.impl.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.source.DataSource;
-import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.StdinDataStore;
+import io.xpipe.core.store.StdoutDataStore;
 
 import java.io.IOException;
+import java.lang.reflect.WildcardType;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -41,11 +39,7 @@ public class CoreJacksonModule extends SimpleModule {
                 new NamedType(DefaultSecretValue.class),
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
-                new NamedType(LocalDirectoryDataStore.class),
                 new NamedType(LocalStore.class),
-                new NamedType(NamedStore.class),
-                new NamedType(ValueType.class),
-                new NamedType(TupleType.class),
                 new NamedType(ArrayType.class),
                 new NamedType(WildcardType.class),
                 new NamedType(BaseQueryElement.class),
@@ -72,50 +66,10 @@ public class CoreJacksonModule extends SimpleModule {
         addSerializer(OsType.class, new OsTypeSerializer());
         addDeserializer(OsType.class, new OsTypeDeserializer());
 
-        addSerializer(DataSourceReference.class, new DataSourceReferenceSerializer());
-        addDeserializer(DataSourceReference.class, new DataSourceReferenceDeserializer());
-
         context.setMixInAnnotations(Throwable.class, ThrowableTypeMixIn.class);
-        context.setMixInAnnotations(DataSourceReference.class, DataSourceReferenceTypeMixIn.class);
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
-
-        /*
-        TODO: Find better way to supply a default serializer for data sources
-         */
-        try {
-            Class.forName("io.xpipe.app.core.App");
-        } catch (ClassNotFoundException e) {
-            addSerializer(DataSource.class, new NullSerializer());
-            addDeserializer(DataSource.class, new NullDeserializer());
-        }
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static class NullDeserializer extends JsonDeserializer<DataSource> {
-
-        @Override
-        public DataSource deserialize(JsonParser p, DeserializationContext ctxt) {
-            return null;
-        }
-    }
-
-    public static class DataSourceReferenceSerializer extends JsonSerializer<DataSourceReference> {
-
-        @Override
-        public void serialize(DataSourceReference value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
-            jgen.writeString(value.toRefString());
-        }
-    }
-
-    public static class DataSourceReferenceDeserializer extends JsonDeserializer<DataSourceReference> {
-
-        @Override
-        public DataSourceReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return DataSourceReference.parse(p.getValueAsString());
-        }
     }
 
     public static class CharsetSerializer extends JsonSerializer<Charset> {
@@ -204,14 +158,5 @@ public class CoreJacksonModule extends SimpleModule {
 
         @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
         private Throwable cause;
-    }
-
-    @JsonSerialize(as = DataSourceReference.class)
-    public abstract static class DataSourceReferenceTypeMixIn {}
-
-    public static class NullSerializer extends JsonSerializer<Object> {
-        public void serialize(Object value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeNull();
-        }
     }
 }

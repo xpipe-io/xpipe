@@ -3,7 +3,7 @@ package io.xpipe.beacon;
 import io.xpipe.beacon.exchange.WriteStreamExchange;
 import io.xpipe.beacon.exchange.cli.StoreAddExchange;
 import io.xpipe.beacon.util.QuietDialogHandler;
-import io.xpipe.core.impl.InternalStreamStore;
+import io.xpipe.core.store.InternalStreamStore;
 import io.xpipe.core.util.FailableBiConsumer;
 import io.xpipe.core.util.FailableConsumer;
 

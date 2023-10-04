@@ -51,7 +51,7 @@ public class JsonStorageHandler implements StorageHandler {
         var id = getSaveId(breadcrumb);
         var tree = object instanceof PrefsChoiceValue prefsChoiceValue
                 ? new TextNode(prefsChoiceValue.getId())
-                : (object != null ? JacksonMapper.newMapper().valueToTree(object) : NullNode.getInstance());
+                : (object != null ? JacksonMapper.getDefault().valueToTree(object) : NullNode.getInstance());
         setContent(id, tree);
     }
 
@@ -102,7 +102,7 @@ public class JsonStorageHandler implements StorageHandler {
 
         try {
             TrackEvent.debug("Loading preferences value for key " + breadcrumb + " from value " + tree);
-            return JacksonMapper.newMapper().treeToValue(tree, type);
+            return JacksonMapper.getDefault().treeToValue(tree, type);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).omit().handle();
             return defaultObject;

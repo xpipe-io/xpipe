@@ -2,10 +2,11 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.FileStore;
+import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -76,18 +77,19 @@ public class BrowserModel {
     }
 
     public void restoreState(BrowserSavedState.Entry e, BooleanProperty busy) {
-        var storageEntry = DataStorage.get().getStoreEntry(e.getUuid());
+        var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         storageEntry.ifPresent(entry -> {
-            openFileSystemAsync(null, entry.getStore().asNeeded(), e.getPath(), busy);
+            openFileSystemAsync(entry.ref(), e.getPath(), busy);
         });
     }
 
     public void reset() {
         var list = new ArrayList<BrowserSavedState.Entry>();
         openFileSystems.forEach(model -> {
-            var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
-            storageEntry.ifPresent(entry -> list.add(new BrowserSavedState.Entry(
-                    entry.getUuid(), model.getCurrentPath().get())));
+            if (DataStorage.get().getStoreEntries().contains(model.getEntry().get())) {
+                list.add(new BrowserSavedState.Entry(
+                        model.getEntry().get().getUuid(), model.getCurrentPath().get()));
+            }
         });
 
         // Don't override state if it is empty
@@ -138,18 +140,18 @@ public class BrowserModel {
         });
     }
 
-    public void openExistingFileSystemIfPresent(String name, ShellStore store) {
+    public void openExistingFileSystemIfPresent(DataStoreEntryRef<? extends FileSystemStore>  store) {
         var found = openFileSystems.stream()
-                .filter(model -> Objects.equals(model.getStore(), store))
+                .filter(model -> Objects.equals(model.getEntry(), store))
                 .findFirst();
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
-            openFileSystemAsync(name, store, null, null);
+            openFileSystemAsync(store, null, null);
         }
     }
 
-    public void openFileSystemAsync(String name, ShellStore store, String path, BooleanProperty externalBusy) {
+    public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, String path, BooleanProperty externalBusy) {
         //        // Prevent multiple tabs in non browser modes
         //        if (!mode.equals(Mode.BROWSER)) {
         //            ThreadHelper.runFailableAsync(() -> {
@@ -177,7 +179,7 @@ public class BrowserModel {
             // Prevent multiple calls from interfering with each other
             synchronized (BrowserModel.this) {
                 try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-                    model = new OpenFileSystemModel(name, this, store);
+                    model = new OpenFileSystemModel(this, store);
                     model.initFileSystem();
                     model.initSavedState();
                 }

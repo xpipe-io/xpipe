@@ -6,6 +6,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FeatureProvider;
 import io.xpipe.app.util.XPipeSession;
+import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
@@ -56,7 +57,7 @@ public class StandardStorage extends DataStorage {
                         return;
                     }
 
-                    var entry = getStoreEntry(uuid);
+                    var entry = getStoreEntryIfPresent(uuid);
                     if (entry.isEmpty()) {
                         TrackEvent.withTrace("storage", "Deleting leftover store directory")
                                 .tag("uuid", uuid)
@@ -150,8 +151,20 @@ public class StandardStorage extends DataStorage {
             }
 
             if (getStoreCategoryIfPresent(ALL_CATEGORY_UUID).isEmpty()) {
-                var cat = DataStoreCategory.createNew(null, ALL_CATEGORY_UUID,"All categories");
+                var cat = DataStoreCategory.createNew(null, ALL_CATEGORY_UUID,"All connections");
                 cat.setDirectory(categoriesDir.resolve(ALL_CATEGORY_UUID.toString()));
+                storeCategories.add(cat);
+            }
+
+            if (getStoreCategoryIfPresent(SCRIPTS_CATEGORY_UUID).isEmpty()) {
+                var cat = DataStoreCategory.createNew(null, SCRIPTS_CATEGORY_UUID,"All scripts");
+                cat.setDirectory(categoriesDir.resolve(SCRIPTS_CATEGORY_UUID.toString()));
+                storeCategories.add(cat);
+            }
+
+            if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+                var cat = DataStoreCategory.createNew(SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID,"Predefined");
+                cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
             }
 
@@ -175,7 +188,7 @@ public class StandardStorage extends DataStorage {
                         && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory())
                                 .isEmpty()) {
                     dataStoreCategory.setParentCategory(ALL_CATEGORY_UUID);
-                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CATEGORY_UUID)) {
+                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CATEGORY_UUID) && !dataStoreCategory.getUuid().equals(SCRIPTS_CATEGORY_UUID)) {
                     dataStoreCategory.setParentCategory(ALL_CATEGORY_UUID);
                 }
             });
@@ -229,13 +242,28 @@ public class StandardStorage extends DataStorage {
                         dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
                 });
-
-                // Refresh to update state
-                storeEntries.forEach(dataStoreEntry -> dataStoreEntry.simpleRefresh());
             }
         } catch (IOException ex) {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
+
+        {
+            var hasFixedLocal = storeEntries.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
+            // storeEntries.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
+            if (!hasFixedLocal) {
+                var e = DataStoreEntry.createNew(
+                        LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
+                e.setConfiguration(
+                        StorageElement.Configuration.builder().deletable(false).build());
+                storeEntries.add(e);
+                e.validate();
+            }
+        }
+
+        // Refresh to update state
+        storeEntries.forEach(dataStoreEntry -> dataStoreEntry.refresh());
+
+        refreshValidities(true);
 
         deleteLeftovers();
     }

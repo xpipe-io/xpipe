@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.Module;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
@@ -6,6 +7,7 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
+import io.xpipe.app.storage.StorageJacksonModule;
 import io.xpipe.app.util.FeatureProvider;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalHelper;
@@ -26,7 +28,6 @@ open module io.xpipe.app {
     exports io.xpipe.app.comp.store;
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
-    exports io.xpipe.app.comp.storage;
     exports io.xpipe.app.ext;
     exports io.xpipe.app.fxcomps.impl;
     exports io.xpipe.app.fxcomps;
@@ -111,8 +112,6 @@ open module io.xpipe.app {
     uses MessageExchangeImpl;
     uses TerminalHelper;
     uses io.xpipe.app.ext.ActionProvider;
-    uses DataSourceProvider;
-    uses DataSourceTarget;
     uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
@@ -122,8 +121,8 @@ open module io.xpipe.app {
     uses BrowserAction;
     uses io.xpipe.app.util.FeatureProvider;
 
+    provides Module with StorageJacksonModule;
     provides ModuleLayerLoader with
-            DataSourceTarget.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
             BrowserAction.Loader,
@@ -144,17 +143,14 @@ open module io.xpipe.app {
             OpenExchangeImpl,
             LaunchExchangeImpl,
             FocusExchangeImpl,
-            ProxyReadConnectionExchangeImpl,
             StatusExchangeImpl,
             DrainExchangeImpl,
             SinkExchangeImpl,
             StopExchangeImpl,
             ModeExchangeImpl,
             DialogExchangeImpl,
-            ProxyWriteConnectionExchangeImpl,
             RemoveStoreExchangeImpl,
             RenameStoreExchangeImpl,
-            ProxyFunctionExchangeImpl,
             ListStoresExchangeImpl,
             StoreAddExchangeImpl,
             AskpassExchangeImpl,

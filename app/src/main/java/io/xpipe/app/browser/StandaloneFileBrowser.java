@@ -4,8 +4,9 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.store.FileStore;
+import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -38,7 +39,7 @@ public class StandaloneFileBrowser {
         });
     }
 
-    public static void openSingleFile(Supplier<ShellStore> store, Consumer<FileStore> file) {
+    public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileStore> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER);
             var comp = new BrowserComp(model)
@@ -50,7 +51,7 @@ public class StandaloneFileBrowser {
                 window.close();
             });
             window.show();
-            model.openFileSystemAsync(null, store.get(), null, null);
+            model.openFileSystemAsync(store.get(), null, null);
         });
     }
 

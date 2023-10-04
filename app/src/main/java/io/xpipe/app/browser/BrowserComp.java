@@ -7,7 +7,6 @@ import io.xpipe.app.browser.icon.DirectoryType;
 import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.browser.icon.FileType;
 import io.xpipe.app.comp.base.MultiContentComp;
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
@@ -252,7 +251,7 @@ public class BrowserComp extends SimpleComp {
                 .bind(Bindings.createDoubleBinding(
                         () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
 
-        var image = DataStoreProviders.byStore(model.getStore()).getDisplayIconFileName(model.getStore());
+        var image = model.getEntry().get().getProvider().getDisplayIconFileName(model.getEntry().getStore());
         var logo = PrettyImageHelper.ofFixedSquare(image, 16).createRegion();
 
         tab.graphicProperty()

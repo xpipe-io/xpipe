@@ -29,7 +29,9 @@ public class NamedToggleComp extends SimpleComp {
                 s.setSelected(newValue);
             });
         });
-        s.textProperty().bind(PlatformThread.sync(name));
+        if (name != null) {
+            s.textProperty().bind(PlatformThread.sync(name));
+        }
         return s;
     }
 }

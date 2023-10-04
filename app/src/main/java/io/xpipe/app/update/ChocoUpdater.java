@@ -3,7 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.impl.CodeSnippet;
 import io.xpipe.app.fxcomps.impl.CodeSnippetComp;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.LocalStore;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;
 
@@ -30,7 +30,7 @@ public class ChocoUpdater extends UpdateHandler {
     }
 
     public AvailableRelease refreshUpdateCheckImpl() throws Exception {
-        try (var sc = ShellStore.createLocal().control().start()) {
+        try (var sc = new LocalStore().control().start()) {
             var latest = sc.executeSimpleStringCommand("choco outdated -r --nocolor")
                     .lines()
                     .filter(s -> s.startsWith("xpipe"))

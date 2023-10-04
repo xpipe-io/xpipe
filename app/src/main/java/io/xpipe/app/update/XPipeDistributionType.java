@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.XPipeSession;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;

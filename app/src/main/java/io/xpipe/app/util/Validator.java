@@ -4,8 +4,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
@@ -14,6 +16,14 @@ public interface Validator {
     static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
         return v.createCheck().dependsOn("val", s).withMethod(c -> {
             if (c.get("val") == null) {
+                c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
+            }
+        });
+    }
+
+    static Check nonEmpty(Validator v, ObservableValue<String> name, ReadOnlyListProperty<?> s) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (((ObservableList<?>) c.get("val")).size() == 0) {
                 c.error(AppI18n.get("app.mustNotBeEmpty", name != null ? name.getValue() : "null"));
             }
         });

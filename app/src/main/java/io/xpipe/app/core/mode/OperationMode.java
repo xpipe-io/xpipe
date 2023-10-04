@@ -6,7 +6,7 @@ import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;

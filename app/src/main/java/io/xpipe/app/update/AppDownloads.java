@@ -3,7 +3,6 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.HttpHelper;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.github.GHRelease;
@@ -116,12 +115,8 @@ public class AppDownloads {
     public static Optional<GHRelease> getLatestSuitableRelease() throws IOException {
         var preIncluding = getLatestIncludingPreRelease();
 
-        if (AppPrefs.get() != null && AppPrefs.get().updateToPrereleases().get()) {
-            return preIncluding;
-        }
-
         // If we are currently running a prerelease, always return this as the suitable release!
-        if (preIncluding.isPresent()
+        if (preIncluding.isPresent() && preIncluding.get().isPrerelease()
                 && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
             return preIncluding;
         }

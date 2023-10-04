@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
@@ -101,8 +101,12 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static String createExecScript(ShellControl processControl, String content) {
+        return createExecScript(processControl.getShellDialect(), processControl, content);
+    }
+
+    @SneakyThrows
+    public static String createExecScript(ShellDialect type, ShellControl processControl, String content) {
         var fileName = "exec-" + getScriptId();
-        ShellDialect type = processControl.getShellDialect();
         var temp = processControl.getSubTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
         return createExecScript(processControl.getShellDialect(), processControl, file, content);

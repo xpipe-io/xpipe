@@ -36,18 +36,22 @@ public class AppExtensionManager {
 
     public static void init(boolean loadProviders) {
         var load = INSTANCE == null || !INSTANCE.loadedProviders && loadProviders;
-        
+
         if (INSTANCE == null) {
             INSTANCE = new AppExtensionManager(loadProviders);
             INSTANCE.determineExtensionDirectories();
             INSTANCE.loadBaseExtension();
             INSTANCE.loadAllExtensions();
-}
+        }
 
         if (load) {
             INSTANCE.addNativeLibrariesToPath();
-            XPipeServiceProviders.load(INSTANCE.extendedLayer);
-            MessageExchangeImpls.loadAll();
+            try {
+                XPipeServiceProviders.load(INSTANCE.extendedLayer);
+                MessageExchangeImpls.loadAll();
+            } catch (Throwable t) {
+                throw new ExtensionException("Service provider initialization failed. Is the installation data corrupt?", t);
+            }
         }
     }
 

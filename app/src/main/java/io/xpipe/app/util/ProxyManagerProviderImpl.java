@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.update.AppInstaller;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ProxyManagerProvider;

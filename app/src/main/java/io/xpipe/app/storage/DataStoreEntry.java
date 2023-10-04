@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ExpandedLifecycleStore;
+import io.xpipe.app.util.FixedHierarchyStore;
+import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -21,17 +21,12 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 
-import static java.lang.Integer.MAX_VALUE;
-
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class DataStoreEntry extends StorageElement {
 
     @NonFinal
-    State state;
-
-    @NonFinal
-    String information;
+    Validity validity;
 
     @NonFinal
     JsonNode storeNode;
@@ -53,14 +48,20 @@ public class DataStoreEntry extends StorageElement {
     @Setter
     boolean observing;
 
+    @Getter
     @NonFinal
     DataStoreProvider provider;
 
-   Map<String, Object> elementState = new LinkedHashMap<>();
+    Map<String, Object> storeCache = new LinkedHashMap<>();
 
     @NonFinal
     UUID categoryUuid;
 
+    @NonFinal
+    Object storePersistentState;
+
+    @NonFinal
+    JsonNode storePersistentStateNode;
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -68,33 +69,28 @@ public class DataStoreEntry extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            String information,
             JsonNode storeNode,
             boolean dirty,
-            State state,
+            Validity validity,
             Configuration configuration,
+            JsonNode storePersistentState,
             boolean expanded) {
-        super(directory, uuid,  name, lastUsed, lastModified, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
-        this.information = information;
         this.store = DataStorageParser.storeFromNode(storeNode);
         this.storeNode = storeNode;
-        this.state = state;
+        this.validity = validity;
         this.configuration = configuration;
         this.expanded = expanded;
-        this.provider = store != null ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null) : null;
-    }
-
-    public void setInRefresh(boolean newRefresh) {
-        var changed = inRefresh != newRefresh;
-        if (changed) {
-            this.inRefresh = newRefresh;
-            notifyUpdate();
-        }
+        this.provider = store != null
+                ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
+                : null;
+        this.storePersistentStateNode = storePersistentState;
     }
 
     @SneakyThrows
-    public static DataStoreEntry createNew(@NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
+    public static DataStoreEntry createNew(
+            @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -102,13 +98,13 @@ public class DataStoreEntry extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
-                null,
                 DataStorageWriter.storeToNode(store),
                 true,
-                State.LOAD_FAILED,
+                store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE,
                 Configuration.defaultConfiguration(),
+                null,
                 false);
-        entry.refresh(false);
+        entry.refresh();
         return entry;
     }
 
@@ -120,10 +116,9 @@ public class DataStoreEntry extends StorageElement {
             @NonNull String name,
             @NonNull Instant lastUsed,
             @NonNull Instant lastModified,
-            String information,
             JsonNode storeNode,
-            State state,
             Configuration configuration,
+            JsonNode storePersistentState,
             boolean expanded) {
         return new DataStoreEntry(
                 directory,
@@ -132,16 +127,16 @@ public class DataStoreEntry extends StorageElement {
                 name,
                 lastUsed,
                 lastModified,
-                information,
                 storeNode,
                 false,
-                state,
+                Validity.INCOMPLETE,
                 configuration,
+                storePersistentState,
                 expanded);
     }
 
     public static DataStoreEntry fromDirectory(Path dir) throws Exception {
-        ObjectMapper mapper = JacksonMapper.newMapper();
+        ObjectMapper mapper = JacksonMapper.getDefault();
 
         var entryFile = dir.resolve("entry.json");
         var storeFile = dir.resolve("store.json");
@@ -157,23 +152,20 @@ public class DataStoreEntry extends StorageElement {
         var json = mapper.readTree(entryFile.toFile());
         var stateJson = mapper.readTree(stateFile.toFile());
         var uuid = UUID.fromString(json.required("uuid").textValue());
-        var categoryUuid = Optional.ofNullable(json.get("categoryUuid")).map(jsonNode -> UUID.fromString(jsonNode.textValue())).orElse(DataStorage.DEFAULT_CATEGORY_UUID);
+        var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
+                .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
+                .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
         var name = json.required("name").textValue();
-        var state = Optional.ofNullable(stateJson.get("state"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, State.class);
-                    } catch (JsonProcessingException e) {
-                        return State.INCOMPLETE;
-                    }
-                })
-                .orElse(State.INCOMPLETE);
-        var information = Optional.ofNullable(stateJson.get("information"))
-                .map(JsonNode::textValue)
-                .orElse(null);
 
-        var lastUsed = Optional.ofNullable(stateJson.get("lastUsed")).map(jsonNode -> jsonNode.textValue()).map(Instant::parse).orElse(Instant.now());
-        var lastModified = Optional.ofNullable(stateJson.get("lastModified")).map(jsonNode -> jsonNode.textValue()).map(Instant::parse).orElse(Instant.now());
+        var persistentState = stateJson.get("persistentState");
+        var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
+                .map(jsonNode -> jsonNode.textValue())
+                .map(Instant::parse)
+                .orElse(Instant.now());
+        var lastModified = Optional.ofNullable(stateJson.get("lastModified"))
+                .map(jsonNode -> jsonNode.textValue())
+                .map(Instant::parse)
+                .orElse(Instant.now());
         var configuration = Optional.ofNullable(json.get("configuration"))
                 .map(node -> {
                     try {
@@ -195,13 +187,65 @@ public class DataStoreEntry extends StorageElement {
             ErrorEvent.fromThrowable(e).handle();
         }
         return createExisting(
-                dir, uuid, categoryUuid, name, lastUsed, lastModified, information, storeNode, state, configuration, expanded);
+                dir,
+                uuid,
+                categoryUuid,
+                name,
+                lastUsed,
+                lastModified,
+                storeNode,
+                configuration,
+                persistentState,
+                expanded);
+    }
+
+    public void setInRefresh(boolean newRefresh) {
+        var changed = inRefresh != newRefresh;
+        if (changed) {
+            this.inRefresh = newRefresh;
+            notifyUpdate();
+        }
+    }
+
+    public <T extends DataStore> DataStoreEntryRef<T> ref() {
+        return new DataStoreEntryRef<T>(this);
+    }
+
+    public void setStorePersistentState(Object value) {
+        var changed = !Objects.equals(storePersistentState, value);
+        this.storePersistentState = value;
+        this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
+        if (changed) {
+            this.dirty = true;
+            notifyUpdate();
+        }
+    }
+
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public <T extends DataStoreState> T getStorePersistentState() {
+        if (!(store instanceof StatefulDataStore<?> sds)) {
+            return null;
+        }
+
+        if (storePersistentStateNode == null && storePersistentState == null) {
+            storePersistentState = sds.createDefaultState();
+            storePersistentStateNode = JacksonMapper.getDefault().valueToTree(storePersistentState);
+        } else if (storePersistentState == null) {
+            storePersistentState =
+                    JacksonMapper.getDefault().treeToValue(storePersistentStateNode, sds.getStateClass());
+            if (storePersistentState == null) {
+                storePersistentState = sds.createDefaultState();
+                storePersistentStateNode = JacksonMapper.getDefault().valueToTree(storePersistentState);
+            }
+        }
+        return (T) sds.getStateClass().cast(storePersistentState);
     }
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         this.dirty = true;
-        simpleRefresh();
+        refresh();
     }
 
     public void setCategoryUuid(UUID categoryUuid) {
@@ -224,34 +268,22 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public boolean matches(String filter) {
-        return getName().toLowerCase().contains(filter.toLowerCase())
-                || (!isDisabled()
-                                && (getProvider().toSummaryString(getStore(), MAX_VALUE) != null
-                                        && getProvider()
-                                                .toSummaryString(getStore(), MAX_VALUE)
-                                                .toLowerCase()
-                                                .contains(filter.toLowerCase()))
-                        || (information != null && information.toLowerCase().contains(filter.toLowerCase())));
-    }
-
     public boolean isDisabled() {
-        return state == State.LOAD_FAILED;
+        return validity == Validity.LOAD_FAILED;
     }
 
     public void applyChanges(DataStoreEntry e) {
         name = e.getName();
         storeNode = e.storeNode;
         store = e.store;
-        state = e.state;
+        validity = e.validity;
         lastModified = Instant.now();
-        information = e.information;
         dirty = true;
         provider = e.provider;
-        simpleRefresh();
+        refresh();
     }
 
-    void setStoreInternal(DataStore store, boolean updateTime) {
+    public void setStoreInternal(DataStore store, boolean updateTime) {
         this.store = store;
         this.storeNode = DataStorageWriter.storeToNode(store);
         if (updateTime) {
@@ -260,66 +292,87 @@ public class DataStoreEntry extends StorageElement {
         dirty = true;
     }
 
-    /*
-    TODO: Implement singular change functions
-     */
-    public void refresh(boolean deep) throws Exception {
+    public void validate() {
+        try {
+            validateOrThrow();
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+        }
+    }
+
+    public void validateOrThrow() throws Exception {
+        try {
+            store.checkComplete();
+            setInRefresh(true);
+            if (store instanceof ValidatableStore l) {
+                l.validate();
+            } else if (store instanceof FixedHierarchyStore h) {
+                h.listChildren(this);
+            }
+        } finally {
+            setInRefresh(false);
+        }
+    }
+
+    public boolean tryMakeValid() {
+        if (validity == Validity.LOAD_FAILED) {
+            return false;
+        }
+
+        var complete = validity == Validity.COMPLETE;
+        if (complete) {
+            return false;
+        }
+
+        var newComplete = store.isComplete();
+        if (!newComplete) {
+            return false;
+        }
+
+        validity = Validity.COMPLETE;
+        notifyUpdate();
+        return true;
+    }
+
+    public boolean tryMakeInvalid() {
+        if (validity == Validity.LOAD_FAILED) {
+            return false;
+        }
+
+        if (validity == Validity.INCOMPLETE) {
+            return false;
+        }
+
+        var newComplete = store.isComplete();
+        if (newComplete) {
+            return false;
+        }
+
+        validity = Validity.INCOMPLETE;
+        notifyUpdate();
+        return true;
+    }
+
+    public void refresh() {
         var oldStore = store;
         DataStore newStore = DataStorageParser.storeFromNode(storeNode);
         if (newStore == null
-                || DataStoreProviders.byStoreClass(store.getClass()).isEmpty()) {
+                || DataStoreProviders.byStoreClass(newStore.getClass()).isEmpty()) {
             store = null;
-            state = State.LOAD_FAILED;
-            information = null;
+            validity = Validity.LOAD_FAILED;
             provider = null;
             dirty = dirty || oldStore != null;
             notifyUpdate();
         } else {
-            var newNode = DataStorageWriter.storeToNode(newStore);
-            var nodesEqual = Objects.equals(storeNode, newNode);
-            if (!nodesEqual) {
-                storeNode = newNode;
-            }
-
-            dirty = dirty || !nodesEqual;
+            dirty = dirty || !oldStore.equals(newStore);
             store = newStore;
-            provider = DataStoreProviders.byStoreClass(newStore.getClass()).orElse(null);
             var complete = newStore.isComplete();
-
-            try {
-                if (complete && !newStore.shouldPersist()) {
-                    DataStorage.get().deleteStoreEntry(this);
-                    return;
-                }
-
-                if (complete && deep) {
-                    inRefresh = true;
-                    notifyUpdate();
-                    store.validate();
-                    inRefresh = false;
-                    state = State.COMPLETE_AND_VALID;
-                    information = getProvider().queryInformationString(getStore(), 50);
-                    dirty = true;
-                } else if (complete) {
-                    state = state == State.LOAD_FAILED || state == State.INCOMPLETE
-                            ? State.COMPLETE_NOT_VALIDATED
-                            : state;
-                    information = state == State.COMPLETE_AND_VALID
-                            ? information
-                            : state == State.COMPLETE_BUT_INVALID
-                                    ? getProvider().queryInvalidInformationString(getStore(), 50)
-                                    : null;
-                } else {
-                    state = state == State.LOAD_FAILED ? State.COMPLETE_BUT_INVALID : State.INCOMPLETE;
-                }
-            } catch (Exception e) {
-                inRefresh = false;
-                state = State.COMPLETE_BUT_INVALID;
-                information = getProvider().queryInvalidInformationString(getStore(), 50);
-                throw e;
-            } finally {
-                notifyUpdate();
+            if (complete) {
+                validity = Validity.COMPLETE;
+            } else {
+                validity = Validity.INCOMPLETE;
             }
+            notifyUpdate();
         }
     }
 
@@ -356,15 +409,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public boolean shouldSave() {
-        return getStore() == null || getStore().shouldSave();
-    }
-
-    public void simpleRefresh() {
-        try {
-            refresh(false);
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
+        return getStore() != null;
     }
 
     public void writeDataToDisk() throws Exception {
@@ -378,10 +423,9 @@ public class DataStoreEntry extends StorageElement {
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
-        stateObj.put("information", information);
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
-        stateObj.set("state", mapper.valueToTree(state));
+        stateObj.set("persistentState", storePersistentStateNode);
         obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);
 
@@ -404,26 +448,18 @@ public class DataStoreEntry extends StorageElement {
         return JacksonMapper.getDefault().valueToTree(store);
     }
 
-    public DataStoreProvider getProvider() {
-        return provider;
-    }
-
     @Getter
-    public enum State {
+    public enum Validity {
         @JsonProperty("loadFailed")
         LOAD_FAILED(false),
         @JsonProperty("incomplete")
         INCOMPLETE(false),
-        @JsonProperty("completeNotValidated")
-        COMPLETE_NOT_VALIDATED(true),
-        @JsonProperty("completeButInvalid")
-        COMPLETE_BUT_INVALID(true),
-        @JsonProperty("completeAndValid")
-        COMPLETE_AND_VALID(true);
+        @JsonProperty("complete")
+        COMPLETE(true);
 
         private final boolean isUsable;
 
-        State(boolean isUsable) {
+        Validity(boolean isUsable) {
             this.isUsable = isUsable;
         }
     }

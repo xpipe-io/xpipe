@@ -6,12 +6,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalHelper;
-import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
 
@@ -145,7 +145,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var shellProcessControl = ShellStore.createLocal().control().start();
+                var shellProcessControl = new LocalStore().control().start();
                 var exec = XPipeInstallation.getInstallationExecutable(
                         shellProcessControl,
                         XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl));
@@ -192,7 +192,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = ShellStore.createLocal()
+                var command = new LocalStore()
                         .control()
                         .subShell(ShellDialects.BASH)
                         .command(String.format(
@@ -234,7 +234,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = ShellStore.createLocal()
+                var command = new LocalStore()
                         .control()
                         .subShell(ShellDialects.BASH)
                         .command(String.format(
@@ -275,7 +275,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = ShellStore.createLocal()
+                var command = new LocalStore()
                         .control()
                         .subShell(ShellDialects.BASH)
                         .command(String.format(

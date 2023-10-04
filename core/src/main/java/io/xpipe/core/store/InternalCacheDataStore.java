@@ -10,15 +10,15 @@ public interface InternalCacheDataStore extends DataStore {
         return DataStateProvider.get().isInStorage(this);
     }
 
-    default <T> T getState(String key, Class<T> c, T def) {
-        return DataStateProvider.get().getState(this, key, c, () -> def);
+    default <T> T getCache(String key, Class<T> c, T def) {
+        return DataStateProvider.get().getCache(this, key, c, () -> def);
     }
 
-    default <T> T getOrComputeState(String key, Class<T> c, Supplier<T> def) {
-        return DataStateProvider.get().getState(this, key, c, def);
+    default <T> T getOrCompute(String key, Class<T> c, Supplier<T> def) {
+        return DataStateProvider.get().getCache(this, key, c, def);
     }
 
-    default void setState(String key, Object val) {
-        DataStateProvider.get().putState(this, key, val);
+    default void setCache(String key, Object val) {
+        DataStateProvider.get().putCache(this, key, val);
     }
 }

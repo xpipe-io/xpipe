@@ -3,10 +3,11 @@ package io.xpipe.app.browser;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.*;
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
 @Getter
 public final class OpenFileSystemModel {
 
-    private final FileSystemStore store;
+    private final DataStoreEntryRef<? extends FileSystemStore> entry;
     private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
@@ -42,12 +43,11 @@ public final class OpenFileSystemModel {
     private final String tooltip;
     private boolean local;
 
-    public OpenFileSystemModel(String name, BrowserModel browserModel, FileSystemStore store) {
+    public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
         this.browserModel = browserModel;
-        this.store = store;
-        var e = DataStorage.get().getStoreEntryIfPresent(store);
-        this.name = name != null ? name : e.isPresent() ? DataStorage.get().getStoreBrowserDisplayName(store) : "?";
-        this.tooltip = e.isPresent() ? DataStorage.get().getId(e.get()).toString() : name;
+        this.entry = entry;
+        this.name = entry.get().getName();
+        this.tooltip = DataStorage.get().getId(entry.getEntry()).toString();
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
                     return currentPath.get() == null;
@@ -63,7 +63,7 @@ public final class OpenFileSystemModel {
             }
 
             BooleanScope.execute(busy, () -> {
-                if (store instanceof ShellStore s) {
+                if (entry.getStore() instanceof ShellStore s) {
                     c.accept(fileSystem.getShell().orElseThrow());
                     if (refresh) {
                         refreshSync();
@@ -150,8 +150,7 @@ public final class OpenFileSystemModel {
         if (allowCommands && evaluatedPath != null && !FileNames.isAbsolute(evaluatedPath)
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
-            var name = adjustedPath + " - "
-                    + DataStorage.get().getStoreDisplayName(store).orElse("?");
+            var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.ALL.stream()
                         .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
@@ -205,7 +204,7 @@ public final class OpenFileSystemModel {
 
     private void cdSyncWithoutCheck(String path) throws Exception {
         if (fileSystem == null) {
-            var fs = store.createFileSystem();
+            var fs = entry.getStore().createFileSystem();
             fs.open();
             this.fileSystem = fs;
         }
@@ -364,7 +363,7 @@ public final class OpenFileSystemModel {
 
     public void initFileSystem() throws Exception {
         BooleanScope.execute(busy, () -> {
-            var fs = store.createFileSystem();
+            var fs = entry.getStore().createFileSystem();
             fs.open();
             this.fileSystem = fs;
             this.local =
@@ -393,21 +392,15 @@ public final class OpenFileSystemModel {
             }
 
             BooleanScope.execute(busy, () -> {
-                if (store instanceof ShellStore s) {
+                if (entry.getStore() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var command = s.control()
                             .initWith(connection.getShellDialect().getCdCommand(directory))
-                            .prepareTerminalOpen(directory + " - "
-                                    + DataStorage.get().getStoreDisplayName(store)
-                                            .orElse("?"));
+                            .prepareTerminalOpen(directory + " - " + entry.get().getName());
                     TerminalHelper.open(directory, command);
                 }
             });
         });
-    }
-
-    public OpenFileSystemHistory getHistory() {
-        return history;
     }
 
     public void backSync() throws Exception {

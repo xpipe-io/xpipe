@@ -17,7 +17,6 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DesktopShortcuts;
@@ -70,7 +69,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH =
             App.getApp().getStage().widthProperty().divide(2.2);
     public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH =
-            App.getApp().getStage().widthProperty().divide(2.2).add(-300);
+            App.getApp().getStage().widthProperty().divide(2.2).add(-200);
     protected final StoreEntryWrapper wrapper;
     protected final Comp<?> content;
 
@@ -91,12 +90,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setMaxWidth(3000);
         button.setFocusTraversable(true);
         button.accessibleTextProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            return wrapper.getName();
-                        },
-                        wrapper.nameProperty()));
-        button.accessibleHelpProperty().bind(wrapper.getInformation());
+                .bind(wrapper.nameProperty());
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
@@ -117,7 +111,8 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Label createInformation() {
         var information = new Label();
         information.setGraphicTextGap(7);
-        information.textProperty().bind(PlatformThread.sync(wrapper.getInformation()));
+        information.textProperty().bind(wrapper.getEntry().getProvider() != null ?
+                                                PlatformThread.sync(wrapper.getEntry().getProvider().informationString(wrapper)) : new SimpleStringProperty());
         information.getStyleClass().add("information");
         AppFont.header(information);
 
@@ -131,14 +126,14 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected Label createSummary() {
         var summary = new Label();
-        summary.textProperty().bind(PlatformThread.sync(wrapper.getSummary()));
+        summary.textProperty().bind(wrapper.summary());
         summary.getStyleClass().add("summary");
         AppFont.small(summary);
         return summary;
     }
 
     protected void applyState(Node node) {
-        SimpleChangeListener.apply(PlatformThread.sync(wrapper.getState()), val -> {
+        SimpleChangeListener.apply(PlatformThread.sync(wrapper.getValidity()), val -> {
             switch (val) {
                 case LOAD_FAILED -> {
                     node.pseudoClassStateChanged(FAILED, true);
@@ -157,24 +152,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createName() {
-        //        var filtered = BindingsHelper.filteredContentBinding(
-        //                StoreViewState.get().getAllEntries(),
-        //                other -> other.getEntry().getState().isUsable()
-        //                        && entry.getEntry()
-        //                                .getStore()
-        //                                .equals(other.getEntry()
-        //                                        .getProvider()
-        //                                        .getLogicalParent(other.getEntry().getStore())));
-        LabelComp name = new LabelComp(Bindings.createStringBinding(
-                () -> {
-                    return wrapper.getName();
-                    //                            + (filtered.size() > 0 && entry.getEntry().getStore() instanceof
-                    // FixedHierarchyStore
-                    //                                    ? "     (" + filtered.size() + ")"
-                    //                                    : "");
-                },
-                wrapper.nameProperty(),
-                wrapper.getInformation()));
+        LabelComp name = new LabelComp(wrapper.nameProperty());
         name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS))
                 .apply(struc -> struc.get().setPadding(new Insets(5, 5, 5, 0)));
         name.apply(s -> AppFont.header(s.get()));
@@ -183,14 +161,14 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Node createIcon(int w, int h) {
-        var img = wrapper.isDisabled()
+        var img = wrapper.disabledProperty().get()
                 ? "disabled_icon.png"
                 : wrapper.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(wrapper.getEntry().getStore());
         var imageComp = PrettyImageHelper.ofFixed(img, w, h);
         var storeIcon = imageComp.createRegion();
-        if (wrapper.getState().getValue().isUsable()) {
+        if (wrapper.getValidity().getValue().isUsable()) {
             new FancyTooltipAugment<>(new SimpleStringProperty(
                             wrapper.getEntry().getProvider().getDisplayName()))
                     .augment(storeIcon);
@@ -319,7 +297,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 sc.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
                         DesktopShortcuts.create(url,
-                                wrapper.getName() + " (" + p.getKey().getDataStoreCallSite().getName(wrapper.getEntry().getStore().asNeeded()).getValue() + ")");
+                                wrapper.nameProperty().getValue() + " (" + p.getKey().getDataStoreCallSite().getName(wrapper.getEntry().getStore().asNeeded()).getValue() + ")");
                     });
                 });
                 menu.getItems().add(sc);
@@ -360,12 +338,6 @@ public abstract class StoreEntryComp extends SimpleComp {
             move.getItems().add(m);
         });
         contextMenu.getItems().add(move);
-
-        var refresh = new MenuItem(AppI18n.get("refresh"), new FontIcon("mdal-360"));
-        refresh.setOnAction(event -> {
-            DataStorage.get().refreshAsync(wrapper.getEntry(), true);
-        });
-        contextMenu.getItems().add(refresh);
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.disableProperty().bind(wrapper.getDeletable().not());

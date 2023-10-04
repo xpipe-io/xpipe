@@ -6,8 +6,8 @@ import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.MacOsPermissions;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -170,7 +170,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
+                ApplicationHelper.isInPath(pc, executable, toTranslatedString(), null);
 
                 var toExecute = executable + " " + toCommand(name, file).build(pc);
                 // In order to fix this bug which also affects us:
@@ -590,7 +590,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(String name, String file) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkSupport(pc, executable, toTranslatedString(), null);
+                ApplicationHelper.isInPath(pc, executable, toTranslatedString(), null);
 
                 var toExecute = executable + " " + toCommand(name, file).build(pc);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {

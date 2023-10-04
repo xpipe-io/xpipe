@@ -15,8 +15,7 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         model.getBrowserModel()
                 .openFileSystemAsync(
-                        model.getName(),
-                        model.getStore().asNeeded(),
+                        model.getEntry(),
                         entries.get(0).getRawFileEntry().getPath(),
                         null);
     }

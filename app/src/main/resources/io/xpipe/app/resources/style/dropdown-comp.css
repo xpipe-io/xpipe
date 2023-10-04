@@ -1,0 +1,19 @@
+.dropdown-comp {
+    -fx-padding: 6px 7px;
+}
+
+.dropdown-comp .arrow {
+    -fx-alignment: center;
+}
+
+.dropdown-comp .arrow-button {
+    -fx-alignment: center;
+}
+
+.dropdown-comp .menu-item:hover:focused {
+    -fx-background-color: -color-neutral-subtle;
+}
+
+.dropdown-comp .menu-item:focused {
+    -fx-background-color: transparent;
+}

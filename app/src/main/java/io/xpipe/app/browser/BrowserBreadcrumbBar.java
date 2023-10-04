@@ -4,7 +4,7 @@ import atlantafx.base.controls.Breadcrumbs;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;

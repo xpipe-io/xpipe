@@ -9,7 +9,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.FeatureProvider;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LockedSecretValue;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {

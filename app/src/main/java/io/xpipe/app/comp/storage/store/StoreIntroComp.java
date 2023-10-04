@@ -7,7 +7,6 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ScanAlert;
-import io.xpipe.core.impl.LocalStore;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -38,7 +37,7 @@ public class StoreIntroComp extends SimpleComp {
         });
 
         var scanButton = new Button(AppI18n.get("detectConnections"), new FontIcon("mdi2m-magnify"));
-        scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().getStoreEntry(new LocalStore())));
+        scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().local()));
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 

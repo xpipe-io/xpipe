@@ -1,6 +1,6 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
 
 import java.nio.file.Files;

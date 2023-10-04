@@ -19,7 +19,7 @@ import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.*;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
@@ -198,10 +198,6 @@ public class AppPrefs {
     private final BooleanField automaticallyCheckForUpdatesField =
             BooleanField.ofBooleanType(automaticallyCheckForUpdates).render(() -> new CustomToggleControl());
 
-    private final BooleanProperty checkForPrereleases = typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField checkForPrereleasesField =
-            BooleanField.ofBooleanType(checkForPrereleases).render(() -> new CustomToggleControl());
-
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
 
     // Storage
@@ -307,10 +303,6 @@ public class AppPrefs {
 
     public ReadOnlyBooleanProperty automaticallyUpdate() {
         return automaticallyCheckForUpdates;
-    }
-
-    public ReadOnlyBooleanProperty updateToPrereleases() {
-        return checkForPrereleases;
     }
 
     public ReadOnlyBooleanProperty confirmDeletions() {
@@ -570,15 +562,14 @@ public class AppPrefs {
                                 Setting.of("startupBehaviour", startupBehaviourControl, startupBehaviour),
                                 Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
                         Group.of(
+                                "advanced",
+                                Setting.of("developerMode", developerModeField, internalDeveloperMode)),
+                        Group.of(
                                 "updates",
                                 Setting.of(
                                         "automaticallyUpdate",
                                         automaticallyCheckForUpdatesField,
-                                        automaticallyCheckForUpdates),
-                                Setting.of("updateToPrereleases", checkForPrereleasesField, checkForPrereleases)),
-                        Group.of(
-                                "advanced",
-                                Setting.of("developerMode", developerModeField, internalDeveloperMode))),
+                                        automaticallyCheckForUpdates))),
                 new VaultCategory(this).create(),
                 Category.of(
                         "appearance",

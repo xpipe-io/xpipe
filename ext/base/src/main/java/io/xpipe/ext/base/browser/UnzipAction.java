@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.ExecuteApplicationAction;
 import io.xpipe.app.browser.icon.FileType;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.OsType;
 
 import java.util.List;

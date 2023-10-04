@@ -6,7 +6,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.app.storage.DataStorage;
 import lombok.Getter;
 import lombok.Value;
 
@@ -116,7 +116,7 @@ public abstract class LauncherInput {
 
             var dir = Files.isDirectory(file) ? file : file.getParent();
             AppLayoutModel.get().selectBrowser();
-            BrowserModel.DEFAULT.openFileSystemAsync(null, ShellStore.createLocal(), dir.toString(), null);
+            BrowserModel.DEFAULT.openFileSystemAsync( DataStorage.get().local().ref(), dir.toString(), null);
         }
 
         @Override

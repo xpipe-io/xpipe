@@ -3,7 +3,7 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileKind;
 import javafx.scene.Node;
 import org.kordamp.ikonli.javafx.FontIcon;

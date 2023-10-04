@@ -12,7 +12,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;

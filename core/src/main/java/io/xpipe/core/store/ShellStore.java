@@ -1,17 +1,12 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.impl.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 
 import java.nio.charset.Charset;
 
-public interface ShellStore extends DataStore, InternalCacheDataStore, LaunchableStore, FileSystemStore {
-
-    static ShellStore createLocal() {
-        return new LocalStore();
-    }
+public interface ShellStore extends DataStore, InternalCacheDataStore, LaunchableStore, FileSystemStore, ValidatableStore {
 
     static boolean isLocal(ShellStore s) {
         return s instanceof LocalStore;
@@ -27,22 +22,12 @@ public interface ShellStore extends DataStore, InternalCacheDataStore, Launchabl
         return control().prepareTerminalOpen(displayName);
     }
 
-    default ShellControl control() {
-        var pc = createBasicControl();
-        pc.onInit(processControl -> {
-            setState("type", processControl.getShellDialect());
-            setState("os", processControl.getOsType());
-            setState("charset", processControl.getCharset());
-        });
-        return pc;
-    }
-
     default ShellDialect getShellType() {
-        return getState("type", ShellDialect.class, null);
+        return getCache("type", ShellDialect.class, null);
     }
 
     default OsType getOsType() {
-        return getOrComputeState("os", OsType.class, () -> {
+        return getOrCompute("os", OsType.class, () -> {
             try (var sc = control().start()) {
                 return sc.getOsType();
             } catch (Exception ex) {
@@ -52,10 +37,10 @@ public interface ShellStore extends DataStore, InternalCacheDataStore, Launchabl
     }
 
     default Charset getCharset() {
-        return getState("charset", Charset.class, null);
+        return getCache("charset", Charset.class, null);
     }
 
-    ShellControl createBasicControl();
+    ShellControl control();
 
     default ShellDialect determineType() throws Exception {
         try (var pc = control().start()) {

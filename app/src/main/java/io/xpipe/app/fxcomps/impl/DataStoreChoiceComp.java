@@ -10,6 +10,8 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
@@ -37,62 +39,59 @@ import java.util.function.Predicate;
 public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     public static <T extends DataStore> DataStoreChoiceComp<T> other(
-            Property<T> selected, Class<T> clazz, Predicate<T> filter) {
+            Property<DataStoreEntryRef<T>> selected, Class<T> clazz, Predicate<DataStoreEntryRef<T>> filter) {
         return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter);
     }
 
-    public static DataStoreChoiceComp<ShellStore> proxy(Property<ShellStore> selected) {
-        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> proxy(Property<DataStoreEntryRef<ShellStore>> selected) {
+        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, null);
     }
 
-    public static DataStoreChoiceComp<ShellStore> host(Property<ShellStore> selected) {
-        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> host(Property<DataStoreEntryRef<ShellStore>> selected) {
+        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null);
     }
 
-    public static DataStoreChoiceComp<ShellStore> environment(ShellStore self, Property<ShellStore> selected) {
-        return new DataStoreChoiceComp<>(Mode.ENVIRONMENT, self, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> environment(
+            DataStoreEntry self, Property<DataStoreEntryRef<ShellStore>> selected) {
+        return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, shellStoreDataStoreEntryRef -> shellStoreDataStoreEntryRef.get().getProvider().canHaveSubShells());
     }
 
-    public static DataStoreChoiceComp<ShellStore> proxy(ShellStore self, Property<ShellStore> selected) {
-        return new DataStoreChoiceComp<>(Mode.PROXY, self, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> proxy(
+            DataStoreEntry self, Property<DataStoreEntryRef<ShellStore>> selected) {
+        return new DataStoreChoiceComp<>(Mode.PROXY, self, selected, ShellStore.class, null);
     }
 
-    public static DataStoreChoiceComp<ShellStore> host(ShellStore self, Property<ShellStore> selected) {
-        return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, shellStore -> true);
+    public static DataStoreChoiceComp<ShellStore> host(
+            DataStoreEntry self, Property<DataStoreEntryRef<ShellStore>> selected) {
+        return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, null);
     }
 
     public enum Mode {
         HOST,
-        ENVIRONMENT,
         OTHER,
         PROXY
     }
 
     private final Mode mode;
-    private final T self;
-    private final Property<T> selected;
+    private final DataStoreEntry self;
+    private final Property<DataStoreEntryRef<T>> selected;
     private final Class<T> storeClass;
-    private final Predicate<T> applicableCheck;
+    private final Predicate<DataStoreEntryRef<T>> applicableCheck;
 
     private Popover popover;
 
     private Popover getPopover() {
-        if (popover == null) {
+        // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
+        // changed
+        if (popover == null || applicableCheck != null) {
             var selectedCategory = new SimpleObjectProperty<>(
                     StoreViewState.get().getActiveCategory().getValue());
             var filterText = new SimpleStringProperty();
             popover = new Popover();
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
-                        var e = storeEntryWrapper.getEntry();
+                var e = storeEntryWrapper.getEntry();
 
-                if (e.getStore() == self) {
-                    return false;
-                }
-
-                var store = e.getStore();
-                if (!(mode == Mode.ENVIRONMENT)
-                        && e.getProvider() != null
-                        && !e.getProvider().canHaveSubShells()) {
+                if (e.equals(self)) {
                     return false;
                 }
 
@@ -100,15 +99,18 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                 if (e.getStore() == null) {
                     return false;
                 }
-                        return storeClass.isAssignableFrom(e.getStore().getClass()) && e.getState().isUsable() && applicableCheck.test(e.getStore().asNeeded());
-                    };
+
+                return storeClass.isAssignableFrom(e.getStore().getClass())
+                        && e.getValidity().isUsable()
+                        && (applicableCheck == null
+                                || applicableCheck.test(e.ref()));
+            };
             var section = StoreSectionMiniComp.createList(
                     StoreSection.createTopLevel(
                             StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory),
                     (s, comp) -> {
                         comp.apply(struc -> struc.get().setOnAction(event -> {
-                            selected.setValue(
-                                    s.getWrapper().getEntry().getStore().asNeeded());
+                            selected.setValue(s.getWrapper().getEntry().ref());
                             popover.hide();
                             event.consume();
                         }));
@@ -126,7 +128,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             Platform.runLater(() -> {
                                 Platform.runLater(() -> {
                                     Platform.runLater(() -> {
-                                    struc.getText().requestFocus();
+                                        struc.getText().requestFocus();
                                     });
                                 });
                             });
@@ -134,10 +136,13 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                     });
 
             var addButton = Comp.of(() -> {
-                MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
-                StoreCreationMenu.addButtons(m);
-                return m;
-            }).padding(new Insets(-2)).styleClass(Styles.RIGHT_PILL).grow(false, true);
+                        MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
+                        StoreCreationMenu.addButtons(m);
+                        return m;
+                    })
+                    .padding(new Insets(-2))
+                    .styleClass(Styles.RIGHT_PILL)
+                    .grow(false, true);
 
             var top = new HorizontalComp(List.of(category, filter.hgrow(), addButton))
                     .styleClass("top")
@@ -182,16 +187,18 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         return new Label(name, imgView);
     }
 
-    private String toName(DataStore store) {
-        if (store == null) {
+    private String toName(DataStoreEntry entry) {
+        if (entry == null) {
             return null;
         }
 
-        if (mode == Mode.PROXY && store instanceof ShellStore && ShellStore.isLocal(store.asNeeded())) {
+        if (mode == Mode.PROXY
+                && entry.getStore() instanceof ShellStore
+                && ShellStore.isLocal(entry.getStore().asNeeded())) {
             return AppI18n.get("none");
         }
 
-        return DataStorage.get().getStoreDisplayName(store).orElse("?");
+        return entry.getName();
     }
 
     @Override
@@ -199,7 +206,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         var button = new ButtonComp(
                 Bindings.createStringBinding(
                         () -> {
-                            return toName(selected.getValue());
+                            return selected.getValue() != null ? toName(selected.getValue().getEntry()) : null;
                         },
                         selected),
                 () -> {});
@@ -207,21 +214,22 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                     struc.get().setMaxWidth(2000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
                     struc.get()
-                            .setGraphic(PrettyImageHelper.ofSvg(Bindings.createStringBinding(
+                            .setGraphic(PrettyImageHelper.ofSvg(
+                                            Bindings.createStringBinding(
                                                     () -> {
                                                         if (selected.getValue() == null) {
                                                             return null;
                                                         }
 
-                                                        return DataStorage.get()
-                                                                .getStoreEntryIfPresent(selected.getValue())
-                                                                .map(entry -> entry.getProvider()
-                                                                        .getDisplayIconFileName(selected.getValue()))
-                                                                .orElse(null);
+                                                        return selected.getValue()
+                                                                .get()
+                                                                .getProvider()
+                                                                .getDisplayIconFileName(selected.getValue()
+                                                                        .getStore());
                                                     },
                                                     selected),
-                                                                16,
-                                                                16)
+                                            16,
+                                            16)
                                     .createRegion());
                     struc.get().setOnAction(event -> {
                         getPopover().show(struc.get());

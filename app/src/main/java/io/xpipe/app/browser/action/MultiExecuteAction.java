@@ -5,7 +5,7 @@ import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalHelper;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
 import org.apache.commons.io.FilenameUtils;
 

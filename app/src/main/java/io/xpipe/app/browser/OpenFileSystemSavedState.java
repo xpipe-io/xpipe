@@ -12,8 +12,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.JacksonMapper;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -81,11 +80,7 @@ public class OpenFileSystemSavedState {
     }
 
     static OpenFileSystemSavedState loadForStore(OpenFileSystemModel model) {
-        var storageEntry = DataStorage.get()
-                .getStoreEntryIfPresent(model.getStore())
-                .map(entry -> entry.getUuid())
-                .orElse(UUID.randomUUID());
-        var state = AppCache.get("fs-state-" + storageEntry, OpenFileSystemSavedState.class, () -> {
+        var state = AppCache.get("fs-state-" + model.getEntry().get().getUuid(), OpenFileSystemSavedState.class, () -> {
             return new OpenFileSystemSavedState();
         });
         state.setModel(model);
@@ -127,8 +122,7 @@ public class OpenFileSystemSavedState {
             return;
         }
 
-        var storageEntry = DataStorage.get().getStoreEntryIfPresent(model.getStore());
-        storageEntry.ifPresent(entry -> AppCache.update("fs-state-" + entry.getUuid(), this));
+       AppCache.update("fs-state-" + model.getEntry().get().getUuid(), this);
     }
 
     public void cd(String dir) {

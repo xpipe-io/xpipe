@@ -8,7 +8,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

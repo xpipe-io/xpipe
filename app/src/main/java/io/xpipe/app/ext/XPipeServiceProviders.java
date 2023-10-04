@@ -19,14 +19,6 @@ public class XPipeServiceProviders {
         ProcessControlProvider.init(layer);
 
         TrackEvent.info("Loading extension providers ...");
-        DataSourceProviders.init(layer);
-        for (DataSourceProvider<?> p : DataSourceProviders.getAll()) {
-            TrackEvent.trace("Loaded data source provider " + p.getId());
-            JacksonMapper.configure(objectMapper -> {
-                objectMapper.registerSubtypes(new NamedType(p.getSourceClass()));
-            });
-        }
-
         DataStoreProviders.init(layer);
         for (DataStoreProvider p : DataStoreProviders.getAll()) {
             TrackEvent.trace("Loaded data store provider " + p.getId());

@@ -3,65 +3,52 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
-import javafx.scene.Node;
-import javafx.scene.control.MenuButton;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class DropdownComp extends Comp <CompStructure<MenuButton>>{
+public class DropdownComp extends Comp<CompStructure<Button>> {
 
-    private final ObservableValue<String> name;
-    private final ObjectProperty<Node> graphic;
     private final List<Comp<?>> items;
 
-    public DropdownComp(ObservableValue<String> name, List<Comp<?>> items) {
-        this.name = name;
-        this.graphic = new SimpleObjectProperty<>(null);
+    public DropdownComp(List<Comp<?>> items) {
         this.items = items;
-    }
-
-    public DropdownComp(ObservableValue<String> name, Node graphic, List<Comp<?>> items) {
-        this.name = name;
-        this.graphic = new SimpleObjectProperty<>(graphic);
-        this.items = items;
-    }
-
-    public Node getGraphic() {
-        return graphic.get();
-    }
-
-    public ObjectProperty<Node> graphicProperty() {
-        return graphic;
     }
 
     @Override
-    public CompStructure<MenuButton> createBase() {
-        var button = new MenuButton(null);
-        if (name != null) {
-            button.textProperty().bind(name);
-        }
-        var graphic = getGraphic();
-        if (graphic instanceof FontIcon f) {
-            SimpleChangeListener.apply(button.fontProperty(), c -> {
-                f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
-            });
-        }
+    public CompStructure<Button> createBase() {
+        ContextMenu cm = new ContextMenu(items.stream()
+                .map(comp -> {
+                    return new MenuItem(null, comp.createRegion());
+                })
+                .toArray(MenuItem[]::new));
 
-        button.setGraphic(getGraphic());
-        button.getStyleClass().add("dropdown-comp");
+        Button button = (Button) new ButtonComp(null, () -> {})
+                .apply(new ContextMenuAugment<>(e -> true, () -> {
+                    return cm;
+                }))
+                .createRegion();
 
-        items.forEach(comp -> {
-            var i = new MenuItem(null,comp.createRegion());
-            button.getItems().add(i);
+        button.visibleProperty()
+                .bind(BindingsHelper.anyMatch(cm.getItems().stream()
+                        .map(menuItem -> menuItem.getGraphic().visibleProperty())
+                        .toList()));
+
+        var graphic = new FontIcon("mdi2c-chevron-double-down");
+        SimpleChangeListener.apply(button.fontProperty(), c -> {
+            graphic.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
         });
+
+        button.setGraphic(graphic);
+        button.getStyleClass().add("dropdown-comp");
 
         return new SimpleCompStructure<>(button);
     }

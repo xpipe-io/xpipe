@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;

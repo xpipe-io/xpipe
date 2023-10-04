@@ -19,7 +19,6 @@ public class ListStoresExchangeImpl extends ListStoresExchange
                 .map(col -> StoreListEntry.builder()
                         .id(DataStorage.get().getId(col))
                         .type(col.getProvider().getId())
-                        .information(col.getInformation())
                         .build())
                 .sorted(Comparator.comparing(en -> en.getId().toString()))
                 .toList();

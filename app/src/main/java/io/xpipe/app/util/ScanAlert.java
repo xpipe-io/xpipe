@@ -10,8 +10,8 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -38,7 +38,7 @@ public class ScanAlert {
     }
 
     private static void showForShellStore(DataStoreEntry initial) {
-        show(initial != null ? initial.getStore().asNeeded() : null, (DataStoreEntry entry) -> {
+        show(initial, (DataStoreEntry entry) -> {
             try (var sc = ((ShellStore) entry.getStore()).control().start()) {
                 var providers = ScanProvider.getAll();
                 var applicable = new ArrayList<ScanProvider.ScanOperation>();
@@ -57,8 +57,8 @@ public class ScanAlert {
     }
 
     private static void show(
-            ShellStore initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
-        var store = new SimpleObjectProperty<ShellStore>();
+            DataStoreEntry initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
+        var entry = new SimpleObjectProperty<DataStoreEntryRef<ShellStore>>();
         var selected = new SimpleListProperty<ScanProvider.ScanOperation>(FXCollections.observableArrayList());
 
         var loading = new SimpleBooleanProperty();
@@ -85,7 +85,7 @@ public class ScanAlert {
                                                 .addComp(new DataStoreChoiceComp<>(
                                                                 DataStoreChoiceComp.Mode.OTHER,
                                                                 null,
-                                                                store,
+                                                                entry,
                                                                 ShellStore.class,
                                                                 store1 -> true)
                                                         .disable(new SimpleBooleanProperty(initialStore != null)))
@@ -102,7 +102,7 @@ public class ScanAlert {
                                                 .createStructure()
                                                 .get();
 
-                                        store.addListener((observable, oldValue, newValue) -> {
+                                        entry.addListener((observable, oldValue, newValue) -> {
                                             selected.clear();
                                             stackPane.getChildren().clear();
 
@@ -112,9 +112,7 @@ public class ScanAlert {
 
                                             ThreadHelper.runAsync(() -> {
                                                 BooleanScope.execute(loading, () -> {
-                                                    var entry =
-                                                            DataStorage.get().getStoreEntry(newValue);
-                                                    var a = applicable.apply(entry);
+                                                    var a = applicable.apply(entry.get().get());
 
                                                     Platform.runLater(() -> {
                                                         if (a == null) {
@@ -140,7 +138,7 @@ public class ScanAlert {
                                             });
                                         });
 
-                                        store.set(initialStore);
+                                        entry.set(initialStore != null ? initialStore.ref() : null);
                                         return new SimpleCompStructure<>(b);
                                     }
                                 }));
@@ -149,7 +147,7 @@ public class ScanAlert {
                             @Override
                             protected void finish() {
                                 ThreadHelper.runAsync(() -> {
-                                    if (store.get() == null) {
+                                    if (entry.get() == null) {
                                         return;
                                     }
 
@@ -159,8 +157,7 @@ public class ScanAlert {
                                     });
 
                                     BooleanScope.execute(loading, () -> {
-                                        var entry = DataStorage.get().getStoreEntry(store.get());
-                                        entry.setExpanded(true);
+                                        entry.get().get().setExpanded(true);
 
                                         for (var a : selected) {
                                             try {

@@ -25,6 +25,19 @@
 -fx-opacity: 0.2;
 }
 
+.edit-button.icon-button-comp {
+    -fx-background-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 5px;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-neutral-emphasis;
+}
+
+.edit-button.icon-button-comp:hover {
+    -fx-background-color: -color-accent-muted;
+}
+
 .scan-list {
 -fx-background-radius: 4px;
  -fx-border-width: 0.05em;

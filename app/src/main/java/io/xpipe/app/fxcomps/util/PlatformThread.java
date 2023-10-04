@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 public class PlatformThread {
 
     public static Observable sync(Observable o) {
+        Objects.requireNonNull(o);
         return new Observable() {
 
             private final Map<InvalidationListener, InvalidationListener> invListenerMap = new ConcurrentHashMap<>();
@@ -40,6 +41,7 @@ public class PlatformThread {
     }
 
     public static <T> ObservableValue<T> sync(ObservableValue<T> ov) {
+        Objects.requireNonNull(ov);
         ObservableValue<T> obs = new ObservableValue<>() {
 
             private final Map<ChangeListener<? super T>, ChangeListener<? super T>> changeListenerMap =
@@ -86,6 +88,7 @@ public class PlatformThread {
     }
 
     public static <T> ObservableList<T> sync(ObservableList<T> ol) {
+        Objects.requireNonNull(ol);
         ObservableList<T> obs = new ObservableList<>() {
 
             private final Map<ListChangeListener<? super T>, ListChangeListener<? super T>> listChangeListenerMap =

@@ -9,9 +9,9 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.util.*;
-import io.xpipe.core.impl.FileNames;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.ShellStore;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
 
 import java.util.List;
@@ -58,7 +58,7 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
-                                        try (var sc = ShellStore.createLocal()
+                                        try (var sc = new LocalStore()
                                                 .control()
                                                 .start()) {
                                             var script = FileNames.join(

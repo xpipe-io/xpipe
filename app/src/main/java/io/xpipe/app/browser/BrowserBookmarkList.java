@@ -12,11 +12,10 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
+import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FixedHierarchyStore;
 import io.xpipe.core.store.ShellStore;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -53,7 +52,7 @@ final class BrowserBookmarkList extends SimpleComp {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
                     return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore
                                     || storeEntryWrapper.getEntry().getStore() instanceof FixedHierarchyStore)
-                            && storeEntryWrapper.getEntry().getState().isUsable();
+                            && storeEntryWrapper.getEntry().getValidity().isUsable();
                 };
         var section = StoreSectionMiniComp.createList(
                 StoreSection.createTopLevel(
@@ -68,7 +67,7 @@ final class BrowserBookmarkList extends SimpleComp {
                                     .pseudoClassStateChanged(
                                             SELECTED,
                                             newValue != null
-                                                    && newValue.getStore()
+                                                    && newValue.getEntry()
                                                             .equals(s.getWrapper()
                                                                     .getEntry()
                                                                     .getStore()));
@@ -77,13 +76,10 @@ final class BrowserBookmarkList extends SimpleComp {
                             ThreadHelper.runFailableAsync(() -> {
                                 var entry = s.getWrapper().getEntry();
                                 if (entry.getStore() instanceof ShellStore fileSystem) {
-                                    BooleanScope.execute(busy, () -> {
-                                        s.getWrapper().refreshIfNeeded();
-                                    });
-                                    model.openFileSystemAsync(null, fileSystem, null, busy);
+                                    model.openFileSystemAsync(entry.ref(), null, busy);
                                 } else if (entry.getStore() instanceof FixedHierarchyStore) {
                                     BooleanScope.execute(busy, () -> {
-                                        s.getWrapper().refreshWithChildren();
+                                        s.getWrapper().refreshChildren();
                                     });
                                 }
                             });
@@ -125,7 +121,7 @@ final class BrowserBookmarkList extends SimpleComp {
                     return;
                 }
 
-                Platform.runLater(() -> model.openExistingFileSystemIfPresent(null, store.asNeeded()));
+                // Platform.runLater(() -> model.openExistingFileSystemIfPresent(store.asNeeded()));
             }
         };
         DROP_TIMER.schedule(activeTask, 500);

@@ -1,14 +1,17 @@
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataSourceProvider;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.ext.base.*;
+import io.xpipe.ext.base.InMemoryStoreProvider;
+import io.xpipe.ext.base.InternalStreamProvider;
 import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
+import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
+import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
     exports io.xpipe.ext.base.action;
+    exports io.xpipe.ext.base.script;
 
     requires java.desktop;
     requires io.xpipe.core;
@@ -47,23 +50,18 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            RefreshStoreAction,
             ScanAction,
             LaunchAction,
-            GroupToggleAction,
             XPipeUrlAction,
             EditStoreAction,
             DeleteStoreChildrenAction,
             FileBrowseAction,
             BrowseStoreAction,
             FileEditAction;
-    provides DataSourceProvider with
-            TextSourceProvider,
-            BinarySourceProvider,
-            XpbtProvider,
-            XpbsProvider;
     provides DataStoreProvider with
-            HttpStoreProvider,
+            ScriptGroupStoreProvider,
+            SimpleScriptStoreProvider,
             InternalStreamProvider,
-            FileStoreProvider,
             InMemoryStoreProvider;
 }

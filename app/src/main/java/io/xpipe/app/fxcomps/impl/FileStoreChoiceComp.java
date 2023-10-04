@@ -5,7 +5,6 @@ import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -21,10 +20,6 @@ public class FileStoreChoiceComp extends SimpleComp {
     private final boolean hideFileSystem;
     private final Property<FileSystemStore> fileSystem;
     private final Property<String> filePath;
-
-    public FileStoreChoiceComp(Property<String> filePath) {
-        this(true, new SimpleObjectProperty<>(), filePath);
-    }
 
     public FileStoreChoiceComp(boolean hideFileSystem, Property<FileSystemStore> fileSystem, Property<String> filePath) {
         this.hideFileSystem = hideFileSystem;
@@ -46,7 +41,7 @@ public class FileStoreChoiceComp extends SimpleComp {
                 .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    StandaloneFileBrowser.openSingleFile(() -> (ShellStore) fileSystem.getValue(), fileStore -> {
+                    StandaloneFileBrowser.openSingleFile(() -> null, fileStore -> {
                         if (fileStore == null) {
                             filePath.setValue(null);
                             fileSystem.setValue(null);

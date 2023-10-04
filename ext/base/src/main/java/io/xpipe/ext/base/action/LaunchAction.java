@@ -6,6 +6,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.core.store.LaunchableStore;
+import io.xpipe.core.store.ShellStore;
+import io.xpipe.ext.base.script.ScriptStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -24,6 +26,12 @@ public class LaunchAction implements ActionProvider {
         @Override
         public void execute() throws Exception {
             var storeName = entry.getName();
+            if (entry.getStore() instanceof ShellStore s) {
+                String command = ScriptStore.controlWithDefaultScripts(s.control()).prepareTerminalOpen(storeName);
+                TerminalHelper.open(storeName, command);
+                return;
+            }
+
             if (entry.getStore() instanceof LaunchableStore s) {
                 String command = s.prepareLaunchCommand(storeName);
                 if (command == null) {
@@ -49,7 +57,7 @@ public class LaunchAction implements ActionProvider {
                 return DataStorage.get()
                         .getStoreEntryIfPresent(o)
                         .orElseThrow()
-                        .getState()
+                        .getValidity()
                         .isUsable() && o.canLaunch();
             }
 
@@ -90,7 +98,7 @@ public class LaunchAction implements ActionProvider {
                 return DataStorage.get()
                         .getStoreEntryIfPresent(o)
                         .orElseThrow()
-                        .getState()
+                        .getValidity()
                         .isUsable() && o.canLaunch();
             }
 

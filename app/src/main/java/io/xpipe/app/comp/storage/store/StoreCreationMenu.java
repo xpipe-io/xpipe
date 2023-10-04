@@ -31,7 +31,7 @@ public class StoreCreationMenu {
             host.textProperty().bind(AppI18n.observable("addHost"));
             host.setOnAction(event -> {
                 GuiDsStoreCreator.showCreation(DataStoreProviders.byName("ssh").orElseThrow(),
-                        v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.HOST));
+                        v -> DataStoreProvider.CreationCategory.HOST.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(host);
@@ -42,7 +42,7 @@ public class StoreCreationMenu {
             shell.textProperty().bind(AppI18n.observable("addShell"));
             shell.setOnAction(event -> {
                 GuiDsStoreCreator.showCreation(null,
-                        v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.SHELL));
+                        v -> DataStoreProvider.CreationCategory.SHELL.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(shell);
@@ -53,7 +53,7 @@ public class StoreCreationMenu {
             cmd.textProperty().bind(AppI18n.observable("addCommand"));
             cmd.setOnAction(event -> {
                 GuiDsStoreCreator.showCreation(null,
-                        v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.COMMAND));
+                        v -> DataStoreProvider.CreationCategory.COMMAND.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(cmd);
@@ -64,7 +64,7 @@ public class StoreCreationMenu {
             db.textProperty().bind(AppI18n.observable("addDatabase"));
             db.setOnAction(event -> {
                 GuiDsStoreCreator.showCreation(null,
-                        v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.DATABASE));
+                        v -> DataStoreProvider.CreationCategory.DATABASE.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(db);
@@ -75,10 +75,21 @@ public class StoreCreationMenu {
             tunnel.textProperty().bind(AppI18n.observable("addTunnel"));
             tunnel.setOnAction(event -> {
                 GuiDsStoreCreator.showCreation(null,
-                        v -> v.getDisplayCategory().equals(DataStoreProvider.DisplayCategory.TUNNEL));
+                        v -> DataStoreProvider.CreationCategory.TUNNEL.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(tunnel);
+        }
+        {
+            var script = new MenuItem();
+            script.setGraphic(new FontIcon("mdi2s-script-text-outline"));
+            script.textProperty().bind(AppI18n.observable("addScript"));
+            script.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(null,
+                                               v -> DataStoreProvider.CreationCategory.SCRIPT.equals(v.getCreationCategory()));
+                event.consume();
+            });
+            menu.getItems().add(script);
         }
     }
 

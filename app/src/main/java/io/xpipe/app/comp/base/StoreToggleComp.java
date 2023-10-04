@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -28,18 +29,22 @@ public class StoreToggleComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var disable = section.getWrapper().getState().map(state -> state != DataStoreEntry.State.COMPLETE_AND_VALID);
+        var disable = section.getWrapper().getValidity().map(state -> state != DataStoreEntry.Validity.COMPLETE);
         var visible = BindingsHelper.persist(Bindings.createBooleanBinding(
                 () -> {
-                    return section.getWrapper().getState().getValue() == DataStoreEntry.State.COMPLETE_AND_VALID
+                    return section.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.COMPLETE
                             && section.getShowDetails().get();
                 },
-                section.getWrapper().getState(),
+                section.getWrapper().getValidity(),
                 section.getShowDetails()));
         var t = new NamedToggleComp(value, AppI18n.observable(nameKey))
                 .visible(visible)
                 .disable(disable);
-        value.addListener((observable, oldValue, newValue) -> onChange.accept(newValue));
+        value.addListener((observable, oldValue, newValue) -> {
+            ThreadHelper.runAsync(() -> {
+                onChange.accept(newValue);
+            });
+        });
         return t.createRegion();
     }
 }

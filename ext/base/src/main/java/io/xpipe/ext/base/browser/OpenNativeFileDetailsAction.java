@@ -3,8 +3,8 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
-import io.xpipe.core.impl.FileNames;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 

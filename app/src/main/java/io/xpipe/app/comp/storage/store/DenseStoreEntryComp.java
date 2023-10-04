@@ -31,11 +31,13 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
+        var summary = wrapper.summary();
+        var info = wrapper.getEntry().getProvider().informationString(wrapper);
         SimpleChangeListener.apply(grid.hoverProperty(), val -> {
-            if (val && wrapper.getSummary().get() != null && wrapper.getEntry().getProvider().alwaysShowSummary()) {
-                information.textProperty().bind(PlatformThread.sync(wrapper.getSummary()));
+            if (val && summary.getValue() != null && wrapper.getEntry().getProvider().alwaysShowSummary()) {
+                information.textProperty().bind(PlatformThread.sync(summary));
             } else {
-                information.textProperty().bind(PlatformThread.sync(wrapper.getInformation()));
+                information.textProperty().bind(PlatformThread.sync(info));
 
             }
         });
@@ -56,7 +58,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             GridPane.setHalignment(storeIcon, HPos.CENTER);
         }
 
-        var customSize = content != null ? 300 : 0;
+        var customSize = content != null ? 200 : 0;
         var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
 

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
@@ -159,7 +159,7 @@ public interface SecretRetrievalStrategy {
                 return null;
             }
 
-            try (var cc = new LocalStore().createBasicControl().command(cmd).start()) {
+            try (var cc = new LocalStore().control().command(cmd).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             } catch (ProcessOutputException ex) {
                 throw ErrorEvent.unreportable(ProcessOutputException.withPrefix("Unable to retrieve password with command " + cmd, ex));
@@ -187,7 +187,7 @@ public interface SecretRetrievalStrategy {
 
         @Override
         public SecretValue retrieve(String displayName, UUID id, int sub) throws Exception {
-            try (var cc = new LocalStore().createBasicControl().command(command).start()) {
+            try (var cc = new LocalStore().control().command(command).start()) {
                 return SecretHelper.encrypt(cc.readStdoutOrThrow());
             }
         }

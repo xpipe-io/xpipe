@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.util.FixedHierarchyStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -22,16 +22,16 @@ public class RefreshStoreAction implements ActionProvider  {
 
         @Override
         public void execute() throws Exception {
-            store.refresh(true);
+            DataStorage.get().refreshChildren(store);
         }
     }
 
     @Override
     public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {
-        return new ActionProvider.DataStoreCallSite<>() {
+        return new ActionProvider.DataStoreCallSite<FixedHierarchyStore>() {
 
             @Override
-            public boolean isMajor(DataStore o) {
+            public boolean isMajor(FixedHierarchyStore o) {
                 return true;
             }
 
@@ -41,23 +41,23 @@ public class RefreshStoreAction implements ActionProvider  {
             }
 
             @Override
-            public ActionProvider.Action createAction(DataStore store) {
+            public ActionProvider.Action createAction(FixedHierarchyStore store) {
                 return new Action(DataStorage.get().getStoreEntry(store));
             }
 
             @Override
-            public Class<DataStore> getApplicableClass() {
-                return DataStore.class;
+            public Class<FixedHierarchyStore> getApplicableClass() {
+                return FixedHierarchyStore.class;
             }
 
             @Override
-            public ObservableValue<String> getName(DataStore store) {
+            public ObservableValue<String> getName(FixedHierarchyStore store) {
                 return AppI18n.observable("base.refresh");
             }
 
             @Override
-            public String getIcon(DataStore store) {
-                return "mdal-edit";
+            public String getIcon(FixedHierarchyStore store) {
+                return "mdi2r-refresh";
             }
         };
     }

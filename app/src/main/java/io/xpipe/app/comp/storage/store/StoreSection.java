@@ -74,7 +74,7 @@ public class StoreSection {
     private static ObservableList<StoreSection> sorted(
             ObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
         var c = Comparator.<StoreSection>comparingInt(
-                value -> value.getWrapper().getEntry().getState().isUsable() ? 1 : -1);
+                value -> value.getWrapper().getEntry().getValidity().isUsable() ? 1 : -1);
         category.getValue().getSortMode().addListener((observable, oldValue, newValue) -> {
             int a = 0;
         });
@@ -109,12 +109,12 @@ public class StoreSection {
                 ordered,
                 section -> {
                     var noParent = DataStorage.get()
-                            .getParent(section.getWrapper().getEntry(), true)
+                            .getDisplayParent(section.getWrapper().getEntry())
                             .isEmpty();
                     var sameCategory =
                             category.getValue().contains(section.getWrapper().getEntry());
                     var diffParentCategory = DataStorage.get()
-                            .getParent(section.getWrapper().getEntry(), true)
+                            .getDisplayParent(section.getWrapper().getEntry())
                             .map(entry -> !category.getValue().contains(entry))
                             .orElse(false);
                     var showFilter = section.shouldShow(filterString.get());
@@ -133,13 +133,13 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
-        if (e.getEntry().getState() == DataStoreEntry.State.LOAD_FAILED) {
+        if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(e, FXCollections.observableArrayList(), FXCollections.observableArrayList(), depth);
         }
 
         var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
             return DataStorage.get()
-                    .getParent(other.getEntry(), true)
+                    .getDisplayParent(other.getEntry())
                     .map(found -> found.equals(e.getEntry()))
                     .orElse(false);
         });

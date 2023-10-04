@@ -1,9 +1,7 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.util.FailableFunction;
-import io.xpipe.core.util.FailableSupplier;
-import io.xpipe.core.util.SecretValue;
-import io.xpipe.core.util.XPipeSystemId;
+import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.core.util.*;
 import lombok.NonNull;
 
 import java.io.IOException;
@@ -13,6 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface ShellControl extends ProcessControl {
 
@@ -20,11 +19,40 @@ public interface ShellControl extends ProcessControl {
         return getSystemId().equals(XPipeSystemId.getLocal());
     }
 
+    String getOsName();
+
     UUID getSystemId();
 
     ReentrantLock getLock();
 
-    ShellControl onInit(Consumer<ShellControl> pc);
+    ShellControl onInit(FailableConsumer<ShellControl, Exception> pc);
+
+    default <T extends ShellStoreState> ShellControl withShellStateInit(StatefulDataStore<T> store) {
+        return onInit(shellControl -> {
+            var s = store.getState();
+            s.setOsType(shellControl.getOsType());
+            s.setShellDialect(shellControl.getShellDialect());
+            s.setRunning(true);
+            s.setOsName(shellControl.getOsName());
+            store.setState(s);
+        });
+    };
+
+    default ShellControl withSupportCheckInit(Predicate<ShellControl> predicate, String name) {
+        return onInit(shellControl -> {
+            if (!predicate.test(shellControl)) {
+
+            }
+        });
+    };
+
+    default <T extends ShellStoreState> ShellControl withShellStateFail(StatefulDataStore<T> store) {
+        return onFail(shellControl -> {
+            var s = store.getState();
+            s.setRunning(false);
+            store.setState(s);
+        });
+    };
 
     ShellControl onExit(Consumer<ShellControl> pc);
 
@@ -115,7 +143,9 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl initWith(String cmds);
 
-    ShellControl initWith(List<String> cmds);
+    ShellControl initWithDumb(String cmds);
+
+    ShellControl initWithTerminal(String cmds);
 
     ShellControl additionalTimeout(int ms);
 

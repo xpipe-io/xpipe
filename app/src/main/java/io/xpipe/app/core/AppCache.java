@@ -55,7 +55,7 @@ public class AppCache {
                     return notPresent.get();
                 }
 
-                return (T) JacksonMapper.newMapper().treeToValue(tree, type);
+                return (T) JacksonMapper.getDefault().treeToValue(tree, type);
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).omit().handle();
                 FileUtils.deleteQuietly(path.toFile());
@@ -69,7 +69,7 @@ public class AppCache {
 
         try {
             FileUtils.forceMkdirParent(path.toFile());
-            var tree = JacksonMapper.newMapper().valueToTree(val);
+            var tree = JacksonMapper.getDefault().valueToTree(val);
             JsonConfigHelper.writeConfig(path, tree);
         } catch (Exception e) {
             ErrorEvent.fromThrowable("Could not parse cached data for key " + key, e)

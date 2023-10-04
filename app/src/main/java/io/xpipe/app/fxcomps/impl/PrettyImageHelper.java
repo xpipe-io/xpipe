@@ -2,14 +2,14 @@ package io.xpipe.app.fxcomps.impl;
 
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 public class PrettyImageHelper {
 
     public static Comp<?> ofFixedSquare(String img, int size) {
-        if (img.endsWith(".svg")) {
+        if (img != null && img.endsWith(".svg")) {
             var base = FileNames.getBaseName(img);
             var renderedName = base + "-" + size + ".png";
             if (AppImages.hasNormalImage(base + "-" + size + ".png")) {

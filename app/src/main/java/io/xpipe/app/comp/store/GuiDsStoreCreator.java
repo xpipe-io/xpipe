@@ -109,7 +109,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 newE -> {
                     ThreadHelper.runAsync(() -> {
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
-                            DataStorage.get().addStoreEntry(newE);
+                            DataStorage.get().addStoreEntryIfNotPresent(newE);
                         } else {
                             DataStorage.get().updateEntry(e, newE);
                         }
@@ -126,7 +126,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 filter,
                 e -> {
                     try {
-                        DataStorage.get().addStoreEntry(e);
+                        DataStorage.get().addStoreEntryIfNotPresent(e);
                         if (e.getProvider().shouldHaveChildren()) {
                             ScanAlert.showAsync(e);
                         }
@@ -260,7 +260,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 //                    return;
                 //                }
 
-                var d = n.guiDialog(store);
+                var d = n.guiDialog(entry.getValue(), store);
                 var propVal = new SimpleValidator();
                 var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
 
@@ -349,7 +349,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         ThreadHelper.runAsync(() -> {
             try (var b = new BooleanScope(busy).start()) {
-                entry.getValue().refresh(true);
+                entry.getValue().validateOrThrow();
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);
             } catch (Exception ex) {

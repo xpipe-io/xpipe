@@ -36,8 +36,8 @@ public class EditStoreAction implements ActionProvider {
                 return DataStorage.get()
                         .getStoreEntryIfPresent(o)
                         .orElseThrow()
-                        .getState()
-                        .equals(DataStoreEntry.State.INCOMPLETE);
+                        .getValidity()
+                        .equals(DataStoreEntry.Validity.INCOMPLETE);
             }
 
             @Override

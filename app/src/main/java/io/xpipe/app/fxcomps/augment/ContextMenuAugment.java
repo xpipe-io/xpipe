@@ -44,5 +44,10 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
                 event.consume();
             }
         });
+        r.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (show.test(event)) {
+                event.consume();
+            }
+        });
     }
 }

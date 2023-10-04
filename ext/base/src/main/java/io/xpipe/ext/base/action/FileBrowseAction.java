@@ -3,8 +3,8 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.core.impl.FileStore;
-import io.xpipe.core.impl.LocalStore;
+import io.xpipe.core.store.FileStore;
+import io.xpipe.core.store.LocalStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 

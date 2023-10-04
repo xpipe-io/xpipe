@@ -1,6 +1,6 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 
 import java.util.List;
 import java.util.Locale;

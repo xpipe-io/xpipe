@@ -9,7 +9,7 @@ import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.impl.FileNames;
+import io.xpipe.core.store.FileNames;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;

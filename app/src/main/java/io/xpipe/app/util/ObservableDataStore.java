@@ -14,7 +14,7 @@ public interface ObservableDataStore extends DataStore, InternalCacheDataStore {
         var entry = DataStorage.get().getStoreEntry(this);
         entry.setObserving(state);
         if (state) {
-            var timer = getState("oberserverTimer", Timer.class, null);
+            var timer = getCache("oberserverTimer", Timer.class, null);
             if (timer == null) {
                 timer = new Timer(true);
                 timer.scheduleAtFixedRate(
@@ -28,23 +28,21 @@ public interface ObservableDataStore extends DataStore, InternalCacheDataStore {
                         },
                         0,
                         20000);
-                setState("oberserverTimer", timer);
+                setCache("oberserverTimer", timer);
             }
         }
     }
 
     default void setObserverState(boolean state) {
-        setState("observerState", state);
+        setCache("observerState", state);
     }
 
     default boolean getObserverState() {
-        return getState("observerState", Boolean.class, false);
+        return getCache("observerState", Boolean.class, false);
     }
 
     private void refresh() {
         var entry = DataStorage.get().getStoreEntry(this);
-        if (DataStorage.get().refresh(entry, true)) {
-            DataStorage.get().refreshChildren(entry);
-        }
+        DataStorage.get().refreshChildren(entry);
     }
 }

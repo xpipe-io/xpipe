@@ -54,12 +54,12 @@ public class BrowserWelcomeComp extends SimpleComp {
         var storeList = new VBox();
         storeList.setSpacing(8);
         state.getLastSystems().forEach(e -> {
-            var entry = DataStorage.get().getStoreEntry(e.getUuid());
+            var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             if (entry.isEmpty()) {
                 return;
             }
 
-            if (!entry.get().getState().isUsable()) {
+            if (!entry.get().getValidity().isUsable()) {
                 return;
             }
 
@@ -68,7 +68,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             var view = PrettyImageHelper.ofFixedSquare(graphic, 45);
             view.padding(new Insets(2, 8, 2, 8));
             var tile = new Tile(
-                    DataStorage.get().getStoreBrowserDisplayName(entry.get().getStore()),
+                    DataStorage.get().getStoreBrowserDisplayName(entry.get()),
                     e.getPath(),
                     view.createRegion());
             tile.setActionHandler(() -> {
