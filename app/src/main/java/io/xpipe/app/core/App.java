@@ -79,7 +79,7 @@ public class App extends Application {
                 () -> {
                     var base = String.format(
                             "XPipe Desktop (%s)", AppProperties.get().getVersion());
-                    var prefix = AppProperties.get().isStaging() ? "[STAGING, Not a proper release] " : "";
+                    var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
                     var suffix = XPipeDistributionType.get()
                                             .getUpdateHandler()
                                             .getPreparedUpdate()
