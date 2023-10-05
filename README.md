@@ -86,12 +86,6 @@ This script will automatically install the `.msi` for you.
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
-If you like chocolatey, you can also install the [xpipe choco package](https://community.chocolatey.org/packages/xpipe):
-
-```
-choco install xpipe
-```
-
 ####  Linux / MacOS
 
 The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
@@ -100,7 +94,14 @@ The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
 
-Alternatively on arch, the [xpipe AUR package](https://aur.archlinux.org/packages/xpipe) can also be installed via `yay -S xpipe`.
+
+### Package managers
+
+Alternatively, you can also use your favorite package manager (if supported):
+
+- [choco](https://community.chocolatey.org/packages/xpipe): `choco install xpipe`
+- [AUR package](https://aur.archlinux.org/packages/xpipe): `yay -S xpipe`
+- [Homebrew](https://github.com/xpipe-io/homebrew-tap): `brew install --cask xpipe-io/tap/xpipe`
 
 ## Commercial usage
 
@@ -121,7 +122,7 @@ For information about the security model of XPipe, see the [security page](/SECU
 
 For information about the privacy policy of XPipe, see the [privacy page](/PRIVACY.md).
 
-In case you're interested in development, check out the [development page](/DEVELOPMENT.md).
+In case you're interested in development, check out the [contributing page](/CONTRIBUTING.md).
 
 If you want to talk you can also join:
 

@@ -89,7 +89,7 @@ The professional version also comes with a feature to synchronize your storage w
 
 ## Can I contribute to this project?
 
-Yes, check out the [development page](/DEVELOPMENT.md) for details on how to set up a development environment and the [contributing page](/CONTRIBUTING.md) on how to get started.
+Yes, check out the [contribution page](/CONTRIBUTING.md) for details.
 
 ## Why are there no GitHub actions workflows in this repository?
 
