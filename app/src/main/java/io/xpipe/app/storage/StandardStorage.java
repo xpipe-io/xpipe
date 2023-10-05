@@ -253,6 +253,7 @@ public class StandardStorage extends DataStorage {
             if (!hasFixedLocal) {
                 var e = DataStoreEntry.createNew(
                         LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
+                e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
                 e.setConfiguration(
                         StorageElement.Configuration.builder().deletable(false).build());
                 storeEntries.add(e);
