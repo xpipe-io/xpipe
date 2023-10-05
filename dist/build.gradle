@@ -5,6 +5,7 @@ plugins {
     id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'org.jreleaser' version '1.8.0'
     id("com.netflix.nebula.ospackage") version "11.4.0"
+    id 'org.gradle.crypto.checksum' version '1.4.0'
 }
 
 repositories {
@@ -53,3 +54,19 @@ if (rootProject.fullVersion) {
 
     apply from: 'test.gradle'
 }
+
+import org.gradle.crypto.checksum.Checksum
+def distDir = layout.buildDirectory.get().dir('dist')
+task createChecksums(type: Checksum) {
+    inputFiles.setFrom(distDir.dir('artifacts').getAsFileTree().files)
+    outputDirectory.set(layout.buildDirectory.dir("dist/checksums"))
+    checksumAlgorithm.set(Checksum.Algorithm.SHA256)
+
+    doLast {
+        for (final def file in distDir.dir('checksums').getAsFileTree().files) {
+            artifactChecksums.put(file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}, file.text.trim())
+        }
+        println(artifactChecksums)
+    }
+}
+dist.finalizedBy(createChecksums)
