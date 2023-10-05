@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.SystemStateComp;
 import io.xpipe.app.comp.storage.store.DenseStoreEntryComp;
 import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
 import io.xpipe.app.comp.storage.store.StoreSection;
+import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
@@ -48,11 +49,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
         });
         var dropdown = new DropdownComp(List.of(def));
         return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
-    }
-
-    @Override
-    public boolean alwaysShowSummary() {
-        return true;
     }
 
     @Override
@@ -132,7 +128,8 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         new DataStoreListChoiceComp<>(
                                 others,
                                 ScriptStore.class,
-                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore)),
+                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore), StoreViewState.get().getAllScriptsCategory()
+                        ),
                         others)
                 .name("minimumShellDialect")
                 .description("minimumShellDialectDescription")
@@ -160,7 +157,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                 .description("scriptGroupDescription")
                 .addComp(
                         new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER, null, group, ScriptGroupStore.class, null),
+                                DataStoreChoiceComp.Mode.OTHER, null, group, ScriptGroupStore.class, null, StoreViewState.get().getAllScriptsCategory()),
                         group)
                 .nonNull()
                 .bind(
@@ -180,31 +177,30 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
-        return (scriptStore.isRequiresElevation() ? "Elevated " : "")
-                + (scriptStore.getMinimumDialect() != null
-                        ? scriptStore.getMinimumDialect().getDisplayName() + " "
-                        : "")
-                + (scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.TERMINAL_ONLY
-                        ? "Terminal"
-                        : scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.DUMB_ONLY
-                                ? "Background"
-                                : "")
-                + " Snippet";
+    public boolean canMoveCategories() {
+        return false;
     }
 
     @Override
     public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
         SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
-        return new SimpleStringProperty(scriptStore.getDescription());
+        return new SimpleStringProperty((scriptStore.isRequiresElevation() ? "Elevated " : "")
+                + (scriptStore.getMinimumDialect() != null
+                ? scriptStore.getMinimumDialect().getDisplayName() + " "
+                : "")
+                + (scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.TERMINAL_ONLY
+                ? "Terminal"
+                : scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.DUMB_ONLY
+                ? "Background"
+                : "")
+                + " Snippet");
     }
 
     @Override
     public void storageInit() throws Exception {
         var cat = DataStorage.get()
                 .addStoreCategoryIfNotPresent(DataStoreCategory.createNew(
-                        DataStorage.SCRIPTS_CATEGORY_UUID, DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID, "My scripts"));
+                        DataStorage.ALL_SCRIPTS_CATEGORY_UUID, DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID, "My scripts"));
         DataStorage.get()
                 .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
                         UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),

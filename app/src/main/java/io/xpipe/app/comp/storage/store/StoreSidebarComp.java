@@ -2,8 +2,8 @@ package io.xpipe.app.comp.storage.store;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.fxcomps.impl.StoreCategoryListComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
-import io.xpipe.app.util.FeatureProvider;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -17,7 +17,7 @@ public class StoreSidebarComp extends SimpleComp {
         var sideBar = new VerticalComp(List.of(
                 new StoreEntryListSideComp(),
                 new StoreSortComp(),
-                FeatureProvider.get().organizationComp(),
+                new StoreCategoryListComp(),
                 Comp.of(() -> new Region()).styleClass("bar").styleClass("filler-bar")));
         sideBar.apply(struc -> struc.get().setFillWidth(true));
         sideBar.apply(s -> VBox.setVgrow(s.get().getChildren().get(2), Priority.ALWAYS));

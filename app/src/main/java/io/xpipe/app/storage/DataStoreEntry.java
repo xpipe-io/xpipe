@@ -211,6 +211,12 @@ public class DataStoreEntry extends StorageElement {
         return new DataStoreEntryRef<T>(this);
     }
 
+    public void setStoreCache(String key, Object value) {
+        if (!Objects.equals(storeCache.put(key, value), value)) {
+            notifyUpdate();
+        }
+    }
+
     public void setStorePersistentState(Object value) {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;

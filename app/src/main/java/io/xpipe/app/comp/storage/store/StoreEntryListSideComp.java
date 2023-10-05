@@ -7,7 +7,9 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -21,17 +23,28 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class StoreEntryListSideComp extends SimpleComp {
 
     private Region createGroupListHeader() {
-        var label = new Label("Connections");
+        var label = new Label();
+        label.textProperty().bind(Bindings.createStringBinding(() -> {
+            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory().getCategory()) ? "Connections" : "Scripts";
+        }, StoreViewState.get().getActiveCategory()));
         label.getStyleClass().add("name");
 
-        var shownList = BindingsHelper.filteredContentBinding(
+        var all = BindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
+                storeEntryWrapper -> {
+                    var cat = DataStorage.get().getStoreCategoryIfPresent(storeEntryWrapper.getEntry().getCategoryUuid()).orElse(null);
+                    var storeRoot = cat != null ? DataStorage.get().getRootCategory(cat) : null;
+                    return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(storeRoot);
+                },
+                StoreViewState.get().getActiveCategory());
+        var shownList = BindingsHelper.filteredContentBinding(
+                all,
                 storeEntryWrapper -> {
                     return storeEntryWrapper.shouldShow(
                             StoreViewState.get().getFilterString().getValue());
                 },
                 StoreViewState.get().getFilterString());
-        var count = new CountComp<>(shownList, StoreViewState.get().getAllEntries());
+        var count = new CountComp<>(shownList, all);
 
         var spacer = new Region();
 

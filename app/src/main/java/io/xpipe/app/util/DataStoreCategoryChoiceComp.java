@@ -50,7 +50,7 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
             textProperty().unbind();
             if (w != null) {
                 textProperty().bind(w.nameProperty());
-                setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 6 : 0)));
+                setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
             }
         }
     }

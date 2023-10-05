@@ -11,10 +11,9 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
-
+import java.util.Set;
+import java.util.stream.Stream;
 
 @SuperBuilder
 @Getter
@@ -22,37 +21,47 @@ import java.util.function.BiFunction;
 @JsonTypeName("script")
 public class SimpleScriptStore extends ScriptStore {
 
-    @Override
     public String prepareDumbScript(ShellControl shellControl) {
-        return assemble(shellControl, ExecutionType.DUMB_ONLY, ScriptStore::prepareDumbScript);
+        return assemble(shellControl, ExecutionType.DUMB_ONLY);
     }
 
-    @Override
     public String prepareTerminalScript(ShellControl shellControl) {
-        return assemble(shellControl, ExecutionType.TERMINAL_ONLY, ScriptStore::prepareTerminalScript);
+        return assemble(shellControl, ExecutionType.TERMINAL_ONLY);
     }
 
-    private String assemble(ShellControl shellControl, ExecutionType type, BiFunction<ScriptStore, ShellControl, String> function) {
-        var list = new ArrayList<String>();
-        scripts.forEach(scriptStoreDataStoreEntryRef -> {
-            var s = function.apply(scriptStoreDataStoreEntryRef.getStore(), shellControl);
-            if (s != null) {
-                list.add(s);
-            }
-        });
-
-        if ((executionType == type || executionType == ExecutionType.BOTH) && minimumDialect.isCompatibleTo(shellControl.getShellDialect())) {
+    private String assemble(
+            ShellControl shellControl, ExecutionType type) {
+        if ((executionType == type || executionType == ExecutionType.BOTH)
+                && minimumDialect.isCompatibleTo(shellControl.getShellDialect())) {
             var script = ScriptHelper.createExecScript(minimumDialect, shellControl, commands);
-            list.add(shellControl.getShellDialect().sourceScriptCommand(shellControl, script));
+            return shellControl.getShellDialect().sourceScriptCommand(shellControl, script);
         }
 
-        var cmd = String.join("\n", list);
-        return cmd.isEmpty() ? null : cmd;
+        return null;
     }
 
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
-        return scripts != null ? scripts.stream().filter(scriptStore -> scriptStore != null).toList() : List.of();
+        return scripts != null
+                ? scripts.stream().filter(scriptStore -> scriptStore != null).toList()
+                : List.of();
+    }
+
+    @Override
+    public List<SimpleScriptStore> getFlattenedScripts(Set<SimpleScriptStore> seen) {
+        var isLoop = seen.contains(this);
+        seen.add(this);
+        return Stream.concat(
+                        getEffectiveScripts().stream()
+                                .map(scriptStoreDataStoreEntryRef -> {
+                                    return scriptStoreDataStoreEntryRef.getStore().getFlattenedScripts(seen).stream()
+                                            .filter(simpleScriptStore -> !seen.contains(simpleScriptStore))
+                                            .peek(simpleScriptStore -> seen.add(simpleScriptStore))
+                                            .toList();
+                                })
+                                .flatMap(List::stream),
+                        isLoop ? Stream.of() : Stream.of(this))
+                .toList();
     }
 
     @Getter

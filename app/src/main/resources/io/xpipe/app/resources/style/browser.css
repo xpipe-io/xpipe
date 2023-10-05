@@ -84,7 +84,7 @@
 .browser .bookmark-list *.scroll-bar:horizontal *.thumb,
 .browser .bookmark-list *.scroll-bar:horizontal *.increment-button,
 .browser .bookmark-list *.scroll-bar:horizontal *.decrement-button,
-.browser .bookmark-list *.scroll-bar:horizontal *.increment-arrow, 
+.browser .bookmark-list *.scroll-bar:horizontal *.increment-arrow,
 .browser .bookmark-list *.scroll-bar:horizontal *.decrement-arrow {
     -fx-background-color: null;
     -fx-background-radius: 0;

@@ -13,8 +13,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -22,19 +24,22 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<ScriptStore.State> {
 
-
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
+        return controlWithScripts(pc,getDefaultScripts());
+    }
+
+    public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> refs) {
         pc.onInit(shellControl -> {
-            var scripts = getDefaultScripts().stream()
-                    .map(simpleScriptStore -> simpleScriptStore.getStore().prepareDumbScript(shellControl))
+            var scripts = flatten(refs).stream()
+                    .map(simpleScriptStore -> simpleScriptStore.prepareDumbScript(shellControl))
                     .filter(Objects::nonNull)
                     .collect(Collectors.joining("\n"));
             if (!scripts.isBlank()) {
                 shellControl.executeSimpleBooleanCommand(scripts);
             }
 
-            var terminalCommands = getDefaultScripts().stream()
-                    .map(simpleScriptStore -> simpleScriptStore.getStore().prepareTerminalScript(shellControl))
+            var terminalCommands = flatten(refs).stream()
+                    .map(simpleScriptStore -> simpleScriptStore.prepareTerminalScript(shellControl))
                     .filter(Objects::nonNull)
                     .collect(Collectors.joining("\n"));
             if (!terminalCommands.isBlank()) {
@@ -44,14 +49,21 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         return pc;
     }
 
-    public static List<DataStoreEntryRef<ScriptStore>> getDefaultScripts() {
-        var list = DataStorage.get().getStoreEntries().stream()
+    private static List<DataStoreEntryRef<ScriptStore>> getDefaultScripts() {
+        return DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
                         && scriptStore.getState().isDefault())
                 .map(e -> e.<ScriptStore>ref())
                 .toList();
-        // TODO: Make unique
-        return list;
+    }
+
+    public static List<SimpleScriptStore> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
+        var seen = new HashSet<SimpleScriptStore>();
+        return scripts.stream()
+                .map(scriptStoreDataStoreEntryRef ->
+                        scriptStoreDataStoreEntryRef.getStore().getFlattenedScripts(seen))
+                .flatMap(List::stream)
+                .toList();
     }
 
     protected final DataStoreEntryRef<ScriptGroupStore> group;
@@ -83,9 +95,11 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         }
     }
 
-    public abstract String prepareDumbScript(ShellControl shellControl);
+    public List<SimpleScriptStore> getFlattenedScripts() {
+        return getFlattenedScripts(new HashSet<>());
+    }
 
-    public abstract String prepareTerminalScript(ShellControl shellControl);
+    protected abstract List<SimpleScriptStore> getFlattenedScripts(Set<SimpleScriptStore> seen);
 
     public abstract List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts();
 }

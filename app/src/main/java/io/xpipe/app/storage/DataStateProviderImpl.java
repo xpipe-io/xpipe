@@ -59,7 +59,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return;
         }
 
-        var old = entry.get().getStoreCache().put(key, value);
+        entry.get().setStoreCache(key, value);
     }
 
     @Override
@@ -73,8 +73,12 @@ public class DataStateProviderImpl extends DataStateProvider {
             return def.get();
         }
 
-        var result = entry.get().getStoreCache().computeIfAbsent(key, k -> def.get());
-        return c.cast(result);
+        var r = entry.get().getStoreCache().get(key);
+        if (r == null) {
+            r = def .get();
+            entry.get().setStoreCache(key, r);
+        }
+        return c.cast(r);
     }
 
     public boolean isInStorage(DataStore store) {

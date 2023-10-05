@@ -48,7 +48,7 @@ public class StoreViewState {
         } catch (Exception exception) {
             tl = new StoreSection(null, FXCollections.emptyObservableList(), FXCollections.emptyObservableList(), 0);
             categories.setAll(new StoreCategoryWrapper(DataStorage.get().getAllCategory()));
-            activeCategory.setValue(getAllCategory());
+            activeCategory.setValue(getAllConnectionsCategory());
             ErrorEvent.fromThrowable(exception).handle();
         }
         topLevelSection = tl;
@@ -58,6 +58,17 @@ public class StoreViewState {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
+                var o1Root = o1.getRoot();
+                var o2Root = o2.getRoot();
+
+                if (o1Root.equals(getAllConnectionsCategory().getCategory()) && !o1Root.equals(o2Root)) {
+                    return -1;
+                }
+
+                if (o2Root.equals(getAllConnectionsCategory().getCategory()) && !o1Root.equals(o2Root)) {
+                    return 1;
+                }
+
                 if (o1.getParent() == null && o2.getParent() == null) {
                     return 0;
                 }
@@ -81,19 +92,18 @@ public class StoreViewState {
         return categories.sorted(comparator);
     }
 
-    public StoreCategoryWrapper getAllCategory() {
+    public StoreCategoryWrapper getAllConnectionsCategory() {
         return categories.stream()
                 .filter(storeCategoryWrapper ->
-                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_CATEGORY_UUID))
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID))
                 .findFirst()
                 .orElseThrow();
     }
 
-
-    public StoreCategoryWrapper getScriptsCategory() {
+    public StoreCategoryWrapper getAllScriptsCategory() {
         return categories.stream()
                 .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.SCRIPTS_CATEGORY_UUID))
+                                storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
                 .findFirst()
                 .orElseThrow();
     }

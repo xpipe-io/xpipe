@@ -23,8 +23,8 @@ import java.util.stream.Stream;
 
 public abstract class DataStorage {
 
-    public static final UUID ALL_CATEGORY_UUID = UUID.fromString("bfb0b51a-e7a3-4ce4-8878-8d4cb5828d6c");
-    public static final UUID SCRIPTS_CATEGORY_UUID = UUID.fromString("19024cf9-d192-41a9-88a6-a22694cf716a");
+    public static final UUID ALL_CONNECTIONS_CATEGORY_UUID = UUID.fromString("bfb0b51a-e7a3-4ce4-8878-8d4cb5828d6c");
+    public static final UUID ALL_SCRIPTS_CATEGORY_UUID = UUID.fromString("19024cf9-d192-41a9-88a6-a22694cf716a");
     public static final UUID PREDEFINED_SCRIPTS_CATEGORY_UUID = UUID.fromString("5faf1d71-0efc-4293-8b70-299406396973");
     public static final UUID CUSTOM_SCRIPTS_CATEGORY_UUID = UUID.fromString("d3496db5-b709-41f9-abc0-ee0a660fbab9");
     public static final UUID DEFAULT_CATEGORY_UUID = UUID.fromString("97458c07-75c0-4f9d-a06e-92d8cdf67c40");
@@ -68,7 +68,7 @@ public abstract class DataStorage {
     }
 
     public DataStoreCategory getAllCategory() {
-        return getStoreCategoryIfPresent(ALL_CATEGORY_UUID).orElseThrow();
+        return getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).orElseThrow();
     }
 
     private static boolean shouldPersist() {
@@ -370,6 +370,17 @@ public abstract class DataStorage {
 
     public abstract boolean supportsSharing();
 
+    public DataStoreCategory getRootCategory(DataStoreCategory category) {
+        DataStoreCategory last = category;
+        DataStoreCategory p = category;
+        while ((p = DataStorage.get()
+                .getStoreCategoryIfPresent(p.getParentCategory())
+                .orElse(null))
+                != null) {
+            last = p;
+        }
+        return last;
+    }
 
     public Optional<DataStoreCategory> getStoreCategoryIfPresent(UUID uuid) {
         if (uuid == null) {
@@ -565,7 +576,7 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
-        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(ALL_CATEGORY_UUID)) {
+        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
             return;
         }
 

@@ -150,20 +150,20 @@ public class StandardStorage extends DataStorage {
                 ErrorEvent.fromThrowable(exception.get()).handle();
             }
 
-            if (getStoreCategoryIfPresent(ALL_CATEGORY_UUID).isEmpty()) {
-                var cat = DataStoreCategory.createNew(null, ALL_CATEGORY_UUID,"All connections");
-                cat.setDirectory(categoriesDir.resolve(ALL_CATEGORY_UUID.toString()));
+            if (getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).isEmpty()) {
+                var cat = DataStoreCategory.createNew(null, ALL_CONNECTIONS_CATEGORY_UUID, "All connections");
+                cat.setDirectory(categoriesDir.resolve(ALL_CONNECTIONS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
             }
 
-            if (getStoreCategoryIfPresent(SCRIPTS_CATEGORY_UUID).isEmpty()) {
-                var cat = DataStoreCategory.createNew(null, SCRIPTS_CATEGORY_UUID,"All scripts");
-                cat.setDirectory(categoriesDir.resolve(SCRIPTS_CATEGORY_UUID.toString()));
+            if (getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+                var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
+                cat.setDirectory(categoriesDir.resolve(ALL_SCRIPTS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
             }
 
             if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
-                var cat = DataStoreCategory.createNew(SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID,"Predefined");
+                var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
                 cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
             }
@@ -176,7 +176,7 @@ public class StandardStorage extends DataStorage {
                         Instant.now(),
                         Instant.now(),
                         true,
-                        ALL_CATEGORY_UUID,
+                        ALL_CONNECTIONS_CATEGORY_UUID,
                         StoreSortMode.ALPHABETICAL_ASC, false
                 ));
             }
@@ -187,9 +187,10 @@ public class StandardStorage extends DataStorage {
                 if (dataStoreCategory.getParentCategory() != null
                         && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory())
                                 .isEmpty()) {
-                    dataStoreCategory.setParentCategory(ALL_CATEGORY_UUID);
-                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CATEGORY_UUID) && !dataStoreCategory.getUuid().equals(SCRIPTS_CATEGORY_UUID)) {
-                    dataStoreCategory.setParentCategory(ALL_CATEGORY_UUID);
+                    dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
+                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID) && !dataStoreCategory.getUuid().equals(
+                        ALL_SCRIPTS_CATEGORY_UUID)) {
+                    dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
                 }
             });
 

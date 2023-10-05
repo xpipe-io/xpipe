@@ -10,9 +10,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.layout.Region;
+import lombok.AllArgsConstructor;
 
 import java.util.function.Consumer;
 
+@AllArgsConstructor
 public class StoreToggleComp extends SimpleComp {
 
     private final String nameKey;

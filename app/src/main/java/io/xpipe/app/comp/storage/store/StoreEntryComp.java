@@ -290,6 +290,16 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(item);
 
             if (menu != null) {
+                var run = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
+                run.textProperty().bind(AppI18n.observable("base.execute"));
+                run.setOnAction(event -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        p.getKey().getDataStoreCallSite().createAction(wrapper.getEntry().getStore().asNeeded()).execute();
+                    });
+                });
+                menu.getItems().add(run);
+
+
                 var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
                 var url = "xpipe://action/" + p.getKey().getId() + "/"
                         + wrapper.getEntry().getUuid();
@@ -329,15 +339,17 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(browse);
         }
 
-        var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-        StoreViewState.get().getSortedCategories().forEach(storeCategoryWrapper -> {
-            MenuItem m = new MenuItem(storeCategoryWrapper.getName());
-            m.setOnAction(event -> {
-                wrapper.moveTo(storeCategoryWrapper.getCategory());
+        if (wrapper.getEntry().getProvider() != null && wrapper.getEntry().getProvider().canMoveCategories()) {
+            var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+            StoreViewState.get().getSortedCategories().forEach(storeCategoryWrapper -> {
+                MenuItem m = new MenuItem(storeCategoryWrapper.getName());
+                m.setOnAction(event -> {
+                    wrapper.moveTo(storeCategoryWrapper.getCategory());
+                });
+                move.getItems().add(m);
             });
-            move.getItems().add(m);
-        });
-        contextMenu.getItems().add(move);
+            contextMenu.getItems().add(move);
+        }
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.disableProperty().bind(wrapper.getDeletable().not());

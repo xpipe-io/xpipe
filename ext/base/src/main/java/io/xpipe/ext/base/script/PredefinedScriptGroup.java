@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 public enum PredefinedScriptGroup {
     CLINK("Clink", null),
-    STARSHIP("Starship", "Scripts to enable the starship shell extension");
+    STARSHIP("Starship", "Sets up and enables the starship shell prompt");
 
     private final String name;
     private final String description;

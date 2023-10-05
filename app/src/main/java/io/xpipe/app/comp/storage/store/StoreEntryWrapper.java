@@ -12,6 +12,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -34,8 +35,8 @@ public class StoreEntryWrapper {
     private final Property<ActionProvider.DefaultDataStoreCallSite<?>> defaultActionProvider;
     private final BooleanProperty deletable = new SimpleBooleanProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
-    private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
+    private final MapProperty<String, Object> cache = new SimpleMapProperty<>(FXCollections.observableHashMap());
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -144,6 +145,7 @@ public class StoreEntryWrapper {
         expanded.setValue(entry.isExpanded());
         observing.setValue(entry.isObserving());
         persistentState.setValue(entry.getStorePersistentState());
+        cache.putAll(entry.getStoreCache());
 
         inRefresh.setValue(entry.isInRefresh());
         deletable.setValue(entry.getConfiguration().isDeletable()

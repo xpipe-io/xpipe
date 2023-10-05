@@ -38,8 +38,6 @@ public abstract class FeatureProvider {
 
     public abstract void init();
 
-    public abstract Comp<?> organizationComp();
-
     public abstract Comp<?> overviewPage();
 
     public abstract GitStorageHandler createStorageHandler();

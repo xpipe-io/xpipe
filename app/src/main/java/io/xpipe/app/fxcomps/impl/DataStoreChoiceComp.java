@@ -39,31 +39,16 @@ import java.util.function.Predicate;
 public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     public static <T extends DataStore> DataStoreChoiceComp<T> other(
-            Property<DataStoreEntryRef<T>> selected, Class<T> clazz, Predicate<DataStoreEntryRef<T>> filter) {
-        return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter);
+            Property<DataStoreEntryRef<T>> selected, Class<T> clazz, Predicate<DataStoreEntryRef<T>> filter, StoreCategoryWrapper initialCategory) {
+        return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
     }
 
-    public static DataStoreChoiceComp<ShellStore> proxy(Property<DataStoreEntryRef<ShellStore>> selected) {
-        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, null);
+    public static DataStoreChoiceComp<ShellStore> proxy(Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
+        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, null, initialCategory);
     }
 
-    public static DataStoreChoiceComp<ShellStore> host(Property<DataStoreEntryRef<ShellStore>> selected) {
-        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null);
-    }
-
-    public static DataStoreChoiceComp<ShellStore> environment(
-            DataStoreEntry self, Property<DataStoreEntryRef<ShellStore>> selected) {
-        return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, shellStoreDataStoreEntryRef -> shellStoreDataStoreEntryRef.get().getProvider().canHaveSubShells());
-    }
-
-    public static DataStoreChoiceComp<ShellStore> proxy(
-            DataStoreEntry self, Property<DataStoreEntryRef<ShellStore>> selected) {
-        return new DataStoreChoiceComp<>(Mode.PROXY, self, selected, ShellStore.class, null);
-    }
-
-    public static DataStoreChoiceComp<ShellStore> host(
-            DataStoreEntry self, Property<DataStoreEntryRef<ShellStore>> selected) {
-        return new DataStoreChoiceComp<>(Mode.HOST, self, selected, ShellStore.class, null);
+    public static DataStoreChoiceComp<ShellStore> host(Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
+        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);
     }
 
     public enum Mode {
@@ -77,6 +62,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
     private final Property<DataStoreEntryRef<T>> selected;
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
+    private final StoreCategoryWrapper initialCategory;
 
     private Popover popover;
 
@@ -84,8 +70,9 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
         // changed
         if (popover == null || applicableCheck != null) {
+            var cur = StoreViewState.get().getActiveCategory().getValue();
             var selectedCategory = new SimpleObjectProperty<>(
-                    StoreViewState.get().getActiveCategory().getValue());
+                    initialCategory != null ? (initialCategory.getRoot().equals(cur.getRoot()) ? cur : initialCategory) : cur);
             var filterText = new SimpleStringProperty();
             popover = new Popover();
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {

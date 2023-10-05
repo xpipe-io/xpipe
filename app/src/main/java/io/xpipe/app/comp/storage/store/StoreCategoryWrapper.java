@@ -19,6 +19,7 @@ import java.util.Optional;
 @Getter
 public class StoreCategoryWrapper {
 
+    private final DataStoreCategory root;
     private final int depth;
     private final Property<String> name;
     private final DataStoreCategory category;
@@ -30,15 +31,18 @@ public class StoreCategoryWrapper {
 
     public StoreCategoryWrapper(DataStoreCategory category) {
         var d = 0;
+        DataStoreCategory last = category;
         DataStoreCategory p = category;
         while ((p = DataStorage.get()
                         .getStoreCategoryIfPresent(p.getParentCategory())
                         .orElse(null))
                 != null) {
             d++;
+            last = p;
         }
         depth = d;
 
+        this.root = last;
         this.category = category;
         this.name = new SimpleStringProperty();
         this.lastAccess = new SimpleObjectProperty<>();

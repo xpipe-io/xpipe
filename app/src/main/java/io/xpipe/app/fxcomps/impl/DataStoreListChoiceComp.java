@@ -1,6 +1,7 @@
 package io.xpipe.app.fxcomps.impl;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
+import io.xpipe.app.comp.storage.store.StoreCategoryWrapper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -19,11 +20,15 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
     private final ListProperty<DataStoreEntryRef<T>> selectedList;
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
+    private final StoreCategoryWrapper initialCategory;
 
-    public DataStoreListChoiceComp(ListProperty<DataStoreEntryRef<T>> selectedList, Class<T> storeClass, Predicate<DataStoreEntryRef<T>> applicableCheck) {
+    public DataStoreListChoiceComp(ListProperty<DataStoreEntryRef<T>> selectedList, Class<T> storeClass, Predicate<DataStoreEntryRef<T>> applicableCheck,
+                                   StoreCategoryWrapper initialCategory
+    ) {
         this.selectedList = selectedList;
         this.storeClass = storeClass;
         this.applicableCheck = applicableCheck;
+        this.initialCategory = initialCategory;
     }
 
     @Override
@@ -42,7 +47,7 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
            return hbox;
         }).padding(new Insets(0)).apply(struc -> struc.get().setMinHeight(0)).apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
-        var add = new DataStoreChoiceComp<T>(DataStoreChoiceComp.Mode.OTHER, null, selected, storeClass, applicableCheck);
+        var add = new DataStoreChoiceComp<T>(DataStoreChoiceComp.Mode.OTHER, null, selected, storeClass, applicableCheck, initialCategory);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (!selectedList.contains(newValue)

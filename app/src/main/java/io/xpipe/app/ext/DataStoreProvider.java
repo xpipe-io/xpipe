@@ -22,6 +22,10 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default boolean canMoveCategories() {
+        return true;
+    }
+
     default boolean alwaysShowSummary() {
         return false;
     }

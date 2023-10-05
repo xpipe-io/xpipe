@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.MultiStepComp;
+import io.xpipe.app.comp.storage.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.ext.ScanProvider;
@@ -83,11 +84,12 @@ public class ScanAlert {
                                                 .name("scanAlertChoiceHeader")
                                                 .description("scanAlertChoiceHeaderDescription")
                                                 .addComp(new DataStoreChoiceComp<>(
-                                                                DataStoreChoiceComp.Mode.OTHER,
-                                                                null,
-                                                                entry,
-                                                                ShellStore.class,
-                                                                store1 -> true)
+                                                        DataStoreChoiceComp.Mode.OTHER,
+                                                        null,
+                                                        entry,
+                                                        ShellStore.class,
+                                                                store1 -> true,
+                                                        StoreViewState.get().getAllConnectionsCategory())
                                                         .disable(new SimpleBooleanProperty(initialStore != null)))
                                                 .name("scanAlertHeader")
                                                 .description("scanAlertHeaderDescription")

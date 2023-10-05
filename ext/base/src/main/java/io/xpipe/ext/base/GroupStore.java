@@ -5,7 +5,7 @@ import io.xpipe.core.store.DataStore;
 
 public interface GroupStore<T extends DataStore> extends DataStore {
 
-    DataStoreEntryRef<T> getParent();
+    DataStoreEntryRef<? extends T> getParent();
 
     @Override
     default void checkComplete() throws Exception {

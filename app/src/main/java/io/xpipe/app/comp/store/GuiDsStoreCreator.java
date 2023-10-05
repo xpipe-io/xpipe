@@ -64,8 +64,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
-            boolean exists, boolean staticDisplay
-    ) {
+            boolean exists,
+            boolean staticDisplay) {
         this.parent = parent;
         this.provider = provider;
         this.store = store;
@@ -115,7 +115,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         }
                     });
                 },
-                true, true);
+                true,
+                true);
     }
 
     public static void showCreation(DataStoreProvider selected, Predicate<DataStoreProvider> filter) {
@@ -134,7 +135,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         ErrorEvent.fromThrowable(ex).handle();
                     }
                 },
-                false, false);
+                false,
+                false);
     }
 
     public static void show(
@@ -155,8 +157,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     window -> {
                         return new MultiStepComp() {
 
-                            private final GuiDsStoreCreator creator =
-                                    new GuiDsStoreCreator(this, prop, store, filter, initialName, exists, staticDisplay);
+                            private final GuiDsStoreCreator creator = new GuiDsStoreCreator(
+                                    this, prop, store, filter, initialName, exists, staticDisplay);
 
                             @Override
                             protected List<Entry> setup() {
@@ -227,7 +229,21 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                                 return null;
                             }
 
-                            return DataStoreEntry.createNew(UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name.getValue(), store.getValue());
+                            var testE = DataStoreEntry.createNew(
+                                    UUID.randomUUID(),
+                                    DataStorage.get().getSelectedCategory().getUuid(),
+                                    name.getValue(),
+                                    store.getValue());
+                            var parent = provider.getValue().getDisplayParent(testE);
+                            return DataStoreEntry.createNew(
+                                    UUID.randomUUID(),
+                                    parent != null
+                                            ? parent.getCategoryUuid()
+                                            : DataStorage.get()
+                                                    .getSelectedCategory()
+                                                    .getUuid(),
+                                    name.getValue(),
+                                    store.getValue());
                         },
                         entry)
                 .build();
