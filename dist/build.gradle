@@ -31,30 +31,6 @@ distZip {
     enabled = false;
 }
 
-apply from: 'base.gradle'
-apply from: 'jpackage.gradle'
-
-if (rootProject.fullVersion) {
-    apply from: 'cli.gradle'
-    apply from: 'portable.gradle'
-    apply from: 'proguard.gradle'
-    apply from: 'jreleaser.gradle'
-    apply from: 'aur.gradle'
-    apply from: 'nix.gradle'
-    apply from: 'choco.gradle'
-    //apply from: 'flatpak.gradle'
-
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-        apply from: 'linux_packages.gradle'
-    } else if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        apply from: 'msi.gradle'
-    } else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        apply from: 'pkg.gradle'
-    }
-
-    apply from: 'test.gradle'
-}
-
 import org.gradle.crypto.checksum.Checksum
 def distDir = layout.buildDirectory.get().dir('dist')
 task createChecksums(type: Checksum) {
@@ -66,7 +42,29 @@ task createChecksums(type: Checksum) {
         for (final def file in distDir.dir('checksums').getAsFileTree().files) {
             artifactChecksums.put(file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}, file.text.trim())
         }
-        println(artifactChecksums)
     }
 }
 dist.finalizedBy(createChecksums)
+
+apply from: 'base.gradle'
+apply from: 'jpackage.gradle'
+
+if (rootProject.fullVersion) {
+    apply from: 'cli.gradle'
+    apply from: 'portable.gradle'
+    apply from: 'proguard.gradle'
+
+    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+        apply from: 'linux_packages.gradle'
+    } else if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        apply from: 'msi.gradle'
+    } else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        apply from: 'pkg.gradle'
+    }
+
+    apply from: 'jreleaser.gradle'
+    apply from: 'aur.gradle'
+    apply from: 'nix.gradle'
+    apply from: 'choco.gradle'
+    apply from: 'test.gradle'
+}
