@@ -21,6 +21,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import javafx.util.Duration;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.nio.file.Files;
@@ -39,6 +40,9 @@ public class AppTheme {
         if (t == null) {
             return;
         }
+
+        Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+        stage.getScene().getRoot().getStyleClass().add(t.getCssId());
 
         stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
         stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
@@ -130,8 +134,8 @@ public class AppTheme {
 
         private final String name;
 
-        public DerivedTheme(String id, String name, atlantafx.base.theme.Theme theme) {
-            super(id, theme);
+        public DerivedTheme(String id, String cssId, String name, atlantafx.base.theme.Theme theme) {
+            super(id, cssId, theme);
             this.name = name;
         }
 
@@ -165,16 +169,16 @@ public class AppTheme {
     @AllArgsConstructor
     public static class Theme implements PrefsChoiceValue {
 
-        public static final Theme PRIMER_LIGHT = new Theme("light", new PrimerLight());
-        public static final Theme PRIMER_DARK = new Theme("dark", new PrimerDark());
-        public static final Theme NORD_LIGHT = new Theme("nordLight", new NordLight());
-        public static final Theme NORD_DARK = new Theme("nordDark", new NordDark());
-        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", new CupertinoLight());
-        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", new CupertinoDark());
-        public static final Theme DRACULA = new Theme("dracula", new Dracula());
+        public static final Theme PRIMER_LIGHT = new Theme("light", "primer", new PrimerLight());
+        public static final Theme PRIMER_DARK = new Theme("dark", "primer", new PrimerDark());
+        public static final Theme NORD_LIGHT = new Theme("nordLight", "nord", new NordLight());
+        public static final Theme NORD_DARK = new Theme("nordDark", "nord", new NordDark());
+        public static final Theme CUPERTINO_LIGHT = new Theme("cupertinoLight", "cupertino", new CupertinoLight());
+        public static final Theme CUPERTINO_DARK = new Theme("cupertinoDark", "cupertino", new CupertinoDark());
+        public static final Theme DRACULA = new Theme("dracula", "dracula", new Dracula());
 
         // Adjust this to create your own theme
-        public static final Theme CUSTOM = new DerivedTheme("custom", "Custom", new PrimerDark());
+        public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
 
         // Also include your custom theme here
         public static final List<Theme> ALL = List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
@@ -196,6 +200,8 @@ public class AppTheme {
         }
 
         protected final String id;
+        @Getter
+        protected final String cssId;
         protected final atlantafx.base.theme.Theme theme;
         
         public boolean isDark() {

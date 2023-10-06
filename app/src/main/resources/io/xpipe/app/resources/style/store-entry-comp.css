@@ -1,3 +1,12 @@
+.store-list-comp .top {
+    -fx-border-width: 0 0 0.5em 0;
+    -fx-background-insets: 0 0 0.5em 0;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+/* Grid */
+
 .store-entry-grid .date, .store-entry-grid .summary {
 -fx-text-fill: -color-fg-muted;
 }
@@ -21,7 +30,11 @@
 
 .store-entry-grid .icon {
 -fx-background-color: -color-bg-overlay;
--fx-background-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+.root.nord .store-entry-grid .icon {
+    -fx-background-radius: 3;
 }
 
 .root:pretty .store-entry-grid .icon {
@@ -41,34 +54,16 @@
 -fx-padding: 1px 6px 1px 6px;
 }
 
-.store-list-comp .top {
--fx-border-width: 0 0 0.7em 0;
--fx-background-insets: 0 0 0.7em 0;
--fx-border-color: transparent;
--fx-background-color: transparent;
-}
-
-.store-entry-section-comp:expanded:odd-depth {
--fx-background-color: -color-bg-default;
--fx-background-radius: 4px;
-}
-
-.store-entry-section-comp:expanded:even-depth {
--fx-background-radius: 4px;
-}
-
-.root:light .store-entry-section-comp:expanded:even-depth {
--fx-background-color: derive(-color-bg-default, -3%);
-}
-
-.root:dark .store-entry-section-comp:expanded:even-depth {
--fx-background-color: derive(-color-bg-default, 5%);
--fx-border-color: -color-border-subtle;
-}
+/* Entry */
 
 .store-entry-comp {
 -fx-border-color: transparent;
 -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+}
+
+.root.nord .store-entry-comp {
+    -fx-background-radius: 0;
 }
 
 .store-entry-comp:hover {
@@ -99,6 +94,8 @@
 -fx-padding: 6px;
 }
 
+/* Section */
+
 .store-entry-section-comp .separator {
 -fx-padding: 0 0.75em 0 0.75em;
 -fx-border-insets: 0px;
@@ -115,23 +112,145 @@
 -fx-pref-height: 1;
 }
 
-.top > .store-entry-section-comp {
--fx-background-color: -color-bg-default;
--fx-background-radius: 4px;
-}
-
 .root:pretty .top > .store-entry-section-comp {
--fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
+-fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.5, 0, 1);
 }
 
-.store-entry-section-comp:expanded {
--fx-border-radius: 4px;
--fx-border-width: 1px;
--fx-border-color: -color-border-default;
+.store-entry-section-comp {
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+}
+
+.root.nord .store-entry-section-comp {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
 }
 
 .store-entry-section-comp .list-box-view-comp .content {
 -fx-spacing: 0.2em;
+}
+
+.store-entry-section-comp.none {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+}
+
+/* Colors */
+
+.root:light .top > .store-entry-section-comp.blue {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(130, 130, 250, 0.2) 40%, rgb(57, 57, 200, 0.2) 50%, rgb(137, 137, 250, 0.2) 100%);
+    -fx-border-color: rgba(80, 100, 150, 0.3);
+}
+
+.root:light .top > .store-entry-section-comp.blue > .separator .line {
+    -fx-border-color: rgba(80, 100, 150, 0.4);
+}
+
+.root:dark .top > .store-entry-section-comp.blue {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(30, 30, 80, 0.8) 40%, rgb(27, 27, 65, 0.8) 50%, rgb(37, 37, 100, 0.8) 100%);
+    -fx-border-color: rgba(80, 100, 150, 0.7);
+}
+
+.root:dark .top > .store-entry-section-comp.blue > .separator .line {
+    -fx-border-color: rgba(80, 100, 150, 0.7);
+}
+
+.root:light .top > .store-entry-section-comp.red {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(220, 100, 100, 0.15) 40%, rgb(205, 50, 50, 0.15) 50%, rgb(200, 90, 90, 0.15) 100%);
+    -fx-border-color: rgba(150, 100, 80, 0.4);
+}
+
+.root:light .top > .store-entry-section-comp.red > .separator .line {
+    -fx-border-color: rgba(150, 100, 80, 0.4);
+}
+
+.root:dark .top > .store-entry-section-comp.red {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(80, 30, 30, 0.4) 40%, rgb(65, 27, 27, 0.4) 50%, rgb(100, 37, 37, 0.4) 100%);
+    -fx-border-color: rgba(150, 100, 80, 0.4);
+}
+
+.root:dark .top > .store-entry-section-comp.red > .separator .line {
+    -fx-border-color: rgba(150, 100, 80, 0.4);
+}
+
+.root:light .top > .store-entry-section-comp.yellow {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(180, 180, 30, 0.2) 40%, rgb(135, 135, 27, 0.2) 50%, rgb(200, 200, 37, 0.2) 100%);
+    -fx-border-color: rgba(170, 170, 80, 0.3);
+}
+
+.root:light .top > .store-entry-section-comp.yellow > .separator .line {
+    -fx-border-color: rgba(170, 170, 80, 0.5);
+}
+
+.root:dark .top > .store-entry-section-comp.yellow {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(80, 80, 30, 0.4) 40%, rgb(65, 65, 27, 0.4) 50%, rgb(100, 100, 37, 0.4) 100%);
+    -fx-border-color: rgba(150, 150, 80, 0.4);
+}
+
+.root:dark .top > .store-entry-section-comp.yellow > .separator .line {
+    -fx-border-color: rgba(170, 170, 80, 0.3);
+}
+
+.root:light .top > .store-entry-section-comp.green {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(30, 180, 30, 0.1) 40%, rgb(20, 120, 20, 0.15) 50%, rgb(37, 200, 37, 0.1) 100%);
+    -fx-border-color: rgba(100, 150, 80, 0.2);
+}
+
+.root:light .top > .store-entry-section-comp.green > .separator .line {
+    -fx-border-color: rgba(100, 150, 80, 0.4);
+}
+
+.root:dark .top > .store-entry-section-comp.green {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(30, 80, 30, 0.3) 40%, rgb(20, 60, 20, 0.3) 50%, rgb(37, 100, 37, 0.3) 100%);
+    -fx-border-color: rgba(100, 190, 80, 0.3);
+}
+
+.root:dark .top > .store-entry-section-comp.green > .separator .line {
+    -fx-border-color: rgba(100, 190, 80, 0.2);
+}
+
+/* Light sub backgrounds */
+
+.root:light .store-entry-section-comp:sub:expanded {
+    -fx-border-color: #9999;
+}
+
+.root:light .store-entry-section-comp.none .store-entry-section-comp:expanded:even-depth {
+    -fx-background-color: derive(-color-bg-default, -3%);
+}
+
+.root:light .store-entry-section-comp.none .store-entry-section-comp:expanded:odd-depth {
+    -fx-background-color: -color-bg-default;
+}
+
+.root:light .store-entry-section-comp:sub:expanded:even-depth {
+    -fx-background-color: #ddd5;
+}
+
+.root:light .store-entry-section-comp:sub:expanded:odd-depth {
+    -fx-background-color: #aaa3;
+}
+
+/* Dark sub backgrounds */
+
+.root:dark .store-entry-section-comp:sub:expanded {
+    -fx-border-color: #4449;
+}
+
+.root:dark .store-entry-section-comp.none .store-entry-section-comp:expanded:even-depth {
+    -fx-background-color: derive(-color-bg-default, 5%);
+}
+
+.root:dark .store-entry-section-comp.none .store-entry-section-comp:expanded:odd-depth {
+    -fx-background-color: -color-bg-default;
+}
+
+.root:dark .store-entry-section-comp:sub:expanded:even-depth {
+    -fx-background-color: #1114;
+}
+
+.root:dark .store-entry-section-comp:sub:expanded:odd-depth {
+    -fx-background-color: #2224;
 }
 
 

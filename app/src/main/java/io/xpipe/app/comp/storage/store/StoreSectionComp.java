@@ -9,16 +9,20 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.storage.DataStoreColor;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
+    private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
+    private static final PseudoClass SUB = PseudoClass.getPseudoClass("sub");
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even-depth");
     public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
@@ -80,6 +84,23 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
                     struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
+                }).apply(struc -> SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+                    if (!topLevel) {
+                        return;
+                    }
+
+                    struc.get().getStyleClass().removeIf(s -> Arrays.stream(DataStoreColor.values())
+                            .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
+                    struc.get().getStyleClass().remove("none");
+                    if (val != null) {
+                        struc.get().getStyleClass().add(val.getId());
+                    } else {
+                        struc.get().getStyleClass().add("none");
+                    }
+                }))
+                .apply(struc -> {
+                    struc.get().pseudoClassStateChanged(ROOT, topLevel);
+                    struc.get().pseudoClassStateChanged(SUB, !topLevel);
                 })
                 .createStructure();
     }

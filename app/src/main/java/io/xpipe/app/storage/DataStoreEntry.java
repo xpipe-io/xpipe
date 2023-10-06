@@ -62,6 +62,10 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     JsonNode storePersistentStateNode;
+
+    @NonFinal
+    DataStoreColor color;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -74,7 +78,8 @@ public class DataStoreEntry extends StorageElement {
             Validity validity,
             Configuration configuration,
             JsonNode storePersistentState,
-            boolean expanded) {
+            boolean expanded, DataStoreColor color
+    ) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -82,6 +87,7 @@ public class DataStoreEntry extends StorageElement {
         this.validity = validity;
         this.configuration = configuration;
         this.expanded = expanded;
+        this.color = color;
         this.provider = store != null
                 ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
                 : null;
@@ -103,7 +109,8 @@ public class DataStoreEntry extends StorageElement {
                 store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE,
                 Configuration.defaultConfiguration(),
                 null,
-                false);
+                false, null
+        );
         entry.refresh();
         return entry;
     }
@@ -119,7 +126,8 @@ public class DataStoreEntry extends StorageElement {
             JsonNode storeNode,
             Configuration configuration,
             JsonNode storePersistentState,
-            boolean expanded) {
+            boolean expanded,
+            DataStoreColor color) {
         return new DataStoreEntry(
                 directory,
                 uuid,
@@ -132,7 +140,8 @@ public class DataStoreEntry extends StorageElement {
                 Validity.INCOMPLETE,
                 configuration,
                 storePersistentState,
-                expanded);
+                expanded, color
+        );
     }
 
     public static DataStoreEntry fromDirectory(Path dir) throws Exception {
@@ -178,6 +187,15 @@ public class DataStoreEntry extends StorageElement {
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
+        var color = Optional.ofNullable(stateJson.get("color"))
+                .map(node -> {
+                    try {
+                        return mapper.treeToValue(node, DataStoreColor.class);
+                    } catch (JsonProcessingException e) {
+                        return null;
+                    }
+                })
+                .orElse(null);
 
         // Store loading is prone to errors.
         JsonNode storeNode = null;
@@ -196,7 +214,8 @@ public class DataStoreEntry extends StorageElement {
                 storeNode,
                 configuration,
                 persistentState,
-                expanded);
+                expanded,
+                color);
     }
 
     public void setInRefresh(boolean newRefresh) {
@@ -268,6 +287,15 @@ public class DataStoreEntry extends StorageElement {
     public void setExpanded(boolean expanded) {
         var changed = expanded != this.expanded;
         this.expanded = expanded;
+        if (changed) {
+            dirty = true;
+            notifyUpdate();
+        }
+    }
+
+    public void setColor(DataStoreColor newColor) {
+        var changed = !Objects.equals(color, newColor);
+        this.color = newColor;
         if (changed) {
             dirty = true;
             notifyUpdate();
@@ -431,6 +459,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("categoryUuid", categoryUuid.toString());
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
+        stateObj.set("color", mapper.valueToTree(color));
         stateObj.set("persistentState", storePersistentStateNode);
         obj.set("configuration", mapper.valueToTree(configuration));
         stateObj.put("expanded", expanded);

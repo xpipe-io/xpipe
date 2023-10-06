@@ -7,6 +7,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
@@ -37,6 +38,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
     private final MapProperty<String, Object> cache = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -146,6 +148,7 @@ public class StoreEntryWrapper {
         observing.setValue(entry.isObserving());
         persistentState.setValue(entry.getStorePersistentState());
         cache.putAll(entry.getStoreCache());
+        color.setValue(entry.getColor());
 
         inRefresh.setValue(entry.isInRefresh());
         deletable.setValue(entry.getConfiguration().isDeletable()

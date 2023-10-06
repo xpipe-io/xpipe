@@ -13,6 +13,16 @@
 -fx-spacing: 0.8em;
 }
 
+.root.nord .store-header-bar {
+ -fx-background-radius: 0;
+ -fx-border-radius: 0;
+}
+
+.root.nord .bar {
+ -fx-background-radius: 0;
+ -fx-border-radius: 0;
+}
+
 .bar .filter-bar .text-field {
 -fx-padding: 0.35em;
 -fx-text-fill: -color-fg-default;
@@ -47,6 +57,11 @@
 -fx-border-radius: 0 4px 4px 0;
  -fx-border-width: 0.05em 0.05em 0.05em 0;
 -fx-spacing: 0.2em;
+}
+
+.root.nord .store-creation-bar, .root.nord .store-sort-bar, .root.nord .store-category-bar {
+ -fx-background-radius: 0;
+ -fx-border-radius: 0;
 }
 
 .store-category-bar {

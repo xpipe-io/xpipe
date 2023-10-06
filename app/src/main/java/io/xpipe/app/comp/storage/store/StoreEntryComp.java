@@ -17,7 +17,9 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.DesktopShortcuts;
 import io.xpipe.app.util.ThreadHelper;
@@ -43,13 +45,14 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
     public static StoreEntryComp create(
             StoreEntryWrapper entry, boolean showIcon, Comp<?> content, boolean preferLarge) {
         if (!preferLarge) {
-            return new DenseStoreEntryComp(entry, showIcon, content);
+            return new DenseStoreEntryComp(entry, true, content);
         } else {
             return new StandardStoreEntryComp(entry, content);
         }
@@ -345,10 +348,30 @@ public abstract class StoreEntryComp extends SimpleComp {
                 MenuItem m = new MenuItem(storeCategoryWrapper.getName());
                 m.setOnAction(event -> {
                     wrapper.moveTo(storeCategoryWrapper.getCategory());
+                    event.consume();
                 });
                 move.getItems().add(m);
             });
             contextMenu.getItems().add(move);
+        }
+
+        {
+            var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
+            var none = new MenuItem("None");
+            none.setOnAction(event -> {
+                wrapper.getEntry().setColor(null);
+                event.consume();
+            });
+            color.getItems().add(none);
+            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
+                MenuItem m = new MenuItem(DataStoreFormatter.capitalize(dataStoreColor.getId()));
+                m.setOnAction(event -> {
+                    wrapper.getEntry().setColor(dataStoreColor);
+                    event.consume();
+                });
+                color.getItems().add(m);
+            });
+            contextMenu.getItems().add(color);
         }
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
