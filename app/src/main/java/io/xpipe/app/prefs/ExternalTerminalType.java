@@ -381,6 +381,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType ALACRITTY_MACOS = new MacOsType("app.alacrittyMacOs", "Alacritty") {
 
         @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             LocalStore.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
@@ -396,15 +401,35 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "kitty") {
 
         @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = new LocalStore().control().start()) {
-                pc.command(String.format(
+            if (!MacOsPermissions.waitForAccessibilityPermissions()) {
+                return;
+            }
+
+            try (ShellControl pc = LocalStore.getShell()) {
+                pc.osascriptCommand(String.format(
                                 """
-                                %s/Contents/MacOS/kitty -T "%s" %s
-                                """,
-                                getApplicationPath().orElseThrow(),
-                                configuration.getTitle(),
-                                pc.getShellDialect().fileArgument(configuration.getScriptFile())))
+                                        if application "Kitty" is running then
+                                            tell application "Kitty" to activate
+                                            tell application "System Events" to tell process "Kitty" to keystroke "t" using command down
+                                        else
+                                            tell application "Kitty" to activate
+                                        end if
+                                        delay 1
+                                        tell application "System Events"
+                                            tell process "Kitty"
+                                                keystroke "%s"
+                                                delay 0.01
+                                                key code 36
+                                            end tell
+                                        end tell
+                                        """,
+                                configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
                         .execute();
             }
         }

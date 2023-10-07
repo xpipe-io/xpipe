@@ -218,7 +218,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public Map<String, String> getProperties(ShellControl pc) throws Exception {
             try (CommandControl c =
-                    pc.subShell(ShellDialects.BASH).command("sw_vers").start()) {
+                    pc.command("sw_vers").start()) {
                 var text = c.readStdoutOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
