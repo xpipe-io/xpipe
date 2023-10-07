@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 
@@ -18,8 +19,8 @@ public interface ShellStore extends DataStore, InternalCacheDataStore, Launchabl
     }
 
     @Override
-    default String prepareLaunchCommand(String displayName) throws Exception {
-        return control().prepareTerminalOpen(displayName);
+    default ProcessControl prepareLaunchCommand() throws Exception {
+        return control();
     }
 
     default ShellDialect getShellType() {

@@ -27,18 +27,17 @@ public class LaunchAction implements ActionProvider {
         public void execute() throws Exception {
             var storeName = entry.getName();
             if (entry.getStore() instanceof ShellStore s) {
-                String command = ScriptStore.controlWithDefaultScripts(s.control()).prepareTerminalOpen(storeName);
-                TerminalHelper.open(storeName, command);
+                TerminalHelper.open(entry, storeName, ScriptStore.controlWithDefaultScripts(s.control()));
                 return;
             }
 
             if (entry.getStore() instanceof LaunchableStore s) {
-                String command = s.prepareLaunchCommand(storeName);
+                var command = s.prepareLaunchCommand();
                 if (command == null) {
                     return;
                 }
 
-                TerminalHelper.open(storeName, command);
+                TerminalHelper.open(entry, storeName, command);
             }
         }
     }

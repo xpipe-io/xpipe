@@ -48,7 +48,7 @@ public class XPipeUrlAction implements ActionProvider {
         public void execute() throws Exception {
             var storeName = entry.getName();
             if (entry.getStore() instanceof LaunchableStore s) {
-                String command = s.prepareLaunchCommand(storeName);
+                var command = s.prepareLaunchCommand();
                 if (command == null) {
                     return;
                 }

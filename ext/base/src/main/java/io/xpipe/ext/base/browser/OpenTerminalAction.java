@@ -25,7 +25,7 @@ public class OpenTerminalAction implements LeafAction {
         if (model.getInOverview().get()) {
             TerminalHelper.open(
                     model.getName(),
-                    model.getFileSystem().getShell().orElseThrow().prepareTerminalOpen(model.getName()));
+                    model.getFileSystem().getShell().orElseThrow());
             return;
         }
 

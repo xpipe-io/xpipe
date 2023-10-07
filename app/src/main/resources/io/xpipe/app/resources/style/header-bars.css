@@ -13,6 +13,10 @@
 -fx-spacing: 0.8em;
 }
 
+.store-header-bar > .top {
+ -fx-font-weight: BOLD;
+}
+
 .root.nord .store-header-bar {
  -fx-background-radius: 0;
  -fx-border-radius: 0;

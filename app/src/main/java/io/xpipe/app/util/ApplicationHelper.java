@@ -40,7 +40,7 @@ public class ApplicationHelper {
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 
-    public static void isInPath(
+    public static void checkIsInPath(
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!isInPath(processControl, executable)) {

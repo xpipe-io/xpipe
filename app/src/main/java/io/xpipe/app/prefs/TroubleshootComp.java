@@ -69,7 +69,7 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                                                 sc.executeSimpleCommand(
                                                         ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
                                             } else {
-                                                TerminalHelper.open("XPipe Debug", "\"" + script + "\"");
+                                                TerminalHelper.open("XPipe Debug", LocalStore.getShell().command("\"" + script + "\""));
                                             }
                                         }
                                     });

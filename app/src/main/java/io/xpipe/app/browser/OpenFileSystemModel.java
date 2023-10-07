@@ -7,7 +7,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.*;
@@ -46,7 +45,7 @@ public final class OpenFileSystemModel {
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
         this.browserModel = browserModel;
         this.entry = entry;
-        this.name = entry.get().getName();
+        this.name = DataStorage.get().getStoreBrowserDisplayName(entry.get());
         this.tooltip = DataStorage.get().getId(entry.getEntry()).toString();
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
@@ -147,32 +146,29 @@ public final class OpenFileSystemModel {
         }
 
         // Handle commands typed into navigation bar
-        if (allowCommands && evaluatedPath != null && !FileNames.isAbsolute(evaluatedPath)
+        if (allowCommands
+                && evaluatedPath != null
+                && !FileNames.isAbsolute(evaluatedPath)
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.ALL.stream()
-                        .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
-                    var cmd = fileSystem
+                if (ShellDialects.ALL.stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
+                    TerminalHelper.open(entry.getEntry(), name,  fileSystem
                             .getShell()
                             .get()
                             .subShell(adjustedPath)
                             .initWith(fileSystem
-                                    .getShell()
-                                    .get()
-                                    .getShellDialect()
-                                    .getCdCommand(currentPath.get()))
-                            .prepareTerminalOpen(name);
-                    TerminalHelper.open(adjustedPath, cmd);
+                                              .getShell()
+                                              .get()
+                                              .getShellDialect()
+                                              .getCdCommand(currentPath.get())));
                 } else {
-                    var cmd = fileSystem
+                    TerminalHelper.open(entry.getEntry(), name,  fileSystem
                             .getShell()
                             .get()
                             .command(adjustedPath)
-                            .withWorkingDirectory(directory)
-                            .prepareTerminalOpen(name);
-                    TerminalHelper.open(adjustedPath, cmd);
+                            .withWorkingDirectory(directory));
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -394,10 +390,9 @@ public final class OpenFileSystemModel {
             BooleanScope.execute(busy, () -> {
                 if (entry.getStore() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
-                    var command = s.control()
-                            .initWith(connection.getShellDialect().getCdCommand(directory))
-                            .prepareTerminalOpen(directory + " - " + entry.get().getName());
-                    TerminalHelper.open(directory, command);
+                    var name = directory + " - " + entry.get().getName();
+                    TerminalHelper.open(entry.getEntry(), name, s.control()
+                            .initWith(connection.getShellDialect().getCdCommand(directory)));
                 }
             });
         });
