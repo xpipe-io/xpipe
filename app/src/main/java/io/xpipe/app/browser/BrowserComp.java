@@ -14,6 +14,7 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
@@ -262,13 +263,11 @@ public class BrowserComp extends SimpleComp {
                         PlatformThread.sync(model.getBusy())));
         tab.setText(model.getName());
 
-        // new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(tab);
         tab.setContent(new OpenFileSystemComp(model).createSimple());
 
         var id = UUID.randomUUID().toString();
         tab.setId(id);
 
-        var found = tabs.lookupAll("tab-header-area");
         SimpleChangeListener.apply(tabs.skinProperty(), newValue -> {
             if (newValue != null) {
                 Platform.runLater(() -> {
@@ -281,6 +280,11 @@ public class BrowserComp extends SimpleComp {
                     close.setPrefWidth(30);
 
                     StackPane c = (StackPane) tabs.lookup("#" + id + " .tab-container");
+                    c.getStyleClass().add("color-box");
+                    var color = DataStorage.get().getRootForEntry(model.getEntry().get()).getColor();
+                    if (color != null) {
+                        c.getStyleClass().add(color.getId());
+                    }
                     new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,

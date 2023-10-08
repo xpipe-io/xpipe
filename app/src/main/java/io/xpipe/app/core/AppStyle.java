@@ -15,7 +15,7 @@ import java.util.*;
 
 public class AppStyle {
 
-    private static final Map<Path, String> STYLESHEET_CONTENTS = new HashMap<>();
+    private static final Map<Path, String> STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final List<Scene> scenes = new ArrayList<>();
     private static String FONT_CONTENTS = "";
 

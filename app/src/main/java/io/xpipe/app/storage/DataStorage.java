@@ -200,6 +200,34 @@ public abstract class DataStorage {
         saveAsync();
     }
 
+    public boolean isRootEntry(DataStoreEntry entry) {
+        var noParent = DataStorage.get()
+                .getDisplayParent(entry)
+                .isEmpty();
+        var diffParentCategory = DataStorage.get()
+                .getDisplayParent(entry)
+                .map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid()))
+                .orElse(false);
+        return noParent || diffParentCategory;
+    }
+
+    public DataStoreEntry getRootForEntry(DataStoreEntry entry) {
+        if (isRootEntry(entry)) {
+            return entry;
+        }
+
+        var current = entry;
+        Optional<DataStoreEntry> parent;
+        while ((parent = getDisplayParent(current)).isPresent()) {
+            current = parent.get();
+            if (isRootEntry(current)) {
+                break;
+            }
+        }
+
+        return current;
+    }
+
     public Optional<DataStoreEntry> getDisplayParent(DataStoreEntry entry) {
         if (entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return Optional.empty();
@@ -555,7 +583,7 @@ public abstract class DataStorage {
         return findEntry(store).map(dataStoreEntry -> dataStoreEntry.getName());
     }
 
-    public String getStoreBrowserDisplayName(DataStoreEntry store) {
+    public String getStoreDisplayName(DataStoreEntry store) {
         if (store == null) {
             return "?";
         }

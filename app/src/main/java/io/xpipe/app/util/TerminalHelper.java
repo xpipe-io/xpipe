@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalTerminalType;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ProcessControl;
 
@@ -22,12 +23,13 @@ public class TerminalHelper {
             throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
-        var prefix = entry != null && entry.getColor() != null && type.supportsColoredTitle()
-                ? entry.getColor().getEmoji() + " "
+        var color = DataStorage.get().getRootForEntry(entry).getColor();
+        var prefix = entry != null && color != null && type.supportsColoredTitle()
+                ? color.getEmoji() + " "
                 : "";
         var fixedTitle = prefix + (title != null ? title : entry != null ? entry.getName() : "?");
         var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(fixedTitle));
-        var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? entry.getColor() : null, title, file);
+        var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, title, file);
         try {
             type.launch(config);
         } catch (Exception ex) {

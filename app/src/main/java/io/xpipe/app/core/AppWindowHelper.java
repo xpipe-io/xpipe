@@ -62,6 +62,7 @@ public class AppWindowHelper {
         stage.setTitle(title);
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
+        AppTheme.initThemeHandlers(stage);
         setupStylesheets(stage.getScene());
 
         stage.setOnShown(e -> {

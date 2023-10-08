@@ -94,7 +94,7 @@ public class StoreCategoryComp extends SimpleComp {
         }));
         h.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, () -> createContextMenu(name)));
-        h.padding(new Insets(0, 10, 0, (category.getDepth() * 8)));
+        h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
         h.styleClass("category-button");
         var l = category.getChildren()
                 .sorted(Comparator.comparing(
@@ -102,7 +102,7 @@ public class StoreCategoryComp extends SimpleComp {
         var children = new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper));
 
         var emptyBinding = Bindings.isEmpty(category.getChildren());
-        var v = new VerticalComp(List.of(h, Comp.separator().hide(emptyBinding), children.hide(emptyBinding)));
+        var v = new VerticalComp(List.of(h, Comp.separator().hide(emptyBinding), Comp.vspacer(5).hide(emptyBinding), children.hide(emptyBinding)));
         v.styleClass("category");
         v.apply(struc -> {
             SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {

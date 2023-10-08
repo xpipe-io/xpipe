@@ -4,7 +4,7 @@ import io.xpipe.app.comp.storage.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.FeatureProvider;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class StandardStorage extends DataStorage {
     private final GitStorageHandler gitStorageHandler;
 
     StandardStorage() {
-        this.gitStorageHandler = FeatureProvider.get().createStorageHandler();
+        this.gitStorageHandler = LicenseProvider.get().createStorageHandler();
         this.gitStorageHandler.init(dir);
     }
 
@@ -257,6 +257,7 @@ public class StandardStorage extends DataStorage {
                 e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
                 e.setConfiguration(
                         StorageElement.Configuration.builder().deletable(false).build());
+                e.setColor(DataStoreColor.BLUE);
                 storeEntries.add(e);
                 e.validate();
             }

@@ -8,7 +8,7 @@ import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.storage.StorageJacksonModule;
-import io.xpipe.app.util.FeatureProvider;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.core.util.DataStateProvider;
@@ -119,14 +119,14 @@ open module io.xpipe.app {
     uses ModuleLayerLoader;
     uses ScanProvider;
     uses BrowserAction;
-    uses io.xpipe.app.util.FeatureProvider;
+    uses LicenseProvider;
 
     provides Module with StorageJacksonModule;
     provides ModuleLayerLoader with
             ActionProvider.Loader,
             PrefsProvider.Loader,
             BrowserAction.Loader,
-            FeatureProvider.Loader,
+            LicenseProvider.Loader,
             ScanProvider.Loader;
     provides DataStateProvider with
             DataStateProviderImpl;

@@ -17,6 +17,7 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.DataStoreFormatter;
@@ -355,7 +356,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(move);
         }
 
-        {
+        if (DataStorage.get().isRootEntry(wrapper.getEntry())) {
             var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
             var none = new MenuItem("None");
             none.setOnAction(event -> {

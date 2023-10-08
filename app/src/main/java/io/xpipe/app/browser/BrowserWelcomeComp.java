@@ -68,7 +68,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             var view = PrettyImageHelper.ofFixedSquare(graphic, 45);
             view.padding(new Insets(2, 8, 2, 8));
             var tile = new Tile(
-                    DataStorage.get().getStoreBrowserDisplayName(entry.get()),
+                    DataStorage.get().getStoreDisplayName(entry.get()),
                     e.getPath(),
                     view.createRegion());
             tile.setActionHandler(() -> {

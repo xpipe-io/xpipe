@@ -6,7 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.FeatureProvider;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LockedSecretValue;
 import io.xpipe.core.store.LocalStore;
@@ -41,7 +41,7 @@ public class BaseMode extends OperationMode {
         // Load translations before storage initialization to localize store error messages
         // Also loaded before antivirus alert to localize that
         AppI18n.init();
-        FeatureProvider.get().init();
+        LicenseProvider.get().init();
         AppAntivirusAlert.showIfNeeded();
         LocalStore.init();
         AppPrefs.init();

@@ -15,9 +15,15 @@ import java.util.function.Predicate;
 
 public interface ShellControl extends ProcessControl {
 
-    default boolean isLocal() {
+    default boolean hasLocalSystemAccess() {
         return getSystemId().equals(XPipeSystemId.getLocal());
     }
+
+    boolean isLocal();
+
+    ShellControl changesHosts();
+
+    ShellControl getMachineRootSession();
 
     String getOsName();
 

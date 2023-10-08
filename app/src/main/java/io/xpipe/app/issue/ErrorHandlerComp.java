@@ -10,7 +10,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.util.JfxHelper;
-import io.xpipe.app.util.LicenseException;
+import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -194,7 +194,7 @@ public class ErrorHandlerComp extends SimpleComp {
         actionBox.getStyleClass().add("actions");
         actionBox.setFillWidth(true);
 
-        if (event.getThrowable() instanceof LicenseException) {
+        if (event.getThrowable() instanceof LicenseRequiredException) {
             event.getCustomActions().add(new ErrorAction() {
                 @Override
                 public String getName() {

@@ -35,17 +35,18 @@ public class AppTheme {
     private static final PseudoClass PRETTY = PseudoClass.getPseudoClass("pretty");
     private static final PseudoClass PERFORMANCE = PseudoClass.getPseudoClass("performance");
 
-    public static void initTheme(Window stage) {
-        var t = AppPrefs.get().theme.getValue();
-        if (t == null) {
-            return;
-        }
+    public static void initThemeHandlers(Window stage) {
+        SimpleChangeListener.apply(AppPrefs.get().theme, t -> {
+            Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+            if (t == null) {
+                return;
+            }
 
-        Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
-        stage.getScene().getRoot().getStyleClass().add(t.getCssId());
+            stage.getScene().getRoot().getStyleClass().add(t.getCssId());
+            stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
+            stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
+        });
 
-        stage.getScene().getRoot().pseudoClassStateChanged(LIGHT, !t.isDark());
-        stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
         SimpleChangeListener.apply(AppPrefs.get().performanceMode(),val -> {
             stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
             stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
@@ -106,7 +107,6 @@ public class AppTheme {
             for (Window window : Window.getWindows()) {
                 var scene = window.getScene();
                 Image snapshot = scene.snapshot(null);
-                initTheme(window);
                 Pane root = (Pane) scene.getRoot();
 
                 ImageView imageView = new ImageView(snapshot);

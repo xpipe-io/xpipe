@@ -38,7 +38,7 @@ public class AppInstaller {
 
     public static void installFile(ShellControl s, InstallerAssetType asset, Path localFile) throws Exception {
         String targetFile;
-        if (s.isLocal()) {
+        if (s.hasLocalSystemAccess()) {
             targetFile = localFile.toString();
         } else {
             targetFile = FileNames.join(

@@ -108,18 +108,11 @@ public class StoreSection {
         var topLevel = BindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    var noParent = DataStorage.get()
-                            .getDisplayParent(section.getWrapper().getEntry())
-                            .isEmpty();
                     var sameCategory =
                             category.getValue().contains(section.getWrapper().getEntry());
-                    var diffParentCategory = DataStorage.get()
-                            .getDisplayParent(section.getWrapper().getEntry())
-                            .map(entry -> !category.getValue().contains(entry))
-                            .orElse(false);
                     var showFilter = section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
-                    return (noParent || diffParentCategory) && showFilter && sameCategory && matchesSelector;
+                    return DataStorage.get().isRootEntry(section.getWrapper().getEntry()) && showFilter && sameCategory && matchesSelector;
                 },
                 category,
                 filterString);

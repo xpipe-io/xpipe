@@ -45,7 +45,7 @@ public final class OpenFileSystemModel {
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
         this.browserModel = browserModel;
         this.entry = entry;
-        this.name = DataStorage.get().getStoreBrowserDisplayName(entry.get());
+        this.name = DataStorage.get().getStoreDisplayName(entry.get());
         this.tooltip = DataStorage.get().getId(entry.getEntry()).toString();
         this.inOverview.bind(Bindings.createBooleanBinding(
                 () -> {
@@ -363,7 +363,7 @@ public final class OpenFileSystemModel {
             fs.open();
             this.fileSystem = fs;
             this.local =
-                    fs.getShell().map(shellControl -> shellControl.isLocal()).orElse(false);
+                    fs.getShell().map(shellControl -> shellControl.hasLocalSystemAccess()).orElse(false);
             this.cache.init();
         });
     }

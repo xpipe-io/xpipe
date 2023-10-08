@@ -2,15 +2,16 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.GitStorageHandler;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ModuleLayerLoader;
 
 import java.util.ServiceLoader;
 
-public abstract class FeatureProvider {
+public abstract class LicenseProvider {
 
-    private static FeatureProvider INSTANCE = null;
+    private static LicenseProvider INSTANCE = null;
 
-    public static FeatureProvider get() {
+    public static LicenseProvider get() {
         return INSTANCE;
     }
 
@@ -18,7 +19,7 @@ public abstract class FeatureProvider {
 
         @Override
         public void init(ModuleLayer layer) {
-            INSTANCE = ServiceLoader.load(layer, FeatureProvider.class).stream()
+            INSTANCE = ServiceLoader.load(layer, LicenseProvider.class).stream()
                                .map(ServiceLoader.Provider::get)
                                .findFirst().orElseThrow();
         }
@@ -33,6 +34,10 @@ public abstract class FeatureProvider {
             return true;
         }
     }
+
+    public abstract void handleShellControl(ShellControl sc);
+
+    public abstract void showLicenseAlert(LicenseRequiredException ex);
 
     public abstract LicenseType getLicenseType();
 

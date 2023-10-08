@@ -6,7 +6,7 @@ import io.xpipe.app.comp.DeveloperTabComp;
 import io.xpipe.app.comp.storage.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.PrefsComp;
-import io.xpipe.app.util.FeatureProvider;
+import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -70,7 +70,7 @@ public class AppLayoutModel {
         l.add(new Entry(
                 AppI18n.observable("explorePlans"),
                 "mdi2p-professional-hexagon",
-                FeatureProvider.get().overviewPage()));
+                LicenseProvider.get().overviewPage()));
 
         return l;
     }
