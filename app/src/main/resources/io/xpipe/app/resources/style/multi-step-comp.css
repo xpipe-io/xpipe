@@ -3,7 +3,7 @@
 -fx-background-color: -color-accent-fg;
 }
 
-.multi-step-comp .entry {
+.multi-step-comp > .entry {
 -fx-spacing: 0.2em;
 -fx-padding: 0.6em 0 1em 0;
 }

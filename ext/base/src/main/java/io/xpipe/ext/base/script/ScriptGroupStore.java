@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @SuperBuilder
@@ -24,10 +24,10 @@ public class ScriptGroupStore extends ScriptStore implements GroupStore<ScriptSt
     }
 
     @Override
-    public List<SimpleScriptStore> getFlattenedScripts(Set<SimpleScriptStore> seen) {
-        return getEffectiveScripts().stream().map(scriptStoreDataStoreEntryRef -> {
-            return scriptStoreDataStoreEntryRef.getStore().getFlattenedScripts(seen);
-        }).flatMap(List::stream).toList();
+    protected void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+        getEffectiveScripts().forEach(simpleScriptStore -> {
+            simpleScriptStore.getStore().queryFlattenedScripts(all);
+        });
     }
 
     @Override

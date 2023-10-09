@@ -257,9 +257,13 @@ public class StandardStorage extends DataStorage {
                 e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
                 e.setConfiguration(
                         StorageElement.Configuration.builder().deletable(false).build());
-                e.setColor(DataStoreColor.BLUE);
                 storeEntries.add(e);
                 e.validate();
+            }
+
+            var local = DataStorage.get().getStoreEntry(LOCAL_ID);
+            if (storeEntries.stream().noneMatch(entry -> entry.getColor() != null)) {
+                local.setColor(DataStoreColor.BLUE);
             }
         }
 

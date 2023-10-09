@@ -1,3 +1,17 @@
+.root:dark .color-box {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 5%) 40%, derive(-color-bg-default, 1%) 50%, derive(-color-bg-default, 5%) 100%);
+    -fx-border-color: -color-border-default;
+}
+
+.root:light .color-box {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -8%) 40%, derive(-color-bg-default, -3%) 50%, derive(-color-bg-default, -8%) 100%);
+    -fx-border-color: derive(-color-border-default, -10%);
+}
+
+.color-box > .separator .line {
+    -fx-border-color: -color-border-default;
+}
+
 .root:light .color-box.blue {
     -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(130, 130, 250, 0.2) 40%, rgb(57, 57, 200, 0.2) 50%, rgb(137, 137, 250, 0.2) 100%);
     -fx-border-color: rgba(80, 100, 150, 0.3);

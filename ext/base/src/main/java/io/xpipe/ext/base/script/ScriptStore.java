@@ -13,10 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -58,12 +55,11 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     public static List<SimpleScriptStore> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
-        var seen = new HashSet<SimpleScriptStore>();
-        return scripts.stream()
-                .map(scriptStoreDataStoreEntryRef ->
-                        scriptStoreDataStoreEntryRef.getStore().getFlattenedScripts(seen))
-                .flatMap(List::stream)
-                .toList();
+        var seen = new LinkedHashSet<SimpleScriptStore>();
+        scripts
+                .forEach(scriptStoreDataStoreEntryRef ->
+                        scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
+        return seen.stream().toList();
     }
 
     protected final DataStoreEntryRef<ScriptGroupStore> group;
@@ -95,11 +91,13 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         }
     }
 
-    public List<SimpleScriptStore> getFlattenedScripts() {
-        return getFlattenedScripts(new HashSet<>());
+    public LinkedHashSet<SimpleScriptStore> getFlattenedScripts() {
+        var set = new LinkedHashSet<SimpleScriptStore>();
+        queryFlattenedScripts(set);
+        return set;
     }
 
-    protected abstract List<SimpleScriptStore> getFlattenedScripts(Set<SimpleScriptStore> seen);
+    protected abstract void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all);
 
     public abstract List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts();
 }

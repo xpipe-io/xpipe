@@ -27,9 +27,10 @@ public class TerminalHelper {
         var prefix = entry != null && color != null && type.supportsColoredTitle()
                 ? color.getEmoji() + " "
                 : "";
-        var fixedTitle = prefix + (title != null ? title : entry != null ? entry.getName() : "?");
-        var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(fixedTitle));
-        var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, title, file);
+        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
+        var adjustedTitle = prefix + cleanTitle;
+                var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(adjustedTitle));
+        var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, adjustedTitle, cleanTitle, file);
         try {
             type.launch(config);
         } catch (Exception ex) {

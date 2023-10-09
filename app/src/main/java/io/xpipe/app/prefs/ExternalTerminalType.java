@@ -3,10 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.ApplicationHelper;
-import io.xpipe.app.util.MacOsPermissions;
-import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -176,6 +173,27 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return launcherDir.map(Path::of);
         }
     };
+
+//    ExternalTerminalType WEZ_WINDOWS = new WindowsType("app.wezWindows", "wezterm") {
+//
+//        @Override
+//        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+//            ThreadHelper.runFailableAsync(() -> {
+//                new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start", "-e", "cmd", "/c").addFile(configuration.getScriptFile())).execute();
+//            });
+//        }
+//
+//        @Override
+//        protected Optional<Path> determineInstallation() {
+//            Optional<String> launcherDir;
+//            launcherDir = WindowsRegistry.readString(
+//                            WindowsRegistry.HKEY_LOCAL_MACHINE,
+//                            "Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
+//                            "InstallLocation")
+//                    .map(p -> p + "\\wezterm.exe");
+//            return launcherDir.map(Path::of);
+//        }
+//    };
 
     //    ExternalTerminalType HYPER_WINDOWS = new WindowsFullPathType("app.hyperWindows") {
     //
@@ -478,11 +496,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         DataStoreColor color;
         String title;
+        String cleanTitle;
         String scriptFile;
-
-        public String getColorPrefix() {
-            return color != null ? color.getEmoji() + " " : "";
-        }
     }
 
     default boolean supportsColoredTitle() {

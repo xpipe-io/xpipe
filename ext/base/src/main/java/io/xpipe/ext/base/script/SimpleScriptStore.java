@@ -11,9 +11,8 @@ import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @SuperBuilder
 @Getter
@@ -47,21 +46,11 @@ public class SimpleScriptStore extends ScriptStore {
                 : List.of();
     }
 
-    @Override
-    public List<SimpleScriptStore> getFlattenedScripts(Set<SimpleScriptStore> seen) {
-        var isLoop = seen.contains(this);
-        seen.add(this);
-        return Stream.concat(
-                        getEffectiveScripts().stream()
-                                .map(scriptStoreDataStoreEntryRef -> {
-                                    return scriptStoreDataStoreEntryRef.getStore().getFlattenedScripts(seen).stream()
-                                            .filter(simpleScriptStore -> !seen.contains(simpleScriptStore))
-                                            .peek(simpleScriptStore -> seen.add(simpleScriptStore))
-                                            .toList();
-                                })
-                                .flatMap(List::stream),
-                        isLoop ? Stream.of() : Stream.of(this))
-                .toList();
+    public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+        getEffectiveScripts().stream().filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore())).forEach(scriptStoreDataStoreEntryRef -> {
+            scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
+        });
+        all.add(this);
     }
 
     @Getter
