@@ -101,6 +101,10 @@ public interface DataStoreProvider {
         return null;
     }
 
+    default DataStoreEntry getLogicalParent(DataStoreEntry store) {
+        return getDisplayParent(store);
+    }
+
     default GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         return null;
     }

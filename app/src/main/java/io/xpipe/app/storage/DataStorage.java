@@ -125,7 +125,7 @@ public abstract class DataStorage {
             return false;
         }
 
-        var oldChildren = getStoreChildren(e, false);
+        var oldChildren = getStoreEntries().stream().filter(other -> e.equals(other.getProvider().getLogicalParent(other))).toList();
         var toRemove = oldChildren.stream()
                 .filter(entry -> newChildren.entrySet().stream()
                         .noneMatch(
@@ -245,29 +245,6 @@ public abstract class DataStorage {
         }
     }
 
-    public Optional<DataStoreEntry> findEntry(DataStore store) {
-        if (store == null) {
-            return Optional.empty();
-        }
-
-        for (DataStoreEntry entry : storeEntries) {
-            if (entry.getStore() == null) {
-                continue;
-            }
-
-            if (!entry.getStore()
-                    .getClass()
-                    .equals(store.getClass())) {
-                continue;
-            }
-
-            if (entry.getStore().equals(store)) {
-                return Optional.of(entry);
-            }
-        }
-        return Optional.empty();
-    }
-
     public List<DataStoreEntry> getStoreChildren(DataStoreEntry entry, boolean deep) {
         if (entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return List.of();
@@ -286,10 +263,7 @@ public abstract class DataStorage {
 
                     var parent = getDisplayParent(other);
                     return parent.isPresent()
-                            && entry.getStore()
-                                    .getClass()
-                                    .equals(parent.get().getStore().getClass())
-                            && entry.getStore().equals(parent.get().getStore());
+                            && parent.get().equals(entry);
                 })
                 .toList());
 
@@ -358,15 +332,6 @@ public abstract class DataStorage {
         return DataStoreId.create(names.toArray(String[]::new));
     }
 
-    public DataStoreEntry getStoreEntry(@NonNull DataStore store) {
-        return storeEntries.stream()
-                .filter(n -> n.getStore() != null
-                        && Objects.equals(store.getClass(), n.getStore().getClass())
-                        && store.equals(n.getStore()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Store not found"));
-    }
-
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
         var current = getStoreEntryIfPresent(id.getNames().get(0));
         if (current.isPresent()) {
@@ -390,13 +355,16 @@ public abstract class DataStorage {
         return Optional.empty();
     }
 
+    public DataStoreEntry getStoreEntry(@NonNull DataStore store) {
+        return getStoreEntryIfPresent(store)
+                .orElseThrow(() -> new IllegalArgumentException("Store not found"));
+    }
+
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
         return storeEntries.stream()
-                .filter(n -> {
-                    return n.getStore() != null
-                            && store.getClass().equals(n.getStore().getClass())
-                            && store.equals(n.getStore());
-                })
+                .filter(n -> n.getStore() == store || (n.getStore() != null
+                            && Objects.equals(store.getClass(), n.getStore().getClass())
+                            && store.equals(n.getStore())))
                 .findFirst();
     }
 
@@ -538,7 +506,7 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry getOrCreateNewEntry(String name, DataStore store) {
-        var found = findEntry(store);
+        var found = getStoreEntryIfPresent(store);
         if (found.isPresent()) {
             return found.get();
         }
@@ -548,7 +516,7 @@ public abstract class DataStorage {
 
     public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
         for (DataStoreEntry e : es) {
-            if (storeEntries.contains(e) || findEntry(e.getStore()).isPresent()) {
+            if (storeEntries.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
                 return;
             }
 
@@ -569,7 +537,7 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry addStoreIfNotPresent(@NonNull String name, DataStore store) {
-        var f = findEntry(store);
+        var f = getStoreEntryIfPresent(store);
         if (f.isPresent()) {
             return f.get();
         }
@@ -584,7 +552,7 @@ public abstract class DataStorage {
             return Optional.empty();
         }
 
-        return findEntry(store).map(dataStoreEntry -> dataStoreEntry.getName());
+        return getStoreEntryIfPresent(store).map(dataStoreEntry -> dataStoreEntry.getName());
     }
 
     public String getStoreDisplayName(DataStoreEntry store) {

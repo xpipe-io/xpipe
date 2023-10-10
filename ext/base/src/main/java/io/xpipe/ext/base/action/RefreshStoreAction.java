@@ -27,6 +27,27 @@ public class RefreshStoreAction implements ActionProvider  {
     }
 
     @Override
+    public DefaultDataStoreCallSite<FixedHierarchyStore> getDefaultDataStoreCallSite() {
+        return new DefaultDataStoreCallSite<>() {
+
+            @Override
+            public boolean isApplicable(FixedHierarchyStore o) {
+                return DataStorage.get().getStoreChildren(DataStorage.get().getStoreEntry(o), true).size() == 0;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(FixedHierarchyStore store) {
+                return new Action(DataStorage.get().getStoreEntry(store));
+            }
+
+            @Override
+            public Class<FixedHierarchyStore> getApplicableClass() {
+                return FixedHierarchyStore.class;
+            }
+        };
+    }
+
+    @Override
     public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {
         return new ActionProvider.DataStoreCallSite<FixedHierarchyStore>() {
 
