@@ -108,6 +108,14 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
+    public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
+        return allEntries.stream()
+                .filter(storeCategoryWrapper ->
+                                storeCategoryWrapper.getEntry().equals(entry))
+                .findFirst()
+                .orElseThrow();
+    }
+
     public static void init() {
         new StoreViewState();
     }

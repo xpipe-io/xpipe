@@ -14,8 +14,8 @@ import java.util.function.Supplier;
 
 @Getter
 public enum PredefinedScriptStore {
-    SETUP_CLINK(
-            "Setup Clink",
+    CLINK_SETUP(
+            "Clink Setup",
             () -> SimpleScriptStore.builder()
                     .group(PredefinedScriptGroup.CLINK.getEntry())
                     .minimumDialect(ShellDialects.CMD)
@@ -23,30 +23,51 @@ public enum PredefinedScriptStore {
                     .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
                     .build()),
     CLINK_INJECT(
-            "Inject Clink",
+            "Clink Inject",
             () -> SimpleScriptStore.builder()
                     .group(PredefinedScriptGroup.CLINK.getEntry())
                     .minimumDialect(ShellDialects.CMD)
-                    .script(SETUP_CLINK.getEntry())
+                    .script(CLINK_SETUP.getEntry())
                     .commands(
                             """
                             clink inject --quiet
                             """)
                     .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
                     .build()),
+    STARSHIP_SETUP_UNIX("Starship Unix Setup", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.STARSHIP.getEntry())
+            .minimumDialect(ShellDialects.SH)
+            .commands(file("starship_setup.sh"))
+            .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
+            .build()),
     STARSHIP_BASH("Starship Bash", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.STARSHIP.getEntry())
             .minimumDialect(ShellDialects.BASH)
-            .commands(file("starship_bash.sh"))
+            .commands("eval \"$(starship init bash)\"")
             .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
+            .script(STARSHIP_SETUP_UNIX.getEntry())
+            .build()),
+    STARSHIP_ZSH("Starship Zsh", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.STARSHIP.getEntry())
+            .minimumDialect(ShellDialects.ZSH)
+            .commands("eval \"$(starship init zsh)\"")
+            .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
+            .script(STARSHIP_SETUP_UNIX.getEntry())
+            .build()),
+    STARSHIP_FISH("Starship Fish", () -> SimpleScriptStore.builder()
+            .group(PredefinedScriptGroup.STARSHIP.getEntry())
+            .minimumDialect(ShellDialects.FISH)
+            .commands("starship init fish | source")
+            .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
+            .script(STARSHIP_SETUP_UNIX.getEntry())
             .build()),
     STARSHIP_CMD(
             "Starship Cmd",
             () -> SimpleScriptStore.builder()
                     .group(PredefinedScriptGroup.STARSHIP.getEntry())
                     .minimumDialect(ShellDialects.CMD)
-                    .script(SETUP_CLINK.getEntry())
-                    .commands(file("starship_cmd.bat"))
+                    .script(CLINK_SETUP.getEntry())
+                    .commands(file(("starship_cmd.bat")))
                     .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
                     .build()),
     STARSHIP_POWERSHELL(

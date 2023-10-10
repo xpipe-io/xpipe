@@ -14,6 +14,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -42,11 +43,18 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     @Override
     public Comp<?> customEntryComp(StoreSection sec, boolean preferLarge) {
         SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
+        var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
         var def = new StoreToggleComp("base.isDefault", sec, s.getState().isDefault(), aBoolean -> {
             var state = s.getState();
             state.setDefault(aBoolean);
             s.setState(state);
         });
+
+        // Disable selection if parent group is already made default
+        def.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
+            ScriptStore.State state = (ScriptStore.State) o;
+            return state.isDefault();
+        }));
         var dropdown = new DropdownComp(List.of(def));
         return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
     }
