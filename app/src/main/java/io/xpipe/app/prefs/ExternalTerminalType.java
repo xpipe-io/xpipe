@@ -47,6 +47,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType POWERSHELL_WINDOWS = new SimplePathType("app.powershell", "powershell") {
 
         @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
         protected CommandBuilder toCommand(String name, String file) {
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C", "'" + file + "'");
@@ -59,6 +64,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
 
     ExternalTerminalType PWSH_WINDOWS = new SimplePathType("app.pwsh", "pwsh") {
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
@@ -244,6 +254,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole") {
 
         @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
         protected CommandBuilder toCommand(String name, String file) {
             // Note for later: When debugging konsole launches, it will always open as a child process of
             // IntelliJ/XPipe even though we try to detach it.
@@ -309,7 +324,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of().add("-T").addQuoted(name).addQuoted(file);
+            return CommandBuilder.of().add("-1").add("-T").addQuoted(name).addQuoted(file);
         }
 
         @Override
@@ -531,6 +546,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         public CustomType() {
             super("app.custom");
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return false;
         }
 
         @Override

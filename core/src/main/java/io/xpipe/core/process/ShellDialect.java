@@ -6,6 +6,7 @@ import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.SecretValue;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,7 @@ public interface ShellDialect {
                 .collect(Collectors.joining(" "));
     }
 
-    default boolean isSupported() {
+    default boolean isSelectable() {
         return true;
     }
 
@@ -92,6 +93,10 @@ public interface ShellDialect {
     String getPauseCommand();
 
     String prepareScriptContent(String content);
+
+    default void exit(ShellControl sc) throws IOException {
+        sc.writeLine("exit");
+    }
 
     default String getExitCommand() {
         return "exit";

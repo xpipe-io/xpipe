@@ -31,6 +31,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
 
         if (event.getThrowable() instanceof LicenseRequiredException lex) {
             LicenseProvider.get().showLicenseAlert(lex);
+            event.setShouldSendDiagnostics(true);
         } else {
             ErrorHandlerComp.showAndTryWait(event, true);
         }

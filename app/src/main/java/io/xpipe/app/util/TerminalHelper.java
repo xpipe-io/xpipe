@@ -23,7 +23,7 @@ public class TerminalHelper {
             throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
-        var color = DataStorage.get().getRootForEntry(entry).getColor();
+        var color = entry != null ? DataStorage.get().getRootForEntry(entry).getColor() : null;
         var prefix = entry != null && color != null && type.supportsColoredTitle()
                 ? color.getEmoji() + " "
                 : "";

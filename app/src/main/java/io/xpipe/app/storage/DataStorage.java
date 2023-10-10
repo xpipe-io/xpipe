@@ -212,6 +212,10 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry getRootForEntry(DataStoreEntry entry) {
+        if (entry == null) {
+            return null;
+        }
+
         if (isRootEntry(entry)) {
             return entry;
         }
