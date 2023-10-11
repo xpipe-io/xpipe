@@ -125,9 +125,9 @@ public abstract class LauncherInput {
         }
     }
 
+    @Getter
     public abstract static class ActionInput extends LauncherInput {
 
-        @Getter
         private final List<String> args;
 
         protected ActionInput(List<String> args) {

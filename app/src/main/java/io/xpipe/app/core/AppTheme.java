@@ -164,7 +164,7 @@ public class AppTheme {
         public String toTranslatedString() {
             return name;
         }
-    };
+    }
 
     @AllArgsConstructor
     public static class Theme implements PrefsChoiceValue {

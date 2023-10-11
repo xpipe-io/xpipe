@@ -1,7 +1,9 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
+@Getter
 public enum DataFlow {
     @JsonProperty("input")
     INPUT("Input"),
@@ -28,7 +30,4 @@ public enum DataFlow {
         return this == OUTPUT || this == INPUT_OUTPUT;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
 }

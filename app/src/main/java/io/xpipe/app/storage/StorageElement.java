@@ -15,15 +15,20 @@ import java.util.UUID;
 
 public abstract class StorageElement {
 
+    @Getter
     protected final UUID uuid;
     protected final List<Listener> listeners = new ArrayList<>();
     @Getter
     protected boolean dirty;
+    @Getter
     protected Path directory;
 
+    @Getter
     protected String name;
 
+    @Getter
     protected Instant lastUsed;
+    @Getter
     protected Instant lastModified;
 
     public StorageElement(
@@ -67,20 +72,8 @@ public abstract class StorageElement {
         return getLastUsed().isAfter(getLastModified()) ? getLastUsed() : getLastModified();
     }
 
-    public Path getDirectory() {
-        return directory;
-    }
-
     public void setDirectory(Path directory) {
         this.directory = directory;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {
@@ -92,14 +85,6 @@ public abstract class StorageElement {
         this.dirty = true;
         this.lastModified = Instant.now();
         notifyUpdate();
-    }
-
-    public Instant getLastUsed() {
-        return lastUsed;
-    }
-
-    public Instant getLastModified() {
-        return lastModified;
     }
 
     public interface Listener {

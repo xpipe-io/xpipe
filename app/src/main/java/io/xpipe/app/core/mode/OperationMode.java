@@ -12,6 +12,7 @@ import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.core.util.XPipeSystemId;
 import javafx.application.Platform;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,11 @@ public abstract class OperationMode {
     public static final OperationMode GUI = new GuiMode();
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
     private static final List<OperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
+    @Getter
     private static boolean inStartup;
+    @Getter
     private static boolean inShutdown;
+    @Getter
     private static boolean inShutdownHook;
     private static OperationMode CURRENT = null;
 
@@ -114,14 +118,6 @@ public abstract class OperationMode {
 
     public static void postInit(String[] args) {
         DataStoreProviders.postInit(AppExtensionManager.getInstance().getExtendedLayer());
-    }
-
-    public static boolean isInStartup() {
-        return inStartup;
-    }
-
-    public static boolean isInShutdown() {
-        return inShutdown;
     }
 
     public static void switchToAsync(OperationMode newMode) {
@@ -283,10 +279,6 @@ public abstract class OperationMode {
 
     public static OperationMode get() {
         return CURRENT;
-    }
-
-    public static boolean isInShutdownHook() {
-        return inShutdownHook;
     }
 
     public abstract boolean isSupported();

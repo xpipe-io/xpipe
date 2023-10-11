@@ -34,7 +34,7 @@ public class BrowserClipboard {
     static {
         Toolkit.getDefaultToolkit()
                 .getSystemClipboard()
-                .addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<Throwable>() {
+                .addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<>() {
                     @Override
                     @SuppressWarnings("unchecked")
                     public void run() throws Throwable {

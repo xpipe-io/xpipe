@@ -43,11 +43,10 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
            var delete = new IconButtonComp("mdal-delete_outline", () -> {
                selectedList.remove(t);
            });
-           var hbox = new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
-           return hbox;
+            return new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
         }).padding(new Insets(0)).apply(struc -> struc.get().setMinHeight(0)).apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
-        var add = new DataStoreChoiceComp<T>(DataStoreChoiceComp.Mode.OTHER, null, selected, storeClass, applicableCheck, initialCategory);
+        var add = new DataStoreChoiceComp<>(DataStoreChoiceComp.Mode.OTHER, null, selected, storeClass, applicableCheck, initialCategory);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (!selectedList.contains(newValue)

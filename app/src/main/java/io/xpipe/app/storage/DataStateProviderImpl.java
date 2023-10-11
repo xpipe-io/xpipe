@@ -45,7 +45,7 @@ public class DataStateProviderImpl extends DataStateProvider {
         if (found == null) {
             entry.get().setStorePersistentState(def.get());
         }
-        return (T) entry.get().getStorePersistentState();
+        return entry.get().getStorePersistentState();
     }
 
     @Override

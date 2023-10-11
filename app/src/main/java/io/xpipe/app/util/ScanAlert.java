@@ -77,7 +77,7 @@ public class ScanAlert {
 
                             @Override
                             protected List<Entry> setup() {
-                                return List.of(new Entry(AppI18n.observable("a"), new Step<CompStructure<?>>() {
+                                return List.of(new Entry(AppI18n.observable("a"), new Step<>() {
                                     @Override
                                     public CompStructure<?> createBase() {
                                         var b = new OptionsBuilder()
@@ -88,9 +88,10 @@ public class ScanAlert {
                                                         null,
                                                         entry,
                                                         ShellStore.class,
-                                                                store1 -> true,
-                                                        StoreViewState.get().getAllConnectionsCategory())
-                                                        .disable(new SimpleBooleanProperty(initialStore != null)))
+                                                        store1 -> true,
+                                                        StoreViewState.get().getAllConnectionsCategory()
+                                                )
+                                                                 .disable(new SimpleBooleanProperty(initialStore != null)))
                                                 .name("scanAlertHeader")
                                                 .description("scanAlertHeaderDescription")
                                                 .addComp(Comp.of(() -> stackPane).vgrow())
@@ -99,7 +100,7 @@ public class ScanAlert {
                                                 .prefHeight(600)
                                                 .styleClass("window-content")
                                                 .apply(struc -> {
-                                                    VBox.setVgrow(((VBox) struc.get().getChildren().get(1)), ALWAYS);
+                                                    VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
                                                 })
                                                 .createStructure()
                                                 .get();
@@ -123,16 +124,17 @@ public class ScanAlert {
                                                         }
 
                                                         selected.setAll(a.stream()
-                                                                .filter(
-                                                                        scanOperation ->
-                                                                                scanOperation.isDefaultSelected())
-                                                                .toList());
+                                                                                .filter(
+                                                                                        scanOperation ->
+                                                                                                scanOperation.isDefaultSelected())
+                                                                                .toList());
                                                         var r = new ListSelectorComp<>(
-                                                                        a,
-                                                                        scanOperation ->
-                                                                                AppI18n.get(scanOperation.getNameKey()),
-                                                                        selected,
-                                                                        a.size() > 3)
+                                                                a,
+                                                                scanOperation ->
+                                                                        AppI18n.get(scanOperation.getNameKey()),
+                                                                selected,
+                                                                a.size() > 3
+                                                        )
                                                                 .createRegion();
                                                         stackPane.getChildren().add(r);
                                                     });

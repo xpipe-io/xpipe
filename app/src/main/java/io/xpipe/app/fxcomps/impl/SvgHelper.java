@@ -21,7 +21,7 @@ public class SvgHelper {
     }
 
     public static Point2D getDimensions(String val) {
-        var regularExpression = Pattern.compile("<svg[^>]+?width=\"([^\s]+)\"", Pattern.DOTALL);
+        var regularExpression = Pattern.compile("<svg[^>]+?width=\"([^ ]+)\"", Pattern.DOTALL);
         var matcher = regularExpression.matcher(val);
 
         if (!matcher.find()) {
@@ -36,7 +36,7 @@ public class SvgHelper {
         }
 
         var width = matcher.group(1);
-        regularExpression = Pattern.compile("<svg.+?height=\"([^\s]+)\"", Pattern.DOTALL);
+        regularExpression = Pattern.compile("<svg.+?height=\"([^ ]+)\"", Pattern.DOTALL);
         matcher = regularExpression.matcher(val);
         matcher.find();
         var height = matcher.group(1);

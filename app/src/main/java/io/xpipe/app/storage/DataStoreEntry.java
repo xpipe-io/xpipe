@@ -227,7 +227,7 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public <T extends DataStore> DataStoreEntryRef<T> ref() {
-        return new DataStoreEntryRef<T>(this);
+        return new DataStoreEntryRef<>(this);
     }
 
     public void setStoreCache(String key, Object value) {

@@ -18,10 +18,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class OptionsComp extends Comp<CompStructure<Pane>> {
 
     private final List<OptionsComp.Entry> entries;
@@ -46,7 +48,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         pane.getStyleClass().add("options-comp");
 
         var nameRegions = new ArrayList<Region>();
-        var compRegions = new ArrayList<Region>();
 
         for (var entry : getEntries()) {
             Region compRegion = null;
@@ -135,7 +136,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
 
                 if (compRegion != null) {
                     compRegion.accessibleTextProperty().bind(name.textProperty());
-                    compRegions.add(compRegion);
                     line.getChildren().add(compRegion);
                     HBox.setHgrow(compRegion, Priority.ALWAYS);
                 }
@@ -143,7 +143,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 pane.getChildren().add(line);
             } else {
                 if (compRegion != null) {
-                    compRegions.add(compRegion);
                     pane.getChildren().add(compRegion);
                 }
             }
@@ -163,10 +162,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         }
 
         return new SimpleCompStructure<>(pane);
-    }
-
-    public List<OptionsComp.Entry> getEntries() {
-        return entries;
     }
 
     public record Entry(

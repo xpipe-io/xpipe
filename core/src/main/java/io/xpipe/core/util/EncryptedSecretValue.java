@@ -8,11 +8,11 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
+@Getter
 @SuperBuilder
 @EqualsAndHashCode
 public abstract class EncryptedSecretValue implements SecretValue {
 
-    @Getter
     String encryptedValue;
 
     public EncryptedSecretValue(char[] c) {

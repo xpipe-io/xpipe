@@ -14,11 +14,15 @@ import java.util.List;
 @Getter
 public class ChoiceElement extends DialogElement {
 
+    @Getter
     private final String description;
+    @Getter
     private final List<Choice> elements;
+    @Getter
     private final boolean required;
     private final boolean quiet;
 
+    @Getter
     private int selected;
 
     @JsonCreator
@@ -76,19 +80,4 @@ public class ChoiceElement extends DialogElement {
         return false;
     }
 
-    public List<Choice> getElements() {
-        return elements;
-    }
-
-    public int getSelected() {
-        return selected;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public boolean isRequired() {
-        return required;
-    }
 }

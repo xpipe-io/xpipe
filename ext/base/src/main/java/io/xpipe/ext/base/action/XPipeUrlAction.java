@@ -90,28 +90,33 @@ public class XPipeUrlAction implements ActionProvider {
 
             @Override
             public Action createAction(List<String> args) throws Exception {
-                if (args.get(0).equals("addStore")) {
-                    var storeString = DefaultSecretValue.builder()
-                            .encryptedValue(args.get(1))
-                            .build();
-                    var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
-                    return new AddStoreAction(store);
-                } else if (args.get(0).equals("launch")) {
-                    var entry = DataStorage.get()
-                            .getStoreEntryIfPresent(UUID.fromString(args.get(1)))
-                            .orElseThrow();
-                    return new LaunchAction(entry);
-                } else if (args.get(0).equals("action")) {
-                    var id = args.get(1);
-                    ActionProvider provider = ActionProvider.ALL.stream().filter(actionProvider -> {
-                        return actionProvider.getDataStoreCallSite() != null && id.equals(actionProvider.getId());
-                    }).findFirst().orElseThrow();
-                    var entry = DataStorage.get()
-                            .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
-                            .orElseThrow();
-                    return new CallAction(provider, entry);
-                } else {
-                    return null;
+                switch (args.get(0)) {
+                    case "addStore" -> {
+                        var storeString = DefaultSecretValue.builder()
+                                .encryptedValue(args.get(1))
+                                .build();
+                        var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
+                        return new AddStoreAction(store);
+                    }
+                    case "launch" -> {
+                        var entry = DataStorage.get()
+                                .getStoreEntryIfPresent(UUID.fromString(args.get(1)))
+                                .orElseThrow();
+                        return new LaunchAction(entry);
+                    }
+                    case "action" -> {
+                        var id = args.get(1);
+                        ActionProvider provider = ActionProvider.ALL.stream().filter(actionProvider -> {
+                            return actionProvider.getDataStoreCallSite() != null && id.equals(actionProvider.getId());
+                        }).findFirst().orElseThrow();
+                        var entry = DataStorage.get()
+                                .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
+                                .orElseThrow();
+                        return new CallAction(provider, entry);
+                    }
+                    default -> {
+                        return null;
+                    }
                 }
             }
         };

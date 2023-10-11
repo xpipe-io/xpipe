@@ -12,10 +12,12 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
+import lombok.Getter;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 
+@Getter
 public class App extends Application {
 
     private static App APP;
@@ -116,7 +118,4 @@ public class App extends Application {
         });
     }
 
-    public Stage getStage() {
-        return stage;
-    }
 }

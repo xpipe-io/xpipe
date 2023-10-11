@@ -6,6 +6,7 @@ import io.xpipe.beacon.util.QuietDialogHandler;
 import io.xpipe.core.store.InternalStreamStore;
 import io.xpipe.core.util.FailableBiConsumer;
 import io.xpipe.core.util.FailableConsumer;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,16 +14,13 @@ import java.io.OutputStream;
 
 public abstract class BeaconConnection implements AutoCloseable {
 
+    @Getter
     protected BeaconClient beaconClient;
 
     private InputStream bodyInput;
     private OutputStream bodyOutput;
 
     protected abstract void constructSocket();
-
-    public BeaconClient getBeaconClient() {
-        return beaconClient;
-    }
 
     @Override
     public void close() {

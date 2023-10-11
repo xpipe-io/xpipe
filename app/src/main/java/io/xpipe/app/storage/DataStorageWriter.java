@@ -8,7 +8,6 @@ public class DataStorageWriter {
 
     public static JsonNode storeToNode(DataStore store) {
         var mapper = JacksonMapper.getDefault();
-        var tree = mapper.valueToTree(store);
-        return tree;
+        return mapper.valueToTree(store);
     }
 }

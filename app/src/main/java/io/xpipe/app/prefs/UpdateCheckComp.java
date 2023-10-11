@@ -75,7 +75,7 @@ public class UpdateCheckComp extends SimpleComp {
                     return "mdi2r-refresh";
                 },
                 updateReady);
-        var button = new TileButtonComp(name, description, graphic, actionEvent -> {
+        return new TileButtonComp(name, description, graphic, actionEvent -> {
                     actionEvent.consume();
                     if (updateReady.getValue()) {
                         restart();
@@ -91,6 +91,5 @@ public class UpdateCheckComp extends SimpleComp {
                 .disable(PlatformThread.sync(
                         XPipeDistributionType.get().getUpdateHandler().getBusy()))
                 .createRegion();
-        return button;
     }
 }

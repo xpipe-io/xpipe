@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+@Getter
 public enum XPipeDaemonMode {
     @JsonProperty("background")
     BACKGROUND("background", List.of("base", "background")),
@@ -29,10 +30,8 @@ public enum XPipeDaemonMode {
                                 .collect(Collectors.joining(", "))));
     }
 
-    @Getter
     private final String displayName;
 
-    @Getter
     private final List<String> nameAlternatives;
 
     XPipeDaemonMode(String displayName, List<String> nameAlternatives) {

@@ -1,6 +1,7 @@
 package io.xpipe.core.charsetter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
 import java.util.Arrays;
 
@@ -11,6 +12,7 @@ public enum NewLine {
     CRLF("\r\n", "crlf");
 
     private final String newLine;
+    @Getter
     private final String id;
 
     NewLine(String newLine, String id) {
@@ -36,7 +38,4 @@ public enum NewLine {
         return newLine;
     }
 
-    public String getId() {
-        return id;
-    }
 }

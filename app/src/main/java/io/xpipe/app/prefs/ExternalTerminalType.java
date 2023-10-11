@@ -507,7 +507,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     }
 
     @Value
-    static class LaunchConfiguration {
+    class LaunchConfiguration {
 
         DataStoreColor color;
         String title;

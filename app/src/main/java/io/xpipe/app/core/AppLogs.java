@@ -43,7 +43,9 @@ public class AppLogs {
             DateTimeFormatter.ofPattern("HH:mm:ss:SSS").withZone(ZoneId.systemDefault());
 
     private static AppLogs INSTANCE;
+    @Getter
     private final PrintStream originalSysOut;
+    @Getter
     private final PrintStream originalSysErr;
     private final Path logDir;
 
@@ -297,14 +299,6 @@ public class AppLogs {
             //            System.setProperty("quantum.debug", "true");
             //            System.setProperty("quantum.pulse", "true");
         }
-    }
-
-    public PrintStream getOriginalSysOut() {
-        return originalSysOut;
-    }
-
-    public PrintStream getOriginalSysErr() {
-        return originalSysErr;
     }
 
     public Path getLogsDirectory() {

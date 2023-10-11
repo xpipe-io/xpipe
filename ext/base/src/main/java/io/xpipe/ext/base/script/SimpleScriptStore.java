@@ -54,7 +54,7 @@ public class SimpleScriptStore extends ScriptStore {
     }
 
     @Getter
-    public static enum ExecutionType {
+    public enum ExecutionType {
         @JsonProperty("dumbOnly")
         DUMB_ONLY("dumbOnly"),
         @JsonProperty("terminalOnly")

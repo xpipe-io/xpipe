@@ -4,12 +4,11 @@ import lombok.Getter;
 
 import java.nio.file.Path;
 
+@Getter
 public abstract class ModuleInstall {
 
-    @Getter
     private final String id;
 
-    @Getter
     private final String module;
 
     protected ModuleInstall(String id, String module) {

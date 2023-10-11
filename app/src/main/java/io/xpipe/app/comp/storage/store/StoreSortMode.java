@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 public interface StoreSortMode {
 
-    static StoreSortMode ALPHABETICAL_DESC = new StoreSortMode() {
+    StoreSortMode ALPHABETICAL_DESC = new StoreSortMode() {
         @Override
         public String getId() {
             return "alphabetical-desc";
@@ -19,12 +19,12 @@ public interface StoreSortMode {
 
         @Override
         public Comparator<StoreSection> comparator() {
-            return Comparator.<StoreSection, String>comparing(
+            return Comparator.comparing(
                     e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
         }
     };
 
-    static StoreSortMode ALPHABETICAL_ASC = new StoreSortMode() {
+    StoreSortMode ALPHABETICAL_ASC = new StoreSortMode() {
         @Override
         public String getId() {
             return "alphabetical-asc";
@@ -38,7 +38,7 @@ public interface StoreSortMode {
         }
     };
 
-    static StoreSortMode DATE_DESC = new StoreSortMode() {
+    StoreSortMode DATE_DESC = new StoreSortMode() {
         @Override
         public String getId() {
             return "date-desc";
@@ -55,7 +55,7 @@ public interface StoreSortMode {
         }
     };
 
-    static StoreSortMode DATE_ASC = new StoreSortMode() {
+    StoreSortMode DATE_ASC = new StoreSortMode() {
         @Override
         public String getId() {
             return "date-asc";
@@ -78,7 +78,7 @@ public interface StoreSortMode {
                 section.getAllChildren().stream().flatMap(section1 -> flatten(section1)));
     }
 
-    static List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
+    List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
 
     static Optional<StoreSortMode> fromId(String id) {
         return ALL.stream()

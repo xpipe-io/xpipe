@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class JacksonMapper {
 
     private static final ObjectMapper BASE = new ObjectMapper();
     private static final ObjectMapper INSTANCE;
+    @Getter
     private static boolean init = false;
 
     public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
@@ -85,7 +87,4 @@ public class JacksonMapper {
         return INSTANCE;
     }
 
-    public static boolean isInit() {
-        return init;
-    }
 }

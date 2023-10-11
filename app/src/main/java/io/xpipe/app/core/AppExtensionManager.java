@@ -8,6 +8,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
+import lombok.Getter;
 import lombok.Value;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class AppExtensionManager {
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
     private final List<Path> extensionBaseDirectories = new ArrayList<>();
     private ModuleLayer baseLayer = ModuleLayer.boot();
+    @Getter
     private ModuleLayer extendedLayer;
 
     public AppExtensionManager(boolean loadedProviders) {
@@ -312,10 +314,6 @@ public class AppExtensionManager {
                 }
             });
         }
-    }
-
-    public ModuleLayer getExtendedLayer() {
-        return extendedLayer;
     }
 
     @Value

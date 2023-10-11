@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorHandler;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
@@ -19,8 +20,9 @@ public class AppTray {
 
     private static AppTray INSTANCE;
     private final FXTrayIcon icon;
+    @Getter
     private final ErrorHandler errorHandler;
-    private TrayIcon privateTrayIcon = null;
+    private TrayIcon privateTrayIcon;
 
     @SneakyThrows
     private AppTray() {
@@ -91,7 +93,7 @@ public class AppTray {
         if (OsType.getLocal().equals(OsType.LINUX)) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    Field peerField = null;
+                    Field peerField;
                     peerField = TrayIcon.class.getDeclaredField("peer");
                     peerField.setAccessible(true);
                     var peer = peerField.get(this.privateTrayIcon);
@@ -127,10 +129,6 @@ public class AppTray {
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
         }
-    }
-
-    public ErrorHandler getErrorHandler() {
-        return errorHandler;
     }
 
     private class TrayErrorHandler implements ErrorHandler {

@@ -209,7 +209,7 @@ public class BindingsHelper {
 
     public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, Comparator<V> comp, Observable... observables) {
         return orderedContentBinding(l2, Bindings.createObjectBinding(() -> {
-            return new Comparator<V>() {
+            return new Comparator<>() {
                 @Override
                 public int compare(V o1, V o2) {
                     return comp.compare(o1, o2);
@@ -240,7 +240,7 @@ public class BindingsHelper {
 
     public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, Predicate<V> predicate, Observable... observables) {
         return filteredContentBinding(l2, Bindings.createObjectBinding(() -> {
-            return new Predicate<V>() {
+            return new Predicate<>() {
                 @Override
                 public boolean test(V v) {
                     return predicate.test(v);

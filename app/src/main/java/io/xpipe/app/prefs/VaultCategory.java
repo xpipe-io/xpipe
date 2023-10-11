@@ -62,8 +62,7 @@ public class VaultCategory extends AppPrefsCategory {
         BooleanField enable = BooleanField.ofBooleanType(prefs.enableGitStorage)
                 .editable(pro)
                 .render(() -> {
-                    var c = new CustomToggleControl();
-                    return c;
+                    return new CustomToggleControl();
                 });
         StringField remote = StringField.ofStringType(prefs.storageGitRemote)
                 .editable(pro)

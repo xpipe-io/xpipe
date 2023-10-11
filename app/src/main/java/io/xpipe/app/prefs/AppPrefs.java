@@ -31,6 +31,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -127,7 +128,9 @@ public class AppPrefs {
     // Lock
     // ====
 
+    @Getter
     private final Property<SecretValue> lockPassword = new SimpleObjectProperty<>();
+    @Getter
     private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
 
     // Window opacity
@@ -295,14 +298,6 @@ public class AppPrefs {
         } else {
             return true;
         }
-    }
-
-    public StringProperty getLockCrypt() {
-        return lockCrypt;
-    }
-
-    public Property<SecretValue> getLockPassword() {
-        return lockPassword;
     }
 
     public final ReadOnlyIntegerProperty editorReloadTimeout() {
@@ -664,6 +659,7 @@ public class AppPrefs {
                 name, Arrays.stream(settings).filter(setting -> setting != null).toArray(Setting[]::new));
     }
 
+    @Getter
     private class PrefsHandlerImpl implements PrefsHandler {
 
         private final List<Category> categories;
@@ -710,8 +706,5 @@ public class AppPrefs {
             categories.add(index, newCategory);
         }
 
-        public List<Category> getCategories() {
-            return categories;
-        }
     }
 }

@@ -60,8 +60,4 @@ public class GuiMode extends PlatformMode {
         });
     }
 
-    @Override
-    public ErrorHandler getErrorHandler() {
-        return new SyncErrorHandler(new GuiErrorHandler());
-    }
 }

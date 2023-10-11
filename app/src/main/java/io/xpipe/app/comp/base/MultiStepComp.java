@@ -19,6 +19,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.*;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -28,7 +29,9 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
     private static final PseudoClass NEXT = PseudoClass.getPseudoClass("next");
     private final Property<Boolean> completed = new SimpleBooleanProperty();
     private final Property<Step<?>> currentStep = new SimpleObjectProperty<>();
+    @Getter
     private List<Entry> entries;
+    @Getter
     private int currentIndex = 0;
 
     private Step<?> getValue() {
@@ -92,10 +95,6 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
 
     public boolean isCurrent(Entry e) {
         return entries.indexOf(e) == currentIndex;
-    }
-
-    public int getCurrentIndex() {
-        return currentIndex;
     }
 
     public boolean isFirstPage() {
@@ -259,10 +258,6 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
     protected abstract List<Entry> setup();
 
     protected abstract void finish();
-
-    public List<Entry> getEntries() {
-        return entries;
-    }
 
     public ReadOnlyProperty<Boolean> completedProperty() {
         return completed;

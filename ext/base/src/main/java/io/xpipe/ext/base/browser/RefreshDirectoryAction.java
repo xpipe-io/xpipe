@@ -2,7 +2,6 @@ package io.xpipe.ext.base.browser;
 
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
-import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.LeafAction;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;

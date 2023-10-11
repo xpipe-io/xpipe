@@ -44,7 +44,7 @@ public interface ShellControl extends ProcessControl {
             s.setOsName(shellControl.getOsName());
             store.setState(s);
         });
-    };
+    }
 
     default ShellControl withSupportCheckInit(Predicate<ShellControl> predicate, String name) {
         return onInit(shellControl -> {
@@ -52,7 +52,7 @@ public interface ShellControl extends ProcessControl {
 
             }
         });
-    };
+    }
 
     default <T extends ShellStoreState> ShellControl withShellStateFail(StatefulDataStore<T> store) {
         return onFail(shellControl -> {
@@ -60,7 +60,7 @@ public interface ShellControl extends ProcessControl {
             s.setRunning(false);
             store.setState(s);
         });
-    };
+    }
 
     ShellControl onExit(Consumer<ShellControl> pc);
 

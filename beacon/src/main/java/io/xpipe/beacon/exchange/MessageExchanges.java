@@ -16,7 +16,7 @@ public class MessageExchanges {
         if (ALL == null) {
             ALL = ServiceLoader.load(MessageExchange.class).stream()
                     .map(s -> {
-                        return (MessageExchange) s.get();
+                        return s.get();
                     })
                     .collect(Collectors.toList());
         }

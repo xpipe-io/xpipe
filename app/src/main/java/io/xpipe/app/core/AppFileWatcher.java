@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -106,6 +107,7 @@ public class AppFileWatcher {
 
     private class WatchedDirectory {
         private final BiConsumer<Path, WatchEvent.Kind<Path>> listener;
+        @Getter
         private final Path baseDir;
 
         private WatchedDirectory(Path dir, BiConsumer<Path, WatchEvent.Kind<Path>> listener) {
@@ -183,8 +185,5 @@ public class AppFileWatcher {
             listener.accept(file, ev.kind());
         }
 
-        public Path getBaseDir() {
-            return baseDir;
-        }
     }
 }

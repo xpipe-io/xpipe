@@ -4,8 +4,7 @@ import com.dlsc.formsfx.model.util.ResourceBundleService;
 import io.xpipe.app.core.AppI18n;
 import lombok.NonNull;
 
-import java.util.Enumeration;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class QuietResourceBundleService extends ResourceBundleService {
 
@@ -17,8 +16,8 @@ public class QuietResourceBundleService extends ResourceBundleService {
             }
 
             @Override
-            public Enumeration<String> getKeys() {
-                return null;
+            public @NonNull Enumeration<String> getKeys() {
+                return Collections.emptyEnumeration();
             }
         });
     }

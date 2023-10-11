@@ -67,10 +67,9 @@ final class BrowserBookmarkList extends SimpleComp {
                                     .pseudoClassStateChanged(
                                             SELECTED,
                                             newValue != null
-                                                    && newValue.getEntry()
+                                                    && newValue.getEntry().get()
                                                             .equals(s.getWrapper()
-                                                                    .getEntry()
-                                                                    .getStore()));
+                                                                    .getEntry()));
                         });
                         struc.get().setOnAction(event -> {
                             ThreadHelper.runFailableAsync(() -> {
