@@ -11,6 +11,7 @@ import com.dlsc.preferencesfx.util.PreferencesFxUtils;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
@@ -71,14 +72,15 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                             // add to GridPane
                             Element element = elements.get(i);
                             if (element instanceof Field f) {
-                                var label = f.getLabel();
-                                var descriptionKey = label != null ? label + "Description" : null;
-
-                                SimpleControl c = (SimpleControl) ((Field) element).getRenderer();
-                                c.setField((Field) element);
+                                SimpleControl c = (SimpleControl) f.getRenderer();
+                                c.setField(f);
                                 AppFont.normal(c.getFieldLabel());
                                 c.getFieldLabel().setPrefHeight(AppFont.getPixelSize(1));
                                 c.getFieldLabel().setMaxHeight(AppFont.getPixelSize(1));
+                                c.getFieldLabel().textProperty().unbind();
+                                c.getFieldLabel().textProperty().bind(Bindings.createStringBinding(() -> {
+                                    return f.labelProperty().get() + (f.isEditable() ? "" : " (Pro)");
+                                }, f.labelProperty()));
                                 grid.add(c.getFieldLabel(), 0, i + rowAmount);
 
                                 var canFocus = BindingsHelper.persist(
@@ -101,6 +103,8 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 descriptionLabel
                                         .visibleProperty()
                                         .bind(c.getFieldLabel().visibleProperty());
+
+                                var descriptionKey = f.getLabel() != null ? f.getLabel() + "Description" : null;
                                 if (AppI18n.getInstance().containsKey(descriptionKey)) {
                                     rowAmount++;
                                     descriptionLabel.textProperty().bind(AppI18n.observable(descriptionKey));

@@ -6,10 +6,6 @@ import java.util.function.Supplier;
 
 public interface InternalCacheDataStore extends DataStore {
 
-    default boolean isInStorage() {
-        return DataStateProvider.get().isInStorage(this);
-    }
-
     default <T> T getCache(String key, Class<T> c, T def) {
         return DataStateProvider.get().getCache(this, key, c, () -> def);
     }

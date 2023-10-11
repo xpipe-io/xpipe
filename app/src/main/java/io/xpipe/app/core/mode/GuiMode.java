@@ -3,10 +3,10 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppMainWindow;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.update.CommercializationAlert;
 import io.xpipe.app.update.UpdateChangelogAlert;
-import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.UnlockAlert;
 import javafx.application.Platform;
 
@@ -21,7 +21,7 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void onSwitchTo() throws Throwable {
-        super.platformSetup();
+        super.onSwitchTo();
 
         UnlockAlert.showIfNeeded();
         UpdateChangelogAlert.showIfNeeded();
@@ -53,11 +53,11 @@ public class GuiMode extends PlatformMode {
 
     @Override
     public void onSwitchFrom() {
-        if (PlatformState.getCurrent() == PlatformState.RUNNING) {
+        super.onSwitchFrom();
+        PlatformThread.runLaterIfNeededBlocking(() -> {
             TrackEvent.info("mode", "Closing window");
             App.getApp().close();
-            waitForPlatform();
-        }
+        });
     }
 
     @Override

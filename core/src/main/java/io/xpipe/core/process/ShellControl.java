@@ -25,6 +25,8 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl getMachineRootSession();
 
+    ShellControl withoutLicenseCheck();
+
     String getOsName();
 
     UUID getSystemId();

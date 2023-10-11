@@ -1,12 +1,16 @@
 package io.xpipe.app.prefs;
 
+import com.dlsc.formsfx.model.structure.BooleanField;
 import com.dlsc.formsfx.model.structure.StringField;
 import com.dlsc.preferencesfx.formsfx.view.controls.SimpleControl;
+import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.LicenseType;
 import io.xpipe.app.util.LockChangeAlert;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
@@ -53,13 +57,39 @@ public class VaultCategory extends AppPrefsCategory {
 
     @SneakyThrows
     public Category create() {
+        var pro = LicenseType.isAtLeast(
+                LicenseProvider.get().getLicenseType(), LicenseType.PROFESSIONAL);
+        BooleanField enable = BooleanField.ofBooleanType(prefs.enableGitStorage)
+                .editable(pro)
+                .render(() -> {
+                    var c = new CustomToggleControl();
+                    return c;
+                });
+        StringField remote = StringField.ofStringType(prefs.storageGitRemote)
+                .editable(pro)
+                .render(() -> {
+                    var c = new SimpleTextControl();
+                    c.setPrefWidth(1000);
+                    return c;
+                });
         return Category.of(
                 "vault",
+                group(
+                        "sharing",
+                        Setting.of(
+                                "enableGitStorage",
+                                enable,
+                                prefs.enableGitStorage),
+                        Setting.of(
+                                "storageGitRemote",
+                                remote,
+                                prefs.storageGitRemote)),
                 group(
                         "storage",
                         STORAGE_DIR_FIXED
                                 ? null
-                                : Setting.of("storageDirectory", prefs.storageDirectoryControl, prefs.storageDirectory)),
+                                : Setting.of(
+                                        "storageDirectory", prefs.storageDirectoryControl, prefs.storageDirectory)),
                 Group.of("security", Setting.of("workspaceLock", lockCryptControl, prefs.getLockCrypt())));
     }
 }

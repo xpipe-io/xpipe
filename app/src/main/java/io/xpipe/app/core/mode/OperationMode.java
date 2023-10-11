@@ -11,6 +11,7 @@ import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 import io.xpipe.core.util.XPipeSystemId;
+import javafx.application.Platform;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,7 @@ public abstract class OperationMode {
         try {
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                TrackEvent.info("Received SIGTERM externally");
                 OperationMode.shutdown(true, false);
             }));
 
@@ -178,8 +180,7 @@ public abstract class OperationMode {
     }
 
     public static void executeAfterShutdown(FailableRunnable<Exception> r) {
-        // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
-        var t = new Thread(() -> {
+        Runnable exec = () -> {
             if (inShutdown) {
                 return;
             }
@@ -198,12 +199,19 @@ public abstract class OperationMode {
             }
 
             OperationMode.halt(0);
-        });
-        t.setDaemon(false);
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException ignored) {
+        };
+
+        if (Platform.isFxApplicationThread() || !Thread.currentThread().isDaemon()) {
+            exec.run();
+        } else {
+            // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
+            var t = new Thread(exec);
+            t.setDaemon(false);
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 

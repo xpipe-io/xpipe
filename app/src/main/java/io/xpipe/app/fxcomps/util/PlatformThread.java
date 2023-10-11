@@ -1,6 +1,8 @@
 package io.xpipe.app.fxcomps.util;
 
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.PlatformState;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -274,7 +276,24 @@ public class PlatformThread {
         return obs;
     }
 
+    private static boolean canRunPlatform() {
+        if (PlatformState.getCurrent() != PlatformState.RUNNING) {
+            return false;
+        }
+
+        // Once the shutdown hooks are run, the toolkit is shutdown, causing it to no longer perform runLater operations
+        if (OperationMode.isInShutdownHook()) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static void runLaterIfNeeded(Runnable r) {
+        if (!canRunPlatform()) {
+            return;
+        }
+
         Runnable catcher = () -> {
             try {
                 r.run();
@@ -291,6 +310,10 @@ public class PlatformThread {
     }
 
     public static void runLaterIfNeededBlocking(Runnable r) {
+        if (!canRunPlatform()) {
+            return;
+        }
+
         Runnable catcher = () -> {
             try {
                 r.run();

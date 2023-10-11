@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -14,6 +15,10 @@ import javafx.scene.layout.VBox;
 public class CloseBehaviourAlert {
 
     public static boolean showIfNeeded() {
+        if (OperationMode.isInShutdown()) {
+            return true;
+        }
+
         boolean set = AppCache.get("closeBehaviourSet", Boolean.class, () -> false);
         if (set) {
             return true;

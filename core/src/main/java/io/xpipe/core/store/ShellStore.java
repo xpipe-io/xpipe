@@ -51,7 +51,12 @@ public interface ShellStore extends DataStore, InternalCacheDataStore, Launchabl
 
     @Override
     default void validate() throws Exception {
-        try (ShellControl pc = control().start()) {}
+        var c = control();
+        if (!isInStorage()) {
+            c.withoutLicenseCheck();
+        }
+
+        try (ShellControl pc = c.start()) {}
     }
 
     default String queryMachineName() throws Exception {

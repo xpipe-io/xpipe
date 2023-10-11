@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.core.util.DataStateProvider;
 
 /**
  * A data store represents some form of a location where data is stored, e.g. a file or a database.
@@ -9,6 +10,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface DataStore {
+
+    default boolean isInStorage() {
+        return DataStateProvider.get().isInStorage(this);
+    }
 
     default boolean isComplete() {
         try {

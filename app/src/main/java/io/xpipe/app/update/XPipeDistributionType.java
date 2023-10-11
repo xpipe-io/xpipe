@@ -3,6 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
@@ -58,6 +59,7 @@ public enum XPipeDistributionType {
 
         type = det;
         AppCache.update("dist", type.getId());
+        TrackEvent.withInfo("Determined distribution type").tag("type",type.getId()).handle();
         return type;
     }
 

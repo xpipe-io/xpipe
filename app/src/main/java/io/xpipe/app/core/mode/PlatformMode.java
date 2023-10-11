@@ -8,10 +8,6 @@ import io.xpipe.app.update.UpdateAvailableAlert;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Application;
-import javafx.application.Platform;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public abstract class PlatformMode extends OperationMode {
 
@@ -21,7 +17,8 @@ public abstract class PlatformMode extends OperationMode {
         return PlatformState.getCurrent() == PlatformState.RUNNING;
     }
 
-    protected void platformSetup() throws Throwable {
+    @Override
+    public void onSwitchTo() throws Throwable {
         if (App.getApp() != null) {
             return;
         }
@@ -60,25 +57,9 @@ public abstract class PlatformMode extends OperationMode {
         StoreViewState.init();
     }
 
-    protected void waitForPlatform() {
-        // The platform thread waits for the shutdown hook to finish in case SIGTERM is sent.
-        // Therefore, we do not wait for the platform when being in a shutdown hook.
-        if (PlatformState.getCurrent() == PlatformState.RUNNING
-                && !Platform.isFxApplicationThread()
-                && !OperationMode.isInShutdownHook()) {
-            TrackEvent.info("mode", "Waiting for platform thread ...");
-            CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater(latch::countDown);
-            try {
-                if (!latch.await(5, TimeUnit.SECONDS)) {
-                    TrackEvent.info("mode", "Platform wait timed out");
-                }
-            } catch (InterruptedException ignored) {
-            }
-            TrackEvent.info("mode", "Synced with platform thread");
-        } else {
-            TrackEvent.info("mode", "Not waiting for platform thread");
-        }
+    @Override
+    public void onSwitchFrom() {
+        StoreViewState.reset();
     }
 
     @Override

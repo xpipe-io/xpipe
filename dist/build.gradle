@@ -14,14 +14,6 @@ repositories {
 
 task dist(type: DefaultTask) {}
 
-clean {
-    setDelete(Set.of())
-    doLast {
-        fileTree(dir: project.buildDir).exclude("jreleaser/**").visit { FileVisitDetails details ->
-            delete details.file
-        }
-    }
-}
 
 distTar {
     enabled = false;

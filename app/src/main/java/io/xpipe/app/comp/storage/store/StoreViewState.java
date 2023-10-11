@@ -117,13 +117,24 @@ public class StoreViewState {
     }
 
     public static void init() {
+        if (INSTANCE != null) {
+            return;
+        }
+
         new StoreViewState();
     }
 
     public static void reset() {
-        AppCache.update(
-                "selectedCategory",
-                INSTANCE.activeCategory.getValue().getCategory().getUuid());
+        if (INSTANCE == null) {
+            return;
+        }
+
+        var active = INSTANCE.activeCategory.getValue().getCategory();
+        if (active == null) {
+            return;
+        }
+
+        AppCache.update("selectedCategory", active.getUuid());
         INSTANCE = null;
     }
 

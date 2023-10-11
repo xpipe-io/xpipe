@@ -1,10 +1,9 @@
 package io.xpipe.app.util;
 
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
-@EqualsAndHashCode(callSuper = true)
-@Value
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class LicenseRequiredException extends RuntimeException {
 
     String featureName;

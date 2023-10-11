@@ -74,14 +74,8 @@ public class StoreSection {
     private static ObservableList<StoreSection> sorted(
             ObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
         var c = Comparator.<StoreSection>comparingInt(
-                value -> value.getWrapper().getEntry().getValidity().isUsable() ? 1 : -1);
-        category.getValue().getSortMode().addListener((observable, oldValue, newValue) -> {
-            int a = 0;
-        });
+                value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
         var mapped = BindingsHelper.mappedBinding(category, storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
-        mapped.addListener((observable, oldValue, newValue) -> {
-            int a = 0;
-        });
         return BindingsHelper.orderedContentBinding(
                 list,
                 (o1, o2) -> {

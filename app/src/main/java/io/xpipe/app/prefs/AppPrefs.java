@@ -26,6 +26,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -165,6 +166,17 @@ public class AppPrefs {
     private final SingleSelectionField<StartupBehaviour> startupBehaviourControl = Field.ofSingleSelectionType(
                     startupBehaviourList, startupBehaviour)
             .render(() -> new TranslatableComboBoxControl<>());
+
+    // Git storage
+    // ===========
+    public final BooleanProperty enableGitStorage = typed(new SimpleBooleanProperty(false), Boolean.class);
+    public ObservableBooleanValue enableGitStorage() {
+        return enableGitStorage;
+    }
+    final StringProperty storageGitRemote = typed(new SimpleStringProperty(""), String.class);
+    public ObservableStringValue storageGitRemote() {
+        return storageGitRemote;
+    }
 
     // Close behaviour
     // ===============
