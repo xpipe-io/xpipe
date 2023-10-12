@@ -115,7 +115,7 @@ public abstract class DataStorage {
         }
 
         e.setInRefresh(true);
-        Map<String, FixedChildStore> newChildren;
+        List<? extends DataStoreEntryRef<? extends FixedChildStore>> newChildren;
         try {
             newChildren = ((FixedHierarchyStore) (e.getStore())).listChildren(e);
             e.setInRefresh(false);
@@ -127,19 +127,19 @@ public abstract class DataStorage {
 
         var oldChildren = getStoreEntries().stream().filter(other -> e.equals(other.getProvider().getLogicalParent(other))).toList();
         var toRemove = oldChildren.stream()
-                .filter(entry -> newChildren.entrySet().stream()
+                .filter(entry -> newChildren.stream()
                         .noneMatch(
-                                nc -> nc.getValue().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId()))
+                                nc -> nc.getStore().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId()))
                 .toList();
-        var toAdd = newChildren.entrySet().stream()
+        var toAdd = newChildren.stream()
                 .filter(entry -> oldChildren.stream()
                         .noneMatch(oc -> ((FixedChildStore) oc.getStore()).getFixedId()
-                                == entry.getValue().getFixedId()))
+                                == entry.getStore().getFixedId()))
                 .toList();
         var toUpdate = oldChildren.stream()
                 .map(entry -> {
-                    FixedChildStore found = newChildren.values().stream()
-                            .filter(nc -> nc.getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId())
+                    var found = newChildren.stream()
+                            .filter(nc -> nc.getStore().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId())
                             .findFirst()
                             .orElse(null);
                     return new Pair<>(entry, found);
@@ -153,18 +153,14 @@ public abstract class DataStorage {
 
         deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
         addStoreEntriesIfNotPresent(toAdd.stream()
-                .map(stringDataStoreEntry -> DataStoreEntry.createNew(
-                        UUID.randomUUID(),
-                        e.getCategoryUuid(),
-                        stringDataStoreEntry.getKey(),
-                        stringDataStoreEntry.getValue()))
+                .map(DataStoreEntryRef::get)
                 .toArray(DataStoreEntry[]::new));
-        toUpdate.forEach(entry -> {
+        toUpdate.forEach(pair -> {
             propagateUpdate(
                     () -> {
-                        entry.getKey().setStoreInternal(entry.getValue(), false);
+                        pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
                     },
-                    entry.getKey());
+                    pair.getKey());
         });
             saveAsync();
         return !newChildren.isEmpty();

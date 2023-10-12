@@ -58,7 +58,7 @@ public class StoreCategoryComp extends SimpleComp {
         var name = new LazyTextFieldComp(category.nameProperty())
                 .apply(struc -> {
                     struc.get().prefWidthProperty().unbind();
-                    struc.get().setPrefWidth(100);
+                    struc.get().setPrefWidth(150);
                     struc.getTextField().minWidthProperty().bind(struc.get().widthProperty());
                 })
                 .styleClass("name")

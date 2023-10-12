@@ -15,6 +15,10 @@ import java.util.function.Predicate;
 
 public interface ShellControl extends ProcessControl {
 
+    ShellControl withTargetTerminalShellDialect(ShellDialect d);
+
+    ShellDialect getTargetTerminalShellDialect();
+
     default boolean hasLocalSystemAccess() {
         return getSystemId().equals(XPipeSystemId.getLocal());
     }

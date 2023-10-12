@@ -17,12 +17,12 @@
 
 }
 
-.root:dark .background {
--fx-opacity: 0.06;
+.root:dark.background {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 5%) 40%, derive(-color-bg-default, 2%) 50%, derive(-color-bg-default, 5%) 100%);
 }
 
-.root:light .background {
--fx-opacity: 0.2;
+.root:light.background {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -9%) 40%, derive(-color-bg-default, 1%) 50%, derive(-color-bg-default, -9%) 100%);
 }
 
 .edit-button.icon-button-comp {

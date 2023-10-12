@@ -34,32 +34,23 @@ public enum PredefinedScriptStore {
                             """)
                     .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
                     .build()),
-    STARSHIP_SETUP_UNIX("Starship Unix Setup", () -> SimpleScriptStore.builder()
-            .group(PredefinedScriptGroup.STARSHIP.getEntry())
-            .minimumDialect(ShellDialects.SH)
-            .commands(file("starship_setup.sh"))
-            .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
-            .build()),
     STARSHIP_BASH("Starship Bash", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.STARSHIP.getEntry())
             .minimumDialect(ShellDialects.BASH)
-            .commands("eval \"$(starship init bash)\"")
+            .commands(file("starship_bash.sh"))
             .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
-            .script(STARSHIP_SETUP_UNIX.getEntry())
             .build()),
     STARSHIP_ZSH("Starship Zsh", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.STARSHIP.getEntry())
             .minimumDialect(ShellDialects.ZSH)
-            .commands("eval \"$(starship init zsh)\"")
+            .commands(file("starship_zsh.sh"))
             .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
-            .script(STARSHIP_SETUP_UNIX.getEntry())
             .build()),
     STARSHIP_FISH("Starship Fish", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.STARSHIP.getEntry())
             .minimumDialect(ShellDialects.FISH)
-            .commands("starship init fish | source")
+            .commands(file("starship_fish.fish"))
             .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
-            .script(STARSHIP_SETUP_UNIX.getEntry())
             .build()),
     STARSHIP_CMD(
             "Starship Cmd",

@@ -20,7 +20,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class StoreEntryListSideComp extends SimpleComp {
+public class StoreEntryListStatusComp extends SimpleComp {
 
     private Region createGroupListHeader() {
         var label = new Label();

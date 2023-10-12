@@ -94,6 +94,10 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentStateNode = storePersistentState;
     }
 
+    public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
+        return createNew(UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name, store);
+    }
+
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {

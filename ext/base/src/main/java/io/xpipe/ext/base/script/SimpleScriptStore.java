@@ -28,12 +28,11 @@ public class SimpleScriptStore extends ScriptStore {
         return assemble(shellControl, ExecutionType.TERMINAL_ONLY);
     }
 
-    private String assemble(
-            ShellControl shellControl, ExecutionType type) {
-        if ((executionType == type || executionType == ExecutionType.BOTH)
-                && minimumDialect.isCompatibleTo(shellControl.getShellDialect())) {
-            var script = ScriptHelper.createExecScript(minimumDialect, shellControl, commands);
-            return shellControl.getShellDialect().sourceScriptCommand(shellControl, script);
+    private String assemble(ShellControl shellControl, ExecutionType type) {
+        var targetType = type == ExecutionType.TERMINAL_ONLY ? shellControl.getTargetTerminalShellDialect() : shellControl.getShellDialect();
+        if ((executionType == type || executionType == ExecutionType.BOTH) && minimumDialect.isCompatibleTo(targetType)) {
+            var script = ScriptHelper.createExecScript(targetType, shellControl, commands);
+            return targetType.sourceScriptCommand(shellControl, script);
         }
 
         return null;
@@ -47,9 +46,11 @@ public class SimpleScriptStore extends ScriptStore {
     }
 
     public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
-        getEffectiveScripts().stream().filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore())).forEach(scriptStoreDataStoreEntryRef -> {
-            scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
-        });
+        getEffectiveScripts().stream()
+                .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore()))
+                .forEach(scriptStoreDataStoreEntryRef -> {
+                    scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
+                });
         all.add(this);
     }
 

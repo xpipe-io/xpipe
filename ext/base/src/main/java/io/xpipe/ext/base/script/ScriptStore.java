@@ -13,7 +13,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<ScriptStore.State> {
 
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
-        return controlWithScripts(pc,getDefaultScripts());
+        return controlWithScripts(pc, getDefaultScripts());
     }
 
     public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> refs) {
@@ -56,9 +58,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
     public static List<SimpleScriptStore> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
         var seen = new LinkedHashSet<SimpleScriptStore>();
-        scripts
-                .forEach(scriptStoreDataStoreEntryRef ->
-                        scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
+        scripts.forEach(scriptStoreDataStoreEntryRef ->
+                scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
         return seen.stream().toList();
     }
 

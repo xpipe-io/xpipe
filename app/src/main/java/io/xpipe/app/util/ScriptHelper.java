@@ -109,7 +109,7 @@ public class ScriptHelper {
         var fileName = "exec-" + getScriptId();
         var temp = processControl.getSubTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
-        return createExecScript(processControl.getShellDialect(), processControl, file, content);
+        return createExecScript(type, processControl, file, content);
     }
 
     @SneakyThrows
