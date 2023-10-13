@@ -4,13 +4,12 @@ import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppMainWindow;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.issue.*;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.CommercializationAlert;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.util.UnlockAlert;
-import javafx.application.Platform;
-
-import java.util.concurrent.CountDownLatch;
+import javafx.stage.Stage;
 
 public class GuiMode extends PlatformMode {
 
@@ -28,26 +27,17 @@ public class GuiMode extends PlatformMode {
         CommercializationAlert.showIfNeeded();
         AppGreetings.showIfNeeded();
 
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
+        TrackEvent.info("mode", "Waiting for window setup completion ...");
+        PlatformThread.runLaterIfNeededBlocking(() -> {
             if (AppMainWindow.getInstance() == null) {
                 try {
                     App.getApp().setupWindow();
-                    AppMainWindow.getInstance().show();
-                    latch.countDown();
                 } catch (Throwable t) {
                     ErrorEvent.fromThrowable(t).terminal(true).handle();
                 }
-            } else {
-                latch.countDown();
             }
+            AppMainWindow.getInstance().show();
         });
-
-        TrackEvent.info("mode", "Waiting for window setup completion ...");
-        try {
-            latch.await();
-        } catch (InterruptedException ignored) {
-        }
         TrackEvent.info("mode", "Window setup complete");
     }
 
@@ -55,8 +45,8 @@ public class GuiMode extends PlatformMode {
     public void onSwitchFrom() {
         super.onSwitchFrom();
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            TrackEvent.info("mode", "Closing window");
-            App.getApp().close();
+            TrackEvent.info("mode", "Closing windows");
+            Stage.getWindows().stream().toList().forEach(w -> w.hide());
         });
     }
 
