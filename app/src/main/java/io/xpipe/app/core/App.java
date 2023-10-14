@@ -9,7 +9,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.core.process.OsType;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
 import lombok.Getter;
@@ -66,13 +65,6 @@ public class App extends Application {
         }
 
         AppWindowHelper.addIcons(stage);
-    }
-
-    public void close() {
-        Platform.runLater(() -> {
-            Stage.getWindows().stream().toList().forEach(w -> w.hide());
-            TrackEvent.debug("Closed main window");
-        });
     }
 
     public void setupWindow() {

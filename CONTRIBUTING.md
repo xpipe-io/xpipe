@@ -24,10 +24,10 @@ many IDEs still have problems building this project properly.
 
 For example, you can't build this project in eclipse or vscode as it will complain about missing modules.
 The tested and recommended IDE is IntelliJ.
-When setting up the project in IntelliJ, make sure that the correct JDK (Java 20)
+When setting up the project in IntelliJ, make sure that the correct JDK (Java 21)
 is selected both for the project and for gradle itself.
 
-## Setup
+## Development Setup
 
 You need to have an up-to-date version of XPipe installed on your local system in order to properly
 run XPipe in a development environment.
@@ -80,6 +80,10 @@ Once you created your custom classes, you have to register them in your module i
 ### Implementing custom actions for the connection hub
 
 All actions that you can perform for certain connections in the connection overview tab are implemented using an [Action API](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/ext/ActionProvider.java). You can find a sample implementation [here](https://github.com/xpipe-io/xpipe/blob/master/ext/base/src/main/java/io/xpipe/ext/base/action/SampleAction.java) and many common action implementations [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/action).
+
+### Adding more predefined scripts
+
+You can add custom script definitions [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/java/io/xpipe/ext/base/script/PredefinedScriptStore.java) and [here](https://github.com/xpipe-io/xpipe/tree/master/ext/base/src/main/resources/io/xpipe/ext/base/resources/scripts).
 
 ### Familiarising yourself with the shell and command API
 

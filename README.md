@@ -116,7 +116,7 @@ This mainly concerns the features only available in the professional tier and th
 
 ## Further information
 
-You have more questions? Then check out the [FAQ](/FAQ.md).
+You have more questions? Then check out the [FAQ](https://xpipe.io/faq).
 
 For information about the security model of XPipe, see the [security page](/SECURITY.md).
 

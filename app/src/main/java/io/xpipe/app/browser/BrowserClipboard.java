@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
@@ -56,7 +57,8 @@ public class BrowserClipboard {
                             }
 
                             currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries));
-                        } catch (IllegalStateException ignored) {
+                        } catch (Exception e) {
+                            ErrorEvent.fromThrowable(e).expected().omit().handle();
                         }
                     }
                 }));
