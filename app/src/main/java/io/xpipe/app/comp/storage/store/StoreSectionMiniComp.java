@@ -43,7 +43,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
     public CompStructure<VBox> createBase() {
         var content = new ListBoxViewComp<>(section.getShownChildren(), section.getAllChildren(), (StoreSection e) -> {
             return StoreSectionMiniComp.builder().section(e).augment(this.augment).build();
-        })
+        }).withLimit(100)
                 .hgrow();
 
         var list = new ArrayList<Comp<?>>();

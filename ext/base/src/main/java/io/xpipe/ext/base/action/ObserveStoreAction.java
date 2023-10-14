@@ -2,6 +2,7 @@ package io.xpipe.ext.base.action;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ObservableDataStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
@@ -11,7 +12,7 @@ public class ObserveStoreAction implements ActionProvider {
     @Value
     static class Action implements ActionProvider.Action {
 
-        ObservableDataStore store;
+        DataStoreEntryRef<ObservableDataStore> store;
 
         @Override
         public boolean requiresJavaFXPlatform() {
@@ -20,7 +21,7 @@ public class ObserveStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            store.toggleObserverState(!store.getObserverState());
+            store.getStore().toggleObserverState(!store.getStore().getObserverState());
         }
     }
 
@@ -29,7 +30,7 @@ public class ObserveStoreAction implements ActionProvider {
         return new DataStoreCallSite<ObservableDataStore>() {
 
             @Override
-            public ActionProvider.Action createAction(ObservableDataStore store) {
+            public ActionProvider.Action createAction(DataStoreEntryRef<ObservableDataStore> store) {
                 return new Action(store);
             }
 
@@ -39,13 +40,13 @@ public class ObserveStoreAction implements ActionProvider {
             }
 
             @Override
-            public ObservableValue<String> getName(ObservableDataStore store) {
-                return store.getObserverState() ? AppI18n.observable("base.stopObserve") : AppI18n.observable("base.observe");
+            public ObservableValue<String> getName(DataStoreEntryRef<ObservableDataStore> store) {
+                return store.getStore().getObserverState() ? AppI18n.observable("base.stopObserve") : AppI18n.observable("base.observe");
             }
 
             @Override
-            public String getIcon(ObservableDataStore store) {
-                return store.getObserverState() ? "mdi2e-eye-off-outline" : "mdi2e-eye-outline";
+            public String getIcon(DataStoreEntryRef<ObservableDataStore> store) {
+                return store.getStore().getObserverState() ? "mdi2e-eye-off-outline" : "mdi2e-eye-outline";
             }
         };
     }

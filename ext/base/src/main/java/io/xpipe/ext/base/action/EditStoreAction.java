@@ -3,9 +3,8 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
@@ -32,18 +31,15 @@ public class EditStoreAction implements ActionProvider {
     public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
         return new DefaultDataStoreCallSite<>() {
             @Override
-            public boolean isApplicable(DataStore o) {
-                return DataStorage.get()
-                        .getStoreEntryIfPresent(o)
-                        .orElseThrow()
+            public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+                return o.get()
                         .getValidity()
                         .equals(DataStoreEntry.Validity.INCOMPLETE);
             }
 
             @Override
-            public ActionProvider.Action createAction(DataStore store) {
-                return new Action(
-                        DataStorage.get().getStoreEntryIfPresent(store).orElseThrow());
+            public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
+                return new Action(store.get());
             }
 
             @Override
@@ -58,8 +54,8 @@ public class EditStoreAction implements ActionProvider {
         return new DataStoreCallSite<>() {
 
             @Override
-            public boolean isMajor(DataStore o) {
-                var provider = DataStoreProviders.byStore(o);
+            public boolean isMajor(DataStoreEntryRef<DataStore> o) {
+                var provider = o.get().getProvider();
                 return provider.shouldEdit();
             }
 
@@ -74,8 +70,8 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
-            public ActionProvider.Action createAction(DataStore store) {
-                return new Action(DataStorage.get().getStoreEntry(store));
+            public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
+                return new Action(store.get());
             }
 
             @Override
@@ -84,12 +80,12 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
-            public ObservableValue<String> getName(DataStore store) {
+            public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
                 return AppI18n.observable("base.edit");
             }
 
             @Override
-            public String getIcon(DataStore store) {
+            public String getIcon(DataStoreEntryRef<DataStore> store) {
                 return "mdal-edit";
             }
         };

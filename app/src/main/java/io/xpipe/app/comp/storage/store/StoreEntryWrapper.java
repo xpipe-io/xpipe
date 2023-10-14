@@ -176,7 +176,7 @@ public class StoreEntryWrapper {
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass())
                             && e.getDefaultDataStoreCallSite()
-                                    .isApplicable(entry.getStore().asNeeded()))
+                                    .isApplicable(entry.ref()))
                     .findFirst()
                     .map(ActionProvider::getDefaultDataStoreCallSite)
                     .orElse(null);
@@ -191,7 +191,7 @@ public class StoreEntryWrapper {
                                         .isAssignableFrom(entry.getStore().getClass())
                                 && dataStoreActionProvider
                                         .getDataStoreCallSite()
-                                        .isApplicable(entry.getStore().asNeeded()));
+                                        .isApplicable(entry.ref()));
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
                 actionProviders.get(dataStoreActionProvider).set(false);
@@ -210,7 +210,7 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.updateLastUsed();
         if (found != null) {
-            found.createAction(entry.getStore().asNeeded()).execute();
+            found.createAction(entry.ref()).execute();
         } else {
             entry.setExpanded(!entry.isExpanded());
         }

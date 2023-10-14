@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.ModuleLayerLoader;
 import javafx.beans.value.ObservableValue;
@@ -92,11 +93,11 @@ public interface ActionProvider {
 
     interface DefaultDataStoreCallSite<T extends DataStore> {
 
-        Action createAction(T store);
+        Action createAction(DataStoreEntryRef<T> store);
 
         Class<T> getApplicableClass();
 
-        default boolean isApplicable(T o) {
+        default boolean isApplicable(DataStoreEntryRef<T> o) {
             return true;
         }
     }
@@ -117,21 +118,21 @@ public interface ActionProvider {
             return false;
         }
 
-        Action createAction(T store);
+        Action createAction(DataStoreEntryRef<T> store);
 
         Class<T> getApplicableClass();
 
-        default boolean isMajor(T o) {
+        default boolean isMajor(DataStoreEntryRef<T> o) {
             return false;
         }
 
-        default boolean isApplicable(T o) {
+        default boolean isApplicable(DataStoreEntryRef<T> o) {
             return true;
         }
 
-        ObservableValue<String> getName(T store);
+        ObservableValue<String> getName(DataStoreEntryRef<T> store);
 
-        String getIcon(T store);
+        String getIcon(DataStoreEntryRef<T> store);
 
         default ActiveType activeType() {
             return ActiveType.ONLY_SHOW_IF_ENABLED;

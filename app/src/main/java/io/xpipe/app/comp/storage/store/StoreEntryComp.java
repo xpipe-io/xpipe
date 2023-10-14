@@ -192,7 +192,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var list = new ArrayList<Comp<?>>();
         for (var p : wrapper.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
-            if (!actionProvider.isMajor(wrapper.getEntry().getStore().asNeeded())) {
+            if (!actionProvider.isMajor(wrapper.getEntry().ref())) {
                 continue;
             }
 
@@ -202,15 +202,15 @@ public abstract class StoreEntryComp extends SimpleComp {
             }
 
             var button = new IconButtonComp(
-                    actionProvider.getIcon(wrapper.getEntry().getStore().asNeeded()), () -> {
+                    actionProvider.getIcon(wrapper.getEntry().ref()), () -> {
                         ThreadHelper.runFailableAsync(() -> {
                             var action = actionProvider.createAction(
-                                    wrapper.getEntry().getStore().asNeeded());
+                                    wrapper.getEntry().ref());
                             action.execute();
                         });
                     });
             button.apply(new FancyTooltipAugment<>(
-                    actionProvider.getName(wrapper.getEntry().getStore().asNeeded())));
+                    actionProvider.getName(wrapper.getEntry().ref())));
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 button.hide(Bindings.not(p.getValue()));
             } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
@@ -256,7 +256,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var hasSep = false;
         for (var p : wrapper.getActionProviders().entrySet()) {
             var actionProvider = p.getKey().getDataStoreCallSite();
-            if (actionProvider.isMajor(wrapper.getEntry().getStore().asNeeded())) {
+            if (actionProvider.isMajor(wrapper.getEntry().ref())) {
                 continue;
             }
 
@@ -267,8 +267,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                 hasSep = true;
             }
 
-            var name = actionProvider.getName(wrapper.getEntry().getStore().asNeeded());
-            var icon = actionProvider.getIcon(wrapper.getEntry().getStore().asNeeded());
+            var name = actionProvider.getName(wrapper.getEntry().ref());
+            var icon = actionProvider.getIcon(wrapper.getEntry().ref());
             var item = actionProvider.canLinkTo()
                     ? new Menu(null, new FontIcon(icon))
                     : new MenuItem(null, new FontIcon(icon));
@@ -281,7 +281,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     contextMenu.hide();
                     ThreadHelper.runFailableAsync(() -> {
                         var action = actionProvider.createAction(
-                                wrapper.getEntry().getStore().asNeeded());
+                                wrapper.getEntry().ref());
                         action.execute();
                     });
                 });
@@ -298,7 +298,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 run.textProperty().bind(AppI18n.observable("base.execute"));
                 run.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        p.getKey().getDataStoreCallSite().createAction(wrapper.getEntry().getStore().asNeeded()).execute();
+                        p.getKey().getDataStoreCallSite().createAction(wrapper.getEntry().ref()).execute();
                     });
                 });
                 menu.getItems().add(run);
@@ -311,7 +311,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 sc.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
                         DesktopShortcuts.create(url,
-                                wrapper.nameProperty().getValue() + " (" + p.getKey().getDataStoreCallSite().getName(wrapper.getEntry().getStore().asNeeded()).getValue() + ")");
+                                wrapper.nameProperty().getValue() + " (" + p.getKey().getDataStoreCallSite().getName(wrapper.getEntry().ref()).getValue() + ")");
                     });
                 });
                 menu.getItems().add(sc);

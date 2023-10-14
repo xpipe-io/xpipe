@@ -56,9 +56,7 @@ open module io.xpipe.ext.base {
             XPipeUrlAction,
             EditStoreAction,
             DeleteStoreChildrenAction,
-            FileBrowseAction,
-            BrowseStoreAction,
-            FileEditAction;
+            BrowseStoreAction;
     provides DataStoreProvider with
             ScriptGroupStoreProvider,
             SimpleScriptStoreProvider,

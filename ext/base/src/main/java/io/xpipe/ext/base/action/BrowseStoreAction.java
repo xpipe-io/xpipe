@@ -4,8 +4,8 @@ import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -35,23 +35,23 @@ public class BrowseStoreAction implements ActionProvider {
         return new DataStoreCallSite<ShellStore>() {
 
             @Override
-            public boolean isMajor(ShellStore o) {
+            public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
                 return true;
             }
 
             @Override
-            public ObservableValue<String> getName(ShellStore store) {
+            public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
                 return AppI18n.observable("browseFiles");
             }
 
             @Override
-            public String getIcon(ShellStore store) {
+            public String getIcon(DataStoreEntryRef<ShellStore> store) {
                 return "mdi2f-folder-open-outline";
             }
 
             @Override
-            public ActionProvider.Action createAction(ShellStore store) {
-                return new Action(DataStorage.get().getStoreEntry(store));
+            public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                return new Action(store.get());
             }
 
             @Override

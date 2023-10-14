@@ -2,12 +2,12 @@ package io.xpipe.ext.base.action;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
@@ -113,8 +113,8 @@ public class SampleAction implements ActionProvider {
         return new DataStoreCallSite<ShellStore>() {
 
             @Override
-            public Action createAction(ShellStore store) {
-                return new Action(DataStorage.get().getStoreEntry(store));
+            public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                return new Action(store.get());
             }
 
             @Override
@@ -124,20 +124,20 @@ public class SampleAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(ShellStore o) {
+            public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
                 // Allows you to individually check whether this action should be available for the specific store.
                 // In this case it should only be available for remote shell connections, not local ones.
-                return !ShellStore.isLocal(o);
+                return !ShellStore.isLocal(o.getStore());
             }
 
             @Override
-            public ObservableValue<String> getName(ShellStore store) {
+            public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
                 // The displayed name of the action, allows you to use translation keys.
                 return AppI18n.observable("installConnector");
             }
 
             @Override
-            public String getIcon(ShellStore store) {
+            public String getIcon(DataStoreEntryRef<ShellStore> store) {
                 // The ikonli icon of the button.
                 return "mdi2c-code-greater-than";
             }

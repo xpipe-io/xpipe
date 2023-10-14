@@ -3,7 +3,8 @@ package io.xpipe.ext.base.action;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
-import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.SecretHelper;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;
@@ -18,7 +19,7 @@ public class ShareStoreAction implements ActionProvider {
     @Value
     static class Action implements ActionProvider.Action {
 
-        DataStore store;
+        DataStoreEntry store;
 
         @Override
         public boolean requiresJavaFXPlatform() {
@@ -32,7 +33,7 @@ public class ShareStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            var string = create(store);
+            var string = create(store.getStore());
             var selection = new StringSelection(string);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             AppActionLinkDetector.setLastDetectedAction(string);
@@ -45,8 +46,8 @@ public class ShareStoreAction implements ActionProvider {
         return new DataStoreCallSite<>() {
 
             @Override
-            public ActionProvider.Action createAction(DataStore store) {
-                return new Action(store);
+            public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
+                return new Action(store.get());
             }
 
             @Override
@@ -55,17 +56,17 @@ public class ShareStoreAction implements ActionProvider {
             }
 
             @Override
-            public boolean isApplicable(DataStore o) {
-                return DataStoreProviders.byStore(o).isShareable();
+            public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+                return o.get().getProvider().isShareable();
             }
 
             @Override
-            public ObservableValue<String> getName(DataStore store) {
+            public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
                 return AppI18n.observable("base.copyShareLink");
             }
 
             @Override
-            public String getIcon(DataStore store) {
+            public String getIcon(DataStoreEntryRef<DataStore> store) {
                 return "mdi2c-clipboard-list-outline";
             }
         };

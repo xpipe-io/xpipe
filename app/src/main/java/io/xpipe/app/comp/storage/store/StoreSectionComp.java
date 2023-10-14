@@ -60,7 +60,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
         var content = new ListBoxViewComp<>(section.getShownChildren(), section.getAllChildren(), (StoreSection e) -> {
                     return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
-                }).hgrow();
+                }).withLimit(100).hgrow();
 
         var expanded = Bindings.createBooleanBinding(() -> {
             return section.getWrapper().getExpanded().get() && section.getShownChildren().size() > 0;
