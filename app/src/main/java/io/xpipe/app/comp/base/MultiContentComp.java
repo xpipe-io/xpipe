@@ -24,12 +24,10 @@ public class MultiContentComp extends SimpleComp {
         stack.setPickOnBounds(false);
         for (Map.Entry<Comp<?>, ObservableBooleanValue> entry : content.entrySet()) {
             var region = entry.getKey().createRegion();
+            stack.getChildren().add(region);
             SimpleChangeListener.apply(PlatformThread.sync(entry.getValue()), val -> {
-                if (val) {
-                    stack.getChildren().add(region);
-                } else {
-                    stack.getChildren().remove(region);
-                }
+                region.setManaged(val);
+                region.setVisible(val);
             });
         }
         return stack;

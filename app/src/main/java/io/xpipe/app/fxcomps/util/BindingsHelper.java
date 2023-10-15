@@ -266,59 +266,43 @@ public class BindingsHelper {
         return l1;
     }
 
-    public static <T> void setContent(ObservableList<T> toSet, List<? extends T> newList) {
-        if (toSet.equals(newList)) {
+    public static <T> void setContent(ObservableList<T> target, List<? extends T> newList) {
+        if (target.equals(newList)) {
             return;
         }
 
-        if (toSet.size() == 0) {
-            toSet.setAll(newList);
+        if (target.size() == 0) {
+            target.setAll(newList);
             return;
         }
 
-        if (newList.containsAll(toSet)) {
-            var l = new ArrayList<>(newList);
-            l.removeIf(t -> !toSet.contains(t));
-            if (!l.equals(toSet)) {
-                toSet.setAll(newList);
-                return;
-            }
-
-            var start = 0;
-            for (int end = 0; end <= toSet.size(); end++) {
-                var index = end < toSet.size() ? newList.indexOf(toSet.get(end)) : newList.size();
-                for (; start < index; start++) {
-                    toSet.add(start, newList.get(start));
-                }
-                start = index + 1;
-            }
+        if (newList.size() == 0) {
+            target.clear();
             return;
         }
 
-        if (toSet.contains(newList)) {
-            var l = new ArrayList<>(newList);
-            l.removeAll(toSet);
-            newList.removeAll(l);
+        var targetSet = new HashSet<>(target);
+        var newSet = new HashSet<>(newList);
+
+        // Only add missing element
+        if (targetSet.size() + 1 == newList.size() && newSet.containsAll(targetSet)) {
+            var l = new HashSet<>(newSet);
+            l.removeAll(targetSet);
+            var found = l.iterator().next();
+            var index = newList.indexOf(found);
+            target.add(index, found);
             return;
         }
 
-        toSet.removeIf(e -> !newList.contains(e));
-
-        if (toSet.size() + 1 == newList.size() && newList.containsAll(toSet)) {
-            var l = new ArrayList<>(newList);
-            l.removeAll(toSet);
-            var index = newList.indexOf(l.get(0));
-            toSet.add(index, l.get(0));
+        // Only remove not needed element
+        if (target.size() - 1 == newList.size() && targetSet.containsAll(newSet)) {
+            var l = new HashSet<>(targetSet);
+            l.removeAll(newSet);
+            target.remove(l.iterator().next());
             return;
         }
 
-        if (toSet.size() - 1 == newList.size() && toSet.containsAll(newList)) {
-            var l = new ArrayList<>(toSet);
-            l.removeAll(newList);
-            toSet.remove(l.get(0));
-            return;
-        }
-
-        toSet.setAll(newList);
+        // Other cases are more difficult
+        target.setAll(newList);
     }
 }

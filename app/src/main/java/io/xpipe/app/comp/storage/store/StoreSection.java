@@ -136,8 +136,7 @@ public class StoreSection {
         var filtered = BindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    return category.getValue().contains(section.getWrapper().getEntry())
-                            && section.shouldShow(filterString.get())
+                    return section.shouldShow(filterString.get())
                             && section.anyMatches(entryFilter);
                 },
                 category,

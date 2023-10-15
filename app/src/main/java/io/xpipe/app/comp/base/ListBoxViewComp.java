@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -91,8 +92,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             }
 
             if (!listView.getChildren().equals(newShown)) {
-                listView.getChildren().setAll(newShown);
-                listView.layout();
+                BindingsHelper.setContent(listView.getChildren(), newShown);
             }
         };
 

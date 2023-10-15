@@ -162,6 +162,7 @@ public abstract class DataStorage {
                     },
                     pair.getKey());
         });
+        e.setChildrenCache(newChildren.stream().map(DataStoreEntryRef::get).toList());
             saveAsync();
         return !newChildren.isEmpty();
     }
@@ -251,6 +252,10 @@ public abstract class DataStorage {
             return List.of();
         }
 
+        if (entry.getChildrenCache() != null) {
+            return entry.getChildrenCache();
+        }
+
         var children = new ArrayList<>(entries.stream()
                 .filter(other -> {
                     if (other.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
@@ -262,6 +267,7 @@ public abstract class DataStorage {
                             && parent.get().equals(entry);
                 })
                 .toList());
+        entry.setChildrenCache(children);
 
         if (deep) {
             for (DataStoreEntry dataStoreEntry : new ArrayList<>(children)) {
@@ -488,6 +494,7 @@ public abstract class DataStorage {
             if (displayParent != null) {
                 displayParent.setExpanded(true);
                 addStoreEntryIfNotPresent(displayParent);
+                displayParent.setChildrenCache(null);
             }
         }
 

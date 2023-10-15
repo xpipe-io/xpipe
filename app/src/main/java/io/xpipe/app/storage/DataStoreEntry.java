@@ -66,6 +66,10 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     DataStoreColor color;
 
+    @NonFinal
+    @Setter
+    List<DataStoreEntry> childrenCache = null;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -318,6 +322,7 @@ public class DataStoreEntry extends StorageElement {
         lastModified = Instant.now();
         dirty = true;
         provider = e.provider;
+        childrenCache = null;
         refresh();
     }
 
@@ -327,6 +332,7 @@ public class DataStoreEntry extends StorageElement {
         if (updateTime) {
             lastModified = Instant.now();
         }
+        childrenCache = null;
         dirty = true;
     }
 
@@ -345,7 +351,7 @@ public class DataStoreEntry extends StorageElement {
             if (store instanceof ValidatableStore l) {
                 l.validate();
             } else if (store instanceof FixedHierarchyStore h) {
-                h.listChildren(this);
+                childrenCache = h.listChildren(this).stream().map(DataStoreEntryRef::get).toList();
             }
         } finally {
             setInRefresh(false);

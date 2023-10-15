@@ -37,14 +37,16 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = StandardStoreEntryComp.customSection(section, topLevel).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+        var root = StandardStoreEntryComp.customSection(section, topLevel)
+                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var button = new IconButtonComp(
                         Bindings.createStringBinding(
                                 () -> section.getWrapper().getExpanded().get()
                                                 && section.getShownChildren().size() > 0
                                         ? "mdal-keyboard_arrow_down"
                                         : "mdal-keyboard_arrow_right",
-                                section.getWrapper().getExpanded(), section.getShownChildren()),
+                                section.getWrapper().getExpanded(),
+                                section.getShownChildren()),
                         () -> {
                             section.getWrapper().toggleExpanded();
                         })
@@ -58,13 +60,27 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .styleClass("expand-button");
         List<Comp<?>> topEntryList = List.of(button, root);
 
-        var content = new ListBoxViewComp<>(section.getShownChildren(), section.getAllChildren(), (StoreSection e) -> {
+        // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
+        // section is actually expanded
+        var listSections = BindingsHelper.filteredContentBinding(
+                section.getShownChildren(),
+                storeSection -> section.getAllChildren().size() <= 20
+                        || section.getWrapper().getExpanded().get(),
+                section.getWrapper().getExpanded(),
+                section.getAllChildren());
+        var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
                     return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
-                }).withLimit(100).hgrow();
+                })
+                .withLimit(100)
+                .hgrow();
 
-        var expanded = Bindings.createBooleanBinding(() -> {
-            return section.getWrapper().getExpanded().get() && section.getShownChildren().size() > 0;
-        }, section.getWrapper().getExpanded(), section.getShownChildren());
+        var expanded = Bindings.createBooleanBinding(
+                () -> {
+                    return section.getWrapper().getExpanded().get()
+                            && section.getShownChildren().size() > 0;
+                },
+                section.getWrapper().getExpanded(),
+                section.getShownChildren());
 
         return new VerticalComp(List.of(
                         new HorizontalComp(topEntryList)
@@ -84,7 +100,8 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
                     struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
-                }).apply(struc -> SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+                })
+                .apply(struc -> SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
                     if (!topLevel) {
                         return;
                     }
