@@ -560,6 +560,7 @@ public abstract class DataStorage {
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
         store.finalizeEntry();
         this.storeEntries.remove(store);
+        getDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
         this.listeners.forEach(l -> l.onStoreRemove(store));
         refreshValidities(false);
         saveAsync();

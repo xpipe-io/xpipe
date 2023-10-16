@@ -41,11 +41,6 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var content = new ListBoxViewComp<>(section.getShownChildren(), section.getAllChildren(), (StoreSection e) -> {
-            return StoreSectionMiniComp.builder().section(e).augment(this.augment).build();
-        }).withLimit(100)
-                .hgrow();
-
         var list = new ArrayList<Comp<?>>();
         BooleanProperty expanded;
         if (section.getWrapper() != null) {
@@ -90,6 +85,19 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         } else {
             expanded = new SimpleBooleanProperty(true);
         }
+
+        // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
+        // section is actually expanded
+        var listSections = section.getWrapper() != null ? BindingsHelper.filteredContentBinding(
+                section.getShownChildren(),
+                storeSection -> section.getAllChildren().size() <= 20
+                        || expanded.get(),
+                expanded,
+                section.getAllChildren()) : section.getShownChildren();
+        var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
+            return StoreSectionMiniComp.builder().section(e).augment(this.augment).build();
+        }).withLimit(100)
+                .hgrow();
 
         list.add(new HorizontalComp(List.of(content))
                          .styleClass("content")

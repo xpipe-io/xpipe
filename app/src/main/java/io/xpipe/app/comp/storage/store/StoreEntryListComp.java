@@ -34,7 +34,9 @@ public class StoreEntryListComp extends SimpleComp {
         var initialCount = 1;
         var showIntro = Bindings.createBooleanBinding(
                 () -> {
-                    return initialCount == StoreViewState.get().getAllEntries().size();
+                    var all = StoreViewState.get().getAllConnectionsCategory();
+                    var connections = StoreViewState.get().getAllEntries().stream().filter(wrapper -> all.contains(wrapper.getEntry())).toList();
+                    return initialCount == connections.size();
                 },
                 StoreViewState.get().getAllEntries());
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();

@@ -36,6 +36,16 @@ task createChecksums(type: Checksum) {
         }
     }
 }
+
+clean {
+    doFirst {
+        // Fix clean failing when file is read-only
+        if (file("$distDir").exists()) {
+            file("$distDir").traverse { f -> if (f.exists() && f.isFile()) f.writable = true }
+        }
+    }
+}
+
 dist.finalizedBy(createChecksums)
 
 apply from: 'base.gradle'

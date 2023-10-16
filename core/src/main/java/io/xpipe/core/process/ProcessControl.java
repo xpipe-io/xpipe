@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.concurrent.ExecutorService;
 
 public interface ProcessControl extends AutoCloseable {
 
@@ -16,10 +15,6 @@ public interface ProcessControl extends AutoCloseable {
     ProcessControl withExceptionConverter(ExceptionConverter converter);
 
     void resetData();
-
-    ExecutorService getStdoutReader();
-
-    ExecutorService getStderrReader();
 
     String prepareTerminalOpen(String displayName) throws Exception;
 
