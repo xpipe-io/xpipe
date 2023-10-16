@@ -34,7 +34,7 @@ public class StoreViewState {
             FXCollections.observableList(new CopyOnWriteArrayList<>());
 
     @Getter
-    private final StoreSection topLevelSection;
+    private final StoreSection currentTopLevelSection;
 
     @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
@@ -51,7 +51,7 @@ public class StoreViewState {
             activeCategory.setValue(getAllConnectionsCategory());
             ErrorEvent.fromThrowable(exception).handle();
         }
-        topLevelSection = tl;
+        currentTopLevelSection = tl;
     }
 
     public ObservableList<StoreCategoryWrapper> getSortedCategories() {

@@ -2,12 +2,9 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.UUID;
 
 public class ImpersistentStorage extends DataStorage {
 
@@ -34,8 +31,4 @@ public class ImpersistentStorage extends DataStorage {
         }
     }
 
-    @Override
-    public Path getInternalStreamPath(@NonNull UUID uuid) {
-        return FileUtils.getTempDirectory().toPath().resolve(uuid.toString());
-    }
 }

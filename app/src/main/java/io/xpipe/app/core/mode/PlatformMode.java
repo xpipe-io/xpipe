@@ -20,6 +20,7 @@ public abstract class PlatformMode extends OperationMode {
     @Override
     public void onSwitchTo() throws Throwable {
         if (App.getApp() != null) {
+            StoreViewState.init();
             return;
         }
 

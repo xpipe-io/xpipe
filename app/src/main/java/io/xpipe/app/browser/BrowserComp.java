@@ -21,7 +21,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableBooleanValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -136,7 +136,7 @@ public class BrowserComp extends SimpleComp {
     }
 
     private Node createTabs() {
-        var multi = new MultiContentComp(Map.<Comp<?>, ObservableBooleanValue>of(
+        var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
                 Comp.of(() -> createTabPane()),
                 BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),

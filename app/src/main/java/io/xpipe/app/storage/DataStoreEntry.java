@@ -20,9 +20,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Value
-@EqualsAndHashCode(callSuper = true)
 public class DataStoreEntry extends StorageElement {
 
     @NonFinal
@@ -68,7 +68,7 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     @Setter
-    List<DataStoreEntry> childrenCache = null;
+    Set<DataStoreEntry> childrenCache = null;
 
     private DataStoreEntry(
             Path directory,
@@ -96,6 +96,21 @@ public class DataStoreEntry extends StorageElement {
                 ? DataStoreProviders.byStoreClass(store.getClass()).orElse(null)
                 : null;
         this.storePersistentStateNode = storePersistentState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
@@ -351,7 +366,7 @@ public class DataStoreEntry extends StorageElement {
             if (store instanceof ValidatableStore l) {
                 l.validate();
             } else if (store instanceof FixedHierarchyStore h) {
-                childrenCache = h.listChildren(this).stream().map(DataStoreEntryRef::get).toList();
+                childrenCache = h.listChildren(this).stream().map(DataStoreEntryRef::get).collect(Collectors.toSet());
             }
         } finally {
             setInRefresh(false);

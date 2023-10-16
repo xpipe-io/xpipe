@@ -3,9 +3,7 @@ package io.xpipe.core.util;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
 
-import java.nio.file.Path;
 import java.util.ServiceLoader;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public abstract class DataStateProvider {
@@ -31,6 +29,4 @@ public abstract class DataStateProvider {
     public abstract <T> T getCache(DataStore store, String key, Class<T> c, Supplier<T> def);
 
     public abstract boolean isInStorage(DataStore store);
-
-    public abstract Path getInternalStreamStore(UUID id);
 }

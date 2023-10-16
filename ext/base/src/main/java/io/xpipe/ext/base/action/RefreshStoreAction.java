@@ -33,7 +33,7 @@ public class RefreshStoreAction implements ActionProvider  {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
-                return DataStorage.get().getStoreChildren(o.get(), true).size() == 0;
+                return DataStorage.get().getStoreChildren(o.get()).size() == 0;
             }
 
             @Override

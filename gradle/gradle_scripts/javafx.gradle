@@ -19,11 +19,13 @@ configurations {
     dep
 }
 
+def jfxVersion = '22-ea+11'
+
 dependencies {
-    dep "org.openjfx:javafx-base:21:${platform}"
-    dep "org.openjfx:javafx-controls:21:${platform}"
-    dep "org.openjfx:javafx-graphics:21:${platform}"
-    dep "org.openjfx:javafx-media:21:${platform}"
-    dep "org.openjfx:javafx-web:21:${platform}"
-    dep "org.openjfx:javafx-swing:21:${platform}"
+    dep "org.openjfx:javafx-base:${jfxVersion}:${platform}"
+    dep "org.openjfx:javafx-controls:${jfxVersion}:${platform}"
+    dep "org.openjfx:javafx-graphics:${jfxVersion}:${platform}"
+    dep "org.openjfx:javafx-media:${jfxVersion}:${platform}"
+    dep "org.openjfx:javafx-web:${jfxVersion}:${platform}"
+    dep "org.openjfx:javafx-swing:${jfxVersion}:${platform}"
 }

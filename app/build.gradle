@@ -89,33 +89,33 @@ project.allExtensions.forEach((Project p) -> {
     }
 })
 
-
-List<String> jvmRunArgs = [
-        "--add-exports", "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
-        "--add-exports", "javafx.graphics/com.sun.javafx.stage=com.jfoenix",
-        "--add-exports", "javafx.base/com.sun.javafx.binding=com.jfoenix",
-        "--add-exports", "javafx.base/com.sun.javafx.event=com.jfoenix",
-        "--add-exports", "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
-        "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
-        "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
-        "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
-        "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.app",
-        "--add-opens", "java.base/java.lang=io.xpipe.app",
-        "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
-        "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
-        "--add-opens", "java.base/java.lang=io.xpipe.core",
-        "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
-        "--add-opens", "java.desktop/java.awt=io.xpipe.app",
-        "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
-        "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
-        "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.model=io.xpipe.app',
-        "-Xmx8g",
-        "-Dio.xpipe.app.arch=$rootProject.arch",
-        //  "-XX:+ExitOnOutOfMemoryError",
-        "-Dfile.encoding=UTF-8",
-        '-XX:+UseZGC',
-        "-Dvisualvm.display.name=XPipe"
-]
+project.ext {
+    jvmRunArgs = [
+            "--add-exports", "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
+            "--add-exports", "javafx.graphics/com.sun.javafx.stage=com.jfoenix",
+            "--add-exports", "javafx.base/com.sun.javafx.binding=com.jfoenix",
+            "--add-exports", "javafx.base/com.sun.javafx.event=com.jfoenix",
+            "--add-exports", "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
+            "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
+            "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
+            "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
+            "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.app",
+            "--add-opens", "java.base/java.lang=io.xpipe.app",
+            "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
+            "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
+            "--add-opens", "java.base/java.lang=io.xpipe.core",
+            "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
+            "--add-opens", "java.desktop/java.awt=io.xpipe.app",
+            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
+            "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
+            "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.model=io.xpipe.app',
+            "-Xmx8g",
+            "-Dio.xpipe.app.arch=$rootProject.arch",
+            "-Dfile.encoding=UTF-8",
+            '-XX:+UseZGC',
+            "-Dvisualvm.display.name=XPipe"
+    ]
+}
 
 import org.gradle.internal.os.OperatingSystem
 
@@ -133,6 +133,7 @@ application {
     mainModule = 'io.xpipe.app'
     mainClass = 'io.xpipe.app.Main'
     applicationDefaultJvmArgs = jvmRunArgs
+    applicationDefaultJvmArgs.add('-XX:+EnableDynamicAgentLoading')
 }
 
 run {
@@ -166,6 +167,7 @@ task runAttachedDebugger(type: JavaExec) {
             "-javaagent:${System.getProperty("user.home")}/.attachme/attachme-agent-1.2.1.jar=port:7857,host:localhost",
             "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=127.0.0.1:0"
     )
+    jvmArgs += '-XX:+EnableDynamicAgentLoading'
     systemProperties run.systemProperties
 }
 

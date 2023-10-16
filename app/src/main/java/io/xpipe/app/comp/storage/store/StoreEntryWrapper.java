@@ -70,18 +70,6 @@ public class StoreEntryWrapper {
         });
     }
 
-    private StoreEntryWrapper computeDisplayParent() {
-        if (StoreViewState.get() == null) {
-            return null;
-        }
-
-        var p = DataStorage.get().getDisplayParent(entry).orElse(null);
-        return StoreViewState.get().getAllEntries().stream()
-                .filter(storeEntryWrapper -> storeEntryWrapper.getEntry().equals(p))
-                .findFirst()
-                .orElse(null);
-    }
-
     public boolean isInStorage() {
         return DataStorage.get().getStoreEntries().contains(entry);
     }
@@ -92,7 +80,7 @@ public class StoreEntryWrapper {
 
     public void delete() {
         ThreadHelper.runAsync(() -> {
-            DataStorage.get().deleteChildren(this.entry, true);
+            DataStorage.get().deleteChildren(this.entry);
             DataStorage.get().deleteStoreEntry(this.entry);
         });
     }

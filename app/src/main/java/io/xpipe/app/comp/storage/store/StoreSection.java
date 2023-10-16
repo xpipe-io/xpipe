@@ -10,12 +10,10 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import lombok.Value;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Predicate;
 
 @Value
@@ -33,7 +31,6 @@ public class StoreSection {
     StoreEntryWrapper wrapper;
     ObservableList<StoreSection> allChildren;
     ObservableList<StoreSection> shownChildren;
-    ObservableList<StoreEntryWrapper> shownEntries;
     int depth;
     ObservableBooleanValue showDetails;
 
@@ -56,23 +53,14 @@ public class StoreSection {
         } else {
             this.showDetails = new SimpleBooleanProperty(true);
         }
-
-        this.shownEntries = FXCollections.observableArrayList();
-        this.shownChildren.addListener((ListChangeListener<? super StoreSection>) c -> {
-            shownEntries.clear();
-            addShown(shownEntries);
-        });
-    }
-
-    private void addShown(List<StoreEntryWrapper> list) {
-        getShownChildren().forEach(shown -> {
-            list.add(shown.getWrapper());
-            shown.addShown(list);
-        });
     }
 
     private static ObservableList<StoreSection> sorted(
             ObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
+        if (category == null) {
+            return list;
+        }
+
         var c = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
         var mapped = BindingsHelper.mappedBinding(category, storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
@@ -96,21 +84,26 @@ public class StoreSection {
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableStringValue filterString,
             ObservableValue<StoreCategoryWrapper> category) {
-        var cached = BindingsHelper.cachedMappedContentBinding(
-                all, storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
-        var ordered = sorted(cached, category);
         var topLevel = BindingsHelper.filteredContentBinding(
+                all,
+                section -> {
+                    return DataStorage.get().isRootEntry(section.getEntry());
+                },
+                category);
+        var cached = BindingsHelper.cachedMappedContentBinding(
+                topLevel, storeEntryWrapper -> create(storeEntryWrapper, 1, all, entryFilter, filterString, category));
+        var ordered = sorted(cached, category);
+        var shown = BindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    var sameCategory =
-                            category.getValue().contains(section.getWrapper().getEntry());
-                    var showFilter = section.shouldShow(filterString.get());
+                    var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
-                    return DataStorage.get().isRootEntry(section.getWrapper().getEntry()) && showFilter && sameCategory && matchesSelector;
+                    var sameCategory = category == null || category.getValue().contains(section.getWrapper().getEntry());
+                    return showFilter && matchesSelector && sameCategory;
                 },
                 category,
                 filterString);
-        return new StoreSection(null, cached, topLevel, 0);
+        return new StoreSection(null, ordered, shown, 0);
     }
 
     private static StoreSection create(
@@ -125,10 +118,12 @@ public class StoreSection {
         }
 
         var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
-            return DataStorage.get()
-                    .getDisplayParent(other.getEntry())
-                    .map(found -> found.equals(e.getEntry()))
-                    .orElse(false);
+//            if (true) return DataStorage.get()
+//                    .getDisplayParent(other.getEntry())
+//                    .map(found -> found.equals(e.getEntry()))
+//                    .orElse(false);
+            // This check is fast as the children are cached in the storage
+            return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
         });
         var cached = BindingsHelper.cachedMappedContentBinding(
                 allChildren, entry1 -> create(entry1, depth + 1, all, entryFilter, filterString, category));
@@ -136,7 +131,7 @@ public class StoreSection {
         var filtered = BindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    return section.shouldShow(filterString.get())
+                    return (filterString == null || section.shouldShow(filterString.get()))
                             && section.anyMatches(entryFilter);
                 },
                 category,

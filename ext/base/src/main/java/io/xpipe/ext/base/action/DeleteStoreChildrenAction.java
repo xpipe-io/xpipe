@@ -24,7 +24,7 @@ public class DeleteStoreChildrenAction implements ActionProvider {
 
         @Override
         public void execute() {
-            DataStorage.get().deleteChildren(store, true);
+            DataStorage.get().deleteChildren(store);
         }
     }
 
@@ -50,7 +50,7 @@ public class DeleteStoreChildrenAction implements ActionProvider {
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
                 return !(o.getStore() instanceof FixedHierarchyStore) && DataStorage.get()
-                                .getStoreChildren(o.get(), true)
+                                .getStoreChildren(o.get())
                                 .size()
                         > 1;
             }

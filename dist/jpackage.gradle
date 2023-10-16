@@ -2,7 +2,7 @@ import java.util.stream.Collectors
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
-def distJvmArgs = new ArrayList<String>(project(':app').application.applicationDefaultJvmArgs)
+def distJvmArgs = new ArrayList<String>(project(':app').jvmRunArgs)
 
 def releaseArguments = distJvmArgs + [
         "-Dio.xpipe.app.version=$rootProject.versionString",

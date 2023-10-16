@@ -1,9 +1,6 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.WriteStreamExchange;
-import io.xpipe.beacon.exchange.cli.StoreAddExchange;
-import io.xpipe.beacon.util.QuietDialogHandler;
-import io.xpipe.core.store.InternalStreamStore;
 import io.xpipe.core.util.FailableBiConsumer;
 import io.xpipe.core.util.FailableConsumer;
 import lombok.Getter;
@@ -172,25 +169,6 @@ public abstract class BeaconConnection implements AutoCloseable {
         } catch (Exception e) {
             throw unwrapException(e);
         }
-    }
-
-    public InternalStreamStore createInternalStreamStore() {
-        return createInternalStreamStore(null);
-    }
-
-    public InternalStreamStore createInternalStreamStore(String name) {
-        var store = new InternalStreamStore();
-        var addReq = StoreAddExchange.Request.builder()
-                .storeInput(store)
-                .name(name != null ? name : store.getUuid().toString())
-                .build();
-        StoreAddExchange.Response addRes = performSimpleExchange(addReq);
-        QuietDialogHandler.handle(addRes.getConfig(), this);
-        return store;
-    }
-
-    public void writeStream(InternalStreamStore s, InputStream in) {
-        writeStream(s.getUuid().toString(), in);
     }
 
     public void writeStream(String name, InputStream in) {

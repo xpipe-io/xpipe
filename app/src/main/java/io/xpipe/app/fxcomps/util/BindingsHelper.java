@@ -239,14 +239,18 @@ public class BindingsHelper {
     }
 
     public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, Predicate<V> predicate, Observable... observables) {
-        return filteredContentBinding(l2, Bindings.createObjectBinding(() -> {
-            return new Predicate<>() {
-                @Override
-                public boolean test(V v) {
-                    return predicate.test(v);
-                }
-            };
-        }, observables));
+        return filteredContentBinding(
+                l2,
+                Bindings.createObjectBinding(
+                        () -> {
+                            return new Predicate<>() {
+                                @Override
+                                public boolean test(V v) {
+                                    return predicate.test(v);
+                                }
+                            };
+                        },
+                        Arrays.stream(observables).filter( Objects::nonNull).toArray(Observable[]::new)));
     }
 
     public static <V> ObservableList<V> filteredContentBinding(

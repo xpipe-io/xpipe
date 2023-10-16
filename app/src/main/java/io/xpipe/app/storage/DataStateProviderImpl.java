@@ -1,12 +1,10 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
+import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.DataStateProvider;
 
-import java.nio.file.Path;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class DataStateProviderImpl extends DataStateProvider {
@@ -84,10 +82,5 @@ public class DataStateProviderImpl extends DataStateProvider {
     public boolean isInStorage(DataStore store) {
         var entry = DataStorage.get().getStoreEntryIfPresent(store);
         return entry.isPresent();
-    }
-
-    @Override
-    public Path getInternalStreamStore(UUID id) {
-        return DataStorage.get().getInternalStreamPath(id);
     }
 }

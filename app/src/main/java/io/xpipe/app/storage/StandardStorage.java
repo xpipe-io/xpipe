@@ -8,7 +8,6 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
-import lombok.NonNull;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -270,6 +269,13 @@ public class StandardStorage extends DataStorage {
         // Refresh to update state
         storeEntries.forEach(dataStoreEntry -> dataStoreEntry.refresh());
 
+        storeEntries.forEach(entry -> {
+            var syntheticParent = getSyntheticParent(entry);
+            syntheticParent.ifPresent(entry1 -> {
+                addStoreEntryIfNotPresent(entry1);
+            });
+        });
+
         refreshValidities(true);
 
         deleteLeftovers();
@@ -328,11 +334,6 @@ public class StandardStorage extends DataStorage {
 
         deleteLeftovers();
         gitStorageHandler.postSave();
-    }
-
-    @Override
-    public Path getInternalStreamPath(@NonNull UUID uuid) {
-        return getStreamsDir().resolve(uuid.toString());
     }
 
     @Override

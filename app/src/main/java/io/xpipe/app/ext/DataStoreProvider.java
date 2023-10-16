@@ -98,6 +98,10 @@ public interface DataStoreProvider {
     }
 
     default DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        return getSyntheticParent(store);
+    }
+
+    default DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         return null;
     }
 
