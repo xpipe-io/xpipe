@@ -13,6 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SuperBuilder
 @Getter
@@ -29,9 +30,18 @@ public class SimpleScriptStore extends ScriptStore {
     }
 
     private String assemble(ShellControl shellControl, ExecutionType type) {
-        var targetType = type == ExecutionType.TERMINAL_ONLY ? shellControl.getTargetTerminalShellDialect() : shellControl.getShellDialect();
-        if ((executionType == type || executionType == ExecutionType.BOTH) && minimumDialect.isCompatibleTo(targetType)) {
-            var script = ScriptHelper.createExecScript(targetType, shellControl, commands);
+        var targetType = type == ExecutionType.TERMINAL_ONLY
+                ? shellControl.getTargetTerminalShellDialect()
+                : shellControl.getShellDialect();
+        if ((executionType == type || executionType == ExecutionType.BOTH)
+                && minimumDialect.isCompatibleTo(targetType)) {
+            var shebang = commands.startsWith("#");
+            // Fix new lines and shebang
+            var fixedCommands = commands.lines()
+                    .skip(shebang ? 1 : 0)
+                    .collect(Collectors.joining(
+                            shellControl.getShellDialect().getNewLine().getNewLineString()));
+            var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
             return targetType.sourceScriptCommand(shellControl, script);
         }
 

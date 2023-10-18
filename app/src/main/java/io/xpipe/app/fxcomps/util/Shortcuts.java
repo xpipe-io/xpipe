@@ -24,6 +24,11 @@ public class Shortcuts {
     public static <T extends Region> void addShortcut(T region, KeyCombination comb, Consumer<T> exec) {
         var filter = new EventHandler<KeyEvent>() {
             public void handle(KeyEvent ke) {
+                var target = ke.getTarget();
+                if (!region.isVisible() || !region.isManaged() || region.isDisabled()) {
+                    return;
+                }
+
                 if (comb.match(ke)) {
                     exec.accept(region);
                     ke.consume();

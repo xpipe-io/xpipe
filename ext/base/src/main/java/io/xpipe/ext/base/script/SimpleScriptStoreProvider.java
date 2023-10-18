@@ -145,7 +145,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                 .nonNull()
                 .name("scriptContents")
                 .description("scriptContentsDescription")
-                .longDescription("proc:environmentScript")
+                .longDescription("base:script")
                 .addComp(
                         new IntegratedTextAreaComp(commandProp, false, "commands", Bindings.createStringBinding(() -> {
                             return dialect.getValue() != null

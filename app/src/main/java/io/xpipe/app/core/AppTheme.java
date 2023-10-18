@@ -36,6 +36,10 @@ public class AppTheme {
     private static final PseudoClass PERFORMANCE = PseudoClass.getPseudoClass("performance");
 
     public static void initThemeHandlers(Window stage) {
+        if (AppPrefs.get() == null) {
+            return;
+        }
+
         SimpleChangeListener.apply(AppPrefs.get().theme, t -> {
             Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
             if (t == null) {
@@ -73,17 +77,20 @@ public class AppTheme {
         t.apply();
         TrackEvent.debug("Set theme " + t.getId() + " for scene");
 
-        detector.registerListener(dark -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                if (dark && !AppPrefs.get().theme.getValue().isDark()) {
-                    AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
-                }
+        // The gnome detector sometimes runs into issues, also it's not that important
+        if (!OsType.getLocal().equals(OsType.LINUX)) {
+            detector.registerListener(dark -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    if (dark && !AppPrefs.get().theme.getValue().isDark()) {
+                        AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
+                    }
 
-                if (!dark && AppPrefs.get().theme.getValue().isDark()) {
-                    AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
-                }
+                    if (!dark && AppPrefs.get().theme.getValue().isDark()) {
+                        AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
+                    }
+                });
             });
-        });
+        }
 
         AppPrefs.get().theme.addListener((c, o, n) -> {
             changeTheme(n);

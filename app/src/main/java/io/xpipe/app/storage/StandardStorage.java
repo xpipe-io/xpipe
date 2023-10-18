@@ -247,9 +247,7 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
 
-        {
             var hasFixedLocal = storeEntries.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
-            // storeEntries.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
             if (!hasFixedLocal) {
                 var e = DataStoreEntry.createNew(
                         LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
@@ -264,7 +262,6 @@ public class StandardStorage extends DataStorage {
             if (storeEntries.stream().noneMatch(entry -> entry.getColor() != null)) {
                 local.setColor(DataStoreColor.BLUE);
             }
-        }
 
         // Refresh to update state
         storeEntries.forEach(dataStoreEntry -> dataStoreEntry.refresh());
@@ -277,6 +274,12 @@ public class StandardStorage extends DataStorage {
         });
 
         refreshValidities(true);
+
+        // Save to apply changes
+        if (!hasFixedLocal) {
+            storeEntries.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
+            save();
+        }
 
         deleteLeftovers();
     }

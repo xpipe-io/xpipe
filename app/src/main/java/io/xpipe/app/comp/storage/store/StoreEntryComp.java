@@ -380,7 +380,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
-        del.disableProperty().bind(wrapper.getDeletable().not());
+        del.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+            return !wrapper.getDeletable().get() && !AppPrefs.get().developerDisableGuiRestrictions().get();
+        }, wrapper.getDeletable(), AppPrefs.get().developerDisableGuiRestrictions()));
         del.setOnAction(event -> wrapper.delete());
         contextMenu.getItems().add(del);
 

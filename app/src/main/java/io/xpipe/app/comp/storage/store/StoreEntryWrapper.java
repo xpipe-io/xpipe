@@ -195,6 +195,11 @@ public class StoreEntryWrapper {
     }
 
     public void executeDefaultAction() throws Exception {
+        if (getEntry().getValidity() == DataStoreEntry.Validity.INCOMPLETE) {
+            editDialog();
+            return;
+        }
+
         var found = getDefaultActionProvider().getValue();
         entry.updateLastUsed();
         if (found != null) {

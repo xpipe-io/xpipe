@@ -6,6 +6,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
@@ -110,9 +111,7 @@ public class AppGreetings {
                                             temp,
                                             MarkdownHelper.toHtml(Files.readString(file), UnaryOperator.identity()));
                                 });
-                                App.getApp()
-                                        .getHostServices()
-                                        .showDocument(temp.toUri().toString());
+                                Hyperlinks.open(temp.toUri().toString());
                             } catch (IOException e) {
                                 ErrorEvent.fromThrowable(e).handle();
                             }

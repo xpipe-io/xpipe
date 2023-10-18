@@ -10,6 +10,10 @@ import java.util.function.Consumer;
 public class GuiErrorHandlerBase {
 
     protected boolean startupGui(Consumer<Throwable> onFail) {
+        if (PlatformState.getCurrent() == PlatformState.EXITED) {
+            return false;
+        }
+
         if (PlatformState.getCurrent() == PlatformState.NOT_INITIALIZED) {
             try {
                 CountDownLatch latch = new CountDownLatch(1);

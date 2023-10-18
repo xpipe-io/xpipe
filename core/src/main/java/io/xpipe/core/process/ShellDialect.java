@@ -34,6 +34,10 @@ public interface ShellDialect {
         return other.equals(this);
     }
 
+    default ShellDialect getDumbReplacementDialect() {
+        return this;
+    }
+
     String getCatchAllVariable();
 
     CommandControl queryVersion(ShellControl shellControl);

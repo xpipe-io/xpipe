@@ -10,6 +10,10 @@ public class DataStoreEntryRef<T extends DataStore> {
     @NonNull
     DataStoreEntry entry;
 
+    public DataStoreEntryRef(@NonNull DataStoreEntry entry) {
+        this.entry = entry;
+    }
+
     public void checkComplete() throws Exception {
         getStore().checkComplete();
     }

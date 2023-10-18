@@ -37,7 +37,9 @@ public abstract class DataStorage {
 
     private static DataStorage INSTANCE;
     protected final Path dir;
+    @Getter
     protected final List<DataStoreCategory> storeCategories;
+    @Getter
     protected final Set<DataStoreEntry> storeEntries;
 
     @Getter
@@ -159,6 +161,8 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
             refreshValidities(true);
         }
+
+        saveAsync();
     }
 
     public void updateCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
@@ -171,6 +175,7 @@ public abstract class DataStorage {
 
         var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
         listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
+        saveAsync();
     }
 
     public boolean refreshChildren(DataStoreEntry e) {
@@ -228,6 +233,15 @@ public abstract class DataStorage {
         return !newChildren.isEmpty();
     }
 
+    public void deleteChildren(DataStoreEntry e) {
+        var c = getDeepStoreChildren(e);
+        c.forEach(entry -> entry.finalizeEntry());
+        this.storeEntries.removeAll(c);
+        this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
+        refreshValidities(false);
+        saveAsync();
+    }
+
     public void deleteWithChildren(DataStoreEntry... entries) {
         var toDelete = Arrays.stream(entries)
                 .flatMap(entry -> {
@@ -244,14 +258,129 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void deleteChildren(DataStoreEntry e) {
-        var c = getDeepStoreChildren(e);
-        c.forEach(entry -> entry.finalizeEntry());
-        this.storeEntries.removeAll(c);
-        this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
+
+    public DataStoreCategory addStoreCategoryIfNotPresent(@NonNull DataStoreCategory cat) {
+        if (storeCategories.contains(cat)) {
+            return cat;
+        }
+
+        var byId = getStoreCategoryIfPresent(cat.getUuid()).orElse(null);
+        if (byId != null) {
+            return byId;
+        }
+
+        addStoreCategory(cat);
+        return cat;
+    }
+
+    public void addStoreCategory(@NonNull DataStoreCategory cat) {
+        cat.setDirectory(getCategoriesDir().resolve(cat.getUuid().toString()));
+        this.storeCategories.add(cat);
+        saveAsync();
+
+        this.listeners.forEach(l -> l.onCategoryAdd(cat));
+    }
+
+    public DataStoreEntry addStoreEntryIfNotPresent(@NonNull DataStoreEntry e) {
+        if (storeEntries.contains(e)) {
+            return e;
+        }
+
+        var byId = getStoreEntryIfPresent(e.getUuid()).orElse(null);
+        if (byId != null) {
+            return byId;
+        }
+
+        var syntheticParent = getSyntheticParent(e);
+        if (syntheticParent.isPresent()) {
+            addStoreEntryIfNotPresent(syntheticParent.get());
+        }
+
+        var displayParent = syntheticParent.or(() -> getDisplayParent(e));
+        if (displayParent.isPresent()) {
+            displayParent.get().setExpanded(true);
+        }
+
+        e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
+        this.storeEntries.add(e);
+        displayParent.ifPresent(p -> {
+            p.setChildrenCache(null);
+        });
+        saveAsync();
+
+        this.listeners.forEach(l -> l.onStoreAdd(e));
+        e.initializeEntry();
+        refreshValidities(true);
+        return e;
+    }
+
+    public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
+        for (DataStoreEntry e : es) {
+            if (storeEntries.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
+                return;
+            }
+
+            var syntheticParent = getSyntheticParent(e);
+            if (syntheticParent.isPresent()) {
+                addStoreEntryIfNotPresent(syntheticParent.get());
+            }
+
+            var displayParent = syntheticParent.or(() -> getDisplayParent(e));
+            if (displayParent.isPresent()) {
+                displayParent.get().setExpanded(true);
+            }
+
+            e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
+            this.storeEntries.add(e);
+            displayParent.ifPresent(p -> {
+                p.setChildrenCache(null);
+            });
+        }
+        this.listeners.forEach(l -> l.onStoreAdd(es));
+        for (DataStoreEntry e : es) {
+            e.initializeEntry();
+        }
+        refreshValidities(true);
+        saveAsync();
+    }
+
+    public DataStoreEntry addStoreIfNotPresent(@NonNull String name, DataStore store) {
+        var f = getStoreEntryIfPresent(store);
+        if (f.isPresent()) {
+            return f.get();
+        }
+
+        var e = DataStoreEntry.createNew(UUID.randomUUID(), selectedCategory.getUuid(), name, store);
+        addStoreEntryIfNotPresent(e);
+        return e;
+    }
+
+    public void deleteStoreEntry(@NonNull DataStoreEntry store) {
+        store.finalizeEntry();
+        this.storeEntries.remove(store);
+        getDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
+        this.listeners.forEach(l -> l.onStoreRemove(store));
         refreshValidities(false);
         saveAsync();
     }
+
+    public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
+        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
+            return;
+        }
+
+        storeEntries.forEach(entry -> {
+            if (entry.getCategoryUuid().equals(cat.getUuid())) {
+                entry.setCategoryUuid(DEFAULT_CATEGORY_UUID);
+            }
+        });
+
+        storeCategories.remove(cat);
+        saveAsync();
+        this.listeners.forEach(l -> l.onCategoryRemove(cat));
+    }
+
+    // Get operations
 
     public boolean isRootEntry(DataStoreEntry entry) {
         var noParent = DataStorage.get().getDisplayParent(entry).isEmpty();
@@ -312,8 +441,9 @@ public abstract class DataStorage {
 
     public Set<DataStoreEntry> getDeepStoreChildren(DataStoreEntry entry) {
         var set = new HashSet<DataStoreEntry>();
-        getStoreChildren(entry).forEach(entry1 -> {
-            set.addAll(getDeepStoreChildren(entry1));
+        getStoreChildren(entry).forEach(c -> {
+            set.add(c);
+            set.addAll(getDeepStoreChildren(c));
         });
         return set;
     }
@@ -435,112 +565,6 @@ public abstract class DataStorage {
                 .findFirst();
     }
 
-    public DataStoreCategory addStoreCategoryIfNotPresent(@NonNull DataStoreCategory cat) {
-        if (storeCategories.contains(cat)) {
-            return cat;
-        }
-
-        var byId = getStoreCategoryIfPresent(cat.getUuid()).orElse(null);
-        if (byId != null) {
-            return byId;
-        }
-
-        addStoreCategory(cat);
-        return cat;
-    }
-
-    public void addStoreCategory(@NonNull DataStoreCategory cat) {
-        cat.setDirectory(getCategoriesDir().resolve(cat.getUuid().toString()));
-        this.storeCategories.add(cat);
-        saveAsync();
-
-        this.listeners.forEach(l -> l.onCategoryAdd(cat));
-    }
-
-    public DataStoreEntry addStoreEntryIfNotPresent(@NonNull DataStoreEntry e) {
-        if (storeEntries.contains(e)) {
-            return e;
-        }
-
-        var byId = getStoreEntryIfPresent(e.getUuid()).orElse(null);
-        if (byId != null) {
-            return byId;
-        }
-
-        var syntheticParent = getSyntheticParent(e);
-        if (syntheticParent.isPresent()) {
-            addStoreEntryIfNotPresent(syntheticParent.get());
-        }
-
-        var displayParent = syntheticParent.or(() -> getDisplayParent(e));
-        if (displayParent.isPresent()) {
-            displayParent.get().setExpanded(true);
-        }
-
-        e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
-        this.storeEntries.add(e);
-        displayParent.ifPresent(p -> {
-            p.setChildrenCache(null);
-        });
-        saveAsync();
-
-        this.listeners.forEach(l -> l.onStoreAdd(e));
-        e.initializeEntry();
-        refreshValidities(true);
-        return e;
-    }
-
-    public DataStoreEntry getOrCreateNewSyntheticEntry(DataStoreEntry parent, String name, DataStore store) {
-        var uuid = UuidHelper.generateFromObject(parent.getUuid(), name);
-        var found = getStoreEntryIfPresent(uuid);
-        if (found.isPresent()) {
-            return found.get();
-        }
-
-        return DataStoreEntry.createNew(uuid, parent.getCategoryUuid(), name, store);
-    }
-
-    public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
-        for (DataStoreEntry e : es) {
-            if (storeEntries.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
-                return;
-            }
-
-            var syntheticParent = getSyntheticParent(e);
-            if (syntheticParent.isPresent()) {
-                addStoreEntryIfNotPresent(syntheticParent.get());
-            }
-
-            var displayParent = syntheticParent.or(() -> getDisplayParent(e));
-            if (displayParent.isPresent()) {
-                displayParent.get().setExpanded(true);
-            }
-
-            e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
-            this.storeEntries.add(e);
-            displayParent.ifPresent(p -> {
-                p.setChildrenCache(null);
-            });
-        }
-        this.listeners.forEach(l -> l.onStoreAdd(es));
-        for (DataStoreEntry e : es) {
-            e.initializeEntry();
-        }
-        refreshValidities(true);
-        saveAsync();
-    }
-
-    public DataStoreEntry addStoreIfNotPresent(@NonNull String name, DataStore store) {
-        var f = getStoreEntryIfPresent(store);
-        if (f.isPresent()) {
-            return f.get();
-        }
-
-        var e = DataStoreEntry.createNew(UUID.randomUUID(), selectedCategory.getUuid(), name, store);
-        addStoreEntryIfNotPresent(e);
-        return e;
-    }
-
     public Optional<String> getStoreDisplayName(DataStore store) {
         if (store == null) {
             return Optional.empty();
@@ -557,33 +581,18 @@ public abstract class DataStorage {
         return store.getProvider().browserDisplayName(store.getStore());
     }
 
-    public void deleteStoreEntry(@NonNull DataStoreEntry store) {
-        store.finalizeEntry();
-        this.storeEntries.remove(store);
-        getDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
-        this.listeners.forEach(l -> l.onStoreRemove(store));
-        refreshValidities(false);
-        saveAsync();
-    }
-
-    public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
-        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
-            return;
-        }
-
-        storeEntries.forEach(entry -> {
-            if (entry.getCategoryUuid().equals(cat.getUuid())) {
-                entry.setCategoryUuid(DEFAULT_CATEGORY_UUID);
-            }
-        });
-
-        storeCategories.remove(cat);
-        saveAsync();
-        this.listeners.forEach(l -> l.onCategoryRemove(cat));
-    }
-
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {
         return storeEntries.stream().filter(e -> e.getUuid().equals(id)).findAny();
+    }
+
+    public DataStoreEntry getOrCreateNewSyntheticEntry(DataStoreEntry parent, String name, DataStore store) {
+        var uuid = UuidHelper.generateFromObject(parent.getUuid(), name);
+        var found = getStoreEntryIfPresent(uuid);
+        if (found.isPresent()) {
+            return found.get();
+        }
+
+        return DataStoreEntry.createNew(uuid, parent.getCategoryUuid(), name, store);
     }
 
     public DataStoreEntry getStoreEntry(UUID id) {
@@ -594,11 +603,4 @@ public abstract class DataStorage {
         return getStoreEntryIfPresent(LOCAL_ID).orElse(null);
     }
 
-    public Set<DataStoreEntry> getStoreEntries() {
-        return storeEntries;
-    }
-
-    public List<DataStoreCategory> getStoreCategories() {
-        return storeCategories;
-    }
 }
