@@ -27,28 +27,6 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/app"
             }
 
-            file("$distDir/base/app/xpiped.exe").writable = true
-            exec {
-                commandLine 'cmd',
-                            '/c',
-                            "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat",
-                            '&',
-                            "signtool.exe",
-                            'sign',
-                            '/f',
-                            "$projectDir\\misc\\windows\\certificate.cer",
-                            '/fd',
-                            'sha256',
-                            '/tr',
-                            'http://timestamp.digicert.com',
-                            '/td',
-                            'sha256',
-                            '/v',
-                            '/as',
-                            "$distDir/base/app/xpiped.exe"
-                ignoreExitValue = true
-            }
-
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))
             def debugAttachArguments = file("$projectDir/debug/windows/debug_attach_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(
@@ -83,7 +61,8 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             if (rootProject.fullVersion) {
                 file("$distDir/base/app/xpiped.exe").writable = true
                 exec {
-                    commandLine "$projectDir\\tools\\sign_desktop.bat"
+                    commandLine "$projectDir\\tools\\sign.bat", "$distDir/base/app/xpiped.exe"
+                    ignoreExitValue = true
                 }
                 file("$distDir/base/app/xpiped.exe").writable = false
             }
