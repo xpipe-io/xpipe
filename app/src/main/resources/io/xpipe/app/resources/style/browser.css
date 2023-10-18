@@ -226,3 +226,16 @@
 .browser .table-row-cell:drag {
     -fx-background-color: -color-accent-muted;
 }
+
+.browser .tab {
+    -fx-opacity: 0.6;
+    -fx-border-radius: 4;
+}
+
+.browser .tab:hover {
+    -fx-opacity: 0.8;
+}
+
+.browser .tab:selected {
+    -fx-opacity: 1.0;
+}

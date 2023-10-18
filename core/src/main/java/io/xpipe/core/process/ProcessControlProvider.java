@@ -3,51 +3,22 @@ package io.xpipe.core.process;
 import io.xpipe.core.util.FailableFunction;
 import lombok.NonNull;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.ServiceLoader;
 
 public abstract class ProcessControlProvider {
 
-    private static List<ProcessControlProvider> INSTANCES;
+    private static ProcessControlProvider INSTANCE;
 
     public static void init(ModuleLayer layer) {
-        INSTANCES = ServiceLoader.load(layer, ProcessControlProvider.class).stream()
-                .map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get())
-                .toList();
+        INSTANCE = ServiceLoader.load(layer, ProcessControlProvider.class).stream()
+                .map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get()).findFirst().orElseThrow();
     }
 
-    public static ShellControl createLocal(boolean stoppable) {
-        return INSTANCES.stream()
-                .map(localProcessControlProvider -> localProcessControlProvider.createLocalProcessControl(stoppable))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElseThrow();
+    public static ProcessControlProvider get() {
+        return INSTANCE;
     }
 
-    public static ShellControl createSub(
-            ShellControl parent,
-            @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
-            ShellControl.TerminalOpenFunction terminalCommand) {
-        return INSTANCES.stream()
-                .map(localProcessControlProvider ->
-                        localProcessControlProvider.sub(parent, commandFunction, terminalCommand))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElseThrow();
-    }
-
-    public static CommandControl createCommand(
-            ShellControl parent,
-            @NonNull FailableFunction<ShellControl, String, Exception> command,
-            FailableFunction<ShellControl, String, Exception> terminalCommand) {
-        return INSTANCES.stream()
-                .map(localProcessControlProvider ->
-                        localProcessControlProvider.command(parent, command, terminalCommand))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(null);
-    }
+    public abstract ShellControl withDefaultScripts(ShellControl pc);
 
     public abstract ShellControl sub(
             ShellControl parent,

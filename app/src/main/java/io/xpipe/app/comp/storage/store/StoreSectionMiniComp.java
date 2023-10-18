@@ -62,7 +62,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
             expanded =
                     new SimpleBooleanProperty(section.getWrapper().getExpanded().get()
-                            && section.getAllChildren().size() > 0);
+                            && section.getShownChildren().size() > 0);
             var button = new IconButtonComp(
                             Bindings.createStringBinding(
                                     () -> expanded.get() ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right",

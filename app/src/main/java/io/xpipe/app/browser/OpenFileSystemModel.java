@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.*;
@@ -391,8 +392,8 @@ public final class OpenFileSystemModel {
                 if (entry.getStore() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var name = directory + " - " + entry.get().getName();
-                    TerminalHelper.open(entry.getEntry(), name, s.control()
-                            .initWith(connection.getShellDialect().getCdCommand(directory)));
+                    var toOpen = ProcessControlProvider.get().withDefaultScripts(s.control());
+                    TerminalHelper.open(entry.getEntry(), name, toOpen.initWith(connection.getShellDialect().getCdCommand(directory)));
                 }
             });
         });

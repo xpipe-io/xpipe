@@ -33,8 +33,39 @@
  -fx-border-width: 0.05em;
 -fx-border-radius: 4px;
 -fx-padding: -1px;
--fx-background-color: -color-bg-default;
--fx-border-color: -color-border-default;
+-fx-background-color: -color-fg-default;
+-fx-border-color: -color-bg-default;
+}
+
+.store-header-bar .menu-button:hover {
+ -fx-background-color: -color-bg-default;
+ -fx-border-color: -color-fg-default;
+}
+
+.store-header-bar .menu-button > * {
+ -fx-text-fill: -color-bg-default;
+}
+
+.store-header-bar .menu-button > * > .ikonli-font-icon {
+ -fx-icon-color: -color-bg-default;
+}
+
+.store-header-bar .menu-button .arrow {
+ -fx-border-color: -color-bg-default;
+ -fx-border-width: 4;
+}
+
+.store-header-bar .menu-button:hover > * {
+ -fx-text-fill: -color-fg-default;
+}
+
+.store-header-bar .menu-button:hover > * > .ikonli-font-icon {
+ -fx-icon-color: -color-fg-default;
+}
+
+.store-header-bar .menu-button:hover .arrow {
+ -fx-border-color: -color-fg-default;
+ -fx-border-width: 4;
 }
 
 .store-header-bar .menu-button .context-menu > * > * {

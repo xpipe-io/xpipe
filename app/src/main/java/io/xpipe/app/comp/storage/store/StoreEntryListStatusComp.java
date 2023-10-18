@@ -75,7 +75,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
     }
 
     private Region createButtons() {
-        var menu = new MenuButton(AppI18n.get("addConnections"), new FontIcon("mdi2p-plus-box-outline"));
+        var menu = new MenuButton(AppI18n.get("addConnections"), new FontIcon("mdi2p-plus-thick"));
         AppFont.medium(menu);
         GrowAugment.create(true, false).augment(menu);
         StoreCreationMenu.addButtons(menu);

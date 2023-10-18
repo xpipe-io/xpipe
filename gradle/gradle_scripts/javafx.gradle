@@ -19,7 +19,7 @@ configurations {
     dep
 }
 
-def jfxVersion = '22-ea+11'
+def jfxVersion = '21'
 
 dependencies {
     dep "org.openjfx:javafx-base:${jfxVersion}:${platform}"

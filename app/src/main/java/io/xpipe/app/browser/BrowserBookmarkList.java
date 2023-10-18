@@ -61,7 +61,8 @@ final class BrowserBookmarkList extends SimpleComp {
                     BooleanProperty busy = new SimpleBooleanProperty(false);
                     comp.disable(Bindings.createBooleanBinding(() -> {
                         return busy.get() || !applicable.test(s.getWrapper());
-                    }, busy)).apply(struc -> {
+                    }, busy));
+                    comp.apply(struc -> {
                         open.addListener((observable, oldValue, newValue) -> {
                             struc.get()
                                     .pseudoClassStateChanged(
@@ -74,6 +75,10 @@ final class BrowserBookmarkList extends SimpleComp {
                         struc.get().setOnAction(event -> {
                             ThreadHelper.runFailableAsync(() -> {
                                 var entry = s.getWrapper().getEntry();
+                                if (!entry.getValidity().isUsable()) {
+                                    return;
+                                }
+
                                 if (entry.getStore() instanceof ShellStore fileSystem) {
                                     model.openFileSystemAsync(entry.ref(), null, busy);
                                 } else if (entry.getStore() instanceof FixedHierarchyStore) {

@@ -20,13 +20,13 @@ public class LocalStore extends JacksonizedValue implements ShellStore, Stateful
     private static FileSystem localFileSystem;
 
     public static void init() throws Exception {
-        local = ProcessControlProvider.createLocal(false).start();
-        localFileSystem = new ConnectionFileSystem(ProcessControlProvider.createLocal(false), new LocalStore());
+        local = ProcessControlProvider.get().createLocalProcessControl(false).start();
+        localFileSystem = new ConnectionFileSystem(ProcessControlProvider.get().createLocalProcessControl(false), new LocalStore());
     }
 
     public static ShellControl getLocalPowershell() throws Exception {
         if (localPowershell == null) {
-            localPowershell = ProcessControlProvider.createLocal(true)
+            localPowershell = ProcessControlProvider.get().createLocalProcessControl(true)
                     .subShell(ShellDialects.POWERSHELL)
                     .start();
         }
@@ -55,7 +55,7 @@ public class LocalStore extends JacksonizedValue implements ShellStore, Stateful
 
     @Override
     public ShellControl control() {
-        var pc = ProcessControlProvider.createLocal(true);
+        var pc = ProcessControlProvider.get().createLocalProcessControl(true);
         pc.withShellStateInit(this);
         pc.withShellStateFail(this);
         return pc;
