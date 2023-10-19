@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

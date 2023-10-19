@@ -30,9 +30,9 @@
 
 .store-header-bar .menu-button {
 -fx-background-radius: 4px;
- -fx-border-width: 0.05em;
--fx-border-radius: 4px;
--fx-padding: -1px;
+ -fx-border-radius: 4px;
+ -fx-border-width: 1px;
+-fx-padding: 0;
 -fx-background-color: -color-fg-default;
 -fx-border-color: -color-bg-default;
 }

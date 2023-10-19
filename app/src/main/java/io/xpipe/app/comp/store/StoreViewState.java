@@ -1,6 +1,7 @@
-package io.xpipe.app.comp.storage.store;
+package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -47,14 +48,14 @@ public class StoreViewState {
             tl = StoreSection.createTopLevel(allEntries,  storeEntryWrapper -> true, filter, activeCategory);
         } catch (Exception exception) {
             tl = new StoreSection(null, FXCollections.emptyObservableList(), FXCollections.emptyObservableList(), 0);
-            categories.setAll(new StoreCategoryWrapper(DataStorage.get().getAllCategory()));
+            categories.setAll(new StoreCategoryWrapper(DataStorage.get().getAllConnectionsCategory()));
             activeCategory.setValue(getAllConnectionsCategory());
             ErrorEvent.fromThrowable(exception).handle();
         }
         currentTopLevelSection = tl;
     }
 
-    public ObservableList<StoreCategoryWrapper> getSortedCategories() {
+    public ObservableList<StoreCategoryWrapper> getSortedCategories(DataStoreCategory root) {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
@@ -89,7 +90,7 @@ public class StoreViewState {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             }
         };
-        return categories.sorted(comparator);
+        return BindingsHelper.filteredContentBinding(categories, cat-> root == null || cat.getRoot().equals(root)).sorted(comparator);
     }
 
     public StoreCategoryWrapper getAllConnectionsCategory() {

@@ -37,8 +37,10 @@ public abstract class DataStorage {
 
     private static DataStorage INSTANCE;
     protected final Path dir;
+
     @Getter
     protected final List<DataStoreCategory> storeCategories;
+
     @Getter
     protected final Set<DataStoreEntry> storeEntries;
 
@@ -59,8 +61,12 @@ public abstract class DataStorage {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
     }
 
-    public DataStoreCategory getAllCategory() {
+    public DataStoreCategory getAllConnectionsCategory() {
         return getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).orElseThrow();
+    }
+
+    public DataStoreCategory getAllScriptsCategory() {
+        return getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).orElseThrow();
     }
 
     private static boolean shouldPersist() {
@@ -195,7 +201,7 @@ public abstract class DataStorage {
         }
 
         var oldChildren = getStoreEntries().stream()
-                .filter(other -> e.equals(other.getProvider().getLogicalParent(other)))
+                .filter(other -> e.equals(other.getProvider().getDisplayParent(other)))
                 .toList();
         var toRemove = oldChildren.stream()
                 .filter(entry -> newChildren.stream()
@@ -257,7 +263,6 @@ public abstract class DataStorage {
         refreshValidities(false);
         saveAsync();
     }
-
 
     public DataStoreCategory addStoreCategoryIfNotPresent(@NonNull DataStoreCategory cat) {
         if (storeCategories.contains(cat)) {
@@ -388,7 +393,23 @@ public abstract class DataStorage {
                 .getDisplayParent(entry)
                 .map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid()))
                 .orElse(false);
-        return noParent || diffParentCategory;
+        var loop = isParentLoop(entry);
+        return noParent || diffParentCategory || loop;
+    }
+
+    private boolean isParentLoop(DataStoreEntry entry) {
+        var es = new HashSet<DataStoreEntry>();
+
+        DataStoreEntry current = entry;
+        while ((current = getDisplayParent(current).orElse(null)) != null) {
+            if (es.contains(current)) {
+                return true;
+            }
+
+            es.add(current);
+        }
+
+        return false;
     }
 
     public DataStoreEntry getRootForEntry(DataStoreEntry entry) {
@@ -469,7 +490,7 @@ public abstract class DataStorage {
                     }
 
                     var parent = getDisplayParent(other);
-                    return parent.isPresent() && parent.get().equals(entry);
+                    return parent.isPresent() && parent.get().equals(entry) && !isParentLoop(entry);
                 })
                 .collect(Collectors.toSet());
         entry.setChildrenCache(children);
@@ -483,20 +504,26 @@ public abstract class DataStorage {
                 .toList());
     }
 
-    public DataStoreId getId(DataStoreEntry entry) {
-        var names = new ArrayList<String>();
-        names.add(entry.getName().replaceAll(":", "_"));
+    private List<DataStoreEntry> getHierarchy(DataStoreEntry entry) {
+        var es = new ArrayList<DataStoreEntry>();
 
         DataStoreEntry current = entry;
         while ((current = getDisplayParent(current).orElse(null)) != null) {
-            if (new LocalStore().equals(current.getStore())) {
+            if (es.contains(current)) {
                 break;
             }
 
-            names.add(0, current.getName().replaceAll(":", "_"));
+            es.add(0, current);
         }
 
-        return DataStoreId.create(names.toArray(String[]::new));
+        return es;
+    }
+
+    public DataStoreId getId(DataStoreEntry entry) {
+        return DataStoreId.create(getHierarchy(entry).stream()
+                .filter(e -> !(e.getStore() instanceof LocalStore))
+                .map(e -> e.getName().replaceAll(":", "_"))
+                .toArray(String[]::new));
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
@@ -602,5 +629,4 @@ public abstract class DataStorage {
     public DataStoreEntry local() {
         return getStoreEntryIfPresent(LOCAL_ID).orElse(null);
     }
-
 }

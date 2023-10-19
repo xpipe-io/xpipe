@@ -3,10 +3,10 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.base.DropdownComp;
 import io.xpipe.app.comp.base.StoreToggleComp;
 import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.storage.store.DenseStoreEntryComp;
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
-import io.xpipe.app.comp.storage.store.StoreSection;
-import io.xpipe.app.comp.storage.store.StoreViewState;
+import io.xpipe.app.comp.store.DenseStoreEntryComp;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreSection;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
@@ -51,9 +51,8 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
                 .description("scriptGroupDescription")
                 .addComp(
                         new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER, null, group, ScriptGroupStore.class, ref->! ref.getEntry().equals(entry), StoreViewState.get().getAllScriptsCategory()),
+                                DataStoreChoiceComp.Mode.OTHER, entry, group, ScriptGroupStore.class, null, StoreViewState.get().getAllScriptsCategory()),
                         group)
-                .nonNull()
                 .bind(
                         () -> {
                             return ScriptGroupStore.builder()
@@ -63,6 +62,12 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
                         },
                         store)
                 .buildDialog();
+    }
+
+    @Override
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        ScriptGroupStore scriptStore = store.getStore().asNeeded();
+        return scriptStore.getParent() != null ? scriptStore.getParent().get() : null;
     }
 
     @Override

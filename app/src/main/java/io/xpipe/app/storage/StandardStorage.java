@@ -1,6 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.storage.store.StoreSortMode;
+import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;

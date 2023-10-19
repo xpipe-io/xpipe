@@ -1,7 +1,7 @@
 package io.xpipe.app.fxcomps.impl;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.app.comp.storage.store.StoreCategoryWrapper;
+import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.storage.DataStoreEntryRef;

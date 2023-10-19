@@ -29,7 +29,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
     public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> refs) {
         pc.onInit(shellControl -> {
-            var scripts = flatten(refs).stream()
+            var flattened = flatten(refs);
+            var scripts = flattened.stream()
                     .map(simpleScriptStore -> simpleScriptStore.prepareDumbScript(shellControl))
                     .filter(Objects::nonNull)
                     .collect(Collectors.joining("\n"));
@@ -37,7 +38,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                 shellControl.executeSimpleBooleanCommand(scripts);
             }
 
-            var terminalCommands = flatten(refs).stream()
+            var terminalCommands = flattened.stream()
                     .map(simpleScriptStore -> simpleScriptStore.prepareTerminalScript(shellControl))
                     .filter(Objects::nonNull)
                     .collect(Collectors.joining("\n"));
@@ -90,6 +91,11 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         if (scripts != null) {
             Validators.contentNonNull(scripts);
         }
+
+        // Prevent possible stack overflow
+//        for (DataStoreEntryRef<ScriptStore> s : getEffectiveScripts()) {
+//         s.checkComplete();
+//        }
     }
 
     public LinkedHashSet<SimpleScriptStore> getFlattenedScripts() {

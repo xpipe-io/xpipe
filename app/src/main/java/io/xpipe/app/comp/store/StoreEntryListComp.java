@@ -1,4 +1,4 @@
-package io.xpipe.app.comp.storage.store;
+package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;

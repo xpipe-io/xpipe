@@ -1,6 +1,6 @@
 set dir ~/.xpipe/scriptdata/starship
 export PATH="$PATH:$dir"
-which starship > /dev/null
+which starship > /dev/null 2>&1
 if [ $status != 0 ]
     mkdir -p "$dir" && \
     which curl > /dev/null && \

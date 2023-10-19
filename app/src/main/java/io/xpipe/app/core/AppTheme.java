@@ -14,6 +14,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,7 +42,8 @@ public class AppTheme {
         }
 
         SimpleChangeListener.apply(AppPrefs.get().theme, t -> {
-            Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+            Theme.ALL.forEach(
+                    theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
             if (t == null) {
                 return;
             }
@@ -51,7 +53,7 @@ public class AppTheme {
             stage.getScene().getRoot().pseudoClassStateChanged(DARK, t.isDark());
         });
 
-        SimpleChangeListener.apply(AppPrefs.get().performanceMode(),val -> {
+        SimpleChangeListener.apply(AppPrefs.get().performanceMode(), val -> {
             stage.getScene().getRoot().pseudoClassStateChanged(PRETTY, !val);
             stage.getScene().getRoot().pseudoClassStateChanged(PERFORMANCE, val);
         });
@@ -111,29 +113,30 @@ public class AppTheme {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
-            for (Window window : Window.getWindows()) {
-                var scene = window.getScene();
-                Image snapshot = scene.snapshot(null);
-                Pane root = (Pane) scene.getRoot();
+            var window = AppMainWindow.getInstance().getStage();
+            var scene = window.getScene();
+            Pane root = (Pane) scene.getRoot();
+            Image snapshot = scene.snapshot(null);
+            ImageView imageView = new ImageView(snapshot);
+            root.getChildren().add(imageView);
 
-                ImageView imageView = new ImageView(snapshot);
-                root.getChildren().add(imageView);
+            newTheme.apply();
+            TrackEvent.debug("Set theme " + newTheme.getId() + " for scene");
 
+            Platform.runLater(() -> {
                 // Animate!
                 var transition = new Timeline(
                         new KeyFrame(
-                                Duration.ZERO, new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
+                                Duration.millis(0),
+                                new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
                         new KeyFrame(
-                                Duration.millis(1250),
+                                Duration.millis(600),
                                 new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
                 transition.setOnFinished(e -> {
                     root.getChildren().remove(imageView);
                 });
                 transition.play();
-            }
-
-            newTheme.apply();
-            TrackEvent.debug("Set theme " + newTheme.getId() + " for scene");
+            });
         });
     }
 
@@ -150,14 +153,18 @@ public class AppTheme {
         @SneakyThrows
         public void apply() {
             var builder = new StringBuilder();
-            AppResources.with(AppResources.XPIPE_MODULE, "theme/" + id + ".css", path->{
+            AppResources.with(AppResources.XPIPE_MODULE, "theme/" + id + ".css", path -> {
                 var content = Files.readString(path);
                 builder.append(content);
             });
 
-            AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path->{
+            AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path -> {
                 var baseStyleContent = Files.readString(path);
-                builder.append("\n").append(baseStyleContent.lines().skip(builder.toString().lines().count()).collect(Collectors.joining("\n")));
+                builder.append("\n")
+                        .append(baseStyleContent
+                                .lines()
+                                .skip(builder.toString().lines().count())
+                                .collect(Collectors.joining("\n")));
             });
 
             var out = Files.createTempFile(id, ".css");
@@ -165,7 +172,6 @@ public class AppTheme {
 
             Application.setUserAgentStylesheet(out.toUri().toString());
         }
-
 
         @Override
         public String toTranslatedString() {
@@ -188,7 +194,8 @@ public class AppTheme {
         public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
 
         // Also include your custom theme here
-        public static final List<Theme> ALL = List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
+        public static final List<Theme> ALL =
+                List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -207,14 +214,16 @@ public class AppTheme {
         }
 
         protected final String id;
+
         @Getter
         protected final String cssId;
+
         protected final atlantafx.base.theme.Theme theme;
-        
+
         public boolean isDark() {
             return theme.isDarkMode();
         }
-        
+
         public void apply() {
             Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
         }

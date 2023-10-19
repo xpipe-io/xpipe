@@ -56,12 +56,12 @@ public class SimpleScriptStore extends ScriptStore {
     }
 
     public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+        all.add(this);
         getEffectiveScripts().stream()
                 .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore()))
                 .forEach(scriptStoreDataStoreEntryRef -> {
                     scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
                 });
-        all.add(this);
     }
 
     @Getter

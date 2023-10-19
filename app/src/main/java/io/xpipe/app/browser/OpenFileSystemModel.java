@@ -392,8 +392,11 @@ public final class OpenFileSystemModel {
                 if (entry.getStore() instanceof ShellStore s) {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var name = directory + " - " + entry.get().getName();
-                    var toOpen = ProcessControlProvider.get().withDefaultScripts(s.control());
+                    var toOpen = ProcessControlProvider.get().withDefaultScripts(connection);
                     TerminalHelper.open(entry.getEntry(), name, toOpen.initWith(connection.getShellDialect().getCdCommand(directory)));
+
+                    // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
+                    connection.start();
                 }
             });
         });

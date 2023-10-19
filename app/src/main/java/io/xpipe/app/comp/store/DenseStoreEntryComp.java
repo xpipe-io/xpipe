@@ -1,4 +1,4 @@
-package io.xpipe.app.comp.storage.store;
+package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;

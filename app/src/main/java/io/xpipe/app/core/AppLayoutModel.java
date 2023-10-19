@@ -3,7 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.browser.BrowserComp;
 import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.DeveloperTabComp;
-import io.xpipe.app.comp.storage.store.StoreLayoutComp;
+import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.prefs.PrefsComp;
 import io.xpipe.app.util.LicenseProvider;

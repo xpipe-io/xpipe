@@ -1,10 +1,10 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.base.MarkdownComp;
-import io.xpipe.app.comp.storage.store.StoreEntryComp;
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
-import io.xpipe.app.comp.storage.store.StoreSection;
-import io.xpipe.app.comp.storage.store.StoreSectionComp;
+import io.xpipe.app.comp.store.StoreEntryComp;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreSection;
+import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
@@ -103,10 +103,6 @@ public interface DataStoreProvider {
 
     default DataStoreEntry getSyntheticParent(DataStoreEntry store) {
         return null;
-    }
-
-    default DataStoreEntry getLogicalParent(DataStoreEntry store) {
-        return getDisplayParent(store);
     }
 
     default GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {

@@ -1,10 +1,9 @@
-package io.xpipe.app.comp.storage.store;
+package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -67,7 +66,7 @@ public class StoreCategoryWrapper {
     }
 
     public void select() {
-        Platform.runLater(() -> {
+        PlatformThread.runLaterIfNeeded(() -> {
             StoreViewState.get().getActiveCategory().setValue(this);
         });
     }

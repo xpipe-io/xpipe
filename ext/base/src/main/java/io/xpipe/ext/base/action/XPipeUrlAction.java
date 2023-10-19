@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.comp.storage.store.StoreViewState;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
@@ -30,7 +30,7 @@ public class XPipeUrlAction implements ActionProvider {
 
         @Override
         public void execute() throws Exception {
-            actionProvider.getDataStoreCallSite().createAction(entry.getStore().asNeeded()).execute();
+            actionProvider.getDataStoreCallSite().createAction(entry.ref()).execute();
         }
     }
 

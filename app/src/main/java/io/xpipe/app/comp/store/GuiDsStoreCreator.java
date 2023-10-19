@@ -25,6 +25,7 @@ import io.xpipe.core.store.DataStore;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
@@ -52,9 +53,10 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
     Property<String> messageProp = new SimpleStringProperty();
     BooleanProperty finished = new SimpleBooleanProperty();
-    Property<DataStoreEntry> entry = new SimpleObjectProperty<>();
+    ObservableValue<DataStoreEntry> entry;
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
     StringProperty name;
+    DataStoreEntry existingEntry;
     boolean exists;
     boolean staticDisplay;
 
@@ -64,13 +66,14 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
-            boolean exists,
+            DataStoreEntry existingEntry, boolean exists,
             boolean staticDisplay) {
         this.parent = parent;
         this.provider = provider;
         this.store = store;
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
+        this.existingEntry = existingEntry;
         this.exists = exists;
         this.staticDisplay = staticDisplay;
         this.store.addListener((c, o, n) -> {
@@ -98,6 +101,27 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 newValue.validate();
             });
         });
+        this.entry = Bindings.createObjectBinding(() -> {
+            if (name.getValue() == null || store.getValue() == null) {
+                return null;
+            }
+
+            var testE = DataStoreEntry.createNew(
+                    UUID.randomUUID(),
+                    DataStorage.get().getSelectedCategory().getUuid(),
+                    name.getValue(),
+                    store.getValue());
+            var p = provider.getValue().getDisplayParent(testE);
+            return DataStoreEntry.createNew(
+                    UUID.randomUUID(),
+                    p != null
+                            ? p.getCategoryUuid()
+                            : DataStorage.get()
+                            .getSelectedCategory()
+                            .getUuid(),
+                    name.getValue(),
+                    store.getValue());
+        }, name, store);
     }
 
     public static void showEdit(DataStoreEntry e) {
@@ -116,7 +140,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     });
                 },
                 true,
-                true);
+                true,
+                e);
     }
 
     public static void showCreation(DataStoreProvider selected, Predicate<DataStoreProvider> filter) {
@@ -136,17 +161,19 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     }
                 },
                 false,
-                false);
+                false,
+                null);
     }
 
-    public static void show(
+    private static void show(
             String initialName,
             DataStoreProvider provider,
             DataStore s,
             Predicate<DataStoreProvider> filter,
             Consumer<DataStoreEntry> con,
             boolean exists,
-            boolean staticDisplay) {
+            boolean staticDisplay,
+            DataStoreEntry existingEntry) {
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
         var loading = new SimpleBooleanProperty();
@@ -158,7 +185,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                         return new MultiStepComp() {
 
                             private final GuiDsStoreCreator creator = new GuiDsStoreCreator(
-                                    this, prop, store, filter, initialName, exists, staticDisplay);
+                                    this, prop, store, filter, initialName, existingEntry, exists, staticDisplay);
 
                             @Override
                             protected List<Entry> setup() {
@@ -223,29 +250,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 .description("connectionNameDescription")
                 .addString(name, false)
                 .nonNull(propVal)
-                .bind(
-                        () -> {
-                            if (name.getValue() == null || store.getValue() == null) {
-                                return null;
-                            }
-
-                            var testE = DataStoreEntry.createNew(
-                                    UUID.randomUUID(),
-                                    DataStorage.get().getSelectedCategory().getUuid(),
-                                    name.getValue(),
-                                    store.getValue());
-                            var parent = provider.getValue().getDisplayParent(testE);
-                            return DataStoreEntry.createNew(
-                                    UUID.randomUUID(),
-                                    parent != null
-                                            ? parent.getCategoryUuid()
-                                            : DataStorage.get()
-                                                    .getSelectedCategory()
-                                                    .getUuid(),
-                                    name.getValue(),
-                                    store.getValue());
-                        },
-                        entry)
                 .build();
     }
 
@@ -268,15 +272,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         SimpleChangeListener.apply(provider, n -> {
             if (n != null) {
-                //                var install = n.getRequiredAdditionalInstallation();
-                //                if (install != null && AppExtensionManager.getInstance().isInstalled(install)) {
-                //                    layout.setCenter(new InstallExtensionComp((DownloadModuleInstall)
-                // install).createRegion());
-                //                    validator.setValue(new SimpleValidator());
-                //                    return;
-                //                }
-
-                var d = n.guiDialog(entry.getValue(), store);
+                var d = n.guiDialog(existingEntry, store);
                 var propVal = new SimpleValidator();
                 var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
 

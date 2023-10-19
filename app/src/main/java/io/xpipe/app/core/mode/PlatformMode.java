@@ -1,6 +1,6 @@
 package io.xpipe.app.core.mode;
 
-import io.xpipe.app.comp.storage.store.StoreViewState;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;

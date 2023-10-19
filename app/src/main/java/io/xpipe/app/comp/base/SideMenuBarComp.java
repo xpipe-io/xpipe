@@ -55,6 +55,23 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         });
 
         {
+            var b = new IconButtonComp(
+                    "mdal-bug_report",
+                    () -> {
+                        var event = ErrorEvent.fromMessage("User Report");
+                        if (AppLogs.get().isWriteToFile()) {
+                            event.attachment(AppLogs.get().getSessionLogsDirectory());
+                        }
+                        UserReportComp.show(event.build());
+                    })
+                    .apply(new FancyTooltipAugment<>("reportIssue"));
+            b.apply(struc -> {
+                AppFont.setSize(struc.get(), 2);
+            });
+            vbox.getChildren().add(b.createRegion());
+        }
+
+        {
             var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
                     .apply(new FancyTooltipAugment<>("visitGithubRepository"));
             b.apply(struc -> {
@@ -64,25 +81,18 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var b = new IconButtonComp(
-                            "mdal-bug_report",
-                            () -> {
-                                var event = ErrorEvent.fromMessage("User Report");
-                                if (AppLogs.get().isWriteToFile()) {
-                                    event.attachment(AppLogs.get().getSessionLogsDirectory());
-                                }
-                                UserReportComp.show(event.build());
-                            })
-                    .apply(new FancyTooltipAugment<>("reportIssue"));
+            var b = new IconButtonComp("mdi2c-comment-processing-outline", () -> Hyperlinks.open(Hyperlinks.ROADMAP))
+                    .apply(new FancyTooltipAugment<>("roadmap"));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
             vbox.getChildren().add(b.createRegion());
         }
 
+
         {
-            var b = new IconButtonComp("mdi2c-comment-processing-outline", () -> Hyperlinks.open(Hyperlinks.ROADMAP))
-                    .apply(new FancyTooltipAugment<>("roadmap"));
+            var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
+                    .apply(new FancyTooltipAugment<>("discord"));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });

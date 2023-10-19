@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;

@@ -3,7 +3,7 @@ package io.xpipe.app.fxcomps.impl;
 import atlantafx.base.controls.Popover;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.storage.store.*;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -106,7 +106,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
                     });
-            var category = new DataStoreCategoryChoiceComp(selectedCategory).styleClass(Styles.LEFT_PILL);
+            var category = new DataStoreCategoryChoiceComp(initialCategory != null ? initialCategory.getRoot() : null, selectedCategory).styleClass(Styles.LEFT_PILL);
             var filter = new FilterComp(filterText)
                     .styleClass(Styles.CENTER_PILL)
                     .hgrow()

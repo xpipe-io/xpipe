@@ -1,15 +1,16 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.comp.storage.store.StoreEntryWrapper;
-import io.xpipe.app.comp.storage.store.StoreSection;
-import io.xpipe.app.comp.storage.store.StoreSectionMiniComp;
-import io.xpipe.app.comp.storage.store.StoreViewState;
+import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreSection;
+import io.xpipe.app.comp.store.StoreSectionMiniComp;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.app.util.FixedHierarchyStore;
@@ -91,7 +92,7 @@ final class BrowserBookmarkList extends SimpleComp {
                         });
                     });
                 });
-        var category = new DataStoreCategoryChoiceComp(StoreViewState.get().getActiveCategory())
+        var category = new DataStoreCategoryChoiceComp(DataStorage.get().getAllConnectionsCategory(), StoreViewState.get().getActiveCategory())
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);
         var filter =
