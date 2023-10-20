@@ -22,5 +22,3 @@ for (def ext : file("ext").list()) {
 include 'app'
 include 'cli'
 include 'dist'
-
-println('arch: ' + System.getProperty("os.arch"))
