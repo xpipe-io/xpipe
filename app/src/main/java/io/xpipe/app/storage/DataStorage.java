@@ -304,6 +304,7 @@ public abstract class DataStorage {
         var displayParent = syntheticParent.or(() -> getDisplayParent(e));
         if (displayParent.isPresent()) {
             displayParent.get().setExpanded(true);
+            e.setCategoryUuid(displayParent.get().getCategoryUuid());
         }
 
         e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));

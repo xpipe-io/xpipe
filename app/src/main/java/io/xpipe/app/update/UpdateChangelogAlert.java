@@ -11,6 +11,8 @@ import javafx.stage.Modality;
 
 public class UpdateChangelogAlert {
 
+    private static boolean shown = false;
+
     public static void showIfNeeded() {
         var update = XPipeDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !XPipeDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
@@ -21,6 +23,11 @@ public class UpdateChangelogAlert {
         if (update == null || update.getRawDescription() == null) {
             return;
         }
+
+        if (shown) {
+            return;
+        }
+        shown = true;
 
         AppWindowHelper.showAlert(
                 alert -> {

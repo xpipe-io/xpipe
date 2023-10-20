@@ -19,6 +19,10 @@ public class UnlockAlert {
             return;
         }
 
+        if (AppPrefs.get().getLockPassword().getValue() != null) {
+            return;
+        }
+
         while (true) {
             var pw = new SimpleObjectProperty<SecretValue>();
             var canceled = new SimpleBooleanProperty();

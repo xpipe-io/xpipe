@@ -149,16 +149,22 @@ public class StandardStorage extends DataStorage {
                 ErrorEvent.fromThrowable(exception.get()).handle();
             }
 
-            if (getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).isEmpty()) {
+            var allConnections = getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID);
+            if (allConnections.isEmpty()) {
                 var cat = DataStoreCategory.createNew(null, ALL_CONNECTIONS_CATEGORY_UUID, "All connections");
                 cat.setDirectory(categoriesDir.resolve(ALL_CONNECTIONS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
+            } else {
+                allConnections.get().setParentCategory(null);
             }
 
-            if (getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+            var allScripts = getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID);
+            if (allScripts.isEmpty()) {
                 var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
                 cat.setDirectory(categoriesDir.resolve(ALL_SCRIPTS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
+            } else {
+                allScripts.get().setParentCategory(null);
             }
 
             if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
