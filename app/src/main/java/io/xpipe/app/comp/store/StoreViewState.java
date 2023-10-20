@@ -177,10 +177,10 @@ public class StoreViewState {
             public void onStoreAdd(DataStoreEntry... entry) {
                 var l = Arrays.stream(entry).map(StoreEntryWrapper::new).toList();
                 Platform.runLater(() -> {
-                    synchronized (allEntries) {
+                    synchronized (this) {
                         allEntries.addAll(l);
                     }
-                    synchronized (categories) {
+                    synchronized (this) {
                         categories.stream()
                                 .filter(storeCategoryWrapper -> allEntries.stream()
                                         .anyMatch(storeEntryWrapper -> storeEntryWrapper
@@ -198,13 +198,13 @@ public class StoreViewState {
             public void onStoreRemove(DataStoreEntry... entry) {
                 var a = Arrays.stream(entry).collect(Collectors.toSet());
                 List<StoreEntryWrapper> l;
-                synchronized (allEntries) {
+                synchronized (this) {
                     l = allEntries.stream()
                             .filter(storeEntryWrapper -> a.contains(storeEntryWrapper.getEntry()))
                             .toList();
                 }
                 List<StoreCategoryWrapper> cats;
-                synchronized (categories) {
+                synchronized (this) {
                     cats = categories.stream()
                             .filter(storeCategoryWrapper -> allEntries.stream()
                                     .anyMatch(storeEntryWrapper -> storeEntryWrapper
@@ -216,7 +216,7 @@ public class StoreViewState {
                             .toList();
                 }
                 Platform.runLater(() -> {
-                    synchronized (allEntries) {
+                    synchronized (this) {
                         allEntries.removeAll(l);
                     }
                     cats.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
@@ -227,7 +227,7 @@ public class StoreViewState {
             public void onCategoryAdd(DataStoreCategory category) {
                 var l = new StoreCategoryWrapper(category);
                 Platform.runLater(() -> {
-                    synchronized (categories) {
+                    synchronized (this) {
                         categories.add(l);
                     }
                     l.update();
@@ -237,7 +237,7 @@ public class StoreViewState {
             @Override
             public void onCategoryRemove(DataStoreCategory category) {
                 Optional<StoreCategoryWrapper> found;
-                synchronized (categories) {
+                synchronized (this) {
                     found = categories.stream()
                             .filter(storeCategoryWrapper ->
                                     storeCategoryWrapper.getCategory().equals(category))
@@ -248,7 +248,7 @@ public class StoreViewState {
                 }
 
                 Platform.runLater(() -> {
-                    synchronized (categories) {
+                    synchronized (this) {
                         categories.remove(found.get());
                     }
                     var p = found.get().getParent();

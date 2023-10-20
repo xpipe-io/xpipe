@@ -201,7 +201,7 @@ public abstract class DataStorage {
         }
 
         var oldChildren = getStoreEntries().stream()
-                .filter(other -> e.equals(other.getProvider().getDisplayParent(other)))
+                .filter(other -> e.equals(getDisplayParent(other).orElse(null)))
                 .toList();
         var toRemove = oldChildren.stream()
                 .filter(entry -> newChildren.stream()

@@ -368,7 +368,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of().add("-r").addQuoted(name).add("-e").addQuoted(file);
+            return CommandBuilder.of().add("-n", "~").add("-r").addQuoted(name).add("-e").addQuoted(file);
         }
 
         @Override
