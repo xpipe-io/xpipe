@@ -284,6 +284,10 @@ public class StandardStorage extends DataStorage {
         // Save to apply changes
         if (!hasFixedLocal) {
             storeEntries.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
+            storeEntries.stream().filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).forEach(entry -> {
+                entry.dirty = true;
+                entry.setStoreNode(DataStorageWriter.storeToNode(entry.getStore()));
+            });
             save();
         }
 

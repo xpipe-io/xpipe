@@ -29,6 +29,7 @@ public class DataStoreEntry extends StorageElement {
     Validity validity;
 
     @NonFinal
+    @Setter
     JsonNode storeNode;
 
     @Getter
