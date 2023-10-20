@@ -20,7 +20,6 @@ public abstract class PlatformMode extends OperationMode {
     @Override
     public void onSwitchTo() throws Throwable {
         if (App.getApp() != null) {
-            StoreViewState.init();
             return;
         }
 
@@ -59,14 +58,10 @@ public abstract class PlatformMode extends OperationMode {
     }
 
     @Override
-    public void onSwitchFrom() {
-        StoreViewState.reset();
-    }
-
-    @Override
     public void finalTeardown() throws Throwable {
         TrackEvent.info("mode", "Shutting down platform components");
         onSwitchFrom();
+        StoreViewState.reset();
         PlatformState.teardown();
         TrackEvent.info("mode", "Platform shutdown finished");
         BACKGROUND.finalTeardown();

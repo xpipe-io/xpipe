@@ -33,7 +33,6 @@ public class TrayMode extends PlatformMode {
 
     @Override
     public void onSwitchFrom() {
-        super.onSwitchFrom();
         if (AppTray.get() != null) {
             TrackEvent.info("mode", "Closing tray");
             PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
