@@ -57,7 +57,6 @@ open module io.xpipe.app {
     requires org.fxmisc.wellbehavedfx;
     requires org.kordamp.ikonli.feather;
     requires org.reactfx;
-    requires com.dustinredmond.fxtrayicon;
     requires io.xpipe.modulefs;
     requires io.xpipe.core;
     requires static lombok;

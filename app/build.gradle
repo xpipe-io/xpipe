@@ -36,7 +36,6 @@ dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.3'
 
-    implementation 'com.dustinredmond.fxtrayicon:FXTrayIcon:4.0.1'
     implementation 'net.java.dev.jna:jna-jpms:5.13.0'
     implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"
@@ -104,7 +103,6 @@ project.ext {
             "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
             "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
             "--add-opens", "java.base/java.lang=io.xpipe.core",
-            "--add-opens", "com.dustinredmond.fxtrayicon/com.dustinredmond.fxtrayicon=io.xpipe.app",
             "--add-opens", "java.desktop/java.awt=io.xpipe.app",
             "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
             "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
