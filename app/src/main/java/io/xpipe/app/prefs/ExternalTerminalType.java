@@ -3,7 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.*;
+import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.MacOsPermissions;
+import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -184,26 +187,28 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-//    ExternalTerminalType WEZ_WINDOWS = new WindowsType("app.wezWindows", "wezterm") {
-//
-//        @Override
-//        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-//            ThreadHelper.runFailableAsync(() -> {
-//                new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start", "-e", "cmd", "/c").addFile(configuration.getScriptFile())).execute();
-//            });
-//        }
-//
-//        @Override
-//        protected Optional<Path> determineInstallation() {
-//            Optional<String> launcherDir;
-//            launcherDir = WindowsRegistry.readString(
-//                            WindowsRegistry.HKEY_LOCAL_MACHINE,
-//                            "Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
-//                            "InstallLocation")
-//                    .map(p -> p + "\\wezterm.exe");
-//            return launcherDir.map(Path::of);
-//        }
-//    };
+    //    ExternalTerminalType WEZ_WINDOWS = new WindowsType("app.wezWindows", "wezterm") {
+    //
+    //        @Override
+    //        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+    //            ThreadHelper.runFailableAsync(() -> {
+    //                new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start", "-e",
+    // "cmd", "/c").addFile(configuration.getScriptFile())).execute();
+    //            });
+    //        }
+    //
+    //        @Override
+    //        protected Optional<Path> determineInstallation() {
+    //            Optional<String> launcherDir;
+    //            launcherDir = WindowsRegistry.readString(
+    //                            WindowsRegistry.HKEY_LOCAL_MACHINE,
+    //
+    // "Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
+    //                            "InstallLocation")
+    //                    .map(p -> p + "\\wezterm.exe");
+    //            return launcherDir.map(Path::of);
+    //        }
+    //    };
 
     //    ExternalTerminalType HYPER_WINDOWS = new WindowsFullPathType("app.hyperWindows") {
     //
@@ -368,7 +373,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of().add("-n", "~").add("-r").addQuoted(name).add("-e").addQuoted(file);
+            return CommandBuilder.of()
+                    .add("-n", "~")
+                    .add("-r")
+                    .addQuoted(name)
+                    .add("-e")
+                    .addQuoted(file);
         }
 
         @Override
@@ -708,7 +718,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkIsInPath(pc, executable, toTranslatedString(), null);
+                if (!ApplicationHelper.isInPath(pc, executable)) {
+                    throw ErrorEvent.unreportable(
+                            new IOException(
+                                    "Executable " + executable
+                                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
+                }
 
                 var toExecute = executable + " "
                         + toCommand(configuration.getTitle(), configuration.getScriptFile())
