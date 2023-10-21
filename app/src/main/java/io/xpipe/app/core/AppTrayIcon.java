@@ -14,7 +14,7 @@ import java.net.URL;
 public class AppTrayIcon {
 
     private boolean shown = false;
-    
+
     /**
      * The default AWT SystemTray
      */
@@ -37,8 +37,8 @@ public class AppTrayIcon {
 
         var image = switch (OsType.getLocal()) {
             case OsType.Windows windows -> "img/logo/logo_16x16.png";
-            case OsType.Linux linux -> "img/logo/logo_22x22.png";
-            case OsType.MacOs macOs -> "img/logo/logo_22x22.png";
+            case OsType.Linux linux -> "img/logo/logo_24x24.png";
+            case OsType.MacOs macOs -> "img/logo/logo_24x24.png";
         };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
@@ -49,6 +49,7 @@ public class AppTrayIcon {
         {
             var open = new MenuItem(AppI18n.get("open"));
             open.addActionListener(e -> {
+                tray.remove(trayIcon);
                 OperationMode.switchToAsync(OperationMode.GUI);
             });
             popupMenu.add(open);
@@ -65,6 +66,7 @@ public class AppTrayIcon {
 
         trayIcon.addActionListener(e -> {
             if (OsType.getLocal() != OsType.MACOS) {
+                tray.remove(trayIcon);
                 OperationMode.switchToAsync(OperationMode.GUI);
             }
         });

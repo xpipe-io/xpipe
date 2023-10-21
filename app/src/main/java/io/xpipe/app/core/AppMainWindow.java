@@ -59,7 +59,7 @@ public class AppMainWindow {
     private synchronized void onChange() {
         lastUpdate = Instant.now();
         if (thread == null) {
-            thread = ThreadHelper.createPlatformThread("window change timeout", true, () -> {
+            thread = ThreadHelper.unstarted(() -> {
                 while (true) {
                     var toStop = lastUpdate.plus(Duration.of(1, ChronoUnit.SECONDS));
                     if (Instant.now().isBefore(toStop)) {
@@ -237,6 +237,10 @@ public class AppMainWindow {
     }
 
     public void show() {
+        // Due to some weird GTK bug, we have to set these sizes every time we show a window even though they have been previously set
+        stage.setWidth(stage.getWidth());
+        stage.setHeight(stage.getHeight());
+
         stage.show();
     }
 
