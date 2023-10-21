@@ -3,44 +3,22 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 
 public class AppTrayIcon {
 
-    private static final Integer winScale = 16;
-    private static final Integer coreScale = 22;
     private boolean shown = false;
-    private ActionListener exitMenuItemActionListener;
-
-
+    
     /**
      * The default AWT SystemTray
      */
     private final SystemTray tray;
-
-    /**
-     * The parent Stage of the FXTrayIcon
-     */
-    private Stage parentStage;
-
-    /**
-     * The application's title, to be used
-     * as default tooltip text for the FXTrayIcon
-     */
-    private String appTitle;
 
     /**
      * The AWT TrayIcon managed by FXTrayIcon
@@ -52,31 +30,6 @@ public class AppTrayIcon {
      */
     private final PopupMenu popupMenu = new PopupMenu();
 
-    /**
-     * Creates a {@code MouseListener} whose
-     * single-click action performs the passed
-     * JavaFX EventHandler
-     * @param e A JavaFX event to be performed
-     * @return A MouseListener fired by single-click
-     */
-    private MouseListener getPrimaryClickListener(EventHandler<ActionEvent> e) {
-        return new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                Platform.runLater(() -> e.handle(new ActionEvent()));
-            }
-
-            @Override
-            public void mousePressed(MouseEvent ignored) { }
-            @Override
-            public void mouseReleased(MouseEvent ignored) { }
-            @Override
-            public void mouseEntered(MouseEvent ignored) { }
-            @Override
-            public void mouseExited(MouseEvent ignored) { }
-        };
-    }
-
     public AppTrayIcon() {
         ensureSystemTraySupported();
 
@@ -84,8 +37,8 @@ public class AppTrayIcon {
 
         var image = switch (OsType.getLocal()) {
             case OsType.Windows windows -> "img/logo/logo_16x16.png";
-            case OsType.Linux linux -> "img/logo/logo_24x24.png";
-            case OsType.MacOs macOs -> "img/logo/logo_24x24.png";
+            case OsType.Linux linux -> "img/logo/logo_22x22.png";
+            case OsType.MacOs macOs -> "img/logo/logo_22x22.png";
         };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
