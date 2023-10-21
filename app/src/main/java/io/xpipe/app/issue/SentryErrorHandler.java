@@ -35,7 +35,6 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setDsn(AppProperties.get().getSentryUrl());
                     options.setEnableUncaughtExceptionHandler(false);
                     options.setAttachServerName(false);
-                    // options.setDebug(true);
                     options.setRelease(AppProperties.get().getVersion());
                     options.setEnableShutdownHook(false);
                     options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
@@ -49,7 +48,7 @@ public class SentryErrorHandler implements ErrorHandler {
             init = true;
         }
 
-        var id = createReport(ee);
+        var id = captureEvent(ee);
         if (id == null) {
             return;
         }
@@ -57,8 +56,7 @@ public class SentryErrorHandler implements ErrorHandler {
         var email = ee.getEmail();
         var hasEmail = email != null && !email.isBlank();
         var text = ee.getUserReport();
-        var hasText = text != null && !text.isBlank();
-        if (hasText || hasEmail) {
+        if (hasUserReport(ee)) {
             var fb = new UserFeedback(id);
             if (hasEmail) {
                 fb.setEmail(email);
@@ -67,6 +65,14 @@ public class SentryErrorHandler implements ErrorHandler {
             Sentry.captureUserFeedback(fb);
         }
         Sentry.flush(3000);
+    }
+
+    private static boolean hasUserReport(ErrorEvent ee) {
+        var email = ee.getEmail();
+        var hasEmail = email != null && !email.isBlank();
+        var text = ee.getUserReport();
+        var hasText = text != null && !text.isBlank();
+        return hasEmail || hasText;
     }
 
     private static Throwable adjustCopy(Throwable throwable, boolean clear) {
@@ -102,7 +108,11 @@ public class SentryErrorHandler implements ErrorHandler {
         }
     }
 
-    private static SentryId createReport(ErrorEvent ee) {
+    private static SentryId captureEvent(ErrorEvent ee) {
+        if (!hasUserReport(ee) && "User Report".equals(ee.getDescription())) {
+            return null;
+        }
+
         if (ee.getThrowable() != null) {
             var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics());
             return Sentry.captureException(adjusted, sc -> fillScope(ee, sc));
