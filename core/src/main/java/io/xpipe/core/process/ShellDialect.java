@@ -62,6 +62,8 @@ public interface ShellDialect {
 
     String prepareProperTerminalCommands();
 
+    String appendToPathVariableCommand(String entry);
+
     default String applyRcFileCommand() {
         return null;
     }

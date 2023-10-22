@@ -44,9 +44,16 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     public Comp<?> customEntryComp(StoreSection sec, boolean preferLarge) {
         SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
         var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
+
         var def = new StoreToggleComp("base.isDefault", sec, s.getState().isDefault(), aBoolean -> {
             var state = s.getState();
             state.setDefault(aBoolean);
+            s.setState(state);
+        });
+
+        var bring = new StoreToggleComp("base.bringToShells", sec, s.getState().isBringToShell(), aBoolean -> {
+            var state = s.getState();
+            state.setBringToShell(aBoolean);
             s.setState(state);
         });
 
@@ -55,7 +62,14 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
             ScriptStore.State state = (ScriptStore.State) o;
             return state.isDefault();
         }));
-        var dropdown = new DropdownComp(List.of(def));
+
+        // Disable selection if parent group is already brings
+        bring.disable(BindingsHelper.map(groupWrapper.getPersistentState(), o -> {
+            ScriptStore.State state = (ScriptStore.State) o;
+            return state.isBringToShell();
+        }));
+
+        var dropdown = new DropdownComp(List.of(def, bring));
         return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
     }
 
