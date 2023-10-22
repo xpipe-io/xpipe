@@ -1,10 +1,7 @@
 package io.xpipe.core.util;
 
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ProcessOutputException;
-import io.xpipe.core.process.ShellControl;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -58,20 +55,22 @@ public class XPipeInstallation {
     public static String createExternalAsyncLaunchCommand(
             String installationBase, XPipeDaemonMode mode, String arguments) {
         var suffix = (arguments != null ? " " + arguments : "");
+        var modeOption = mode != null ? " --mode " + mode.getDisplayName() : null;
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/app/bin/xpiped\" --mode " + mode.getDisplayName() + suffix
+            return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix
                     + " & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            return "open \"" + installationBase + "\" --args --mode " + mode.getDisplayName() + suffix;
+            return "open \"" + installationBase + "\" --args" + modeOption + suffix;
         }
 
         return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                + "\" --mode " + mode.getDisplayName() + suffix;
+                + "\"" + modeOption + suffix;
     }
 
     public static String createExternalLaunchCommand(String command, String arguments, XPipeDaemonMode mode) {
         var suffix = (arguments != null ? " " + arguments : "");
-        return "\"" + command + "\" --mode " + mode.getDisplayName() + suffix;
+        var modeOption = mode != null ? " --mode " + mode.getDisplayName() : null;
+        return "\"" + command + "\"" + modeOption + suffix;
     }
 
     @SneakyThrows

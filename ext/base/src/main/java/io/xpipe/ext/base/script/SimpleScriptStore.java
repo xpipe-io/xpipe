@@ -87,6 +87,7 @@ public class SimpleScriptStore extends ScriptStore {
 
     @Override
     public void checkComplete() throws Exception {
+        Validators.nonNull(group);
         super.checkComplete();
         Validators.nonNull(executionType);
         Validators.nonNull(minimumDialect);

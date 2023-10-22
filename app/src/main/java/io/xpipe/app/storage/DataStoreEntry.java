@@ -135,7 +135,6 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 false, null
         );
-        entry.refresh();
         return entry;
     }
 
@@ -294,7 +293,7 @@ public class DataStoreEntry extends StorageElement {
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         this.dirty = true;
-        refresh();
+        notifyUpdate();
     }
 
     public void setCategoryUuid(UUID categoryUuid) {
@@ -339,10 +338,16 @@ public class DataStoreEntry extends StorageElement {
         dirty = true;
         provider = e.provider;
         childrenCache = null;
-        refresh();
+        validity = store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        notifyUpdate();
     }
 
     public void setStoreInternal(DataStore store, boolean updateTime) {
+        var changed = !Objects.equals(this.store, store);
+        if (!changed) {
+            return;
+        }
+
         this.store = store;
         this.storeNode = DataStorageWriter.storeToNode(store);
         if (updateTime) {
@@ -384,6 +389,12 @@ public class DataStoreEntry extends StorageElement {
             return false;
         }
 
+        store = DataStorageParser.storeFromNode(storeNode);
+        if (store == null) {
+            validity = Validity.LOAD_FAILED;
+            return false;
+        }
+
         var newComplete = store.isComplete();
         if (!newComplete) {
             return false;
@@ -403,6 +414,12 @@ public class DataStoreEntry extends StorageElement {
             return false;
         }
 
+        store = DataStorageParser.storeFromNode(storeNode);
+        if (store == null) {
+            validity = Validity.LOAD_FAILED;
+            return false;
+        }
+
         var newComplete = store.isComplete();
         if (newComplete) {
             return false;
@@ -411,29 +428,6 @@ public class DataStoreEntry extends StorageElement {
         validity = Validity.INCOMPLETE;
         notifyUpdate();
         return true;
-    }
-
-    public void refresh() {
-        var oldStore = store;
-        DataStore newStore = DataStorageParser.storeFromNode(storeNode);
-        if (newStore == null
-                || DataStoreProviders.byStoreClass(newStore.getClass()).isEmpty()) {
-            store = null;
-            validity = Validity.LOAD_FAILED;
-            provider = null;
-            dirty = dirty || oldStore != null;
-            notifyUpdate();
-        } else {
-            dirty = dirty || !oldStore.equals(newStore);
-            store = newStore;
-            var complete = newStore.isComplete();
-            if (complete) {
-                validity = Validity.COMPLETE;
-            } else {
-                validity = Validity.INCOMPLETE;
-            }
-            notifyUpdate();
-        }
     }
 
     @SneakyThrows

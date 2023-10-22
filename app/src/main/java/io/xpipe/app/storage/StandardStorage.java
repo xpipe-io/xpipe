@@ -269,16 +269,13 @@ public class StandardStorage extends DataStorage {
                 local.setColor(DataStoreColor.BLUE);
             }
 
-        // Refresh to update state
-        storeEntries.forEach(dataStoreEntry -> dataStoreEntry.refresh());
-
+        refreshValidities(true);
         storeEntries.forEach(entry -> {
             var syntheticParent = getSyntheticParent(entry);
             syntheticParent.ifPresent(entry1 -> {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
-
         refreshValidities(true);
 
         // Save to apply changes

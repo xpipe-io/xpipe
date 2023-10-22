@@ -27,6 +27,9 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
     @Override
     public Comp<?> customEntryComp(StoreSection sec, boolean preferLarge) {
         ScriptGroupStore s = sec.getWrapper().getEntry().getStore().asNeeded();
+        if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
+            return new DenseStoreEntryComp(sec.getWrapper(), true, null);
+        }
 
         var def = new StoreToggleComp("base.isDefaultGroup", sec, s.getState().isDefault(), aBoolean -> {
             var state = s.getState();

@@ -1,16 +1,12 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreSectionMiniComp;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.app.util.FixedHierarchyStore;
@@ -20,6 +16,7 @@ import io.xpipe.core.store.ShellStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
@@ -55,9 +52,10 @@ final class BrowserBookmarkList extends SimpleComp {
                                     || storeEntryWrapper.getEntry().getStore() instanceof FixedHierarchyStore)
                             && storeEntryWrapper.getEntry().getValidity().isUsable();
                 };
+        var selectedCategory = new SimpleObjectProperty<>(StoreViewState.get().getActiveCategory().getValue());
         var section = StoreSectionMiniComp.createList(
                 StoreSection.createTopLevel(
-                        StoreViewState.get().getAllEntries(), applicable, filterText, StoreViewState.get().getActiveCategory()),
+                        StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory),
                 (s, comp) -> {
                     BooleanProperty busy = new SimpleBooleanProperty(false);
                     comp.disable(Bindings.createBooleanBinding(() -> {
@@ -92,7 +90,7 @@ final class BrowserBookmarkList extends SimpleComp {
                         });
                     });
                 });
-        var category = new DataStoreCategoryChoiceComp(DataStorage.get().getAllConnectionsCategory(), StoreViewState.get().getActiveCategory())
+        var category = new DataStoreCategoryChoiceComp(StoreViewState.get().getAllConnectionsCategory(), StoreViewState.get().getActiveCategory(), selectedCategory)
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);
         var filter =

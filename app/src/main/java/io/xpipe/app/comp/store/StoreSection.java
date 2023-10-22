@@ -98,7 +98,7 @@ public class StoreSection {
                 section -> {
                     var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
-                    var sameCategory = category == null || category.getValue().contains(section.getWrapper().getEntry());
+                    var sameCategory = category == null || category.getValue() == null || category.getValue().contains(section.getWrapper().getEntry());
                     return showFilter && matchesSelector && sameCategory;
                 },
                 category,

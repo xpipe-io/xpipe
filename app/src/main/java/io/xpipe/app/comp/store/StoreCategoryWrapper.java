@@ -53,6 +53,10 @@ public class StoreCategoryWrapper {
         update();
     }
 
+    public StoreCategoryWrapper getRoot() {
+        return StoreViewState.get().getCategoryWrapper(root);
+    }
+
     public StoreCategoryWrapper getParent() {
         return StoreViewState.get().getCategories().stream()
                 .filter(storeCategoryWrapper ->
@@ -122,7 +126,6 @@ public class StoreCategoryWrapper {
                             .getUuid()
                             .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                     .toList());
-
             Optional.ofNullable(getParent())
                     .ifPresent(storeCategoryWrapper -> {
                         storeCategoryWrapper.update();

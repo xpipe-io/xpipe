@@ -106,7 +106,8 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
                     });
-            var category = new DataStoreCategoryChoiceComp(initialCategory != null ? initialCategory.getRoot() : null, selectedCategory).styleClass(Styles.LEFT_PILL);
+            var category = new DataStoreCategoryChoiceComp(initialCategory != null ? initialCategory.getRoot() : null, StoreViewState.get().getActiveCategory(),
+                                                           selectedCategory).styleClass(Styles.LEFT_PILL);
             var filter = new FilterComp(filterText)
                     .styleClass(Styles.CENTER_PILL)
                     .hgrow()

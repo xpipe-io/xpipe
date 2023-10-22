@@ -4,7 +4,7 @@ import io.xpipe.app.comp.store.StoreCategoryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
@@ -15,22 +15,35 @@ import lombok.Value;
 
 public class DataStoreCategoryChoiceComp extends SimpleComp {
 
-    private final DataStoreCategory root;
-    private final Property<StoreCategoryWrapper> selected;
+    private final StoreCategoryWrapper root;
+    private final Property<StoreCategoryWrapper> external;
+    private final Property<StoreCategoryWrapper> value;
 
-    public DataStoreCategoryChoiceComp(DataStoreCategory root, Property<StoreCategoryWrapper> selected) {
+    public DataStoreCategoryChoiceComp(StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value) {
         this.root = root;
-        this.selected = selected;
+        this.external = external;
+        this.value = value;
     }
 
     @Override
     protected Region createSimple() {
-        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root));
-        box.setValue(selected.getValue());
-        box.valueProperty().addListener((observable, oldValue, newValue) -> {
-            selected.setValue(newValue);
+        SimpleChangeListener.apply(external, newValue -> {
+            if (newValue == null) {
+                value.setValue(root);
+            } else if (root == null) {
+                value.setValue(newValue);
+            } else if (!newValue.getRoot().equals(root)) {
+                value.setValue(root);
+            } else {
+                value.setValue(newValue);
+            }
         });
-        selected.addListener((observable, oldValue, newValue) -> {
+        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root));
+        box.setValue(value.getValue());
+        box.valueProperty().addListener((observable, oldValue, newValue) -> {
+            value.setValue(newValue);
+        });
+        value.addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> box.setValue(newValue));
         });
         box.setCellFactory(param -> {
@@ -54,6 +67,8 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
             if (w != null) {
                 textProperty().bind(w.nameProperty());
                 setPadding(new Insets(6, 6, 6, 8 + (indent ? w.getDepth() * 8 : 0)));
+            } else {
+                setText("None");
             }
         }
     }

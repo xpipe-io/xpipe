@@ -43,6 +43,10 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     @Override
     public Comp<?> customEntryComp(StoreSection sec, boolean preferLarge) {
         SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
+        if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
+            return new DenseStoreEntryComp(sec.getWrapper(), true, null);
+        }
+
         var groupWrapper = StoreViewState.get().getEntryWrapper(s.getGroup().getEntry());
 
         var def = new StoreToggleComp("base.isDefault", sec, s.getState().isDefault(), aBoolean -> {

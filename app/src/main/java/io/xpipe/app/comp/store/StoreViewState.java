@@ -55,18 +55,18 @@ public class StoreViewState {
         currentTopLevelSection = tl;
     }
 
-    public ObservableList<StoreCategoryWrapper> getSortedCategories(DataStoreCategory root) {
+    public ObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
         Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
             @Override
             public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
                 var o1Root = o1.getRoot();
                 var o2Root = o2.getRoot();
 
-                if (o1Root.equals(getAllConnectionsCategory().getCategory()) && !o1Root.equals(o2Root)) {
+                if (o1Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
                     return -1;
                 }
 
-                if (o2Root.equals(getAllConnectionsCategory().getCategory()) && !o1Root.equals(o2Root)) {
+                if (o2Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
                     return 1;
                 }
 
@@ -116,6 +116,15 @@ public class StoreViewState {
                 .findFirst()
                 .orElseThrow();
     }
+
+    public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {
+        return categories.stream()
+                .filter(storeCategoryWrapper ->
+                                storeCategoryWrapper.getCategory().equals(entry))
+                .findFirst()
+                .orElseThrow();
+    }
+
 
     public static void init() {
         if (INSTANCE != null) {

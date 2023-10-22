@@ -7,7 +7,6 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,15 +24,14 @@ public class StoreEntryListStatusComp extends SimpleComp {
     private Region createGroupListHeader() {
         var label = new Label();
         label.textProperty().bind(Bindings.createStringBinding(() -> {
-            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory().getCategory()) ? "Connections" : "Scripts";
+            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory()) ? "Connections" : "Scripts";
         }, StoreViewState.get().getActiveCategory()));
         label.getStyleClass().add("name");
 
         var all = BindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
                 storeEntryWrapper -> {
-                    var cat = DataStorage.get().getStoreCategoryIfPresent(storeEntryWrapper.getEntry().getCategoryUuid()).orElse(null);
-                    var storeRoot = cat != null ? DataStorage.get().getRootCategory(cat) : null;
+                    var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
                     return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(storeRoot);
                 },
                 StoreViewState.get().getActiveCategory());

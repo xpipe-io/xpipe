@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
@@ -39,6 +38,7 @@ public class StoreEntryWrapper {
     private final Property<Object> persistentState = new SimpleObjectProperty<>();
     private final MapProperty<String, Object> cache = new SimpleMapProperty<>(FXCollections.observableHashMap());
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
+    private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -118,12 +118,6 @@ public class StoreEntryWrapper {
     }
 
     public void update() {
-        //        var cat = StoreViewState.get().getCategories().stream()
-        //                .filter(storeCategoryWrapper ->
-        //                        Objects.equals(storeCategoryWrapper.getCategory().getUuid(), entry.getCategoryUuid()))
-        //                .findFirst();
-        //        category.setValue(cat.orElseThrow());
-
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
@@ -141,6 +135,10 @@ public class StoreEntryWrapper {
         inRefresh.setValue(entry.isInRefresh());
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
+
+        if (StoreViewState.get() != null) {
+            category.setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
+        }
 
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {
