@@ -118,6 +118,7 @@ open module io.xpipe.app {
     uses ScanProvider;
     uses BrowserAction;
     uses LicenseProvider;
+    uses io.xpipe.app.util.LicensedFeature;
 
     provides Module with StorageJacksonModule;
     provides ModuleLayerLoader with

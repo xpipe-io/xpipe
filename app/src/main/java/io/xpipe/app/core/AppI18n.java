@@ -62,11 +62,11 @@ public class AppI18n {
         return INSTANCE;
     }
 
-    public static StringBinding readableDuration(String s, ObservableValue<Instant> instant) {
-        return readableDuration(instant, rs -> getValue(getInstance().getLocalised(s), rs));
+    public static StringBinding readableInstant(String s, ObservableValue<Instant> instant) {
+        return readableInstant(instant, rs -> getValue(getInstance().getLocalised(s), rs));
     }
 
-    public static StringBinding readableDuration(ObservableValue<Instant> instant, UnaryOperator<String> op) {
+    public static StringBinding readableInstant(ObservableValue<Instant> instant, UnaryOperator<String> op) {
         return Bindings.createStringBinding(
                 () -> {
                     if (instant.getValue() == null) {
@@ -79,7 +79,7 @@ public class AppI18n {
                 instant);
     }
 
-    public static StringBinding readableDuration(ObservableValue<Instant> instant) {
+    public static StringBinding readableInstant(ObservableValue<Instant> instant) {
         return Bindings.createStringBinding(
                 () -> {
                     if (instant.getValue() == null) {
@@ -89,6 +89,19 @@ public class AppI18n {
                     return getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1)));
                 },
                 instant);
+    }
+
+    public static StringBinding readableDuration(ObservableValue<Duration> duration) {
+        return Bindings.createStringBinding(
+                () -> {
+                    if (duration.getValue() == null) {
+                        return "null";
+                    }
+
+                    return getInstance().prettyTime.formatDuration(
+                            getInstance().prettyTime.approximateDuration(Instant.now().plus(duration.getValue())));
+                },
+                duration);
     }
 
     public static ObservableValue<String> observable(String s, Object... vars) {

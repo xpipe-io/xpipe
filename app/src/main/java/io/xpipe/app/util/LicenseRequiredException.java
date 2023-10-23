@@ -8,12 +8,10 @@ public class LicenseRequiredException extends RuntimeException {
 
     String featureName;
     boolean plural;
-    LicenseType minLicense;
 
-    public LicenseRequiredException(String featureName, boolean plural, LicenseType minLicense) {
-        super(featureName + (plural ? " are" : " is") + " only supported with a " + minLicense.name().toLowerCase() + " license");
+    public LicenseRequiredException(String featureName, boolean plural) {
+        super(featureName + (plural ? " are" : " is") + " only supported with a professional license");
         this.featureName = featureName;
         this.plural = plural;
-        this.minLicense = minLicense;
     }
 }

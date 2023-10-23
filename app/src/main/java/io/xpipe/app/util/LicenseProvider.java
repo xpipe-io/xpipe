@@ -35,11 +35,11 @@ public abstract class LicenseProvider {
         }
     }
 
+    public abstract LicensedFeature getFeature(String id);
+
     public abstract void handleShellControl(ShellControl sc);
 
     public abstract void showLicenseAlert(LicenseRequiredException ex);
-
-    public abstract LicenseType getLicenseType();
 
     public abstract void init();
 
