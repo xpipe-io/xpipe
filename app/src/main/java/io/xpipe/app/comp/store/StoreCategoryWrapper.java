@@ -43,14 +43,13 @@ public class StoreCategoryWrapper {
 
         this.root = last;
         this.category = category;
-        this.name = new SimpleStringProperty();
-        this.lastAccess = new SimpleObjectProperty<>();
-        this.sortMode = new SimpleObjectProperty<>();
-        this.share = new SimpleObjectProperty<>();
+        this.name = new SimpleStringProperty(category.getName());
+        this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
+        this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
+        this.share = new SimpleObjectProperty<>(category.isShare());
         this.children = FXCollections.observableArrayList();
         this.containedEntries = FXCollections.observableArrayList();
         setupListeners();
-        update();
     }
 
     public StoreCategoryWrapper getRoot() {
@@ -117,20 +116,18 @@ public class StoreCategoryWrapper {
         sortMode.setValue(category.getSortMode());
         share.setValue(category.isShare());
 
-        if (StoreViewState.get() != null) {
-            containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
-                    .filter(entry -> contains(entry.getEntry()))
-                    .toList());
-            children.setAll(StoreViewState.get().getCategories().stream()
-                    .filter(storeCategoryWrapper -> getCategory()
-                            .getUuid()
-                            .equals(storeCategoryWrapper.getCategory().getParentCategory()))
-                    .toList());
-            Optional.ofNullable(getParent())
-                    .ifPresent(storeCategoryWrapper -> {
-                        storeCategoryWrapper.update();
-                    });
-        }
+        containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
+                .filter(entry -> contains(entry.getEntry()))
+                .toList());
+        children.setAll(StoreViewState.get().getCategories().stream()
+                .filter(storeCategoryWrapper -> getCategory()
+                        .getUuid()
+                        .equals(storeCategoryWrapper.getCategory().getParentCategory()))
+                .toList());
+        Optional.ofNullable(getParent())
+                .ifPresent(storeCategoryWrapper -> {
+                    storeCategoryWrapper.update();
+                });
     }
 
     public String getName() {

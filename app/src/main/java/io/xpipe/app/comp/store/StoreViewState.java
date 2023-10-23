@@ -131,7 +131,9 @@ public class StoreViewState {
             return;
         }
 
-        new StoreViewState();
+        INSTANCE = new StoreViewState();
+        INSTANCE.categories.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+        INSTANCE.allEntries.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
     }
 
     public static void reset() {
@@ -173,10 +175,6 @@ public class StoreViewState {
                                 storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.DEFAULT_CATEGORY_UUID))
                         .findFirst()
                         .orElseThrow()));
-
-        INSTANCE = this;
-        categories.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
-        allEntries.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
     }
 
     private void addStorageListeners() {

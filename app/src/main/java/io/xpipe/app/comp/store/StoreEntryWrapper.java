@@ -61,7 +61,6 @@ public class StoreEntryWrapper {
                 });
         this.defaultActionProvider = new SimpleObjectProperty<>();
         setupListeners();
-        update();
     }
 
     public void moveTo(DataStoreCategory category) {
@@ -136,9 +135,7 @@ public class StoreEntryWrapper {
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 
-        if (StoreViewState.get() != null) {
-            category.setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
-        }
+        category.setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
 
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {
