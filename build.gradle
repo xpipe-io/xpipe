@@ -50,6 +50,7 @@ project.ext {
     sourceWebsite = 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
     artifactChecksums = new HashMap<String, String>()
+    javafxVersion = '21.0.1'
 }
 
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {

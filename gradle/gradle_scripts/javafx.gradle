@@ -15,17 +15,11 @@ if (arch == 'aarch64') {
     platform += '-aarch64'
 }
 
-configurations {
-    dep
-}
-
-def jfxVersion = '21'
-
 dependencies {
-    dep "org.openjfx:javafx-base:${jfxVersion}:${platform}"
-    dep "org.openjfx:javafx-controls:${jfxVersion}:${platform}"
-    dep "org.openjfx:javafx-graphics:${jfxVersion}:${platform}"
-    dep "org.openjfx:javafx-media:${jfxVersion}:${platform}"
-    dep "org.openjfx:javafx-web:${jfxVersion}:${platform}"
-    dep "org.openjfx:javafx-swing:${jfxVersion}:${platform}"
+    compileOnly "org.openjfx:javafx-base:${javafxVersion}:${platform}"
+    compileOnly "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
+    compileOnly "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
+    compileOnly "org.openjfx:javafx-media:${javafxVersion}:${platform}"
+    compileOnly "org.openjfx:javafx-web:${javafxVersion}:${platform}"
+    compileOnly "org.openjfx:javafx-swing:${javafxVersion}:${platform}"
 }
