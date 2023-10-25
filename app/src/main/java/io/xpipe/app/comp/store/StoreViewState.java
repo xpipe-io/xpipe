@@ -24,116 +24,14 @@ public class StoreViewState {
 
     private static StoreViewState INSTANCE;
 
-    private final StringProperty filter = new SimpleStringProperty();
-
-    @Getter
-    private final ObservableList<StoreEntryWrapper> allEntries =
-            FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    @Getter
-    private final ObservableList<StoreCategoryWrapper> categories =
-            FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    @Getter
-    private final StoreSection currentTopLevelSection;
-
-    @Getter
-    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
-
-    private StoreViewState() {
-        StoreSection tl;
-        try {
-            initContent();
-            addStorageListeners();
-            tl = StoreSection.createTopLevel(allEntries,  storeEntryWrapper -> true, filter, activeCategory);
-        } catch (Exception exception) {
-            tl = new StoreSection(null, FXCollections.emptyObservableList(), FXCollections.emptyObservableList(), 0);
-            categories.setAll(new StoreCategoryWrapper(DataStorage.get().getAllConnectionsCategory()));
-            activeCategory.setValue(getAllConnectionsCategory());
-            ErrorEvent.fromThrowable(exception).handle();
-        }
-        currentTopLevelSection = tl;
-    }
-
-    public ObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
-        Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
-            @Override
-            public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
-                var o1Root = o1.getRoot();
-                var o2Root = o2.getRoot();
-
-                if (o1Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
-                    return -1;
-                }
-
-                if (o2Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
-                    return 1;
-                }
-
-                if (o1.getParent() == null && o2.getParent() == null) {
-                    return 0;
-                }
-
-                if (o1.getParent() == null) {
-                    return -1;
-                }
-
-                if (o2.getParent() == null) {
-                    return 1;
-                }
-
-                var parent = compare(o1.getParent(), o2.getParent());
-                if (parent != 0) {
-                    return parent;
-                }
-
-                return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-        };
-        return BindingsHelper.filteredContentBinding(categories, cat-> root == null || cat.getRoot().equals(root)).sorted(comparator);
-    }
-
-    public StoreCategoryWrapper getAllConnectionsCategory() {
-        return categories.stream()
-                .filter(storeCategoryWrapper ->
-                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    public StoreCategoryWrapper getAllScriptsCategory() {
-        return categories.stream()
-                .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
-        return allEntries.stream()
-                .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getEntry().equals(entry))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {
-        return categories.stream()
-                .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getCategory().equals(entry))
-                .findFirst()
-                .orElseThrow();
-    }
-
-
     public static void init() {
         if (INSTANCE != null) {
             return;
         }
 
         INSTANCE = new StoreViewState();
-        INSTANCE.categories.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
-        INSTANCE.allEntries.forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
+        INSTANCE.updateContent();
+        INSTANCE.initSections();
     }
 
     public static void reset() {
@@ -152,6 +50,43 @@ public class StoreViewState {
 
     public static StoreViewState get() {
         return INSTANCE;
+    }
+
+    private final StringProperty filter = new SimpleStringProperty();
+
+    @Getter
+    private final ObservableList<StoreEntryWrapper> allEntries =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
+
+    @Getter
+    private final ObservableList<StoreCategoryWrapper> categories =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
+
+    @Getter
+    private StoreSection currentTopLevelSection;
+
+    @Getter
+    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
+
+    private StoreViewState() {
+        initContent();
+        addStorageListeners();
+    }
+
+    private void updateContent() {
+        categories.forEach(c -> c.update());
+        allEntries.forEach(e -> e.update());
+    }
+
+    private void initSections() {
+        try {
+            currentTopLevelSection =
+                    StoreSection.createTopLevel(allEntries, storeEntryWrapper -> true, filter, activeCategory);
+        } catch (Exception exception) {
+            currentTopLevelSection =
+                    new StoreSection(null, FXCollections.emptyObservableList(), FXCollections.emptyObservableList(), 0);
+            ErrorEvent.fromThrowable(exception).handle();
+        }
     }
 
     private void initContent() {
@@ -267,8 +202,78 @@ public class StoreViewState {
         });
     }
 
+    public ObservableList<StoreCategoryWrapper> getSortedCategories(StoreCategoryWrapper root) {
+        Comparator<StoreCategoryWrapper> comparator = new Comparator<>() {
+            @Override
+            public int compare(StoreCategoryWrapper o1, StoreCategoryWrapper o2) {
+                var o1Root = o1.getRoot();
+                var o2Root = o2.getRoot();
+
+                if (o1Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
+                    return -1;
+                }
+
+                if (o2Root.equals(getAllConnectionsCategory()) && !o1Root.equals(o2Root)) {
+                    return 1;
+                }
+
+                if (o1.getParent() == null && o2.getParent() == null) {
+                    return 0;
+                }
+
+                if (o1.getParent() == null) {
+                    return -1;
+                }
+
+                if (o2.getParent() == null) {
+                    return 1;
+                }
+
+                var parent = compare(o1.getParent(), o2.getParent());
+                if (parent != 0) {
+                    return parent;
+                }
+
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        };
+        return BindingsHelper.filteredContentBinding(
+                        categories, cat -> root == null || cat.getRoot().equals(root))
+                .sorted(comparator);
+    }
+
+    public StoreCategoryWrapper getAllConnectionsCategory() {
+        return categories.stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getAllScriptsCategory() {
+        return categories.stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
+        return allEntries.stream()
+                .filter(storeCategoryWrapper -> storeCategoryWrapper.getEntry().equals(entry))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getCategoryWrapper(DataStoreCategory entry) {
+        return categories.stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().equals(entry))
+                .findFirst()
+                .orElseThrow();
+    }
+
     public Property<String> getFilterString() {
         return filter;
     }
-
 }
