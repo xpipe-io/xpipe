@@ -36,9 +36,9 @@ public class StoreEntryListComp extends SimpleComp {
                 () -> {
                     var all = StoreViewState.get().getAllConnectionsCategory();
                     var connections = StoreViewState.get().getAllEntries().stream().filter(wrapper -> all.contains(wrapper.getEntry())).toList();
-                    return initialCount == connections.size();
+                    return initialCount == connections.size() && StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory());
                 },
-                StoreViewState.get().getAllEntries());
+                StoreViewState.get().getAllEntries(), StoreViewState.get().getActiveCategory());
         var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
         map.put(
                 createList(),
