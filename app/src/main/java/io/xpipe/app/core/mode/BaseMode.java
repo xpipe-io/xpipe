@@ -32,6 +32,9 @@ public class BaseMode extends OperationMode {
             return;
         }
 
+        // For debugging
+        // if (true) throw new IllegalStateException();
+
         TrackEvent.info("mode", "Initializing base mode components ...");
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());

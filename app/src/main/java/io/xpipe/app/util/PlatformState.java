@@ -91,6 +91,7 @@ public enum PlatformState {
                 // Platform initialization has failed in this case
                 PLATFORM_LOADED = false;
                 PlatformState.setCurrent(PlatformState.EXITED);
+                TrackEvent.error(t.getMessage());
                 return Optional.of(t);
             }
         }
