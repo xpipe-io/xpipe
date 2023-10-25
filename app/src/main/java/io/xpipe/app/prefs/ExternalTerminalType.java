@@ -413,6 +413,46 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
+    ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm") {
+
+        @Override
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-title").addQuoted(name).add("-e").addQuoted(file);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+    ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal") {
+
+        @Override
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-C").addQuoted(file);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
+
+    ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal") {
+
+        @Override
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-e").addQuoted(file);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
     ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
 
     ExternalTerminalType ITERM2 = new ITerm2Type();
