@@ -5,7 +5,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -15,19 +14,10 @@ public class AppTrayIcon {
 
     private boolean shown = false;
 
-    /**
-     * The default AWT SystemTray
-     */
     private final SystemTray tray;
 
-    /**
-     * The AWT TrayIcon managed by FXTrayIcon
-     */
     private final TrayIcon trayIcon;
 
-    /**
-     * The AWT PopupMenu managed by FXTrayIcon
-     */
     private final PopupMenu popupMenu = new PopupMenu();
 
     public AppTrayIcon() {
@@ -72,12 +62,6 @@ public class AppTrayIcon {
         });
     }
 
-    /**
-     * Gets the nested AWT {@link TrayIcon}. This is intended for extended
-     * instances of FXTrayIcon which require the access to implement
-     * custom features.
-     * @return The nest trayIcon within this instance of FXTrayIcon.
-     */
     public final TrayIcon getAwtTrayIcon() {
         return trayIcon;
     }
@@ -99,19 +83,8 @@ public class AppTrayIcon {
         }
     }
 
-    /**
-     * Adds the FXTrayIcon to the system tray.
-     * This will add the TrayIcon with the image initialized in the
-     * {@code FXTrayIcon}'s constructor. By default, an empty popup
-     * menu is shown.
-     * By default, {@code javafx.application.Platform.setImplicitExit(false)}
-     * will be called. This will allow the application to continue running
-     * and show the tray icon after no more JavaFX Stages are visible. If
-     * this is not the behavior that you intend, call {@code setImplicitExit}
-     * to true after calling {@code show()}.
-     */
     public void show() {
-        SwingUtilities.invokeLater(() -> {
+        EventQueue.invokeLater(() -> {
             try {
                 tray.add(this.trayIcon);
                 shown = true;
@@ -125,7 +98,7 @@ public class AppTrayIcon {
     private void fixBackground() {
         // Ugly fix to show a transparent background on Linux
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            SwingUtilities.invokeLater(() -> {
+            EventQueue.invokeLater(() -> {
                 try {
                     Field peerField;
                     peerField = TrayIcon.class.getDeclaredField("peer");
@@ -160,12 +133,6 @@ public class AppTrayIcon {
         });
     }
 
-    /**
-     * Displays an info popup message near the tray icon.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param title The caption (header) text
-     * @param message The message content text
-     */
     public void showInfoMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             showMacAlert(title, message,"Information");
@@ -176,21 +143,10 @@ public class AppTrayIcon {
         }
     }
 
-    /**
-     * Displays an info popup message near the tray icon.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param message The message content text
-     */
     public void showInfoMessage(String message) {
         this.showInfoMessage(null, message);
     }
 
-    /**
-     * Displays a warning popup message near the tray icon.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param title The caption (header) text
-     * @param message The message content text
-     */
     public void showWarningMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             showMacAlert(title, message,"Warning");
@@ -201,21 +157,10 @@ public class AppTrayIcon {
         }
     }
 
-    /**
-     * Displays a warning popup message near the tray icon.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param message The message content text
-     */
     public void showWarningMessage(String message) {
         this.showWarningMessage(null, message);
     }
 
-    /**
-     * Displays an error popup message near the tray icon.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param title The caption (header) text
-     * @param message The message content text
-     */
     public void showErrorMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             showMacAlert(title, message,"Error");
@@ -226,22 +171,10 @@ public class AppTrayIcon {
         }
     }
 
-    /**
-     * Displays an error popup message near the tray icon.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param message The message content text
-     */
     public void showErrorMessage(String message) {
         this.showErrorMessage(null, message);
     }
 
-    /**
-     * Displays a popup message near the tray icon.
-     * Some systems will display FXTrayIcon's image on this popup.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param title The caption (header) text
-     * @param message The message content text
-     */
     public void showMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             showMacAlert(title, message,"Message");
@@ -252,37 +185,14 @@ public class AppTrayIcon {
         }
     }
 
-    /**
-     * Displays a popup message near the tray icon.
-     * Some systems will display FXTrayIcon's image on this popup.
-     * <p>NOTE: Some systems do not support this.</p>
-     * @param message The message content text
-     */
     public void showMessage(String message) {
         this.showMessage(null, message);
     }
 
-    /**
-     * Checks whether the system tray icon is supported on the
-     * current platform, or not.
-     * Just because the system tray is supported, does not mean that the
-     * current platform implements all system tray functionality.
-     * This will always return true on Windows or MacOS. Check the
-     * specific desktop environment for AppIndicator support when
-     * calling this on *nix platforms.
-     * @return false if the system tray is not supported, true if any
-     *          part of the system tray functionality is supported.
-     */
     public static boolean isSupported() {
         return Desktop.isDesktopSupported() && SystemTray.isSupported();
     }
 
-    /**
-     * Displays a sliding info message. Behavior is similar to Windows, but without AWT
-     * @param subTitle The message caption
-     * @param message The message text
-     * @param title The message title
-     */
     private void showMacAlert(String subTitle, String message, String title) {
         String execute = String.format(
                 "display notification \"%s\""

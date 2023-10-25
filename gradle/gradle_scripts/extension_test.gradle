@@ -7,9 +7,9 @@ dependencies {
     testImplementation project(':core')
     testImplementation project(':app')
 
-    testImplementation "org.openjfx:javafx-base:21:win"
-    testImplementation "org.openjfx:javafx-controls:21:win"
-    testImplementation "org.openjfx:javafx-graphics:21:win"
+    testImplementation "org.openjfx:javafx-base:${javafxVersion}:win"
+    testImplementation "org.openjfx:javafx-controls:${javafxVersion}:win"
+    testImplementation "org.openjfx:javafx-graphics:${javafxVersion}:win"
 }
 
 def attachDebugger = System.getProperty('idea.debugger.dispatch.addr') != null

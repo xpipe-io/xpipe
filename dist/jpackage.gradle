@@ -26,6 +26,7 @@ application {
 }
 
 def appDependencies = project(':app').configurations.findByName('runtimeClasspath').getFiles().stream()
+        .filter(f -> !f.name.startsWith('javafx')) // Remove JavaFX dependencies
         .collect(Collectors.toMap(f -> f.toPath().getFileName().toString(), f -> f, (f1, f2) -> f1))
         .values()
 def appModuleNames = ['app']
