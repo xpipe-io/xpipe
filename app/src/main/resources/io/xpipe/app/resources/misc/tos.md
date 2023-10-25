@@ -30,7 +30,7 @@ The Terms of Service can be viewed and printed out at any time in the XPipe desk
 
 ## 4. Service description and scope
 
-**4.1** Insofar as a paid subscription agreement has been concluded, XPipe shall provide the agreed services. Insofar as XPipe also provides content and/or services voluntarily and free of charge, it shall do so without assuming any legal obligation. XPipe shall be entitled to change, expand or limit these services at any time.
+**4.1** Insofar as a payment or paid subscription agreement has been concluded, XPipe shall provide the agreed services. Insofar as XPipe also provides content and/or services voluntarily and free of charge, it shall do so without assuming any legal obligation. XPipe shall be entitled to change, expand or limit these services at any time.
 
 **4.2** XPipe guarantees an availability of 99% or higher, based on the calendar year, for the server for downloading the Software (this currently corresponds to the XPipe website) as well as for the server for registration and/or obtaining licenses. Not included are downtimes caused by necessary maintenance work, force majeure, technical disruptions of the Internet or other reasons for which XPipe is not responsible.
 
@@ -72,9 +72,9 @@ The Terms of Service can be viewed and printed out at any time in the XPipe desk
 
 ## 7. Contract duration, automatic renewal, pause, termination
 
-**7.1** The paid subscription contract is valid for a certain minimum term. For example, it can be one (1) month or one (1) year, based on user's choice. At the end of each subscription period, the subscription will be automatically renewed depending on the term of the subscription period unless terminated by User before the last day of the current subscription period.
+**7.1** The paid subscription contract is valid for a certain minimum term. For example, it can be one (1) month. At the end of each subscription period, the subscription will be automatically renewed depending on the term of the subscription period unless terminated by User before the last day of the current subscription period.
 
-**7.2** The User or XPipe may terminate the contract at any time, with one day's notice before the end of the minimum term. The User may continue to use the XPipe service until the end of the minimum term. If the contract is not properly terminated by the end of the minimum term, it will be automatically renewed and a paid subscription will be activated.
+**7.2** The User or XPipe may terminate the subscription contract at any time, with one day's notice before the end of the minimum term. The User may continue to use the XPipe service until the end of the minimum term. If the contract is not properly terminated by the end of the minimum term, it will be automatically renewed and a paid subscription will be activated.
 
 **7.3** For the effective termination, the user may give notice of termination online via the function provided on the billing page at https://buy.xpipe.io/billing. Users can always contact us at hello@xpipe.io for help with ending their subscription.
 

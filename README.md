@@ -103,11 +103,6 @@ Alternatively, you can also use your favorite package manager (if supported):
 - [AUR package](https://aur.archlinux.org/packages/xpipe): `yay -S xpipe`
 - [Homebrew](https://github.com/xpipe-io/homebrew-tap): `brew install --cask xpipe-io/tap/xpipe`
 
-## Commercial usage
-
-Recently I decided to try to develop XPipe full-time. To finance this, there now is a professional tier intended for commercial users.
-The free community tier comes with the full feature set and no restrictions on anything as long you are using it for non-commercial purposes. For commercial usage, I would like to ask you to purchase an [XPipe professional license](https://buy.xpipe.io/checkout/buy/dbcd37b8-be94-40a5-8c1c-af61979e6537). You can try out XPipe as much as you want in a non-commercial setting or start a free trial if you want to test it in your commercial environments prior to purchasing a license.
-
 ## Open source model
 
 XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
