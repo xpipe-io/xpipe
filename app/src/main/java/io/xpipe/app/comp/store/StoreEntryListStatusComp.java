@@ -77,6 +77,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         AppFont.medium(menu);
         GrowAugment.create(true, false).augment(menu);
         StoreCreationMenu.addButtons(menu);
+        menu.setOpacity(0.85);
         return menu;
     }
 

@@ -91,7 +91,7 @@ public class BrowserNavBar extends SimpleComp {
                             : "home_icon.svg";
                 },
                 model.getCurrentPath());
-        var breadcrumbsGraphic = PrettyImageHelper.ofSvg(graphic, 22, 22)
+        var breadcrumbsGraphic = PrettyImageHelper.ofSvg(graphic, 16, 16)
                 .padding(new Insets(0, 0, 1, 0))
                 .styleClass("path-graphic")
                 .createRegion();

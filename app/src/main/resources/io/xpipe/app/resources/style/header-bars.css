@@ -34,7 +34,7 @@
  -fx-border-width: 1px;
 -fx-padding: 0;
 -fx-background-color: -color-fg-default;
--fx-border-color: -color-bg-default;
+-fx-border-color: transparent;
 }
 
 .store-header-bar .menu-button:hover {

@@ -39,6 +39,10 @@ public abstract class Comp<S extends CompStructure<?>> {
         return of(() -> new Spacer(Orientation.HORIZONTAL));
     }
 
+    public static Comp<CompStructure<Spacer>> vspacer() {
+        return of(() -> new Spacer(Orientation.VERTICAL));
+    }
+
     public static Comp<CompStructure<Spacer>> vspacer(double size) {
         return of(() -> new Spacer(size, Orientation.VERTICAL));
     }
