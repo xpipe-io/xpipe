@@ -103,18 +103,6 @@ jlink {
             appVersion = rootProject.canonicalVersionString
         } else {
             icon = "logo/logo.icns"
-
-            def cert = System.getenv('MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_USER_NAME')
-            if (cert != null) {
-                imageOptions += [
-                        '--mac-signing-key-user-name', cert
-                ]
-            }
-
-            imageOptions += [
-                    '--mac-sign'
-            ]
-
             resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }
