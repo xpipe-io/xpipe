@@ -234,7 +234,6 @@ public abstract class DataStorage {
         toUpdate.forEach(pair -> {
             pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
         });
-        e.setChildrenCache(newChildren.stream().map(DataStoreEntryRef::get).collect(Collectors.toSet()));
         saveAsync();
         return !newChildren.isEmpty();
     }
@@ -334,6 +333,7 @@ public abstract class DataStorage {
             var displayParent = syntheticParent.or(() -> getDisplayParent(e));
             if (displayParent.isPresent()) {
                 displayParent.get().setExpanded(true);
+                e.setCategoryUuid(displayParent.get().getCategoryUuid());
             }
 
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
@@ -351,12 +351,16 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry addStoreIfNotPresent(@NonNull String name, DataStore store) {
+        return addStoreIfNotPresent(null, name, store);
+    }
+
+    public DataStoreEntry addStoreIfNotPresent(DataStoreEntry related, @NonNull String name, DataStore store) {
         var f = getStoreEntryIfPresent(store);
         if (f.isPresent()) {
             return f.get();
         }
 
-        var e = DataStoreEntry.createNew(UUID.randomUUID(), selectedCategory.getUuid(), name, store);
+        var e = DataStoreEntry.createNew(UUID.randomUUID(), related != null ? related.getCategoryUuid() : selectedCategory.getUuid(), name, store);
         addStoreEntryIfNotPresent(e);
         return e;
     }

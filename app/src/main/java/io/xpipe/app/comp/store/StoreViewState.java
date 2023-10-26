@@ -117,7 +117,7 @@ public class StoreViewState {
         DataStorage.get().addListener(new StorageListener() {
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
-                var l = Arrays.stream(entry).map(StoreEntryWrapper::new).toList();
+                var l = Arrays.stream(entry).map(StoreEntryWrapper::new).peek(storeEntryWrapper -> storeEntryWrapper.update()).toList();
                 Platform.runLater(() -> {
                     synchronized (this) {
                         allEntries.addAll(l);
@@ -168,6 +168,7 @@ public class StoreViewState {
             @Override
             public void onCategoryAdd(DataStoreCategory category) {
                 var l = new StoreCategoryWrapper(category);
+                l.update();
                 Platform.runLater(() -> {
                     synchronized (this) {
                         categories.add(l);
