@@ -118,10 +118,10 @@ public class StoreSection {
         }
 
         var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
-            if (true) return DataStorage.get()
-                    .getDisplayParent(other.getEntry())
-                    .map(found -> found.equals(e.getEntry()))
-                    .orElse(false);
+//            if (true) return DataStorage.get()
+//                    .getDisplayParent(other.getEntry())
+//                    .map(found -> found.equals(e.getEntry()))
+//                    .orElse(false);
             // This check is fast as the children are cached in the storage
             return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
         });

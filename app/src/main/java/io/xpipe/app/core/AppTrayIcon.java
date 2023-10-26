@@ -33,8 +33,8 @@ public class AppTrayIcon {
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
         this.trayIcon = new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
-        this.trayIcon.setImageAutoSize(false);
         this.trayIcon.setToolTip("XPipe");
+        this.trayIcon.setImageAutoSize(true);
 
         {
             var open = new MenuItem(AppI18n.get("open"));
