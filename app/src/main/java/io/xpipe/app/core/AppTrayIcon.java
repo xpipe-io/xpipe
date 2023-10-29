@@ -28,7 +28,7 @@ public class AppTrayIcon {
         var image = switch (OsType.getLocal()) {
             case OsType.Windows windows -> "img/logo/logo_16x16.png";
             case OsType.Linux linux -> "img/logo/logo_24x24.png";
-            case OsType.MacOs macOs -> "img/logo/logo_24x24.png";
+            case OsType.MacOs macOs -> "img/logo/logo_macos_tray_24x24.png";
         };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
