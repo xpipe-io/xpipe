@@ -37,7 +37,7 @@ public class App extends Application {
         // This is necessary in case XPipe was started through a script as it will have no icon otherwise
         if (OsType.getLocal().equals(OsType.MACOS) && AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout()) {
             try {
-                var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_128x128.png");
+                var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_macos_128x128.png");
                 if (iconUrl != null) {
                     var awtIcon = ImageIO.read(iconUrl);
                     Taskbar.getTaskbar().setIconImage(awtIcon);

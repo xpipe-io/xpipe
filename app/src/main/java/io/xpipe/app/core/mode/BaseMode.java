@@ -69,9 +69,9 @@ public class BaseMode extends OperationMode {
         DataStorage.reset();
         AppPrefs.reset();
         AppExtensionManager.reset();
+        AppDataLock.unlock();
         // Shut down socket server last to keep a non-daemon thread running
         AppSocketServer.reset();
-        AppDataLock.unlock();
         TrackEvent.info("mode", "Background mode shutdown finished");
     }
 }
