@@ -79,7 +79,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                 c.getFieldLabel().setMaxHeight(AppFont.getPixelSize(1));
                                 c.getFieldLabel().textProperty().unbind();
                                 c.getFieldLabel().textProperty().bind(Bindings.createStringBinding(() -> {
-                                    return f.labelProperty().get() + (f.isEditable() ? "" : " (Pro)");
+                                    return f.labelProperty().get() + (AppPrefs.get().getProRequiredSettings().contains(f) ? " (Pro)" : "");
                                 }, f.labelProperty()));
                                 grid.add(c.getFieldLabel(), 0, i + rowAmount);
 
