@@ -20,6 +20,7 @@ public class ShellDialects {
     public static ShellDialect ZSH;
     public static ShellDialect CSH;
     public static ShellDialect FISH;
+    public static ShellDialect UNKNOWN;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -40,6 +41,7 @@ public class ShellDialects {
             CSH = byName("csh");
             ASH = byName("ash");
             SH = byName("sh");
+            UNKNOWN = byName("unknown");
         }
 
         @Override

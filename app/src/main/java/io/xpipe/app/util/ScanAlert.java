@@ -13,6 +13,7 @@ import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -41,6 +42,10 @@ public class ScanAlert {
     private static void showForShellStore(DataStoreEntry initial) {
         show(initial, (DataStoreEntry entry) -> {
             try (var sc = ((ShellStore) entry.getStore()).control().start()) {
+                if (sc.getShellDialect().equals(ShellDialects.UNKNOWN)) {
+                    return null;
+                }
+
                 var providers = ScanProvider.getAll();
                 var applicable = new ArrayList<ScanProvider.ScanOperation>();
                 for (ScanProvider scanProvider : providers) {
