@@ -36,6 +36,8 @@ public abstract class LicenseProvider {
         }
     }
 
+    public abstract boolean hasLicense();
+
     public abstract LicensedFeature getFeature(String id);
 
     public abstract void handleShellControl(ShellControl sc);

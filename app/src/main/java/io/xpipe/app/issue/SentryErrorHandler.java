@@ -9,6 +9,7 @@ import io.xpipe.app.core.AppState;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.XPipeDistributionType;
+import io.xpipe.app.util.LicenseProvider;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -150,6 +151,7 @@ public class SentryErrorHandler implements ErrorHandler {
             atts.forEach(attachment -> s.addAttachment(attachment));
         }
 
+        s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasLicense()));
         s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
         s.setTag(
