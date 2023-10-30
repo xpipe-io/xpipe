@@ -1,20 +1,24 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
-import atlantafx.base.controls.Tile;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.JfxHelper;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -53,40 +57,41 @@ public class BrowserWelcomeComp extends SimpleComp {
 
         var storeList = new VBox();
         storeList.setSpacing(8);
-        state.getLastSystems().forEach(e -> {
+
+        var list = FXCollections.observableList(state.getLastSystems().stream().filter(e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             if (entry.isEmpty()) {
-                return;
+                return false;
             }
 
             if (!entry.get().getValidity().isUsable()) {
-                return;
+                return false;
             }
 
+            return true;
+        }).toList());
+        var box = new ListBoxViewComp<>(list, list, e -> {
+            var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             var graphic =
                     entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
             var view = PrettyImageHelper.ofFixedSquare(graphic, 45);
             view.padding(new Insets(2, 8, 2, 8));
-            var tile = new Tile(
-                    DataStorage.get().getStoreDisplayName(entry.get()),
-                    e.getPath(),
-                    view.createRegion());
-            tile.setActionHandler(() -> {
-                model.restoreState(e, tile.disableProperty());
-            });
-            storeList.getChildren().add(tile);
-        });
-
-        var sp = new ScrollPane(storeList);
-        sp.setFitToWidth(true);
+            var content =
+                    JfxHelper.createNamedEntry(DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
+            return Comp.of(() -> new Button(null, content)).styleClass("color-box").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
+        }).apply(struc -> {
+            VBox vBox = (VBox) struc.get().getContent();
+            vBox.setSpacing(10);
+        }).createRegion();
 
         var layout = new VBox();
-        layout.setMaxWidth(700);
+        layout.getStyleClass().add("welcome");
         layout.setPadding(new Insets(40, 40, 40, 50));
         layout.setSpacing(18);
         layout.getChildren().add(hbox);
         layout.getChildren().add(new Separator(Orientation.HORIZONTAL));
-        layout.getChildren().add(sp);
+        layout.getChildren().add(box);
+        VBox.setVgrow(layout.getChildren().get(2), Priority.NEVER);
         layout.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
         var tile = new TileButtonComp("restore", "restoreAllSessions", "mdmz-restore", actionEvent -> {
