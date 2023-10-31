@@ -150,6 +150,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
         return new OptionsBuilder()
                 .name("snippets")
                 .description("snippetsDescription")
+                .longDescription("base:scriptDependencies")
                 .addComp(
                         new DataStoreListChoiceComp<>(
                                 others,
@@ -159,6 +160,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         others)
                 .name("minimumShellDialect")
                 .description("minimumShellDialectDescription")
+                .longDescription("base:scriptCompatibility")
                 .addComp(choice, dialect)
                 .nonNull()
                 .name("scriptContents")
