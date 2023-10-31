@@ -26,6 +26,10 @@ public interface ShellDialect {
                 .collect(Collectors.joining(" "));
     }
 
+    default boolean isSupportedShell() {
+        return true;
+    }
+
     default boolean isSelectable() {
         return true;
     }
@@ -40,7 +44,7 @@ public interface ShellDialect {
 
     String getCatchAllVariable();
 
-    CommandControl queryVersion(ShellControl shellControl);
+    String queryVersion(ShellControl shellControl) throws Exception;
 
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
