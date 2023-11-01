@@ -3,7 +3,9 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.SimpleScriptSnippet;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.store.FileNames;
@@ -18,8 +20,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SuperBuilder
 @Getter
@@ -31,29 +31,20 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> initScripts, List<DataStoreEntryRef<ScriptStore>> bringScripts) {
-        pc.onInit(shellControl -> {
-            var initFlattened = flatten(initScripts);
-            var scripts = initFlattened.stream()
-                    .map(simpleScriptStore -> simpleScriptStore.prepareDumbScript(shellControl))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.joining("\n"));
-            if (!scripts.isBlank()) {
-                shellControl.executeSimpleBooleanCommand(scripts);
+        var initFlattened = flatten(initScripts);
+        initFlattened.forEach(simpleScriptStore -> {
+            if (pc.getInitCommands().contains(simpleScriptStore)) {
+                return;
             }
 
-            var terminalCommands = initFlattened.stream()
-                    .map(simpleScriptStore -> simpleScriptStore.prepareTerminalScript(shellControl))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.joining("\n"));
-            if (!terminalCommands.isBlank()) {
-                shellControl.initWithTerminal(terminalCommands);
-            }
+            pc.initWith(simpleScriptStore);
         });
+
         pc.onInit(shellControl -> {
             var bringFlattened = flatten(bringScripts);
             var dir = initScriptsDirectory(shellControl, bringFlattened);
             if (dir != null) {
-                shellControl.initWithTerminal(shellControl.getShellDialect().appendToPathVariableCommand(dir));
+                shellControl.initWith(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir), ScriptSnippet.ExecutionType.TERMINAL_ONLY));
             }
         });
         return pc;

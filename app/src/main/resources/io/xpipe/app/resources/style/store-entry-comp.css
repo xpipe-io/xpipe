@@ -66,8 +66,12 @@
     -fx-background-radius: 0;
 }
 
+.store-entry-comp:hover:armed {
+-fx-background-color: derive(-color-neutral-muted, 25%);
+}
+
 .store-entry-comp:hover {
--fx-background-color: -color-neutral-muted;
+    -fx-background-color: -color-neutral-muted;
 }
 
 .store-entry-comp .button-bar, .store-entry-comp .dropdown-comp {

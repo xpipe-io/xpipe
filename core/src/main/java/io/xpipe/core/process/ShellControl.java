@@ -15,6 +15,8 @@ import java.util.function.Predicate;
 
 public interface ShellControl extends ProcessControl {
 
+    List<ScriptSnippet> getInitCommands();
+
     ShellControl withTargetTerminalShellDialect(ShellDialect d);
 
     ShellDialect getTargetTerminalShellDialect();
@@ -153,11 +155,7 @@ public interface ShellControl extends ProcessControl {
     }
     ShellControl elevationPassword(FailableSupplier<SecretValue> value);
 
-    ShellControl initWith(String cmds);
-
-    ShellControl initWithDumb(String cmds);
-
-    ShellControl initWithTerminal(String cmds);
+    ShellControl initWith(ScriptSnippet snippet);
 
     ShellControl additionalTimeout(int ms);
 
