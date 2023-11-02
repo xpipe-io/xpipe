@@ -1,6 +1,8 @@
 .gradle/
 build/
-.idea
+.idea/*
+!.idea/codeStyles
+!.idea/inspectionProfiles
 lib/
 dev.properties
 extensions.txt
