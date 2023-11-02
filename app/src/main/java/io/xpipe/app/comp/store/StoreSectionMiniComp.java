@@ -57,6 +57,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         struc.get().setAlignment(Pos.CENTER_LEFT);
                     })
                     .grow(true, false)
+                    .apply(struc -> struc.get().setMnemonicParsing(false))
                     .styleClass("item");
             augment.accept(section, root);
 
