@@ -81,7 +81,6 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
             List<Comp<?>> topEntryList = List.of(button, root);
             list.add(new HorizontalComp(topEntryList)
                              .apply(struc -> struc.get().setFillHeight(true)));
-            list.add(Comp.separator().visible(expanded));
         } else {
             expanded = new SimpleBooleanProperty(true);
         }

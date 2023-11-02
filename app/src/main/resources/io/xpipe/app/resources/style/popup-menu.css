@@ -42,4 +42,6 @@
 
 .context-menu * .context-menu {
     -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }

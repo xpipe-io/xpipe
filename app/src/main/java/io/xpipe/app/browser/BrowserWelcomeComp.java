@@ -2,19 +2,20 @@ package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.ThreadHelper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
@@ -72,13 +73,17 @@ public class BrowserWelcomeComp extends SimpleComp {
         }).toList());
         var box = new ListBoxViewComp<>(list, list, e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-            var graphic =
-                    entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
+            var graphic = entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
             var view = PrettyImageHelper.ofFixedSquare(graphic, 45);
             view.padding(new Insets(2, 8, 2, 8));
             var content =
                     JfxHelper.createNamedEntry(DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
-            return Comp.of(() -> new Button(null, content)).styleClass("color-box").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
+            var disable = new SimpleBooleanProperty();
+            return new ButtonComp(null, content, () -> {
+                ThreadHelper.runAsync(() -> {
+                    model.restoreState(e, disable);
+                });
+            }).disable(disable).styleClass("color-box").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
         }).apply(struc -> {
             VBox vBox = (VBox) struc.get().getContent();
             vBox.setSpacing(10);

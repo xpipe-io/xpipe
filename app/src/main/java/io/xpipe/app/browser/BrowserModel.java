@@ -24,6 +24,15 @@ import java.util.function.Consumer;
 @Getter
 public class BrowserModel {
 
+    public static final BrowserModel DEFAULT = new BrowserModel(Mode.BROWSER);
+    private final Mode mode;
+    private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
+    private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
+    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
+    private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
+    @Setter
+    private Consumer<List<FileStore>> onFinish;
+
     public BrowserModel(Mode mode) {
         this.mode = mode;
 
@@ -35,40 +44,6 @@ public class BrowserModel {
             BindingsHelper.bindContent(selection, newValue.getFileList().getSelection());
         });
     }
-
-    @Getter
-    public enum Mode {
-        BROWSER(false, true, true, true),
-        SINGLE_FILE_CHOOSER(true, false, true, false),
-        SINGLE_FILE_SAVE(true, false, true, false),
-        MULTIPLE_FILE_CHOOSER(true, true, true, false),
-        SINGLE_DIRECTORY_CHOOSER(true, false, false, true),
-        MULTIPLE_DIRECTORY_CHOOSER(true, true, false, true);
-
-        private final boolean chooser;
-        private final boolean multiple;
-        private final boolean acceptsFiles;
-        private final boolean acceptsDirectories;
-
-        Mode(boolean chooser, boolean multiple, boolean acceptsFiles, boolean acceptsDirectories) {
-            this.chooser = chooser;
-            this.multiple = multiple;
-            this.acceptsFiles = acceptsFiles;
-            this.acceptsDirectories = acceptsDirectories;
-        }
-    }
-
-    public static final BrowserModel DEFAULT = new BrowserModel(Mode.BROWSER);
-
-    private final Mode mode;
-
-    @Setter
-    private Consumer<List<FileStore>> onFinish;
-
-    private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
-    private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
-    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
-    private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
 
     public void restoreState(BrowserSavedState state) {
         state.getLastSystems().forEach(e -> {
@@ -87,8 +62,7 @@ public class BrowserModel {
         var list = new ArrayList<BrowserSavedState.Entry>();
         openFileSystems.forEach(model -> {
             if (DataStorage.get().getStoreEntries().contains(model.getEntry().get())) {
-                list.add(new BrowserSavedState.Entry(
-                        model.getEntry().get().getUuid(), model.getCurrentPath().get()));
+                list.add(new BrowserSavedState.Entry(model.getEntry().get().getUuid(), model.getCurrentPath().get()));
             }
         });
 
@@ -120,11 +94,8 @@ public class BrowserModel {
             return;
         }
 
-        var stores = chosen.stream()
-                .map(entry -> new FileStore(
-                        entry.getRawFileEntry().getFileSystem().getStore(),
-                        entry.getRawFileEntry().getPath()))
-                .toList();
+        var stores = chosen.stream().map(
+                entry -> new FileStore(entry.getRawFileEntry().getFileSystem().getStore(), entry.getRawFileEntry().getPath())).toList();
         onFinish.accept(stores);
     }
 
@@ -140,10 +111,8 @@ public class BrowserModel {
         });
     }
 
-    public void openExistingFileSystemIfPresent(DataStoreEntryRef<? extends FileSystemStore>  store) {
-        var found = openFileSystems.stream()
-                .filter(model -> Objects.equals(model.getEntry(), store))
-                .findFirst();
+    public void openExistingFileSystemIfPresent(DataStoreEntryRef<? extends FileSystemStore> store) {
+        var found = openFileSystems.stream().filter(model -> Objects.equals(model.getEntry(), store)).findFirst();
         if (found.isPresent()) {
             selected.setValue(found.get());
         } else {
@@ -176,9 +145,9 @@ public class BrowserModel {
         ThreadHelper.runFailableAsync(() -> {
             OpenFileSystemModel model;
 
-            // Prevent multiple calls from interfering with each other
-            synchronized (BrowserModel.this) {
-                try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+            try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+                // Prevent multiple calls from interfering with each other
+                synchronized (BrowserModel.this) {
                     model = new OpenFileSystemModel(this, store);
                     model.initFileSystem();
                     model.initSavedState();
@@ -193,5 +162,27 @@ public class BrowserModel {
                 model.initWithDefaultDirectory();
             }
         });
+    }
+
+    @Getter
+    public enum Mode {
+        BROWSER(false, true, true, true),
+        SINGLE_FILE_CHOOSER(true, false, true, false),
+        SINGLE_FILE_SAVE(true, false, true, false),
+        MULTIPLE_FILE_CHOOSER(true, true, true, false),
+        SINGLE_DIRECTORY_CHOOSER(true, false, false, true),
+        MULTIPLE_DIRECTORY_CHOOSER(true, true, false, true);
+
+        private final boolean chooser;
+        private final boolean multiple;
+        private final boolean acceptsFiles;
+        private final boolean acceptsDirectories;
+
+        Mode(boolean chooser, boolean multiple, boolean acceptsFiles, boolean acceptsDirectories) {
+            this.chooser = chooser;
+            this.multiple = multiple;
+            this.acceptsFiles = acceptsFiles;
+            this.acceptsDirectories = acceptsDirectories;
+        }
     }
 }
