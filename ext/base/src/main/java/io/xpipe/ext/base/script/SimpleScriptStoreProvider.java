@@ -137,7 +137,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                 new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
         Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
         var type = new SimpleObjectProperty<>(st.getExecutionType());
-        var requiresElevationProperty = new SimpleBooleanProperty(st.isRequiresElevation());
 
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
@@ -177,10 +176,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                 .description("executionTypeDescription")
                 .longDescription("base:executionType")
                 .addComp(new ScriptStoreTypeChoiceComp(type), type)
-                .name("shouldElevate")
-                .description("shouldElevateDescription")
-                .longDescription("proc:elevation")
-                .addToggle(requiresElevationProperty)
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
                 .addComp(
@@ -197,7 +192,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                                     .description(st.getDescription())
                                     .commands(commandProp.getValue())
                                     .executionType(type.get())
-                                    .requiresElevation(requiresElevationProperty.get())
                                     .build();
                         },
                         store)
@@ -212,8 +206,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     @Override
     public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
         SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
-        return new SimpleStringProperty((scriptStore.isRequiresElevation() ? "Elevated " : "")
-                + (scriptStore.getMinimumDialect() != null
+        return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
                 ? scriptStore.getMinimumDialect().getDisplayName() + " "
                 : "")
                 + (scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.TERMINAL_ONLY
@@ -275,7 +268,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
         return SimpleScriptStore.builder()
                 .scripts(List.of())
                 .executionType(SimpleScriptStore.ExecutionType.TERMINAL_ONLY)
-                .requiresElevation(false)
                 .build();
     }
 

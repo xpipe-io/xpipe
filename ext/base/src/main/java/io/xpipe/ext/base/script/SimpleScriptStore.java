@@ -69,7 +69,6 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
     private final ShellDialect minimumDialect;
     private final String commands;
     private final ExecutionType executionType;
-    private final boolean requiresElevation;
 
     @Override
     public void checkComplete() throws Exception {
