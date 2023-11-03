@@ -1,6 +1,6 @@
 <img src="https://github.com/xpipe-io/xpipe/assets/72509152/88d750f3-8469-4c51-bb64-5b264b0e9d47" alt="drawing" width="250"/>
 
-### A brand-new shell connection hub and remote file manager
+### Your entire server infrastructure at your fingertips
 
 XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire sever infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.
 
@@ -44,13 +44,13 @@ It currently supports:
 
 <br>
 <p align="center">
-  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/f3d29909-acd7-4568-a625-0667d936ef2b" alt="Terminal launcher"/>
+  <img src="https://github.com/xpipe-io/xpipe/assets/72509152/02351317-f25d-4af3-8116-bc3b4fb92312" alt="Terminal launcher"/>
 </p>
 <br>
 
 ## Downloads
 
-Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure with ease from your local machine.
+Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
 
 ### Installers
 
@@ -107,7 +107,7 @@ Alternatively, you can also use your favorite package manager (if supported):
 
 XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
 
-This mainly concerns the features only available in the professional tier and the shell handling library implementation and extensions for configuring and handling shell connections. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository. Finally, scripts and workflows to create and publish installers and packages are also not included to prevent attackers from easily impersonating the XPipe application.
+This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository.
 
 ## Further information
 
