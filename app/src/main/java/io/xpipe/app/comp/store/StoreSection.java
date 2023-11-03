@@ -46,7 +46,7 @@ public class StoreSection {
         if (wrapper != null) {
             this.showDetails = Bindings.createBooleanBinding(
                     () -> {
-                        return wrapper.getExpanded().get() || allChildren.size() == 0;
+                        return wrapper.getExpanded().get() || allChildren.isEmpty();
                     },
                     wrapper.getExpanded(),
                     allChildren);
@@ -63,20 +63,19 @@ public class StoreSection {
 
         var c = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
-        var mapped = BindingsHelper.mappedBinding(category, storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
+        var mappedSortMode = BindingsHelper.mappedBinding(category, storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
         return BindingsHelper.orderedContentBinding(
                 list,
                 (o1, o2) -> {
-                    var current = category.getValue();
+                    var current = mappedSortMode.getValue();
                     if (current != null) {
-                        return c.thenComparing(current.getSortMode().getValue().comparator())
+                        return c.thenComparing(current.comparator())
                                 .compare(o1, o2);
                     } else {
                         return c.compare(o1, o2);
                     }
                 },
-                category,
-                mapped);
+                mappedSortMode);
     }
 
     public static StoreSection createTopLevel(
@@ -118,10 +117,12 @@ public class StoreSection {
         }
 
         var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
+            // Legacy implementation that does not use caches. Use for testing
 //            if (true) return DataStorage.get()
 //                    .getDisplayParent(other.getEntry())
 //                    .map(found -> found.equals(e.getEntry()))
 //                    .orElse(false);
+
             // This check is fast as the children are cached in the storage
             return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
         });
@@ -131,8 +132,12 @@ public class StoreSection {
         var filtered = BindingsHelper.filteredContentBinding(
                 ordered,
                 section -> {
-                    return (filterString == null || section.shouldShow(filterString.get()))
-                            && section.anyMatches(entryFilter);
+                    var showFilter = filterString == null || section.shouldShow(filterString.get());
+                    var matchesSelector = section.anyMatches(entryFilter);
+                    var sameCategory = category == null || category.getValue() == null || category.getValue().contains(section.getWrapper().getEntry());
+                    // If this entry is already shown as root due to a different category than parent, don't show it again here
+                    var notRoot = !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
+                    return showFilter && matchesSelector && sameCategory && notRoot;
                 },
                 category,
                 filterString);

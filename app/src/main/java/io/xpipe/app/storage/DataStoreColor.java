@@ -7,13 +7,13 @@ import lombok.Getter;
 @Getter
 public enum DataStoreColor {
     @JsonProperty("red")
-    RED("red", "\uD83D\uDFE5", Color.BLUE),
+    RED("red", "\uD83D\uDD34", Color.RED),
 
     @JsonProperty("green")
-    GREEN("green", "\uD83D\uDFE9", Color.BLUE),
+    GREEN("green", "\uD83D\uDFE2", Color.GREEN),
 
     @JsonProperty("yellow")
-    YELLOW("yellow", "\uD83D\uDFE8", Color.BLUE),
+    YELLOW("yellow", "\uD83D\uDFE1", Color.YELLOW),
 
     @JsonProperty("blue")
     BLUE("blue", "\uD83D\uDD35", Color.BLUE);
