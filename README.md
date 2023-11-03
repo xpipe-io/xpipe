@@ -17,12 +17,12 @@ It currently supports:
 ## Connection Hub
 
 - Easily connect to and access all kinds of remote connections in one place
-- Securely stores all information exclusively on your computer and encrypts all secret information. See the [security page](/SECURITY.md) for more information
+- Securely stores all information exclusively on your computer and encrypts all secret information
 - Allows you to create specific login environments on any system to instantly jump into a properly set up environment for every use case
 - Can create desktop shortcuts that automatically open remote connections in your terminal
 - Group all your connections into hierarchical categories
 
-![connections](https://github.com/xpipe-io/xpipe/assets/72509152/ef19aa85-1b66-45e0-a051-5a4658758626)
+![connections](https://github.com/xpipe-io/xpipe/assets/72509152/3a690fe3-29b8-43fc-a1d1-1dee9be71d4d)
 
 ## Remote File Manager
 
@@ -31,7 +31,7 @@ It currently supports:
 - Utilize your favourite local programs to open and edit remote files
 - Dynamically elevate sessions with sudo when required
 
-![browser](https://github.com/xpipe-io/xpipe/assets/72509152/daec9740-1aca-4ee4-90ef-0bdf79af49e0)
+![browser](https://github.com/xpipe-io/xpipe/assets/72509152/60d70293-c513-4f12-b242-30610ce5ab5d)
 
 ## Terminal Launcher
 
