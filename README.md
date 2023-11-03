@@ -31,7 +31,7 @@ It currently supports:
 - Utilize your favourite local programs to open and edit remote files
 - Dynamically elevate sessions with sudo when required
 
-![browser](https://github.com/xpipe-io/xpipe/assets/72509152/5631fe50-58b4-4847-a5f4-ad3898a02a9f)
+![browser](https://github.com/xpipe-io/xpipe/assets/72509152/daec9740-1aca-4ee4-90ef-0bdf79af49e0)
 
 ## Terminal Launcher
 
@@ -48,7 +48,7 @@ It currently supports:
 </p>
 <br>
 
-## Downloads
+# Downloads
 
 Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
 
