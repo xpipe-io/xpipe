@@ -53,13 +53,8 @@ open module io.xpipe.app {
     requires com.vladsch.flexmark_util_sequence;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
-    requires org.fxmisc.richtext;
-    requires org.fxmisc.flowless;
     requires net.synedra.validatorfx;
-    requires org.fxmisc.undofx;
-    requires org.fxmisc.wellbehavedfx;
     requires org.kordamp.ikonli.feather;
-    requires org.reactfx;
     requires io.xpipe.modulefs;
     requires io.xpipe.core;
     requires static lombok;

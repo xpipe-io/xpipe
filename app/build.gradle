@@ -13,7 +13,6 @@ configurations {
 
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
-apply from: "$projectDir/gradle_scripts/richtextfx.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/prettytime.gradle"
 apply from: "$projectDir/gradle_scripts/sentry.gradle"
