@@ -1,6 +1,6 @@
 <img src="https://github.com/xpipe-io/xpipe/assets/72509152/88d750f3-8469-4c51-bb64-5b264b0e9d47" alt="drawing" width="250"/>
 
-XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.
+XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs and does not require any setup on your remote systems.
 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
@@ -32,15 +32,6 @@ It currently supports:
 
 ![browser](https://github.com/xpipe-io/xpipe/assets/72509152/60d70293-c513-4f12-b242-30610ce5ab5d)
 
-## Versatile scripting system
-
-- Create reusable simple shell scripts, templates, and groups to run on connected remote systems
-- Automatically make your scripts available in the PATH on any remote system without any setup
-- Setup shell init environments for connections to fully customize your work environment for every purpose
-- Open custom shells and custom remote connections by providing your own commands
-
-![browser](https://github.com/xpipe-io/xpipe/assets/72509152/2d473f7b-ae1d-4dd1-86a3-02658b094da5)
-
 ## Terminal Launcher
 
 - Automatically login into a shell in your favourite terminal with one click (no need to fill password prompts, etc.)
@@ -55,6 +46,15 @@ It currently supports:
   <img src="https://github.com/xpipe-io/xpipe/assets/72509152/02351317-f25d-4af3-8116-bc3b4fb92312" alt="Terminal launcher"/>
 </p>
 <br>
+
+## Versatile scripting system
+
+- Create reusable simple shell scripts, templates, and groups to run on connected remote systems
+- Automatically make your scripts available in the PATH on any remote system without any setup
+- Setup shell init environments for connections to fully customize your work environment for every purpose
+- Open custom shells and custom remote connections by providing your own commands
+
+![scripts](https://github.com/xpipe-io/xpipe/assets/72509152/2d473f7b-ae1d-4dd1-86a3-02658b094da5)
 
 # Downloads
 
