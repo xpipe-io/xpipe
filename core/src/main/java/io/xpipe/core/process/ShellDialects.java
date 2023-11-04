@@ -23,6 +23,20 @@ public class ShellDialects {
     public static ShellDialect UNSUPPORTED;
     public static ShellDialect CISCO;
 
+    private static ShellDialect byName(String name) {
+        return ALL.stream().filter(shellType -> shellType.getId().equals(name)).findFirst().orElseThrow();
+    }
+
+    public static ShellDialect getPlatformDefault() {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            return CMD;
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return BASH;
+        } else {
+            return ZSH;
+        }
+    }
+
     public static class Loader implements ModuleLayerLoader {
 
         @Override
@@ -54,23 +68,6 @@ public class ShellDialects {
         @Override
         public boolean prioritizeLoading() {
             return true;
-        }
-    }
-
-    private static ShellDialect byName(String name) {
-        return ALL.stream()
-                .filter(shellType -> shellType.getId().equals(name))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    public static ShellDialect getPlatformDefault() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return CMD;
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return BASH;
-        } else {
-            return ZSH;
         }
     }
 }

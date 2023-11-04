@@ -30,9 +30,8 @@ public final class XPipeApiConnection extends BeaconConnection {
                     throw new IllegalStateException();
                 }
 
-                DialogExchange.Response response = con.performSimpleExchange(DialogExchange.Request.builder()
-                        .dialogKey(reference.getDialogId())
-                        .build());
+                DialogExchange.Response response = con.performSimpleExchange(
+                        DialogExchange.Request.builder().dialogKey(reference.getDialogId()).build());
                 element = response.getElement();
                 if (response.getElement() == null) {
                     break;
@@ -78,10 +77,7 @@ public final class XPipeApiConnection extends BeaconConnection {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder()
-                    .version("?")
-                    .language("Java")
-                    .build());
+            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder().version("?").language("Java").build());
             if (s.isPresent()) {
                 return s;
             }
@@ -122,10 +118,7 @@ public final class XPipeApiConnection extends BeaconConnection {
         }
 
         try {
-            beaconClient = BeaconClient.connect(BeaconClient.ApiClientInformation.builder()
-                    .version("?")
-                    .language("Java")
-                    .build());
+            beaconClient = BeaconClient.connect(BeaconClient.ApiClientInformation.builder().version("?").language("Java").build());
         } catch (Exception ex) {
             throw new BeaconException("Unable to connect to running xpipe daemon", ex);
         }

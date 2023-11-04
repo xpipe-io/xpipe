@@ -50,15 +50,13 @@ public class VBoxViewComp<T> extends Comp<CompStructure<VBox>> {
 
     private void refresh(VBox listView, List<? extends T> c, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
-            var newShown = c.stream()
-                    .map(v -> {
-                        if (!cache.containsKey(v)) {
-                            cache.put(v, compFunction.apply(v).createRegion());
-                        }
+            var newShown = c.stream().map(v -> {
+                if (!cache.containsKey(v)) {
+                    cache.put(v, compFunction.apply(v).createRegion());
+                }
 
-                        return cache.get(v);
-                    })
-                    .toList();
+                return cache.get(v);
+            }).toList();
 
             if (!listView.getChildren().equals(newShown)) {
                 listView.getChildren().setAll(newShown);

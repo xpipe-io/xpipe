@@ -38,13 +38,7 @@ public class BigIconButton extends ButtonComp {
         b.setGraphic(vbox);
         b.setOnAction(e -> getListener().run());
         b.getStyleClass().add("big-icon-button-comp");
-        return Structure.builder()
-                .stack(vbox)
-                .graphic(getGraphic())
-                .graphicPane(icon)
-                .text(label)
-                .button(b)
-                .build();
+        return Structure.builder().stack(vbox).graphic(getGraphic()).graphicPane(icon).text(label).button(b).build();
     }
 
     @Value

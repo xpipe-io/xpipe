@@ -78,13 +78,9 @@ public class ErrorHandlerComp extends SimpleComp {
         var finishLatch = new CountDownLatch(1);
         if (!showing.get()) {
             showing.set(true);
-            var window = AppWindowHelper.sideWindow(
-                    AppI18n.get("errorHandler"),
-                    w -> {
-                        return setUpComp(event, w, finishLatch);
-                    },
-                    true,
-                    null);
+            var window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> {
+                return setUpComp(event, w, finishLatch);
+            }, true, null);
 
             // An exception is thrown when show and wait is called
             // within an animation or layout processing task, so use show
@@ -106,13 +102,9 @@ public class ErrorHandlerComp extends SimpleComp {
         Platform.runLater(() -> {
             if (!showing.get()) {
                 showing.set(true);
-                var window = AppWindowHelper.sideWindow(
-                        AppI18n.get("errorHandler"),
-                        w -> {
-                            return setUpComp(event, w, finishLatch);
-                        },
-                        true,
-                        null);
+                var window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> {
+                    return setUpComp(event, w, finishLatch);
+                }, true, null);
                 // An exception is thrown when show and wait is called
                 // within an animation or layout processing task, so use show
                 try {
@@ -225,8 +217,7 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        for (var action :
-                List.of(ErrorAction.ignore())) {
+        for (var action : List.of(ErrorAction.ignore())) {
             var ac = createActionComp(action);
             actionBox.getChildren().add(ac);
         }

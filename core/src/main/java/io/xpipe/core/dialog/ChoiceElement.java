@@ -39,13 +39,13 @@ public class ChoiceElement extends DialogElement {
     }
 
     @Override
-    public boolean requiresExplicitUserInput() {
-        return required && selected == -1;
+    public String toDisplayString() {
+        return description;
     }
 
     @Override
-    public String toDisplayString() {
-        return description;
+    public boolean requiresExplicitUserInput() {
+        return required && selected == -1;
     }
 
     @Override
@@ -62,8 +62,7 @@ public class ChoiceElement extends DialogElement {
             }
 
             for (int i = 0; i < elements.size(); i++) {
-                if (elements.get(i).getCharacter() != null
-                        && elements.get(i).getCharacter().equals(c)) {
+                if (elements.get(i).getCharacter() != null && elements.get(i).getCharacter().equals(c)) {
                     selected = i;
                     return true;
                 }

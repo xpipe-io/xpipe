@@ -42,8 +42,7 @@ public class TextAreaComp extends SimpleComp {
             currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
-                if (Objects.equals(text.getText(), n)
-                        || (n == null && text.getText().isEmpty())) {
+                if (Objects.equals(text.getText(), n) || (n == null && text.getText().isEmpty())) {
                     return;
                 }
 
@@ -58,13 +57,9 @@ public class TextAreaComp extends SimpleComp {
         });
 
         if (lazy) {
-            var isEqual = Bindings.createBooleanBinding(
-                    () -> Objects.equals(lastAppliedValue.getValue(), currentValue.getValue()),
-                    currentValue,
+            var isEqual = Bindings.createBooleanBinding(() -> Objects.equals(lastAppliedValue.getValue(), currentValue.getValue()), currentValue,
                     lastAppliedValue);
-            var button = new IconButtonComp("mdi2c-checkbox-marked-outline")
-                    .hide(isEqual)
-                    .createRegion();
+            var button = new IconButtonComp("mdi2c-checkbox-marked-outline").hide(isEqual).createRegion();
             var anchorPane = new AnchorPane(text, button);
             AnchorPane.setBottomAnchor(button, 10.0);
             AnchorPane.setRightAnchor(button, 10.0);

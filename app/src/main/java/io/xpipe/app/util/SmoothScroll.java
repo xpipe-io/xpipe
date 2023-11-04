@@ -38,7 +38,8 @@ public class SmoothScroll {
     }
 
     private static void smoothScrollingListView(
-            Node n, double speed, Orientation orientation, Function<Bounds, Double> sizeFunc) {
+            Node n, double speed, Orientation orientation, Function<Bounds, Double> sizeFunc
+    ) {
         ((TableView<?>) n).skinProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 ScrollBar scrollBar = getScrollbarComponent(n, orientation);
@@ -47,8 +48,7 @@ public class SmoothScroll {
                 }
                 scrollBar.setUnitIncrement(1);
                 final double[] frictions = {
-                    0.99, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0.04, 0.01, 0.008, 0.008, 0.008, 0.008, 0.0006, 0.0005,
-                    0.00003, 0.00001
+                        0.99, 0.1, 0.05, 0.04, 0.03, 0.02, 0.01, 0.04, 0.01, 0.008, 0.008, 0.008, 0.008, 0.0006, 0.0005, 0.00003, 0.00001
                 };
                 final double[] pushes = {speed};
                 final double[] derivatives = new double[frictions.length];

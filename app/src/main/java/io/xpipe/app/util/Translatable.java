@@ -35,14 +35,14 @@ public interface Translatable {
             }
 
             @Override
-            protected String computeValue() {
-                final T value = observableValue.getValue();
-                return (value == null) ? "null" : value.toTranslatedString();
+            public ObservableList<ObservableValue<?>> getDependencies() {
+                return FXCollections.singletonObservableList(observableValue);
             }
 
             @Override
-            public ObservableList<ObservableValue<?>> getDependencies() {
-                return FXCollections.singletonObservableList(observableValue);
+            protected String computeValue() {
+                final T value = observableValue.getValue();
+                return (value == null) ? "null" : value.toTranslatedString();
             }
         };
     }

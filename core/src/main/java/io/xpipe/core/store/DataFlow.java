@@ -5,16 +5,11 @@ import lombok.Getter;
 
 @Getter
 public enum DataFlow {
-    @JsonProperty("input")
-    INPUT("Input"),
-    @JsonProperty("output")
-    OUTPUT("Output"),
-    @JsonProperty("inputOrOutput")
-    INPUT_OR_OUTPUT("Input or Output"),
-    @JsonProperty("inputOutput")
-    INPUT_OUTPUT("Input/Output"),
-    @JsonProperty("transformer")
-    TRANSFORMER("Transformer");
+    @JsonProperty("input") INPUT("Input"),
+    @JsonProperty("output") OUTPUT("Output"),
+    @JsonProperty("inputOrOutput") INPUT_OR_OUTPUT("Input or Output"),
+    @JsonProperty("inputOutput") INPUT_OUTPUT("Input/Output"),
+    @JsonProperty("transformer") TRANSFORMER("Transformer");
 
     private final String displayName;
 

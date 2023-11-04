@@ -23,9 +23,30 @@ import java.util.function.Predicate;
 public class BindingsHelper {
 
     private static final Set<ReferenceEntry> REFERENCES = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    /*
+    TODO: Proper cleanup. Maybe with a separate thread?
+     */
+    private static final Map<WeakReference<Object>, Set<javafx.beans.Observable>> BINDINGS = new ConcurrentHashMap<>();
+
+    static {
+        ThreadHelper.createPlatformThread("referenceGC", true, () -> {
+            while (true) {
+                for (ReferenceEntry reference : REFERENCES) {
+                    if (reference.canGc()) {
+                                /*
+                                TODO: Figure out why some bindings are garbage collected, even if they shouldn't
+                                 */
+                        // REFERENCES.remove(reference);
+                    }
+                }
+                ThreadHelper.sleep(1000);
+            }
+        }).start();
+    }
 
     public static <T, V> void bindExclusive(
-            Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind) {
+            Property<V> selected, Map<V, ? extends Property<T>> map, Property<T> toBind
+    ) {
         selected.addListener((c, o, n) -> {
             toBind.unbind();
             toBind.bind(map.get(n));
@@ -34,48 +55,14 @@ public class BindingsHelper {
         toBind.bind(map.get(selected.getValue()));
     }
 
-    @Value
-    private static class ReferenceEntry {
-
-        WeakReference<?> source;
-        Object target;
-
-        public boolean canGc() {
-            return source.get() == null;
-        }
-    }
-
-    static {
-        ThreadHelper.createPlatformThread("referenceGC", true, () -> {
-                    while (true) {
-                        for (ReferenceEntry reference : REFERENCES) {
-                            if (reference.canGc()) {
-                                /*
-                                TODO: Figure out why some bindings are garbage collected, even if they shouldn't
-                                 */
-                                // REFERENCES.remove(reference);
-                            }
-                        }
-                        ThreadHelper.sleep(1000);
-                    }
-                })
-                .start();
-    }
-
     public static void linkPersistently(Object source, Object target) {
         REFERENCES.add(new ReferenceEntry(new WeakReference<>(source), target));
     }
 
-    /*
-    TODO: Proper cleanup. Maybe with a separate thread?
-     */
-    private static final Map<WeakReference<Object>, Set<javafx.beans.Observable>> BINDINGS = new ConcurrentHashMap<>();
-
     public static <T extends Binding<?>> T persist(T binding) {
         var dependencies = new HashSet<javafx.beans.Observable>();
-        while (dependencies.addAll(binding.getDependencies().stream()
-                .map(o -> (javafx.beans.Observable) o)
-                .toList())) {}
+        while (dependencies.addAll(binding.getDependencies().stream().map(o -> (javafx.beans.Observable) o).toList())) {
+        }
         dependencies.add(binding);
         BINDINGS.put(new WeakReference<>(binding), dependencies);
         return binding;
@@ -83,9 +70,8 @@ public class BindingsHelper {
 
     public static <T extends ListBinding<?>> T persist(T binding) {
         var dependencies = new HashSet<javafx.beans.Observable>();
-        while (dependencies.addAll(binding.getDependencies().stream()
-                .map(o -> (javafx.beans.Observable) o)
-                .toList())) {}
+        while (dependencies.addAll(binding.getDependencies().stream().map(o -> (javafx.beans.Observable) o).toList())) {
+        }
         dependencies.add(binding);
         BINDINGS.put(new WeakReference<>(binding), dependencies);
         return binding;
@@ -98,13 +84,15 @@ public class BindingsHelper {
         });
     }
 
-    public static <T,U> ObservableValue<U> map(ObservableValue<T> observableValue, Function<? super T, ? extends U> mapper) {
+    public static <T, U> ObservableValue<U> map(ObservableValue<T> observableValue, Function<? super T, ? extends U> mapper) {
         return persist(Bindings.createObjectBinding(() -> {
             return mapper.apply(observableValue.getValue());
         }, observableValue));
     }
 
-    public static <T,U> ObservableValue<U> flatMap(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
+    public static <T, U> ObservableValue<U> flatMap(
+            ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper
+    ) {
         var prop = new SimpleObjectProperty<U>();
         Runnable runnable = () -> {
             prop.bind(mapper.apply(observableValue.getValue()));
@@ -117,7 +105,7 @@ public class BindingsHelper {
         return prop;
     }
 
-    public static <T,U> ObservableValue<Boolean> anyMatch(List<? extends ObservableValue<Boolean>> l) {
+    public static <T, U> ObservableValue<Boolean> anyMatch(List<? extends ObservableValue<Boolean>> l) {
         return BindingsHelper.persist(Bindings.createBooleanBinding(() -> {
             return l.stream().anyMatch(booleanObservableValue -> booleanObservableValue.getValue());
         }, l.toArray(ObservableValue[]::new)));
@@ -152,14 +140,13 @@ public class BindingsHelper {
         ObservableList<T> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
             cache.keySet().removeIf(t -> !l2.contains(t));
-            setContent(l1, l2.stream()
-                    .map(v -> {
-                        if (!cache.containsKey(v)) {
-                            cache.put(v, map.apply(v));
-                        }
+            setContent(l1, l2.stream().map(v -> {
+                if (!cache.containsKey(v)) {
+                    cache.put(v, map.apply(v));
+                }
 
-                        return cache.get(v);
-                    }).toList());
+                return cache.get(v);
+            }).toList());
         };
         runnable.run();
         l2.addListener((ListChangeListener<? super V>) c -> {
@@ -175,14 +162,13 @@ public class BindingsHelper {
         ObservableList<T> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
             cache.keySet().removeIf(t -> !all.contains(t));
-            setContent(l1, shown.stream()
-                    .map(v -> {
-                        if (!cache.containsKey(v)) {
-                            cache.put(v, map.apply(v));
-                        }
+            setContent(l1, shown.stream().map(v -> {
+                if (!cache.containsKey(v)) {
+                    cache.put(v, map.apply(v));
+                }
 
-                        return cache.get(v);
-                    }).toList());
+                return cache.get(v);
+            }).toList());
         };
         runnable.run();
         shown.addListener((ListChangeListener<? super V>) c -> {
@@ -193,19 +179,12 @@ public class BindingsHelper {
         return l1;
     }
 
-    public static <T,U> ObservableValue<U> mappedBinding(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
+    public static <T, U> ObservableValue<U> mappedBinding(
+            ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper
+    ) {
         var binding = (Binding<U>) observableValue.flatMap(mapper);
         return persist(binding);
     }
-
-//    public static <T,U> ObservableValue<U> mappedBinding(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<? extends U>> mapper) {
-//        var v = new SimpleObjectProperty<U>();
-//        SimpleChangeListener.apply(observableValue, val -> {
-//            v.unbind();
-//            v.bind(mapper.apply(val));
-//        });
-//        return v;
-//    }
 
     public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, Comparator<V> comp, Observable... observables) {
         return orderedContentBinding(l2, Bindings.createObjectBinding(() -> {
@@ -217,6 +196,16 @@ public class BindingsHelper {
             };
         }, observables));
     }
+
+    //    public static <T,U> ObservableValue<U> mappedBinding(ObservableValue<T> observableValue, Function<? super T, ? extends ObservableValue<?
+    //    extends U>> mapper) {
+    //        var v = new SimpleObjectProperty<U>();
+    //        SimpleChangeListener.apply(observableValue, val -> {
+    //            v.unbind();
+    //            v.bind(mapper.apply(val));
+    //        });
+    //        return v;
+    //    }
 
     public static <V> ObservableList<V> orderedContentBinding(ObservableList<V> l2, ObservableValue<Comparator<V>> comp) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
@@ -239,22 +228,19 @@ public class BindingsHelper {
     }
 
     public static <V> ObservableList<V> filteredContentBinding(ObservableList<V> l2, Predicate<V> predicate, Observable... observables) {
-        return filteredContentBinding(
-                l2,
-                Bindings.createObjectBinding(
-                        () -> {
-                            return new Predicate<>() {
-                                @Override
-                                public boolean test(V v) {
-                                    return predicate.test(v);
-                                }
-                            };
-                        },
-                        Arrays.stream(observables).filter( Objects::nonNull).toArray(Observable[]::new)));
+        return filteredContentBinding(l2, Bindings.createObjectBinding(() -> {
+            return new Predicate<>() {
+                @Override
+                public boolean test(V v) {
+                    return predicate.test(v);
+                }
+            };
+        }, Arrays.stream(observables).filter(Objects::nonNull).toArray(Observable[]::new)));
     }
 
     public static <V> ObservableList<V> filteredContentBinding(
-            ObservableList<V> l2, ObservableValue<Predicate<V>> predicate) {
+            ObservableList<V> l2, ObservableValue<Predicate<V>> predicate
+    ) {
         ObservableList<V> l1 = FXCollections.observableList(new ArrayList<>());
         Runnable runnable = () -> {
             setContent(l1, predicate.getValue() != null ? l2.stream().filter(predicate.getValue()).toList() : l2);
@@ -308,5 +294,16 @@ public class BindingsHelper {
 
         // Other cases are more difficult
         target.setAll(newList);
+    }
+
+    @Value
+    private static class ReferenceEntry {
+
+        WeakReference<?> source;
+        Object target;
+
+        public boolean canGc() {
+            return source.get() == null;
+        }
     }
 }

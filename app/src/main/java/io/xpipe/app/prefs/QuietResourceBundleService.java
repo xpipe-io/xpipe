@@ -4,7 +4,9 @@ import com.dlsc.formsfx.model.util.ResourceBundleService;
 import io.xpipe.app.core.AppI18n;
 import lombok.NonNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 
 public class QuietResourceBundleService extends ResourceBundleService {
 

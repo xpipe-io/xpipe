@@ -28,6 +28,18 @@ import java.util.function.Consumer;
 @Getter
 public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
+    private final ObservableValue<String> name;
+    private final ObservableValue<String> description;
+    private final ObservableValue<String> icon;
+    private final Consumer<ActionEvent> action;
+
+    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
+        this.name = AppI18n.observable(nameKey);
+        this.description = AppI18n.observable(descriptionKey);
+        this.icon = new SimpleStringProperty(icon);
+        this.action = action;
+    }
+
     @Override
     public Structure createBase() {
         var bt = new Button();
@@ -53,16 +65,10 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var pane = new StackPane(fi);
         var hbox = new HBox(pane, text);
         hbox.setSpacing(8);
-        pane.prefWidthProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> (header.getHeight() + desc.getHeight()) * 0.6,
-                        header.heightProperty(),
-                        desc.heightProperty()));
-        pane.prefHeightProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> header.getHeight() + desc.getHeight() + 2,
-                        header.heightProperty(),
-                        desc.heightProperty()));
+        pane.prefWidthProperty().bind(
+                Bindings.createDoubleBinding(() -> (header.getHeight() + desc.getHeight()) * 0.6, header.heightProperty(), desc.heightProperty()));
+        pane.prefHeightProperty().bind(
+                Bindings.createDoubleBinding(() -> header.getHeight() + desc.getHeight() + 2, header.heightProperty(), desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
             fi.setIconSize((int) (size * 0.55));
@@ -84,17 +90,5 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         public Button get() {
             return button;
         }
-    }
-
-    private final ObservableValue<String> name;
-    private final ObservableValue<String> description;
-    private final ObservableValue<String> icon;
-    private final Consumer<ActionEvent> action;
-
-    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
-        this.name = AppI18n.observable(nameKey);
-        this.description = AppI18n.observable(descriptionKey);
-        this.icon = new SimpleStringProperty(icon);
-        this.action = action;
     }
 }

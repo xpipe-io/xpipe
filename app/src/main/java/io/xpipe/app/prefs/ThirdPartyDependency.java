@@ -22,22 +22,16 @@ public record ThirdPartyDependency(String name, String version, String licenseNa
                 }
 
                 try (var list = Files.list(path)) {
-                    for (var p : list.filter(p -> p.getFileName().toString().endsWith(".properties"))
-                            .sorted(Comparator.comparing(path1 -> path1.toString()))
-                            .toList()) {
+                    for (var p : list.filter(p -> p.getFileName().toString().endsWith(".properties")).sorted(
+                            Comparator.comparing(path1 -> path1.toString())).toList()) {
                         var props = new Properties();
                         try (var in = Files.newInputStream(p)) {
                             props.load(in);
                         }
 
-                        var textFile = p.resolveSibling(
-                                FilenameUtils.getBaseName(p.getFileName().toString()) + ".license");
+                        var textFile = p.resolveSibling(FilenameUtils.getBaseName(p.getFileName().toString()) + ".license");
                         var text = Files.readString(textFile);
-                        ALL.add(new ThirdPartyDependency(
-                                props.getProperty("name"),
-                                props.getProperty("version"),
-                                props.getProperty("license"),
-                                text,
+                        ALL.add(new ThirdPartyDependency(props.getProperty("name"), props.getProperty("version"), props.getProperty("license"), text,
                                 props.getProperty("link")));
                     }
                 }

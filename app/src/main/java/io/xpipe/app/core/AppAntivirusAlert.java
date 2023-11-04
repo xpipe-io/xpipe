@@ -16,7 +16,7 @@ import java.util.Optional;
 public class AppAntivirusAlert {
 
     public static Optional<String> detect() {
-        var bitdefender = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE,"SOFTWARE\\Bitdefender", "InstallDir");
+        var bitdefender = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Bitdefender", "InstallDir");
         if (bitdefender.isPresent()) {
             return Optional.of("Bitdefender");
         }
@@ -43,18 +43,16 @@ public class AppAntivirusAlert {
             alert.setTitle(AppI18n.get("antivirusNoticeTitle"));
             alert.setAlertType(Alert.AlertType.NONE);
 
-            AppResources.with(
-                    AppResources.XPIPE_MODULE,
-                    "misc/antivirus.md",
-                    file -> {
-                        var markdown = new MarkdownComp(Files.readString(file), s -> s.formatted(found.get(), found.get(), AppProperties.get().getVersion(), AppProperties.get().getVersion(), found.get())).prefWidth(550).prefHeight(600).createRegion();
-                        alert.getDialogPane().setContent(markdown);
-                        alert.getDialogPane().setPadding(new Insets(15));
-                    });
+            AppResources.with(AppResources.XPIPE_MODULE, "misc/antivirus.md", file -> {
+                var markdown = new MarkdownComp(Files.readString(file),
+                        s -> s.formatted(found.get(), found.get(), AppProperties.get().getVersion(), AppProperties.get().getVersion(),
+                                found.get())).prefWidth(550).prefHeight(600).createRegion();
+                alert.getDialogPane().setContent(markdown);
+                alert.getDialogPane().setPadding(new Insets(15));
+            });
 
             alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
         });
-        a.filter(b -> b.getButtonData().isDefaultButton())
-                .ifPresentOrElse(buttonType -> {}, () -> OperationMode.halt(1));
+        a.filter(b -> b.getButtonData().isDefaultButton()).ifPresentOrElse(buttonType -> {}, () -> OperationMode.halt(1));
     }
 }

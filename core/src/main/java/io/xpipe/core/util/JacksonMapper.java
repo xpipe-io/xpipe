@@ -20,28 +20,24 @@ public class JacksonMapper {
     @Getter
     private static boolean init = false;
 
-    public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
-        var mapper = getDefault();
-        var tree = mapper.readTree(s);
-        return mapper.treeToValue(tree, c);
-    }
-
     static {
         ObjectMapper objectMapper = BASE;
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE);
-        objectMapper.setVisibility(objectMapper
-                .getSerializationConfig()
-                .getDefaultVisibilityChecker()
-                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
-                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
-                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
+        objectMapper.setVisibility(objectMapper.getSerializationConfig().getDefaultVisibilityChecker().withFieldVisibility(
+                        JsonAutoDetect.Visibility.ANY).withGetterVisibility(JsonAutoDetect.Visibility.NONE).withSetterVisibility(
+                        JsonAutoDetect.Visibility.NONE).withCreatorVisibility(JsonAutoDetect.Visibility.NONE)
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
 
         INSTANCE = BASE.copy();
+    }
+
+    public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
+        var mapper = getDefault();
+        var tree = mapper.readTree(s);
+        return mapper.treeToValue(tree, c);
     }
 
     public static synchronized void configure(Consumer<ObjectMapper> mapper) {
@@ -60,8 +56,7 @@ public class JacksonMapper {
 
     private static List<Module> findModules(ModuleLayer layer) {
         ArrayList<Module> modules = new ArrayList<>();
-        ServiceLoader<Module> loader =
-                layer != null ? ServiceLoader.load(layer, Module.class) : ServiceLoader.load(Module.class);
+        ServiceLoader<Module> loader = layer != null ? ServiceLoader.load(layer, Module.class) : ServiceLoader.load(Module.class);
         for (Module module : loader) {
             modules.add(module);
         }

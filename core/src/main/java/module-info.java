@@ -25,8 +25,6 @@ open module io.xpipe.core {
     uses ModuleLayerLoader;
     uses ShellDialect;
 
-    provides ModuleLayerLoader with
-            ShellDialects.Loader;
-    provides com.fasterxml.jackson.databind.Module with
-            CoreJacksonModule;
+    provides ModuleLayerLoader with ShellDialects.Loader;
+    provides com.fasterxml.jackson.databind.Module with CoreJacksonModule;
 }

@@ -83,30 +83,16 @@ public class AppMainWindow {
     }
 
     private void logChange() {
-        TrackEvent.withDebug("Window resize")
-                .windowCategory()
-                .tag("x", stage.getX())
-                .tag("y", stage.getY())
-                .tag("width", stage.getWidth())
-                .tag("height", stage.getHeight())
-                .tag("maximized", stage.isMaximized())
-                .build()
-                .handle();
+        TrackEvent.withDebug("Window resize").windowCategory().tag("x", stage.getX()).tag("y", stage.getY()).tag("width", stage.getWidth()).tag(
+                "height", stage.getHeight()).tag("maximized", stage.isMaximized()).build().handle();
     }
 
     private void initializeWindow() {
         var state = loadState();
         applyState(state);
 
-        TrackEvent.withDebug("Window initialized")
-                .windowCategory()
-                .tag("x", stage.getX())
-                .tag("y", stage.getY())
-                .tag("width", stage.getWidth())
-                .tag("height", stage.getHeight())
-                .tag("maximized", stage.isMaximized())
-                .build()
-                .handle();
+        TrackEvent.withDebug("Window initialized").windowCategory().tag("x", stage.getX()).tag("y", stage.getY()).tag("width", stage.getWidth()).tag(
+                "height", stage.getHeight()).tag("maximized", stage.isMaximized()).build().handle();
     }
 
     private void setupListeners() {
@@ -190,13 +176,8 @@ public class AppMainWindow {
             return;
         }
 
-        var newState = WindowState.builder()
-                .maximized(stage.isMaximized())
-                .windowX((int) stage.getX())
-                .windowY((int) stage.getY())
-                .windowWidth((int) stage.getWidth())
-                .windowHeight((int) stage.getHeight())
-                .build();
+        var newState = WindowState.builder().maximized(stage.isMaximized()).windowX((int) stage.getX()).windowY((int) stage.getY()).windowWidth(
+                (int) stage.getWidth()).windowHeight((int) stage.getHeight()).build();
         AppCache.update("windowState", newState);
     }
 
@@ -218,10 +199,8 @@ public class AppMainWindow {
         for (Screen screen : Screen.getScreens()) {
             Rectangle2D visualBounds = screen.getVisualBounds();
             // Check whether the bounds intersect where the intersection is larger than 20 pixels!
-            if (state.windowWidth > 40
-                    && state.windowHeight > 40
-                    && visualBounds.intersects(new Rectangle2D(
-                            state.windowX + 20, state.windowY + 20, state.windowWidth - 40, state.windowHeight - 40))) {
+            if (state.windowWidth > 40 && state.windowHeight > 40 && visualBounds.intersects(
+                    new Rectangle2D(state.windowX + 20, state.windowY + 20, state.windowWidth - 40, state.windowHeight - 40))) {
                 inBounds = true;
                 break;
             }

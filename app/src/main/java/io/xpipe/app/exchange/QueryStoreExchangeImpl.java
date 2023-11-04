@@ -13,11 +13,6 @@ public class QueryStoreExchangeImpl extends QueryStoreExchange
         var summary = "";
         var dialog = store.getProvider().dialogForStore(store.getStore().asNeeded());
         var config = new DialogMapper(dialog).handle();
-        return Response.builder()
-                .summary(summary)
-                .internalStore(store.getStore())
-                .provider(store.getProvider().getId())
-                .config(config)
-                .build();
+        return Response.builder().summary(summary).internalStore(store.getStore()).provider(store.getProvider().getId()).config(config).build();
     }
 }

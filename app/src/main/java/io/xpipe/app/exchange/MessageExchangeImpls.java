@@ -14,12 +14,10 @@ public class MessageExchangeImpls {
     private static List<MessageExchangeImpl<?, ?>> ALL;
 
     public static void loadAll() {
-        ALL = ServiceLoader.load(MessageExchangeImpl.class).stream()
-                .map(s -> {
-                    // TrackEvent.trace("init", "Loaded exchange implementation " + ex.getId());
-                    return (MessageExchangeImpl<?, ?>) s.get();
-                })
-                .collect(Collectors.toList());
+        ALL = ServiceLoader.load(MessageExchangeImpl.class).stream().map(s -> {
+            // TrackEvent.trace("init", "Loaded exchange implementation " + ex.getId());
+            return (MessageExchangeImpl<?, ?>) s.get();
+        }).collect(Collectors.toList());
 
         ALL.forEach(messageExchange -> {
             if (MessageExchanges.byId(messageExchange.getId()).isEmpty()) {
@@ -36,17 +34,15 @@ public class MessageExchangeImpls {
 
     @SuppressWarnings("unchecked")
     public static <RQ extends RequestMessage, RS extends ResponseMessage> Optional<MessageExchangeImpl<RQ, RS>> byId(
-            String name) {
+            String name
+    ) {
         var r = ALL.stream().filter(d -> d.getId().equals(name)).findAny();
         return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
     }
 
     @SuppressWarnings("unchecked")
-    public static <RQ extends RequestMessage, RS extends ResponseMessage>
-            Optional<MessageExchangeImpl<RQ, RS>> byRequest(RQ req) {
-        var r = ALL.stream()
-                .filter(d -> d.getRequestClass().equals(req.getClass()))
-                .findAny();
+    public static <RQ extends RequestMessage, RS extends ResponseMessage> Optional<MessageExchangeImpl<RQ, RS>> byRequest(RQ req) {
+        var r = ALL.stream().filter(d -> d.getRequestClass().equals(req.getClass())).findAny();
         return Optional.ofNullable((MessageExchangeImpl<RQ, RS>) r.orElse(null));
     }
 

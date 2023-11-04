@@ -22,46 +22,37 @@ import java.util.UUID;
 
 public class BrowserClipboard {
 
-    @Value
-    public static class Instance {
-        UUID uuid;
-        FileSystem.FileEntry baseDirectory;
-        List<FileSystem.FileEntry> entries;
-    }
-
     public static final Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
     public static Instance currentDragClipboard;
 
     static {
-        Toolkit.getDefaultToolkit()
-                .getSystemClipboard()
-                .addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<>() {
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public void run() throws Throwable {
-                        Clipboard clipboard = (Clipboard) e.getSource();
-                        try {
-                            if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
-                                return;
-                            }
-
-                            List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-                            var files = data.stream().map(string -> string.toPath()).toList();
-                            if (files.size() == 0) {
-                                return;
-                            }
-
-                            var entries = new ArrayList<FileSystem.FileEntry>();
-                            for (Path file : files) {
-                                entries.add(FileSystemHelper.getLocal(file));
-                            }
-
-                            currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries));
-                        } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).expected().omit().handle();
-                        }
+        Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void run() throws Throwable {
+                Clipboard clipboard = (Clipboard) e.getSource();
+                try {
+                    if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
+                        return;
                     }
-                }));
+
+                    List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
+                    var files = data.stream().map(string -> string.toPath()).toList();
+                    if (files.size() == 0) {
+                        return;
+                    }
+
+                    var entries = new ArrayList<FileSystem.FileEntry>();
+                    for (Path file : files) {
+                        entries.add(FileSystemHelper.getLocal(file));
+                    }
+
+                    currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries));
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).expected().omit().handle();
+                }
+            }
+        }));
     }
 
     @SneakyThrows
@@ -100,5 +91,12 @@ public class BrowserClipboard {
         }
 
         return null;
+    }
+
+    @Value
+    public static class Instance {
+        UUID uuid;
+        FileSystem.FileEntry baseDirectory;
+        List<FileSystem.FileEntry> entries;
     }
 }

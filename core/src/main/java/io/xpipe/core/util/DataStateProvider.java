@@ -12,9 +12,7 @@ public abstract class DataStateProvider {
 
     public static DataStateProvider get() {
         if (INSTANCE == null) {
-            INSTANCE = ServiceLoader.load(ModuleLayer.boot(), DataStateProvider.class)
-                    .findFirst()
-                    .orElseThrow();
+            INSTANCE = ServiceLoader.load(ModuleLayer.boot(), DataStateProvider.class).findFirst().orElseThrow();
         }
 
         return INSTANCE;

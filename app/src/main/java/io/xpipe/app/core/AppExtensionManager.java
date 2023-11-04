@@ -57,6 +57,14 @@ public class AppExtensionManager {
         }
     }
 
+    public static void reset() {
+        INSTANCE = null;
+    }
+
+    public static AppExtensionManager getInstance() {
+        return INSTANCE;
+    }
+
     private void loadBaseExtension() {
         var baseModule = findAndParseExtension("base", ModuleLayer.boot());
         if (baseModule.isEmpty()) {
@@ -69,18 +77,14 @@ public class AppExtensionManager {
 
     private void determineExtensionDirectories() {
         if (!AppProperties.get().isImage()) {
-            extensionBaseDirectories.add(Path.of(System.getProperty("user.dir"))
-                    .resolve("app")
-                    .resolve("build")
-                    .resolve("ext_dev"));
+            extensionBaseDirectories.add(Path.of(System.getProperty("user.dir")).resolve("app").resolve("build").resolve("ext_dev"));
         }
 
         if (!AppProperties.get().isFullVersion()) {
             var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
             Path p = Path.of(localInstallation);
             if (!Files.exists(p)) {
-                throw new IllegalStateException(
-                        "Required local XPipe installation was not found but is required for development");
+                throw new IllegalStateException("Required local XPipe installation was not found but is required for development");
             }
 
             var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
@@ -95,30 +99,18 @@ public class AppExtensionManager {
         extensionBaseDirectories.add(productionRoot);
     }
 
-    public static void reset() {
-        INSTANCE = null;
-    }
-
-    public static AppExtensionManager getInstance() {
-        return INSTANCE;
-    }
-
     public Set<Module> getContentModules() {
-        return Stream.concat(
-                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()),
-                        loadedExtensions.stream().map(extension -> extension.module))
-                .collect(Collectors.toSet());
+        return Stream.concat(Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()),
+                loadedExtensions.stream().map(extension -> extension.module)).collect(Collectors.toSet());
     }
 
     public boolean isInstalled(ModuleInstall install) {
-        var target =
-                AppExtensionManager.getInstance().getGeneratedModulesDirectory(install.getModule(), install.getId());
+        var target = AppExtensionManager.getInstance().getGeneratedModulesDirectory(install.getModule(), install.getId());
         return Files.exists(target) && Files.isRegularFile(target.resolve("finished"));
     }
 
     public void installIfNeeded(ModuleInstall install) throws Exception {
-        var target =
-                AppExtensionManager.getInstance().getGeneratedModulesDirectory(install.getModule(), install.getId());
+        var target = AppExtensionManager.getInstance().getGeneratedModulesDirectory(install.getModule(), install.getId());
         if (Files.exists(target) && Files.isRegularFile(target.resolve("finished"))) {
             return;
         }
@@ -129,11 +121,7 @@ public class AppExtensionManager {
     }
 
     public Path getGeneratedModulesDirectory(String module, String ext) {
-        var base = AppProperties.get()
-                .getDataDir()
-                .resolve("generated_extensions")
-                .resolve(AppProperties.get().getVersion())
-                .resolve(module);
+        var base = AppProperties.get().getDataDir().resolve("generated_extensions").resolve(AppProperties.get().getVersion()).resolve(module);
         return ext != null ? base.resolve(ext) : base;
     }
 
@@ -147,8 +135,7 @@ public class AppExtensionManager {
             var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
             var finder = ModuleFinder.ofSystem();
             var cf = Configuration.resolve(finder, cfs, finder, List.of());
-            extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
-                    .layer();
+            extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl).layer();
         } else {
             extendedLayer = baseLayer;
         }
@@ -174,9 +161,7 @@ public class AppExtensionManager {
                     }
 
                     loadedExtensions.add(extension.get());
-                    var xModule = findAndParseExtension(
-                            extension.get().getId() + "x",
-                            extension.get().getModule().getLayer());
+                    var xModule = findAndParseExtension(extension.get().getId() + "x", extension.get().getModule().getLayer());
                     if (xModule.isPresent()) {
                         loadedExtensions.add(xModule.get());
                         leafModuleLayers.add(xModule.get().getModule().getLayer());
@@ -206,10 +191,8 @@ public class AppExtensionManager {
             return Optional.empty();
         }
 
-        if (loadedExtensions.stream().anyMatch(extension -> extension.dir.equals(dir))
-                || loadedExtensions.stream()
-                        .anyMatch(extension ->
-                                extension.id.equals(dir.getFileName().toString()))) {
+        if (loadedExtensions.stream().anyMatch(extension -> extension.dir.equals(dir)) || loadedExtensions.stream().anyMatch(
+                extension -> extension.id.equals(dir.getFileName().toString()))) {
             return Optional.empty();
         }
 
@@ -223,24 +206,18 @@ public class AppExtensionManager {
             TrackEvent.withTrace("Found modules").elements(found).handle();
 
             if (hasModules) {
-                Configuration cf = parent.configuration()
-                        .resolve(
-                                finder,
-                                ModuleFinder.of(),
-                                found.stream().map(r -> r.descriptor().name()).collect(Collectors.toSet()));
+                Configuration cf = parent.configuration().resolve(finder, ModuleFinder.of(),
+                        found.stream().map(r -> r.descriptor().name()).collect(Collectors.toSet()));
                 ClassLoader scl = ClassLoader.getSystemClassLoader();
-                var layer = ModuleLayer.defineModulesWithOneLoader(cf, List.of(parent), scl)
-                        .layer();
+                var layer = ModuleLayer.defineModulesWithOneLoader(cf, List.of(parent), scl).layer();
 
                 var ext = getExtensionFromDir(layer, dir);
                 if (ext.isEmpty()) {
                     if (AppProperties.get().isFullVersion()) {
-                        throw new ExtensionException(
-                                "Unable to load extension from directory " + dir + ". Is the installation corrupted?");
+                        throw new ExtensionException("Unable to load extension from directory " + dir + ". Is the installation corrupted?");
                     }
                 } else {
-                    if (loadedExtensions.stream()
-                            .anyMatch(extension -> extension.getName().equals(ext.get().name))) {
+                    if (loadedExtensions.stream().anyMatch(extension -> extension.getName().equals(ext.get().name))) {
                         return Optional.empty();
                     }
 
@@ -248,47 +225,38 @@ public class AppExtensionManager {
                         ModuleHelper.exportAndOpen(pkg, ext.get().getModule());
                     });
 
-                    TrackEvent.withInfo("Loaded extension module")
-                            .tag("name", ext.get().getName())
-                            .tag("dir", dir.toString())
-                            .tag("dependencies", ext.get().getDependencies())
-                            .handle();
+                    TrackEvent.withInfo("Loaded extension module").tag("name", ext.get().getName()).tag("dir", dir.toString()).tag("dependencies",
+                            ext.get().getDependencies()).handle();
 
                     return ext;
                 }
             }
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t)
-                    .description("Unable to load extension from " + dir + ". Is the installation corrupted?")
-                    .handle();
+            ErrorEvent.fromThrowable(t).description("Unable to load extension from " + dir + ". Is the installation corrupted?").handle();
         }
         return Optional.empty();
     }
 
     private Optional<Extension> getExtensionFromDir(ModuleLayer l, Path dir) {
-        return l.modules().stream()
-                .map(m -> {
-                    AtomicReference<Extension> ext = new AtomicReference<>();
-                    AppResources.withResourceInLayer(m.getName(), "extension.properties", l, path -> {
-                        if (Files.exists(path)) {
-                            var props = new Properties();
-                            try (var in = Files.newInputStream(path)) {
-                                props.load(in);
-                            }
-                            var name = props.get("name").toString();
-                            var deps = l.modules().size() - 1;
-                            ext.set(new Extension(dir, dir.getFileName().toString(), name, m, deps));
-                        }
-                    });
-                    return Optional.ofNullable(ext.get());
-                })
-                .flatMap(Optional::stream)
-                .findFirst();
+        return l.modules().stream().map(m -> {
+            AtomicReference<Extension> ext = new AtomicReference<>();
+            AppResources.withResourceInLayer(m.getName(), "extension.properties", l, path -> {
+                if (Files.exists(path)) {
+                    var props = new Properties();
+                    try (var in = Files.newInputStream(path)) {
+                        props.load(in);
+                    }
+                    var name = props.get("name").toString();
+                    var deps = l.modules().size() - 1;
+                    ext.set(new Extension(dir, dir.getFileName().toString(), name, m, deps));
+                }
+            });
+            return Optional.ofNullable(ext.get());
+        }).flatMap(Optional::stream).findFirst();
     }
 
     private void addNativeLibrariesToPath() {
-        var libsDir =
-                AppProperties.get().isImage() ? XPipeInstallation.getLocalDynamicLibraryDirectory() : Path.of("lib");
+        var libsDir = AppProperties.get().isImage() ? XPipeInstallation.getLocalDynamicLibraryDirectory() : Path.of("lib");
         if (!Files.exists(libsDir)) {
             try {
                 Files.createDirectories(libsDir);

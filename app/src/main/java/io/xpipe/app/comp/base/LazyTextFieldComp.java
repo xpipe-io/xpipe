@@ -69,8 +69,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         SimpleChangeListener.apply(currentValue, n -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
-                if (Objects.equals(r.getText(), n)
-                        || (n == null && r.getText().isEmpty())) {
+                if (Objects.equals(r.getText(), n) || (n == null && r.getText().isEmpty())) {
                     return;
                 }
 

@@ -19,8 +19,7 @@ public class FocusExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        XPipeDaemonMode mode;
+        @NonNull XPipeDaemonMode mode;
     }
 
     @Jacksonized

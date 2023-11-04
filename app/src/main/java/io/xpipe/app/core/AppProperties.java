@@ -9,7 +9,7 @@ import lombok.Value;
 
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,48 +35,33 @@ public class AppProperties {
 
     public AppProperties() {
         image = ModuleHelper.isImage();
-        fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
-        version =
-                Optional.ofNullable(System.getProperty("io.xpipe.app.version")).orElse("dev");
+        fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion")).map(Boolean::parseBoolean).orElse(false);
+        version = Optional.ofNullable(System.getProperty("io.xpipe.app.version")).orElse("dev");
         build = Optional.ofNullable(System.getProperty("io.xpipe.app.build")).orElse("unknown");
-        buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))
-                .map(UUID::fromString)
-                .orElse(UUID.randomUUID());
+        buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId")).map(UUID::fromString).orElse(UUID.randomUUID());
         sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
         arch = System.getProperty("io.xpipe.app.arch");
         staging = XPipeInstallation.isStaging();
-        useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
-                .map(Boolean::parseBoolean)
-                .orElse(true);
+        useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads")).map(Boolean::parseBoolean).orElse(true);
         dataDir = XPipeInstallation.getDataDir();
-        showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
+        showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase")).map(Boolean::parseBoolean).orElse(false);
     }
 
     public static void logSystemProperties() {
         for (var e : System.getProperties().entrySet()) {
-            if (List.of("user.dir").contains(e.getKey())) {
+            if (Objects.equals("user.dir", e.getKey())) {
                 TrackEvent.info("Detected system property " + e.getKey() + "=" + e.getValue());
             }
         }
     }
 
     public static void logArguments(String[] args) {
-        TrackEvent.withInfo("Detected arguments")
-                .tag("list", Arrays.asList(args))
-                .handle();
+        TrackEvent.withInfo("Detected arguments").tag("list", Arrays.asList(args)).handle();
     }
 
     public static void logPassedProperties() {
-        TrackEvent.withInfo("Loaded properties")
-                .tag("version", INSTANCE.version)
-                .tag("build", INSTANCE.build)
-                .tag("dataDir", INSTANCE.dataDir)
-                .tag("fullVersion", INSTANCE.fullVersion)
-                .build();
+        TrackEvent.withInfo("Loaded properties").tag("version", INSTANCE.version).tag("build", INSTANCE.build).tag("dataDir", INSTANCE.dataDir).tag(
+                "fullVersion", INSTANCE.fullVersion).build();
 
         for (var e : System.getProperties().entrySet()) {
             if (e.getKey().toString().contains("io.xpipe")) {

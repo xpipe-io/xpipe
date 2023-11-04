@@ -26,9 +26,7 @@ public class ApplicationHelper {
     public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {
         try (var sc = LocalStore.getShell().start()) {
             var cmd = detach ? ScriptHelper.createDetachCommand(sc, s.apply(sc)) : s.apply(sc);
-            TrackEvent.withDebug("proc", "Executing local application")
-                    .tag("command", cmd)
-                    .handle();
+            TrackEvent.withDebug("proc", "Executing local application").tag("command", cmd).handle();
             try (var c = sc.command(cmd).start()) {
                 c.discardOrThrow();
             }
@@ -36,24 +34,22 @@ public class ApplicationHelper {
     }
 
     public static boolean isInPath(ShellControl processControl, String executable) throws Exception {
-        return processControl.executeSimpleBooleanCommand(
-                processControl.getShellDialect().getWhichCommand(executable));
+        return processControl.executeSimpleBooleanCommand(processControl.getShellDialect().getWhichCommand(executable));
     }
 
     public static void checkIsInPath(
-            ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
-            throws Exception {
+            ShellControl processControl, String executable, String displayName, DataStoreEntry connection
+    ) throws Exception {
         if (!isInPath(processControl, executable)) {
-            throw ErrorEvent.unreportable(new IOException(displayName + " executable " + executable + " not found in PATH"
-                    + (connection != null ? " on system " + connection.getName() : "")));
+            throw ErrorEvent.unreportable(new IOException(displayName + " executable " + executable + " not found in PATH" +
+                    (connection != null ? " on system " + connection.getName() : "")));
         }
     }
 
-    public static void isSupported(FailableSupplier<Boolean> supplier, String displayName, DataStoreEntry connection)
-            throws Exception {
+    public static void isSupported(FailableSupplier<Boolean> supplier, String displayName, DataStoreEntry connection) throws Exception {
         if (!supplier.get()) {
-            throw ErrorEvent.unreportable(new IOException(displayName + " is not supported"
-                                                                  + (connection != null ? " on system " + connection.getName() : "")));
+            throw ErrorEvent.unreportable(
+                    new IOException(displayName + " is not supported" + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
 }

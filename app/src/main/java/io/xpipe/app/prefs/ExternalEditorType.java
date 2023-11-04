@@ -27,10 +27,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         protected Optional<Path> determineInstallation() {
-            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Microsoft VS Code")
-                    .resolve("bin")
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA")).resolve("Programs").resolve("Microsoft VS Code").resolve("bin")
                     .resolve("code.cmd"));
         }
 
@@ -44,11 +41,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         protected Optional<Path> determineInstallation() {
-            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                                       .resolve("Programs")
-                                       .resolve("Microsoft VS Code Insiders")
-                                       .resolve("bin")
-                                       .resolve("code-insiders.cmd"));
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA")).resolve("Programs").resolve("Microsoft VS Code Insiders").resolve("bin")
+                    .resolve("code-insiders.cmd"));
         }
 
         @Override
@@ -86,41 +80,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma");
-
-    class MacOsEditor extends ExternalApplicationType.MacApplication implements ExternalEditorType {
-
-        public MacOsEditor(String id, String applicationName) {
-            super(id, applicationName);
-        }
-
-        @Override
-        public void launch(Path file) throws Exception {
-            var execFile = getApplicationPath();
-            if (execFile.isEmpty()) {
-                throw new IOException("Application " + applicationName + ".app not found");
-            }
-
-            ApplicationHelper.executeLocalApplication(
-                    shellControl -> String.format(
-                            "open -a %s %s",
-                            shellControl
-                                    .getShellDialect()
-                                    .fileArgument(execFile.orElseThrow().toString()),
-                            shellControl.getShellDialect().fileArgument(file.toString())),
-                    false);
-        }
-    }
-
     ExternalEditorType TEXT_EDIT = new MacOsEditor("app.textEdit", "TextEdit");
-
     ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit");
-
     ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
-
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
 
     };
-
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
         @Override
@@ -139,8 +104,73 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return "app.custom";
         }
     };
+    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
+    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
+    List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+    @SuppressWarnings("TrivialFunctionalExpressionUsage")
+    List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
+        var all = new ArrayList<ExternalEditorType>();
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            all.addAll(WINDOWS_EDITORS);
+        }
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            all.addAll(LINUX_EDITORS);
+        }
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            all.addAll(MACOS_EDITORS);
+        }
+        all.add(CUSTOM);
+        return all;
+    }).get();
+
+    static void detectDefault() {
+        var typeProperty = AppPrefs.get().externalEditor;
+        var customProperty = AppPrefs.get().customEditorCommand;
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            typeProperty.set(WINDOWS_EDITORS.stream().filter(externalEditorType -> externalEditorType.isAvailable()).findFirst().orElse(null));
+        }
+
+        if (OsType.getLocal().equals(OsType.LINUX)) {
+            var env = System.getenv("VISUAL");
+            if (env != null) {
+                var found = LINUX_EDITORS.stream().filter(externalEditorType -> externalEditorType.executable.equalsIgnoreCase(env)).findFirst()
+                        .orElse(null);
+                if (found == null) {
+                    typeProperty.set(CUSTOM);
+                    customProperty.set(env);
+                } else {
+                    typeProperty.set(found);
+                }
+            } else {
+                typeProperty.set(LINUX_EDITORS.stream().filter(externalEditorType -> externalEditorType.isAvailable()).findFirst().orElse(null));
+            }
+        }
+
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            typeProperty.set(MACOS_EDITORS.stream().filter(externalEditorType -> externalEditorType.isAvailable()).findFirst().orElse(null));
+        }
+    }
 
     void launch(Path file) throws Exception;
+
+    class MacOsEditor extends ExternalApplicationType.MacApplication implements ExternalEditorType {
+
+        public MacOsEditor(String id, String applicationName) {
+            super(id, applicationName);
+        }
+
+        @Override
+        public void launch(Path file) throws Exception {
+            var execFile = getApplicationPath();
+            if (execFile.isEmpty()) {
+                throw new IOException("Application " + applicationName + ".app not found");
+            }
+
+            ApplicationHelper.executeLocalApplication(
+                    shellControl -> String.format("open -a %s %s", shellControl.getShellDialect().fileArgument(execFile.orElseThrow().toString()),
+                            shellControl.getShellDialect().fileArgument(file.toString())), false);
+        }
+    }
 
     class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
@@ -159,8 +189,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    abstract class WindowsType extends ExternalApplicationType.WindowsType
-            implements ExternalEditorType {
+    abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalEditorType {
 
         private final String executable;
 
@@ -184,72 +213,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             }
 
             Optional<Path> finalLocation = location;
-            ApplicationHelper.executeLocalApplication(
-                    sc -> String.format(
-                            "%s %s",
-                            sc.getShellDialect().fileArgument(finalLocation.get().toString()),
-                            sc.getShellDialect().fileArgument(file.toString())),
-                    detach());
-        }
-    }
-
-    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
-    List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
-
-    @SuppressWarnings("TrivialFunctionalExpressionUsage")
-    List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
-                var all = new ArrayList<ExternalEditorType>();
-                if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                    all.addAll(WINDOWS_EDITORS);
-                }
-                if (OsType.getLocal().equals(OsType.LINUX)) {
-                    all.addAll(LINUX_EDITORS);
-                }
-                if (OsType.getLocal().equals(OsType.MACOS)) {
-                    all.addAll(MACOS_EDITORS);
-                }
-                all.add(CUSTOM);
-                return all;
-            })
-            .get();
-
-    static void detectDefault() {
-        var typeProperty = AppPrefs.get().externalEditor;
-        var customProperty = AppPrefs.get().customEditorCommand;
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            typeProperty.set(WINDOWS_EDITORS.stream()
-                    .filter(externalEditorType -> externalEditorType.isAvailable())
-                    .findFirst()
-                    .orElse(null));
-        }
-
-        if (OsType.getLocal().equals(OsType.LINUX)) {
-            var env = System.getenv("VISUAL");
-            if (env != null) {
-                var found = LINUX_EDITORS.stream()
-                        .filter(externalEditorType -> externalEditorType.executable.equalsIgnoreCase(env))
-                        .findFirst()
-                        .orElse(null);
-                if (found == null) {
-                    typeProperty.set(CUSTOM);
-                    customProperty.set(env);
-                } else {
-                    typeProperty.set(found);
-                }
-            } else {
-                typeProperty.set(LINUX_EDITORS.stream()
-                        .filter(externalEditorType -> externalEditorType.isAvailable())
-                        .findFirst()
-                        .orElse(null));
-            }
-        }
-
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            typeProperty.set(MACOS_EDITORS.stream()
-                    .filter(externalEditorType -> externalEditorType.isAvailable())
-                    .findFirst()
-                    .orElse(null));
+            ApplicationHelper.executeLocalApplication(sc -> String.format("%s %s", sc.getShellDialect().fileArgument(finalLocation.get().toString()),
+                    sc.getShellDialect().fileArgument(file.toString())), detach());
         }
     }
 }

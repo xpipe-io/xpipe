@@ -34,8 +34,7 @@ public class XPipeInstanceHelper {
     }
 
     public static boolean isSupported(ShellStore host) {
-        try (var pc = host.control().start();
-                var cmd = pc.command(List.of("xpipe"))) {
+        try (var pc = host.control().start(); var cmd = pc.command(List.of("xpipe"))) {
             cmd.discardOrThrow();
             return true;
         } catch (Exception e) {
@@ -59,20 +58,12 @@ public class XPipeInstanceHelper {
     }
 
     public static XPipeInstance refresh() {
-        Map<ShellStore, Optional<XPipeInstance>> map = DataStorage.get().getStoreEntries().stream()
-                .filter(entry -> entry.getStore() instanceof ShellStore)
-                .collect(Collectors.toMap(
-                        entry -> entry.getStore().asNeeded(),
-                        entry -> getInstance(entry.getStore().asNeeded())));
-        var adjacent = map.entrySet().stream()
-                .filter(shellStoreOptionalEntry ->
-                        shellStoreOptionalEntry.getValue().isPresent())
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey(), entry -> entry.getValue().get()));
-        var reachable = adjacent.values().stream()
-                .map(XPipeInstance::getReachable)
-                .flatMap(Collection::stream)
-                .toList();
+        Map<ShellStore, Optional<XPipeInstance>> map = DataStorage.get().getStoreEntries().stream().filter(
+                entry -> entry.getStore() instanceof ShellStore).collect(
+                Collectors.toMap(entry -> entry.getStore().asNeeded(), entry -> getInstance(entry.getStore().asNeeded())));
+        var adjacent = map.entrySet().stream().filter(shellStoreOptionalEntry -> shellStoreOptionalEntry.getValue().isPresent()).collect(
+                Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue().get()));
+        var reachable = adjacent.values().stream().map(XPipeInstance::getReachable).flatMap(Collection::stream).toList();
 
         var id = getInstanceId();
         var name = "test";

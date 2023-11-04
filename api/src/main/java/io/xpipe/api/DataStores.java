@@ -11,10 +11,7 @@ public class DataStores {
 
     public static void addNamedStore(DataStore store, String name) {
         XPipeApiConnection.execute(con -> {
-            var req = StoreAddExchange.Request.builder()
-                    .storeInput(store)
-                    .name(name)
-                    .build();
+            var req = StoreAddExchange.Request.builder().storeInput(store).name(name).build();
             StoreAddExchange.Response res = con.performSimpleExchange(req);
 
             new QuietDialogHandler(res.getConfig(), con, Map.of()).handle();

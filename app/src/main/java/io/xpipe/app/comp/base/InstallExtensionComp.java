@@ -29,8 +29,7 @@ public class InstallExtensionComp extends SimpleComp {
     protected Region createSimple() {
         var builder = new OptionsBuilder();
         builder.addTitle("installRequired");
-        var header = new LabelComp(AppI18n.observable("extensionInstallDescription"))
-                .apply(struc -> struc.get().setWrapText(true));
+        var header = new LabelComp(AppI18n.observable("extensionInstallDescription")).apply(struc -> struc.get().setWrapText(true));
         builder.addComp(header);
 
         if (install.getVendorURL() != null) {
@@ -45,8 +44,7 @@ public class InstallExtensionComp extends SimpleComp {
         if (install.getLicenseFile() != null) {
             builder.addTitle("license");
 
-            var changeNotice = new LabelComp(AppI18n.observable("extensionInstallLicenseNote"))
-                    .apply(struc -> struc.get().setWrapText(true));
+            var changeNotice = new LabelComp(AppI18n.observable("extensionInstallLicenseNote")).apply(struc -> struc.get().setWrapText(true));
             builder.addComp(changeNotice);
 
             var license = Comp.of(() -> {

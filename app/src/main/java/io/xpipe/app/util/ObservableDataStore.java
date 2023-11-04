@@ -17,28 +17,25 @@ public interface ObservableDataStore extends DataStore, InternalCacheDataStore {
             var timer = getCache("oberserverTimer", Timer.class, null);
             if (timer == null) {
                 timer = new Timer(true);
-                timer.scheduleAtFixedRate(
-                        new TimerTask() {
-                            @Override
-                            public void run() {
-                                if (getObserverState()) {
-                                    refresh();
-                                }
-                            }
-                        },
-                        0,
-                        20000);
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (getObserverState()) {
+                            refresh();
+                        }
+                    }
+                }, 0, 20000);
                 setCache("oberserverTimer", timer);
             }
         }
     }
 
-    default void setObserverState(boolean state) {
-        setCache("observerState", state);
-    }
-
     default boolean getObserverState() {
         return getCache("observerState", Boolean.class, false);
+    }
+
+    default void setObserverState(boolean state) {
+        setCache("observerState", state);
     }
 
     private void refresh() {

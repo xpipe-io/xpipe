@@ -27,18 +27,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType CMD = new PathType("app.cmd", "cmd.exe") {
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalStore.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("start")
-                            .addQuoted(configuration.getTitle())
-                            .add("cmd", "/c")
-                            .addFile(configuration.getScriptFile()));
+        public boolean supportsColoredTitle() {
+            return false;
         }
 
         @Override
-        public boolean supportsColoredTitle() {
-            return false;
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            LocalStore.getShell().executeSimpleCommand(CommandBuilder.of().add("start").addQuoted(configuration.getTitle()).add("cmd", "/c")
+                    .addFile(configuration.getScriptFile()));
         }
 
         @Override
@@ -56,8 +52,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of()
-                    .add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C", "'" + file + "'");
+            return CommandBuilder.of().add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C", "'" + file + "'");
         }
 
         @Override
@@ -76,13 +71,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected CommandBuilder toCommand(String name, String file) {
             // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-            return CommandBuilder.of()
-                    .add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C")
-                    .add(sc -> {
-                        var script =
-                                ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
-                        return "'" + script + "'";
-                    });
+            return CommandBuilder.of().add("-ExecutionPolicy", "RemoteSigned", "-NoProfile", "-Command", "cmd", "/C").add(sc -> {
+                var script = ScriptHelper.createLocalExecScript("set \"PSModulePath=\"\r\n\"" + file + "\"\npause");
+                return "'" + script + "'";
+            });
         }
 
         @Override
@@ -99,11 +91,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             // backslash of a filepath to escape the closing quote in the title argument
             // So just remove that slash
             var fixedName = FileNames.removeTrailingSlash(configuration.getTitle());
-            LocalStore.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("wt", "-w", "1", "nt", "--title")
-                            .addQuoted(fixedName)
-                            .addFile(configuration.getScriptFile()));
+            LocalStore.getShell().executeSimpleCommand(CommandBuilder.of().add("wt", "-w", "1", "nt", "--title").addQuoted(fixedName)
+                    .addFile(configuration.getScriptFile()));
         }
 
         @Override
@@ -123,17 +112,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             var b = CommandBuilder.of().add("alacritty");
             if (configuration.getColor() != null) {
-                b.add("-o")
-                        .addQuoted("colors.primary.background='%s'"
-                                .formatted(configuration.getColor().toHexString()));
+                b.add("-o").addQuoted("colors.primary.background='%s'".formatted(configuration.getColor().toHexString()));
             }
-            LocalStore.getShell()
-                    .executeSimpleCommand(b.add("-t")
-                            .addQuoted(configuration.getTitle())
-                            .add("-e")
-                            .add("cmd")
-                            .add("/c")
-                            .addQuoted(configuration.getScriptFile().replaceAll(" ", "^$0")));
+            LocalStore.getShell().executeSimpleCommand(b.add("-t").addQuoted(configuration.getTitle()).add("-e").add("cmd").add("/c")
+                    .addQuoted(configuration.getScriptFile().replaceAll(" ", "^$0")));
         }
 
         @Override
@@ -141,57 +123,46 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.WINDOWS);
         }
     };
-
-    abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalTerminalType {
-
-        public WindowsType(String id, String executable) {
-            super(id, executable);
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            var location = determineFromPath();
-            if (location.isEmpty()) {
-                location = determineInstallation();
-                if (location.isEmpty()) {
-                    throw new IOException("Unable to find installation of " + toTranslatedString());
-                }
-            }
-
-            Optional<Path> finalLocation = location;
-            execute(location.get(), configuration);
-        }
-
-        protected abstract void execute(Path file, LaunchConfiguration configuration) throws Exception;
-    }
-
     ExternalTerminalType TABBY_WINDOWS = new WindowsType("app.tabbyWindows", "Tabby") {
 
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            ApplicationHelper.executeLocalApplication(
-                    shellControl -> shellControl.getShellDialect().fileArgument(file.toString()) + " run "
-                            + shellControl.getShellDialect().fileArgument(configuration.getScriptFile()),
-                    true);
+            ApplicationHelper.executeLocalApplication(shellControl -> shellControl.getShellDialect().fileArgument(file.toString()) + " run " +
+                    shellControl.getShellDialect().fileArgument(configuration.getScriptFile()), true);
         }
 
         @Override
         protected Optional<Path> determineInstallation() {
-            var perUser = WindowsRegistry.readString(
-                            WindowsRegistry.HKEY_CURRENT_USER,
-                            "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
-                            "InstallLocation")
-                    .map(p -> p + "\\Tabby.exe").map(Path::of);
+            var perUser = WindowsRegistry.readString(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
+                    "InstallLocation").map(p -> p + "\\Tabby.exe").map(Path::of);
             if (perUser.isPresent()) {
                 return perUser;
             }
 
-            var systemWide = WindowsRegistry.readString(
-                            WindowsRegistry.HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
-                            "InstallLocation")
-                    .map(p -> p + "\\Tabby.exe").map(Path::of);
+            var systemWide = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
+                    "InstallLocation").map(p -> p + "\\Tabby.exe").map(Path::of);
             return systemWide;
+        }
+    };
+    ExternalTerminalType GNOME_TERMINAL = new PathType("app.gnomeTerminal", "gnome-terminal") {
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            try (ShellControl pc = LocalStore.getShell()) {
+                ApplicationHelper.checkIsInPath(pc, executable, toTranslatedString(), null);
+
+                var toExecute = CommandBuilder.of().add(executable, "-v", "--title").addQuoted(configuration.getTitle()).add("--").addFile(
+                        configuration.getScriptFile()).build(pc);
+                // In order to fix this bug which also affects us:
+                // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
+                toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                pc.executeSimpleCommand(toExecute);
+            }
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
         }
     };
 
@@ -237,33 +208,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //            return launcherDir.map(Path::of);
     //        }
     //    };
-
-    ExternalTerminalType GNOME_TERMINAL = new PathType("app.gnomeTerminal", "gnome-terminal") {
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
-                ApplicationHelper.checkIsInPath(pc, executable, toTranslatedString(), null);
-
-                var toExecute = CommandBuilder.of()
-                        .add(executable, "-v", "--title")
-                        .addQuoted(configuration.getTitle())
-                        .add("--")
-                        .addFile(configuration.getScriptFile())
-                        .build(pc);
-                // In order to fix this bug which also affects us:
-                // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
-                toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
-                pc.executeSimpleCommand(toExecute);
-            }
-        }
-
-        @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.LINUX);
-        }
-    };
-
     ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole") {
 
         @Override
@@ -284,16 +228,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal") {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of()
-                    .add("--tab", "--title")
-                    .addQuoted(name)
-                    .add("--command")
-                    .addFile(file);
+            return CommandBuilder.of().add("--tab", "--title").addQuoted(name).add("--command").addFile(file);
         }
 
         @Override
@@ -301,7 +240,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal") {
 
         @Override
@@ -314,17 +252,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator") {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of()
-                    .add("-e")
-                    .addQuoted(file)
-                    .add("-T")
-                    .addQuoted(name)
-                    .add("--new-tab");
+            return CommandBuilder.of().add("-e").addQuoted(file).add("-T").addQuoted(name).add("--new-tab");
         }
 
         @Override
@@ -332,7 +264,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType KITTY = new SimplePathType("app.kitty", "kitty") {
 
         @Override
@@ -345,17 +276,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology") {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of()
-                    .add("-T")
-                    .addQuoted(name)
-                    .add("-2")
-                    .add("-e")
-                    .addQuoted(file);
+            return CommandBuilder.of().add("-T").addQuoted(name).add("-2").add("-e").addQuoted(file);
         }
 
         @Override
@@ -363,7 +288,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term") {
 
         @Override
@@ -376,17 +300,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake") {
 
         @Override
         protected CommandBuilder toCommand(String name, String file) {
-            return CommandBuilder.of()
-                    .add("-n", "~")
-                    .add("-r")
-                    .addQuoted(name)
-                    .add("-e")
-                    .addQuoted(file);
+            return CommandBuilder.of().add("-n", "~").add("-r").addQuoted(name).add("-e").addQuoted(file);
         }
 
         @Override
@@ -394,7 +312,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType ALACRITTY = new SimplePathType("app.alacritty", "alacritty") {
 
         @Override
@@ -407,7 +324,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda") {
 
         @Override
@@ -420,7 +336,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm") {
 
         @Override
@@ -433,7 +348,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal") {
 
         @Override
@@ -446,8 +360,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
-
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal") {
 
         @Override
@@ -460,15 +372,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return OsType.getLocal().equals(OsType.LINUX);
         }
     };
-
     ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
-
     ExternalTerminalType ITERM2 = new ITerm2Type();
-
     ExternalTerminalType WARP = new WarpType();
-
     ExternalTerminalType TABBY_MAC_OS = new TabbyMacOsType();
-
     ExternalTerminalType ALACRITTY_MACOS = new MacOsType("app.alacrittyMacOs", "Alacritty") {
 
         @Override
@@ -478,17 +385,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalStore.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("Alacritty.app")
-                            .add("-n", "--args", "-t")
-                            .addQuoted(configuration.getTitle())
-                            .add("-e")
-                            .addFile(configuration.getScriptFile()));
+            LocalStore.getShell().executeSimpleCommand(CommandBuilder.of().add("open", "-a").addQuoted("Alacritty.app").add("-n", "--args", "-t")
+                    .addQuoted(configuration.getTitle()).add("-e").addFile(configuration.getScriptFile()));
         }
     };
-
     ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "kitty") {
 
         @Override
@@ -503,68 +403,63 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             try (ShellControl pc = LocalStore.getShell()) {
-                pc.osascriptCommand(String.format(
-                                """
-                                        if application "Kitty" is running then
-                                            tell application "Kitty" to activate
-                                            tell application "System Events" to tell process "Kitty" to keystroke "t" using command down
-                                        else
-                                            tell application "Kitty" to activate
-                                        end if
-                                        delay 1
-                                        tell application "System Events"
-                                            tell process "Kitty"
-                                                keystroke "%s"
-                                                delay 0.01
-                                                key code 36
-                                            end tell
-                                        end tell
-                                        """,
-                                configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
-                        .execute();
+                pc.osascriptCommand(String.format("""
+                                                  if application "Kitty" is running then
+                                                      tell application "Kitty" to activate
+                                                      tell application "System Events" to tell process "Kitty" to keystroke "t" using command down
+                                                  else
+                                                      tell application "Kitty" to activate
+                                                  end if
+                                                  delay 1
+                                                  tell application "System Events"
+                                                      tell process "Kitty"
+                                                          keystroke "%s"
+                                                          delay 0.01
+                                                          key code 36
+                                                      end tell
+                                                  end tell
+                                                  """, configuration.getScriptFile().replaceAll("\"", "\\\\\""))).execute();
             }
         }
     };
-
     ExternalTerminalType CUSTOM = new CustomType();
-
-    List<ExternalTerminalType> ALL = Stream.of(
-                    TABBY_WINDOWS,
-                    ALACRITTY_WINDOWS,
-                    WINDOWS_TERMINAL,
-                    PWSH_WINDOWS,
-                    POWERSHELL_WINDOWS,
-                    CMD,
-                    KONSOLE,
-                    XFCE,
-                    ELEMENTARY,
-                    GNOME_TERMINAL,
-                    TERMINATOR,
-                    KITTY,
-                    TERMINOLOGY,
-                    COOL_RETRO_TERM,
-                    GUAKE,
-                    ALACRITTY,
-                    TILDA,
-                    XTERM,
-                    DEEPIN_TERMINAL,
-                    Q_TERMINAL,
-                    ITERM2,
-                    TABBY_MAC_OS,
-                    ALACRITTY_MACOS,
-                    KITTY_MACOS,
-                    WARP,
-                    MACOS_TERMINAL,
-                    CUSTOM)
-            .filter(terminalType -> terminalType.isSelectable())
-            .toList();
+    List<ExternalTerminalType> ALL = Stream.of(TABBY_WINDOWS, ALACRITTY_WINDOWS, WINDOWS_TERMINAL, PWSH_WINDOWS, POWERSHELL_WINDOWS, CMD, KONSOLE,
+            XFCE, ELEMENTARY, GNOME_TERMINAL, TERMINATOR, KITTY, TERMINOLOGY, COOL_RETRO_TERM, GUAKE, ALACRITTY, TILDA, XTERM, DEEPIN_TERMINAL,
+            Q_TERMINAL, ITERM2, TABBY_MAC_OS, ALACRITTY_MACOS, KITTY_MACOS, WARP, MACOS_TERMINAL, CUSTOM).filter(
+            terminalType -> terminalType.isSelectable()).toList();
 
     static ExternalTerminalType getDefault() {
-        return ALL.stream()
-                .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
-                .filter(terminalType -> terminalType.isAvailable())
-                .findFirst()
-                .orElse(null);
+        return ALL.stream().filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM)).filter(terminalType -> terminalType.isAvailable())
+                .findFirst().orElse(null);
+    }
+
+    default boolean supportsColoredTitle() {
+        return true;
+    }
+
+    default void launch(LaunchConfiguration configuration) throws Exception {}
+
+    abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalTerminalType {
+
+        public WindowsType(String id, String executable) {
+            super(id, executable);
+        }
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            var location = determineFromPath();
+            if (location.isEmpty()) {
+                location = determineInstallation();
+                if (location.isEmpty()) {
+                    throw new IOException("Unable to find installation of " + toTranslatedString());
+                }
+            }
+
+            Optional<Path> finalLocation = location;
+            execute(location.get(), configuration);
+        }
+
+        protected abstract void execute(Path file, LaunchConfiguration configuration) throws Exception;
     }
 
     @Value
@@ -576,12 +471,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         String scriptFile;
     }
 
-    default boolean supportsColoredTitle() {
-        return true;
-    }
-
-    default void launch(LaunchConfiguration configuration) throws Exception {}
-
     class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
 
         public MacOsTerminalType() {
@@ -592,13 +481,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 var suffix = "\"" + configuration.getScriptFile().replaceAll("\"", "\\\\\"") + "\"";
-                pc.osascriptCommand(String.format(
-                                """
-                                activate application "Terminal"
-                                tell app "Terminal" to do script %s
-                                """,
-                                suffix))
-                        .execute();
+                pc.osascriptCommand(String.format("""
+                                                  activate application "Terminal"
+                                                  tell app "Terminal" to do script %s
+                                                  """, suffix)).execute();
             }
         }
     }
@@ -660,23 +546,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             try (ShellControl pc = LocalStore.getShell()) {
                 var a = app.get().toString();
-                pc.osascriptCommand(String.format(
-                                """
-                                if application "%s" is not running then
-                                    launch application "%s"
-                                    delay 1
-                                    tell application "%s"
-                                        tell current tab of current window
-                                            close
-                                        end tell
-                                    end tell
-                                end if
-                                tell application "%s"
-                                    create window with default profile command "%s"
-                                end tell
-                                """,
-                                a, a, a, a, configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
-                        .execute();
+                pc.osascriptCommand(String.format("""
+                                                  if application "%s" is not running then
+                                                      launch application "%s"
+                                                      delay 1
+                                                      tell application "%s"
+                                                          tell current tab of current window
+                                                              close
+                                                          end tell
+                                                      end tell
+                                                  end if
+                                                  tell application "%s"
+                                                      create window with default profile command "%s"
+                                                  end tell
+                                                  """, a, a, a, a, configuration.getScriptFile().replaceAll("\"", "\\\\\""))).execute();
             }
         }
     }
@@ -689,12 +572,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalStore.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("Tabby.app")
-                            .add("-n", "--args", "run")
-                            .addFile(configuration.getScriptFile()));
+            LocalStore.getShell().executeSimpleCommand(CommandBuilder.of().add("open", "-a").addQuoted("Tabby.app").add("-n", "--args", "run")
+                    .addFile(configuration.getScriptFile()));
         }
     }
 
@@ -711,21 +590,18 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             try (ShellControl pc = LocalStore.getShell()) {
-                pc.osascriptCommand(String.format(
-                                """
-                        tell application "Warp" to activate
-                        tell application "System Events" to tell process "Warp" to keystroke "t" using command down
-                        delay 1
-                        tell application "System Events"
-                            tell process "Warp"
-                                keystroke "%s"
-                                delay 0.01
-                                key code 36
-                            end tell
-                        end tell
-                        """,
-                                configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
-                        .execute();
+                pc.osascriptCommand(String.format("""
+                                                  tell application "Warp" to activate
+                                                  tell application "System Events" to tell process "Warp" to keystroke "t" using command down
+                                                  delay 1
+                                                  tell application "System Events"
+                                                      tell process "Warp"
+                                                          keystroke "%s"
+                                                          delay 0.01
+                                                          key code 36
+                                                      end tell
+                                                  end tell
+                                                  """, configuration.getScriptFile().replaceAll("\"", "\\\\\""))).execute();
             }
         }
     }
@@ -770,15 +646,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(LaunchConfiguration configuration) throws Exception {
             try (ShellControl pc = LocalStore.getShell()) {
                 if (!ApplicationHelper.isInPath(pc, executable)) {
-                    throw ErrorEvent.unreportable(
-                            new IOException(
-                                    "Executable " + executable
-                                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
+                    throw ErrorEvent.unreportable(new IOException("Executable " + executable +
+                            " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute " +
+                            "executable path using the custom terminal setting."));
                 }
 
-                var toExecute = executable + " "
-                        + toCommand(configuration.getTitle(), configuration.getScriptFile())
-                                .build(pc);
+                var toExecute = executable + " " + toCommand(configuration.getTitle(), configuration.getScriptFile()).build(pc);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + configuration.getTitle() + "\" " + toExecute;
                 } else {

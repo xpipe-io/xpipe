@@ -42,8 +42,7 @@ public class AppTheme {
         }
 
         SimpleChangeListener.apply(AppPrefs.get().theme, t -> {
-            Theme.ALL.forEach(
-                    theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
+            Theme.ALL.forEach(theme -> stage.getScene().getRoot().getStyleClass().remove(theme.getCssId()));
             if (t == null) {
                 return;
             }
@@ -125,13 +124,8 @@ public class AppTheme {
 
             Platform.runLater(() -> {
                 // Animate!
-                var transition = new Timeline(
-                        new KeyFrame(
-                                Duration.millis(0),
-                                new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
-                        new KeyFrame(
-                                Duration.millis(600),
-                                new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
+                var transition = new Timeline(new KeyFrame(Duration.millis(0), new KeyValue(imageView.opacityProperty(), 1, Interpolator.EASE_OUT)),
+                        new KeyFrame(Duration.millis(600), new KeyValue(imageView.opacityProperty(), 0, Interpolator.EASE_OUT)));
                 transition.setOnFinished(e -> {
                     root.getChildren().remove(imageView);
                 });
@@ -160,11 +154,7 @@ public class AppTheme {
 
             AppResources.with("atlantafx.base", theme.getUserAgentStylesheet(), path -> {
                 var baseStyleContent = Files.readString(path);
-                builder.append("\n")
-                        .append(baseStyleContent
-                                .lines()
-                                .skip(builder.toString().lines().count())
-                                .collect(Collectors.joining("\n")));
+                builder.append("\n").append(baseStyleContent.lines().skip(builder.toString().lines().count()).collect(Collectors.joining("\n")));
             });
 
             var out = Files.createTempFile(id, ".css");
@@ -194,8 +184,11 @@ public class AppTheme {
         public static final Theme CUSTOM = new DerivedTheme("custom", "primer", "Custom", new PrimerDark());
 
         // Also include your custom theme here
-        public static final List<Theme> ALL =
-                List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
+        public static final List<Theme> ALL = List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
+        protected final String id;
+        @Getter
+        protected final String cssId;
+        protected final atlantafx.base.theme.Theme theme;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -212,13 +205,6 @@ public class AppTheme {
                 case OsType.MacOs macOs -> CUPERTINO_DARK;
             };
         }
-
-        protected final String id;
-
-        @Getter
-        protected final String cssId;
-
-        protected final atlantafx.base.theme.Theme theme;
 
         public boolean isDark() {
             return theme.isDarkMode();

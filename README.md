@@ -1,12 +1,17 @@
 <img src="https://github.com/xpipe-io/xpipe/assets/72509152/88d750f3-8469-4c51-bb64-5b264b0e9d47" alt="drawing" width="250"/>
 
-XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs and does not require any setup on your remote systems.
+XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local
+machine. It works on top of your installed command-line programs and does not require any setup on your remote systems.
 
-XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
+XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is
+designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension
+system.
 
 It currently supports:
+
 - [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
-- [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
+- [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances
+  located on any host
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config files, and tunnels
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
@@ -58,7 +63,8 @@ It currently supports:
 
 # Downloads
 
-Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
+Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to
+connect to your server infrastructure from there.
 
 ### Installers
 
@@ -94,7 +100,7 @@ This script will automatically install the `.msi` for you.
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
-####  Linux / MacOS
+#### Linux / MacOS
 
 The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
 
@@ -112,9 +118,11 @@ Alternatively, you can also use your favorite package manager (if supported):
 
 ## Open source model
 
-XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
+XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select
+parts are not open source yet, but may be added to this repository in the future.
 
-This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository.
+This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some tests and
+especially test environments and that run on private servers are also not included in this repository.
 
 ## Further information
 

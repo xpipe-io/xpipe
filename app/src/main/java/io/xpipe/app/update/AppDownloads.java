@@ -28,25 +28,22 @@ public class AppDownloads {
             return repository;
         }
 
-        var github = new GitHubBuilder()
-                .withRateLimitHandler(RateLimitHandler.FAIL)
-                .withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
+        var github = new GitHubBuilder().withRateLimitHandler(RateLimitHandler.FAIL).withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
                 .build();
         repository = github.getRepository(AppProperties.get().isStaging() ? "xpipe-io/xpipe-ptb" : "xpipe-io/xpipe");
         return repository;
     }
 
     public static Optional<Path> downloadInstaller(
-            AppInstaller.InstallerAssetType iAsset, String version, boolean omitErrors) {
+            AppInstaller.InstallerAssetType iAsset, String version, boolean omitErrors
+    ) {
         var release = AppDownloads.getRelease(version, omitErrors);
         if (release.isEmpty()) {
             return Optional.empty();
         }
 
         try {
-            var asset = release.orElseThrow().listAssets().toList().stream()
-                    .filter(ghAsset -> iAsset.isCorrectAsset(ghAsset.getName()))
-                    .findAny();
+            var asset = release.orElseThrow().listAssets().toList().stream().filter(ghAsset -> iAsset.isCorrectAsset(ghAsset.getName())).findAny();
             if (asset.isEmpty()) {
                 ErrorEvent.fromMessage("No matching asset found for " + iAsset.getExtension());
                 return Optional.empty();
@@ -54,16 +51,11 @@ public class AppDownloads {
 
             var url = URI.create(asset.get().getBrowserDownloadUrl()).toURL();
             var bytes = HttpHelper.executeGet(url, aFloat -> {});
-            var downloadFile =
-                    FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
+            var downloadFile = FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
             Files.write(downloadFile, bytes);
 
-            TrackEvent.withInfo("installation", "Downloaded asset")
-                    .tag("version", version)
-                    .tag("url", url)
-                    .tag("size", FileUtils.byteCountToDisplaySize(bytes.length))
-                    .tag("target", downloadFile)
-                    .handle();
+            TrackEvent.withInfo("installation", "Downloaded asset").tag("version", version).tag("url", url).tag("size",
+                    FileUtils.byteCountToDisplaySize(bytes.length)).tag("target", downloadFile).handle();
 
             return Optional.of(downloadFile);
         } catch (Throwable t) {
@@ -79,9 +71,7 @@ public class AppDownloads {
         }
 
         try {
-            var asset = release.get().listAssets().toList().stream()
-                    .filter(ghAsset -> ghAsset.getName().equals("changelog.md"))
-                    .findAny();
+            var asset = release.get().listAssets().toList().stream().filter(ghAsset -> ghAsset.getName().equals("changelog.md")).findAny();
 
             if (asset.isEmpty()) {
                 return Optional.empty();
@@ -97,9 +87,7 @@ public class AppDownloads {
     }
 
     public static String getLatestVersion() throws IOException {
-        return getLatestSuitableRelease()
-                .map(ghRelease -> ghRelease.getTagName())
-                .orElse("?");
+        return getLatestSuitableRelease().map(ghRelease -> ghRelease.getTagName()).orElse("?");
     }
 
     public static Optional<GHRelease> getLatestIncludingPreRelease() throws IOException {
@@ -116,8 +104,8 @@ public class AppDownloads {
         var preIncluding = getLatestIncludingPreRelease();
 
         // If we are currently running a prerelease, always return this as the suitable release!
-        if (preIncluding.isPresent() && preIncluding.get().isPrerelease()
-                && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
+        if (preIncluding.isPresent() && preIncluding.get().isPrerelease() && AppProperties.get().getVersion().equals(
+                preIncluding.get().getTagName())) {
             return preIncluding;
         }
 

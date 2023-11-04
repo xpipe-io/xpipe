@@ -72,10 +72,7 @@ public class AppCache {
             var tree = JacksonMapper.getDefault().valueToTree(val);
             JsonConfigHelper.writeConfig(path, tree);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Could not parse cached data for key " + key, e)
-                    .omitted(true)
-                    .build()
-                    .handle();
+            ErrorEvent.fromThrowable("Could not parse cached data for key " + key, e).omitted(true).build().handle();
         }
     }
 

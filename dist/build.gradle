@@ -1,4 +1,3 @@
-
 plugins {
     id 'org.beryx.jlink' version '2.26.0'
     id "org.moditect.gradleplugin" version "1.0.0-rc3"
@@ -25,6 +24,7 @@ distZip {
 }
 
 import org.gradle.crypto.checksum.Checksum
+
 def distDir = layout.buildDirectory.get().dir('dist')
 task createChecksums(type: Checksum) {
     inputFiles.setFrom(distDir.dir('artifacts').getAsFileTree().files)
@@ -33,7 +33,7 @@ task createChecksums(type: Checksum) {
 
     doLast {
         for (final def file in distDir.dir('checksums').getAsFileTree().files) {
-            artifactChecksums.put(file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}, file.text.trim())
+            artifactChecksums.put(file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }, file.text.trim())
         }
     }
 }

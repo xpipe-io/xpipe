@@ -23,20 +23,13 @@ public class OpenFileWithAction implements LeafAction {
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         switch (OsType.getLocal()) {
             case OsType.Windows windows -> {
-                Shell32.INSTANCE.ShellExecute(
-                        null,
-                        "open",
-                        "rundll32.exe",
-                        "shell32.dll,OpenAs_RunDLL "
-                                + entries.get(0).getRawFileEntry().getPath(),
-                        null,
-                        WinUser.SW_SHOWNORMAL);
+                Shell32.INSTANCE.ShellExecute(null, "open", "rundll32.exe", "shell32.dll,OpenAs_RunDLL " + entries.get(0).getRawFileEntry().getPath(),
+                        null, WinUser.SW_SHOWNORMAL);
             }
             case OsType.Linux linux -> {
                 ShellControl sc = model.getFileSystem().getShell().get();
                 ShellDialect d = sc.getShellDialect();
-                sc.executeSimpleCommand("mimeopen -a "
-                        + d.fileArgument(entries.get(0).getRawFileEntry().getPath()));
+                sc.executeSimpleCommand("mimeopen -a " + d.fileArgument(entries.get(0).getRawFileEntry().getPath()));
             }
             case OsType.MacOs macOs -> {
                 throw new UnsupportedOperationException();
@@ -45,22 +38,13 @@ public class OpenFileWithAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.OPEN;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2b-book-open-page-variant-outline");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        var os = model.getFileSystem().getShell();
-        return os.isPresent()
-                && os.get().getOsType().equals(OsType.WINDOWS)
-                && entries.size() == 1
-                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
+    public Category getCategory() {
+        return Category.OPEN;
     }
 
     @Override
@@ -71,5 +55,12 @@ public class OpenFileWithAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Open with ...";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        var os = model.getFileSystem().getShell();
+        return os.isPresent() && os.get().getOsType().equals(OsType.WINDOWS) && entries.size() == 1 && entries.stream().allMatch(
+                entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 }

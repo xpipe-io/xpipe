@@ -10,7 +10,9 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 @ToString
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
 public abstract class DialogElement {
 
     protected final String id;

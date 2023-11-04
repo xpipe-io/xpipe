@@ -65,19 +65,14 @@ public class BrowserWelcomeComp extends SimpleComp {
                 return false;
             }
 
-            if (!entry.get().getValidity().isUsable()) {
-                return false;
-            }
-
-            return true;
+            return entry.get().getValidity().isUsable();
         }).toList());
         var box = new ListBoxViewComp<>(list, list, e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             var graphic = entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
             var view = PrettyImageHelper.ofFixedSquare(graphic, 45);
             view.padding(new Insets(2, 8, 2, 8));
-            var content =
-                    JfxHelper.createNamedEntry(DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
+            var content = JfxHelper.createNamedEntry(DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
             var disable = new SimpleBooleanProperty();
             return new ButtonComp(null, content, () -> {
                 ThreadHelper.runAsync(() -> {

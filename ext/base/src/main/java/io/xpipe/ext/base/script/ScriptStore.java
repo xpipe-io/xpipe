@@ -28,11 +28,18 @@ import java.util.Locale;
 @AllArgsConstructor
 public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<ScriptStore.State> {
 
+    protected final DataStoreEntryRef<ScriptGroupStore> group;
+    @Singular
+    protected final List<DataStoreEntryRef<ScriptStore>> scripts;
+    protected final String description;
+
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
         return controlWithScripts(pc, getDefaultInitScripts(), getDefaultBringScripts());
     }
 
-    public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> initScripts, List<DataStoreEntryRef<ScriptStore>> bringScripts) {
+    public static ShellControl controlWithScripts(
+            ShellControl pc, List<DataStoreEntryRef<ScriptStore>> initScripts, List<DataStoreEntryRef<ScriptStore>> bringScripts
+    ) {
         var initFlattened = flatten(initScripts);
         var bringFlattened = flatten(bringScripts);
 
@@ -41,7 +48,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
             var dir = initScriptsDirectory(shellControl, bringFlattened);
             if (dir != null) {
-                shellControl.initWith(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir), ScriptSnippet.ExecutionType.TERMINAL_ONLY));
+                shellControl.initWith(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir),
+                        ScriptSnippet.ExecutionType.TERMINAL_ONLY));
             }
         });
         return pc;
@@ -66,13 +74,15 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
             return null;
         }
 
-        var applicable = scriptStores.stream().filter(simpleScriptStore -> simpleScriptStore.getMinimumDialect().isCompatibleTo(proc.getShellDialect())).toList();
+        var applicable = scriptStores.stream().filter(
+                simpleScriptStore -> simpleScriptStore.getMinimumDialect().isCompatibleTo(proc.getShellDialect())).toList();
         if (applicable.isEmpty()) {
             return null;
         }
 
         var refs = applicable.stream().map(scriptStore -> {
-            return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == scriptStore).findFirst().orElseThrow().<SimpleScriptStore>ref();
+            return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == scriptStore).findFirst()
+                    .orElseThrow().<SimpleScriptStore>ref();
         }).toList();
         var hash = refs.stream().mapToInt(value -> value.get().getName().hashCode() + value.getStore().hashCode()).sum();
         var xpipeHome = XPipeInstallation.getDataDir(proc);
@@ -113,43 +123,21 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     public static List<DataStoreEntryRef<ScriptStore>> getDefaultInitScripts() {
-        return DataStorage.get().getStoreEntries().stream()
-                .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isDefault())
-                .map(DataStoreEntry::<ScriptStore>ref)
-                .toList();
+        return DataStorage.get().getStoreEntries().stream().filter(
+                dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore && scriptStore.getState().isDefault()).map(
+                DataStoreEntry::<ScriptStore>ref).toList();
     }
 
     public static List<DataStoreEntryRef<ScriptStore>> getDefaultBringScripts() {
-        return DataStorage.get().getStoreEntries().stream()
-                .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isBringToShell())
-                .map(DataStoreEntry::<ScriptStore>ref)
-                .toList();
+        return DataStorage.get().getStoreEntries().stream().filter(
+                dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore && scriptStore.getState().isBringToShell()).map(
+                DataStoreEntry::<ScriptStore>ref).toList();
     }
 
     public static List<SimpleScriptStore> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
         var seen = new LinkedHashSet<SimpleScriptStore>();
-        scripts.forEach(scriptStoreDataStoreEntryRef ->
-                scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
+        scripts.forEach(scriptStoreDataStoreEntryRef -> scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
         return seen.stream().toList();
-    }
-
-    protected final DataStoreEntryRef<ScriptGroupStore> group;
-
-    @Singular
-    protected final List<DataStoreEntryRef<ScriptStore>> scripts;
-
-    protected final String description;
-
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    @Setter
-    @Getter
-    @SuperBuilder
-    @Jacksonized
-    public static class State extends DataStoreState {
-        boolean isDefault;
-        boolean bringToShell;
     }
 
     @Override
@@ -165,12 +153,22 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         }
 
         // Prevent possible stack overflow
-//        for (DataStoreEntryRef<ScriptStore> s : getEffectiveScripts()) {
-//         s.checkComplete();
-//        }
+        //        for (DataStoreEntryRef<ScriptStore> s : getEffectiveScripts()) {
+        //         s.checkComplete();
+        //        }
     }
 
     protected abstract void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all);
 
     public abstract List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts();
+
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @Setter
+    @Getter
+    @SuperBuilder
+    @Jacksonized
+    public static class State extends DataStoreState {
+        boolean isDefault;
+        boolean bringToShell;
+    }
 }

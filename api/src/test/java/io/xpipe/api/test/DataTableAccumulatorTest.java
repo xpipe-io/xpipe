@@ -16,8 +16,7 @@ public class DataTableAccumulatorTest extends ApiTest {
         var type = TupleType.of(List.of("col1", "col2"), List.of(ValueType.of(), ValueType.of()));
         var acc = DataTableAccumulator.create(type);
 
-        var val = type.convert(TupleNode.of(List.of(ValueNode.of("val1"), ValueNode.of("val2"))))
-                .orElseThrow();
+        var val = type.convert(TupleNode.of(List.of(ValueNode.of("val1"), ValueNode.of("val2")))).orElseThrow();
         acc.add(val);
         var table = acc.finish(":test");
 

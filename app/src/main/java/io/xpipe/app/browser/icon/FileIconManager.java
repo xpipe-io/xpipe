@@ -38,9 +38,7 @@ public class FileIconManager {
             }
         }
 
-        return r.getKind() == FileKind.DIRECTORY
-                ? (open ? "default_folder_opened.svg" : "default_folder.svg")
-                : "default_file.svg";
+        return r.getKind() == FileKind.DIRECTORY ? (open ? "default_folder_opened.svg" : "default_folder.svg") : "default_file.svg";
     }
 
     private static String getIconPath(String name) {

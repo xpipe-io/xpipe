@@ -9,38 +9,17 @@ import java.util.*;
 
 public class SecretManager {
 
-    @Value
-    @AllArgsConstructor
-    public static class SecretReference {
-
-        UUID secretId;
-        int subId;
-
-        public SecretReference(Object store) {
-            this.secretId = UuidHelper.generateFromObject(store);
-            this.subId = 0;
-        }
-
-        public SecretReference(Object store, int sub) {
-            this.secretId = UuidHelper.generateFromObject(store);
-            this.subId = sub;
-        }
-    }
-
     private static final Map<SecretReference, SecretValue> passwords = new HashMap<>();
 
     public static boolean shouldCacheForPrompt(String prompt) {
         var l = prompt.toLowerCase(Locale.ROOT);
-        if (l.contains("passcode") || l.contains("verification code")) {
-            return false;
-        }
-
-        return true;
+        return !l.contains("passcode") && !l.contains("verification code");
     }
 
     public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, Object key) throws Exception {
-        return retrieve(strategy, prompt,key, 0);
+        return retrieve(strategy, prompt, key, 0);
     }
+
     public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, Object key, int sub) throws Exception {
         var ref = new SecretReference(key, sub);
         if (strategy == null) {
@@ -77,5 +56,23 @@ public class SecretManager {
 
     public static Optional<SecretValue> get(SecretReference ref) {
         return Optional.ofNullable(passwords.get(ref));
+    }
+
+    @Value
+    @AllArgsConstructor
+    public static class SecretReference {
+
+        UUID secretId;
+        int subId;
+
+        public SecretReference(Object store) {
+            this.secretId = UuidHelper.generateFromObject(store);
+            this.subId = 0;
+        }
+
+        public SecretReference(Object store, int sub) {
+            this.secretId = UuidHelper.generateFromObject(store);
+            this.subId = sub;
+        }
     }
 }

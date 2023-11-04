@@ -12,9 +12,9 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -72,27 +72,21 @@ final class BrowserFileListComp extends SimpleComp {
     private TableView<BrowserEntry> createTable() {
         var filenameCol = new TableColumn<BrowserEntry, String>("Name");
         filenameCol.setCellValueFactory(param -> new SimpleStringProperty(
-                param.getValue() != null
-                        ? FileNames.getFileName(
-                                param.getValue().getRawFileEntry().getPath())
-                        : null));
+                param.getValue() != null ? FileNames.getFileName(param.getValue().getRawFileEntry().getPath()) : null));
         filenameCol.setComparator(Comparator.comparing(String::toLowerCase));
         filenameCol.setSortType(ASCENDING);
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing()));
 
         var sizeCol = new TableColumn<BrowserEntry, Number>("Size");
-        sizeCol.setCellValueFactory(param ->
-                new SimpleLongProperty(param.getValue().getRawFileEntry().resolved().getSize()));
+        sizeCol.setCellValueFactory(param -> new SimpleLongProperty(param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
 
         var mtimeCol = new TableColumn<BrowserEntry, Instant>("Modified");
-        mtimeCol.setCellValueFactory(param ->
-                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getDate()));
+        mtimeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
 
         var modeCol = new TableColumn<BrowserEntry, String>("Attributes");
-        modeCol.setCellValueFactory(param ->
-                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getMode()));
+        modeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
         modeCol.setSortable(false);
 
@@ -133,25 +127,17 @@ final class BrowserFileListComp extends SimpleComp {
             var toSelect = new ArrayList<>(c.getList());
             // Explicitly unselect synthetic entries since we can't use a custom selection model as that is bugged in
             // JavaFX
-            toSelect.removeIf(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() != null
-                    && entry.getRawFileEntry()
-                            .getPath()
-                            .equals(fileList.getFileSystemModel()
-                                    .getCurrentParentDirectory()
-                                    .getPath()));
+            toSelect.removeIf(entry -> fileList.getFileSystemModel().getCurrentParentDirectory() != null &&
+                    entry.getRawFileEntry().getPath().equals(fileList.getFileSystemModel().getCurrentParentDirectory().getPath()));
             // Remove unsuitable selection
-            toSelect.removeIf(browserEntry -> (browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                            && !fileList.getMode().isAcceptsDirectories())
-                    || (browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY
-                            && !fileList.getMode().isAcceptsFiles()));
+            toSelect.removeIf(
+                    browserEntry -> (browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY && !fileList.getMode().isAcceptsDirectories()) ||
+                            (browserEntry.getRawFileEntry().getKind() != FileKind.DIRECTORY && !fileList.getMode().isAcceptsFiles()));
             fileList.getSelection().setAll(toSelect);
 
             Platform.runLater(() -> {
-                var toUnselect = table.getSelectionModel().getSelectedItems().stream()
-                        .filter(entry -> !toSelect.contains(entry))
-                        .toList();
-                toUnselect.forEach(entry -> table.getSelectionModel()
-                        .clearSelection(table.getItems().indexOf(entry)));
+                var toUnselect = table.getSelectionModel().getSelectedItems().stream().filter(entry -> !toSelect.contains(entry)).toList();
+                toUnselect.forEach(entry -> table.getSelectionModel().clearSelection(table.getItems().indexOf(entry)));
             });
         });
 
@@ -166,12 +152,8 @@ final class BrowserFileListComp extends SimpleComp {
                     return;
                 }
 
-                var indices = c.getList().stream()
-                        .skip(1)
-                        .mapToInt(entry -> table.getItems().indexOf(entry))
-                        .toArray();
-                table.getSelectionModel()
-                        .selectIndices(table.getItems().indexOf(c.getList().get(0)), indices);
+                var indices = c.getList().stream().skip(1).mapToInt(entry -> table.getItems().indexOf(entry)).toArray();
+                table.getSelectionModel().selectIndices(table.getItems().indexOf(c.getList().get(0)), indices);
             });
         });
     }
@@ -179,12 +161,10 @@ final class BrowserFileListComp extends SimpleComp {
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.setOnKeyPressed(event -> {
             var selected = fileList.getSelection();
-            BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
-                    .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
-                            && browserAction.isActive(fileList.getFileSystemModel(), selected))
-                    .filter(browserAction -> browserAction.getShortcut() != null)
-                    .filter(browserAction -> browserAction.getShortcut().match(event))
-                    .findAny()
+            BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream().filter(
+                            browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected) &&
+                                    browserAction.isActive(fileList.getFileSystemModel(), selected)).filter(
+                            browserAction -> browserAction.getShortcut() != null).filter(browserAction -> browserAction.getShortcut().match(event)).findAny()
                     .ifPresent(browserAction -> {
                         ThreadHelper.runFailableAsync(() -> {
                             browserAction.execute(fileList.getFileSystemModel(), selected);
@@ -227,47 +207,34 @@ final class BrowserFileListComp extends SimpleComp {
 
         table.setRowFactory(param -> {
             TableRow<BrowserEntry> row = new TableRow<>();
-            row.accessibleTextProperty()
-                    .bind(Bindings.createStringBinding(
-                            () -> {
-                                return row.getItem() != null ? row.getItem().getFileName() : null;
-                            },
-                            row.itemProperty()));
-            row.focusTraversableProperty()
-                    .bind(Bindings.createBooleanBinding(
-                            () -> {
-                                return row.getItem() != null;
-                            },
-                            row.itemProperty()));
-            new ContextMenuAugment<>(
-                            event -> {
-                                if (row.getItem() == null) {
-                                    return event.getButton() == MouseButton.SECONDARY;
-                                }
+            row.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+                return row.getItem() != null ? row.getItem().getFileName() : null;
+            }, row.itemProperty()));
+            row.focusTraversableProperty().bind(Bindings.createBooleanBinding(() -> {
+                return row.getItem() != null;
+            }, row.itemProperty()));
+            new ContextMenuAugment<>(event -> {
+                if (row.getItem() == null) {
+                    return event.getButton() == MouseButton.SECONDARY;
+                }
 
-                                if (row.getItem() != null
-                                        && row.getItem().getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                                    return event.getButton() == MouseButton.SECONDARY;
-                                }
+                if (row.getItem() != null && row.getItem().getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
+                    return event.getButton() == MouseButton.SECONDARY;
+                }
 
-                                if (row.getItem() != null
-                                        && row.getItem().getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
-                                    return event.getButton() == MouseButton.SECONDARY
-                                            || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
-                                }
+                if (row.getItem() != null && row.getItem().getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
+                    return event.getButton() == MouseButton.SECONDARY || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
+                }
 
-                                return false;
-                            },
-                            () -> {
-                                if (row.getItem() != null && row.getItem().isSynthetic()) {
-                                    return null;
-                                }
+                return false;
+            }, () -> {
+                if (row.getItem() != null && row.getItem().isSynthetic()) {
+                    return null;
+                }
 
-                                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
-                            })
-                    .augment(new SimpleCompStructure<>(row));
-            var listEntry = Bindings.createObjectBinding(
-                    () -> new BrowserFileListCompEntry(table, row, row.getItem(), fileList), row.itemProperty());
+                return new BrowserContextMenu(fileList.getFileSystemModel(), row.getItem());
+            }).augment(new SimpleCompStructure<>(row));
+            var listEntry = Bindings.createObjectBinding(() -> new BrowserFileListCompEntry(table, row, row.getItem(), fileList), row.itemProperty());
 
             // Don't let the list view see this event
             // otherwise it unselects everything as it doesn't understand shift clicks
@@ -284,10 +251,8 @@ final class BrowserFileListComp extends SimpleComp {
 
             row.itemProperty().addListener((observable, oldValue, newValue) -> {
                 row.pseudoClassStateChanged(EMPTY, newValue == null);
-                row.pseudoClassStateChanged(
-                        FILE, newValue != null && newValue.getRawFileEntry().getKind() != FileKind.DIRECTORY);
-                row.pseudoClassStateChanged(
-                        FOLDER, newValue != null && newValue.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+                row.pseudoClassStateChanged(FILE, newValue != null && newValue.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+                row.pseudoClassStateChanged(FOLDER, newValue != null && newValue.getRawFileEntry().getKind() == FileKind.DIRECTORY);
             });
 
             fileList.getDraggedOverDirectory().addListener((observable, oldValue, newValue) -> {
@@ -326,17 +291,14 @@ final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableChanges(
-            TableView<BrowserEntry> table,
-            TableColumn<BrowserEntry, Instant> mtimeCol,
-            TableColumn<BrowserEntry, String> modeCol) {
+            TableView<BrowserEntry> table, TableColumn<BrowserEntry, Instant> mtimeCol, TableColumn<BrowserEntry, String> modeCol
+    ) {
         var lastDir = new SimpleObjectProperty<FileSystem.FileEntry>();
         Runnable updateHandler = () -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 var newItems = new ArrayList<>(fileList.getShown().getValue());
 
-                var hasModifiedDate = newItems.size() == 0
-                        || newItems.stream()
-                                .anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
+                var hasModifiedDate = newItems.size() == 0 || newItems.stream().anyMatch(entry -> entry.getRawFileEntry().getDate() != null);
                 if (!hasModifiedDate) {
                     table.getColumns().remove(mtimeCol);
                 } else {
@@ -345,13 +307,8 @@ final class BrowserFileListComp extends SimpleComp {
                     }
                 }
 
-                var hasAttributes = fileList.getFileSystemModel().getFileSystem() != null
-                        && !fileList.getFileSystemModel()
-                                .getFileSystem()
-                                .getShell()
-                                .orElseThrow()
-                                .getOsType()
-                                .equals(OsType.WINDOWS);
+                var hasAttributes = fileList.getFileSystemModel().getFileSystem() != null &&
+                        !fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
                 if (!hasAttributes) {
                     table.getColumns().remove(modeCol);
                 } else {
@@ -371,10 +328,8 @@ final class BrowserFileListComp extends SimpleComp {
                 if (!Objects.equals(lastDir.get(), currentDirectory)) {
                     TableViewSkin<?> skin = (TableViewSkin<?>) table.getSkin();
                     if (skin != null) {
-                        VirtualFlow<?> flow =
-                                (VirtualFlow<?>) skin.getChildren().get(1);
-                        ScrollBar vbar =
-                                (ScrollBar) flow.getChildrenUnmodifiable().get(2);
+                        VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
+                        ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
                         if (vbar.getValue() != 0.0) {
                             table.scrollTo(0);
                         }
@@ -419,25 +374,64 @@ final class BrowserFileListComp extends SimpleComp {
         }
     }
 
+    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
+
+        @Override
+        protected void updateItem(Number fileSize, boolean empty) {
+            super.updateItem(fileSize, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+            } else {
+                var path = getTableRow().getItem();
+                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
+                    setText("");
+                } else {
+                    setText(byteCount(fileSize.longValue()));
+                }
+            }
+        }
+    }
+
+    private static class FileModeCell extends TableCell<BrowserEntry, String> {
+
+        @Override
+        protected void updateItem(String mode, boolean empty) {
+            super.updateItem(mode, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+            } else {
+                setText(mode);
+            }
+        }
+    }
+
+    private static class FileTimeCell extends TableCell<BrowserEntry, Instant> {
+
+        @Override
+        protected void updateItem(Instant fileTime, boolean empty) {
+            super.updateItem(fileTime, empty);
+            if (empty) {
+                setText(null);
+            } else {
+                setText(fileTime != null ? HumanReadableFormat.date(fileTime.atZone(ZoneId.systemDefault()).toLocalDateTime()) : "");
+            }
+        }
+    }
+
     private class FilenameCell extends TableCell<BrowserEntry, String> {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
-        private final Node imageView = new PrettySvgComp(img, 24, 24)
-                .createRegion();
-        private final StackPane textField =
-                new LazyTextFieldComp(text).createStructure().get();
+        private final Node imageView = new PrettySvgComp(img, 24, 24).createRegion();
+        private final StackPane textField = new LazyTextFieldComp(text).createStructure().get();
         private final HBox graphic;
 
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
         public FilenameCell(Property<BrowserEntry> editing) {
-            accessibleTextProperty()
-                    .bind(Bindings.createStringBinding(
-                            () -> {
-                                return getItem() != null ? getItem() : null;
-                            },
-                            itemProperty()));
+            accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+                return getItem() != null ? getItem() : null;
+            }, itemProperty()));
             setAccessibleRole(AccessibleRole.TEXT);
 
             editing.addListener((observable, oldValue, newValue) -> {
@@ -482,84 +476,25 @@ final class BrowserFileListComp extends SimpleComp {
                     // Use opacity instead of visibility as visibility is kinda bugged with web views
                     setOpacity(0.0);
                 } else {
-                    var isParentLink = getTableRow()
-                            .getItem()
-                            .getRawFileEntry()
-                            .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
+                    var isParentLink = getTableRow().getItem().getRawFileEntry().equals(fileList.getFileSystemModel().getCurrentParentDirectory());
                     img.set(FileIconManager.getFileIcon(
-                            isParentLink
-                                    ? fileList.getFileSystemModel().getCurrentDirectory()
-                                    : getTableRow().getItem().getRawFileEntry(),
+                            isParentLink ? fileList.getFileSystemModel().getCurrentDirectory() : getTableRow().getItem().getRawFileEntry(),
                             isParentLink));
 
                     var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                     pseudoClassStateChanged(FOLDER, isDirectory);
 
-                    var normalName = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.LINK
-                            ? getTableRow().getItem().getFileName() + " -> "
-                                    + getTableRow()
-                                            .getItem()
-                                            .getRawFileEntry()
-                                            .resolved()
-                                            .getPath()
-                            : getTableRow().getItem().getFileName();
+                    var normalName = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.LINK ?
+                            getTableRow().getItem().getFileName() + " -> " + getTableRow().getItem().getRawFileEntry().resolved().getPath() :
+                            getTableRow().getItem().getFileName();
                     var fileName = isParentLink ? ".." : normalName;
-                    var hidden = !isParentLink
-                            && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
+                    var hidden = !isParentLink && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
 
                     // Use opacity instead of visibility as visibility is kinda bugged with web views
                     setOpacity(1.0);
                 }
-            }
-        }
-    }
-
-    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
-
-        @Override
-        protected void updateItem(Number fileSize, boolean empty) {
-            super.updateItem(fileSize, empty);
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                setText(null);
-            } else {
-                var path = getTableRow().getItem();
-                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                    setText("");
-                } else {
-                    setText(byteCount(fileSize.longValue()));
-                }
-            }
-        }
-    }
-
-    private static class FileModeCell extends TableCell<BrowserEntry, String> {
-
-        @Override
-        protected void updateItem(String mode, boolean empty) {
-            super.updateItem(mode, empty);
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                setText(null);
-            } else {
-                setText(mode);
-            }
-        }
-    }
-
-    private static class FileTimeCell extends TableCell<BrowserEntry, Instant> {
-
-        @Override
-        protected void updateItem(Instant fileTime, boolean empty) {
-            super.updateItem(fileTime, empty);
-            if (empty) {
-                setText(null);
-            } else {
-                setText(
-                        fileTime != null
-                                ? HumanReadableFormat.date(
-                                        fileTime.atZone(ZoneId.systemDefault()).toLocalDateTime())
-                                : "");
             }
         }
     }

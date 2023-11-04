@@ -8,12 +8,7 @@ import java.lang.reflect.Method;
 public class ModuleHelper {
 
     public static boolean isImage() {
-        return ModuleHelper.class
-                .getProtectionDomain()
-                .getCodeSource()
-                .getLocation()
-                .getProtocol()
-                .equals("jrt");
+        return ModuleHelper.class.getProtectionDomain().getCodeSource().getLocation().getProtocol().equals("jrt");
     }
 
     @SneakyThrows

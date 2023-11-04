@@ -73,14 +73,11 @@ public final class ExclusiveValidator<T> implements Validator {
 
     @Override
     public StringBinding createStringBinding(String prefix, String separator) {
-        var list = new ArrayList<Observable>(
-                validators.values().stream().map(Validator::createStringBinding).toList());
+        var list = new ArrayList<Observable>(validators.values().stream().map(Validator::createStringBinding).toList());
         list.add(obs);
         Observable[] observables = list.toArray(Observable[]::new);
-        return Bindings.createStringBinding(
-                () -> {
-                    return get().createStringBinding(prefix, separator).get();
-                },
-                observables);
+        return Bindings.createStringBinding(() -> {
+            return get().createStringBinding(prefix, separator).get();
+        }, observables);
     }
 }

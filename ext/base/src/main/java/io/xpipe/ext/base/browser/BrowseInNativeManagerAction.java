@@ -27,20 +27,17 @@ public class BrowseInNativeManagerAction implements LeafAction {
                     }
                 }
                 case OsType.Linux linux -> {
-                    var action = entry.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                            ? "org.freedesktop.FileManager1.ShowFolders"
-                            : "org.freedesktop.FileManager1.ShowItems";
-                    var dbus = String.format(
-                            """
-                                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
-                                                """,
-                            action, entry.getRawFileEntry().getPath());
+                    var action = entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
+                            "org.freedesktop.FileManager1.ShowFolders" :
+                            "org.freedesktop.FileManager1.ShowItems";
+                    var dbus = String.format("""
+                                             dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
+                                             """, action, entry.getRawFileEntry().getPath());
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
-                    sc.executeSimpleCommand(
-                            "open " + (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "" : "-R ")
-                                    + d.fileArgument(entry.getRawFileEntry().getPath()));
+                    sc.executeSimpleCommand("open " + (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "" : "-R ") +
+                            d.fileArgument(entry.getRawFileEntry().getPath()));
                 }
             }
         }
@@ -57,16 +54,16 @@ public class BrowseInNativeManagerAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.isLocal();
-    }
-
-    @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return switch (OsType.getLocal()) {
             case OsType.Windows windows -> "Browse in Windows Explorer";
             case OsType.Linux linux -> "Browse in default file manager";
             case OsType.MacOs macOs -> "Browse in Finder";
         };
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return model.isLocal();
     }
 }

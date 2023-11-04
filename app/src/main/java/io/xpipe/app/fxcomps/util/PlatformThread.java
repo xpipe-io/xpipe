@@ -46,8 +46,7 @@ public class PlatformThread {
         Objects.requireNonNull(ov);
         ObservableValue<T> obs = new ObservableValue<>() {
 
-            private final Map<ChangeListener<? super T>, ChangeListener<? super T>> changeListenerMap =
-                    new ConcurrentHashMap<>();
+            private final Map<ChangeListener<? super T>, ChangeListener<? super T>> changeListenerMap = new ConcurrentHashMap<>();
             private final Map<InvalidationListener, InvalidationListener> invListenerMap = new ConcurrentHashMap<>();
 
             @Override
@@ -93,8 +92,7 @@ public class PlatformThread {
         Objects.requireNonNull(ol);
         ObservableList<T> obs = new ObservableList<>() {
 
-            private final Map<ListChangeListener<? super T>, ListChangeListener<? super T>> listChangeListenerMap =
-                    new ConcurrentHashMap<>();
+            private final Map<ListChangeListener<? super T>, ListChangeListener<? super T>> listChangeListenerMap = new ConcurrentHashMap<>();
             private final Map<InvalidationListener, InvalidationListener> invListenerMap = new ConcurrentHashMap<>();
 
             @Override
@@ -282,11 +280,7 @@ public class PlatformThread {
         }
 
         // Once the shutdown hooks are run, the toolkit is shutdown, causing it to no longer perform runLater operations
-        if (OperationMode.isInShutdownHook()) {
-            return false;
-        }
-
-        return true;
+        return !OperationMode.isInShutdownHook();
     }
 
     public static void runLaterIfNeeded(Runnable r) {

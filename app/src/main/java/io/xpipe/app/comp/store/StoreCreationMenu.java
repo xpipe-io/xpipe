@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -41,8 +40,7 @@ public class StoreCreationMenu {
             shell.setGraphic(new FontIcon("mdi2t-text-box-multiple"));
             shell.textProperty().bind(AppI18n.observable("addShell"));
             shell.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
-                        v -> DataStoreProvider.CreationCategory.SHELL.equals(v.getCreationCategory()));
+                GuiDsStoreCreator.showCreation(null, v -> DataStoreProvider.CreationCategory.SHELL.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(shell);
@@ -52,8 +50,7 @@ public class StoreCreationMenu {
             cmd.setGraphic(new FontIcon("mdi2c-code-greater-than"));
             cmd.textProperty().bind(AppI18n.observable("addCommand"));
             cmd.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
-                        v -> DataStoreProvider.CreationCategory.COMMAND.equals(v.getCreationCategory()));
+                GuiDsStoreCreator.showCreation(null, v -> DataStoreProvider.CreationCategory.COMMAND.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(cmd);
@@ -63,8 +60,7 @@ public class StoreCreationMenu {
             db.setGraphic(new FontIcon("mdi2d-database-plus"));
             db.textProperty().bind(AppI18n.observable("addDatabase"));
             db.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
-                        v -> DataStoreProvider.CreationCategory.DATABASE.equals(v.getCreationCategory()));
+                GuiDsStoreCreator.showCreation(null, v -> DataStoreProvider.CreationCategory.DATABASE.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(db);
@@ -74,8 +70,7 @@ public class StoreCreationMenu {
             tunnel.setGraphic(new FontIcon("mdi2v-vector-polyline-plus"));
             tunnel.textProperty().bind(AppI18n.observable("addTunnel"));
             tunnel.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
-                        v -> DataStoreProvider.CreationCategory.TUNNEL.equals(v.getCreationCategory()));
+                GuiDsStoreCreator.showCreation(null, v -> DataStoreProvider.CreationCategory.TUNNEL.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(tunnel);
@@ -85,8 +80,7 @@ public class StoreCreationMenu {
             script.setGraphic(new FontIcon("mdi2s-script-text-outline"));
             script.textProperty().bind(AppI18n.observable("addScript"));
             script.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
-                                               v -> DataStoreProvider.CreationCategory.SCRIPT.equals(v.getCreationCategory()));
+                GuiDsStoreCreator.showCreation(null, v -> DataStoreProvider.CreationCategory.SCRIPT.equals(v.getCreationCategory()));
                 event.consume();
             });
             menu.getItems().add(script);

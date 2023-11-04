@@ -8,7 +8,9 @@ import io.xpipe.core.util.DataStateProvider;
  * It does not contain any information on what data is stored,
  * how the data is stored inside, or what part of the data store makes up the actual data source.
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
 public interface DataStore {
 
     default boolean isInStorage() {

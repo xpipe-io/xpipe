@@ -20,16 +20,14 @@ import java.util.function.Supplier;
 public class StandaloneFileBrowser {
 
     public static void localOpenFileChooser(
-            Property<FileStore> fileStoreProperty, Window owner, Map<String, List<String>> extensions) {
+            Property<FileStore> fileStoreProperty, Window owner, Map<String, List<String>> extensions
+    ) {
         PlatformThread.runLaterIfNeeded(() -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(AppI18n.get("browseFileTitle"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(AppI18n.get("anyFile"), "*"));
             extensions.forEach((key, value) -> {
-                fileChooser
-                        .getExtensionFilters()
-                        .add(new FileChooser.ExtensionFilter(
-                                key, value.stream().map(v -> "*." + v).toArray(String[]::new)));
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(key, value.stream().map(v -> "*." + v).toArray(String[]::new)));
             });
 
             File file = fileChooser.showOpenDialog(owner);
@@ -42,9 +40,7 @@ public class StandaloneFileBrowser {
     public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileStore> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER);
-            var comp = new BrowserComp(model)
-                    .apply(struc -> struc.get().setPrefSize(1200, 700))
-                    .apply(struc -> AppFont.normal(struc.get()));
+            var comp = new BrowserComp(model).apply(struc -> struc.get().setPrefSize(1200, 700)).apply(struc -> AppFont.normal(struc.get()));
             var window = AppWindowHelper.sideWindow(AppI18n.get("openFileTitle"), stage -> comp, true, null);
             model.setOnFinish(fileStores -> {
                 file.accept(fileStores.size() > 0 ? fileStores.get(0) : null);
@@ -58,9 +54,7 @@ public class StandaloneFileBrowser {
     public static void saveSingleFile(Property<FileStore> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_SAVE);
-            var comp = new BrowserComp(model)
-                    .apply(struc -> struc.get().setPrefSize(1200, 700))
-                    .apply(struc -> AppFont.normal(struc.get()));
+            var comp = new BrowserComp(model).apply(struc -> struc.get().setPrefSize(1200, 700)).apply(struc -> AppFont.normal(struc.get()));
             var window = AppWindowHelper.sideWindow(AppI18n.get("saveFileTitle"), stage -> comp, true, null);
             model.setOnFinish(fileStores -> {
                 file.setValue(fileStores.size() > 0 ? fileStores.get(0) : null);

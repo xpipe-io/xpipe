@@ -55,7 +55,8 @@ public class StorageJacksonModule extends SimpleModule {
             }
 
             var id = UUID.fromString(text);
-            var e = DataStorage.get().getStoreEntryIfPresent(id).filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).orElse(null);
+            var e = DataStorage.get().getStoreEntryIfPresent(id).filter(
+                    dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).orElse(null);
             if (e == null) {
                 return null;
             }

@@ -44,8 +44,7 @@ public class DataStoreId {
         }
 
         if (Arrays.stream(names).anyMatch(s -> s.contains("" + SEPARATOR))) {
-            throw new IllegalArgumentException(
-                    "Separator character " + SEPARATOR + " is not allowed in the names");
+            throw new IllegalArgumentException("Separator character " + SEPARATOR + " is not allowed in the names");
         }
 
         if (Arrays.stream(names).anyMatch(s -> s.trim().length() == 0)) {

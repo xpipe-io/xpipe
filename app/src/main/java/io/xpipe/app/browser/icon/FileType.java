@@ -18,34 +18,28 @@ public interface FileType {
     List<FileType> ALL = new ArrayList<>();
 
     static FileType byId(String id) {
-        return ALL.stream()
-                .filter(fileType -> fileType.getId().equals(id))
-                .findAny()
-                .orElseThrow();
+        return ALL.stream().filter(fileType -> fileType.getId().equals(id)).findAny().orElseThrow();
     }
 
     static void loadDefinitions() {
         AppResources.with(AppResources.XPIPE_MODULE, "file_list.txt", path -> {
-            try (var reader =
-                    new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
+            try (var reader = new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     var split = line.split("\\|");
                     var id = split[0].trim();
-                    var filter = Arrays.stream(split[1].split(","))
-                            .map(s -> {
-                                var r = s.trim();
-                                if (r.startsWith(".")) {
-                                    return r;
-                                }
+                    var filter = Arrays.stream(split[1].split(",")).map(s -> {
+                        var r = s.trim();
+                        if (r.startsWith(".")) {
+                            return r;
+                        }
 
-                                if (r.contains(".")) {
-                                    return r;
-                                }
+                        if (r.contains(".")) {
+                            return r;
+                        }
 
-                                return "." + r;
-                            })
-                            .toList();
+                        return "." + r;
+                    }).toList();
                     var darkIcon = split[2].trim();
                     var lightIcon = split.length > 3 ? split[3].trim() : darkIcon;
                     ALL.add(new FileType.Simple(id, lightIcon, darkIcon, filter.toArray(String[]::new)));
@@ -53,6 +47,12 @@ public interface FileType {
             }
         });
     }
+
+    String getId();
+
+    boolean matches(FileSystem.FileEntry entry);
+
+    String getIcon();
 
     @Getter
     class Simple implements FileType {
@@ -73,8 +73,7 @@ public interface FileType {
                 return false;
             }
 
-            return Arrays.stream(endings)
-                    .anyMatch(ending -> entry.getPath().toLowerCase().endsWith(ending.toLowerCase()));
+            return Arrays.stream(endings).anyMatch(ending -> entry.getPath().toLowerCase().endsWith(ending.toLowerCase()));
         }
 
         @Override
@@ -82,10 +81,4 @@ public interface FileType {
             return icon.getIcon();
         }
     }
-
-    String getId();
-
-    boolean matches(FileSystem.FileEntry entry);
-
-    String getIcon();
 }

@@ -1,7 +1,7 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.store.DataStoreId;
 import io.xpipe.core.source.DataSourceReference;
+import io.xpipe.core.store.DataStoreId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +22,10 @@ public class DataSourceReferenceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"abc:", "ab::c", "::abc"})
+    @ValueSource(
+            strings = {
+                    "abc:", "ab::c", "::abc"
+            })
     public void parseInvalidParameters(String arg) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             DataSourceReference.parse(arg);

@@ -32,8 +32,7 @@ public class DialogExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        UUID dialogKey;
+        @NonNull UUID dialogKey;
 
         String value;
         boolean cancel;

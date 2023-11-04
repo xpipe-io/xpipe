@@ -45,8 +45,7 @@ public class AppImages {
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    var relativeFileName = FilenameUtils.separatorsToUnix(
-                            basePath.relativize(file).toString());
+                    var relativeFileName = FilenameUtils.separatorsToUnix(basePath.relativize(file).toString());
                     try {
                         if (FilenameUtils.getExtension(file.toString()).equals("svg")) {
                             var s = Files.readString(file);
@@ -112,8 +111,7 @@ public class AppImages {
     }
 
     public static BufferedImage toAwtImage(Image fxImage) {
-        BufferedImage img =
-                new BufferedImage((int) fxImage.getWidth(), (int) fxImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage((int) fxImage.getWidth(), (int) fxImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
         for (int x = 0; x < fxImage.getWidth(); x++) {
             for (int y = 0; y < fxImage.getHeight(); y++) {
                 int rgb = fxImage.getPixelReader().getArgb(x, y);

@@ -25,7 +25,6 @@ public class InstanceExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        XPipeInstance instance;
+        @NonNull XPipeInstance instance;
     }
 }

@@ -2,11 +2,11 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.LocalStore;
 import lombok.SneakyThrows;
 
 import java.io.FilterInputStream;
@@ -23,15 +23,9 @@ public class FileOpener {
 
         var file = entry.getPath();
         var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
-        FileBridge.get()
-                .openIO(
-                        FileNames.getFileName(file),
-                        key,
-                        () -> {
-                            return entry.getFileSystem().openInput(file);
-                        },
-                        () -> entry.getFileSystem().openOutput(file),
-                        s -> openInDefaultApplication(s));
+        FileBridge.get().openIO(FileNames.getFileName(file), key, () -> {
+            return entry.getFileSystem().openInput(file);
+        }, () -> entry.getFileSystem().openOutput(file), s -> openInDefaultApplication(s));
     }
 
     public static void openInTextEditor(FileSystem.FileEntry entry) {
@@ -42,15 +36,9 @@ public class FileOpener {
 
         var file = entry.getPath();
         var key = entry.getPath().hashCode() + entry.getFileSystem().hashCode();
-        FileBridge.get()
-                .openIO(
-                        FileNames.getFileName(file),
-                        key,
-                        () -> {
-                            return entry.getFileSystem().openInput(file);
-                        },
-                        () -> entry.getFileSystem().openOutput(file),
-                        FileOpener::openInTextEditor);
+        FileBridge.get().openIO(FileNames.getFileName(file), key, () -> {
+            return entry.getFileSystem().openInput(file);
+        }, () -> entry.getFileSystem().openOutput(file), FileOpener::openInTextEditor);
     }
 
     public static void openInTextEditor(String file) {
@@ -62,10 +50,8 @@ public class FileOpener {
         try {
             editor.launch(Path.of(file).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .description("Unable to launch editor " + editor.toTranslatedString()
-                            + ".\nMaybe try to use a different editor in the settings.")
-                    .expected()
+            ErrorEvent.fromThrowable(e).description(
+                            "Unable to launch editor " + editor.toTranslatedString() + ".\nMaybe try to use a different editor in the settings.").expected()
                     .handle();
         }
     }
@@ -80,9 +66,7 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + file + "\"");
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .description("Unable to open file " + file)
-                    .handle();
+            ErrorEvent.fromThrowable(e).description("Unable to open file " + file).handle();
         }
     }
 
@@ -95,18 +79,12 @@ public class FileOpener {
     }
 
     public static void openCommandOutput(String keyName, Object key, CommandControl cc) {
-        FileBridge.get()
-                .openIO(
-                        keyName,
-                        key,
-                        () -> new FilterInputStream(cc.getStdout()) {
-                            @Override
-                            @SneakyThrows
-                            public void close() {
-                                cc.close();
-                            }
-                        },
-                        null,
-                        file -> openInTextEditor(file));
+        FileBridge.get().openIO(keyName, key, () -> new FilterInputStream(cc.getStdout()) {
+            @Override
+            @SneakyThrows
+            public void close() {
+                cc.close();
+            }
+        }, null, file -> openInTextEditor(file));
     }
 }

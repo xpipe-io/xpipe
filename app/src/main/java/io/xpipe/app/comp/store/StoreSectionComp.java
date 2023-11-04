@@ -21,12 +21,11 @@ import java.util.List;
 
 public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
+    public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
     private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
     private static final PseudoClass SUB = PseudoClass.getPseudoClass("sub");
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even-depth");
-    public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
-
     private final StoreSection section;
     private final boolean topLevel;
 
@@ -37,89 +36,59 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = StandardStoreEntryComp.customSection(section, topLevel)
-                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
-        var button = new IconButtonComp(
-                        Bindings.createStringBinding(
-                                () -> section.getWrapper().getExpanded().get()
-                                                && section.getShownChildren().size() > 0
-                                        ? "mdal-keyboard_arrow_down"
-                                        : "mdal-keyboard_arrow_right",
-                                section.getWrapper().getExpanded(),
-                                section.getShownChildren()),
-                        () -> {
-                            section.getWrapper().toggleExpanded();
-                        })
-                .apply(struc -> struc.get().setMinWidth(30))
-                .apply(struc -> struc.get().setPrefWidth(30))
-                .focusTraversable()
-                .accessibleText("Expand")
-                .disable(BindingsHelper.persist(
-                        Bindings.size(section.getShownChildren()).isEqualTo(0)))
-                .grow(false, true)
-                .styleClass("expand-button");
+        var root = StandardStoreEntryComp.customSection(section, topLevel).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+        var button = new IconButtonComp(Bindings.createStringBinding(
+                () -> section.getWrapper().getExpanded().get() && section.getShownChildren().size() > 0 ?
+                        "mdal-keyboard_arrow_down" :
+                        "mdal-keyboard_arrow_right", section.getWrapper().getExpanded(), section.getShownChildren()), () -> {
+            section.getWrapper().toggleExpanded();
+        }).apply(struc -> struc.get().setMinWidth(30)).apply(struc -> struc.get().setPrefWidth(30)).focusTraversable().accessibleText("Expand")
+                .disable(BindingsHelper.persist(Bindings.size(section.getShownChildren()).isEqualTo(0))).grow(false, true).styleClass(
+                        "expand-button");
         List<Comp<?>> topEntryList = List.of(button, root);
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
-        var listSections = BindingsHelper.filteredContentBinding(
-                section.getShownChildren(),
-                storeSection -> section.getAllChildren().size() <= 20
-                        || section.getWrapper().getExpanded().get(),
-                section.getWrapper().getExpanded(),
+        var listSections = BindingsHelper.filteredContentBinding(section.getShownChildren(),
+                storeSection -> section.getAllChildren().size() <= 20 || section.getWrapper().getExpanded().get(), section.getWrapper().getExpanded(),
                 section.getAllChildren());
         var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
-                    return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
-                })
-                .withLimit(100)
-                .hgrow();
+            return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
+        }).withLimit(100).hgrow();
 
-        var expanded = Bindings.createBooleanBinding(
-                () -> {
-                    return section.getWrapper().getExpanded().get()
-                            && section.getShownChildren().size() > 0;
-                },
-                section.getWrapper().getExpanded(),
-                section.getShownChildren());
+        var expanded = Bindings.createBooleanBinding(() -> {
+            return section.getWrapper().getExpanded().get() && section.getShownChildren().size() > 0;
+        }, section.getWrapper().getExpanded(), section.getShownChildren());
 
-        return new VerticalComp(List.of(
-                        new HorizontalComp(topEntryList)
-                                .apply(struc -> struc.get().setFillHeight(true)),
-                        Comp.separator().visible(expanded),
-                        new HorizontalComp(List.of(content))
-                                .styleClass("content")
-                                .apply(struc -> struc.get().setFillHeight(true))
-                                .hide(BindingsHelper.persist(Bindings.or(
-                                        Bindings.not(section.getWrapper().getExpanded()),
-                                        Bindings.size(section.getAllChildren()).isEqualTo(0))))))
-                .styleClass("store-entry-section-comp")
-                .apply(struc -> {
+        return new VerticalComp(
+                List.of(new HorizontalComp(topEntryList).apply(struc -> struc.get().setFillHeight(true)), Comp.separator().visible(expanded),
+                        new HorizontalComp(List.of(content)).styleClass("content").apply(struc -> struc.get().setFillHeight(true))
+                                .hide(BindingsHelper.persist(Bindings.or(Bindings.not(section.getWrapper().getExpanded()),
+                                        Bindings.size(section.getAllChildren()).isEqualTo(0)))))).styleClass("store-entry-section-comp").apply(
+                struc -> {
                     struc.get().setFillWidth(true);
                     SimpleChangeListener.apply(expanded, val -> {
                         struc.get().pseudoClassStateChanged(EXPANDED, val);
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
                     struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
-                })
-                .apply(struc -> SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
-                    if (!topLevel) {
-                        return;
-                    }
+                }).apply(struc -> SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+            if (!topLevel) {
+                return;
+            }
 
-                    struc.get().getStyleClass().removeIf(s -> Arrays.stream(DataStoreColor.values())
-                            .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
-                    struc.get().getStyleClass().remove("none");
-                    struc.get().getStyleClass().add("color-box");
-                    if (val != null) {
-                        struc.get().getStyleClass().add(val.getId());
-                    } else {
-                        struc.get().getStyleClass().add("none");
-                    }
-                }))
-                .apply(struc -> {
-                    struc.get().pseudoClassStateChanged(ROOT, topLevel);
-                    struc.get().pseudoClassStateChanged(SUB, !topLevel);
-                })
-                .createStructure();
+            struc.get().getStyleClass().removeIf(
+                    s -> Arrays.stream(DataStoreColor.values()).anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
+            struc.get().getStyleClass().remove("none");
+            struc.get().getStyleClass().add("color-box");
+            if (val != null) {
+                struc.get().getStyleClass().add(val.getId());
+            } else {
+                struc.get().getStyleClass().add("none");
+            }
+        })).apply(struc -> {
+            struc.get().pseudoClassStateChanged(ROOT, topLevel);
+            struc.get().pseudoClassStateChanged(SUB, !topLevel);
+        }).createStructure();
     }
 }

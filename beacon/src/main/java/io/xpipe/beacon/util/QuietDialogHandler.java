@@ -40,13 +40,9 @@ public class QuietDialogHandler {
             response = handleQuery(q);
         }
 
-        DialogExchange.Response res = connection.performSimpleExchange(DialogExchange.Request.builder()
-                .dialogKey(dialogKey)
-                .value(response)
-                .build());
+        DialogExchange.Response res = connection.performSimpleExchange(DialogExchange.Request.builder().dialogKey(dialogKey).value(response).build());
         if (res.getElement() != null && element.equals(res.getElement())) {
-            throw new BeaconException(
-                    "Invalid value for key " + res.getElement().toDisplayString());
+            throw new BeaconException("Invalid value for key " + res.getElement().toDisplayString());
         }
 
         element = res.getElement();

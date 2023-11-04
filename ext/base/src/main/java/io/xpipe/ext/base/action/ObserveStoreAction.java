@@ -9,22 +9,6 @@ import lombok.Value;
 
 public class ObserveStoreAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntryRef<ObservableDataStore> store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
-
-        @Override
-        public void execute() {
-            store.getStore().toggleObserverState(!store.getStore().getObserverState());
-        }
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<ObservableDataStore>() {
@@ -49,5 +33,21 @@ public class ObserveStoreAction implements ActionProvider {
                 return store.getStore().getObserverState() ? "mdi2e-eye-off-outline" : "mdi2e-eye-outline";
             }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntryRef<ObservableDataStore> store;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+            store.getStore().toggleObserverState(!store.getStore().getObserverState());
+        }
     }
 }

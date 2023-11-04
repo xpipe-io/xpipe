@@ -17,12 +17,10 @@ public interface CommandControl extends ProcessControl {
     int START_FAILED_EXIT_CODE = -3;
     int INTERNAL_ERROR_EXIT_CODE = -4;
 
-    enum TerminalExitMode {
-        KEEP_OPEN,
-        CLOSE
-    }
-
     CommandControl withExceptionConverter(ExceptionConverter converter);
+
+    @Override
+    CommandControl start() throws Exception;
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
 
@@ -66,9 +64,6 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
-    @Override
-    CommandControl start() throws Exception;
-
     CommandControl exitTimeout(Integer timeout);
 
     void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c);
@@ -103,4 +98,9 @@ public interface CommandControl extends ProcessControl {
     void discardOut();
 
     void discardErr();
+
+    enum TerminalExitMode {
+        KEEP_OPEN,
+        CLOSE
+    }
 }

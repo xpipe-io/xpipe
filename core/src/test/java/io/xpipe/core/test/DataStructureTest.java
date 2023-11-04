@@ -27,12 +27,7 @@ public class DataStructureTest {
         var flatArray = ArrayNode.of(List.of(ValueNode.of(1), ValueNode.of(2)));
         var flatTuple = TupleNode.builder().add("key1", val).build();
         var nestedArray = ArrayNode.of(List.of(flatArray, flatTuple));
-        return TupleNode.builder()
-                .add("key1", val)
-                .add("key2", flatArray)
-                .add("key3", flatTuple)
-                .add("key4", nestedArray)
-                .build();
+        return TupleNode.builder().add("key1", val).add("key2", flatArray).add("key3", flatTuple).add("key4", nestedArray).build();
     }
 
     @Test

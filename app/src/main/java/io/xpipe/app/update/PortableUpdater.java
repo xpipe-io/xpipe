@@ -18,13 +18,8 @@ public class PortableUpdater extends UpdateHandler {
     @Override
     public Region createInterface() {
         return new ButtonComp(AppI18n.observable("checkOutUpdate"), () -> {
-                    Hyperlinks.open(XPipeDistributionType.get()
-                            .getUpdateHandler()
-                            .getPreparedUpdate()
-                            .getValue()
-                            .getReleaseUrl());
-                })
-                .createRegion();
+            Hyperlinks.open(XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue().getReleaseUrl());
+        }).createRegion();
     }
 
     public void executeUpdateAndCloseImpl() {
@@ -33,8 +28,7 @@ public class PortableUpdater extends UpdateHandler {
 
     public synchronized AvailableRelease refreshUpdateCheckImpl() throws Exception {
         var rel = AppDownloads.getLatestSuitableRelease();
-        event("Determined latest suitable release "
-                + rel.map(GHRelease::getName).orElse(null));
+        event("Determined latest suitable release " + rel.map(GHRelease::getName).orElse(null));
 
         if (rel.isEmpty()) {
             lastUpdateCheckResult.setValue(null);
@@ -42,15 +36,9 @@ public class PortableUpdater extends UpdateHandler {
         }
 
         var isUpdate = isUpdate(rel.get().getTagName());
-        lastUpdateCheckResult.setValue(new AvailableRelease(
-                AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
-                rel.get().getTagName(),
-                rel.get().getHtmlUrl().toString(),
-                null,
-                null,
-                Instant.now(),
-                isUpdate));
+        lastUpdateCheckResult.setValue(
+                new AvailableRelease(AppProperties.get().getVersion(), XPipeDistributionType.get().getId(), rel.get().getTagName(),
+                        rel.get().getHtmlUrl().toString(), null, null, Instant.now(), isUpdate));
         return lastUpdateCheckResult.getValue();
     }
 }

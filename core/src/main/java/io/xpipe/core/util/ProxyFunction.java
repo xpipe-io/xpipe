@@ -25,13 +25,13 @@ public abstract class ProxyFunction {
 
     @SneakyThrows
     public ProxyFunction callAndCopy() {
-//        var proxyStore = ProxyProvider.get().getProxy(getProxyBase());
-//        if (proxyStore != null) {
-//            return ProxyProvider.get().call(this, proxyStore);
-//        } else {
-//            callLocal();
-//            return this;
-//        }
+        //        var proxyStore = ProxyProvider.get().getProxy(getProxyBase());
+        //        if (proxyStore != null) {
+        //            return ProxyProvider.get().call(this, proxyStore);
+        //        } else {
+        //            callLocal();
+        //            return this;
+        //        }
         return null;
     }
 

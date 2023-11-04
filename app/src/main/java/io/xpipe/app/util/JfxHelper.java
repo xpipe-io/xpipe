@@ -39,16 +39,10 @@ public class JfxHelper {
         var pane = new StackPane(graphic);
         var hbox = new HBox(pane, text);
         hbox.setSpacing(8);
-        pane.prefWidthProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> (header.getHeight() + desc.getHeight()) * 0.6,
-                        header.heightProperty(),
-                        desc.heightProperty()));
-        pane.prefHeightProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> header.getHeight() + desc.getHeight() + 2,
-                        header.heightProperty(),
-                        desc.heightProperty()));
+        pane.prefWidthProperty().bind(
+                Bindings.createDoubleBinding(() -> (header.getHeight() + desc.getHeight()) * 0.6, header.heightProperty(), desc.heightProperty()));
+        pane.prefHeightProperty().bind(
+                Bindings.createDoubleBinding(() -> header.getHeight() + desc.getHeight() + 2, header.heightProperty(), desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
             graphic.setIconSize((int) (size * 0.55));

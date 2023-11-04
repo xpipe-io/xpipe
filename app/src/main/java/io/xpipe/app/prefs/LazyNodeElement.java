@@ -9,15 +9,15 @@ public class LazyNodeElement<N extends Node> extends Element<LazyNodeElement<N>>
 
     protected Supplier<N> node;
 
-    public static <T extends Node> LazyNodeElement<T> of(Supplier<T> node) {
-        return new LazyNodeElement<>(node);
-    }
-
     protected LazyNodeElement(Supplier<N> node) {
         if (node == null) {
             throw new NullPointerException("Node argument must not be null");
         }
         this.node = node;
+    }
+
+    public static <T extends Node> LazyNodeElement<T> of(Supplier<T> node) {
+        return new LazyNodeElement<>(node);
     }
 
     public N getNode() {

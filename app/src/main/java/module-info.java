@@ -3,7 +3,10 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.cli.*;
-import io.xpipe.app.ext.*;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
@@ -121,41 +124,13 @@ open module io.xpipe.app {
     uses io.xpipe.app.util.LicensedFeature;
 
     provides Module with StorageJacksonModule;
-    provides ModuleLayerLoader with
-            ActionProvider.Loader,
-            PrefsProvider.Loader,
-            BrowserAction.Loader,
-            LicenseProvider.Loader,
-            ScanProvider.Loader;
-    provides DataStateProvider with
-            DataStateProviderImpl;
-    provides ProxyManagerProvider with
-            ProxyManagerProviderImpl;
-    provides SLF4JServiceProvider with
-            AppLogs.Slf4jProvider;
-    provides EventHandler with
-            EventHandlerImpl;
-    provides MessageExchangeImpl with
-            ReadDrainExchangeImpl,
-            EditStoreExchangeImpl,
-            StoreProviderListExchangeImpl,
-            OpenExchangeImpl,
-            LaunchExchangeImpl,
-            FocusExchangeImpl,
-            StatusExchangeImpl,
-            DrainExchangeImpl,
-            SinkExchangeImpl,
-            StopExchangeImpl,
-            ModeExchangeImpl,
-            DialogExchangeImpl,
-            RemoveStoreExchangeImpl,
-            RenameStoreExchangeImpl,
-            ListStoresExchangeImpl,
-            StoreAddExchangeImpl,
-            AskpassExchangeImpl,
-            QueryStoreExchangeImpl,
-            WriteStreamExchangeImpl,
-            ReadStreamExchangeImpl,
-            InstanceExchangeImpl,
-            VersionExchangeImpl;
+    provides ModuleLayerLoader with ActionProvider.Loader, PrefsProvider.Loader, BrowserAction.Loader, LicenseProvider.Loader, ScanProvider.Loader;
+    provides DataStateProvider with DataStateProviderImpl;
+    provides ProxyManagerProvider with ProxyManagerProviderImpl;
+    provides SLF4JServiceProvider with AppLogs.Slf4jProvider;
+    provides EventHandler with EventHandlerImpl;
+    provides MessageExchangeImpl with ReadDrainExchangeImpl, EditStoreExchangeImpl, StoreProviderListExchangeImpl, OpenExchangeImpl,
+            LaunchExchangeImpl, FocusExchangeImpl, StatusExchangeImpl, DrainExchangeImpl, SinkExchangeImpl, StopExchangeImpl, ModeExchangeImpl,
+            DialogExchangeImpl, RemoveStoreExchangeImpl, RenameStoreExchangeImpl, ListStoresExchangeImpl, StoreAddExchangeImpl, AskpassExchangeImpl
+            , QueryStoreExchangeImpl, WriteStreamExchangeImpl, ReadStreamExchangeImpl, InstanceExchangeImpl, VersionExchangeImpl;
 }

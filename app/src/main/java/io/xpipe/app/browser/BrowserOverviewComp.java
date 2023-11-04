@@ -29,32 +29,24 @@ public class BrowserOverviewComp extends SimpleComp {
     protected Region createSimple() {
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         // TODO: May be move this into another thread
-        var common = sc.getOsType().determineInterestingPaths(sc).stream()
-                .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
+        var common = sc.getOsType().determineInterestingPaths(sc).stream().map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
                 .filter(entry -> {
                     try {
-                        return sc.getShellDialect()
-                                .directoryExists(sc, entry.getPath())
-                                .executeAndCheck();
+                        return sc.getShellDialect().directoryExists(sc, entry.getPath()).executeAndCheck();
                     } catch (Exception e) {
                         ErrorEvent.fromThrowable(e).handle();
                         return false;
                     }
-                })
-                .toList();
+                }).toList();
         var commonOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(common), false);
-        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview)
-                .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
+        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview).apply(
+                struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
 
-        var roots = sc.getShellDialect()
-                .listRoots(sc)
-                .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
-                .toList();
+        var roots = sc.getShellDialect().listRoots(sc).map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s)).toList();
         var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview);
 
-        var recent = BindingsHelper.mappedContentBinding(
-                model.getSavedState().getRecentDirectories(),
+        var recent = BindingsHelper.mappedContentBinding(model.getSavedState().getRecentDirectories(),
                 s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()));
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview);

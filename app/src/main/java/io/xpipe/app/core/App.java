@@ -69,27 +69,13 @@ public class App extends Application {
 
     public void setupWindow() {
         var content = new AppLayoutComp();
-        var titleBinding = Bindings.createStringBinding(
-                () -> {
-                    var base = String.format(
-                            "XPipe Desktop (%s)", AppProperties.get().getVersion());
-                    var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
-                    var suffix = XPipeDistributionType.get()
-                                            .getUpdateHandler()
-                                            .getPreparedUpdate()
-                                            .getValue()
-                                    != null
-                            ? String.format(
-                                    " (Update to %s ready)",
-                                    XPipeDistributionType.get()
-                                            .getUpdateHandler()
-                                            .getPreparedUpdate()
-                                            .getValue()
-                                            .getVersion())
-                            : "";
-                    return prefix + base + suffix;
-                },
-                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate());
+        var titleBinding = Bindings.createStringBinding(() -> {
+            var base = String.format("XPipe Desktop (%s)", AppProperties.get().getVersion());
+            var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
+            var suffix = XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null ? String.format(
+                    " (Update to %s ready)", XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue().getVersion()) : "";
+            return prefix + base + suffix;
+        }, XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate());
 
         var appWindow = AppMainWindow.init(stage);
         appWindow.getStage().titleProperty().bind(PlatformThread.sync(titleBinding));

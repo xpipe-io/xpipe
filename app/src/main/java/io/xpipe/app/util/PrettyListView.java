@@ -72,18 +72,10 @@ public class PrettyListView<T> extends ListView<T> {
         double w = getWidth();
         double h = getHeight();
         final double prefWidth = vBar.prefWidth(-1);
-        vBar.resizeRelocate(
-                w - prefWidth - insets.getRight(),
-                insets.getTop(),
-                prefWidth,
-                h - insets.getTop() - insets.getBottom());
+        vBar.resizeRelocate(w - prefWidth - insets.getRight(), insets.getTop(), prefWidth, h - insets.getTop() - insets.getBottom());
 
         final double prefHeight = hBar.prefHeight(-1);
-        hBar.resizeRelocate(
-                insets.getLeft(),
-                h - prefHeight - insets.getBottom(),
-                w - insets.getLeft() - insets.getRight(),
-                prefHeight);
+        hBar.resizeRelocate(insets.getLeft(), h - prefHeight - insets.getBottom(), w - insets.getLeft() - insets.getRight(), prefHeight);
     }
 
     public static class NoSelectionModel<T> extends MultipleSelectionModel<T> {

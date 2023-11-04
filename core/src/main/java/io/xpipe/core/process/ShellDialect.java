@@ -13,17 +13,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
 public interface ShellDialect {
 
     static String flatten(List<String> command) {
-        return command.stream()
-                .map(s -> s.contains(" ")
-                                && !(s.startsWith("\"") && s.endsWith("\""))
-                                && !(s.startsWith("'") && s.endsWith("'"))
-                        ? "\"" + s + "\""
-                        : s)
-                .collect(Collectors.joining(" "));
+        return command.stream().map(s -> s.contains(" ") && !(s.startsWith("\"") && s.endsWith("\"")) && !(s.startsWith("'") && s.endsWith("'")) ?
+                "\"" + s + "\"" :
+                s).collect(Collectors.joining(" "));
     }
 
     default boolean isSupportedShell() {

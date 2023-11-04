@@ -19,6 +19,13 @@ import java.util.List;
 public class AppLayoutModel {
 
     private static AppLayoutModel INSTANCE;
+    private final List<Entry> entries;
+    private final Property<Entry> selected;
+
+    public AppLayoutModel() {
+        this.entries = createEntryList();
+        this.selected = new SimpleObjectProperty<>(entries.get(1));
+    }
 
     public static AppLayoutModel get() {
         return INSTANCE;
@@ -26,14 +33,6 @@ public class AppLayoutModel {
 
     public static void init() {
         INSTANCE = new AppLayoutModel();
-    }
-
-    private final List<Entry> entries;
-    private final Property<Entry> selected;
-
-    public AppLayoutModel() {
-        this.entries = createEntryList();
-        this.selected = new SimpleObjectProperty<>(entries.get(1));
     }
 
     public void selectBrowser() {
@@ -53,24 +52,17 @@ public class AppLayoutModel {
     }
 
     private List<Entry> createEntryList() {
-        var l = new ArrayList<>(List.of(
-                new Entry(
-                        AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
+        var l = new ArrayList<>(List.of(new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new Entry(
-                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this))));
+                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this))));
         // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
         // StorageLayoutComp()),
         // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
         if (AppProperties.get().isDeveloperMode() && !AppProperties.get().isImage()) {
-            l.add(new Entry(
-                    AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
+            l.add(new Entry(AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
         }
 
-        l.add(new Entry(
-                AppI18n.observable("explorePlans"),
-                "mdi2p-professional-hexagon",
-                LicenseProvider.get().overviewPage()));
+        l.add(new Entry(AppI18n.observable("explorePlans"), "mdi2p-professional-hexagon", LicenseProvider.get().overviewPage()));
 
         return l;
     }

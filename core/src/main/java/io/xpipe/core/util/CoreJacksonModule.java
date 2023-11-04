@@ -35,16 +35,9 @@ public class CoreJacksonModule extends SimpleModule {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.registerSubtypes(
-                new NamedType(DefaultSecretValue.class),
-                new NamedType(StdinDataStore.class),
-                new NamedType(StdoutDataStore.class),
-                new NamedType(LocalStore.class),
-                new NamedType(ArrayType.class),
-                new NamedType(WildcardType.class),
-                new NamedType(BaseQueryElement.class),
-                new NamedType(ChoiceElement.class),
-                new NamedType(BusyElement.class),
+        context.registerSubtypes(new NamedType(DefaultSecretValue.class), new NamedType(StdinDataStore.class), new NamedType(StdoutDataStore.class),
+                new NamedType(LocalStore.class), new NamedType(ArrayType.class), new NamedType(WildcardType.class),
+                new NamedType(BaseQueryElement.class), new NamedType(ChoiceElement.class), new NamedType(BusyElement.class),
                 new NamedType(HeaderElement.class));
 
         for (ShellDialect t : ShellDialects.ALL) {
@@ -156,7 +149,9 @@ public class CoreJacksonModule extends SimpleModule {
     @JsonSerialize(as = Throwable.class)
     public abstract static class ThrowableTypeMixIn {
 
-        @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
+        @JsonIdentityInfo(
+                generator = ObjectIdGenerators.StringIdGenerator.class,
+                property = "$id")
         private Throwable cause;
     }
 }

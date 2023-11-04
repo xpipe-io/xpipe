@@ -20,8 +20,7 @@ import javafx.util.Duration;
 
 public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<S> {
 
-    private static final TooltipBehavior BEHAVIOR =
-            new TooltipBehavior(Duration.millis(400), Duration.INDEFINITE, Duration.millis(100));
+    private static final TooltipBehavior BEHAVIOR = new TooltipBehavior(Duration.millis(400), Duration.INDEFINITE, Duration.millis(100));
     private final ObservableValue<String> text;
 
     public FancyTooltipAugment(ObservableValue<String> text) {
@@ -130,46 +129,9 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
             visibleTimer.getKeyFrames().setAll(new KeyFrame(duration));
         }
 
-        private final EventHandler<MouseEvent> moveHandler = (MouseEvent event) -> {
-            // if tool tip is already showing, do nothing
-            if (visibleTimer.getStatus() == Timeline.Status.RUNNING) {
-                return;
-            }
-            hoveredNode = (Node) event.getSource();
-            Object property = hoveredNode.getProperties().get(TOOLTIP_PROP);
-            if (property instanceof JFXTooltip tooltip) {
-                ensureHoveredNodeIsVisible(() -> {
-                    // if a tooltip is already showing then show this tooltip immediately
-                    if (leftTimer.getStatus() == Timeline.Status.RUNNING) {
-                        if (currentTooltip != null) {
-                            currentTooltip.hide();
-                        }
-                        currentTooltip = tooltip;
-                        // show the tooltip
-                        showTooltip(tooltip);
-                        // stop left timer and start the visible timer to hide the tooltip
-                        // once finished
-                        leftTimer.stop();
-                        visibleTimer.playFromStart();
-                    } else {
-                        // else mark the tooltip as the next tooltip to be shown once the hover
-                        // timer is finished (restart the timer)
-                        //                        t.setActivated(true);
-                        nextTooltip = tooltip;
-                        hoverTimer.stop();
-                        hoverTimer.playFromStart();
-                    }
-                });
-            } else {
-                uninstall(hoveredNode);
-            }
-        };
-
         private void setLeftDelay(Duration duration) {
             leftTimer.getKeyFrames().setAll(new KeyFrame(duration));
         }
-
-        private final WeakEventHandler<MouseEvent> weakMoveHandler = new WeakEventHandler<>(moveHandler);
 
         private void hideCurrentTooltip() {
             currentTooltip.hide();
@@ -213,7 +175,40 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
                     weakPressedHandler.handle(null);
                 }
             }
-        }
+        }        private final EventHandler<MouseEvent> moveHandler = (MouseEvent event) -> {
+            // if tool tip is already showing, do nothing
+            if (visibleTimer.getStatus() == Timeline.Status.RUNNING) {
+                return;
+            }
+            hoveredNode = (Node) event.getSource();
+            Object property = hoveredNode.getProperties().get(TOOLTIP_PROP);
+            if (property instanceof JFXTooltip tooltip) {
+                ensureHoveredNodeIsVisible(() -> {
+                    // if a tooltip is already showing then show this tooltip immediately
+                    if (leftTimer.getStatus() == Timeline.Status.RUNNING) {
+                        if (currentTooltip != null) {
+                            currentTooltip.hide();
+                        }
+                        currentTooltip = tooltip;
+                        // show the tooltip
+                        showTooltip(tooltip);
+                        // stop left timer and start the visible timer to hide the tooltip
+                        // once finished
+                        leftTimer.stop();
+                        visibleTimer.playFromStart();
+                    } else {
+                        // else mark the tooltip as the next tooltip to be shown once the hover
+                        // timer is finished (restart the timer)
+                        //                        t.setActivated(true);
+                        nextTooltip = tooltip;
+                        hoverTimer.stop();
+                        hoverTimer.playFromStart();
+                    }
+                });
+            } else {
+                uninstall(hoveredNode);
+            }
+        };
 
         private void ensureHoveredNodeIsVisible(Runnable visibleRunnable) {
             final Window owner = getWindow(hoveredNode);
@@ -229,5 +224,12 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
             final Scene scene = node == null ? null : node.getScene();
             return scene == null ? null : scene.getWindow();
         }
+
+
+
+
+        private final WeakEventHandler<MouseEvent> weakMoveHandler = new WeakEventHandler<>(moveHandler);
+
+
     }
 }

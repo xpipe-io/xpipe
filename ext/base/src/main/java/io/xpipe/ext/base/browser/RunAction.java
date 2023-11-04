@@ -30,9 +30,7 @@ public class RunAction extends MultiExecuteAction {
         }
 
         var os = shell.get().getOsType();
-        if (os.equals(OsType.WINDOWS)
-                && Stream.of("exe", "bat", "ps1", "cmd")
-                        .anyMatch(s -> e.getPath().endsWith(s))) {
+        if (os.equals(OsType.WINDOWS) && Stream.of("exe", "bat", "ps1", "cmd").anyMatch(s -> e.getPath().endsWith(s))) {
             return true;
         }
 
@@ -44,13 +42,13 @@ public class RunAction extends MultiExecuteAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.CUSTOM;
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new FontIcon("mdi2p-play");
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2p-play");
+    public Category getCategory() {
+        return Category.CUSTOM;
     }
 
     @Override

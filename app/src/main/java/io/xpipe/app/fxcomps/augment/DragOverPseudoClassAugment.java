@@ -18,7 +18,6 @@ public class DragOverPseudoClassAugment<S extends CompStructure<?>> implements A
             struc.get().pseudoClassStateChanged(DRAGGED_PSEUDOCLASS, true);
         });
 
-        struc.get().addEventFilter(DragEvent.DRAG_EXITED, event -> struc.get()
-                .pseudoClassStateChanged(DRAGGED_PSEUDOCLASS, false));
+        struc.get().addEventFilter(DragEvent.DRAG_EXITED, event -> struc.get().pseudoClassStateChanged(DRAGGED_PSEUDOCLASS, false));
     }
 }

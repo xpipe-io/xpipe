@@ -44,20 +44,15 @@ public class AppWindowHelper {
 
         // This allows for assigning logos even if AppImages has not been initialized yet
         AppResources.with(AppResources.XPIPE_MODULE, "img/logo", path -> {
-            for (String s : List.of(
-                    "logo_16x16.png",
-                    "logo_24x24.png",
-                    "logo_32x32.png",
-                    "logo_48x48.png",
-                    "logo_128x128.png",
-                    "logo_256x256.png")) {
+            for (String s : List.of("logo_16x16.png", "logo_24x24.png", "logo_32x32.png", "logo_48x48.png", "logo_128x128.png", "logo_256x256.png")) {
                 stage.getIcons().add(AppImages.loadImage(path.resolve(s)));
             }
         });
     }
 
     public static Stage sideWindow(
-            String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
+            String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading
+    ) {
         var stage = new Stage();
         stage.setTitle(title);
         addIcons(stage);
@@ -82,7 +77,8 @@ public class AppWindowHelper {
     }
 
     public static void showAlert(
-            Consumer<Alert> c, ObservableValue<Boolean> loading, Consumer<Optional<ButtonType>> bt) {
+            Consumer<Alert> c, ObservableValue<Boolean> loading, Consumer<Optional<ButtonType>> bt
+    ) {
         ThreadHelper.runAsync(() -> {
             var r = showBlockingAlert(c);
             if (bt != null) {
@@ -159,7 +155,8 @@ public class AppWindowHelper {
     }
 
     public static void setupContent(
-            Stage stage, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
+            Stage stage, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading
+    ) {
         var baseComp = contentFunc.apply(stage);
         var content = loading != null ? new LoadingOverlayComp(baseComp, loading) : baseComp;
         var contentR = content.createRegion();

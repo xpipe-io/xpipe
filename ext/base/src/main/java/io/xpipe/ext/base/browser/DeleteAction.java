@@ -28,13 +28,13 @@ public class DeleteAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.MUTATION;
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new FontIcon("mdi2d-delete");
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2d-delete");
+    public Category getCategory() {
+        return Category.MUTATION;
     }
 
     @Override

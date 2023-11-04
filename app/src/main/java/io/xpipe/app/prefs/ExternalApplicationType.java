@@ -2,10 +2,10 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.LocalStore;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,14 +20,14 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         this.id = id;
     }
 
+    public abstract boolean isAvailable();
+
+    public abstract boolean isSelectable();
+
     @Override
     public String getId() {
         return id;
     }
-
-    public abstract boolean isSelectable();
-
-    public abstract boolean isAvailable();
 
     @Override
     public String toString() {
@@ -45,11 +45,11 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         protected Optional<Path> getApplicationPath() {
             try (ShellControl pc = LocalStore.getShell().start()) {
-                try (var c = pc.command(String.format(
-                                "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister "
-                                        + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|.Trash|/Volumes/%s\" | uniq",
-                                applicationName, applicationName))
-                        .start()) {
+                try (var c = pc.command(String.format("/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices" +
+                                ".framework/Versions/A/Support/lsregister " +
+                                "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|.Trash|/Volumes/%s\" | uniq",
+                        applicationName,
+                        applicationName)).start()) {
                     var path = c.readStdoutDiscardErr();
                     if (c.getExitCode() != 0 || path.isBlank()) {
                         return Optional.empty();
@@ -122,9 +122,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
-            try (var cc = LocalStore.getShell()
-                    .command(ShellDialects.getPlatformDefault().getWhichCommand(executable))
-                    .start()) {
+            try (var cc = LocalStore.getShell().command(ShellDialects.getPlatformDefault().getWhichCommand(executable)).start()) {
                 var out = cc.readStdoutDiscardErr();
                 var exit = cc.getExitCode();
                 if (exit == 0) {

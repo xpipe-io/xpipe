@@ -33,8 +33,6 @@ public class ScriptGroupStore extends ScriptStore implements GroupStore<ScriptSt
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
         var self = getSelfEntry();
-        return DataStorage.get().getDeepStoreChildren(self).stream()
-                .map(dataStoreEntry -> dataStoreEntry.<ScriptStore>ref())
-                .toList();
+        return DataStorage.get().getDeepStoreChildren(self).stream().map(dataStoreEntry -> dataStoreEntry.<ScriptStore>ref()).toList();
     }
 }

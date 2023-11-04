@@ -11,58 +11,9 @@ import lombok.Value;
 
 public class EditStoreAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
-
-        @Override
-        public void execute() {
-            GuiDsStoreCreator.showEdit(store);
-        }
-    }
-
-    @Override
-    public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
-        return new DefaultDataStoreCallSite<>() {
-            @Override
-            public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get()
-                        .getValidity()
-                        .equals(DataStoreEntry.Validity.INCOMPLETE);
-            }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<DataStore> getApplicableClass() {
-                return DataStore.class;
-            }
-        };
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<>() {
-
-            @Override
-            public boolean isMajor(DataStoreEntryRef<DataStore> o) {
-                var provider = o.get().getProvider();
-                return provider.shouldEdit();
-            }
-
-            @Override
-            public ActiveType activeType() {
-                return ActiveType.ALWAYS_ENABLE;
-            }
 
             @Override
             public boolean isSystemAction() {
@@ -80,6 +31,12 @@ public class EditStoreAction implements ActionProvider {
             }
 
             @Override
+            public boolean isMajor(DataStoreEntryRef<DataStore> o) {
+                var provider = o.get().getProvider();
+                return provider.shouldEdit();
+            }
+
+            @Override
             public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
                 return AppI18n.observable("base.edit");
             }
@@ -88,6 +45,47 @@ public class EditStoreAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<DataStore> store) {
                 return "mdal-edit";
             }
+
+            @Override
+            public ActiveType activeType() {
+                return ActiveType.ALWAYS_ENABLE;
+            }
         };
+    }
+
+    @Override
+    public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
+        return new DefaultDataStoreCallSite<>() {
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<DataStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<DataStore> getApplicableClass() {
+                return DataStore.class;
+            }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+                return o.get().getValidity().equals(DataStoreEntry.Validity.INCOMPLETE);
+            }
+        };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry store;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+            GuiDsStoreCreator.showEdit(store);
+        }
     }
 }

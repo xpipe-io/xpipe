@@ -1,8 +1,8 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.exchange.StopExchange;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -16,8 +16,7 @@ import java.util.List;
 public class BeaconServer {
 
     public static boolean isRunning() {
-        try (var ignored = BeaconClient.connect(
-                BeaconClient.ReachableCheckInformation.builder().build())) {
+        try (var ignored = BeaconClient.connect(BeaconClient.ReachableCheckInformation.builder().build())) {
             return true;
         } catch (Exception e) {
             return false;
@@ -31,8 +30,7 @@ public class BeaconServer {
     public static Process tryStartCustom() throws Exception {
         var custom = BeaconConfig.getCustomDaemonCommand();
         if (custom != null) {
-            var toExec =
-                    custom + (BeaconConfig.getDaemonArguments() != null ? " " + BeaconConfig.getDaemonArguments() : "");
+            var toExec = custom + (BeaconConfig.getDaemonArguments() != null ? " " + BeaconConfig.getDaemonArguments() : "");
             var command = toProcessCommand(toExec);
             Process process = Runtime.getRuntime().exec(command.toArray(String[]::new));
             printDaemonOutput(process, command);
@@ -44,11 +42,10 @@ public class BeaconServer {
     public static Process start(String installationBase, XPipeDaemonMode mode) throws Exception {
         String command;
         if (!BeaconConfig.launchDaemonInDebugMode()) {
-            command = XPipeInstallation.createExternalAsyncLaunchCommand(
-                    installationBase, mode, BeaconConfig.getDaemonArguments());
+            command = XPipeInstallation.createExternalAsyncLaunchCommand(installationBase, mode, BeaconConfig.getDaemonArguments());
         } else {
-            command = XPipeInstallation.createExternalLaunchCommand(
-                    getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments(), mode);
+            command = XPipeInstallation.createExternalLaunchCommand(getDaemonDebugExecutable(installationBase), BeaconConfig.getDaemonArguments(),
+                    mode);
         }
 
         var fullCommand = toProcessCommand(command);
@@ -63,43 +60,37 @@ public class BeaconServer {
             System.out.println("Starting daemon: " + command);
         }
 
-        var out = new Thread(
-                null,
-                () -> {
-                    try {
-                        InputStreamReader isr = new InputStreamReader(proc.getInputStream());
-                        BufferedReader br = new BufferedReader(isr);
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            if (print) {
-                                System.out.println("[xpiped] " + line);
-                            }
-                        }
-                    } catch (Exception ioe) {
-                        ioe.printStackTrace();
+        var out = new Thread(null, () -> {
+            try {
+                InputStreamReader isr = new InputStreamReader(proc.getInputStream());
+                BufferedReader br = new BufferedReader(isr);
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (print) {
+                        System.out.println("[xpiped] " + line);
                     }
-                },
-                "daemon sysout");
+                }
+            } catch (Exception ioe) {
+                ioe.printStackTrace();
+            }
+        }, "daemon sysout");
         out.setDaemon(true);
         out.start();
 
-        var err = new Thread(
-                null,
-                () -> {
-                    try {
-                        InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
-                        BufferedReader br = new BufferedReader(isr);
-                        String line;
-                        while ((line = br.readLine()) != null) {
-                            if (print) {
-                                System.err.println("[xpiped] " + line);
-                            }
-                        }
-                    } catch (Exception ioe) {
-                        ioe.printStackTrace();
+        var err = new Thread(null, () -> {
+            try {
+                InputStreamReader isr = new InputStreamReader(proc.getErrorStream());
+                BufferedReader br = new BufferedReader(isr);
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (print) {
+                        System.err.println("[xpiped] " + line);
                     }
-                },
-                "daemon syserr");
+                }
+            } catch (Exception ioe) {
+                ioe.printStackTrace();
+            }
+        }, "daemon syserr");
         err.setDaemon(true);
         err.start();
     }

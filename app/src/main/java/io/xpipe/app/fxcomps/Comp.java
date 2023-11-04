@@ -62,7 +62,8 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     @SuppressWarnings("unchecked")
     public static <IR extends Region, SIN extends CompStructure<IR>, OR extends Region> Comp<CompStructure<OR>> derive(
-            Comp<SIN> comp, Function<IR, OR> r) {
+            Comp<SIN> comp, Function<IR, OR> r
+    ) {
         return of(() -> r.apply((IR) comp.createRegion()));
     }
 

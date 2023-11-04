@@ -13,11 +13,6 @@ public class ImpersistentStorage extends DataStorage {
     }
 
     @Override
-    public boolean supportsSharing() {
-        return false;
-    }
-
-    @Override
     public void save() {
         var storesDir = getStoresDir();
 
@@ -29,6 +24,11 @@ public class ImpersistentStorage extends DataStorage {
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).build().handle();
         }
+    }
+
+    @Override
+    public boolean supportsSharing() {
+        return false;
     }
 
 }

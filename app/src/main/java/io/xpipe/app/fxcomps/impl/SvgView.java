@@ -65,7 +65,7 @@ public class SvgView {
         wv.setDisable(true);
 
         wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
-        SimpleChangeListener.apply(svgContent, n ->  {
+        SimpleChangeListener.apply(svgContent, n -> {
             if (n == null) {
                 wv.setOpacity(0.0);
                 return;
@@ -87,13 +87,9 @@ public class SvgView {
         });
 
         // As the aspect ratio of the WebView is kept constant, we can compute the zoom only using the width
-        wv.zoomProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> {
-                            return wv.getWidth() / width.getValue().doubleValue();
-                        },
-                        wv.widthProperty(),
-                        width));
+        wv.zoomProperty().bind(Bindings.createDoubleBinding(() -> {
+            return wv.getWidth() / width.getValue().doubleValue();
+        }, wv.widthProperty(), width));
 
         wv.maxWidthProperty().bind(wv.prefWidthProperty());
         wv.maxHeightProperty().bind(wv.prefHeightProperty());

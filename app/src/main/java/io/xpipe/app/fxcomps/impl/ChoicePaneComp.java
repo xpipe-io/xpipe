@@ -19,7 +19,9 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.function.Function;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 

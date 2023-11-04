@@ -20,8 +20,7 @@ import lombok.SneakyThrows;
 
 import java.util.List;
 
-public class StoreAddExchangeImpl extends StoreAddExchange
-        implements MessageExchangeImpl<StoreAddExchange.Request, StoreAddExchange.Response> {
+public class StoreAddExchangeImpl extends StoreAddExchange implements MessageExchangeImpl<StoreAddExchange.Request, StoreAddExchange.Response> {
 
     @Override
     @SneakyThrows
@@ -58,27 +57,21 @@ public class StoreAddExchangeImpl extends StoreAddExchange
 
     private Dialog createCompleteDialog(DataStoreProvider provider, Dialog creator, StringProperty name) {
         var validator = Dialog.header(() -> {
-                    DataStore store = creator.getResult();
-                    if (store == null) {
-                        return "Store is null";
-                    }
+            DataStore store = creator.getResult();
+            if (store == null) {
+                return "Store is null";
+            }
 
-                    return null;
-                })
-                .map((String msg) -> {
-                    return msg == null ? creator.getResult() : null;
-                });
+            return null;
+        }).map((String msg) -> {
+            return msg == null ? creator.getResult() : null;
+        });
 
         var creatorAndValidator = Dialog.chain(creator, Dialog.busy(), validator);
 
-        var nameQ = Dialog.retryIf(
-                        Dialog.query("Store name", true, true, false, name.getValue(), QueryConverter.STRING),
-                        (String r) -> {
-                            return DataStorage.get().getStoreEntryIfPresent(r).isPresent()
-                                    ? "Store with name " + r + " already exists"
-                                    : null;
-                        })
-                .onCompletion((String n) -> name.setValue(n));
+        var nameQ = Dialog.retryIf(Dialog.query("Store name", true, true, false, name.getValue(), QueryConverter.STRING), (String r) -> {
+            return DataStorage.get().getStoreEntryIfPresent(r).isPresent() ? "Store with name " + r + " already exists" : null;
+        }).onCompletion((String n) -> name.setValue(n));
 
         var display = Dialog.header(() -> {
             if (provider == null) {
@@ -97,48 +90,35 @@ public class StoreAddExchangeImpl extends StoreAddExchange
         });
 
         if (provider == null) {
-            return Dialog.chain(
-                            creatorAndValidator, Dialog.skipIf(display, () -> creatorAndValidator.getResult() == null))
-                    .evaluateTo(creatorAndValidator);
+            return Dialog.chain(creatorAndValidator, Dialog.skipIf(display, () -> creatorAndValidator.getResult() == null)).evaluateTo(
+                    creatorAndValidator);
         }
 
         var aborted = new SimpleBooleanProperty();
-        var addStore =
-                Dialog.skipIf(Dialog.chain(nameQ, display), () -> aborted.get() || validator.getResult() == null);
+        var addStore = Dialog.skipIf(Dialog.chain(nameQ, display), () -> aborted.get() || validator.getResult() == null);
 
         var prop = new SimpleObjectProperty<Dialog>();
-        var fork = Dialog.skipIf(
-                Dialog.fork(
-                                "Choose how to continue",
-                                List.of(
-                                        new Choice('r', "Retry"),
-                                        new Choice('i', "Ignore and continue"),
-                                        new Choice('e', "Edit configuration"),
-                                        new Choice('a', "Abort")),
-                                true,
-                                0,
-                                (Integer choice) -> {
-                                    if (choice == 0) {
-                                        return Dialog.chain(Dialog.busy(), validator, prop.get());
-                                    }
-                                    if (choice == 1) {
-                                        return null;
-                                    }
-                                    if (choice == 2) {
-                                        return Dialog.chain(creatorAndValidator, prop.get());
-                                    }
-                                    if (choice == 3) {
-                                        aborted.set(true);
-                                        return null;
-                                    }
+        var fork = Dialog.skipIf(Dialog.fork("Choose how to continue",
+                List.of(new Choice('r', "Retry"), new Choice('i', "Ignore and continue"), new Choice('e', "Edit configuration"),
+                        new Choice('a', "Abort")), true, 0, (Integer choice) -> {
+                    if (choice == 0) {
+                        return Dialog.chain(Dialog.busy(), validator, prop.get());
+                    }
+                    if (choice == 1) {
+                        return null;
+                    }
+                    if (choice == 2) {
+                        return Dialog.chain(creatorAndValidator, prop.get());
+                    }
+                    if (choice == 3) {
+                        aborted.set(true);
+                        return null;
+                    }
 
-                                    throw new AssertionError();
-                                })
-                        .evaluateTo(() -> null),
-                () -> validator.getResult() != null);
+                    throw new AssertionError();
+                }).evaluateTo(() -> null), () -> validator.getResult() != null);
         prop.set(fork);
 
-        return Dialog.chain(creatorAndValidator, fork, addStore)
-                .evaluateTo(() -> aborted.get() ? null : creator.getResult());
+        return Dialog.chain(creatorAndValidator, fork, addStore).evaluateTo(() -> aborted.get() ? null : creator.getResult());
     }
 }

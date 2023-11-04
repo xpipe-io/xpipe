@@ -18,8 +18,7 @@ import java.util.Map;
 public class SimpleValidator implements Validator {
 
     private final Map<Check, ChangeListener<ValidationResult>> checks = new LinkedHashMap<>();
-    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty =
-            new ReadOnlyObjectWrapper<>(new ValidationResult());
+    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>(new ValidationResult());
     private final ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
 
     /**
@@ -98,6 +97,28 @@ public class SimpleValidator implements Validator {
         return !containsErrors();
     }
 
+    /**
+     * Create a string property that depends on the validation result.
+     * Each error message will be displayed on a separate line prefixed with a bullet.
+     */
+    public StringBinding createStringBinding() {
+        return createStringBinding("- ", "\n");
+    }
+
+    @Override
+    public StringBinding createStringBinding(String prefix, String separator) {
+        return Bindings.createStringBinding(() -> {
+            StringBuilder str = new StringBuilder();
+            for (ValidationMessage msg : validationResultProperty.get().getMessages()) {
+                if (str.length() > 0) {
+                    str.append(separator);
+                }
+                str.append(prefix).append(msg.getText());
+            }
+            return str.toString();
+        }, validationResultProperty);
+    }
+
     private void refreshProperties() {
         ValidationResult nextResult = new ValidationResult();
         for (Check check : checks.keySet()) {
@@ -109,29 +130,5 @@ public class SimpleValidator implements Validator {
             hasErrors = hasErrors || msg.getSeverity() == Severity.ERROR;
         }
         containsErrorsProperty.set(hasErrors);
-    }
-
-    /**
-     * Create a string property that depends on the validation result.
-     * Each error message will be displayed on a separate line prefixed with a bullet.
-     */
-    public StringBinding createStringBinding() {
-        return createStringBinding("- ", "\n");
-    }
-
-    @Override
-    public StringBinding createStringBinding(String prefix, String separator) {
-        return Bindings.createStringBinding(
-                () -> {
-                    StringBuilder str = new StringBuilder();
-                    for (ValidationMessage msg : validationResultProperty.get().getMessages()) {
-                        if (str.length() > 0) {
-                            str.append(separator);
-                        }
-                        str.append(prefix).append(msg.getText());
-                    }
-                    return str.toString();
-                },
-                validationResultProperty);
     }
 }

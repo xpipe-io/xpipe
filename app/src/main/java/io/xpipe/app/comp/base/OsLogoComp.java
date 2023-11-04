@@ -6,8 +6,8 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.core.store.FileNames;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -20,6 +20,8 @@ import java.util.Map;
 
 public class OsLogoComp extends SimpleComp {
 
+    private static final Map<String, String> ICONS = new HashMap<>();
+    private static final String LINUX_DEFAULT = "linux.svg";
     private final StoreEntryWrapper wrapper;
     private final ObservableValue<SystemStateComp.State> state;
 
@@ -34,29 +36,21 @@ public class OsLogoComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var img = BindingsHelper.persist(Bindings.createObjectBinding(
-                () -> {
-                    if (state.getValue() != SystemStateComp.State.SUCCESS) {
-                        return null;
-                    }
+        var img = BindingsHelper.persist(Bindings.createObjectBinding(() -> {
+            if (state.getValue() != SystemStateComp.State.SUCCESS) {
+                return null;
+            }
 
-                    var ps = wrapper.getPersistentState().getValue();
-                    if (!(ps instanceof ShellStoreState sss)) {
-                        return null;
-                    }
+            var ps = wrapper.getPersistentState().getValue();
+            if (!(ps instanceof ShellStoreState sss)) {
+                return null;
+            }
 
-                    return getImage(sss.getOsName());
-                },
-                wrapper.getPersistentState(), state));
+            return getImage(sss.getOsName());
+        }, wrapper.getPersistentState(), state));
         var hide = BindingsHelper.map(img, s -> s != null);
-        return new StackComp(List.of(
-                        new SystemStateComp(state).hide(hide),
-                        PrettyImageHelper.ofSvg(img, 24, 24).visible(hide)))
-                .createRegion();
+        return new StackComp(List.of(new SystemStateComp(state).hide(hide), PrettyImageHelper.ofSvg(img, 24, 24).visible(hide))).createRegion();
     }
-
-    private static final Map<String, String> ICONS = new HashMap<>();
-    private static final String LINUX_DEFAULT = "linux.svg";
 
     private String getImage(String name) {
         if (name == null) {
@@ -66,14 +60,16 @@ public class OsLogoComp extends SimpleComp {
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
-                    list.filter(path -> !path.toString().endsWith(LINUX_DEFAULT)).map(path -> FileNames.getFileName(path.toString())).forEach(path -> {
-                        var base = FileNames.getBaseName(path).replace("-dark", "") + ".svg";
-                        ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
-                    });
+                    list.filter(path -> !path.toString().endsWith(LINUX_DEFAULT)).map(path -> FileNames.getFileName(path.toString())).forEach(
+                            path -> {
+                                var base = FileNames.getBaseName(path).replace("-dark", "") + ".svg";
+                                ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
+                            });
                 }
             });
         }
 
-        return ICONS.entrySet().stream().filter(e->name.toLowerCase().contains(e.getKey())).findAny().map(e->e.getValue()).orElse("os/" + LINUX_DEFAULT);
+        return ICONS.entrySet().stream().filter(e -> name.toLowerCase().contains(e.getKey())).findAny().map(e -> e.getValue()).orElse(
+                "os/" + LINUX_DEFAULT);
     }
 }

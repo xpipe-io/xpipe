@@ -19,16 +19,13 @@ public class SinkExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        DataStoreId source;
+        @NonNull DataStoreId source;
 
-        @NonNull
-        String path;
+        @NonNull String path;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response implements ResponseMessage {
-    }
+    public static class Response implements ResponseMessage {}
 }

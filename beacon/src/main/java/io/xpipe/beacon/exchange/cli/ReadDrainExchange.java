@@ -19,8 +19,7 @@ public class ReadDrainExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        String name;
+        @NonNull String name;
     }
 
     @Jacksonized

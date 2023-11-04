@@ -25,22 +25,16 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
 
     @Override
     public CompStructure<Button> createBase() {
-        ContextMenu cm = new ContextMenu(items.stream()
-                .map(comp -> {
-                    return new MenuItem(null, comp.createRegion());
-                })
-                .toArray(MenuItem[]::new));
+        ContextMenu cm = new ContextMenu(items.stream().map(comp -> {
+            return new MenuItem(null, comp.createRegion());
+        }).toArray(MenuItem[]::new));
 
-        Button button = (Button) new ButtonComp(null, () -> {})
-                .apply(new ContextMenuAugment<>(e -> true, () -> {
-                    return cm;
-                }))
-                .createRegion();
+        Button button = (Button) new ButtonComp(null, () -> {}).apply(new ContextMenuAugment<>(e -> true, () -> {
+            return cm;
+        })).createRegion();
 
-        button.visibleProperty()
-                .bind(BindingsHelper.anyMatch(cm.getItems().stream()
-                        .map(menuItem -> menuItem.getGraphic().visibleProperty())
-                        .toList()));
+        button.visibleProperty().bind(
+                BindingsHelper.anyMatch(cm.getItems().stream().map(menuItem -> menuItem.getGraphic().visibleProperty()).toList()));
 
         var graphic = new FontIcon("mdi2c-chevron-double-down");
         SimpleChangeListener.apply(button.fontProperty(), c -> {

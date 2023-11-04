@@ -12,13 +12,11 @@ public enum StartupBehaviour implements PrefsChoiceValue {
     GUI("app.startGui", XPipeDaemonMode.GUI) {
     },
     TRAY("app.startInTray", XPipeDaemonMode.TRAY) {
-
         public boolean isSelectable() {
             return OperationMode.TRAY.isSupported();
         }
     },
     BACKGROUND("app.startInBackground", XPipeDaemonMode.BACKGROUND) {
-
         public boolean isSelectable() {
             return !OperationMode.TRAY.isSupported();
         }

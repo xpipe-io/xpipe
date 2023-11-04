@@ -14,11 +14,6 @@ public class TrayMode extends PlatformMode {
     }
 
     @Override
-    public String getId() {
-        return "tray";
-    }
-
-    @Override
     public void onSwitchTo() throws Throwable {
         super.onSwitchTo();
         PlatformThread.runLaterIfNeededBlocking(() -> {
@@ -30,6 +25,11 @@ public class TrayMode extends PlatformMode {
             AppTray.get().show();
             TrackEvent.info("mode", "Finished tray initialization");
         });
+    }
+
+    @Override
+    public String getId() {
+        return "tray";
     }
 
     @Override

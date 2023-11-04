@@ -50,23 +50,13 @@ public abstract class UpdateHandler {
         preparedUpdate.setValue(AppCache.get("preparedUpdate", PreparedUpdate.class, () -> null));
 
         // Check if the original version this was downloaded from is still the same
-        if (preparedUpdate.getValue() != null
-                && (!preparedUpdate
-                                .getValue()
-                                .getSourceVersion()
-                                .equals(AppProperties.get().getVersion())
-                        || !XPipeDistributionType.get()
-                                .getId()
-                                .equals(preparedUpdate.getValue().getSourceDist()))) {
+        if (preparedUpdate.getValue() != null && (!preparedUpdate.getValue().getSourceVersion().equals(AppProperties.get().getVersion()) ||
+                !XPipeDistributionType.get().getId().equals(preparedUpdate.getValue().getSourceDist()))) {
             preparedUpdate.setValue(null);
         }
 
         // Check if somehow the downloaded version is equal to the current one
-        if (preparedUpdate.getValue() != null
-                && preparedUpdate
-                        .getValue()
-                        .getVersion()
-                        .equals(AppProperties.get().getVersion())) {
+        if (preparedUpdate.getValue() != null && preparedUpdate.getValue().getVersion().equals(AppProperties.get().getVersion())) {
             preparedUpdate.setValue(null);
         }
 
@@ -74,10 +64,7 @@ public abstract class UpdateHandler {
             AppCache.update("preparedUpdate", n);
         });
         lastUpdateCheckResult.addListener((c, o, n) -> {
-            if (n != null
-                    && preparedUpdate.getValue() != null
-                    && n.isUpdate()
-                    && n.getVersion().equals(preparedUpdate.getValue().getVersion())) {
+            if (n != null && preparedUpdate.getValue() != null && n.isUpdate() && n.getVersion().equals(preparedUpdate.getValue().getVersion())) {
                 return;
             }
 
@@ -91,19 +78,18 @@ public abstract class UpdateHandler {
 
     private void startBackgroundUpdater() {
         ThreadHelper.createPlatformThread("updater", true, () -> {
-                    ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
-                    event("Starting background updater thread");
-                    while (true) {
-                        if (AppPrefs.get().automaticallyUpdate().get()) {
-                            event("Performing background update");
-                            refreshUpdateCheckSilent();
-                            prepareUpdate();
-                        }
+            ThreadHelper.sleep(Duration.ofMinutes(5).toMillis());
+            event("Starting background updater thread");
+            while (true) {
+                if (AppPrefs.get().automaticallyUpdate().get()) {
+                    event("Performing background update");
+                    refreshUpdateCheckSilent();
+                    prepareUpdate();
+                }
 
-                        ThreadHelper.sleep(Duration.ofHours(1).toMillis());
-                    }
-                })
-                .start();
+                ThreadHelper.sleep(Duration.ofHours(1).toMillis());
+            }
+        }).start();
     }
 
     protected void event(String msg) {
@@ -111,9 +97,7 @@ public abstract class UpdateHandler {
     }
 
     protected final boolean isUpdate(String releaseVersion) {
-        if (AppPrefs.get() != null
-                && AppPrefs.get().developerMode().getValue()
-                && AppPrefs.get().developerDisableUpdateVersionCheck().get()) {
+        if (AppPrefs.get() != null && AppPrefs.get().developerMode().getValue() && AppPrefs.get().developerDisableUpdateVersionCheck().get()) {
             event("Bypassing version check");
             return true;
         }
@@ -157,10 +141,7 @@ public abstract class UpdateHandler {
         }
 
         if (preparedUpdate.getValue() != null) {
-            if (lastUpdateCheckResult
-                    .getValue()
-                    .getVersion()
-                    .equals(preparedUpdate.getValue().getVersion())) {
+            if (lastUpdateCheckResult.getValue().getVersion().equals(preparedUpdate.getValue().getVersion())) {
                 event("Update is already prepared ...");
                 return;
             }
@@ -175,17 +156,11 @@ public abstract class UpdateHandler {
     public abstract Region createInterface();
 
     public void prepareUpdateImpl() {
-        var changelogString =
-                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
+        var changelogString = AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
         var changelog = changelogString.orElse(null);
 
-        var rel = new PreparedUpdate(
-                AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
-                lastUpdateCheckResult.getValue().getVersion(),
-                lastUpdateCheckResult.getValue().getReleaseUrl(),
-                null,
-                changelog,
+        var rel = new PreparedUpdate(AppProperties.get().getVersion(), XPipeDistributionType.get().getId(),
+                lastUpdateCheckResult.getValue().getVersion(), lastUpdateCheckResult.getValue().getReleaseUrl(), null, changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
         preparedUpdate.setValue(rel);
     }
@@ -223,9 +198,7 @@ public abstract class UpdateHandler {
             } catch (Throwable ex) {
                 ex.printStackTrace();
             } finally {
-                var performedUpdate = new PerformedUpdate(
-                        preparedUpdate.getValue().getVersion(),
-                        preparedUpdate.getValue().getBody(),
+                var performedUpdate = new PerformedUpdate(preparedUpdate.getValue().getVersion(), preparedUpdate.getValue().getBody(),
                         preparedUpdate.getValue().getVersion());
                 AppCache.update("performedUpdate", performedUpdate);
             }

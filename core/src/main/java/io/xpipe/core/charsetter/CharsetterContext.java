@@ -17,7 +17,6 @@ public class CharsetterContext {
     List<String> observedCharsets;
 
     public static CharsetterContext empty() {
-        return new CharsetterContext(
-                Charset.defaultCharset().name(), Locale.getDefault(), Locale.getDefault(), List.of());
+        return new CharsetterContext(Charset.defaultCharset().name(), Locale.getDefault(), Locale.getDefault(), List.of());
     }
 }

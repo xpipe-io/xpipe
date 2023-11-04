@@ -189,7 +189,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
 
             if (System.getenv("MACOS_DEVELOPER_ID_APPLICATION_CERTIFICATE_NAME") != null) {
                 exec {
-                    commandLine "$projectDir/misc/mac/sign_and_notarize.sh", "$projectDir", rootProject.arch.toString(), rootProject.productName
+                    commandLine "$projectDir/misc/mac/sign_and_notarize.sh",
+                                "$projectDir",
+                                rootProject.arch.toString(),
+                                rootProject.productName
                 }
             }
         }

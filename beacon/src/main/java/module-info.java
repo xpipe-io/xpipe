@@ -27,29 +27,9 @@ module io.xpipe.beacon {
     uses MessageExchange;
     uses ProxyFunction;
 
-    provides Module with
-            BeaconJacksonModule;
-    provides io.xpipe.beacon.exchange.MessageExchange with
-            SinkExchange,
-            DrainExchange,
-            LaunchExchange,
-            InstanceExchange,
-            EditStoreExchange,
-            WriteStreamExchange,
-            ReadStreamExchange,
-            StoreProviderListExchange,
-            ModeExchange,
-            QueryStoreExchange,
-            StatusExchange,
-            FocusExchange,
-            OpenExchange,
-            StopExchange,
-            RenameStoreExchange,
-            RemoveStoreExchange,
-            StoreAddExchange,
-            ReadDrainExchange,
-            AskpassExchange,
-            ListStoresExchange,
-            DialogExchange,
-            VersionExchange;
+    provides Module with BeaconJacksonModule;
+    provides io.xpipe.beacon.exchange.MessageExchange with SinkExchange, DrainExchange, LaunchExchange, InstanceExchange, EditStoreExchange,
+            WriteStreamExchange, ReadStreamExchange, StoreProviderListExchange, ModeExchange, QueryStoreExchange, StatusExchange, FocusExchange,
+            OpenExchange, StopExchange, RenameStoreExchange, RemoveStoreExchange, StoreAddExchange, ReadDrainExchange, AskpassExchange,
+            ListStoresExchange, DialogExchange, VersionExchange;
 }

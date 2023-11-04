@@ -16,10 +16,16 @@ import java.util.UUID;
 @Getter
 public class BrowserSavedState {
 
+    @NonNull List<Entry> lastSystems;
+
     static BrowserSavedState load() {
         return AppCache.get("browser-state", BrowserSavedState.class, () -> {
             return null;
         });
+    }
+
+    public void save() {
+        AppCache.update("browser-state", this);
     }
 
     @Value
@@ -29,11 +35,5 @@ public class BrowserSavedState {
 
         UUID uuid;
         String path;
-    }
-
-    @NonNull List<Entry> lastSystems;
-
-    public void save() {
-        AppCache.update("browser-state", this);
     }
 }

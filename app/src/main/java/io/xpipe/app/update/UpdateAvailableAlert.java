@@ -20,33 +20,29 @@ public class UpdateAvailableAlert {
 
         var u = uh.getPreparedUpdate().getValue();
         var update = AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
-                    alert.setAlertType(Alert.AlertType.NONE);
+            alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
+            alert.setAlertType(Alert.AlertType.NONE);
 
-                    var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> {
-                                var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
-                                return header + s;
-                            })
-                            .createRegion();
-                    alert.getButtonTypes().clear();
-                    var updaterContent = uh.createInterface();
-                    if (updaterContent != null) {
-                        var stack = new StackPane(updaterContent);
-                        stack.setPadding(new Insets(18));
-                        var box = new VBox(markdown, stack);
-                        box.setFillWidth(true);
-                        box.setPadding(Insets.EMPTY);
-                        alert.getDialogPane().setContent(box);
-                    } else {
-                        alert.getDialogPane().setContent(markdown);
-                        alert.getButtonTypes()
-                                .add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
-                    }
+            var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> {
+                var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
+                return header + s;
+            }).createRegion();
+            alert.getButtonTypes().clear();
+            var updaterContent = uh.createInterface();
+            if (updaterContent != null) {
+                var stack = new StackPane(updaterContent);
+                stack.setPadding(new Insets(18));
+                var box = new VBox(markdown, stack);
+                box.setFillWidth(true);
+                box.setPadding(Insets.EMPTY);
+                alert.getDialogPane().setContent(box);
+            } else {
+                alert.getDialogPane().setContent(markdown);
+                alert.getButtonTypes().add(new ButtonType(AppI18n.get("install"), ButtonBar.ButtonData.OK_DONE));
+            }
 
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
-                })
-                .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                .orElse(false);
+            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
+        }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
         if (update) {
             uh.executeUpdateAndClose();
         }

@@ -10,11 +10,6 @@ import io.xpipe.core.util.JacksonizedValue;
 @JsonTypeName("local")
 public class LocalStore extends JacksonizedValue implements ShellStore, StatefulDataStore<ShellStoreState> {
 
-    @Override
-    public Class<ShellStoreState> getStateClass() {
-        return ShellStoreState.class;
-    }
-
     private static ShellControl local;
     private static ShellControl localPowershell;
     private static FileSystem localFileSystem;
@@ -26,9 +21,7 @@ public class LocalStore extends JacksonizedValue implements ShellStore, Stateful
 
     public static ShellControl getLocalPowershell() throws Exception {
         if (localPowershell == null) {
-            localPowershell = ProcessControlProvider.get().createLocalProcessControl(true)
-                    .subShell(ShellDialects.POWERSHELL)
-                    .start();
+            localPowershell = ProcessControlProvider.get().createLocalProcessControl(true).subShell(ShellDialects.POWERSHELL).start();
         }
         return localPowershell;
     }
@@ -51,6 +44,11 @@ public class LocalStore extends JacksonizedValue implements ShellStore, Stateful
         }
 
         return localFileSystem;
+    }
+
+    @Override
+    public Class<ShellStoreState> getStateClass() {
+        return ShellStoreState.class;
     }
 
     @Override

@@ -10,8 +10,8 @@ public abstract class ProcessControlProvider {
     private static ProcessControlProvider INSTANCE;
 
     public static void init(ModuleLayer layer) {
-        INSTANCE = ServiceLoader.load(layer, ProcessControlProvider.class).stream()
-                .map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get()).findFirst().orElseThrow();
+        INSTANCE = ServiceLoader.load(layer, ProcessControlProvider.class).stream().map(
+                localProcessControlProviderProvider -> localProcessControlProviderProvider.get()).findFirst().orElseThrow();
     }
 
     public static ProcessControlProvider get() {
@@ -21,14 +21,14 @@ public abstract class ProcessControlProvider {
     public abstract ShellControl withDefaultScripts(ShellControl pc);
 
     public abstract ShellControl sub(
-            ShellControl parent,
-            @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
-            ShellControl.TerminalOpenFunction terminalCommand);
+            ShellControl parent, @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
+            ShellControl.TerminalOpenFunction terminalCommand
+    );
 
     public abstract CommandControl command(
-            ShellControl parent,
-            @NonNull FailableFunction<ShellControl, String, Exception> command,
-            FailableFunction<ShellControl, String, Exception> terminalCommand);
+            ShellControl parent, @NonNull FailableFunction<ShellControl, String, Exception> command,
+            FailableFunction<ShellControl, String, Exception> terminalCommand
+    );
 
     public abstract ShellControl createLocalProcessControl(boolean stoppable);
 

@@ -1,6 +1,9 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.process.*;
+import io.xpipe.core.process.CommandControl;
+import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -18,9 +21,7 @@ public class XPipeInstallation {
     private static final String STAGING_PROP = "io.xpipe.app.staging";
 
     @Getter
-    private static final boolean staging = Optional.ofNullable(System.getProperty(STAGING_PROP))
-            .map(Boolean::parseBoolean)
-            .orElse(false);
+    private static final boolean staging = Optional.ofNullable(System.getProperty(STAGING_PROP)).map(Boolean::parseBoolean).orElse(false);
 
     public static int getDefaultBeaconPort() {
         var offset = isStaging() ? 1 : 0;
@@ -53,18 +54,17 @@ public class XPipeInstallation {
     }
 
     public static String createExternalAsyncLaunchCommand(
-            String installationBase, XPipeDaemonMode mode, String arguments) {
+            String installationBase, XPipeDaemonMode mode, String arguments
+    ) {
         var suffix = (arguments != null ? " " + arguments : "");
         var modeOption = mode != null ? " --mode " + mode.getDisplayName() : null;
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix
-                    + " & disown";
+            return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
             return "open \"" + installationBase + "\" --args" + modeOption + suffix;
         }
 
-        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                + "\"" + modeOption + suffix;
+        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\"" + modeOption + suffix;
     }
 
     public static String createExternalLaunchCommand(String command, String arguments, XPipeDaemonMode mode) {
@@ -75,8 +75,7 @@ public class XPipeInstallation {
 
     @SneakyThrows
     public static Path getCurrentInstallationBasePath() {
-        Path path =
-                Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
+        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
         if (!path.isAbsolute()) {
             path = Path.of(System.getProperty("user.dir")).resolve(path).toRealPath();
         }
@@ -101,10 +100,8 @@ public class XPipeInstallation {
             }
 
             try {
-                var process = new ProcessBuilder("pkgutil", "--pkg-info", getPkgId())
-                        .redirectOutput(ProcessBuilder.Redirect.DISCARD)
-                        .redirectError(ProcessBuilder.Redirect.DISCARD)
-                        .start();
+                var process = new ProcessBuilder("pkgutil", "--pkg-info", getPkgId()).redirectOutput(ProcessBuilder.Redirect.DISCARD).redirectError(
+                        ProcessBuilder.Redirect.DISCARD).start();
                 process.waitFor();
                 return process.exitValue() == 0;
             } catch (Exception ex) {
@@ -123,29 +120,18 @@ public class XPipeInstallation {
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return path.resolve("app").resolve("lib").resolve("runtime").resolve("lib");
         } else {
-            return path.resolve("Contents")
-                    .resolve("runtime")
-                    .resolve("Contents")
-                    .resolve("Home")
-                    .resolve("lib");
+            return path.resolve("Contents").resolve("runtime").resolve("Contents").resolve("Home").resolve("lib");
         }
     }
 
     public static Path getLocalExtensionsDirectory(Path path) {
-        return OsType.getLocal().equals(OsType.MACOS)
-                ? path.resolve("Contents").resolve("Resources").resolve("extensions")
-                : path.resolve("app").resolve("extensions");
+        return OsType.getLocal().equals(OsType.MACOS) ? path.resolve("Contents").resolve("Resources").resolve("extensions") : path.resolve("app")
+                .resolve("extensions");
     }
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            return executable
-                    .getParent()
-                    .getParent()
-                    .getParent()
-                    .getParent()
-                    .getParent()
-                    .getParent();
+            return executable.getParent().getParent().getParent().getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return executable.getParent().getParent().getParent().getParent().getParent();
         } else {
@@ -186,9 +172,7 @@ public class XPipeInstallation {
     }
 
     public static String queryLocalInstallationVersion(String exec) throws Exception {
-        var process = new ProcessBuilder(exec, "version")
-                .redirectError(ProcessBuilder.Redirect.DISCARD)
-                .start();
+        var process = new ProcessBuilder(exec, "version").redirectError(ProcessBuilder.Redirect.DISCARD).start();
         var v = new String(process.getInputStream().readAllBytes(), StandardCharsets.US_ASCII);
         process.waitFor();
         return v;
@@ -208,9 +192,7 @@ public class XPipeInstallation {
     }
 
     public static String getLocalDefaultCliExecutable() {
-        Path path = ModuleHelper.isImage()
-                ? getCurrentInstallationBasePath()
-                : Path.of(getLocalDefaultInstallationBasePath());
+        Path path = ModuleHelper.isImage() ? getCurrentInstallationBasePath() : Path.of(getLocalDefaultInstallationBasePath());
         return path.resolve(getRelativeCliExecutablePath(OsType.getLocal())).toString();
     }
 

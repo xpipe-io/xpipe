@@ -17,15 +17,9 @@ public class UpdateCheckComp extends SimpleComp {
     private final ObservableValue<Boolean> updateReady;
 
     public UpdateCheckComp() {
-        updateReady = PlatformThread.sync(Bindings.createBooleanBinding(
-                () -> {
-                    return XPipeDistributionType.get()
-                                    .getUpdateHandler()
-                                    .getPreparedUpdate()
-                                    .getValue()
-                            != null;
-                },
-                XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
+        updateReady = PlatformThread.sync(Bindings.createBooleanBinding(() -> {
+            return XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() != null;
+        }, XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate()));
     }
 
     private void restart() {
@@ -42,54 +36,40 @@ public class UpdateCheckComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var name = Bindings.createStringBinding(
-                () -> {
-                    if (updateReady.getValue()) {
-                        var prefix = XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ?  AppI18n.get("updateReadyPortable") : AppI18n.get("updateReady");
-                        var version = "Version " + XPipeDistributionType.get()
-                                .getUpdateHandler()
-                                .getPreparedUpdate()
-                                .getValue()
-                                .getVersion();
-                        return prefix + " (" + version + ")";
-                    }
+        var name = Bindings.createStringBinding(() -> {
+            if (updateReady.getValue()) {
+                var prefix = XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ? AppI18n.get("updateReadyPortable") : AppI18n.get(
+                        "updateReady");
+                var version = "Version " + XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue().getVersion();
+                return prefix + " (" + version + ")";
+            }
 
-                    return AppI18n.get("checkForUpdates");
-                },
-                updateReady);
-        var description = Bindings.createStringBinding(
-                () -> {
-                    if (updateReady.getValue()) {
-                        return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ?  AppI18n.get("updateReadyDescriptionPortable") : AppI18n.get("updateReadyDescription");
-                    }
+            return AppI18n.get("checkForUpdates");
+        }, updateReady);
+        var description = Bindings.createStringBinding(() -> {
+            if (updateReady.getValue()) {
+                return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ? AppI18n.get("updateReadyDescriptionPortable") : AppI18n.get(
+                        "updateReadyDescription");
+            }
 
-                    return AppI18n.get("checkForUpdatesDescription");
-                },
-                updateReady);
-        var graphic = Bindings.createObjectBinding(
-                () -> {
-                    if (updateReady.getValue()) {
-                        return "mdi2a-apple-airplay";
-                    }
+            return AppI18n.get("checkForUpdatesDescription");
+        }, updateReady);
+        var graphic = Bindings.createObjectBinding(() -> {
+            if (updateReady.getValue()) {
+                return "mdi2a-apple-airplay";
+            }
 
-                    return "mdi2r-refresh";
-                },
-                updateReady);
+            return "mdi2r-refresh";
+        }, updateReady);
         return new TileButtonComp(name, description, graphic, actionEvent -> {
-                    actionEvent.consume();
-                    if (updateReady.getValue()) {
-                        restart();
-                        return;
-                    }
+            actionEvent.consume();
+            if (updateReady.getValue()) {
+                restart();
+                return;
+            }
 
-                    refresh();
-                })
-                .styleClass(Styles.ACCENT)
-                .styleClass("button-comp")
-                .styleClass("update-button")
-                .grow(true, false)
-                .disable(PlatformThread.sync(
-                        XPipeDistributionType.get().getUpdateHandler().getBusy()))
-                .createRegion();
+            refresh();
+        }).styleClass(Styles.ACCENT).styleClass("button-comp").styleClass("update-button").grow(true, false).disable(
+                PlatformThread.sync(XPipeDistributionType.get().getUpdateHandler().getBusy())).createRegion();
     }
 }

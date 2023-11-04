@@ -23,20 +23,19 @@ public class CommercializationAlert {
             return;
         }
 
-        AppWindowHelper.showBlockingAlert(
-                alert -> {
-                    alert.setTitle(AppI18n.get("news"));
-                    alert.setAlertType(Alert.AlertType.NONE);
-                    alert.initModality(Modality.NONE);
+        AppWindowHelper.showBlockingAlert(alert -> {
+            alert.setTitle(AppI18n.get("news"));
+            alert.setAlertType(Alert.AlertType.NONE);
+            alert.initModality(Modality.NONE);
 
-                    AppResources.with(AppResources.XPIPE_MODULE, "misc/commercialization.md", file -> {
-                        var md = Files.readString(file);
-                        var markdown = new MarkdownComp(md, UnaryOperator.identity()).createRegion();
-                        alert.getDialogPane().setContent(markdown);
-                    });
+            AppResources.with(AppResources.XPIPE_MODULE, "misc/commercialization.md", file -> {
+                var md = Files.readString(file);
+                var markdown = new MarkdownComp(md, UnaryOperator.identity()).createRegion();
+                alert.getDialogPane().setContent(markdown);
+            });
 
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
-                });
+            alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
+        });
 
         AppCache.update("commercializationSeen", true);
     }

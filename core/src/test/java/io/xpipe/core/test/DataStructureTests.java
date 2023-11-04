@@ -18,12 +18,7 @@ public class DataStructureTests {
         var flatArray = ArrayNode.of(List.of(ValueNode.of(1), ValueNode.of(2)));
         var flatTuple = TupleNode.builder().add("key1", val).build();
         var nestedArray = ArrayNode.of(List.of(flatArray, flatTuple));
-        return TupleNode.builder()
-                .add("key1", val)
-                .add("key2", flatArray)
-                .add("key3", flatTuple)
-                .add("key4", nestedArray)
-                .build();
+        return TupleNode.builder().add("key1", val).add("key2", flatArray).add("key3", flatTuple).add("key4", nestedArray).build();
     }
 
     private static DataStructureNode createTestData12() {
@@ -31,12 +26,7 @@ public class DataStructureTests {
         var flatArray = ArrayNode.of();
         var flatTuple = TupleNode.builder().add("key1", val).build();
         var nestedArray = ArrayNode.of(List.of(flatArray, flatTuple));
-        return TupleNode.builder()
-                .add("key1", val)
-                .add("key2", flatArray)
-                .add("key3", flatTuple)
-                .add("key4", nestedArray)
-                .build();
+        return TupleNode.builder().add("key1", val).add("key2", flatArray).add("key3", flatTuple).add("key4", nestedArray).build();
     }
 
     private static DataType createTestDataType1() {
@@ -70,10 +60,7 @@ public class DataStructureTests {
 
     public static DataStructureNode createTestData32() {
         var val = ValueNode.of("value2".getBytes(StandardCharsets.UTF_8));
-        var flatTuple = TupleNode.builder()
-                .add("key1", ValueNode.nullValue())
-                .add("key2", ValueNode.nullValue())
-                .build();
+        var flatTuple = TupleNode.builder().add("key1", ValueNode.nullValue()).add("key2", ValueNode.nullValue()).build();
         var flatArray = ArrayNode.of(List.of(val, flatTuple));
         return flatArray;
     }

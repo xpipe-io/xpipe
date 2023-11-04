@@ -12,19 +12,121 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {
 
     private static final ErrorHandler INSTANCE = new SyncErrorHandler(new SentryErrorHandler());
+    private boolean init;
 
     public static ErrorHandler getInstance() {
         return INSTANCE;
     }
 
-    private boolean init;
+    private static boolean hasUserReport(ErrorEvent ee) {
+        var email = ee.getEmail();
+        var hasEmail = email != null && !email.isBlank();
+        var text = ee.getUserReport();
+        var hasText = text != null && !text.isBlank();
+        return hasEmail || hasText;
+    }
+
+    private static Throwable adjustCopy(Throwable throwable, boolean clear) {
+        if (throwable == null) {
+            return null;
+        }
+
+        if (!clear) {
+            return throwable;
+        }
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(throwable);
+
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            var copy = (Throwable) ois.readObject();
+
+            var msgField = Throwable.class.getDeclaredField("detailMessage");
+            msgField.setAccessible(true);
+            msgField.set(copy, null);
+
+            var causeField = Throwable.class.getDeclaredField("cause");
+            causeField.setAccessible(true);
+            causeField.set(copy, adjustCopy(throwable.getCause(), true));
+
+            return copy;
+        } catch (Exception e) {
+            if (AppLogs.get() != null) {
+                AppLogs.get().logException("Unable to adjust exception", e);
+            }
+            return throwable;
+        }
+    }
+
+    private static SentryId captureEvent(ErrorEvent ee) {
+        if (!hasUserReport(ee) && "User Report".equals(ee.getDescription())) {
+            return null;
+        }
+
+        if (ee.getThrowable() != null) {
+            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics());
+            return Sentry.captureException(adjusted, sc -> fillScope(ee, sc));
+        }
+
+        if (ee.getDescription() != null) {
+            return Sentry.captureMessage(ee.getDescription(), sc -> fillScope(ee, sc));
+        }
+
+        var event = new SentryEvent();
+        return Sentry.captureEvent(event, sc -> fillScope(ee, sc));
+    }
+
+    private static void fillScope(ErrorEvent ee, Scope s) {
+        if (ee.isShouldSendDiagnostics()) {
+            var atts = ee.getAttachments().stream().map(d -> {
+                try {
+                    var toUse = d;
+                    if (Files.isDirectory(d)) {
+                        toUse = AttachmentHelper.compressZipfile(d,
+                                FileUtils.getTempDirectory().toPath().resolve(d.getFileName().toString() + ".zip"));
+                    }
+                    return new Attachment(toUse.toString());
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            }).filter(attachment -> attachment != null).toList();
+            atts.forEach(attachment -> s.addAttachment(attachment));
+        }
+
+        s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasLicense()));
+        s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
+        s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
+        s.setTag("developerMode", AppPrefs.get() != null ? AppPrefs.get().developerMode().getValue().toString() : "false");
+        s.setTag("terminal", Boolean.toString(ee.isTerminal()));
+        s.setTag("omitted", Boolean.toString(ee.isOmitted()));
+
+        var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
+        if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && ee.isShouldSendDiagnostics()) {
+            s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
+        }
+
+        var user = new User();
+        user.setId(AppState.get().getUserId().toString());
+        if (ee.isShouldSendDiagnostics()) {
+            user.setEmail(AppState.get().getUserEmail());
+            user.setUsername(AppState.get().getUserName());
+        }
+        s.setUser(user);
+    }
 
     public void handle(ErrorEvent ee) {
         // Assume that this object is wrapped by a synchronous error handler
@@ -66,113 +168,5 @@ public class SentryErrorHandler implements ErrorHandler {
             Sentry.captureUserFeedback(fb);
         }
         Sentry.flush(3000);
-    }
-
-    private static boolean hasUserReport(ErrorEvent ee) {
-        var email = ee.getEmail();
-        var hasEmail = email != null && !email.isBlank();
-        var text = ee.getUserReport();
-        var hasText = text != null && !text.isBlank();
-        return hasEmail || hasText;
-    }
-
-    private static Throwable adjustCopy(Throwable throwable, boolean clear) {
-        if (throwable == null) {
-            return null;
-        }
-
-        if (!clear) {
-            return throwable;
-        }
-
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(throwable);
-
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            var copy = (Throwable) ois.readObject();
-
-            var msgField = Throwable.class.getDeclaredField("detailMessage");
-            msgField.setAccessible(true);
-            msgField.set(copy, null);
-
-            var causeField = Throwable.class.getDeclaredField("cause");
-            causeField.setAccessible(true);
-            causeField.set(copy, adjustCopy(throwable.getCause(), true));
-
-            return copy;
-        } catch (Exception e) {
-            if (AppLogs.get() != null) AppLogs.get().logException("Unable to adjust exception", e);
-            return throwable;
-        }
-    }
-
-    private static SentryId captureEvent(ErrorEvent ee) {
-        if (!hasUserReport(ee) && "User Report".equals(ee.getDescription())) {
-            return null;
-        }
-
-        if (ee.getThrowable() != null) {
-            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics());
-            return Sentry.captureException(adjusted, sc -> fillScope(ee, sc));
-        }
-
-        if (ee.getDescription() != null) {
-            return Sentry.captureMessage(ee.getDescription(), sc -> fillScope(ee, sc));
-        }
-
-        var event = new SentryEvent();
-        return Sentry.captureEvent(event, sc -> fillScope(ee, sc));
-    }
-
-    private static void fillScope(ErrorEvent ee, Scope s) {
-        if (ee.isShouldSendDiagnostics()) {
-            var atts = ee.getAttachments().stream()
-                    .map(d -> {
-                        try {
-                            var toUse = d;
-                            if (Files.isDirectory(d)) {
-                                toUse = AttachmentHelper.compressZipfile(
-                                        d,
-                                        FileUtils.getTempDirectory()
-                                                .toPath()
-                                                .resolve(d.getFileName().toString() + ".zip"));
-                            }
-                            return new Attachment(toUse.toString());
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            return null;
-                        }
-                    })
-                    .filter(attachment -> attachment != null)
-                    .toList();
-            atts.forEach(attachment -> s.addAttachment(attachment));
-        }
-
-        s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasLicense()));
-        s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
-        s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
-        s.setTag(
-                "developerMode",
-                AppPrefs.get() != null
-                        ? AppPrefs.get().developerMode().getValue().toString()
-                        : "false");
-        s.setTag("terminal", Boolean.toString(ee.isTerminal()));
-        s.setTag("omitted", Boolean.toString(ee.isOmitted()));
-
-        var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
-        if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && ee.isShouldSendDiagnostics()) {
-                s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
-        }
-
-        var user = new User();
-        user.setId(AppState.get().getUserId().toString());
-        if (ee.isShouldSendDiagnostics()) {
-            user.setEmail(AppState.get().getUserEmail());
-            user.setUsername(AppState.get().getUserName());
-        }
-        s.setUser(user);
     }
 }

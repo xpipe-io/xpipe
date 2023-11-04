@@ -6,17 +6,13 @@ import lombok.Getter;
 
 @Getter
 public enum DataStoreColor {
-    @JsonProperty("red")
-    RED("red", "\uD83D\uDD34", Color.RED),
+    @JsonProperty("red") RED("red", "\uD83D\uDD34", Color.RED),
 
-    @JsonProperty("green")
-    GREEN("green", "\uD83D\uDFE2", Color.GREEN),
+    @JsonProperty("green") GREEN("green", "\uD83D\uDFE2", Color.GREEN),
 
-    @JsonProperty("yellow")
-    YELLOW("yellow", "\uD83D\uDFE1", Color.YELLOW),
+    @JsonProperty("yellow") YELLOW("yellow", "\uD83D\uDFE1", Color.YELLOW),
 
-    @JsonProperty("blue")
-    BLUE("blue", "\uD83D\uDD35", Color.BLUE);
+    @JsonProperty("blue") BLUE("blue", "\uD83D\uDD35", Color.BLUE);
 
     private final String id;
     private final String emoji;
@@ -35,7 +31,6 @@ public enum DataStoreColor {
 
     public String toHexString() {
         var value = terminalColor;
-        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()))
-                .toUpperCase();
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
     }
 }

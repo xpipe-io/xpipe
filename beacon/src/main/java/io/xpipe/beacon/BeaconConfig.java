@@ -10,12 +10,12 @@ public class BeaconConfig {
 
     public static final byte[] BODY_SEPARATOR = "\n\n".getBytes(StandardCharsets.UTF_8);
     public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
+    public static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
     private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
     private static final String LAUNCH_DAEMON_IN_DEBUG_PROP = "io.xpipe.beacon.launchDebugDaemon";
     private static final String ATTACH_DEBUGGER_PROP = "io.xpipe.beacon.attachDebuggerToDaemon";
     private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.printDaemonOutput";
     private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.customDaemonCommand";
-    public static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
     private static final String LOCAL_PROXY_PROP = "io.xpipe.beacon.localProxy";
 
     public static boolean localProxy() {

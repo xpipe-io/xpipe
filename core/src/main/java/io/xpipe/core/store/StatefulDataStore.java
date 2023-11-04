@@ -23,12 +23,12 @@ public interface StatefulDataStore<T extends DataStoreState> extends DataStore {
         return (T) DataStateProvider.get().getState(this, this::createDefaultState).deepCopy();
     }
 
-    default T getState(Supplier<T> def) {
-        return DataStateProvider.get().getState(this, def);
-    }
-
     default void setState(T val) {
         DataStateProvider.get().setState(this, val);
+    }
+
+    default T getState(Supplier<T> def) {
+        return DataStateProvider.get().getState(this, def);
     }
 
     @SneakyThrows

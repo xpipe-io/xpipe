@@ -6,8 +6,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.StopExchange;
 
-public class StopExchangeImpl extends StopExchange
-        implements MessageExchangeImpl<StopExchange.Request, StopExchange.Response> {
+public class StopExchangeImpl extends StopExchange implements MessageExchangeImpl<StopExchange.Request, StopExchange.Response> {
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {

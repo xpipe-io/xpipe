@@ -20,13 +20,9 @@ public class AppChecks {
             Files.delete(testDirectory);
             // if (true) throw new IOException();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(
-                            new IOException(
-                                    "Unable to access directory " + dataDirectory
-                                            + ". Please make sure that you have the appropriate permissions and no Antivirus program is blocking the access. "
-                                            + "In case you use cloud storage, verify that your cloud storage is working and you are logged in."))
-                    .term()
-                    .handle();
+            ErrorEvent.fromThrowable(new IOException("Unable to access directory " + dataDirectory +
+                    ". Please make sure that you have the appropriate permissions and no Antivirus program is blocking the access. " +
+                    "In case you use cloud storage, verify that your cloud storage is working and you are logged in.")).term().handle();
         }
     }
 
@@ -39,8 +35,7 @@ public class AppChecks {
 
         if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
             ErrorEvent.fromThrowable(
-                            new IOException("Specified temporary directory " + tmpdir + ", set via the environment variable %TEMP% is invalid."))
-                    .term()
+                            new IOException("Specified temporary directory " + tmpdir + ", set via the environment variable %TEMP% is invalid.")).term()
                     .handle();
         }
     }

@@ -14,14 +14,8 @@ public class ListStoresExchangeImpl extends ListStoresExchange
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {
         DataStorage s = DataStorage.get();
-        var e = s.getStoreEntries().stream()
-                .filter(entry -> !entry.isDisabled())
-                .map(col -> StoreListEntry.builder()
-                        .id(DataStorage.get().getId(col))
-                        .type(col.getProvider().getId())
-                        .build())
-                .sorted(Comparator.comparing(en -> en.getId().toString()))
-                .toList();
+        var e = s.getStoreEntries().stream().filter(entry -> !entry.isDisabled()).map(col -> StoreListEntry.builder().id(DataStorage.get().getId(col))
+                .type(col.getProvider().getId()).build()).sorted(Comparator.comparing(en -> en.getId().toString())).toList();
         return Response.builder().entries(e).build();
     }
 }

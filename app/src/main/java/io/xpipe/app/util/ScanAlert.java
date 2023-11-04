@@ -62,125 +62,96 @@ public class ScanAlert {
     }
 
     private static void show(
-            DataStoreEntry initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
+            DataStoreEntry initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable
+    ) {
         var entry = new SimpleObjectProperty<DataStoreEntryRef<ShellStore>>();
         var selected = new SimpleListProperty<ScanProvider.ScanOperation>(FXCollections.observableArrayList());
 
         var loading = new SimpleBooleanProperty();
         Platform.runLater(() -> {
-            var stage = AppWindowHelper.sideWindow(
-                    AppI18n.get("scanAlertTitle"),
-                    window -> {
-                        return new MultiStepComp() {
+            var stage = AppWindowHelper.sideWindow(AppI18n.get("scanAlertTitle"), window -> {
+                return new MultiStepComp() {
 
-                            private final StackPane stackPane = new StackPane();
+                    private final StackPane stackPane = new StackPane();
 
-                            {
-                                stackPane.getStyleClass().add("scan-list");
-                            }
+                    {
+                        stackPane.getStyleClass().add("scan-list");
+                    }
 
+                    @Override
+                    protected List<Entry> setup() {
+                        return List.of(new Entry(AppI18n.observable("a"), new Step<>() {
                             @Override
-                            protected List<Entry> setup() {
-                                return List.of(new Entry(AppI18n.observable("a"), new Step<>() {
-                                    @Override
-                                    public CompStructure<?> createBase() {
-                                        var b = new OptionsBuilder()
-                                                .name("scanAlertChoiceHeader")
-                                                .description("scanAlertChoiceHeaderDescription")
-                                                .addComp(new DataStoreChoiceComp<>(
-                                                        DataStoreChoiceComp.Mode.OTHER,
-                                                        null,
-                                                        entry,
-                                                        ShellStore.class,
-                                                        store1 -> true,
-                                                        StoreViewState.get().getAllConnectionsCategory()
-                                                )
-                                                                 .disable(new SimpleBooleanProperty(initialStore != null)))
-                                                .name("scanAlertHeader")
-                                                .description("scanAlertHeaderDescription")
-                                                .addComp(Comp.of(() -> stackPane).vgrow())
-                                                .buildComp()
-                                                .prefWidth(500)
-                                                .prefHeight(600)
-                                                .styleClass("window-content")
-                                                .apply(struc -> {
-                                                    VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
-                                                })
-                                                .createStructure()
-                                                .get();
+                            public CompStructure<?> createBase() {
+                                var b = new OptionsBuilder().name("scanAlertChoiceHeader").description("scanAlertChoiceHeaderDescription").addComp(
+                                        new DataStoreChoiceComp<>(DataStoreChoiceComp.Mode.OTHER, null, entry, ShellStore.class, store1 -> true,
+                                                StoreViewState.get().getAllConnectionsCategory()).disable(
+                                                new SimpleBooleanProperty(initialStore != null))).name("scanAlertHeader").description(
+                                        "scanAlertHeaderDescription").addComp(Comp.of(() -> stackPane).vgrow()).buildComp().prefWidth(500).prefHeight(
+                                        600).styleClass("window-content").apply(struc -> {
+                                    VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
+                                }).createStructure().get();
 
-                                        entry.addListener((observable, oldValue, newValue) -> {
-                                            selected.clear();
-                                            stackPane.getChildren().clear();
+                                entry.addListener((observable, oldValue, newValue) -> {
+                                    selected.clear();
+                                    stackPane.getChildren().clear();
 
-                                            if (newValue == null) {
-                                                return;
-                                            }
-
-                                            ThreadHelper.runAsync(() -> {
-                                                BooleanScope.execute(loading, () -> {
-                                                    var a = applicable.apply(entry.get().get());
-
-                                                    Platform.runLater(() -> {
-                                                        if (a == null) {
-                                                            window.close();
-                                                            return;
-                                                        }
-
-                                                        selected.setAll(a.stream()
-                                                                                .filter(
-                                                                                        scanOperation ->
-                                                                                                scanOperation.isDefaultSelected())
-                                                                                .toList());
-                                                        var r = new ListSelectorComp<>(
-                                                                a,
-                                                                scanOperation ->
-                                                                        AppI18n.get(scanOperation.getNameKey()),
-                                                                selected,
-                                                                a.size() > 3
-                                                        )
-                                                                .createRegion();
-                                                        stackPane.getChildren().add(r);
-                                                    });
-                                                });
-                                            });
-                                        });
-
-                                        entry.set(initialStore != null ? initialStore.ref() : null);
-                                        return new SimpleCompStructure<>(b);
-                                    }
-                                }));
-                            }
-
-                            @Override
-                            protected void finish() {
-                                ThreadHelper.runAsync(() -> {
-                                    if (entry.get() == null) {
+                                    if (newValue == null) {
                                         return;
                                     }
 
+                                    ThreadHelper.runAsync(() -> {
+                                        BooleanScope.execute(loading, () -> {
+                                            var a = applicable.apply(entry.get().get());
 
-                                    Platform.runLater(() -> {
-                                        window.close();
-                                    });
+                                            Platform.runLater(() -> {
+                                                if (a == null) {
+                                                    window.close();
+                                                    return;
+                                                }
 
-                                    BooleanScope.execute(loading, () -> {
-                                        entry.get().get().setExpanded(true);
-
-                                        for (var a : selected) {
-                                            try {
-                                                a.getScanner().run();
-                                            } catch (Exception ex) {
-                                                ErrorEvent.fromThrowable(ex).handle();
-                                            }
-                                        }
+                                                selected.setAll(a.stream().filter(scanOperation -> scanOperation.isDefaultSelected()).toList());
+                                                var r = new ListSelectorComp<>(a, scanOperation -> AppI18n.get(scanOperation.getNameKey()), selected,
+                                                        a.size() > 3).createRegion();
+                                                stackPane.getChildren().add(r);
+                                            });
+                                        });
                                     });
                                 });
+
+                                entry.set(initialStore != null ? initialStore.ref() : null);
+                                return new SimpleCompStructure<>(b);
                             }
-                        };
-                    },
-                    false,
-                    loading);
+                        }));
+                    }
+
+                    @Override
+                    protected void finish() {
+                        ThreadHelper.runAsync(() -> {
+                            if (entry.get() == null) {
+                                return;
+                            }
+
+
+                            Platform.runLater(() -> {
+                                window.close();
+                            });
+
+                            BooleanScope.execute(loading, () -> {
+                                entry.get().get().setExpanded(true);
+
+                                for (var a : selected) {
+                                    try {
+                                        a.getScanner().run();
+                                    } catch (Exception ex) {
+                                        ErrorEvent.fromThrowable(ex).handle();
+                                    }
+                                }
+                            });
+                        });
+                    }
+                };
+            }, false, loading);
             stage.show();
         });
     }

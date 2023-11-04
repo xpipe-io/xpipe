@@ -19,24 +19,16 @@ public class GitHubUpdater extends UpdateHandler {
     }
 
     public void prepareUpdateImpl() {
-        var downloadFile = AppDownloads.downloadInstaller(
-                lastUpdateCheckResult.getValue().getAssetType(),
-                lastUpdateCheckResult.getValue().getVersion(),
-                false);
+        var downloadFile = AppDownloads.downloadInstaller(lastUpdateCheckResult.getValue().getAssetType(),
+                lastUpdateCheckResult.getValue().getVersion(), false);
         if (downloadFile.isEmpty()) {
             return;
         }
 
-        var changelogString =
-                AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
+        var changelogString = AppDownloads.downloadChangelog(lastUpdateCheckResult.getValue().getVersion(), false);
         var changelog = changelogString.orElse(null);
-        var rel = new PreparedUpdate(
-                AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
-                lastUpdateCheckResult.getValue().getVersion(),
-                lastUpdateCheckResult.getValue().getReleaseUrl(),
-                downloadFile.get(),
-                changelog,
+        var rel = new PreparedUpdate(AppProperties.get().getVersion(), XPipeDistributionType.get().getId(),
+                lastUpdateCheckResult.getValue().getVersion(), lastUpdateCheckResult.getValue().getReleaseUrl(), downloadFile.get(), changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
         preparedUpdate.setValue(rel);
     }
@@ -52,8 +44,7 @@ public class GitHubUpdater extends UpdateHandler {
 
     public synchronized AvailableRelease refreshUpdateCheckImpl() throws Exception {
         var rel = AppDownloads.getLatestSuitableRelease();
-        event("Determined latest suitable release "
-                + rel.map(GHRelease::getName).orElse(null));
+        event("Determined latest suitable release " + rel.map(GHRelease::getName).orElse(null));
 
         if (rel.isEmpty()) {
             lastUpdateCheckResult.setValue(null);
@@ -62,23 +53,15 @@ public class GitHubUpdater extends UpdateHandler {
 
         var isUpdate = isUpdate(rel.get().getTagName());
         var assetType = AppInstaller.getSuitablePlatformAsset();
-        var ghAsset = rel.orElseThrow().listAssets().toList().stream()
-                .filter(g -> assetType.isCorrectAsset(g.getName()))
-                .findAny();
+        var ghAsset = rel.orElseThrow().listAssets().toList().stream().filter(g -> assetType.isCorrectAsset(g.getName())).findAny();
         if (ghAsset.isEmpty()) {
             return null;
         }
 
         event("Selected asset " + ghAsset.get().getName());
-        lastUpdateCheckResult.setValue(new AvailableRelease(
-                AppProperties.get().getVersion(),
-                XPipeDistributionType.get().getId(),
-                rel.get().getTagName(),
-                rel.get().getHtmlUrl().toString(),
-                ghAsset.get().getBrowserDownloadUrl(),
-                assetType,
-                Instant.now(),
-                isUpdate));
+        lastUpdateCheckResult.setValue(
+                new AvailableRelease(AppProperties.get().getVersion(), XPipeDistributionType.get().getId(), rel.get().getTagName(),
+                        rel.get().getHtmlUrl().toString(), ghAsset.get().getBrowserDownloadUrl(), assetType, Instant.now(), isUpdate));
         return lastUpdateCheckResult.getValue();
     }
 }

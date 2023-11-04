@@ -11,22 +11,6 @@ import lombok.Value;
 
 public class LaunchShortcutAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        @Override
-        public void execute() throws Exception {
-            DesktopShortcuts.create("xpipe://launch/" + entry.getUuid().toString(), entry.getName());
-        }
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<LaunchableStore>() {
@@ -52,5 +36,21 @@ public class LaunchShortcutAction implements ActionProvider {
             }
 
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry entry;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return false;
+        }
+
+        @Override
+        public void execute() throws Exception {
+            DesktopShortcuts.create("xpipe://launch/" + entry.getUuid().toString(), entry.getName());
+        }
     }
 }

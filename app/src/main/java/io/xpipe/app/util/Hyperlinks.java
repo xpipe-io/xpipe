@@ -12,11 +12,12 @@ public class Hyperlinks {
     public static final String TOS = "https://github.com/xpipe-io/xpipe/blob/master/app/src/main/resources/io/xpipe/app/resources/misc/tos.md";
     public static final String SECURITY = "https://github.com/xpipe-io/xpipe/blob/master/SECURITY.md";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
-    public static final String SLACK =
-            "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
+    public static final String SLACK = "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
     public static final String DOCS_PRIVACY = "https://github.com/xpipe-io/xpipe/blob/master/PRIVACY.md";
 
-    static final String[] browsers = {"xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla"};
+    static final String[] browsers = {
+            "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla"
+    };
 
     @SuppressWarnings("deprecation")
     public static void open(String uri) {
@@ -29,13 +30,12 @@ public class Hyperlinks {
             } else { // assume Unix or Linux
                 String browser = null;
                 for (String b : browsers) {
-                    if (browser == null
-                            && Runtime.getRuntime()
-                                            .exec(new String[] {"which", b})
-                                            .getInputStream()
-                                            .read()
-                                    != -1) {
-                        Runtime.getRuntime().exec(new String[] {browser = b, uri});
+                    if (browser == null && Runtime.getRuntime().exec(new String[]{
+                            "which", b
+                    }).getInputStream().read() != -1) {
+                        Runtime.getRuntime().exec(new String[]{
+                                browser = b, uri
+                        });
                     }
                 }
                 if (browser == null) {

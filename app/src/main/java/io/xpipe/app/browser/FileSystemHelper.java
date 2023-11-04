@@ -1,12 +1,8 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.ConnectionFileSystem;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +11,8 @@ import java.util.List;
 
 public class FileSystemHelper {
 
+    private static FileSystem localFileSystem;
+
     public static String getStartDirectory(OpenFileSystemModel model) throws Exception {
         // Handle special case when file system creation has failed
         if (model.getFileSystem() == null) {
@@ -22,16 +20,10 @@ public class FileSystemHelper {
         }
 
         ConnectionFileSystem fileSystem = (ConnectionFileSystem) model.getFileSystem();
-        var current = !model.isLocal()
-                ? fileSystem
-                        .getShellControl()
-                        .executeSimpleStringCommand(
-                                fileSystem.getShellControl().getShellDialect().getPrintWorkingDirectoryCommand())
-                : fileSystem
-                        .getShell()
-                        .get()
-                        .getOsType()
-                        .getHomeDirectory(fileSystem.getShell().get());
+        var current = !model.isLocal() ?
+                fileSystem.getShellControl().executeSimpleStringCommand(
+                        fileSystem.getShellControl().getShellDialect().getPrintWorkingDirectoryCommand()) :
+                fileSystem.getShell().get().getOsType().getHomeDirectory(fileSystem.getShell().get());
         var r = resolveDirectoryPath(model, evaluatePath(model, adjustPath(model, current)));
         validateDirectoryPath(model, r);
         return r;
@@ -80,10 +72,7 @@ public class FileSystemHelper {
             return path;
         }
 
-        return shell.get()
-                .getShellDialect()
-                .evaluateExpression(shell.get(), path)
-                .readStdoutOrThrow();
+        return shell.get().getShellDialect().evaluateExpression(shell.get(), path).readStdoutOrThrow();
     }
 
     public static String resolveDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
@@ -96,10 +85,7 @@ public class FileSystemHelper {
             return path;
         }
 
-        var resolved = shell.get()
-                .getShellDialect()
-                .resolveDirectory(shell.get(), path)
-                .withWorkingDirectory(model.getCurrentPath().get())
+        var resolved = shell.get().getShellDialect().resolveDirectory(shell.get(), path).withWorkingDirectory(model.getCurrentPath().get())
                 .readStdoutOrThrow();
 
         if (!FileNames.isAbsolute(resolved)) {
@@ -130,36 +116,25 @@ public class FileSystemHelper {
         model.getFileSystem().directoryAccessible(path);
     }
 
-    private static FileSystem localFileSystem;
-
     public static FileSystem.FileEntry getLocal(Path file) throws Exception {
         if (localFileSystem == null) {
             localFileSystem = new LocalStore().createFileSystem();
             localFileSystem.open();
         }
 
-        return new FileSystem.FileEntry(
-                localFileSystem,
-                file.toString(),
-                Files.getLastModifiedTime(file).toInstant(),
-                Files.isHidden(file),
-                Files.isExecutable(file),
-                Files.size(file),
-                null,
-                Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);
+        return new FileSystem.FileEntry(localFileSystem, file.toString(), Files.getLastModifiedTime(file).toInstant(), Files.isHidden(file),
+                Files.isExecutable(file), Files.size(file), null, Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }
 
     public static void dropLocalFilesInto(FileSystem.FileEntry entry, List<Path> files) {
         try {
-            var entries = files.stream()
-                    .map(path -> {
-                        try {
-                            return getLocal(path);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .toList();
+            var entries = files.stream().map(path -> {
+                try {
+                    return getLocal(path);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }).toList();
             dropFilesInto(entry, entries, false);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
@@ -181,7 +156,8 @@ public class FileSystemHelper {
     }
 
     public static void dropFilesInto(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) throws Exception {
+            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy
+    ) throws Exception {
         if (files.size() == 0) {
             return;
         }
@@ -196,7 +172,8 @@ public class FileSystemHelper {
     }
 
     private static void dropFileAcrossSameFileSystem(
-            FileSystem.FileEntry target, FileSystem.FileEntry source, boolean explicitCopy) throws Exception {
+            FileSystem.FileEntry target, FileSystem.FileEntry source, boolean explicitCopy
+    ) throws Exception {
         // Prevent dropping directory into itself
         if (source.getPath().equals(target.getPath())) {
             return;
@@ -216,8 +193,7 @@ public class FileSystemHelper {
         }
     }
 
-    private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry source)
-            throws Exception {
+    private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry source) throws Exception {
         if (target.getKind() != FileKind.DIRECTORY) {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
         }
@@ -225,8 +201,7 @@ public class FileSystemHelper {
         var flatFiles = new LinkedHashMap<FileSystem.FileEntry, String>();
 
         // Prevent dropping directory into itself
-        if (source.getFileSystem().equals(target.getFileSystem())
-                && FileNames.startsWith(source.getPath(), target.getPath())) {
+        if (source.getFileSystem().equals(target.getFileSystem()) && FileNames.startsWith(source.getPath(), target.getPath())) {
             return;
         }
 
@@ -253,8 +228,7 @@ public class FileSystemHelper {
             if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
             } else {
-                try (var in = sourceFile.getFileSystem().openInput(sourceFile.getPath());
-                        var out = target.getFileSystem().openOutput(targetFile)) {
+                try (var in = sourceFile.getFileSystem().openInput(sourceFile.getPath()); var out = target.getFileSystem().openOutput(targetFile)) {
                     in.transferTo(out);
                 }
             }

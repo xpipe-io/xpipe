@@ -31,15 +31,6 @@ public class EventHandlerImpl extends EventHandler {
         }
     }
 
-    private void handleBasic(ErrorEvent ee) {
-        if (ee.getDescription() != null) {
-            System.err.println(ee.getDescription());
-        }
-        if (ee.getThrowable() != null) {
-            Deobfuscator.printStackTrace(ee.getThrowable());
-        }
-    }
-
     @Override
     public void handle(ErrorEvent ee) {
         if (ee.isTerminal()) {
@@ -65,6 +56,15 @@ public class EventHandlerImpl extends EventHandler {
     public void modify(ErrorEvent ee) {
         if (AppLogs.get() != null && AppLogs.get().getSessionLogsDirectory() != null) {
             ee.addAttachment(AppLogs.get().getSessionLogsDirectory());
+        }
+    }
+
+    private void handleBasic(ErrorEvent ee) {
+        if (ee.getDescription() != null) {
+            System.err.println(ee.getDescription());
+        }
+        if (ee.getThrowable() != null) {
+            Deobfuscator.printStackTrace(ee.getThrowable());
         }
     }
 }

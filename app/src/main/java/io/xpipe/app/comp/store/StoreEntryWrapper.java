@@ -45,20 +45,12 @@ public class StoreEntryWrapper {
         this.name = new SimpleStringProperty(entry.getName());
         this.lastAccess = new SimpleObjectProperty<>(entry.getLastAccess().minus(Duration.ofMillis(500)));
         this.actionProviders = new LinkedHashMap<>();
-        ActionProvider.ALL.stream()
-                .filter(dataStoreActionProvider -> {
-                    return !entry.isDisabled()
-                            && dataStoreActionProvider.getDataStoreCallSite() != null
-                            && dataStoreActionProvider
-                                    .getDataStoreCallSite()
-                                    .getApplicableClass()
-                                    .isAssignableFrom(entry.getStore().getClass());
-                })
-                .sorted(Comparator.comparing(
-                        actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction()))
-                .forEach(dataStoreActionProvider -> {
-                    actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
-                });
+        ActionProvider.ALL.stream().filter(dataStoreActionProvider -> {
+            return !entry.isDisabled() && dataStoreActionProvider.getDataStoreCallSite() != null &&
+                    dataStoreActionProvider.getDataStoreCallSite().getApplicableClass().isAssignableFrom(entry.getStore().getClass());
+        }).sorted(Comparator.comparing(actionProvider -> actionProvider.getDataStoreCallSite().isSystemAction())).forEach(dataStoreActionProvider -> {
+            actionProviders.put(dataStoreActionProvider, new SimpleBooleanProperty(true));
+        });
         this.defaultActionProvider = new SimpleObjectProperty<>();
         setupListeners();
     }
@@ -85,21 +77,18 @@ public class StoreEntryWrapper {
     }
 
     public ObservableValue<String> summary() {
-        return PlatformThread.sync(Bindings.createStringBinding(
-                () -> {
-                    if (!validity.getValue().isUsable()) {
-                        return null;
-                    }
+        return PlatformThread.sync(Bindings.createStringBinding(() -> {
+            if (!validity.getValue().isUsable()) {
+                return null;
+            }
 
-                    try {
-                        return entry.getProvider().summaryString(this);
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                        return null;
-                    }
-                },
-                validity,
-                persistentState));
+            try {
+                return entry.getProvider().summaryString(this);
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).handle();
+                return null;
+            }
+        }, validity, persistentState));
     }
 
     private void setupListeners() {
@@ -132,10 +121,10 @@ public class StoreEntryWrapper {
         color.setValue(entry.getColor());
 
         inRefresh.setValue(entry.isInRefresh());
-        deletable.setValue(entry.getConfiguration().isDeletable()
-                || AppPrefs.get().developerDisableGuiRestrictions().getValue());
+        deletable.setValue(entry.getConfiguration().isDeletable() || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 
-        category.setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
+        category.setValue(
+                StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
 
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {
@@ -144,37 +133,22 @@ public class StoreEntryWrapper {
                 return;
             }
 
-            if (!entry.getValidity().isUsable()
-                    && !dataStoreActionProvider
-                            .getDataStoreCallSite()
-                            .activeType()
-                            .equals(ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_ENABLE)) {
+            if (!entry.getValidity().isUsable() && !dataStoreActionProvider.getDataStoreCallSite().activeType().equals(
+                    ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_ENABLE)) {
                 actionProviders.get(dataStoreActionProvider).set(false);
                 return;
             }
 
-            var defaultProvider = ActionProvider.ALL.stream()
-                    .filter(e -> e.getDefaultDataStoreCallSite() != null
-                            && e.getDefaultDataStoreCallSite()
-                                    .getApplicableClass()
-                                    .isAssignableFrom(entry.getStore().getClass())
-                            && e.getDefaultDataStoreCallSite()
-                                    .isApplicable(entry.ref()))
-                    .findFirst()
-                    .map(ActionProvider::getDefaultDataStoreCallSite)
-                    .orElse(null);
+            var defaultProvider = ActionProvider.ALL.stream().filter(e -> e.getDefaultDataStoreCallSite() != null &&
+                    e.getDefaultDataStoreCallSite().getApplicableClass().isAssignableFrom(entry.getStore().getClass()) &&
+                    e.getDefaultDataStoreCallSite().isApplicable(entry.ref())).findFirst().map(ActionProvider::getDefaultDataStoreCallSite).orElse(
+                    null);
             this.defaultActionProvider.setValue(defaultProvider);
 
             try {
-                actionProviders
-                        .get(dataStoreActionProvider)
-                        .set(dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .getApplicableClass()
-                                        .isAssignableFrom(entry.getStore().getClass())
-                                && dataStoreActionProvider
-                                        .getDataStoreCallSite()
-                                        .isApplicable(entry.ref()));
+                actionProviders.get(dataStoreActionProvider).set(
+                        dataStoreActionProvider.getDataStoreCallSite().getApplicableClass().isAssignableFrom(entry.getStore().getClass()) &&
+                                dataStoreActionProvider.getDataStoreCallSite().isApplicable(entry.ref()));
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
                 actionProviders.get(dataStoreActionProvider).set(false);

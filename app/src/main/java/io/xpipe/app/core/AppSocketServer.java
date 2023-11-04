@@ -50,10 +50,7 @@ public class AppSocketServer {
             INSTANCE = new AppSocketServer(port);
             INSTANCE.createSocketListener();
 
-            TrackEvent.withInfo("Initialized socket server")
-                    .tag("port", port)
-                    .build()
-                    .handle();
+            TrackEvent.withInfo("Initialized socket server").tag("port", port).build().handle();
         } catch (Exception ex) {
             // Not terminal!
             ErrorEvent.fromThrowable(ex).build().handle();
@@ -87,25 +84,23 @@ public class AppSocketServer {
     private void createSocketListener() throws IOException {
         socket = new ServerSocket(port, 10000, InetAddress.getLoopbackAddress());
         running = true;
-        listenerThread = new Thread(
-                () -> {
-                    while (running) {
-                        Socket clientSocket;
-                        try {
-                            clientSocket = socket.accept();
-                        } catch (Exception ex) {
-                            continue;
-                        }
+        listenerThread = new Thread(() -> {
+            while (running) {
+                Socket clientSocket;
+                try {
+                    clientSocket = socket.accept();
+                } catch (Exception ex) {
+                    continue;
+                }
 
-                        try {
-                            performExchangesAsync(clientSocket);
-                        } catch (Exception ex) {
-                            ErrorEvent.fromThrowable(ex).build().handle();
-                        }
-                        connectionCounter++;
-                    }
-                },
-                "socket server");
+                try {
+                    performExchangesAsync(clientSocket);
+                } catch (Exception ex) {
+                    ErrorEvent.fromThrowable(ex).build().handle();
+                }
+                connectionCounter++;
+            }
+        }, "socket server");
         listenerThread.start();
     }
 
@@ -134,27 +129,24 @@ public class AppSocketServer {
             throw new IllegalArgumentException("Unknown request id: " + req.getClass());
         }
         AtomicReference<FailableRunnable<Exception>> post = new AtomicReference<>();
-        var res = prov.get()
-                .handleRequest(
-                        new BeaconHandler() {
-                            @Override
-                            public void postResponse(FailableRunnable<Exception> r) {
-                                post.set(r);
-                            }
+        var res = prov.get().handleRequest(new BeaconHandler() {
+            @Override
+            public void postResponse(FailableRunnable<Exception> r) {
+                post.set(r);
+            }
 
-                            @Override
-                            public OutputStream sendBody() throws IOException {
-                                TrackEvent.trace("beacon", "Starting writing body for #" + id);
-                                return AppSocketServer.this.sendBody(clientSocket);
-                            }
+            @Override
+            public OutputStream sendBody() throws IOException {
+                TrackEvent.trace("beacon", "Starting writing body for #" + id);
+                return AppSocketServer.this.sendBody(clientSocket);
+            }
 
-                            @Override
-                            public InputStream receiveBody() throws IOException {
-                                TrackEvent.trace("beacon", "Starting to read body for #" + id);
-                                return AppSocketServer.this.receiveBody(clientSocket);
-                            }
-                        },
-                        req);
+            @Override
+            public InputStream receiveBody() throws IOException {
+                TrackEvent.trace("beacon", "Starting to read body for #" + id);
+                return AppSocketServer.this.receiveBody(clientSocket);
+            }
+        }, req);
 
         TrackEvent.trace("beacon", "Sending response to #" + id + ": \n" + res.toString());
         AppSocketServer.this.sendResponse(clientSocket, res);
@@ -168,13 +160,8 @@ public class AppSocketServer {
             ErrorEvent.fromThrowable(ex).handle();
         }
 
-        TrackEvent.builder()
-                .category("beacon")
-                .type("trace")
-                .message("Socket connection #" + id + " performed exchange "
-                        + req.getClass().getSimpleName())
-                .build()
-                .handle();
+        TrackEvent.builder().category("beacon").type("trace").message(
+                "Socket connection #" + id + " performed exchange " + req.getClass().getSimpleName()).build().handle();
 
         return true;
     }
@@ -189,16 +176,10 @@ public class AppSocketServer {
                 TrackEvent.trace("beacon", "Received EOF");
                 return;
             }
-            var information =
-                    JacksonMapper.getDefault().treeToValue(informationNode, BeaconClient.ClientInformation.class);
+            var information = JacksonMapper.getDefault().treeToValue(informationNode, BeaconClient.ClientInformation.class);
 
-            TrackEvent.builder()
-                    .category("beacon")
-                    .type("trace")
-                    .message("Created new socket connection #" + id)
-                    .tag("client", information != null ? information.toDisplayString() : "Unknown")
-                    .build()
-                    .handle();
+            TrackEvent.builder().category("beacon").type("trace").message("Created new socket connection #" + id).tag("client",
+                    information != null ? information.toDisplayString() : "Unknown").build().handle();
 
             try {
                 while (true) {
@@ -206,12 +187,7 @@ public class AppSocketServer {
                         break;
                     }
                 }
-                TrackEvent.builder()
-                        .category("beacon")
-                        .type("trace")
-                        .message("Socket connection #" + id + " finished successfully")
-                        .build()
-                        .handle();
+                TrackEvent.builder().category("beacon").type("trace").message("Socket connection #" + id + " finished successfully").build().handle();
 
             } catch (ClientException ce) {
                 TrackEvent.trace("beacon", "Sending client error to #" + id + ": " + ce.getMessage());
@@ -245,19 +221,14 @@ public class AppSocketServer {
             }
         }
 
-        TrackEvent.builder()
-                .category("beacon")
-                .type("trace")
-                .message("Socket connection #" + id + " finished unsuccessfully");
+        TrackEvent.builder().category("beacon").type("trace").message("Socket connection #" + id + " finished unsuccessfully");
     }
 
     private void performExchangesAsync(Socket clientSocket) {
         var id = connectionCounter;
-        var t = new Thread(
-                () -> {
-                    performExchanges(clientSocket, id);
-                },
-                "socket connection #" + id);
+        var t = new Thread(() -> {
+            performExchanges(clientSocket, id);
+        }, "socket connection #" + id);
         t.start();
     }
 
@@ -269,8 +240,8 @@ public class AppSocketServer {
     public InputStream receiveBody(Socket outSocket) throws IOException {
         var read = outSocket.getInputStream().readNBytes(BeaconConfig.BODY_SEPARATOR.length);
         if (!Arrays.equals(read, BeaconConfig.BODY_SEPARATOR)) {
-            throw new IOException("Expected body start (" + HexFormat.of().formatHex(BeaconConfig.BODY_SEPARATOR)
-                    + ") but got " + HexFormat.of().formatHex(read));
+            throw new IOException(
+                    "Expected body start (" + HexFormat.of().formatHex(BeaconConfig.BODY_SEPARATOR) + ") but got " + HexFormat.of().formatHex(read));
         }
         return BeaconFormat.readBlocks(outSocket.getInputStream());
     }

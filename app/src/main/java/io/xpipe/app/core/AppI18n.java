@@ -37,10 +37,10 @@ import java.util.regex.Pattern;
 public class AppI18n {
 
     private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
+    private static final AppI18n INSTANCE = new AppI18n();
     private Map<String, String> translations;
     private Map<String, String> markdownDocumentations;
     private PrettyTime prettyTime;
-    private static final AppI18n INSTANCE = new AppI18n();
 
     public static void init() {
         var i = INSTANCE;
@@ -67,41 +67,33 @@ public class AppI18n {
     }
 
     public static StringBinding readableInstant(ObservableValue<Instant> instant, UnaryOperator<String> op) {
-        return Bindings.createStringBinding(
-                () -> {
-                    if (instant.getValue() == null) {
-                        return "null";
-                    }
+        return Bindings.createStringBinding(() -> {
+            if (instant.getValue() == null) {
+                return "null";
+            }
 
-                    return op.apply(
-                            getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1))));
-                },
-                instant);
+            return op.apply(getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1))));
+        }, instant);
     }
 
     public static StringBinding readableInstant(ObservableValue<Instant> instant) {
-        return Bindings.createStringBinding(
-                () -> {
-                    if (instant.getValue() == null) {
-                        return "null";
-                    }
+        return Bindings.createStringBinding(() -> {
+            if (instant.getValue() == null) {
+                return "null";
+            }
 
-                    return getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1)));
-                },
-                instant);
+            return getInstance().prettyTime.format(instant.getValue().minus(Duration.ofSeconds(1)));
+        }, instant);
     }
 
     public static StringBinding readableDuration(ObservableValue<Duration> duration) {
-        return Bindings.createStringBinding(
-                () -> {
-                    if (duration.getValue() == null) {
-                        return "null";
-                    }
+        return Bindings.createStringBinding(() -> {
+            if (duration.getValue() == null) {
+                return "null";
+            }
 
-                    return getInstance().prettyTime.formatDuration(
-                            getInstance().prettyTime.approximateDuration(Instant.now().plus(duration.getValue())));
-                },
-                duration);
+            return getInstance().prettyTime.formatDuration(getInstance().prettyTime.approximateDuration(Instant.now().plus(duration.getValue())));
+        }, duration);
     }
 
     public static ObservableValue<String> observable(String s, Object... vars) {
@@ -136,38 +128,24 @@ public class AppI18n {
         return s;
     }
 
-    private void clear() {
-        translations.clear();
-        prettyTime = null;
-    }
-
-    @SuppressWarnings("removal")
-    public static class CallingClass extends SecurityManager {
-        public static final CallingClass INSTANCE = new CallingClass();
-
-        public Class<?>[] getCallingClasses() {
-            return getClassContext();
-        }
-    }
-
     @SneakyThrows
     private static String getCallerModuleName() {
         var callers = CallingClass.INSTANCE.getCallingClasses();
         for (Class<?> caller : callers) {
-            if (caller.equals(CallingClass.class)
-                    || caller.equals(ModuleHelper.class)
-                    || caller.equals(ModalOverlayComp.class)
-                    || caller.equals(AppI18n.class)
-                    || caller.equals(FancyTooltipAugment.class)
-                    || caller.equals(PrefsChoiceValue.class)
-                    || caller.equals(Translatable.class)
-                    || caller.equals(OptionsBuilder.class)) {
+            if (caller.equals(CallingClass.class) || caller.equals(ModuleHelper.class) || caller.equals(ModalOverlayComp.class) || caller.equals(
+                    AppI18n.class) || caller.equals(FancyTooltipAugment.class) || caller.equals(PrefsChoiceValue.class) || caller.equals(
+                    Translatable.class) || caller.equals(OptionsBuilder.class)) {
                 continue;
             }
             var split = caller.getModule().getName().split("\\.");
             return split[split.length - 1];
         }
         return "";
+    }
+
+    private void clear() {
+        translations.clear();
+        prettyTime = null;
     }
 
     public String getKey(String s) {
@@ -209,9 +187,7 @@ public class AppI18n {
     }
 
     private boolean matchesLocale(Path f) {
-        var l = AppPrefs.get() != null
-                ? AppPrefs.get().language.getValue().getLocale()
-                : SupportedLocale.ENGLISH.getLocale();
+        var l = AppPrefs.get() != null ? AppPrefs.get().language.getValue().getLocale() : SupportedLocale.ENGLISH.getLocale();
         var name = FilenameUtils.getBaseName(f.getFileName().toString());
         var ending = "_" + l.toLanguageTag();
         return name.endsWith(ending);
@@ -267,10 +243,8 @@ public class AppI18n {
                     }
                 });
 
-                TrackEvent.withDebug("Loading translations for module " + simpleName)
-                        .tag("fileCount", fileCounter.get())
-                        .tag("lineCount", lineCounter.get())
-                        .handle();
+                TrackEvent.withDebug("Loading translations for module " + simpleName).tag("fileCount", fileCounter.get()).tag("lineCount",
+                        lineCounter.get()).handle();
             });
         }
 
@@ -293,13 +267,10 @@ public class AppI18n {
                             return FileVisitResult.CONTINUE;
                         }
 
-                        var name = file.getFileName()
-                                .toString()
-                                .substring(0, file.getFileName().toString().lastIndexOf("_"));
+                        var name = file.getFileName().toString().substring(0, file.getFileName().toString().lastIndexOf("_"));
                         try (var in = Files.newInputStream(file)) {
                             var usedPrefix = moduleName + ":";
-                            markdownDocumentations.put(
-                                    usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+                            markdownDocumentations.put(usedPrefix + name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
                         } catch (IOException ex) {
                             ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
                         }
@@ -310,8 +281,15 @@ public class AppI18n {
         }
 
         this.prettyTime = new PrettyTime(
-                AppPrefs.get() != null
-                        ? AppPrefs.get().language.getValue().getLocale()
-                        : SupportedLocale.ENGLISH.getLocale());
+                AppPrefs.get() != null ? AppPrefs.get().language.getValue().getLocale() : SupportedLocale.ENGLISH.getLocale());
+    }
+
+    @SuppressWarnings("removal")
+    public static class CallingClass extends SecurityManager {
+        public static final CallingClass INSTANCE = new CallingClass();
+
+        public Class<?>[] getCallingClasses() {
+            return getClassContext();
+        }
     }
 }

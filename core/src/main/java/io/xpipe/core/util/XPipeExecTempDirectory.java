@@ -1,8 +1,8 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FileNames;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -66,8 +66,8 @@ public class XPipeExecTempDirectory {
         }
 
         var d = proc.getShellDialect();
-        return proc.executeSimpleBooleanCommand("test -r %s && test -w %s && test -x %s"
-                .formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir)));
+        return proc.executeSimpleBooleanCommand(
+                "test -r %s && test -w %s && test -x %s".formatted(d.fileArgument(dir), d.fileArgument(dir), d.fileArgument(dir)));
     }
 
     public static synchronized void occupyXPipeTempDirectory(ShellControl proc) {
@@ -76,8 +76,7 @@ public class XPipeExecTempDirectory {
 
     public static String getSubDirectory(ShellControl proc, String... sub) throws Exception {
         var base = proc.getSubTemporaryDirectory();
-        var arr = Stream.concat(Stream.of(base), Arrays.stream(sub))
-                .toArray(String[]::new);
+        var arr = Stream.concat(Stream.of(base), Arrays.stream(sub)).toArray(String[]::new);
         var dir = FileNames.join(arr);
 
         // We assume that this directory does not exist yet and therefore don't perform any checks

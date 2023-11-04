@@ -1,12 +1,12 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -18,8 +18,7 @@ public class ScriptHelper {
     public static String createDetachCommand(ShellControl pc, String command) {
         if (pc.getShellDialect().equals(ShellDialects.POWERSHELL)) {
             var script = ScriptHelper.createExecScript(pc, command);
-            return String.format(
-                    "Start-Process -WindowStyle Minimized -FilePath powershell.exe -ArgumentList \"-NoProfile\", \"-File\", %s",
+            return String.format("Start-Process -WindowStyle Minimized -FilePath powershell.exe -ArgumentList \"-NoProfile\", \"-File\", %s",
                     ShellDialects.POWERSHELL.fileArgument(script));
         }
 
@@ -44,13 +43,15 @@ public class ScriptHelper {
         }
     }
 
-    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
-            throws Exception {
+    public static String constructInitFile(
+            ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName
+    ) throws Exception {
         return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, login, displayName);
     }
 
-    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
-            throws Exception {
+    public static String constructInitFile(
+            ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName
+    ) throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
 
@@ -72,7 +73,7 @@ public class ScriptHelper {
         }
 
         if (displayName != null) {
-            content += nl + t.changeTitleCommand(displayName)  + nl;
+            content += nl + t.changeTitleCommand(displayName) + nl;
         }
 
         content += nl + String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
@@ -88,8 +89,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static String getExecScriptFile(ShellControl processControl) {
-        return getExecScriptFile(
-                processControl, processControl.getShellDialect().getScriptFileEnding());
+        return getExecScriptFile(processControl, processControl.getShellDialect().getScriptFileEnding());
     }
 
     @SneakyThrows
@@ -116,15 +116,9 @@ public class ScriptHelper {
     public static String createExecScript(ShellDialect type, ShellControl processControl, String file, String content) {
         content = type.prepareScriptContent(content);
 
-        TrackEvent.withTrace("proc", "Writing exec script")
-                .tag("file", file)
-                .tag("content", content)
-                .handle();
+        TrackEvent.withTrace("proc", "Writing exec script").tag("file", file).tag("content", content).handle();
 
-        processControl
-                .getShellDialect()
-                .createScriptTextFileWriteCommand(processControl, content, file)
-                .execute();
+        processControl.getShellDialect().createScriptTextFileWriteCommand(processControl, content, file).execute();
         var e = processControl.getShellDialect().getScriptPermissionsCommand(file);
         if (e != null) {
             processControl.executeSimpleCommand(e, "Failed to set script permissions of " + file);
@@ -132,13 +126,11 @@ public class ScriptHelper {
         return file;
     }
 
-    public static String createAskPassScript(SecretValue pass, ShellControl parent, boolean forceExecutable)
-            throws Exception {
+    public static String createAskPassScript(SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
         return createAskPassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable);
     }
 
-    public static String createAskPassScript(List<SecretValue> pass, ShellControl parent, boolean forceExecutable)
-            throws Exception {
+    public static String createAskPassScript(List<SecretValue> pass, ShellControl parent, boolean forceExecutable) throws Exception {
         var scriptType = parent.getShellDialect();
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
@@ -149,30 +141,19 @@ public class ScriptHelper {
         return createAskPassScript(pass, parent, scriptType);
     }
 
-    private static String createAskPassScript(List<SecretValue> pass, ShellControl parent, ShellDialect type)
-            throws Exception {
+    private static String createAskPassScript(List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
         var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSubTemporaryDirectory();
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
-                var content = sub.getShellDialect()
-                        .prepareAskpassContent(
-                                sub,
-                                file,
-                                pass.stream()
-                                        .map(secretValue -> secretValue.getSecretValue())
-                                        .toList());
+                var content = sub.getShellDialect().prepareAskpassContent(sub, file,
+                        pass.stream().map(secretValue -> secretValue.getSecretValue()).toList());
                 return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
-            var content = parent.getShellDialect()
-                    .prepareAskpassContent(
-                            parent,
-                            file,
-                            pass.stream()
-                                    .map(secretValue -> secretValue.getSecretValue())
-                                    .toList());
+            var content = parent.getShellDialect().prepareAskpassContent(parent, file,
+                    pass.stream().map(secretValue -> secretValue.getSecretValue()).toList());
             return createExecScript(parent.getShellDialect(), parent, file, content);
         }
     }

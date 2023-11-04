@@ -37,10 +37,8 @@ public class AppLogs {
     private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
     private static final String DEFAULT_LOG_LEVEL = "debug";
 
-    private static final DateTimeFormatter FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
-    private static final DateTimeFormatter MESSAGE_FORMATTER =
-            DateTimeFormatter.ofPattern("HH:mm:ss:SSS").withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter MESSAGE_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss:SSS").withZone(ZoneId.systemDefault());
 
     private static AppLogs INSTANCE;
     @Getter
@@ -138,6 +136,15 @@ public class AppLogs {
         return INSTANCE;
     }
 
+    private static String determineLogLevel() {
+        if (System.getProperty(LOG_LEVEL_PROP) != null) {
+            String p = System.getProperty(WRITE_SYSOUT_PROP);
+            return DEFAULT_LEVELS.contains(p) ? p : "trace";
+        }
+
+        return DEFAULT_LOG_LEVEL;
+    }
+
     private void close() {
         outStream.close();
         categoryWriters.forEach((k, s) -> {
@@ -199,12 +206,7 @@ public class AppLogs {
                         return;
                     }
 
-                    TrackEvent.builder()
-                            .type("info")
-                            .category("sysout")
-                            .message(line)
-                            .build()
-                            .handle();
+                    TrackEvent.builder().type("info").category("sysout").message(line).build().handle();
                     baos.reset();
                 } else {
                     baos.write(b);
@@ -234,21 +236,9 @@ public class AppLogs {
         }));
     }
 
-    private static String determineLogLevel() {
-        if (System.getProperty(LOG_LEVEL_PROP) != null) {
-            String p = System.getProperty(WRITE_SYSOUT_PROP);
-            return DEFAULT_LEVELS.contains(p) ? p : "trace";
-        }
-
-        return DEFAULT_LOG_LEVEL;
-    }
-
     public void logException(String description, Throwable e) {
         var deob = Deobfuscator.deobfuscateToString(e);
-        var event = TrackEvent.builder()
-                .type("error")
-                .message((description != null ? description : "") + "\n" + deob)
-                .build();
+        var event = TrackEvent.builder().type("error").message((description != null ? description : "") + "\n" + deob).build();
         logEvent(event);
     }
 
@@ -268,8 +258,7 @@ public class AppLogs {
 
     private synchronized void logSysOut(TrackEvent event) {
         var time = MESSAGE_FORMATTER.format(event.getInstant());
-        var string =
-                new StringBuilder(time).append(" - ").append(event.getType()).append(": ");
+        var string = new StringBuilder(time).append(" - ").append(event.getType()).append(": ");
         if (event.getCategory() != null) {
             string.append("[").append(event.getCategory()).append("] ");
         }
@@ -280,8 +269,7 @@ public class AppLogs {
 
     private void logToFile(TrackEvent event) {
         var time = MESSAGE_FORMATTER.format(event.getInstant());
-        var string =
-                new StringBuilder(time).append(" - ").append(event.getType()).append(": ");
+        var string = new StringBuilder(time).append(" - ").append(event.getType()).append(": ");
         string.append(event);
         var toLog = string.toString();
         getLogStream(event).println(toLog);
@@ -371,79 +359,65 @@ public class AppLogs {
 
         @Override
         protected void handleNormalizedLoggingCall(
-                Level level, Marker marker, String msg, Object[] arguments, Throwable throwable) {
+                Level level, Marker marker, String msg, Object[] arguments, Throwable throwable
+        ) {
             var formatted = msg;
             if (arguments != null) {
                 for (var arg : arguments) {
                     msg = msg.replaceFirst("\\{}", Objects.toString(arg));
                 }
             }
-            TrackEvent.builder()
-                    .category(name)
-                    .type(level.toString().toLowerCase())
-                    .message(msg)
-                    .build()
-                    .handle();
+            TrackEvent.builder().category(name).type(level.toString().toLowerCase()).message(msg).build().handle();
         }
 
         @Override
         public boolean isTraceEnabled() {
-            return DEFAULT_LEVELS.indexOf("trace")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("trace") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isTraceEnabled(Marker marker) {
-            return DEFAULT_LEVELS.indexOf("trace")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("trace") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isDebugEnabled() {
-            return DEFAULT_LEVELS.indexOf("debug")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("debug") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isDebugEnabled(Marker marker) {
-            return DEFAULT_LEVELS.indexOf("debug")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("debug") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isInfoEnabled() {
-            return DEFAULT_LEVELS.indexOf("info")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("info") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isInfoEnabled(Marker marker) {
-            return DEFAULT_LEVELS.indexOf("info")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("info") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isWarnEnabled() {
-            return DEFAULT_LEVELS.indexOf("warn")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("warn") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isWarnEnabled(Marker marker) {
-            return DEFAULT_LEVELS.indexOf("warn")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("warn") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isErrorEnabled() {
-            return DEFAULT_LEVELS.indexOf("error")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("error") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isErrorEnabled(Marker marker) {
-            return DEFAULT_LEVELS.indexOf("error")
-                    <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            return DEFAULT_LEVELS.indexOf("error") <= DEFAULT_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
     }
 }

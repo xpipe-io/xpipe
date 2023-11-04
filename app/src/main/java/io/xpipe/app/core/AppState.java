@@ -15,7 +15,7 @@ public class AppState {
     boolean initialLaunch;
 
     @NonFinal
-            @Setter
+    @Setter
     String userName;
     @NonFinal
     @Setter

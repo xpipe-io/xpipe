@@ -10,32 +10,24 @@ import java.util.stream.Collectors;
 
 @Getter
 public enum XPipeDaemonMode {
-    @JsonProperty("background")
-    BACKGROUND("background", List.of("base", "background")),
+    @JsonProperty("background") BACKGROUND("background", List.of("base", "background")),
 
-    @JsonProperty("tray")
-    TRAY("tray", List.of("tray", "taskbar")),
+    @JsonProperty("tray") TRAY("tray", List.of("tray", "taskbar")),
 
-    @JsonProperty("gui")
-    GUI("gui", List.of("gui", "desktop", "interface"));
-
-    public static XPipeDaemonMode get(String name) {
-        return Arrays.stream(XPipeDaemonMode.values())
-                .filter(xPipeDaemonMode ->
-                        xPipeDaemonMode.getNameAlternatives().contains(name.toLowerCase(Locale.ROOT)))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown mode: " + name + ". Possible values: "
-                        + Arrays.stream(values())
-                                .map(XPipeDaemonMode::getDisplayName)
-                                .collect(Collectors.joining(", "))));
-    }
+    @JsonProperty("gui") GUI("gui", List.of("gui", "desktop", "interface"));
 
     private final String displayName;
-
     private final List<String> nameAlternatives;
 
     XPipeDaemonMode(String displayName, List<String> nameAlternatives) {
         this.displayName = displayName;
         this.nameAlternatives = nameAlternatives;
+    }
+
+    public static XPipeDaemonMode get(String name) {
+        return Arrays.stream(XPipeDaemonMode.values()).filter(
+                xPipeDaemonMode -> xPipeDaemonMode.getNameAlternatives().contains(name.toLowerCase(Locale.ROOT))).findAny().orElseThrow(
+                () -> new IllegalArgumentException("Unknown mode: " + name + ". Possible values: " + Arrays.stream(values())
+                        .map(XPipeDaemonMode::getDisplayName).collect(Collectors.joining(", "))));
     }
 }

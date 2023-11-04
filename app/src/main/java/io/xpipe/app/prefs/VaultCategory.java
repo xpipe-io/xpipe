@@ -26,8 +26,8 @@ public class VaultCategory extends AppPrefsCategory {
 
     private static final boolean STORAGE_DIR_FIXED = System.getProperty(XPipeInstallation.DATA_DIR_PROP) != null;
 
-    private final StringField lockCryptControl = StringField.ofStringType(prefs.getLockCrypt())
-            .render(() -> new SimpleControl<StringField, StackPane>() {
+    private final StringField lockCryptControl = StringField.ofStringType(prefs.getLockCrypt()).render(
+            () -> new SimpleControl<StringField, StackPane>() {
 
                 private Region button;
 
@@ -35,14 +35,9 @@ public class VaultCategory extends AppPrefsCategory {
                 public void initializeParts() {
                     super.initializeParts();
                     this.node = new StackPane();
-                    button = new ButtonComp(
-                                    Bindings.createStringBinding(() -> {
-                                        return prefs.getLockCrypt().getValue() != null
-                                                ? AppI18n.get("changeLock")
-                                                : AppI18n.get("createLock");
-                                    }),
-                                    () -> LockChangeAlert.show())
-                            .createRegion();
+                    button = new ButtonComp(Bindings.createStringBinding(() -> {
+                        return prefs.getLockCrypt().getValue() != null ? AppI18n.get("changeLock") : AppI18n.get("createLock");
+                    }), () -> LockChangeAlert.show()).createRegion();
                 }
 
                 @Override
@@ -59,39 +54,20 @@ public class VaultCategory extends AppPrefsCategory {
     @SneakyThrows
     public Category create() {
         var pro = LicenseProvider.get().getFeature("gitVault").isSupported();
-        BooleanField enable = BooleanField.ofBooleanType(prefs.enableGitStorage)
-                .editable(pro)
-                .render(() -> {
-                    return new CustomToggleControl();
-                });
-        StringField remote = StringField.ofStringType(prefs.storageGitRemote)
-                .editable(pro)
-                .render(() -> {
-                    var c = new SimpleTextControl();
-                    c.setPrefWidth(1000);
-                    return c;
-                });
+        BooleanField enable = BooleanField.ofBooleanType(prefs.enableGitStorage).editable(pro).render(() -> {
+            return new CustomToggleControl();
+        });
+        StringField remote = StringField.ofStringType(prefs.storageGitRemote).editable(pro).render(() -> {
+            var c = new SimpleTextControl();
+            c.setPrefWidth(1000);
+            return c;
+        });
         if (!pro) {
             prefs.getProRequiredSettings().addAll(List.of(enable, remote));
         }
-        return Category.of(
-                "vault",
-                group(
-                        "sharing",
-                        Setting.of(
-                                "enableGitStorage",
-                                enable,
-                                prefs.enableGitStorage),
-                        Setting.of(
-                                "storageGitRemote",
-                                remote,
-                                prefs.storageGitRemote)),
-                group(
-                        "storage",
-                        STORAGE_DIR_FIXED
-                                ? null
-                                : Setting.of(
-                                        "storageDirectory", prefs.storageDirectoryControl, prefs.storageDirectory)),
+        return Category.of("vault", group("sharing", Setting.of("enableGitStorage", enable, prefs.enableGitStorage),
+                        Setting.of("storageGitRemote", remote, prefs.storageGitRemote)),
+                group("storage", STORAGE_DIR_FIXED ? null : Setting.of("storageDirectory", prefs.storageDirectoryControl, prefs.storageDirectory)),
                 Group.of("security", Setting.of("workspaceLock", lockCryptControl, prefs.getLockCrypt())));
     }
 }

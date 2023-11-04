@@ -19,11 +19,9 @@ public class RenameStoreExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        String storeName;
+        @NonNull String storeName;
 
-        @NonNull
-        String newName;
+        @NonNull String newName;
     }
 
     @Jacksonized

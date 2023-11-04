@@ -11,9 +11,7 @@ public class LogErrorHandler implements ErrorHandler {
             if (event.getThrowable() != null) {
                 AppLogs.get().logException(event.getDescription(), event.getThrowable());
             } else {
-                AppLogs.get()
-                        .logEvent(TrackEvent.fromMessage("error", event.getDescription())
-                                .build());
+                AppLogs.get().logEvent(TrackEvent.fromMessage("error", event.getDescription()).build());
             }
             return;
         }

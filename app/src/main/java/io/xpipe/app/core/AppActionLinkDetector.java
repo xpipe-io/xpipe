@@ -61,14 +61,10 @@ public class AppActionLinkDetector {
 
     private static boolean showAlert() {
         return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle(AppI18n.get("clipboardActionDetectedTitle"));
-                    alert.setHeaderText(AppI18n.get("clipboardActionDetectedHeader"));
-                    alert.getDialogPane()
-                            .setContent(
-                                    AppWindowHelper.alertContentText(AppI18n.get("clipboardActionDetectedContent")));
-                })
-                .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                .orElse(false);
+            alert.setAlertType(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(AppI18n.get("clipboardActionDetectedTitle"));
+            alert.setHeaderText(AppI18n.get("clipboardActionDetectedHeader"));
+            alert.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get("clipboardActionDetectedContent")));
+        }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
     }
 }

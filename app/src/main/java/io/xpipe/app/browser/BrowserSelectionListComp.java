@@ -31,6 +31,13 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class BrowserSelectionListComp extends SimpleComp {
 
+    ObservableList<FileSystem.FileEntry> list;
+    Function<FileSystem.FileEntry, ObservableValue<String>> nameTransformation;
+
+    public BrowserSelectionListComp(ObservableList<FileSystem.FileEntry> list) {
+        this(list, entry -> new SimpleStringProperty(FileNames.getFileName(entry.getPath())));
+    }
+
     public static Image snapshot(ObservableList<FileSystem.FileEntry> list) {
         var r = new BrowserSelectionListComp(list).styleClass("drag").createRegion();
         var scene = new Scene(r);
@@ -41,26 +48,17 @@ public class BrowserSelectionListComp extends SimpleComp {
         return r.snapshot(parameters, null);
     }
 
-    ObservableList<FileSystem.FileEntry> list;
-    Function<FileSystem.FileEntry, ObservableValue<String>> nameTransformation;
-
-    public BrowserSelectionListComp(ObservableList<FileSystem.FileEntry> list) {
-        this(list, entry -> new SimpleStringProperty(FileNames.getFileName(entry.getPath())));
-    }
-
     @Override
     protected Region createSimple() {
         var c = new ListBoxViewComp<>(list, list, entry -> {
-                    return Comp.of(() -> {
-                        var wv = PrettyImageHelper.ofFixedSquare(FileIconManager.getFileIcon(entry, false), 20)
-                                .createRegion();
-                        var l = new Label(null, wv);
-                        l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
-                        l.textProperty().bind(PlatformThread.sync(nameTransformation.apply(entry)));
-                        return l;
-                    });
-                })
-                .styleClass("selected-file-list");
+            return Comp.of(() -> {
+                var wv = PrettyImageHelper.ofFixedSquare(FileIconManager.getFileIcon(entry, false), 20).createRegion();
+                var l = new Label(null, wv);
+                l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
+                l.textProperty().bind(PlatformThread.sync(nameTransformation.apply(entry)));
+                return l;
+            });
+        }).styleClass("selected-file-list");
         return c.createRegion();
     }
 }

@@ -88,8 +88,7 @@ public class AppPreferencesFx {
         search.setVisible(false);
         navigationPresenter = new NavigationPresenter(preferencesFxModel, navigationView);
 
-        preferencesFxView =
-                new PreferencesFxView(preferencesFxModel, navigationView, breadCrumbView, categoryController);
+        preferencesFxView = new PreferencesFxView(preferencesFxModel, navigationView, breadCrumbView, categoryController);
         preferencesFxPresenter = new PreferencesFxPresenter(preferencesFxModel, preferencesFxView) {
             @Override
             public void setupEventHandlers() {
@@ -109,23 +108,22 @@ public class AppPreferencesFx {
     private void initializeCategoryViews() {
         preferencesFxModel.getFlatCategoriesLst().forEach(category -> {
             var categoryView = new CustomCategoryView(preferencesFxModel, category);
-            CategoryPresenter categoryPresenter =
-                    new CategoryPresenter(preferencesFxModel, category, categoryView, breadCrumbPresenter) {
-                        @Override
-                        @SneakyThrows
-                        public void initializeViewParts() {
-                            var formMethod = CategoryPresenter.class.getDeclaredMethod("createForm");
-                            formMethod.setAccessible(true);
+            CategoryPresenter categoryPresenter = new CategoryPresenter(preferencesFxModel, category, categoryView, breadCrumbPresenter) {
+                @Override
+                @SneakyThrows
+                public void initializeViewParts() {
+                    var formMethod = CategoryPresenter.class.getDeclaredMethod("createForm");
+                    formMethod.setAccessible(true);
 
-                            var formField = CategoryPresenter.class.getDeclaredField("form");
-                            formField.setAccessible(true);
-                            formField.set(this, formMethod.invoke(this));
-                            categoryView.initializeFormRenderer((Form) formField.get(this));
+                    var formField = CategoryPresenter.class.getDeclaredField("form");
+                    formField.setAccessible(true);
+                    formField.set(this, formMethod.invoke(this));
+                    categoryView.initializeFormRenderer((Form) formField.get(this));
 
-                            this.addI18nListener();
-                            this.addInstantPersistenceListener();
-                        }
-                    };
+                    this.addI18nListener();
+                    this.addInstantPersistenceListener();
+                }
+            };
             categoryController.addView(category, categoryView, categoryPresenter);
         });
     }
@@ -157,7 +155,8 @@ public class AppPreferencesFx {
      * @throws NullPointerException if either event type or handler are {@code null}.
      */
     public AppPreferencesFx addEventHandler(
-            EventType<PreferencesFxEvent> eventType, EventHandler<? super PreferencesFxEvent> eventHandler) {
+            EventType<PreferencesFxEvent> eventType, EventHandler<? super PreferencesFxEvent> eventHandler
+    ) {
         preferencesFxModel.addEventHandler(eventType, eventHandler);
         return this;
     }

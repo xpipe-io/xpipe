@@ -7,11 +7,6 @@ import java.nio.charset.Charset;
 
 public interface ProcessControl extends AutoCloseable {
 
-    @FunctionalInterface
-    interface ExceptionConverter {
-        <T extends Throwable> T convert(T t);
-    }
-
     ProcessControl withExceptionConverter(ExceptionConverter converter);
 
     void resetData();
@@ -44,4 +39,9 @@ public interface ProcessControl extends AutoCloseable {
     InputStream getStderr();
 
     Charset getCharset();
+
+    @FunctionalInterface
+    interface ExceptionConverter {
+        <T extends Throwable> T convert(T t);
+    }
 }

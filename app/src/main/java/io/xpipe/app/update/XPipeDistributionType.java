@@ -5,8 +5,8 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.XPipeSession;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
 import lombok.Getter;
@@ -23,6 +23,12 @@ public enum XPipeDistributionType {
     CHOCO("choco", true, () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
+    @Getter
+    private final String id;
+    @Getter
+    private final boolean supportsUrls;
+    private final Supplier<UpdateHandler> updateHandlerSupplier;
+    private UpdateHandler updateHandler;
 
     XPipeDistributionType(String id, boolean supportsUrls, Supplier<UpdateHandler> updateHandlerSupplier) {
         this.id = id;
@@ -41,11 +47,8 @@ public enum XPipeDistributionType {
 
         if (!XPipeSession.get().isNewBuildSession()) {
             var cached = AppCache.get("dist", String.class, () -> null);
-            var cachedType = Arrays.stream(values())
-                    .filter(xPipeDistributionType ->
-                            xPipeDistributionType.getId().equals(cached))
-                    .findAny()
-                    .orElse(null);
+            var cachedType = Arrays.stream(values()).filter(xPipeDistributionType -> xPipeDistributionType.getId().equals(cached)).findAny().orElse(
+                    null);
             if (cachedType != null) {
                 return (type = cachedType);
             }
@@ -59,7 +62,7 @@ public enum XPipeDistributionType {
 
         type = det;
         AppCache.update("dist", type.getId());
-        TrackEvent.withInfo("Determined distribution type").tag("type",type.getId()).handle();
+        TrackEvent.withInfo("Determined distribution type").tag("type", type.getId()).handle();
         return type;
     }
 
@@ -74,8 +77,7 @@ public enum XPipeDistributionType {
 
         try (var sc = LocalStore.getShell()) {
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
-                try (var chocoOut =
-                        sc.command("choco search --local-only -r xpipe").start()) {
+                try (var chocoOut = sc.command("choco search --local-only -r xpipe").start()) {
                     var out = chocoOut.readStdoutDiscardErr();
                     if (chocoOut.getExitCode() == 0) {
                         var split = out.split("\\|");
@@ -95,9 +97,7 @@ public enum XPipeDistributionType {
                     if (brewOut.getExitCode() == 0) {
                         if (out.lines().anyMatch(s -> {
                             var split = s.split(" ");
-                            return split.length == 2
-                                    && split[0].equals("xpipe")
-                                    && split[1].equals(AppProperties.get().getVersion());
+                            return split.length == 2 && split[0].equals("xpipe") && split[1].equals(AppProperties.get().getVersion());
                         })) {
                             return HOMEBREW;
                         }
@@ -110,14 +110,6 @@ public enum XPipeDistributionType {
 
         return XPipeDistributionType.NATIVE_INSTALLATION;
     }
-
-    @Getter
-    private final String id;
-    @Getter
-    private final boolean supportsUrls;
-
-    private UpdateHandler updateHandler;
-    private final Supplier<UpdateHandler> updateHandlerSupplier;
 
     public UpdateHandler getUpdateHandler() {
         if (updateHandler == null) {

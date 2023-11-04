@@ -60,10 +60,7 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                 for (int i = 1; i < box.getChildren().size() - 1; i++) {
                     box.getChildren().get(i).getStyleClass().add(Styles.CENTER_PILL);
                 }
-                box.getChildren()
-                        .get(box.getChildren().size() - 1)
-                        .getStyleClass()
-                        .add(Styles.RIGHT_PILL);
+                box.getChildren().get(box.getChildren().size() - 1).getStyleClass().add(Styles.RIGHT_PILL);
             }
         });
 

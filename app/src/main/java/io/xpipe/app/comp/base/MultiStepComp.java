@@ -134,9 +134,8 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
             var line = new Region();
             boolean first = number == 1;
             boolean last = number == comp.getEntries().size();
-            line.prefWidthProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> element.getWidth() / ((first || last) ? 2 : 1), element.widthProperty()));
+            line.prefWidthProperty().bind(
+                    Bindings.createDoubleBinding(() -> element.getWidth() / ((first || last) ? 2 : 1), element.widthProperty()));
             line.setMinWidth(0);
             line.getStyleClass().add("line");
             var lineBox = new HBox(line);
@@ -172,9 +171,8 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
 
             box.getChildren().add(element);
 
-            element.prefWidthProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> content.getWidth() / comp.getEntries().size(), content.widthProperty()));
+            element.prefWidthProperty().bind(
+                    Bindings.createDoubleBinding(() -> content.getWidth() / comp.getEntries().size(), content.widthProperty()));
 
             number++;
         }
@@ -197,20 +195,13 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
         });
 
         buttons.setAlignment(Pos.CENTER_RIGHT);
-        var nextText = Bindings.createStringBinding(
-                () -> isLastPage() ? AppI18n.get("finishStep") : AppI18n.get("nextStep"), currentStep);
-        var nextButton = new ButtonComp(nextText, null, comp::next)
-                .apply(struc -> struc.get().setDefaultButton(true))
-                .styleClass("next");
+        var nextText = Bindings.createStringBinding(() -> isLastPage() ? AppI18n.get("finishStep") : AppI18n.get("nextStep"), currentStep);
+        var nextButton = new ButtonComp(nextText, null, comp::next).apply(struc -> struc.get().setDefaultButton(true)).styleClass("next");
 
-        var previousButton = new ButtonComp(AppI18n.observable("previousStep"), null, comp::previous)
-                .styleClass("next")
-                .apply(struc -> struc.get()
-                        .disableProperty()
-                        .bind(Bindings.createBooleanBinding(this::isFirstPage, currentStep)));
+        var previousButton = new ButtonComp(AppI18n.observable("previousStep"), null, comp::previous).styleClass("next").apply(
+                struc -> struc.get().disableProperty().bind(Bindings.createBooleanBinding(this::isFirstPage, currentStep)));
 
-        previousButton.apply(
-                s -> s.get().visibleProperty().bind(Bindings.createBooleanBinding(() -> !isFirstPage(), currentStep)));
+        previousButton.apply(s -> s.get().visibleProperty().bind(Bindings.createBooleanBinding(() -> !isFirstPage(), currentStep)));
 
         buttons.getChildren().add(previousButton.createRegion());
         buttons.getChildren().add(nextButton.createRegion());
@@ -242,9 +233,7 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
         content.setFillWidth(true);
         VBox.setVgrow(compContent, Priority.ALWAYS);
         currentStep.addListener((c, o, n) -> {
-            var nextTab = compContent
-                    .getTabs()
-                    .get(entries.stream().map(e -> e.step).toList().indexOf(n));
+            var nextTab = compContent.getTabs().get(entries.stream().map(e -> e.step).toList().indexOf(n));
             if (nextTab.getContent() == null) {
                 var createdRegion = n.createRegion();
                 createdRegion.getStyleClass().add("step");

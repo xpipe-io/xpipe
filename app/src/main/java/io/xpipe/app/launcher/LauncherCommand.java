@@ -27,15 +27,14 @@ import java.util.concurrent.Callable;
         showEndOfOptionsDelimiterInUsageHelp = true)
 public class LauncherCommand implements Callable<Integer> {
 
+    @CommandLine.Parameters(paramLabel = "<input>")
+    final List<String> inputs = List.of();
     @CommandLine.Option(
             names = {"--mode"},
             description = "The mode to launch the daemon in or switch too",
             paramLabel = "<mode id>",
             converter = LauncherModeConverter.class)
     XPipeDaemonMode mode;
-
-    @CommandLine.Parameters(paramLabel = "<input>")
-    final List<String> inputs = List.of();
 
     public static void runLauncher(String[] args) {
         event("Launcher received commands: " + Arrays.asList(args));
@@ -72,18 +71,14 @@ public class LauncherCommand implements Callable<Integer> {
         if (BeaconServer.isRunning()) {
             try (var con = new LauncherConnection()) {
                 con.constructSocket();
-                con.performSimpleExchange(
-                        FocusExchange.Request.builder().mode(getEffectiveMode()).build());
+                con.performSimpleExchange(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
                 if (!inputs.isEmpty()) {
-                    con.performSimpleExchange(
-                            OpenExchange.Request.builder().arguments(inputs).build());
+                    con.performSimpleExchange(OpenExchange.Request.builder().arguments(inputs).build());
                 }
 
                 if (OsType.getLocal().equals(OsType.MACOS)) {
                     Desktop.getDesktop().setOpenURIHandler(e -> {
-                        con.performSimpleExchange(OpenExchange.Request.builder()
-                                .arguments(List.of(e.getURI().toString()))
-                                .build());
+                        con.performSimpleExchange(OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
                     });
                     ThreadHelper.sleep(1000);
                 }
@@ -106,9 +101,7 @@ public class LauncherCommand implements Callable<Integer> {
             return mode;
         }
 
-        var opModeName = System.getProperty(OperationMode.MODE_PROP) != null
-                ? System.getProperty(OperationMode.MODE_PROP)
-                : null;
+        var opModeName = System.getProperty(OperationMode.MODE_PROP) != null ? System.getProperty(OperationMode.MODE_PROP) : null;
         if (opModeName != null) {
             return XPipeDaemonMode.get(opModeName);
         }

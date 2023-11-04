@@ -10,7 +10,9 @@ import javafx.scene.layout.Region;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE)
 public class ErrorOverlayComp extends SimpleComp {
 
     Comp<?> background;

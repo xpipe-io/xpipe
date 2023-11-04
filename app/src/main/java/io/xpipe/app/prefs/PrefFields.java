@@ -29,13 +29,11 @@ public class PrefFields {
             });
         });
 
-        return StringField.ofStringType(stringProperty)
-                .render(() -> {
-                    var c = new SimpleChooserControl(
-                            AppI18n.get("browse"), fileProperty.getValue().toFile(), true);
-                    c.setMinWidth(600);
-                    c.setPrefWidth(600);
-                    return c;
-                });
+        return StringField.ofStringType(stringProperty).render(() -> {
+            var c = new SimpleChooserControl(AppI18n.get("browse"), fileProperty.getValue().toFile(), true);
+            c.setMinWidth(600);
+            c.setPrefWidth(600);
+            return c;
+        });
     }
 }

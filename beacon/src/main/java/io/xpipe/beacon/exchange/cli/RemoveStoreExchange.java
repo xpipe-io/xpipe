@@ -19,8 +19,7 @@ public class RemoveStoreExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        String storeName;
+        @NonNull String storeName;
     }
 
     @Jacksonized

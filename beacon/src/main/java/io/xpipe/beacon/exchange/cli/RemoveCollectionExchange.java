@@ -19,8 +19,7 @@ public class RemoveCollectionExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        String collectionName;
+        @NonNull String collectionName;
     }
 
     @Jacksonized

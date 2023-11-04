@@ -74,12 +74,9 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
         var stack = new StackPane(r, loadingOverlay);
 
-        loading.prefWidthProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> {
-                            return Math.min(r.getHeight() - 20, 50);
-                        },
-                        r.heightProperty()));
+        loading.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+            return Math.min(r.getHeight() - 20, 50);
+        }, r.heightProperty()));
         loading.prefHeightProperty().bind(loading.prefWidthProperty());
 
         return new SimpleCompStructure<>(stack);

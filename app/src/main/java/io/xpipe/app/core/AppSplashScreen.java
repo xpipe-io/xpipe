@@ -16,8 +16,7 @@ public class AppSplashScreen {
         stage.setResizable(false);
         stage.initStyle(StageStyle.TRANSPARENT);
 
-        var content = new ImageView(
-                Main.class.getResource("resources/img/loading.gif").toString());
+        var content = new ImageView(Main.class.getResource("resources/img/loading.gif").toString());
         var scene = new Scene(new Pane(content), -1, -1, false);
         stage.setScene(scene);
         stage.show();

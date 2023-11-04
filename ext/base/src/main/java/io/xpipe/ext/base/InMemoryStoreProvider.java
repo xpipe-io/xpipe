@@ -14,8 +14,7 @@ public class InMemoryStoreProvider implements DataStoreProvider {
     @Override
     public Dialog dialogForStore(DataStore store) {
         InMemoryStore s = store.asNeeded();
-        var userQ = Dialog.query(
-                "Value", true, true, false, new String(s.getValue(), StandardCharsets.UTF_8), QueryConverter.STRING);
+        var userQ = Dialog.query("Value", true, true, false, new String(s.getValue(), StandardCharsets.UTF_8), QueryConverter.STRING);
         return userQ.evaluateTo(() -> {
             byte[] bytes = ((String) userQ.getResult()).getBytes(StandardCharsets.UTF_8);
             return new InMemoryStore(bytes);

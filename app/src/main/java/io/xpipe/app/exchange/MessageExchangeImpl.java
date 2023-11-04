@@ -18,8 +18,7 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
             throw new ClientException("No store with name " + name + " was found");
         }
         if (store.get().isDisabled() && !acceptDisabled) {
-            throw new ClientException(
-                    String.format("Store %s is disabled", store.get().getName()));
+            throw new ClientException(String.format("Store %s is disabled", store.get().getName()));
         }
         return store.get();
     }
@@ -30,12 +29,10 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
             throw new ClientException("No store with id " + id + " was found");
         }
         if (store.get().isDisabled() && !acceptUnusable) {
-            throw new ClientException(
-                    String.format("Store %s is disabled", store.get().getName()));
+            throw new ClientException(String.format("Store %s is disabled", store.get().getName()));
         }
         if (!store.get().getValidity().isUsable() && !acceptUnusable) {
-            throw new ClientException(
-                    String.format("Store %s is not completely configured", store.get().getName()));
+            throw new ClientException(String.format("Store %s is not completely configured", store.get().getName()));
         }
         return store.get();
     }

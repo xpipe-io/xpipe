@@ -32,16 +32,10 @@ public class StoreToggleComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var disable = section.getWrapper().getValidity().map(state -> state != DataStoreEntry.Validity.COMPLETE);
-        var visible = BindingsHelper.persist(Bindings.createBooleanBinding(
-                () -> {
-                    return section.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.COMPLETE
-                            && section.getShowDetails().get();
-                },
-                section.getWrapper().getValidity(),
-                section.getShowDetails()));
-        var t = new NamedToggleComp(value, AppI18n.observable(nameKey))
-                .visible(visible)
-                .disable(disable);
+        var visible = BindingsHelper.persist(Bindings.createBooleanBinding(() -> {
+            return section.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.COMPLETE && section.getShowDetails().get();
+        }, section.getWrapper().getValidity(), section.getShowDetails()));
+        var t = new NamedToggleComp(value, AppI18n.observable(nameKey)).visible(visible).disable(disable);
         value.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runAsync(() -> {
                 onChange.accept(newValue);

@@ -33,10 +33,6 @@ public class OptionsBuilder {
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
 
-    public Validator buildEffectiveValidator() {
-        return new ChainedValidator(allValidators);
-    }
-
     public OptionsBuilder() {
         this.ownValidator = new SimpleValidator();
         this.allValidators.add(ownValidator);
@@ -47,13 +43,16 @@ public class OptionsBuilder {
         this.allValidators.add(ownValidator);
     }
 
+    public Validator buildEffectiveValidator() {
+        return new ChainedValidator(allValidators);
+    }
+
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<String, OptionsBuilder> options) {
-        var list = options.entrySet().stream()
-                .map(e -> new ChoicePaneComp.Entry(
-                        AppI18n.observable(e.getKey()), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
+        var list = options.entrySet().stream().map(
+                        e -> new ChoicePaneComp.Entry(AppI18n.observable(e.getKey()), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
                 .toList();
-        var validatorList =
-                options.values().stream().map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator()).toList();
+        var validatorList = options.values().stream().map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator())
+                .toList();
         var selected = new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
         selected.addListener((observable, oldValue, newValue) -> {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
@@ -118,19 +117,13 @@ public class OptionsBuilder {
 
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
-        entries.add(new OptionsComp.Entry(
-                titleKey, null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+        entries.add(new OptionsComp.Entry(titleKey, null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
         return this;
     }
 
     public OptionsBuilder addTitle(ObservableValue<String> title) {
         finishCurrent();
-        entries.add(new OptionsComp.Entry(
-                null,
-                null,
-                null,
-                null,
-                Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
+        entries.add(new OptionsComp.Entry(null, null, null, null, Comp.of(() -> new Label(title.getValue())).styleClass("title-header")));
         return this;
     }
 
@@ -189,10 +182,8 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addToggle(Property<Boolean> prop) {
-        var comp = new ToggleGroupComp<>(
-                prop,
-                new SimpleObjectProperty<>(Map.of(
-                        Boolean.TRUE, AppI18n.observable("app.yes"), Boolean.FALSE, AppI18n.observable("app.no"))));
+        var comp = new ToggleGroupComp<>(prop,
+                new SimpleObjectProperty<>(Map.of(Boolean.TRUE, AppI18n.observable("app.yes"), Boolean.FALSE, AppI18n.observable("app.no"))));
         pushComp(comp);
         props.add(prop);
         return this;
@@ -281,7 +272,8 @@ public class OptionsBuilder {
     }
 
     public final <T, V extends T> OptionsBuilder bindChoice(
-            Supplier<Property<? extends V>> creator, Property<T> toSet) {
+            Supplier<Property<? extends V>> creator, Property<T> toSet
+    ) {
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
                 toSet.unbind();

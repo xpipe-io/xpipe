@@ -32,7 +32,8 @@ public abstract class StorageElement {
     protected Instant lastModified;
 
     public StorageElement(
-            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, boolean dirty) {
+            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, boolean dirty
+    ) {
         this.directory = directory;
         this.uuid = uuid;
         this.name = name;

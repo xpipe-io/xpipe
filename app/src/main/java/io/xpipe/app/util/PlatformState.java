@@ -17,12 +17,11 @@ public enum PlatformState {
     RUNNING,
     EXITED;
 
+    public static boolean HAS_GRAPHICS;
+    public static boolean PLATFORM_LOADED;
     @Getter
     @Setter
     private static PlatformState current = PlatformState.NOT_INITIALIZED;
-
-    public static boolean HAS_GRAPHICS;
-    public static boolean PLATFORM_LOADED;
 
     public static void teardown() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
@@ -56,8 +55,7 @@ public enum PlatformState {
         }
 
         try {
-            GraphicsDevice[] screenDevices =
-                    GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+            GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
             HAS_GRAPHICS = screenDevices != null && screenDevices.length > 0;
         } catch (HeadlessException e) {
             TrackEvent.warn(e.getMessage());

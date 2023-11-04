@@ -23,7 +23,8 @@ public class IntegratedTextAreaComp extends SimpleComp {
     private final ObservableValue<String> fileType;
 
     public IntegratedTextAreaComp(
-            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType) {
+            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType
+    ) {
         this.value = value;
         this.lazy = lazy;
         this.identifier = identifier;
@@ -32,35 +33,26 @@ public class IntegratedTextAreaComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var fileDrop = new FileDropOverlayComp<>(
-                Comp.of(() -> {
-                    var textArea = new TextAreaComp(value, lazy).createRegion();
-                    var copyButton = createOpenButton(textArea);
-                    var pane = new AnchorPane(copyButton);
-                    pane.setPickOnBounds(false);
-                    AnchorPane.setTopAnchor(copyButton, 10.0);
-                    AnchorPane.setRightAnchor(copyButton, 10.0);
+        var fileDrop = new FileDropOverlayComp<>(Comp.of(() -> {
+            var textArea = new TextAreaComp(value, lazy).createRegion();
+            var copyButton = createOpenButton(textArea);
+            var pane = new AnchorPane(copyButton);
+            pane.setPickOnBounds(false);
+            AnchorPane.setTopAnchor(copyButton, 10.0);
+            AnchorPane.setRightAnchor(copyButton, 10.0);
 
-                    var c = new StackPane();
-                    c.getChildren().addAll(textArea, pane);
-                    return c;
-                }),
-                paths -> value.setValue(Files.readString(paths.get(0))));
+            var c = new StackPane();
+            c.getChildren().addAll(textArea, pane);
+            return c;
+        }), paths -> value.setValue(Files.readString(paths.get(0))));
         return fileDrop.createRegion();
     }
 
     private Region createOpenButton(Region container) {
-        return new IconButtonComp(
-                        "mdal-edit",
-                        () -> FileOpener.openString(
-                                identifier + (fileType.getValue() != null ? "." + fileType.getValue() : ""),
-                                this,
-                                value.getValue(),
-                                (s) -> {
-                                    Platform.runLater(() -> value.setValue(s));
-                                }))
-                .styleClass("edit-button")
-                .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
-                .createRegion();
+        return new IconButtonComp("mdal-edit",
+                () -> FileOpener.openString(identifier + (fileType.getValue() != null ? "." + fileType.getValue() : ""), this, value.getValue(),
+                        (s) -> {
+                            Platform.runLater(() -> value.setValue(s));
+                        })).styleClass("edit-button").apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT)).createRegion();
     }
 }

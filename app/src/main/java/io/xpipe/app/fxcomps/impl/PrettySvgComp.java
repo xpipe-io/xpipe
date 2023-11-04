@@ -31,48 +31,38 @@ public class PrettySvgComp extends SimpleComp {
     protected Region createSimple() {
         var image = new SimpleStringProperty();
         var syncValue = PlatformThread.sync(value);
-        var storeIcon = SvgView.create(Bindings.createObjectBinding(
-                () -> {
-                    if (image.get() == null) {
-                        return null;
-                    }
+        var storeIcon = SvgView.create(Bindings.createObjectBinding(() -> {
+            if (image.get() == null) {
+                return null;
+            }
 
-                    if (AppImages.hasSvgImage(image.getValue())) {
-                        return AppImages.svgImage(image.getValue());
-                    } else if (AppImages.hasSvgImage(image.getValue().replace("-dark", ""))) {
-                        return AppImages.svgImage(image.getValue().replace("-dark", ""));
-                    } else {
-                        return null;
-                    }
-                },
-                image));
-        var ar = Bindings.createDoubleBinding(
-                () -> {
-                    return storeIcon.getWidth().getValue().doubleValue()
-                            / storeIcon.getHeight().getValue().doubleValue();
-                },
-                storeIcon.getWidth(),
-                storeIcon.getHeight());
-        var widthProperty = Bindings.createDoubleBinding(
-                () -> {
-                    boolean widthLimited = width / height < ar.doubleValue();
-                    if (widthLimited) {
-                        return width;
-                    } else {
-                        return height * ar.doubleValue();
-                    }
-                },
-                ar);
-        var heightProperty = Bindings.createDoubleBinding(
-                () -> {
-                    boolean widthLimited = width / height < ar.doubleValue();
-                    if (widthLimited) {
-                        return width / ar.doubleValue();
-                    } else {
-                        return height;
-                    }
-                },
-                ar);
+            if (AppImages.hasSvgImage(image.getValue())) {
+                return AppImages.svgImage(image.getValue());
+            } else if (AppImages.hasSvgImage(image.getValue().replace("-dark", ""))) {
+                return AppImages.svgImage(image.getValue().replace("-dark", ""));
+            } else {
+                return null;
+            }
+        }, image));
+        var ar = Bindings.createDoubleBinding(() -> {
+            return storeIcon.getWidth().getValue().doubleValue() / storeIcon.getHeight().getValue().doubleValue();
+        }, storeIcon.getWidth(), storeIcon.getHeight());
+        var widthProperty = Bindings.createDoubleBinding(() -> {
+            boolean widthLimited = width / height < ar.doubleValue();
+            if (widthLimited) {
+                return width;
+            } else {
+                return height * ar.doubleValue();
+            }
+        }, ar);
+        var heightProperty = Bindings.createDoubleBinding(() -> {
+            boolean widthLimited = width / height < ar.doubleValue();
+            if (widthLimited) {
+                return width / ar.doubleValue();
+            } else {
+                return height;
+            }
+        }, ar);
 
         var stack = new StackPane();
         var node = storeIcon.createWebview();
@@ -85,7 +75,8 @@ public class PrettySvgComp extends SimpleComp {
         stack.getChildren().add(node);
 
         Consumer<String> update = val -> {
-            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().isDark() ? "-dark" : "") + "." + FileNames.getExtension(val) : null;
+            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().isDark() ? "-dark" : "") + "." +
+                    FileNames.getExtension(val) : null;
             image.set(fixed);
         };
 

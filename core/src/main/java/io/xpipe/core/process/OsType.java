@@ -45,17 +45,12 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getHomeDirectory(pc);
-            return List.of(
-                    home,
-                    FileNames.join(home, "Documents"),
-                    FileNames.join(home, "Downloads"),
-                    FileNames.join(home, "Desktop"));
+            return List.of(home, FileNames.join(home, "Documents"), FileNames.join(home, "Downloads"), FileNames.join(home, "Desktop"));
         }
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeSimpleStringCommand(
-                    pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
+            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
         }
 
         @Override
@@ -84,17 +79,8 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public String determineOperatingSystemName(ShellControl pc) {
             try {
-                return pc.executeSimpleStringCommand("wmic os get Caption")
-                                .lines()
-                                .skip(1)
-                                .collect(Collectors.joining())
-                                .trim()
-                        + " "
-                        + pc.executeSimpleStringCommand("wmic os get Version")
-                                .lines()
-                                .skip(1)
-                                .collect(Collectors.joining())
-                                .trim();
+                return pc.executeSimpleStringCommand("wmic os get Caption").lines().skip(1).collect(Collectors.joining()).trim() + " " +
+                        pc.executeSimpleStringCommand("wmic os get Version").lines().skip(1).collect(Collectors.joining()).trim();
             } catch (Throwable t) {
                 // Just in case this fails somehow
                 return "Windows ?";
@@ -107,8 +93,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getHomeDirectory(pc);
-            return List.of(
-                    home, FileNames.join(home, "Downloads"), FileNames.join(home, "Documents"), "/etc", "/tmp", "/var");
+            return List.of(home, FileNames.join(home, "Downloads"), FileNames.join(home, "Documents"), "/etc", "/tmp", "/var");
         }
 
         @Override
@@ -122,13 +107,13 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public String getTempDirectory(ShellControl pc) {
-            return "/tmp/";
+        public String getName() {
+            return "Linux";
         }
 
         @Override
-        public String getName() {
-            return "Linux";
+        public String getTempDirectory(ShellControl pc) {
+            return "/tmp/";
         }
 
         @Override
@@ -177,20 +162,23 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
             var home = getHomeDirectory(pc);
-            return List.of(
-                    home,
-                    FileNames.join(home, "Downloads"),
-                    FileNames.join(home, "Documents"),
-                    FileNames.join(home, "Desktop"),
-                    "/Applications",
-                    "/Library",
-                    "/System",
-                    "/etc");
+            return List.of(home, FileNames.join(home, "Downloads"), FileNames.join(home, "Documents"), FileNames.join(home, "Desktop"),
+                    "/Applications", "/Library", "/System", "/etc");
         }
 
         @Override
         public String getHomeDirectory(ShellControl pc) throws Exception {
             return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+        }
+
+        @Override
+        public String getFileSystemSeparator() {
+            return "/";
+        }
+
+        @Override
+        public String getName() {
+            return "Mac";
         }
 
         @Override
@@ -206,19 +194,8 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public String getFileSystemSeparator() {
-            return "/";
-        }
-
-        @Override
-        public String getName() {
-            return "Mac";
-        }
-
-        @Override
         public Map<String, String> getProperties(ShellControl pc) throws Exception {
-            try (CommandControl c =
-                    pc.command("sw_vers").start()) {
+            try (CommandControl c = pc.command("sw_vers").start()) {
                 var text = c.readStdoutOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }
@@ -227,10 +204,9 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
             var properties = getProperties(pc);
-            var name = pc.executeSimpleStringCommand(
-                    "awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup "
-                            + "Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | "
-                            + "awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}'");
+            var name = pc.executeSimpleStringCommand("awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup " +
+                    "Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | " +
+                    "awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}'");
             return properties.get("ProductName") + " " + name + " " + properties.get("ProductVersion");
         }
     }

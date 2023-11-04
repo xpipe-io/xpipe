@@ -13,28 +13,18 @@ import java.util.List;
 
 public class RefreshDirectoryAction implements LeafAction {
 
-    public String getId() {
-        return "refresh";
-    }
-
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         model.refreshSync();
     }
 
-    @Override
-    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return !model.getInOverview().get();
+    public String getId() {
+        return "refresh";
     }
 
     @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdmz-refresh");
-    }
-
-    @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return false;
     }
 
     @Override
@@ -45,5 +35,15 @@ public class RefreshDirectoryAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Refresh";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return false;
+    }
+
+    @Override
+    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return !model.getInOverview().get();
     }
 }

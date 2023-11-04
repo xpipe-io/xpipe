@@ -51,21 +51,14 @@ public class FilterComp extends Comp<FilterComp.Structure> {
             filterText.setValue(newValue);
         });
 
-        bgLabel.visibleProperty()
-                .bind(Bindings.createBooleanBinding(
-                        () -> (filter.getText() == null || filter.getText().isEmpty()),
-                        filter.textProperty(),
+        bgLabel.visibleProperty().bind(
+                Bindings.createBooleanBinding(() -> (filter.getText() == null || filter.getText().isEmpty()), filter.textProperty(),
                         filter.focusedProperty()));
 
         var stack = new StackPane(bgLabel, filter);
         stack.getStyleClass().add("filter-comp");
 
-        return Structure.builder()
-                .inactiveIcon(fi)
-                .inactiveText(bgLabel)
-                .text(filter)
-                .pane(stack)
-                .build();
+        return Structure.builder().inactiveIcon(fi).inactiveText(bgLabel).text(filter).pane(stack).build();
     }
 
     @Value

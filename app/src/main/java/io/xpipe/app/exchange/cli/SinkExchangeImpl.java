@@ -6,8 +6,7 @@ import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.exchange.SinkExchange;
 import io.xpipe.core.store.ShellStore;
 
-public class SinkExchangeImpl extends SinkExchange
-        implements MessageExchangeImpl<SinkExchange.Request, SinkExchange.Response> {
+public class SinkExchangeImpl extends SinkExchange implements MessageExchangeImpl<SinkExchange.Request, SinkExchange.Response> {
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
@@ -18,9 +17,7 @@ public class SinkExchangeImpl extends SinkExchange
         }
 
         ShellStore store = ds.getStore().asNeeded();
-        try (var fs = store.createFileSystem();
-                var inputStream = handler.receiveBody();
-                var output = fs.openOutput(msg.getPath())) {
+        try (var fs = store.createFileSystem(); var inputStream = handler.receiveBody(); var output = fs.openOutput(msg.getPath())) {
             inputStream.transferTo(output);
         }
 

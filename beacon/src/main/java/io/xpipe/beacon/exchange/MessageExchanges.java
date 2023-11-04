@@ -14,11 +14,9 @@ public class MessageExchanges {
 
     public static void loadAll() {
         if (ALL == null) {
-            ALL = ServiceLoader.load(MessageExchange.class).stream()
-                    .map(s -> {
-                        return s.get();
-                    })
-                    .collect(Collectors.toList());
+            ALL = ServiceLoader.load(MessageExchange.class).stream().map(s -> {
+                return s.get();
+            }).collect(Collectors.toList());
         }
     }
 
@@ -29,16 +27,12 @@ public class MessageExchanges {
 
     public static <RQ extends RequestMessage> Optional<MessageExchange> byRequest(RQ req) {
         loadAll();
-        return ALL.stream()
-                .filter(d -> d.getRequestClass().equals(req.getClass()))
-                .findAny();
+        return ALL.stream().filter(d -> d.getRequestClass().equals(req.getClass())).findAny();
     }
 
     public static <RP extends ResponseMessage> Optional<MessageExchange> byResponse(RP rep) {
         loadAll();
-        return ALL.stream()
-                .filter(d -> d.getResponseClass().equals(rep.getClass()))
-                .findAny();
+        return ALL.stream().filter(d -> d.getResponseClass().equals(rep.getClass())).findAny();
     }
 
     public static List<MessageExchange> getAll() {

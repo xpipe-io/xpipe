@@ -19,7 +19,6 @@ public class CustomToggleControl extends SimpleControl<BooleanField, ToggleSwitc
      * Constructs a ToggleControl of {@link ToggleControl} type, with visibility condition.
      *
      * @param visibilityProperty property for control visibility of this element
-     *
      * @return the constructed ToggleControl
      */
     public static ToggleControl of(VisibilityProperty visibilityProperty) {

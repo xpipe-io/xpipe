@@ -41,12 +41,9 @@ public class AppInstaller {
         if (s.hasLocalSystemAccess()) {
             targetFile = localFile.toString();
         } else {
-            targetFile = FileNames.join(
-                    s.getSubTemporaryDirectory(), localFile.getFileName().toString());
+            targetFile = FileNames.join(s.getSubTemporaryDirectory(), localFile.getFileName().toString());
             try (InputStream in = Files.newInputStream(localFile)) {
-                in.transferTo(s.getShellDialect()
-                        .createStreamFileWriteCommand(s, targetFile)
-                        .startExternalStdin());
+                in.transferTo(s.getShellDialect().createStreamFileWriteCommand(s, targetFile).startExternalStdin());
             }
         }
 
@@ -59,9 +56,7 @@ public class AppInstaller {
         }
 
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return Files.exists(Path.of("/etc/debian_version"))
-                    ? new InstallerAssetType.Debian()
-                    : new InstallerAssetType.Rpm();
+            return Files.exists(Path.of("/etc/debian_version")) ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
         }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
@@ -77,9 +72,7 @@ public class AppInstaller {
         }
 
         if (p.getOsType().equals(OsType.LINUX)) {
-            try (CommandControl c = p.getShellDialect()
-                    .createFileExistsCommand(p, "/etc/debian_version")
-                    .start()) {
+            try (CommandControl c = p.getShellDialect().createFileExistsCommand(p, "/etc/debian_version").start()) {
                 return c.discardAndCheckExit() ? new InstallerAssetType.Debian() : new InstallerAssetType.Rpm();
             }
         }
@@ -92,13 +85,14 @@ public class AppInstaller {
     }
 
     @Getter
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-    @JsonSubTypes({
-        @JsonSubTypes.Type(value = InstallerAssetType.Msi.class),
-        @JsonSubTypes.Type(value = InstallerAssetType.Debian.class),
-        @JsonSubTypes.Type(value = InstallerAssetType.Rpm.class),
-        @JsonSubTypes.Type(value = InstallerAssetType.Pkg.class)
-    })
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            property = "type")
+    @JsonSubTypes(
+            {
+                    @JsonSubTypes.Type(value = InstallerAssetType.Msi.class), @JsonSubTypes.Type(value = InstallerAssetType.Debian.class),
+                    @JsonSubTypes.Type(value = InstallerAssetType.Rpm.class), @JsonSubTypes.Type(value = InstallerAssetType.Pkg.class)
+            })
     public abstract static class InstallerAssetType {
 
         public abstract void installRemote(ShellControl pc, String file) throws Exception;
@@ -106,8 +100,7 @@ public class AppInstaller {
         public abstract void installLocal(String file) throws Exception;
 
         public boolean isCorrectAsset(String name) {
-            return name.endsWith(getExtension())
-                    && name.contains(AppProperties.get().getArch());
+            return name.endsWith(getExtension()) && name.contains(AppProperties.get().getArch());
         }
 
         public abstract String getExtension();
@@ -116,28 +109,13 @@ public class AppInstaller {
         public static final class Msi extends InstallerAssetType {
 
             @Override
-            public String getExtension() {
-                return ".msi";
-            }
-
-            @Override
             public void installRemote(ShellControl shellControl, String file) throws Exception {
-                var exec = XPipeInstallation.getInstallationExecutable(
-                        shellControl, XPipeInstallation.getDefaultInstallationBasePath(shellControl));
+                var exec = XPipeInstallation.getInstallationExecutable(shellControl, XPipeInstallation.getDefaultInstallationBasePath(shellControl));
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir(shellControl), "logs");
-                var cmd = new ArrayList<>(java.util.List.of(
-                        "start",
-                        "/wait",
-                        "msiexec",
-                        "/i",
-                        file,
-                        "/l*",
-                        FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log"),
-                        "/qb",
-                        "&",
-                        exec
+                var cmd = new ArrayList<>(java.util.List.of("start", "/wait", "msiexec", "/i", file, "/l*",
+                        FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log"), "/qb", "&", exec
                         // "/qf"
-                        ));
+                ));
                 try (CommandControl c = shellControl.command(cmd).start()) {
                     c.discardOrThrow();
                 }
@@ -146,21 +124,21 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var shellProcessControl = new LocalStore().control().start();
-                var exec = XPipeInstallation.getInstallationExecutable(
-                        shellProcessControl,
+                var exec = XPipeInstallation.getInstallationExecutable(shellProcessControl,
                         XPipeInstallation.getDefaultInstallationBasePath(shellProcessControl));
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
-                var script = ScriptHelper.createExecScript(
-                        shellProcessControl,
-                        String.format(
-                                """
-                                cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                                start "" /wait msiexec /i "%s" /l* "%s" /qb
-                                start "" "%s"
-                                """,
-                                file, logFile, exec));
+                var script = ScriptHelper.createExecScript(shellProcessControl, String.format("""
+                                                                                              cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
+                                                                                              start "" /wait msiexec /i "%s" /l* "%s" /qb
+                                                                                              start "" "%s"
+                                                                                              """, file, logFile, exec));
                 shellProcessControl.executeSimpleCommand("start \"\" /min \"" + script + "\"");
+            }
+
+            @Override
+            public String getExtension() {
+                return ".msi";
             }
         }
 
@@ -168,21 +146,12 @@ public class AppInstaller {
         public static final class Debian extends InstallerAssetType {
 
             @Override
-            public String getExtension() {
-                return ".deb";
-            }
-
-            @Override
             public void installRemote(ShellControl shellControl, String file) throws Exception {
                 try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
-                    try (CommandControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get remove -qy xpipe")
-                            .elevated("xpipe")
-                            .start()) {
+                    try (CommandControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get remove -qy xpipe").elevated("xpipe").start()) {
                         c.discardOrThrow();
                     }
-                    try (CommandControl c = pc.command(
-                                    "DEBIAN_FRONTEND=noninteractive apt-get install -qy \"" + file + "\"")
-                            .elevated("xpipe")
+                    try (CommandControl c = pc.command("DEBIAN_FRONTEND=noninteractive apt-get install -qy \"" + file + "\"").elevated("xpipe")
                             .start()) {
                         c.discardOrThrow();
                     }
@@ -192,40 +161,33 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = new LocalStore()
-                        .control()
-                        .subShell(ShellDialects.BASH)
-                        .command(String.format(
-                                """
-                                        function exec {
-                                            echo "+ sudo apt-get remove -qy xpipe"
-                                            echo "+ sudo apt-get install -qy \\"%s\\""
-                                            DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
-                                            DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
-                                            xpipe open || return 1
-                                        }
+                var command = new LocalStore().control().subShell(ShellDialects.BASH).command(String.format("""
+                                                                                                            function exec {
+                                                                                                                echo "+ sudo apt-get remove -qy xpipe"
+                                                                                                                echo "+ sudo apt-get install -qy \\"%s\\""
+                                                                                                                DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy xpipe || return 1
+                                                                                                                DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
+                                                                                                                xpipe open || return 1
+                                                                                                            }
 
-                                        cd ~
-                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                        """,
-                                file, file));
+                                                                                                            cd ~
+                                                                                                            exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                                                                                            """, file, file));
                 TerminalHelper.open("XPipe Updater", command);
+            }
+
+            @Override
+            public String getExtension() {
+                return ".deb";
             }
         }
 
         @JsonTypeName("rpm")
         public static final class Rpm extends InstallerAssetType {
             @Override
-            public String getExtension() {
-                return ".rpm";
-            }
-
-            @Override
             public void installRemote(ShellControl shellControl, String file) throws Exception {
                 try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
-                    try (CommandControl c = pc.command("rpm -U -v --force \"" + file + "\"")
-                            .elevated("xpipe")
-                            .start()) {
+                    try (CommandControl c = pc.command("rpm -U -v --force \"" + file + "\"").elevated("xpipe").start()) {
                         c.discardOrThrow();
                     }
                     pc.executeSimpleCommand("xpipe open");
@@ -234,38 +196,31 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = new LocalStore()
-                        .control()
-                        .subShell(ShellDialects.BASH)
-                        .command(String.format(
-                                """
-                                        function exec {
-                                            echo "+ sudo rpm -U -v --force \\"%s\\""
-                                            sudo rpm -U -v --force "%s" || return 1
-                                            xpipe open || return 1
-                                        }
+                var command = new LocalStore().control().subShell(ShellDialects.BASH).command(String.format("""
+                                                                                                            function exec {
+                                                                                                                echo "+ sudo rpm -U -v --force \\"%s\\""
+                                                                                                                sudo rpm -U -v --force "%s" || return 1
+                                                                                                                xpipe open || return 1
+                                                                                                            }
 
-                                        cd ~
-                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                        """,
-                                file, file));
+                                                                                                            cd ~
+                                                                                                            exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                                                                                            """, file, file));
                 TerminalHelper.open("XPipe Updater", command);
+            }
+
+            @Override
+            public String getExtension() {
+                return ".rpm";
             }
         }
 
         @JsonTypeName("pkg")
         public static final class Pkg extends InstallerAssetType {
             @Override
-            public String getExtension() {
-                return ".pkg";
-            }
-
-            @Override
             public void installRemote(ShellControl shellControl, String file) throws Exception {
                 try (var pc = shellControl.subShell(ShellDialects.BASH).start()) {
-                    try (CommandControl c = pc.command(
-                                    "installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /")
-                            .elevated("xpipe")
+                    try (CommandControl c = pc.command("installer -verboseR -allowUntrusted -pkg \"" + file + "\" -target /").elevated("xpipe")
                             .start()) {
                         c.discardOrThrow();
                     }
@@ -275,22 +230,22 @@ public class AppInstaller {
 
             @Override
             public void installLocal(String file) throws Exception {
-                var command = new LocalStore()
-                        .control()
-                        .subShell(ShellDialects.BASH)
-                        .command(String.format(
-                                """
-                                        function exec {
-                                            echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
-                                            sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
-                                            xpipe open || return 1
-                                        }
+                var command = new LocalStore().control().subShell(ShellDialects.BASH).command(String.format("""
+                                                                                                            function exec {
+                                                                                                                echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
+                                                                                                                sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
+                                                                                                                xpipe open || return 1
+                                                                                                            }
 
-                                        cd ~
-                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                        """,
-                                file, file));
+                                                                                                            cd ~
+                                                                                                            exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                                                                                            """, file, file));
                 TerminalHelper.open("XPipe Updater", command);
+            }
+
+            @Override
+            public String getExtension() {
+                return ".pkg";
             }
         }
     }

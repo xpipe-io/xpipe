@@ -38,8 +38,7 @@ public class ErrorDetailsComp extends SimpleComp {
     protected Region createSimple() {
         var items = new ArrayList<TabPaneComp.Entry>();
         if (event.getThrowable() != null) {
-            items.add(new TabPaneComp.Entry(
-                    AppI18n.observable("stackTrace"), "mdoal-code", Comp.of(this::createStrackTraceContent)));
+            items.add(new TabPaneComp.Entry(AppI18n.observable("stackTrace"), "mdoal-code", Comp.of(this::createStrackTraceContent)));
         }
 
         var tb = new TabPaneComp(new SimpleObjectProperty<>(items.size() > 0 ? items.get(0) : null), items);

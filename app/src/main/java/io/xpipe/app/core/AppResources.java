@@ -19,9 +19,7 @@ public class AppResources {
     public static final String XPIPE_MODULE = "io.xpipe.app";
 
     private static ModuleFileSystem openFileSystem(String module) throws IOException {
-        var layer = AppExtensionManager.getInstance() != null
-                ? AppExtensionManager.getInstance().getExtendedLayer()
-                : null;
+        var layer = AppExtensionManager.getInstance() != null ? AppExtensionManager.getInstance().getExtendedLayer() : null;
         if (layer == null) {
             layer = ModuleLayer.boot();
         }
@@ -40,9 +38,7 @@ public class AppResources {
     }
 
     public static void with(String module, String file, FailableConsumer<Path, IOException> con) {
-        if (AppProperties.get() != null
-                && !AppProperties.get().isImage()
-                && AppProperties.get().isDeveloperMode()) {
+        if (AppProperties.get() != null && !AppProperties.get().isImage() && AppProperties.get().isDeveloperMode()) {
             // Check if resource was found. If we use external processed resources, we can't use local dev resources
             if (withLocalDevResource(module, file, con)) {
                 return;
@@ -53,7 +49,8 @@ public class AppResources {
     }
 
     public static void withResourceInLayer(
-            String module, String file, ModuleLayer layer, FailableConsumer<Path, IOException> con) {
+            String module, String file, ModuleLayer layer, FailableConsumer<Path, IOException> con
+    ) {
         try (var fs = FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer))) {
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
             con.accept(f);
@@ -82,12 +79,7 @@ public class AppResources {
             JarURLConnection connection = (JarURLConnection) url.openConnection();
             URL fileUrl = connection.getJarFileURL();
             var jarFile = Path.of(fileUrl.toURI());
-            var resDir = jarFile.getParent()
-                    .getParent()
-                    .getParent()
-                    .resolve("src")
-                    .resolve("main")
-                    .resolve("resources");
+            var resDir = jarFile.getParent().getParent().getParent().resolve("src").resolve("main").resolve("resources");
             var f = resDir.resolve(module.replace('.', '/') + "/resources/" + file);
             if (!Files.exists(f)) {
                 return false;

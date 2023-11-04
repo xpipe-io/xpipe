@@ -22,10 +22,7 @@ public class DeveloperTabComp extends SimpleComp {
             try {
                 throw new IllegalStateException();
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex)
-                        .attachment(Path.of("extensions.txt"))
-                        .build()
-                        .handle();
+                ErrorEvent.fromThrowable(ex).attachment(Path.of("extensions.txt")).build().handle();
             }
         });
 
@@ -47,12 +44,7 @@ public class DeveloperTabComp extends SimpleComp {
 
         var button5 = new ButtonComp(AppI18n.observable("Operation mode null"), null, OperationMode::close);
 
-        return new HBox(
-                button.createRegion(),
-                button2.createRegion(),
-                button3.createRegion(),
-                button4.createRegion(),
-                button5.createRegion(),
+        return new HBox(button.createRegion(), button2.createRegion(), button3.createRegion(), button4.createRegion(), button5.createRegion(),
                 button6.createRegion());
     }
 }

@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 public class ChainedValidator implements Validator {
 
     private final List<Validator> validators;
-    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty =
-            new ReadOnlyObjectWrapper<>(new ValidationResult());
+    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>(new ValidationResult());
     private final ReadOnlyBooleanWrapper containsErrorsProperty = new ReadOnlyBooleanWrapper();
 
     public ChainedValidator(List<Validator> validators) {
@@ -96,15 +95,10 @@ public class ChainedValidator implements Validator {
 
     @Override
     public StringBinding createStringBinding(String prefix, String separator) {
-        var list = new ArrayList<Observable>(
-                validators.stream().map(Validator::createStringBinding).toList());
+        var list = new ArrayList<Observable>(validators.stream().map(Validator::createStringBinding).toList());
         Observable[] observables = list.toArray(Observable[]::new);
-        return Bindings.createStringBinding(
-                () -> {
-                    return validators.stream()
-                            .map(v -> v.createStringBinding(prefix, separator).get())
-                            .collect(Collectors.joining("\n"));
-                },
-                observables);
+        return Bindings.createStringBinding(() -> {
+            return validators.stream().map(v -> v.createStringBinding(prefix, separator).get()).collect(Collectors.joining("\n"));
+        }, observables);
     }
 }

@@ -9,8 +9,7 @@ public class DataTableTest extends ApiTest {
 
     @BeforeAll
     public static void setupStorage() throws Exception {
-        DataSource.create(
-                DataStoreId.fromString(":usernames"), "csv", DataTableTest.class.getResource("username.csv"));
+        DataSource.create(DataStoreId.fromString(":usernames"), "csv", DataTableTest.class.getResource("username.csv"));
     }
 
     @Test

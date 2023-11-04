@@ -26,19 +26,19 @@ import java.util.stream.Stream;
 public final class OpenFileSystemModel {
 
     private final DataStoreEntryRef<? extends FileSystemStore> entry;
-    private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final OpenFileSystemHistory history = new OpenFileSystemHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final BrowserModel browserModel;
-    private OpenFileSystemSavedState savedState;
     private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final String name;
     private final String tooltip;
+    private FileSystem fileSystem;
+    private OpenFileSystemSavedState savedState;
     private boolean local;
 
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
@@ -46,11 +46,9 @@ public final class OpenFileSystemModel {
         this.entry = entry;
         this.name = DataStorage.get().getStoreDisplayName(entry.get());
         this.tooltip = DataStorage.get().getId(entry.getEntry()).toString();
-        this.inOverview.bind(Bindings.createBooleanBinding(
-                () -> {
-                    return currentPath.get() == null;
-                },
-                currentPath));
+        this.inOverview.bind(Bindings.createBooleanBinding(() -> {
+            return currentPath.get() == null;
+        }, currentPath));
         fileList = new BrowserFileListModel(this);
     }
 
@@ -145,33 +143,16 @@ public final class OpenFileSystemModel {
         }
 
         // Handle commands typed into navigation bar
-        if (allowCommands
-                && evaluatedPath != null
-                && !FileNames.isAbsolute(evaluatedPath)
-                && fileSystem.getShell().isPresent()) {
+        if (allowCommands && evaluatedPath != null && !FileNames.isAbsolute(evaluatedPath) && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.ALL.stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
-                    TerminalHelper.open(
-                            entry.getEntry(),
-                            name,
-                            fileSystem
-                                    .getShell()
-                                    .get()
-                                    .subShell(adjustedPath)
-                                    .initWith(new SimpleScriptSnippet(
-                                            fileSystem
-                                                    .getShell()
-                                                    .get()
-                                                    .getShellDialect()
-                                                    .getCdCommand(currentPath.get()),
-                                            ScriptSnippet.ExecutionType.BOTH)));
+                    TerminalHelper.open(entry.getEntry(), name, fileSystem.getShell().get().subShell(adjustedPath).initWith(
+                            new SimpleScriptSnippet(fileSystem.getShell().get().getShellDialect().getCdCommand(currentPath.get()),
+                                    ScriptSnippet.ExecutionType.BOTH)));
                 } else {
-                    TerminalHelper.open(
-                            entry.getEntry(),
-                            name,
-                            fileSystem.getShell().get().command(adjustedPath).withWorkingDirectory(directory));
+                    TerminalHelper.open(entry.getEntry(), name, fileSystem.getShell().get().command(adjustedPath).withWorkingDirectory(directory));
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -248,7 +229,8 @@ public final class OpenFileSystemModel {
     }
 
     public void dropFilesIntoAsync(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy) {
+            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy
+    ) {
         // We don't have to do anything in this case
         if (files.isEmpty()) {
             return;
@@ -365,9 +347,7 @@ public final class OpenFileSystemModel {
             var fs = entry.getStore().createFileSystem();
             fs.open();
             this.fileSystem = fs;
-            this.local = fs.getShell()
-                    .map(shellControl -> shellControl.hasLocalSystemAccess())
-                    .orElse(false);
+            this.local = fs.getShell().map(shellControl -> shellControl.hasLocalSystemAccess()).orElse(false);
             this.cache.init();
         });
     }
@@ -396,10 +376,8 @@ public final class OpenFileSystemModel {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var name = directory + " - " + entry.get().getName();
                     var toOpen = ProcessControlProvider.get().withDefaultScripts(connection);
-                    TerminalHelper.open(
-                            entry.getEntry(),
-                            name,
-                            toOpen.initWith(new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory), ScriptSnippet.ExecutionType.BOTH)));
+                    TerminalHelper.open(entry.getEntry(), name, toOpen.initWith(
+                            new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory), ScriptSnippet.ExecutionType.BOTH)));
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                     connection.start();

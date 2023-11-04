@@ -51,28 +51,20 @@ public class UserReportComp extends SimpleComp {
     }
 
     public static void show(ErrorEvent event) {
-        var window =
-                AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> new UserReportComp(event, w), true, null);
+        var window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> new UserReportComp(event, w), true, null);
         window.showAndWait();
     }
 
     private Comp<?> createAttachments() {
-        var list = new ListSelectorComp<>(
-                        event.getAttachments(),
-                        file -> {
-                            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
-                                return AppI18n.get("logFilesAttachment");
-                            }
+        var list = new ListSelectorComp<>(event.getAttachments(), file -> {
+            if (file.equals(AppLogs.get().getSessionLogsDirectory())) {
+                return AppI18n.get("logFilesAttachment");
+            }
 
-                            return file.getFileName().toString();
-                        },
-                        includedDiagnostics,
-                        false)
-                .styleClass("attachment-list");
-        return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)
-                .apply(struc -> struc.get().setExpanded(true))
-                .apply(s -> AppFont.medium(s.get()))
-                .styleClass("attachments");
+            return file.getFileName().toString();
+        }, includedDiagnostics, false).styleClass("attachment-list");
+        return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100).apply(struc -> struc.get().setExpanded(true)).apply(
+                s -> AppFont.medium(s.get())).styleClass("attachments");
     }
 
     @Override
@@ -114,9 +106,8 @@ public class UserReportComp extends SimpleComp {
         AppFont.small(dataPolicyButton);
         dataPolicyButton.setOnAction(event1 -> {
             AppResources.with(AppResources.XPIPE_MODULE, "misc/report_privacy_policy.md", file -> {
-                var markDown = new MarkdownComp(Files.readString(file), s -> s)
-                        .apply(struc -> struc.get().setMaxWidth(500))
-                        .apply(struc -> struc.get().setMaxHeight(400));
+                var markDown = new MarkdownComp(Files.readString(file), s -> s).apply(struc -> struc.get().setMaxWidth(500)).apply(
+                        struc -> struc.get().setMaxHeight(400));
                 var popover = new Popover(markDown.createRegion());
                 popover.setCloseButtonEnabled(true);
                 popover.setHeaderAlwaysVisible(false);
@@ -126,9 +117,8 @@ public class UserReportComp extends SimpleComp {
             });
             event1.consume();
         });
-        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send)
-                .apply(struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT))
-                .createRegion();
+        var sendButton = new ButtonComp(AppI18n.observable("sendReport"), null, this::send).apply(
+                struc -> struc.get().getStyleClass().addAll(BUTTON_OUTLINED, ACCENT)).createRegion();
         var spacer = new Region();
         var agree = new Label("Note the issue reporter ");
         var buttons = new HBox(agree, dataPolicyButton, spacer, sendButton);

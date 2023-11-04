@@ -32,14 +32,12 @@ public class DataStoreFormatter {
             return null;
         }
 
-        return name.substring(0, 1).toUpperCase()
-                + name.substring(1).toLowerCase();
+        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
     public static String formatSubHost(IntFunction<String> func, DataStore at, int length) {
-        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
-                : null;
+        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore) ? DataStorage.get().getStoreDisplayName(at).orElse(
+                null) : null;
         if (atString == null) {
             return func.apply(length);
         }
@@ -49,9 +47,8 @@ public class DataStoreFormatter {
     }
 
     public static String formatAtHost(IntFunction<String> func, DataStore at, int length) {
-        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? DataStorage.get().getStoreDisplayName(at).orElse(null)
-                : null;
+        var atString = at instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore) ? DataStorage.get().getStoreDisplayName(at).orElse(
+                null) : null;
         if (atString == null) {
             return func.apply(length);
         }
@@ -61,9 +58,7 @@ public class DataStoreFormatter {
     }
 
     public static String formatViaProxy(IntFunction<String> func, DataStoreEntry at, int length) {
-        var atString = at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? at.getName()
-                : null;
+        var atString = at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore) ? at.getName() : null;
         if (atString == null) {
             return func.apply(length);
         }
@@ -85,7 +80,7 @@ public class DataStoreFormatter {
             return "?";
         }
 
-            return cut(input.getName(), length);
+        return cut(input.getName(), length);
     }
 
     public static String split(String left, String separator, String right, int length) {
@@ -117,9 +112,7 @@ public class DataStoreFormatter {
             var name = split[0];
             var region = split[2];
             var lengthShare = (length - 3) / 2;
-            return String.format(
-                    "%s.%s",
-                    DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
+            return String.format("%s.%s", DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
         }
 
         if (input.endsWith(".compute.amazonaws.com")) {
@@ -127,9 +120,7 @@ public class DataStoreFormatter {
             var name = split[0];
             var region = split[1];
             var lengthShare = (length - 3) / 2;
-            return String.format(
-                    "%s.%s",
-                    DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
+            return String.format("%s.%s", DataStoreFormatter.cut(name, lengthShare), DataStoreFormatter.cut(region, length - lengthShare));
         }
 
         return cut(input, length);

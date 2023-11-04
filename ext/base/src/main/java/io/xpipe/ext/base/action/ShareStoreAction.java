@@ -16,31 +16,6 @@ import java.awt.datatransfer.StringSelection;
 
 public class ShareStoreAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        public static String create(DataStore store) {
-            return "xpipe://addStore/"
-                    + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
-        }
-
-        @Override
-        public void execute() {
-            var string = create(store.getStore());
-            var selection = new StringSelection(string);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            AppActionLinkDetector.setLastDetectedAction(string);
-            clipboard.setContents(selection, selection);
-        }
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<>() {
@@ -70,5 +45,29 @@ public class ShareStoreAction implements ActionProvider {
                 return "mdi2c-clipboard-list-outline";
             }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry store;
+
+        public static String create(DataStore store) {
+            return "xpipe://addStore/" + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
+        }
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return false;
+        }
+
+        @Override
+        public void execute() {
+            var string = create(store.getStore());
+            var selection = new StringSelection(string);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            AppActionLinkDetector.setLastDetectedAction(string);
+            clipboard.setContents(selection, selection);
+        }
     }
 }

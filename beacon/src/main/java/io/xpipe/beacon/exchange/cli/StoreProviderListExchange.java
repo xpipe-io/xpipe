@@ -28,7 +28,6 @@ public class StoreProviderListExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        Map<String, List<ProviderEntry>> entries;
+        @NonNull Map<String, List<ProviderEntry>> entries;
     }
 }

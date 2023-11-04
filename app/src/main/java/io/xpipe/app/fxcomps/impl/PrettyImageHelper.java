@@ -27,15 +27,16 @@ public class PrettyImageHelper {
             return ofFixedSquare(img, w);
         }
 
-        return img.endsWith(".svg") ? new PrettySvgComp(new SimpleStringProperty(img), w, h) : new PrettyImageComp(new SimpleStringProperty(img), w, h);
+        return img.endsWith(".svg") ? new PrettySvgComp(new SimpleStringProperty(img), w, h) : new PrettyImageComp(new SimpleStringProperty(img), w,
+                h);
     }
 
 
-    public static  Comp<?> ofSvg(ObservableValue<String> img, int w, int h) {
+    public static Comp<?> ofSvg(ObservableValue<String> img, int w, int h) {
         return new PrettySvgComp(img, w, h);
     }
 
-    public static  Comp<?> ofFixedSmallSquare(String img) {
+    public static Comp<?> ofFixedSmallSquare(String img) {
         return ofFixed(img, 16, 16);
     }
 

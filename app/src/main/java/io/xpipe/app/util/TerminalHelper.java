@@ -24,20 +24,16 @@ public class TerminalHelper {
         }
 
         var color = entry != null ? DataStorage.get().getRootForEntry(entry).getColor() : null;
-        var prefix = entry != null && color != null && type.supportsColoredTitle()
-                ? color.getEmoji() + " "
-                : "";
+        var prefix = entry != null && color != null && type.supportsColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;
-                var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(adjustedTitle));
+        var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(adjustedTitle));
         var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, adjustedTitle, cleanTitle, file);
         try {
             type.launch(config);
         } catch (Exception ex) {
-            throw ErrorEvent.unreportable(new IOException(
-                    "Unable to launch terminal " + type.toTranslatedString() + ": " + ex.getMessage()
-                            + ".\nMaybe try to use a different terminal in the settings.",
-                    ex));
+            throw ErrorEvent.unreportable(new IOException("Unable to launch terminal " + type.toTranslatedString() + ": " + ex.getMessage() +
+                    ".\nMaybe try to use a different terminal in the settings.", ex));
         }
     }
 }

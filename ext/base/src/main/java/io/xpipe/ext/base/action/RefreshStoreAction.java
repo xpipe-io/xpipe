@@ -9,7 +9,64 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
-public class RefreshStoreAction implements ActionProvider  {
+public class RefreshStoreAction implements ActionProvider {
+
+    @Override
+    public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {
+        return new ActionProvider.DataStoreCallSite<FixedHierarchyStore>() {
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<FixedHierarchyStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<FixedHierarchyStore> getApplicableClass() {
+                return FixedHierarchyStore.class;
+            }
+
+            @Override
+            public boolean isMajor(DataStoreEntryRef<FixedHierarchyStore> o) {
+                return true;
+            }
+
+            @Override
+            public ObservableValue<String> getName(DataStoreEntryRef<FixedHierarchyStore> store) {
+                return AppI18n.observable("base.refresh");
+            }
+
+            @Override
+            public String getIcon(DataStoreEntryRef<FixedHierarchyStore> store) {
+                return "mdi2r-refresh";
+            }
+
+            @Override
+            public ActiveType activeType() {
+                return ActiveType.ALWAYS_ENABLE;
+            }
+        };
+    }
+
+    @Override
+    public DefaultDataStoreCallSite<FixedHierarchyStore> getDefaultDataStoreCallSite() {
+        return new DefaultDataStoreCallSite<>() {
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<FixedHierarchyStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<FixedHierarchyStore> getApplicableClass() {
+                return FixedHierarchyStore.class;
+            }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
+                return DataStorage.get().getStoreChildren(o.get()).size() == 0;
+            }
+        };
+    }
 
     @Value
     static class Action implements ActionProvider.Action {
@@ -25,62 +82,5 @@ public class RefreshStoreAction implements ActionProvider  {
         public void execute() throws Exception {
             DataStorage.get().refreshChildren(store);
         }
-    }
-
-    @Override
-    public DefaultDataStoreCallSite<FixedHierarchyStore> getDefaultDataStoreCallSite() {
-        return new DefaultDataStoreCallSite<>() {
-
-            @Override
-            public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
-                return DataStorage.get().getStoreChildren(o.get()).size() == 0;
-            }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<FixedHierarchyStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<FixedHierarchyStore> getApplicableClass() {
-                return FixedHierarchyStore.class;
-            }
-        };
-    }
-
-    @Override
-    public ActionProvider.DataStoreCallSite<?> getDataStoreCallSite() {
-        return new ActionProvider.DataStoreCallSite<FixedHierarchyStore>() {
-
-            @Override
-            public boolean isMajor(DataStoreEntryRef<FixedHierarchyStore> o) {
-                return true;
-            }
-
-            @Override
-            public ActiveType activeType() {
-                return ActiveType.ALWAYS_ENABLE;
-            }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<FixedHierarchyStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<FixedHierarchyStore> getApplicableClass() {
-                return FixedHierarchyStore.class;
-            }
-
-            @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<FixedHierarchyStore> store) {
-                return AppI18n.observable("base.refresh");
-            }
-
-            @Override
-            public String getIcon(DataStoreEntryRef<FixedHierarchyStore> store) {
-                return "mdi2r-refresh";
-            }
-        };
     }
 }

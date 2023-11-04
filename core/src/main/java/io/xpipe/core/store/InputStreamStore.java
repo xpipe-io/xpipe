@@ -1,8 +1,5 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.store.DataFlow;
-import io.xpipe.core.store.StreamDataStore;
-
 import java.io.InputStream;
 
 /**
@@ -17,11 +14,6 @@ public class InputStreamStore implements StreamDataStore {
     }
 
     @Override
-    public InputStream openInput() {
-        return in;
-    }
-
-    @Override
     public DataFlow getFlow() {
         return DataFlow.INPUT;
     }
@@ -29,5 +21,10 @@ public class InputStreamStore implements StreamDataStore {
     @Override
     public boolean canOpen() {
         return true;
+    }
+
+    @Override
+    public InputStream openInput() {
+        return in;
     }
 }

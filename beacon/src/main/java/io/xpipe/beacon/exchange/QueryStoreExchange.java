@@ -24,26 +24,22 @@ public class QueryStoreExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        String name;
+        @NonNull String name;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        String name;
+        @NonNull String name;
 
         String information;
 
         String summary;
 
-        @NonNull
-        String provider;
+        @NonNull String provider;
 
-        @NonNull
-        LinkedHashMap<String, String> config;
+        @NonNull LinkedHashMap<String, String> config;
 
         DataStore internalStore;
     }

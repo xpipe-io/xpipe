@@ -15,7 +15,7 @@ tasks.withType(JavaExec).configureEach {
     modularity.inferModulePath = true
 }
 
-javadoc{
+javadoc {
     source = sourceSets.main.allJava
     options {
         addStringOption('-release', '21')

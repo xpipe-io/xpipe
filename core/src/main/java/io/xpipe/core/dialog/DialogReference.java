@@ -12,8 +12,7 @@ import java.util.UUID;
 @Value
 public class DialogReference {
 
-    @NonNull
-    UUID dialogId;
+    @NonNull UUID dialogId;
 
     DialogElement start;
 

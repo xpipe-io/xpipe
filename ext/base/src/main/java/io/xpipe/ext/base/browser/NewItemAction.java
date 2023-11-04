@@ -25,8 +25,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "New";
+    public Category getCategory() {
+        return Category.MUTATION;
     }
 
     @Override
@@ -35,116 +35,87 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1
-                && entries.get(0)
-                        .getRawFileEntry()
-                        .getPath()
-                        .equals(model.getCurrentPath().get());
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return "New";
     }
 
     @Override
-    public Category getCategory() {
-        return Category.MUTATION;
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1 && entries.get(0).getRawFileEntry().getPath().equals(model.getCurrentPath().get());
     }
 
     @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return List.of(
-                new LeafAction() {
-                    @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "File";
-                    }
+        return List.of(new LeafAction() {
+            @Override
+            public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                var name = new SimpleStringProperty();
+                model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newFile", Comp.of(() -> {
+                    var creationName = new TextField();
+                    creationName.textProperty().bindBidirectional(name);
+                    return creationName;
+                }), "finish", () -> {
+                    model.createFileAsync(name.getValue());
+                }));
+            }
 
-                    @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        var name = new SimpleStringProperty();
-                        model.getOverlay()
-                                .setValue(new ModalOverlayComp.OverlayContent(
-                                        "newFile",
-                                        Comp.of(() -> {
-                                            var creationName = new TextField();
-                                            creationName.textProperty().bindBidirectional(name);
-                                            return creationName;
-                                        }),
-                                        "finish",
-                                        () -> {
-                                            model.createFileAsync(name.getValue());
-                                        }));
-                    }
+            @Override
+            public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return BrowserIcons.createDefaultFileIcon().createRegion();
+            }
 
-                    @Override
-                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return BrowserIcons.createDefaultFileIcon().createRegion();
-                    }
-                },
-                new LeafAction() {
-                    @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "Directory";
-                    }
+            @Override
+            public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return "File";
+            }
+        }, new LeafAction() {
+            @Override
+            public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                var name = new SimpleStringProperty();
+                model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("newDirectory", Comp.of(() -> {
+                    var creationName = new TextField();
+                    creationName.textProperty().bindBidirectional(name);
+                    return creationName;
+                }), "finish", () -> {
+                    model.createDirectoryAsync(name.getValue());
+                }));
+            }
 
-                    @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        var name = new SimpleStringProperty();
-                        model.getOverlay()
-                                .setValue(new ModalOverlayComp.OverlayContent(
-                                        "newDirectory",
-                                        Comp.of(() -> {
-                                            var creationName = new TextField();
-                                            creationName.textProperty().bindBidirectional(name);
-                                            return creationName;
-                                        }),
-                                        "finish",
-                                        () -> {
-                                            model.createDirectoryAsync(name.getValue());
-                                        }));
-                    }
+            @Override
+            public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return BrowserIcons.createDefaultDirectoryIcon().createRegion();
+            }
 
-                    @Override
-                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return BrowserIcons.createDefaultDirectoryIcon().createRegion();
-                    }
-                },
-                new LeafAction() {
-                    @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "Symbolic link";
-                    }
+            @Override
+            public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return "Directory";
+            }
+        }, new LeafAction() {
+            @Override
+            public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                var linkName = new SimpleStringProperty();
+                var target = new SimpleStringProperty();
+                model.getOverlay().setValue(new ModalOverlayComp.OverlayContent("base.newLink", new OptionsBuilder().spacer(10).name("linkName")
+                        .addString(linkName).spacer(10).name("targetPath").addString(target).buildComp().prefWidth(400).prefHeight(130), "finish",
+                        () -> {
+                            model.createLinkAsync(linkName.getValue(), target.getValue());
+                        }));
+            }
 
-                    @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
-                    }
+            @Override
+            public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return BrowserIcons.createDefaultFileIcon().createRegion();
+            }
 
-                    @Override
-                    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        var linkName = new SimpleStringProperty();
-                        var target = new SimpleStringProperty();
-                        model.getOverlay()
-                                .setValue(new ModalOverlayComp.OverlayContent(
-                                        "base.newLink",
-                                        new OptionsBuilder()
-                                                .spacer(10)
-                                                .name("linkName")
-                                                .addString(linkName)
-                                                .spacer(10)
-                                                .name("targetPath")
-                                                .addString(target)
-                                                .buildComp()
-                                                .prefWidth(400)
-                                                .prefHeight(130),
-                                        "finish",
-                                        () -> {
-                                            model.createLinkAsync(linkName.getValue(), target.getValue());
-                                        }));
-                    }
+            @Override
+            public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return "Symbolic link";
+            }
 
-                    @Override
-                    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return BrowserIcons.createDefaultFileIcon().createRegion();
-                    }
-                });
+            @Override
+            public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+            }
+        });
     }
 }

@@ -11,10 +11,7 @@ public class SvgHelper {
     public static Size parseSize(String string) {
         for (SizeUnits unit : SizeUnits.values()) {
             if (string.endsWith(unit.toString())) {
-                return new Size(
-                        Double.parseDouble(string.substring(
-                                0, string.length() - unit.toString().length())),
-                        unit);
+                return new Size(Double.parseDouble(string.substring(0, string.length() - unit.toString().length())), unit);
             }
         }
         return new Size(Double.parseDouble(string), SizeUnits.PX);
@@ -25,13 +22,10 @@ public class SvgHelper {
         var matcher = regularExpression.matcher(val);
 
         if (!matcher.find()) {
-            var viewBox = Pattern.compile(
-                    "<svg.+?viewBox=\"([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\"", Pattern.DOTALL);
+            var viewBox = Pattern.compile("<svg.+?viewBox=\"([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\\s+([\\d.]+)\"", Pattern.DOTALL);
             matcher = viewBox.matcher(val);
             if (matcher.find()) {
-                return new Point2D(
-                        parseSize(matcher.group(3)).pixels(),
-                        parseSize(matcher.group(4)).pixels());
+                return new Point2D(parseSize(matcher.group(3)).pixels(), parseSize(matcher.group(4)).pixels());
             }
         }
 

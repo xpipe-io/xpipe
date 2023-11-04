@@ -10,10 +10,9 @@ import java.util.function.Supplier;
 
 public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S> {
 
+    private static ContextMenu currentContextMenu;
     private final Predicate<MouseEvent> show;
     private final Supplier<ContextMenu> contextMenu;
-
-    private static ContextMenu currentContextMenu;
 
     public ContextMenuAugment(Predicate<MouseEvent> show, Supplier<ContextMenu> contextMenu) {
         this.show = show;

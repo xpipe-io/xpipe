@@ -10,7 +10,7 @@ if (currentOS.isWindows()) {
     platform = 'mac'
 }
 
-def arch = System.getProperty ("os.arch");
+def arch = System.getProperty("os.arch");
 if (arch == 'aarch64') {
     platform += '-aarch64'
 }

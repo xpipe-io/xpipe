@@ -25,39 +25,11 @@ open module io.xpipe.ext.base {
     requires com.sun.jna.platform;
     requires atlantafx.base;
 
-    provides BrowserAction with
-            FollowLinkAction,
-            BackAction,
-            ForwardAction,
-            RefreshDirectoryAction,
-            OpenFileDefaultAction,
-            OpenFileWithAction,
-            OpenDirectoryAction,
-            OpenDirectoryInNewTabAction,
-            OpenTerminalAction,
-            OpenNativeFileDetailsAction,
-            BrowseInNativeManagerAction,
-            EditFileAction,
-            RunAction,
-            CopyAction,
-            CopyPathAction,
-            PasteAction,
-            NewItemAction,
-            RenameAction,
-            DeleteAction,
-            UnzipAction,
-            JavapAction,
-            JarAction;
-    provides ActionProvider with
-            RefreshStoreAction,
-            ScanAction,
-            LaunchAction,
-            XPipeUrlAction,
-            EditStoreAction,
-            DeleteStoreChildrenAction,
+    provides BrowserAction with FollowLinkAction, BackAction, ForwardAction, RefreshDirectoryAction, OpenFileDefaultAction, OpenFileWithAction,
+            OpenDirectoryAction, OpenDirectoryInNewTabAction, OpenTerminalAction, OpenNativeFileDetailsAction, BrowseInNativeManagerAction,
+            EditFileAction, RunAction, CopyAction, CopyPathAction, PasteAction, NewItemAction, RenameAction, DeleteAction, UnzipAction, JavapAction
+            , JarAction;
+    provides ActionProvider with RefreshStoreAction, ScanAction, LaunchAction, XPipeUrlAction, EditStoreAction, DeleteStoreChildrenAction,
             BrowseStoreAction;
-    provides DataStoreProvider with
-            ScriptGroupStoreProvider,
-            SimpleScriptStoreProvider,
-            InMemoryStoreProvider;
+    provides DataStoreProvider with ScriptGroupStoreProvider, SimpleScriptStoreProvider, InMemoryStoreProvider;
 }

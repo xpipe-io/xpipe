@@ -5,14 +5,15 @@ import lombok.Getter;
 
 public interface ScriptSnippet {
 
+    String content(ShellControl shellControl);
+
+    ExecutionType executionType();
+
     @Getter
     public static enum ExecutionType {
-        @JsonProperty("dumbOnly")
-        DUMB_ONLY("dumbOnly"),
-        @JsonProperty("terminalOnly")
-        TERMINAL_ONLY("terminalOnly"),
-        @JsonProperty("both")
-        BOTH("both");
+        @JsonProperty("dumbOnly") DUMB_ONLY("dumbOnly"),
+        @JsonProperty("terminalOnly") TERMINAL_ONLY("terminalOnly"),
+        @JsonProperty("both") BOTH("both");
 
         private final String id;
 
@@ -28,8 +29,4 @@ public interface ScriptSnippet {
             return this == TERMINAL_ONLY || this == BOTH;
         }
     }
-
-    String content(ShellControl shellControl);
-
-    ExecutionType executionType();
 }

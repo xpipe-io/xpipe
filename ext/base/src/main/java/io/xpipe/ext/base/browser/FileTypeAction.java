@@ -12,14 +12,14 @@ import java.util.List;
 public interface FileTypeAction extends BrowserAction {
 
     @Override
-    default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        var t = getType();
-        return entries.stream().allMatch(entry -> t.matches(entry.getRawFileEntry()));
+    default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return BrowserIcons.createIcon(getType()).createRegion();
     }
 
     @Override
-    default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return BrowserIcons.createIcon(getType()).createRegion();
+    default boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        var t = getType();
+        return entries.stream().allMatch(entry -> t.matches(entry.getRawFileEntry()));
     }
 
     FileType getType();

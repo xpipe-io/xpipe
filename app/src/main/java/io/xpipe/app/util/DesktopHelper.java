@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.LocalStore;
 
 import java.awt.*;
 import java.nio.file.Path;
@@ -11,7 +11,8 @@ public class DesktopHelper {
 
     public static Path getDesktopDirectory() throws Exception {
         if (OsType.getLocal() == OsType.WINDOWS) {
-            return Path.of(LocalStore.getLocalPowershell().executeSimpleStringCommand("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)"));
+            return Path.of(
+                    LocalStore.getLocalPowershell().executeSimpleStringCommand("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)"));
         } else if (OsType.getLocal() == OsType.LINUX) {
             try (var cmd = LocalStore.getShell().command("xdg-user-dir DESKTOP").start()) {
                 var read = cmd.readStdoutDiscardErr();

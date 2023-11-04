@@ -16,14 +16,7 @@ public class CopyAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        BrowserClipboard.startCopy(
-                model.getCurrentDirectory(),
-                entries.stream().map(entry -> entry.getRawFileEntry()).toList());
-    }
-
-    @Override
-    public boolean acceptsEmptySelection() {
-        return true;
+        BrowserClipboard.startCopy(model.getCurrentDirectory(), entries.stream().map(entry -> entry.getRawFileEntry()).toList());
     }
 
     @Override
@@ -39,6 +32,11 @@ public class CopyAction implements LeafAction {
     @Override
     public KeyCombination getShortcut() {
         return new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN);
+    }
+
+    @Override
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 
     @Override

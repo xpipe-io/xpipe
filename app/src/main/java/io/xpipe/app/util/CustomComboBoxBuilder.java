@@ -30,9 +30,6 @@ public class CustomComboBoxBuilder<T> {
 
     private final Property<T> selected;
     private final Function<T, Node> nodeFunction;
-    private ObservableValue<String> emptyAccessibilityName = AppI18n.observable("none");
-    private Function<T, String> accessibleNameFunction;
-    private Function<T, Node> selectedDisplayNodeFunction;
     private final Map<Node, T> nodeMap = new HashMap<>();
     private final Map<Node, Runnable> actionsMap = new HashMap<>();
     private final List<Node> nodes = new ArrayList<>();
@@ -41,12 +38,16 @@ public class CustomComboBoxBuilder<T> {
     private final Predicate<T> veto;
     private final Property<String> filterString = new SimpleStringProperty();
     private final List<T> filterable = new ArrayList<>();
+    private ObservableValue<String> emptyAccessibilityName = AppI18n.observable("none");
+    private Function<T, String> accessibleNameFunction;
+    private Function<T, Node> selectedDisplayNodeFunction;
     private BiPredicate<T, String> filterPredicate;
     private Node filterNode;
     private Function<T, Node> unknownNode;
 
     public CustomComboBoxBuilder(
-            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto) {
+            Property<T> selected, Function<T, Node> nodeFunction, Node emptyNode, Predicate<T> veto
+    ) {
         this.selected = selected;
         this.nodeFunction = nodeFunction;
         this.selectedDisplayNodeFunction = nodeFunction;
@@ -128,11 +129,8 @@ public class CustomComboBoxBuilder<T> {
         });
         cb.setButtonCell(new SelectedCell());
         SimpleChangeListener.apply(selected, c -> {
-            var item = nodeMap.entrySet().stream()
-                    .filter(e -> Objects.equals(c, e.getValue()))
-                    .map(e -> e.getKey())
-                    .findAny()
-                    .orElse(c == null || unknownNode == null ? emptyNode : unknownNode.apply(c));
+            var item = nodeMap.entrySet().stream().filter(e -> Objects.equals(c, e.getValue())).map(e -> e.getKey()).findAny().orElse(
+                    c == null || unknownNode == null ? emptyNode : unknownNode.apply(c));
             cb.setValue(item);
         });
         cb.valueProperty().addListener((c, o, n) -> {
@@ -151,13 +149,8 @@ public class CustomComboBoxBuilder<T> {
 
         if (filterPredicate != null) {
             SimpleChangeListener.apply(filterString, c -> {
-                var filteredNodes = nodes.stream()
-                        .filter(e -> e.equals(cb.getValue())
-                                || !(nodeMap.get(e) != null
-                                        && (filterable.contains(nodeMap.get(e))
-                                                && filterString.getValue() != null
-                                                && !filterPredicate.test(nodeMap.get(e), c))))
-                        .toList();
+                var filteredNodes = nodes.stream().filter(e -> e.equals(cb.getValue()) || !(nodeMap.get(e) != null && (filterable.contains(
+                        nodeMap.get(e)) && filterString.getValue() != null && !filterPredicate.test(nodeMap.get(e), c)))).toList();
                 cb.setItems(FXCollections.observableList(filteredNodes));
             });
 

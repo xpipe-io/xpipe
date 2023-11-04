@@ -26,9 +26,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         information.getStyleClass().add("information");
         AppFont.header(information);
 
-        var state = wrapper.getEntry().getProvider() != null
-                ? wrapper.getEntry().getProvider().stateDisplay(wrapper)
-                : Comp.empty();
+        var state = wrapper.getEntry().getProvider() != null ? wrapper.getEntry().getProvider().stateDisplay(wrapper) : Comp.empty();
         information.setGraphic(state.createRegion());
 
         var summary = wrapper.summary();

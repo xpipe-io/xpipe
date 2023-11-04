@@ -26,7 +26,6 @@ public class ScriptStoreTypeChoiceComp extends SimpleComp {
         Arrays.stream(available).forEach(executionType -> {
             map.put(executionType, AppI18n.observable(executionType.getId()));
         });
-        return new ToggleGroupComp<>(selected, new SimpleObjectProperty<>(map))
-                .createRegion();
+        return new ToggleGroupComp<>(selected, new SimpleObjectProperty<>(map)).createRegion();
     }
 }

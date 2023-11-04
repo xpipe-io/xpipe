@@ -20,7 +20,9 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.function.Predicate;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>>> {
 
@@ -29,8 +31,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
     boolean staticDisplay;
 
     private Region createDefaultNode() {
-        return JfxHelper.createNamedEntry(
-                AppI18n.get("selectType"), AppI18n.get("selectTypeDescription"), "connection_icon.svg");
+        return JfxHelper.createNamedEntry(AppI18n.get("selectType"), AppI18n.get("selectTypeDescription"), "connection_icon.svg");
     }
 
     private List<DataStoreProvider> getProviders() {
@@ -50,10 +51,9 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
     public CompStructure<ComboBox<Node>> createBase() {
         var comboBox = new CustomComboBoxBuilder<>(provider, this::createGraphic, createDefaultNode(), v -> true);
         comboBox.setAccessibleNames(dataStoreProvider -> dataStoreProvider.getDisplayName());
-        var l = getProviders().stream()
-                .filter(p -> AppPrefs.get().developerShowHiddenProviders().get() || p.getCreationCategory() != null || staticDisplay).toList();
-        l
-                .forEach(comboBox::add);
+        var l = getProviders().stream().filter(
+                p -> AppPrefs.get().developerShowHiddenProviders().get() || p.getCreationCategory() != null || staticDisplay).toList();
+        l.forEach(comboBox::add);
         if (l.size() == 1) {
             provider.setValue(l.get(0));
         }

@@ -22,34 +22,32 @@ final class BrowserContextMenu extends ContextMenu {
         createMenu();
     }
 
+    private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
+        return action.automaticallyResolveLinks() ? selected.stream().map(
+                        browserEntry -> new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel(),
+                                browserEntry.isSynthetic()))
+                .toList() : selected;
+    }
+
     private void createMenu() {
         AppFont.normal(this.getStyleableNode());
 
         var empty = source == null;
         var selected = new ArrayList<>(
-                empty
-                        ? List.of(new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false))
-                        : model.getFileList().getSelection());
+                empty ? List.of(new BrowserEntry(model.getCurrentDirectory(), model.getFileList(), false)) : model.getFileList().getSelection());
         if (source != null && !selected.contains(source)) {
             selected.add(source);
         }
 
         for (BrowserAction.Category cat : BrowserAction.Category.values()) {
-            var all = BrowserAction.ALL.stream()
-                    .filter(browserAction -> browserAction.getCategory() == cat)
-                    .filter(browserAction -> {
-                        var used = resolveIfNeeded(browserAction, selected);
-                        if (!browserAction.isApplicable(model, used)) {
-                            return false;
-                        }
+            var all = BrowserAction.ALL.stream().filter(browserAction -> browserAction.getCategory() == cat).filter(browserAction -> {
+                var used = resolveIfNeeded(browserAction, selected);
+                if (!browserAction.isApplicable(model, used)) {
+                    return false;
+                }
 
-                        if (!browserAction.acceptsEmptySelection() && empty) {
-                            return false;
-                        }
-
-                        return true;
-                    })
-                    .toList();
+                return browserAction.acceptsEmptySelection() || !empty;
+            }).toList();
             if (all.size() == 0) {
                 continue;
             }
@@ -82,16 +80,5 @@ final class BrowserContextMenu extends ContextMenu {
                 }
             }
         }
-    }
-
-    private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
-        return action.automaticallyResolveLinks()
-                ? selected.stream()
-                .map(browserEntry -> new BrowserEntry(
-                        browserEntry.getRawFileEntry().resolved(),
-                        browserEntry.getModel(),
-                        browserEntry.isSynthetic()))
-                .toList()
-                : selected;
     }
 }

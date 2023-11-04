@@ -53,9 +53,8 @@ public class OpenFileSystemComp extends SimpleComp {
         var terminalBtn = BrowserAction.byId("openTerminal", model, List.of()).toButton(model, List.of());
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
-        new ContextMenuAugment<>(
-                        event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null))
-                .augment(new SimpleCompStructure<>(menuButton));
+        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> new BrowserContextMenu(model, null)).augment(
+                new SimpleCompStructure<>(menuButton));
         menuButton.disableProperty().bind(model.getInOverview());
         menuButton.setAccessibleText("Directory options");
 
@@ -63,17 +62,8 @@ public class OpenFileSystemComp extends SimpleComp {
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
         var topBar = new ToolBar();
-        topBar.getItems()
-                .setAll(
-                        overview,
-                        backBtn,
-                        forthBtn,
-                        new Spacer(10),
-                        new BrowserNavBar(model).createRegion(),
-                        filter.get(),
-                        refreshBtn,
-                        terminalBtn,
-                        menuButton);
+        topBar.getItems().setAll(overview, backBtn, forthBtn, new Spacer(10), new BrowserNavBar(model).createRegion(), filter.get(), refreshBtn,
+                terminalBtn, menuButton);
 
         var content = createFileListContent();
         var root = new VBox(topBar, content);
@@ -83,17 +73,13 @@ public class OpenFileSystemComp extends SimpleComp {
     }
 
     private Region createFileListContent() {
-        var directoryView = new BrowserFileListComp(model.getFileList())
-                .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
+        var directoryView = new BrowserFileListComp(model.getFileList()).apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
         var statusBar = new BrowserStatusBarComp(model);
         var fileList = new VerticalComp(List.of(directoryView, statusBar));
 
         var home = new BrowserOverviewComp(model);
-        var stack = new MultiContentComp(Map.of(
-                home,
-                model.getCurrentPath().isNull(),
-                fileList,
-                BindingsHelper.persist(model.getCurrentPath().isNull().not())));
+        var stack = new MultiContentComp(
+                Map.of(home, model.getCurrentPath().isNull(), fileList, BindingsHelper.persist(model.getCurrentPath().isNull().not())));
         return stack.createRegion();
     }
 }

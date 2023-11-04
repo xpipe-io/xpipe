@@ -14,8 +14,7 @@ import javafx.scene.layout.VBox;
 public class UnlockAlert {
 
     public static void showIfNeeded() {
-        if (AppPrefs.get().getLockCrypt().getValue() == null
-                || AppPrefs.get().getLockCrypt().getValue().isEmpty()) {
+        if (AppPrefs.get().getLockCrypt().getValue() == null || AppPrefs.get().getLockCrypt().getValue().isEmpty()) {
             return;
         }
 
@@ -27,24 +26,22 @@ public class UnlockAlert {
             var pw = new SimpleObjectProperty<SecretValue>();
             var canceled = new SimpleBooleanProperty();
             AppWindowHelper.showBlockingAlert(alert -> {
-                        alert.setTitle(AppI18n.get("unlockAlertTitle"));
-                        alert.setHeaderText(AppI18n.get("unlockAlertHeader"));
-                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                alert.setTitle(AppI18n.get("unlockAlertTitle"));
+                alert.setHeaderText(AppI18n.get("unlockAlertHeader"));
+                alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
-                        var p1 = new SecretFieldComp(pw) {
-                            @Override
-                            protected SecretValue encrypt(char[] c) {
-                                return SecretHelper.encryptInPlace(c);
-                            }
-                        }.createRegion();
-                        p1.setStyle("-fx-border-width: 1px");
+                var p1 = new SecretFieldComp(pw) {
+                    @Override
+                    protected SecretValue encrypt(char[] c) {
+                        return SecretHelper.encryptInPlace(c);
+                    }
+                }.createRegion();
+                p1.setStyle("-fx-border-width: 1px");
 
-                        var content = new VBox(p1);
-                        content.setSpacing(5);
-                        alert.getDialogPane().setContent(content);
-                    })
-                    .filter(b -> b.getButtonData().isDefaultButton())
-                    .ifPresentOrElse(t -> {}, () -> canceled.set(true));
+                var content = new VBox(p1);
+                content.setSpacing(5);
+                alert.getDialogPane().setContent(content);
+            }).filter(b -> b.getButtonData().isDefaultButton()).ifPresentOrElse(t -> {}, () -> canceled.set(true));
 
             if (canceled.get()) {
                 ErrorEvent.fromMessage("Unlock cancelled").term().omit().handle();

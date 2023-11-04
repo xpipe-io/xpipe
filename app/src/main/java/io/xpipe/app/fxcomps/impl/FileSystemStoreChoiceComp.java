@@ -20,11 +20,8 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
     }
 
     private static String getName(FileSystemStore store) {
-        return DataStorage.get().getUsableStores().stream()
-                .filter(e -> e.equals(store))
-                .findAny()
-                .map(e -> DataStorage.get().getStoreDisplayName(e).orElse("?"))
-                .orElse("?");
+        return DataStorage.get().getUsableStores().stream().filter(e -> e.equals(store)).findAny().map(
+                e -> DataStorage.get().getStoreDisplayName(e).orElse("?")).orElse("?");
     }
 
     private Region createGraphic(FileSystemStore s) {
@@ -44,10 +41,7 @@ public class FileSystemStoreChoiceComp extends SimpleComp {
         var comboBox = new CustomComboBoxBuilder<>(selected, this::createGraphic, null, v -> true);
         comboBox.setAccessibleNames(store -> getName(store));
         comboBox.setSelectedDisplay(this::createDisplayGraphic);
-        DataStorage.get().getUsableStores().stream()
-                .filter(e -> e instanceof FileSystemStore)
-                .map(e -> (FileSystemStore) e)
-                .forEach(comboBox::add);
+        DataStorage.get().getUsableStores().stream().filter(e -> e instanceof FileSystemStore).map(e -> (FileSystemStore) e).forEach(comboBox::add);
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("choice-comp");
         cb.setMaxWidth(45);

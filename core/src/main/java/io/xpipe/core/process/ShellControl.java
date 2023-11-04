@@ -74,9 +74,12 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withExceptionConverter(ExceptionConverter converter);
 
-    ShellControl withErrorFormatter(Function<String, String> formatter);
-
     String prepareTerminalOpen(String displayName) throws Exception;
+
+    @Override
+    ShellControl start();
+
+    ShellControl withErrorFormatter(Function<String, String> formatter);
 
     String prepareIntermediateTerminalOpen(String content, String displayName) throws Exception;
 
@@ -87,13 +90,11 @@ public interface ShellControl extends ProcessControl {
     void checkRunning();
 
     default CommandControl osascriptCommand(String script) {
-        return command(String.format(
-                """
-                osascript - "$@" <<EOF
-                %s
-                EOF
-                """,
-                script));
+        return command(String.format("""
+                                     osascript - "$@" <<EOF
+                                     %s
+                                     EOF
+                                     """, script));
     }
 
     default byte[] executeSimpleRawBytesCommand(String command) throws Exception {
@@ -153,6 +154,7 @@ public interface ShellControl extends ProcessControl {
     default ShellControl elevationPassword(SecretValue value) {
         return elevationPassword(() -> value);
     }
+
     ShellControl elevationPassword(FailableSupplier<SecretValue> value);
 
     ShellControl initWith(ScriptSnippet snippet);
@@ -162,18 +164,11 @@ public interface ShellControl extends ProcessControl {
     FailableSupplier<SecretValue> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getOpenCommand(), (sc, command) -> command)
-                .elevationPassword(getElevationPassword());
-    }
-
-    interface TerminalOpenFunction {
-
-        String prepare(ShellControl sc, String command) throws Exception;
+        return subShell(p -> type.getOpenCommand(), (sc, command) -> command).elevationPassword(getElevationPassword());
     }
 
     default ShellControl identicalSubShell() {
-        return subShell(p -> p.getShellDialect().getOpenCommand(), (sc, command) -> command)
-                .elevationPassword(getElevationPassword());
+        return subShell(p -> p.getShellDialect().getOpenCommand(), (sc, command) -> command).elevationPassword(getElevationPassword());
     }
 
     default ShellControl subShell(@NonNull String command) {
@@ -200,20 +195,18 @@ public interface ShellControl extends ProcessControl {
     }
 
     ShellControl subShell(
-            FailableFunction<ShellControl, String, Exception> command, TerminalOpenFunction terminalCommand);
+            FailableFunction<ShellControl, String, Exception> command, TerminalOpenFunction terminalCommand
+    );
 
     void executeLine(String command) throws Exception;
 
     void cd(String directory) throws Exception;
 
-    @Override
-    ShellControl start();
-
     CommandControl command(FailableFunction<ShellControl, String, Exception> command);
 
     CommandControl command(
-            FailableFunction<ShellControl, String, Exception> command,
-            FailableFunction<ShellControl, String, Exception> terminalCommand);
+            FailableFunction<ShellControl, String, Exception> command, FailableFunction<ShellControl, String, Exception> terminalCommand
+    );
 
     default CommandControl command(String... command) {
         var c = Arrays.stream(command).filter(s -> s != null).toArray(String[]::new);
@@ -221,7 +214,7 @@ public interface ShellControl extends ProcessControl {
     }
 
     default CommandControl buildCommand(Consumer<CommandBuilder> builder) {
-        return command(sc-> {
+        return command(sc -> {
             var b = CommandBuilder.of();
             builder.accept(b);
             return b.build(sc);
@@ -237,4 +230,9 @@ public interface ShellControl extends ProcessControl {
     }
 
     void exitAndWait() throws IOException;
+
+    interface TerminalOpenFunction {
+
+        String prepare(ShellControl sc, String command) throws Exception;
+    }
 }

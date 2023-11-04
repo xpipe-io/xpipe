@@ -33,10 +33,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
     }
 
     public OptionsComp.Entry queryEntry(String key) {
-        return entries.stream()
-                .filter(entry -> entry.key != null && entry.key.equals(key))
-                .findAny()
-                .orElseThrow();
+        return entries.stream().filter(entry -> entry.key != null && entry.key.equals(key)).findAny().orElseThrow();
     }
 
     @Override
@@ -82,9 +79,8 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 }
 
                 if (entry.longDescriptionSource() != null) {
-                    var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s)
-                            .apply(struc -> struc.get().setMaxWidth(500))
-                            .apply(struc -> struc.get().setMaxHeight(400));
+                    var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s).apply(struc -> struc.get().setMaxWidth(500)).apply(
+                            struc -> struc.get().setMaxHeight(400));
                     var popover = new Popover(markDown.createRegion());
                     popover.setCloseButtonEnabled(false);
                     popover.setHeaderAlwaysVisible(false);
@@ -149,25 +145,15 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         }
 
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
-            var nameWidthBinding = Bindings.createDoubleBinding(
-                    () -> {
-                        return nameRegions.stream()
-                                .map(Region::getWidth)
-                                .filter(aDouble -> aDouble > 0.0)
-                                .max(Double::compareTo)
-                                .orElse(Region.USE_COMPUTED_SIZE);
-                    },
-                    nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
+            var nameWidthBinding = Bindings.createDoubleBinding(() -> {
+                return nameRegions.stream().map(Region::getWidth).filter(aDouble -> aDouble > 0.0).max(Double::compareTo).orElse(
+                        Region.USE_COMPUTED_SIZE);
+            }, nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
             nameRegions.forEach(r -> r.minWidthProperty().bind(nameWidthBinding));
         }
 
         return new SimpleCompStructure<>(pane);
     }
 
-    public record Entry(
-            String key,
-            ObservableValue<String> description,
-            String longDescriptionSource,
-            ObservableValue<String> name,
-            Comp<?> comp) {}
+    public record Entry(String key, ObservableValue<String> description, String longDescriptionSource, ObservableValue<String> name, Comp<?> comp) {}
 }

@@ -13,10 +13,8 @@ public final class OpenFileSystemHistory {
 
     private final IntegerProperty cursor = new SimpleIntegerProperty(-1);
     private final List<String> history = new ArrayList<>();
-    private final BooleanBinding canGoBack =
-            Bindings.createBooleanBinding(() -> cursor.get() > 0 && history.size() > 1, cursor);
-    private final BooleanBinding canGoForth =
-            Bindings.createBooleanBinding(() -> cursor.get() < history.size() - 1, cursor);
+    private final BooleanBinding canGoBack = Bindings.createBooleanBinding(() -> cursor.get() > 0 && history.size() > 1, cursor);
+    private final BooleanBinding canGoForth = Bindings.createBooleanBinding(() -> cursor.get() < history.size() - 1, cursor);
 
     public String getCurrent() {
         return history.size() > 0 ? history.get(cursor.get()) : null;

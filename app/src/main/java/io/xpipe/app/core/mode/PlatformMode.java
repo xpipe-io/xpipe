@@ -38,10 +38,9 @@ public abstract class PlatformMode extends OperationMode {
 
         TrackEvent.info("mode", "Launching application ...");
         ThreadHelper.createPlatformThread("app", false, () -> {
-                    TrackEvent.info("mode", "Application thread started");
-                    Application.launch(App.class);
-                })
-                .start();
+            TrackEvent.info("mode", "Application thread started");
+            Application.launch(App.class);
+        }).start();
 
         TrackEvent.info("mode", "Waiting for platform application startup ...");
         while (App.getApp() == null) {

@@ -17,22 +17,14 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
     public Response handleRequest(BeaconHandler handler, Request msg) {
         var categories = DataStoreProvider.CreationCategory.values();
         var all = DataStoreProviders.getAll();
-        var map = Arrays.stream(categories)
-                .collect(Collectors.toMap(category -> getName(category), category -> all.stream()
-                        .filter(dataStoreProvider ->
-                                category.equals(dataStoreProvider.getCreationCategory()))
-                        .map(p -> ProviderEntry.builder()
-                                .id(p.getId())
-                                .description(p.getDisplayDescription())
-                                .hidden(p.getCreationCategory() == null)
-                                .build())
-                        .toList()));
+        var map = Arrays.stream(categories).collect(Collectors.toMap(category -> getName(category), category -> all.stream().filter(
+                dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory())).map(p -> ProviderEntry.builder().id(p.getId())
+                .description(p.getDisplayDescription()).hidden(p.getCreationCategory() == null).build()).toList()));
 
         return Response.builder().entries(map).build();
     }
 
     private String getName(DataStoreProvider.CreationCategory category) {
-        return category.name().substring(0, 1).toUpperCase()
-                + category.name().substring(1).toLowerCase();
+        return category.name().substring(0, 1).toUpperCase() + category.name().substring(1).toLowerCase();
     }
 }

@@ -8,31 +8,12 @@ import java.util.List;
 
 public class CommandBuilder {
 
-    public static CommandBuilder of() {
-        return new CommandBuilder();
-    }
+    private final List<Element> elements = new ArrayList<>();
 
     private CommandBuilder() {}
 
-    private final List<Element> elements = new ArrayList<>();
-
-    public interface Element {
-
-        String evaluate(ShellControl sc) throws Exception;
-    }
-
-    static class Fixed implements Element {
-
-        private final String string;
-
-        Fixed(String string) {
-            this.string = string;
-        }
-
-        @Override
-        public String evaluate(ShellControl sc) {
-            return string;
-        }
+    public static CommandBuilder of() {
+        return new CommandBuilder();
     }
 
     public CommandBuilder addSeparator(String s) {
@@ -150,5 +131,24 @@ public class CommandBuilder {
             list.add(evaluate);
         }
         return String.join(" ", list);
+    }
+
+    public interface Element {
+
+        String evaluate(ShellControl sc) throws Exception;
+    }
+
+    static class Fixed implements Element {
+
+        private final String string;
+
+        Fixed(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String evaluate(ShellControl sc) {
+            return string;
+        }
     }
 }

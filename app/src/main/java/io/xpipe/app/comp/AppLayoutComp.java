@@ -22,13 +22,9 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
     @Override
     public CompStructure<Pane> createBase() {
         var multi = new MultiContentComp(model.getEntries().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.comp(),
-                        entry -> PlatformThread.sync(Bindings.createBooleanBinding(
-                                () -> {
-                                    return model.getSelected().getValue().equals(entry);
-                                },
-                                model.getSelected())))));
+                .collect(Collectors.toMap(entry -> entry.comp(), entry -> PlatformThread.sync(Bindings.createBooleanBinding(() -> {
+                    return model.getSelected().getValue().equals(entry);
+                }, model.getSelected())))));
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());

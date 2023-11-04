@@ -19,6 +19,16 @@ public class GuiMode extends PlatformMode {
     }
 
     @Override
+    public void onSwitchFrom() {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            TrackEvent.info("mode", "Closing windows");
+            Stage.getWindows().stream().toList().forEach(w -> {
+                w.hide();
+            });
+        });
+    }
+
+    @Override
     public void onSwitchTo() throws Throwable {
         super.onSwitchTo();
 
@@ -39,15 +49,5 @@ public class GuiMode extends PlatformMode {
             AppMainWindow.getInstance().show();
         });
         TrackEvent.info("mode", "Window setup complete");
-    }
-
-    @Override
-    public void onSwitchFrom() {
-        PlatformThread.runLaterIfNeededBlocking(() -> {
-            TrackEvent.info("mode", "Closing windows");
-            Stage.getWindows().stream().toList().forEach(w -> {
-                w.hide();
-            });
-        });
     }
 }

@@ -42,7 +42,9 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@FieldDefaults(
+        makeFinal = true,
+        level = AccessLevel.PRIVATE)
 public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
     MultiStepComp parent;
@@ -61,13 +63,9 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     boolean staticDisplay;
 
     public GuiDsStoreCreator(
-            MultiStepComp parent,
-            Property<DataStoreProvider> provider,
-            Property<DataStore> store,
-            Predicate<DataStoreProvider> filter,
-            String initialName,
-            DataStoreEntry existingEntry, boolean exists,
-            boolean staticDisplay) {
+            MultiStepComp parent, Property<DataStoreProvider> provider, Property<DataStore> store, Predicate<DataStoreProvider> filter,
+            String initialName, DataStoreEntry existingEntry, boolean exists, boolean staticDisplay
+    ) {
         this.parent = parent;
         this.provider = provider;
         this.store = store;
@@ -106,194 +104,90 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 return null;
             }
 
-            var testE = DataStoreEntry.createNew(
-                    UUID.randomUUID(),
-                    DataStorage.get().getSelectedCategory().getUuid(),
-                    name.getValue(),
+            var testE = DataStoreEntry.createNew(UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name.getValue(),
                     store.getValue());
             var p = provider.getValue().getDisplayParent(testE);
-            return DataStoreEntry.createNew(
-                    UUID.randomUUID(),
-                    p != null
-                            ? p.getCategoryUuid()
-                            : DataStorage.get()
-                            .getSelectedCategory()
-                            .getUuid(),
-                    name.getValue(),
-                    store.getValue());
+            return DataStoreEntry.createNew(UUID.randomUUID(), p != null ? p.getCategoryUuid() : DataStorage.get().getSelectedCategory().getUuid(),
+                    name.getValue(), store.getValue());
         }, name, store);
     }
 
     public static void showEdit(DataStoreEntry e) {
-        show(
-                e.getName(),
-                e.getProvider(),
-                e.getStore(),
-                v -> true,
-                newE -> {
-                    ThreadHelper.runAsync(() -> {
-                        if (!DataStorage.get().getStoreEntries().contains(e)) {
-                            DataStorage.get().addStoreEntryIfNotPresent(newE);
-                        } else {
-                            DataStorage.get().updateEntry(e, newE);
-                        }
-                    });
-                },
-                true,
-                true,
-                e);
+        show(e.getName(), e.getProvider(), e.getStore(), v -> true, newE -> {
+            ThreadHelper.runAsync(() -> {
+                if (!DataStorage.get().getStoreEntries().contains(e)) {
+                    DataStorage.get().addStoreEntryIfNotPresent(newE);
+                } else {
+                    DataStorage.get().updateEntry(e, newE);
+                }
+            });
+        }, true, true, e);
     }
 
     public static void showCreation(DataStoreProvider selected, Predicate<DataStoreProvider> filter) {
-        show(
-                null,
-                selected,
-                selected != null ? selected.defaultStore() : null,
-                filter,
-                e -> {
-                    try {
-                        DataStorage.get().addStoreEntryIfNotPresent(e);
-                        if (e.getProvider().shouldHaveChildren()) {
-                            ScanAlert.showAsync(e);
-                        }
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                    }
-                },
-                false,
-                false,
-                null);
+        show(null, selected, selected != null ? selected.defaultStore() : null, filter, e -> {
+            try {
+                DataStorage.get().addStoreEntryIfNotPresent(e);
+                if (e.getProvider().shouldHaveChildren()) {
+                    ScanAlert.showAsync(e);
+                }
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).handle();
+            }
+        }, false, false, null);
     }
 
     private static void show(
-            String initialName,
-            DataStoreProvider provider,
-            DataStore s,
-            Predicate<DataStoreProvider> filter,
-            Consumer<DataStoreEntry> con,
-            boolean exists,
-            boolean staticDisplay,
-            DataStoreEntry existingEntry) {
+            String initialName, DataStoreProvider provider, DataStore s, Predicate<DataStoreProvider> filter, Consumer<DataStoreEntry> con,
+            boolean exists, boolean staticDisplay, DataStoreEntry existingEntry
+    ) {
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
         var loading = new SimpleBooleanProperty();
         var name = "addConnection";
         Platform.runLater(() -> {
-            var stage = AppWindowHelper.sideWindow(
-                    AppI18n.get(name),
-                    window -> {
-                        return new MultiStepComp() {
+            var stage = AppWindowHelper.sideWindow(AppI18n.get(name), window -> {
+                return new MultiStepComp() {
 
-                            private final GuiDsStoreCreator creator = new GuiDsStoreCreator(
-                                    this, prop, store, filter, initialName, existingEntry, exists, staticDisplay);
+                    private final GuiDsStoreCreator creator = new GuiDsStoreCreator(this, prop, store, filter, initialName, existingEntry, exists,
+                            staticDisplay);
 
-                            @Override
-                            protected List<Entry> setup() {
-                                loading.bind(creator.busy);
-                                return List.of(new Entry(AppI18n.observable("a"), creator));
-                            }
+                    @Override
+                    protected List<Entry> setup() {
+                        loading.bind(creator.busy);
+                        return List.of(new Entry(AppI18n.observable("a"), creator));
+                    }
 
-                            @Override
-                            protected void finish() {
-                                window.close();
-                                if (creator.entry.getValue() != null) {
-                                    con.accept(creator.entry.getValue());
-                                }
-                            }
-                        };
-                    },
-                    false,
-                    loading);
+                    @Override
+                    protected void finish() {
+                        window.close();
+                        if (creator.entry.getValue() != null) {
+                            con.accept(creator.entry.getValue());
+                        }
+                    }
+                };
+            }, false, loading);
             stage.show();
         });
     }
 
-    @Override
-    public Comp<?> bottom() {
-        var disable = Bindings.createBooleanBinding(
-                () -> {
-                    return provider.getValue() == null
-                            || store.getValue() == null
-                            || !store.getValue().isComplete();
-                },
-                provider,
-                store);
-        return new PopupMenuButtonComp(
-                        new SimpleStringProperty("Insights >"),
-                        Comp.of(() -> {
-                            return provider.getValue() != null
-                                    ? provider.getValue()
-                                            .createInsightsComp(store)
-                                            .createRegion()
-                                    : null;
-                        }),
-                        true)
-                .disable(disable)
-                .styleClass("button-comp");
-    }
-
     private static boolean showInvalidConfirmAlert() {
         return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
-                    alert.setHeaderText(AppI18n.get("confirmInvalidStoreHeader"));
-                    alert.setContentText(AppI18n.get("confirmInvalidStoreContent"));
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                })
-                .map(b -> b.getButtonData().isDefaultButton())
-                .orElse(false);
-    }
-
-    private Region createStoreProperties(Comp<?> comp, Validator propVal) {
-        return new OptionsBuilder()
-                .addComp(comp, store)
-                .name("connectionName")
-                .description("connectionNameDescription")
-                .addString(name, false)
-                .nonNull(propVal)
-                .build();
+            alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
+            alert.setHeaderText(AppI18n.get("confirmInvalidStoreHeader"));
+            alert.setContentText(AppI18n.get("confirmInvalidStoreContent"));
+            alert.setAlertType(Alert.AlertType.CONFIRMATION);
+        }).map(b -> b.getButtonData().isDefaultButton()).orElse(false);
     }
 
     @Override
-    public CompStructure<? extends Region> createBase() {
-        var back = Comp.of(this::createLayout);
-        var message = new ErrorOverlayComp(back, messageProp);
-        return message.createStructure();
-    }
-
-    private Region createLayout() {
-        var layout = new BorderPane();
-        layout.getStyleClass().add("store-creator");
-        layout.setPadding(new Insets(20));
-        var providerChoice = new DsStoreProviderChoiceComp(filter, provider, staticDisplay);
-        if (staticDisplay) {
-            providerChoice.apply(struc -> struc.get().setDisable(true));
-        }
-        providerChoice.apply(GrowAugment.create(true, false));
-
-        SimpleChangeListener.apply(provider, n -> {
-            if (n != null) {
-                var d = n.guiDialog(existingEntry, store);
-                var propVal = new SimpleValidator();
-                var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
-
-                var sp = new ScrollPane(propR);
-                sp.setFitToWidth(true);
-                layout.setCenter(sp);
-
-                validator.setValue(new ChainedValidator(List.of(
-                        d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));
-            } else {
-                layout.setCenter(null);
-                validator.setValue(new SimpleValidator());
-            }
-        });
-
-        var sep = new Separator();
-        sep.getStyleClass().add("spacer");
-        var top = new VBox(providerChoice.createRegion(), sep);
-        top.getStyleClass().add("top");
-        layout.setTop(top);
-        return layout;
+    public Comp<?> bottom() {
+        var disable = Bindings.createBooleanBinding(() -> {
+            return provider.getValue() == null || store.getValue() == null || !store.getValue().isComplete();
+        }, provider, store);
+        return new PopupMenuButtonComp(new SimpleStringProperty("Insights >"), Comp.of(() -> {
+            return provider.getValue() != null ? provider.getValue().createInsightsComp(store).createRegion() : null;
+        }), true).disable(disable).styleClass("button-comp");
     }
 
     @Override
@@ -333,8 +227,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         }
 
         if (!exists) {
-            if (name.getValue() != null
-                    && DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
+            if (name.getValue() != null && DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
                 messageProp.setValue("Store with name " + name.getValue() + " does already exist");
                 changedSinceError.setValue(false);
                 return false;
@@ -342,12 +235,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         }
 
         if (!validator.getValue().validate()) {
-            var msg = validator
-                    .getValue()
-                    .getValidationResult()
-                    .getMessages()
-                    .get(0)
-                    .getText();
+            var msg = validator.getValue().getValidationResult().getMessages().get(0).getText();
             TrackEvent.info(msg);
             var newMessage = msg;
             // Temporary fix for equal error message not showing up again
@@ -376,5 +264,53 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             }
         });
         return false;
+    }
+
+    private Region createStoreProperties(Comp<?> comp, Validator propVal) {
+        return new OptionsBuilder().addComp(comp, store).name("connectionName").description("connectionNameDescription").addString(name, false)
+                .nonNull(propVal).build();
+    }
+
+    @Override
+    public CompStructure<? extends Region> createBase() {
+        var back = Comp.of(this::createLayout);
+        var message = new ErrorOverlayComp(back, messageProp);
+        return message.createStructure();
+    }
+
+    private Region createLayout() {
+        var layout = new BorderPane();
+        layout.getStyleClass().add("store-creator");
+        layout.setPadding(new Insets(20));
+        var providerChoice = new DsStoreProviderChoiceComp(filter, provider, staticDisplay);
+        if (staticDisplay) {
+            providerChoice.apply(struc -> struc.get().setDisable(true));
+        }
+        providerChoice.apply(GrowAugment.create(true, false));
+
+        SimpleChangeListener.apply(provider, n -> {
+            if (n != null) {
+                var d = n.guiDialog(existingEntry, store);
+                var propVal = new SimpleValidator();
+                var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
+
+                var sp = new ScrollPane(propR);
+                sp.setFitToWidth(true);
+                layout.setCenter(sp);
+
+                validator.setValue(
+                        new ChainedValidator(List.of(d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(), propVal)));
+            } else {
+                layout.setCenter(null);
+                validator.setValue(new SimpleValidator());
+            }
+        });
+
+        var sep = new Separator();
+        sep.getStyleClass().add("spacer");
+        var top = new VBox(providerChoice.createRegion(), sep);
+        top.getStyleClass().add("top");
+        layout.setTop(top);
+        return layout;
     }
 }

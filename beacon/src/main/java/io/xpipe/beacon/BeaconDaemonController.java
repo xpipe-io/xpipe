@@ -39,10 +39,7 @@ public class BeaconDaemonController {
             return;
         }
 
-        var client = BeaconClient.connect(BeaconClient.ApiClientInformation.builder()
-                .version("?")
-                .language("Java API Test")
-                .build());
+        var client = BeaconClient.connect(BeaconClient.ApiClientInformation.builder().version("?").language("Java API Test").build());
         if (!BeaconServer.tryStop(client)) {
             throw new AssertionError();
         }
@@ -65,10 +62,7 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder()
-                    .version("?")
-                    .language("Java")
-                    .build());
+            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder().version("?").language("Java").build());
             if (s.isPresent()) {
                 return;
             }

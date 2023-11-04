@@ -16,8 +16,7 @@ public class ReadStreamExchangeImpl extends ReadStreamExchange
 
         handler.postResponse(() -> {
             StreamDataStore store = ds.getStore().asNeeded();
-            try (var output = handler.sendBody();
-                    InputStream inputStream = store.openInput()) {
+            try (var output = handler.sendBody(); InputStream inputStream = store.openInput()) {
                 inputStream.transferTo(output);
             }
         });

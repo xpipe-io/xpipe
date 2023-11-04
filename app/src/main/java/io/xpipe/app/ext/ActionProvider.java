@@ -16,32 +16,24 @@ public interface ActionProvider {
 
     List<ActionProvider> ALL = new ArrayList<>();
 
-    class Loader implements ModuleLayerLoader {
+    default String getId() {
+        return null;
+    }
 
-        @Override
-        public void init(ModuleLayer layer) {
-            ALL.addAll(ServiceLoader.load(layer, ActionProvider.class).stream()
-                    .map(actionProviderProvider -> actionProviderProvider.get())
-                    .filter(provider -> {
-                        try {
-                            return provider.isActive();
-                        } catch (Throwable e) {
-                            ErrorEvent.fromThrowable(e).handle();
-                            return false;
-                        }
-                    })
-                    .toList());
-        }
+    default boolean isActive() {
+        return true;
+    }
 
-        @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
+    default LauncherCallSite getLauncherCallSite() {
+        return null;
+    }
 
-        @Override
-        public boolean prioritizeLoading() {
-            return false;
-        }
+    default DataStoreCallSite<?> getDataStoreCallSite() {
+        return null;
+    }
+
+    default DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
+        return null;
     }
 
     interface Action {
@@ -49,14 +41,6 @@ public interface ActionProvider {
         boolean requiresJavaFXPlatform();
 
         void execute() throws Exception;
-    }
-
-    default String getId() {
-        return null;
-    }
-
-    default boolean isActive() {
-        return true;
     }
 
     interface LauncherCallSite {
@@ -79,18 +63,6 @@ public interface ActionProvider {
         Action createAction(List<String> args) throws Exception;
     }
 
-    default LauncherCallSite getLauncherCallSite() {
-        return null;
-    }
-
-    default DataStoreCallSite<?> getDataStoreCallSite() {
-        return null;
-    }
-
-    default DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
-        return null;
-    }
-
     interface DefaultDataStoreCallSite<T extends DataStore> {
 
         Action createAction(DataStoreEntryRef<T> store);
@@ -103,12 +75,6 @@ public interface ActionProvider {
     }
 
     interface DataStoreCallSite<T extends DataStore> {
-
-        enum ActiveType {
-            ONLY_SHOW_IF_ENABLED,
-            ALWAYS_SHOW,
-            ALWAYS_ENABLE
-        }
 
         default boolean isSystemAction() {
             return false;
@@ -136,6 +102,38 @@ public interface ActionProvider {
 
         default ActiveType activeType() {
             return ActiveType.ONLY_SHOW_IF_ENABLED;
+        }
+
+        enum ActiveType {
+            ONLY_SHOW_IF_ENABLED,
+            ALWAYS_SHOW,
+            ALWAYS_ENABLE
+        }
+    }
+
+    class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            ALL.addAll(ServiceLoader.load(layer, ActionProvider.class).stream().map(actionProviderProvider -> actionProviderProvider.get())
+                    .filter(provider -> {
+                        try {
+                            return provider.isActive();
+                        } catch (Throwable e) {
+                            ErrorEvent.fromThrowable(e).handle();
+                            return false;
+                        }
+                    }).toList());
+        }
+
+        @Override
+        public boolean requiresFullDaemon() {
+            return true;
+        }
+
+        @Override
+        public boolean prioritizeLoading() {
+            return false;
         }
     }
 }

@@ -19,18 +19,15 @@ public class AttachmentHelper {
         return outputFile;
     }
 
-    private static void compressDirectoryToZipfile(Path rootDir, Path sourceDir, ZipOutputStream out)
-            throws IOException {
+    private static void compressDirectoryToZipfile(Path rootDir, Path sourceDir, ZipOutputStream out) throws IOException {
         for (File file : sourceDir.toFile().listFiles()) {
             if (file.isDirectory()) {
                 compressDirectoryToZipfile(rootDir, sourceDir.resolve(file.getName()), out);
             } else {
-                ZipEntry entry = new ZipEntry(
-                        rootDir.relativize(sourceDir).resolve(file.getName()).toString());
+                ZipEntry entry = new ZipEntry(rootDir.relativize(sourceDir).resolve(file.getName()).toString());
                 out.putNextEntry(entry);
 
-                FileInputStream in =
-                        new FileInputStream(sourceDir.resolve(file.getName()).toString());
+                FileInputStream in = new FileInputStream(sourceDir.resolve(file.getName()).toString());
                 IOUtils.copy(in, out);
                 IOUtils.closeQuietly(in);
             }

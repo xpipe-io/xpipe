@@ -1,8 +1,8 @@
 package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppResources;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
 import lombok.Getter;
 
@@ -19,10 +19,7 @@ public interface DirectoryType {
     List<DirectoryType> ALL = new ArrayList<>();
 
     static DirectoryType byId(String id) {
-        return ALL.stream()
-                .filter(fileType -> fileType.getId().equals(id))
-                .findAny()
-                .orElseThrow();
+        return ALL.stream().filter(fileType -> fileType.getId().equals(id)).findAny().orElseThrow();
     }
 
     static void loadDefinitions() {
@@ -45,26 +42,23 @@ public interface DirectoryType {
         });
 
         AppResources.with(AppResources.XPIPE_MODULE, "folder_list.txt", path -> {
-            try (var reader =
-                    new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
+            try (var reader = new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     var split = line.split("\\|");
                     var id = split[0].trim();
-                    var filter = Arrays.stream(split[1].split(","))
-                            .map(s -> {
-                                var r = s.trim();
-                                if (r.startsWith(".")) {
-                                    return r;
-                                }
+                    var filter = Arrays.stream(split[1].split(",")).map(s -> {
+                        var r = s.trim();
+                        if (r.startsWith(".")) {
+                            return r;
+                        }
 
-                                if (r.contains(".")) {
-                                    return r;
-                                }
+                        if (r.contains(".")) {
+                            return r;
+                        }
 
-                                return "." + r;
-                            })
-                            .toList();
+                        return "." + r;
+                    }).toList();
 
                     var closedIcon = split[2].trim();
                     var openIcon = split[3].trim();
@@ -72,15 +66,18 @@ public interface DirectoryType {
                     var lightClosedIcon = split.length > 4 ? split[4].trim() : closedIcon;
                     var lightOpenIcon = split.length > 4 ? split[5].trim() : openIcon;
 
-                    ALL.add(new Simple(
-                            id,
-                            new IconVariant(lightClosedIcon, closedIcon),
-                            new IconVariant(lightOpenIcon, openIcon),
+                    ALL.add(new Simple(id, new IconVariant(lightClosedIcon, closedIcon), new IconVariant(lightOpenIcon, openIcon),
                             filter.toArray(String[]::new)));
                 }
             }
         });
     }
+
+    String getId();
+
+    boolean matches(FileSystem.FileEntry entry);
+
+    String getIcon(FileSystem.FileEntry entry, boolean open);
 
     class Simple implements DirectoryType {
 
@@ -104,8 +101,7 @@ public interface DirectoryType {
                 return false;
             }
 
-            return Arrays.stream(names)
-                    .anyMatch(name -> FileNames.getFileName(entry.getPath()).equalsIgnoreCase(name));
+            return Arrays.stream(names).anyMatch(name -> FileNames.getFileName(entry.getPath()).equalsIgnoreCase(name));
         }
 
         @Override
@@ -113,10 +109,4 @@ public interface DirectoryType {
             return open ? this.open.getIcon() : this.closed.getIcon();
         }
     }
-
-    String getId();
-
-    boolean matches(FileSystem.FileEntry entry);
-
-    String getIcon(FileSystem.FileEntry entry, boolean open);
 }

@@ -24,8 +24,7 @@ import java.util.function.Consumer;
 
 public class FileBridge {
 
-    private static final Path TEMP =
-            FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("bridge");
+    private static final Path TEMP = FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("bridge");
     private static FileBridge INSTANCE;
     private final Set<Entry> openEntries = new CopyOnWriteArraySet<>();
 
@@ -69,8 +68,7 @@ public class FileBridge {
                         // Wait for edit to finish in case external editor has write lock
                         if (!Files.exists(changed)) {
                             event("File " + TEMP.relativize(e.file) + " is probably still writing ...");
-                            ThreadHelper.sleep(
-                                    AppPrefs.get().editorReloadTimeout().getValue());
+                            ThreadHelper.sleep(AppPrefs.get().editorReloadTimeout().getValue());
 
                             // If still no read lock after 500ms, just don't parse it
                             if (!Files.exists(changed)) {
@@ -81,13 +79,10 @@ public class FileBridge {
 
                         try {
                             event("Registering modification for file " + TEMP.relativize(e.file));
-                            event("Last modification for file: " + e.lastModified.toString() + " vs current one: "
-                                    + e.getLastModified());
+                            event("Last modification for file: " + e.lastModified.toString() + " vs current one: " + e.getLastModified());
                             if (e.hasChanged()) {
-                                event("Registering change for file " + TEMP.relativize(e.file) + " for editor node "
-                                        + e.getName());
-                                boolean valid =
-                                        get().openEntries.stream().anyMatch(entry -> entry.file.equals(changed));
+                                event("Registering change for file " + TEMP.relativize(e.file) + " for editor node " + e.getName());
+                                boolean valid = get().openEntries.stream().anyMatch(entry -> entry.file.equals(changed));
                                 event("Editor node " + e.getName() + " validity: " + valid);
                                 if (valid) {
                                     e.registerChange();
@@ -137,41 +132,29 @@ public class FileBridge {
 
         var id = UUID.randomUUID();
         String s = input;
-        openIO(
-                id.toString(),
-                id,
-                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                null,
-                fileConsumer);
+        openIO(id.toString(), id, () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), null, fileConsumer);
     }
 
     public void openString(
-            String keyName, Object key, String input, Consumer<String> output, Consumer<String> fileConsumer) {
+            String keyName, Object key, String input, Consumer<String> output, Consumer<String> fileConsumer
+    ) {
         if (input == null) {
             input = "";
         }
 
         String s = input;
-        openIO(
-                keyName,
-                key,
-                () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                () -> new ByteArrayOutputStream(s.length()) {
-                    @Override
-                    public void close() throws IOException {
-                        super.close();
-                        output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-                    }
-                },
-                fileConsumer);
+        openIO(keyName, key, () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), () -> new ByteArrayOutputStream(s.length()) {
+            @Override
+            public void close() throws IOException {
+                super.close();
+                output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+            }
+        }, fileConsumer);
     }
 
     public void openIO(
-            String keyName,
-            Object key,
-            FailableSupplier<InputStream> input,
-            FailableSupplier<OutputStream> output,
-            Consumer<String> consumer) {
+            String keyName, Object key, FailableSupplier<InputStream> input, FailableSupplier<OutputStream> output, Consumer<String> consumer
+    ) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
             consumer.accept(ext.get().file.toString());
@@ -181,8 +164,7 @@ public class FileBridge {
         Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6)).resolve(getFileSystemCompatibleName(keyName));
         try {
             FileUtils.forceMkdirParent(file.toFile());
-            try (var out = Files.newOutputStream(file);
-                    var in = input.get()) {
+            try (var out = Files.newOutputStream(file); var in = input.get()) {
                 in.transferTo(out);
             }
         } catch (Exception ex) {

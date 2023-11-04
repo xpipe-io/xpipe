@@ -114,9 +114,7 @@ public class AppFileWatcher {
             this.baseDir = dir;
             this.listener = listener;
             createRecursiveWatchers(dir);
-            TrackEvent.withTrace("watcher", "Added watched directory")
-                    .tag("location", dir)
-                    .handle();
+            TrackEvent.withTrace("watcher", "Added watched directory").tag("location", dir).handle();
         }
 
         private void createRecursiveWatchers(Path dir) {
@@ -158,8 +156,7 @@ public class AppFileWatcher {
         }
 
         private void handleWatchEvent(Path path, WatchEvent<?> event) {
-            @SuppressWarnings("unchecked")
-            WatchEvent<Path> ev = (WatchEvent<Path>) event;
+            @SuppressWarnings("unchecked") WatchEvent<Path> ev = (WatchEvent<Path>) event;
 
             // Context may be null for whatever reason
             if (ev.context() == null) {
@@ -177,11 +174,8 @@ public class AppFileWatcher {
             }
 
             // Handle event
-            TrackEvent.withTrace("watcher", "Watch event")
-                    .tag("baseDir", baseDir)
-                    .tag("file", baseDir.relativize(file))
-                    .tag("kind", event.kind().name())
-                    .handle();
+            TrackEvent.withTrace("watcher", "Watch event").tag("baseDir", baseDir).tag("file", baseDir.relativize(file)).tag("kind",
+                    event.kind().name()).handle();
             listener.accept(file, ev.kind());
         }
 

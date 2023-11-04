@@ -9,10 +9,6 @@ public class HostHelper {
             return true;
         }
 
-        if (host.toLowerCase(Locale.ROOT).equals("localhost")) {
-            return true;
-        }
-
-        return false;
+        return host.toLowerCase(Locale.ROOT).equals("localhost");
     }
 }

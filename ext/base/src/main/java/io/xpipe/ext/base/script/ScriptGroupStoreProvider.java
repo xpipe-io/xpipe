@@ -47,43 +47,9 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
         return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
     }
 
-    @SneakyThrows
     @Override
-    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
-        ScriptGroupStore st = store.getValue().asNeeded();
-
-        var group = new SimpleObjectProperty<>(st.getGroup());
-        Property<String> description = new SimpleObjectProperty<>(st.getDescription());
-        return new OptionsBuilder()
-                .name("description")
-                .description("descriptionDescription")
-                .addString(description)
-                .name("scriptGroup")
-                .description("scriptGroupDescription")
-                .addComp(
-                        new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER, entry, group, ScriptGroupStore.class, null, StoreViewState.get().getAllScriptsCategory()),
-                        group)
-                .bind(
-                        () -> {
-                            return ScriptGroupStore.builder()
-                                    .group(group.get())
-                                    .description(st.getDescription())
-                                    .build();
-                        },
-                        store)
-                .buildDialog();
-    }
-
-    @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        ScriptGroupStore scriptStore = store.getStore().asNeeded();
-        return scriptStore.getParent() != null ? scriptStore.getParent().get() : null;
-    }
-
-    @Override
-    public DataStore defaultStore() {
-        return ScriptGroupStore.builder().build();
+    public boolean canHaveSubShells() {
+        return false;
     }
 
     @Override
@@ -97,19 +63,40 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public String getDisplayIconFileName(DataStore store) {
-            return "proc:shellEnvironment_icon.svg";
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        ScriptGroupStore scriptStore = store.getStore().asNeeded();
+        return scriptStore.getParent() != null ? scriptStore.getParent().get() : null;
     }
 
+    @SneakyThrows
     @Override
-    public boolean canHaveSubShells() {
-        return false;
+    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+        ScriptGroupStore st = store.getValue().asNeeded();
+
+        var group = new SimpleObjectProperty<>(st.getGroup());
+        Property<String> description = new SimpleObjectProperty<>(st.getDescription());
+        return new OptionsBuilder().name("description").description("descriptionDescription").addString(description).name("scriptGroup").description(
+                "scriptGroupDescription").addComp(
+                new DataStoreChoiceComp<>(DataStoreChoiceComp.Mode.OTHER, entry, group, ScriptGroupStore.class, null,
+                        StoreViewState.get().getAllScriptsCategory()), group).bind(() -> {
+            return ScriptGroupStore.builder().group(group.get()).description(st.getDescription()).build();
+        }, store).buildDialog();
     }
 
     @Override
     public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
         ScriptGroupStore scriptStore = wrapper.getEntry().getStore().asNeeded();
         return new SimpleStringProperty(scriptStore.getDescription());
+    }
+
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        return "proc:shellEnvironment_icon.svg";
+    }
+
+    @Override
+    public DataStore defaultStore() {
+        return ScriptGroupStore.builder().build();
     }
 
     @Override

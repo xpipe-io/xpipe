@@ -36,7 +36,8 @@ public class BrowserBreadcrumbBar extends SimpleComp {
 
     private Region createBreadcrumbs(
             Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory,
-            Callback<Breadcrumbs.BreadCrumbItem<String>, ? extends Node> dividerFactory) {
+            Callback<Breadcrumbs.BreadCrumbItem<String>, ? extends Node> dividerFactory
+    ) {
 
         var breadcrumbs = new Breadcrumbs<String>();
         SimpleChangeListener.apply(PlatformThread.sync(model.getCurrentPath()), val -> {
@@ -67,8 +68,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
             if (val.startsWith("/")) {
                 modifiedElements.add(0, "/");
             }
-            Breadcrumbs.BreadCrumbItem<String> items =
-                    Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
+            Breadcrumbs.BreadCrumbItem<String> items = Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
             breadcrumbs.setSelectedCrumb(items);
         });
 

@@ -69,19 +69,14 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             var rel = XPipeDistributionType.get().getUpdateHandler().refreshUpdateCheck();
             if (rel != null && rel.isUpdate()) {
                 var update = AppWindowHelper.showBlockingAlert(alert -> {
-                            alert.setAlertType(Alert.AlertType.INFORMATION);
-                            alert.setTitle(AppI18n.get("updateAvailableTitle"));
-                            alert.setHeaderText(AppI18n.get("updateAvailableHeader", rel.getVersion()));
-                            alert.getDialogPane()
-                                    .setContent(
-                                            AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
-                            alert.getButtonTypes().clear();
-                            alert.getButtonTypes()
-                                    .add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
-                            alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
-                        })
-                        .map(buttonType -> buttonType.getButtonData().isDefaultButton())
-                        .orElse(false);
+                    alert.setAlertType(Alert.AlertType.INFORMATION);
+                    alert.setTitle(AppI18n.get("updateAvailableTitle"));
+                    alert.setHeaderText(AppI18n.get("updateAvailableHeader", rel.getVersion()));
+                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get("updateAvailableContent")));
+                    alert.getButtonTypes().clear();
+                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("checkOutUpdate"), ButtonBar.ButtonData.YES));
+                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("ignore"), ButtonBar.ButtonData.NO));
+                }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
                 if (update) {
                     Hyperlinks.open(rel.getReleaseUrl());
                 }

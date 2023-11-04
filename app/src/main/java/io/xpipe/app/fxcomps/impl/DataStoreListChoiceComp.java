@@ -22,8 +22,9 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
 
-    public DataStoreListChoiceComp(ListProperty<DataStoreEntryRef<T>> selectedList, Class<T> storeClass, Predicate<DataStoreEntryRef<T>> applicableCheck,
-                                   StoreCategoryWrapper initialCategory
+    public DataStoreListChoiceComp(
+            ListProperty<DataStoreEntryRef<T>> selectedList, Class<T> storeClass, Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper initialCategory
     ) {
         this.selectedList = selectedList;
         this.storeClass = storeClass;
@@ -38,20 +39,18 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
                 return null;
             }
 
-           var label = new LabelComp(t.get().getName()).apply(struc -> struc.get().setGraphic(PrettyImageHelper.ofFixedSmallSquare(
-                   t.get().getProvider().getDisplayIconFileName(t.getStore())).createRegion()));
-           var delete = new IconButtonComp("mdal-delete_outline", () -> {
-               selectedList.remove(t);
-           });
+            var label = new LabelComp(t.get().getName()).apply(struc -> struc.get()
+                    .setGraphic(PrettyImageHelper.ofFixedSmallSquare(t.get().getProvider().getDisplayIconFileName(t.getStore())).createRegion()));
+            var delete = new IconButtonComp("mdal-delete_outline", () -> {
+                selectedList.remove(t);
+            });
             return new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
         }).padding(new Insets(0)).apply(struc -> struc.get().setMinHeight(0)).apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
         var add = new DataStoreChoiceComp<>(DataStoreChoiceComp.Mode.OTHER, null, selected, storeClass, applicableCheck, initialCategory);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                if (!selectedList.contains(newValue)
-                        && (applicableCheck == null
-                                || applicableCheck.test(newValue))) {
+                if (!selectedList.contains(newValue) && (applicableCheck == null || applicableCheck.test(newValue))) {
                     selectedList.add(newValue);
                 }
                 selected.setValue(null);

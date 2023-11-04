@@ -48,11 +48,8 @@ public class BackgroundImageComp extends Comp<CompStructure<Pane>> {
                 relViewportWidth = Math.min(1, pane.getWidth() / newImageWidth);
             }
 
-            v.setViewport(new Rectangle2D(
-                    ((1 - relViewportWidth) / 2.0) * image.getWidth(),
-                    ((1 - relViewportHeight) / 2.0) * image.getHeight(),
-                    image.getWidth() * relViewportWidth,
-                    image.getHeight() * relViewportHeight));
+            v.setViewport(new Rectangle2D(((1 - relViewportWidth) / 2.0) * image.getWidth(), ((1 - relViewportHeight) / 2.0) * image.getHeight(),
+                    image.getWidth() * relViewportWidth, image.getHeight() * relViewportHeight));
         };
         pane.widthProperty().addListener(cl);
         pane.heightProperty().addListener(cl);

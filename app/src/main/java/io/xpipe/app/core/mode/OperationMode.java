@@ -170,7 +170,8 @@ public abstract class OperationMode {
 
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
-            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(XPipeInstallation.getLocalDefaultInstallationBasePath(), XPipeDaemonMode.GUI, "");
+            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(XPipeInstallation.getLocalDefaultInstallationBasePath(),
+                    XPipeDaemonMode.GUI, "");
             LocalStore.getShell().executeSimpleCommand(exec);
         });
     }
@@ -236,20 +237,20 @@ public abstract class OperationMode {
         OperationMode.halt(hasError ? 1 : 0);
     }
 
-//    public static synchronized void reload() {
-//        ThreadHelper.create("reloader", false, () -> {
-//                    try {
-//                        switchTo(BACKGROUND);
-//                        CURRENT.finalTeardown();
-//                        CURRENT.onSwitchTo();
-//                        switchTo(GUI);
-//                    } catch (Throwable t) {
-//                        ErrorEvent.fromThrowable(t).build().handle();
-//                        OperationMode.halt(1);
-//                    }
-//                })
-//                .start();
-//    }
+    //    public static synchronized void reload() {
+    //        ThreadHelper.create("reloader", false, () -> {
+    //                    try {
+    //                        switchTo(BACKGROUND);
+    //                        CURRENT.finalTeardown();
+    //                        CURRENT.onSwitchTo();
+    //                        switchTo(GUI);
+    //                    } catch (Throwable t) {
+    //                        ErrorEvent.fromThrowable(t).build().handle();
+    //                        OperationMode.halt(1);
+    //                    }
+    //                })
+    //                .start();
+    //    }
 
     private static synchronized void set(OperationMode newMode) {
         if (CURRENT == null && newMode == null) {

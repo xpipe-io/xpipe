@@ -20,19 +20,13 @@ public class NamedCharacter {
                     throw new IllegalArgumentException("No character");
                 }
 
-                var byName = chars.stream()
-                        .filter(nc -> nc.getNames().stream()
-                                .anyMatch(n -> n.toLowerCase().contains(s.toLowerCase())))
-                        .findFirst()
+                var byName = chars.stream().filter(nc -> nc.getNames().stream().anyMatch(n -> n.toLowerCase().contains(s.toLowerCase()))).findFirst()
                         .orElse(null);
                 if (byName != null) {
                     return byName.getCharacter();
                 }
 
-                var byChar = chars.stream()
-                        .filter(nc -> String.valueOf(nc.getCharacter()).equalsIgnoreCase(s))
-                        .findFirst()
-                        .orElse(null);
+                var byChar = chars.stream().filter(nc -> String.valueOf(nc.getCharacter()).equalsIgnoreCase(s)).findFirst().orElse(null);
                 if (byChar != null) {
                     return byChar.getCharacter();
                 }
@@ -46,10 +40,7 @@ public class NamedCharacter {
 
             @Override
             protected String toString(Character value) {
-                var byChar = chars.stream()
-                        .filter(nc -> value.equals(nc.getCharacter()))
-                        .findFirst()
-                        .orElse(null);
+                var byChar = chars.stream().filter(nc -> value.equals(nc.getCharacter())).findFirst().orElse(null);
                 if (byChar != null) {
                     return byChar.getNames().get(0);
                 }

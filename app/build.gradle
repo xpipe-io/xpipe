@@ -47,8 +47,8 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
-    implementation (name: 'preferencesfx-core-11.15.0')
-    implementation (group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0') {
+    implementation(name: 'preferencesfx-core-11.15.0')
+    implementation(group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0') {
         exclude group: 'org.openjfx', module: 'javafx-controls'
         exclude group: 'org.openjfx', module: 'javafx-fxml'
     }
@@ -57,14 +57,14 @@ dependencies {
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.controlsfx:controlsfx:11.1.2'
     implementation 'net.synedra:validatorfx:0.4.2'
-    implementation ('io.github.mkpaz:atlantafx-base:2.0.1') {
+    implementation('io.github.mkpaz:atlantafx-base:2.0.1') {
         exclude group: 'org.openjfx', module: 'javafx-base'
         exclude group: 'org.openjfx', module: 'javafx-controls'
     }
     implementation name: 'jSystemThemeDetector-3.8'
     implementation group: 'com.github.oshi', name: 'oshi-core-java11', version: '6.4.2'
     implementation 'org.jetbrains:annotations:24.0.1'
-    implementation ('de.jangassen:jfa:1.2.0') {
+    implementation('de.jangassen:jfa:1.2.0') {
         exclude group: 'net.java.dev.jna', module: 'jna'
     }
 }

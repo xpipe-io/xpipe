@@ -29,33 +29,28 @@ public class FileStoreChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var fileSystemChoiceComp =
-                new FileSystemStoreChoiceComp(fileSystem).grow(false, true).styleClass(Styles.LEFT_PILL);
+        var fileSystemChoiceComp = new FileSystemStoreChoiceComp(fileSystem).grow(false, true).styleClass(Styles.LEFT_PILL);
         if (hideFileSystem) {
             fileSystemChoiceComp.hide(new SimpleBooleanProperty(true));
         }
 
-        var fileNameComp = new TextFieldComp(filePath)
-                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
-                .styleClass(hideFileSystem ? Styles.LEFT_PILL : Styles.CENTER_PILL)
-                .grow(false, true);
+        var fileNameComp = new TextFieldComp(filePath).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS)).styleClass(
+                hideFileSystem ? Styles.LEFT_PILL : Styles.CENTER_PILL).grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    StandaloneFileBrowser.openSingleFile(() -> null, fileStore -> {
-                        if (fileStore == null) {
-                            filePath.setValue(null);
-                            fileSystem.setValue(null);
-                        } else {
-                            filePath.setValue(fileStore.getPath());
-                            fileSystem.setValue(fileStore.getFileSystem());
-                        }
-                    });
-                })
-                .styleClass(Styles.RIGHT_PILL)
-                .grow(false, true);
+            StandaloneFileBrowser.openSingleFile(() -> null, fileStore -> {
+                if (fileStore == null) {
+                    filePath.setValue(null);
+                    fileSystem.setValue(null);
+                } else {
+                    filePath.setValue(fileStore.getPath());
+                    fileSystem.setValue(fileStore.getFileSystem());
+                }
+            });
+        }).styleClass(Styles.RIGHT_PILL).grow(false, true);
 
-        var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton))
-                .apply(struc -> struc.get().setFillHeight(true));
+        var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton)).apply(
+                struc -> struc.get().setFillHeight(true));
 
         return layout.createRegion();
     }

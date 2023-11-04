@@ -33,17 +33,13 @@ public class CountComp<T> extends Comp<CompStructure<Label>> {
         var label = new Label();
         label.setTextOverrun(OverrunStyle.CLIP);
         label.setAlignment(Pos.CENTER);
-        label.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            if (sub.size() == all.size()) {
-                                return transformation.apply(all.size() + "");
-                            } else {
-                                return transformation.apply(sub.size() + "/" + all.size());
-                            }
-                        },
-                        sub,
-                        all));
+        label.textProperty().bind(Bindings.createStringBinding(() -> {
+            if (sub.size() == all.size()) {
+                return transformation.apply(all.size() + "");
+            } else {
+                return transformation.apply(sub.size() + "/" + all.size());
+            }
+        }, sub, all));
         label.getStyleClass().add("count-comp");
         return new SimpleCompStructure<>(label);
     }

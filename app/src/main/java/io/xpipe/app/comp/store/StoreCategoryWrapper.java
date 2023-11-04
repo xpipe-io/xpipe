@@ -32,10 +32,7 @@ public class StoreCategoryWrapper {
         var d = 0;
         DataStoreCategory last = category;
         DataStoreCategory p = category;
-        while ((p = DataStorage.get()
-                        .getStoreCategoryIfPresent(p.getParentCategory())
-                        .orElse(null))
-                != null) {
+        while ((p = DataStorage.get().getStoreCategoryIfPresent(p.getParentCategory()).orElse(null)) != null) {
             d++;
             last = p;
         }
@@ -57,15 +54,13 @@ public class StoreCategoryWrapper {
     }
 
     public StoreCategoryWrapper getParent() {
-        return StoreViewState.get().getCategories().stream()
-                .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
-                .findAny().orElse(null);
+        return StoreViewState.get().getCategories().stream().filter(
+                storeCategoryWrapper -> storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory())).findAny().orElse(null);
     }
 
     public boolean contains(DataStoreEntry entry) {
-        return entry.getCategoryUuid().equals(category.getUuid())
-                || children.stream().anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry));
+        return entry.getCategoryUuid().equals(category.getUuid()) || children.stream().anyMatch(
+                storeCategoryWrapper -> storeCategoryWrapper.contains(entry));
     }
 
     public void select() {
@@ -96,10 +91,7 @@ public class StoreCategoryWrapper {
 
             DataStoreCategory p = category;
             if (newValue) {
-                while ((p = DataStorage.get()
-                        .getStoreCategoryIfPresent(p.getParentCategory())
-                        .orElse(null))
-                        != null) {
+                while ((p = DataStorage.get().getStoreCategoryIfPresent(p.getParentCategory()).orElse(null)) != null) {
                     p.setShare(true);
                 }
             }
@@ -116,18 +108,12 @@ public class StoreCategoryWrapper {
         sortMode.setValue(category.getSortMode());
         share.setValue(category.isShare());
 
-        containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
-                .filter(entry -> contains(entry.getEntry()))
-                .toList());
+        containedEntries.setAll(StoreViewState.get().getAllEntries().stream().filter(entry -> contains(entry.getEntry())).toList());
         children.setAll(StoreViewState.get().getCategories().stream()
-                .filter(storeCategoryWrapper -> getCategory()
-                        .getUuid()
-                        .equals(storeCategoryWrapper.getCategory().getParentCategory()))
-                .toList());
-        Optional.ofNullable(getParent())
-                .ifPresent(storeCategoryWrapper -> {
-                    storeCategoryWrapper.update();
-                });
+                .filter(storeCategoryWrapper -> getCategory().getUuid().equals(storeCategoryWrapper.getCategory().getParentCategory())).toList());
+        Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
+            storeCategoryWrapper.update();
+        });
     }
 
     public String getName() {

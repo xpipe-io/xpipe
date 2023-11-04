@@ -6,8 +6,8 @@ import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDownloads;
 import io.xpipe.app.update.AppInstaller;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ProxyManagerProvider;
 import io.xpipe.core.util.XPipeInstallation;
@@ -19,14 +19,11 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
 
     private static boolean showAlert() {
         return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle(AppI18n.get("connectorInstallationTitle"));
-                    alert.setHeaderText(AppI18n.get("connectorInstallationHeader"));
-                    alert.getDialogPane()
-                            .setContent(AppWindowHelper.alertContentText(AppI18n.get("connectorInstallationContent")));
-                })
-                .filter(buttonType -> buttonType.getButtonData().isDefaultButton())
-                .isPresent();
+            alert.setAlertType(Alert.AlertType.CONFIRMATION);
+            alert.setTitle(AppI18n.get("connectorInstallationTitle"));
+            alert.setHeaderText(AppI18n.get("connectorInstallationHeader"));
+            alert.getDialogPane().setContent(AppWindowHelper.alertContentText(AppI18n.get("connectorInstallationContent")));
+        }).filter(buttonType -> buttonType.getButtonData().isDefaultButton()).isPresent();
     }
 
     @Override
@@ -37,12 +34,9 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
             return Optional.of(AppI18n.get("versionCheckOverride"));
         }
 
-        var defaultInstallationExecutable = FileNames.join(
-                XPipeInstallation.getDefaultInstallationBasePath(s),
+        var defaultInstallationExecutable = FileNames.join(XPipeInstallation.getDefaultInstallationBasePath(s),
                 XPipeInstallation.getDaemonExecutablePath(s.getOsType()));
-        if (!s.getShellDialect()
-                .createFileExistsCommand(s, defaultInstallationExecutable)
-                .executeAndCheck()) {
+        if (!s.getShellDialect().createFileExistsCommand(s, defaultInstallationExecutable).executeAndCheck()) {
             return Optional.of(AppI18n.get("noInstallationFound"));
         }
 
@@ -59,8 +53,7 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
         var message = checkCompatibility(s);
         if (message.isPresent()) {
             if (showAlert()) {
-                var version =
-                        ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion();
+                var version = ModuleHelper.isImage() ? AppProperties.get().getVersion() : AppDownloads.getLatestVersion();
                 AppInstaller.installOnRemoteMachine(s, version);
                 return true;
             }

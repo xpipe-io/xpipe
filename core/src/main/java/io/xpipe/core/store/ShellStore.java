@@ -56,7 +56,8 @@ public interface ShellStore extends DataStore, InternalCacheDataStore, Launchabl
             c.withoutLicenseCheck();
         }
 
-        try (ShellControl pc = c.start()) {}
+        try (ShellControl pc = c.start()) {
+        }
     }
 
     default String queryMachineName() throws Exception {

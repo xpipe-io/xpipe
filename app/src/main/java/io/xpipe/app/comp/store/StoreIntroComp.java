@@ -54,18 +54,15 @@ public class StoreIntroComp extends SimpleComp {
         docLinkPane.setAlignment(Pos.CENTER);
 
         var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 180).createRegion();
-        var hbox = new HBox(img, new VBox(
-                title, introDesc, new Separator(Orientation.HORIZONTAL), machine
-        ));
+        var hbox = new HBox(img, new VBox(title, introDesc, new Separator(Orientation.HORIZONTAL), machine));
         hbox.setSpacing(35);
         hbox.setAlignment(Pos.CENTER);
 
-        var v = new VBox(
-                hbox, scanPane
+        var v = new VBox(hbox, scanPane
                 //                new Separator(Orientation.HORIZONTAL),
                 //                documentation,
                 //                docLinkPane
-                );
+        );
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);

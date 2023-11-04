@@ -20,15 +20,13 @@ public class EditStoreExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        String name;
+        @NonNull String name;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        DialogReference dialog;
+        @NonNull DialogReference dialog;
     }
 }

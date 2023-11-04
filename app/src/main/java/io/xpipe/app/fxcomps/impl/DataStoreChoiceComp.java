@@ -38,8 +38,17 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
+    private final Mode mode;
+    private final DataStoreEntry self;
+    private final Property<DataStoreEntryRef<T>> selected;
+    private final Class<T> storeClass;
+    private final Predicate<DataStoreEntryRef<T>> applicableCheck;
+    private final StoreCategoryWrapper initialCategory;
+    private Popover popover;
+
     public static <T extends DataStore> DataStoreChoiceComp<T> other(
-            Property<DataStoreEntryRef<T>> selected, Class<T> clazz, Predicate<DataStoreEntryRef<T>> filter, StoreCategoryWrapper initialCategory) {
+            Property<DataStoreEntryRef<T>> selected, Class<T> clazz, Predicate<DataStoreEntryRef<T>> filter, StoreCategoryWrapper initialCategory
+    ) {
         return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
     }
 
@@ -50,21 +59,6 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
     public static DataStoreChoiceComp<ShellStore> host(Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
         return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);
     }
-
-    public enum Mode {
-        HOST,
-        OTHER,
-        PROXY
-    }
-
-    private final Mode mode;
-    private final DataStoreEntry self;
-    private final Property<DataStoreEntryRef<T>> selected;
-    private final Class<T> storeClass;
-    private final Predicate<DataStoreEntryRef<T>> applicableCheck;
-    private final StoreCategoryWrapper initialCategory;
-
-    private Popover popover;
 
     private Popover getPopover() {
         // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
@@ -87,15 +81,11 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                     return false;
                 }
 
-                return storeClass.isAssignableFrom(e.getStore().getClass())
-                        && e.getValidity().isUsable()
-                        && (applicableCheck == null
-                                || applicableCheck.test(e.ref()));
+                return storeClass.isAssignableFrom(e.getStore().getClass()) && e.getValidity().isUsable() &&
+                        (applicableCheck == null || applicableCheck.test(e.ref()));
             };
             var section = StoreSectionMiniComp.createList(
-                    StoreSection.createTopLevel(
-                            StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory),
-                    (s, comp) -> {
+                    StoreSection.createTopLevel(StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory), (s, comp) -> {
                         comp.apply(struc -> struc.get().setOnAction(event -> {
                             selected.setValue(s.getWrapper().getEntry().ref());
                             popover.hide();
@@ -106,36 +96,28 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
                     });
-            var category = new DataStoreCategoryChoiceComp(initialCategory != null ? initialCategory.getRoot() : null, StoreViewState.get().getActiveCategory(),
-                                                           selectedCategory).styleClass(Styles.LEFT_PILL);
-            var filter = new FilterComp(filterText)
-                    .styleClass(Styles.CENTER_PILL)
-                    .hgrow()
-                    .apply(struc -> {
-                        popover.setOnShowing(event -> {
+            var category = new DataStoreCategoryChoiceComp(initialCategory != null ? initialCategory.getRoot() : null,
+                    StoreViewState.get().getActiveCategory(), selectedCategory).styleClass(Styles.LEFT_PILL);
+            var filter = new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow().apply(struc -> {
+                popover.setOnShowing(event -> {
+                    Platform.runLater(() -> {
+                        Platform.runLater(() -> {
                             Platform.runLater(() -> {
-                                Platform.runLater(() -> {
-                                    Platform.runLater(() -> {
-                                        struc.getText().requestFocus();
-                                    });
-                                });
+                                struc.getText().requestFocus();
                             });
                         });
                     });
+                });
+            });
 
             var addButton = Comp.of(() -> {
-                        MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
-                        StoreCreationMenu.addButtons(m);
-                        return m;
-                    })
-                    .padding(new Insets(-2))
-                    .styleClass(Styles.RIGHT_PILL)
-                    .grow(false, true);
+                MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
+                StoreCreationMenu.addButtons(m);
+                return m;
+            }).padding(new Insets(-2)).styleClass(Styles.RIGHT_PILL).grow(false, true);
 
-            var top = new HorizontalComp(List.of(category, filter.hgrow(), addButton))
-                    .styleClass("top")
-                    .apply(struc -> struc.get().setFillHeight(true))
-                    .createRegion();
+            var top = new HorizontalComp(List.of(category, filter.hgrow(), addButton)).styleClass("top").apply(
+                    struc -> struc.get().setFillHeight(true)).createRegion();
             var r = section.vgrow().createRegion();
             var content = new VBox(top, r);
             content.setFillWidth(true);
@@ -157,20 +139,15 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     protected Region createGraphic(T s) {
         var provider = DataStoreProviders.byStore(s);
-        var imgView = PrettyImageHelper.ofFixedSquare(provider.getDisplayIconFileName(s), 16)
-                .createRegion();
+        var imgView = PrettyImageHelper.ofFixedSquare(provider.getDisplayIconFileName(s), 16).createRegion();
 
-        var name = DataStorage.get().getUsableStores().stream()
-                .filter(e -> e.equals(s))
-                .findAny()
-                .flatMap(store -> {
-                    if (mode == Mode.PROXY && ShellStore.isLocal(store.asNeeded())) {
-                        return Optional.of(AppI18n.get("none"));
-                    }
+        var name = DataStorage.get().getUsableStores().stream().filter(e -> e.equals(s)).findAny().flatMap(store -> {
+            if (mode == Mode.PROXY && ShellStore.isLocal(store.asNeeded())) {
+                return Optional.of(AppI18n.get("none"));
+            }
 
-                    return DataStorage.get().getStoreDisplayName(store);
-                })
-                .orElse(AppI18n.get("unknown"));
+            return DataStorage.get().getStoreDisplayName(store);
+        }).orElse(AppI18n.get("unknown"));
 
         return new Label(name, imgView);
     }
@@ -180,9 +157,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             return null;
         }
 
-        if (mode == Mode.PROXY
-                && entry.getStore() instanceof ShellStore
-                && ShellStore.isLocal(entry.getStore().asNeeded())) {
+        if (mode == Mode.PROXY && entry.getStore() instanceof ShellStore && ShellStore.isLocal(entry.getStore().asNeeded())) {
             return AppI18n.get("none");
         }
 
@@ -191,40 +166,24 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var button = new ButtonComp(
-                Bindings.createStringBinding(
-                        () -> {
-                            return selected.getValue() != null ? toName(selected.getValue().getEntry()) : null;
-                        },
-                        selected),
-                () -> {});
+        var button = new ButtonComp(Bindings.createStringBinding(() -> {
+            return selected.getValue() != null ? toName(selected.getValue().getEntry()) : null;
+        }, selected), () -> {});
         button.apply(struc -> {
-                    struc.get().setMaxWidth(2000);
-                    struc.get().setAlignment(Pos.CENTER_LEFT);
-                    struc.get()
-                            .setGraphic(PrettyImageHelper.ofSvg(
-                                            Bindings.createStringBinding(
-                                                    () -> {
-                                                        if (selected.getValue() == null) {
-                                                            return null;
-                                                        }
+            struc.get().setMaxWidth(2000);
+            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.get().setGraphic(PrettyImageHelper.ofSvg(Bindings.createStringBinding(() -> {
+                if (selected.getValue() == null) {
+                    return null;
+                }
 
-                                                        return selected.getValue()
-                                                                .get()
-                                                                .getProvider()
-                                                                .getDisplayIconFileName(selected.getValue()
-                                                                        .getStore());
-                                                    },
-                                                    selected),
-                                            16,
-                                            16)
-                                    .createRegion());
-                    struc.get().setOnAction(event -> {
-                        getPopover().show(struc.get());
-                        event.consume();
-                    });
-                })
-                .styleClass("choice-comp");
+                return selected.getValue().get().getProvider().getDisplayIconFileName(selected.getValue().getStore());
+            }, selected), 16, 16).createRegion());
+            struc.get().setOnAction(event -> {
+                getPopover().show(struc.get());
+                event.consume();
+            });
+        }).styleClass("choice-comp");
 
         var r = button.grow(true, false).createRegion();
         var icon = new FontIcon("mdal-keyboard_arrow_down");
@@ -239,5 +198,11 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         r.prefWidthProperty().bind(pane.widthProperty());
         r.maxWidthProperty().bind(pane.widthProperty());
         return pane;
+    }
+
+    public enum Mode {
+        HOST,
+        OTHER,
+        PROXY
     }
 }

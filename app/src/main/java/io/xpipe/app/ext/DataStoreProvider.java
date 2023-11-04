@@ -37,8 +37,7 @@ public interface DataStoreProvider {
     default void validate() {
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {
-                throw new ExtensionException(
-                        String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
+                throw new ExtensionException(String.format("Store class %s is not a Jacksonized value", storeClass.getSimpleName()));
             }
         }
     }
@@ -53,7 +52,7 @@ public interface DataStoreProvider {
     }
 
     default Comp<?> customEntryComp(StoreSection s, boolean preferLarge) {
-        return StoreEntryComp.create(s.getWrapper(),true, null, preferLarge);
+        return StoreEntryComp.create(s.getWrapper(), true, null, preferLarge);
     }
 
     default Comp<?> customSectionComp(StoreSection section, boolean topLevel) {
@@ -73,20 +72,14 @@ public interface DataStoreProvider {
     }
 
     default Comp<?> createInsightsComp(ObservableValue<DataStore> store) {
-        var content = Bindings.createStringBinding(
-                () -> {
-                    if (store.getValue() == null
-                            || !store.getValue().isComplete()
-                            || !getStoreClasses().contains(store.getValue().getClass())) {
-                        return null;
-                    }
+        var content = Bindings.createStringBinding(() -> {
+            if (store.getValue() == null || !store.getValue().isComplete() || !getStoreClasses().contains(store.getValue().getClass())) {
+                return null;
+            }
 
-                    return createInsightsMarkdown(store.getValue());
-                },
-                store);
-        return new MarkdownComp(content, s -> s)
-                .apply(struc -> struc.get().setPrefWidth(450))
-                .apply(struc -> struc.get().setPrefHeight(200));
+            return createInsightsMarkdown(store.getValue());
+        }, store);
+        return new MarkdownComp(content, s -> s).apply(struc -> struc.get().setPrefWidth(450)).apply(struc -> struc.get().setPrefHeight(200));
     }
 
     default String createInsightsMarkdown(DataStore store) {
@@ -113,7 +106,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default void postInit(){
+    default void postInit() {
     }
 
     default void storageInit() throws Exception {}

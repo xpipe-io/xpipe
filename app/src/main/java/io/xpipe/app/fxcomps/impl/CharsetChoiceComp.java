@@ -18,14 +18,9 @@ public class CharsetChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var builder = new CustomComboBoxBuilder<>(
-                charset,
-                streamCharset -> {
-                    return new Label(streamCharset.getCharset().displayName()
-                            + (streamCharset.hasByteOrderMark() ? " (BOM)" : ""));
-                },
-                new Label(AppI18n.get("app.none")),
-                null);
+        var builder = new CustomComboBoxBuilder<>(charset, streamCharset -> {
+            return new Label(streamCharset.getCharset().displayName() + (streamCharset.hasByteOrderMark() ? " (BOM)" : ""));
+        }, new Label(AppI18n.get("app.none")), null);
         builder.setAccessibleNames(streamCharset -> streamCharset.getNames().get(0));
         builder.addFilter((charset, filter) -> {
             return charset.getCharset().displayName().contains(filter);

@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 public record CodeSnippet(List<CodeSnippet.Line> lines) {
 
-    public static final ColorScheme LIGHT_MODE = new ColorScheme(
-            Color.valueOf("0033B3"), Color.valueOf("000000"), Color.valueOf("000000"), Color.valueOf("067D17"));
+    public static final ColorScheme LIGHT_MODE = new ColorScheme(Color.valueOf("0033B3"), Color.valueOf("000000"), Color.valueOf("000000"),
+            Color.valueOf("067D17"));
 
     public static Builder builder() {
         return new Builder(LIGHT_MODE);
@@ -24,9 +24,8 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
     }
 
     public String getRawString() {
-        return lines.stream()
-                .map(line -> line.elements().stream().map(Element::text).collect(Collectors.joining()))
-                .collect(Collectors.joining(System.lineSeparator()));
+        return lines.stream().map(line -> line.elements().stream().map(Element::text).collect(Collectors.joining())).collect(
+                Collectors.joining(System.lineSeparator()));
     }
 
     public interface Element {

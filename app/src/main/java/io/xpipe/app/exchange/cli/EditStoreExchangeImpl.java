@@ -6,8 +6,7 @@ import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.cli.EditStoreExchange;
 import io.xpipe.core.store.DataStore;
 
-public class EditStoreExchangeImpl extends EditStoreExchange
-        implements MessageExchangeImpl<EditStoreExchange.Request, EditStoreExchange.Response> {
+public class EditStoreExchangeImpl extends EditStoreExchange implements MessageExchangeImpl<EditStoreExchange.Request, EditStoreExchange.Response> {
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {

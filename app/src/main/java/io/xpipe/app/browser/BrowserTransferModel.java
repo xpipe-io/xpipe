@@ -21,8 +21,7 @@ import java.util.concurrent.Executors;
 @Value
 public class BrowserTransferModel {
 
-    private static final Path TEMP =
-            FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("download");
+    private static final Path TEMP = FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("download");
 
     ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
         Thread t = Executors.defaultThreadFactory().newThread(r);
@@ -30,15 +29,6 @@ public class BrowserTransferModel {
         t.setName("file downloader");
         return t;
     });
-
-    @Value
-    public static class Item {
-        String name;
-        FileSystem.FileEntry fileEntry;
-        Path localFile;
-        BooleanProperty finishedDownload = new SimpleBooleanProperty();
-    }
-
     BrowserModel browserModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
     BooleanProperty downloading = new SimpleBooleanProperty();
@@ -83,10 +73,7 @@ public class BrowserTransferModel {
 
                 try {
                     try (var b = new BooleanScope(downloading).start()) {
-                        FileSystemHelper.dropFilesInto(
-                                FileSystemHelper.getLocal(TEMP),
-                                List.of(item.getFileEntry()),
-                                true);
+                        FileSystemHelper.dropFilesInto(FileSystemHelper.getLocal(TEMP), List.of(item.getFileEntry()), true);
                     }
                     item.finishedDownload.set(true);
                 } catch (Throwable t) {
@@ -96,5 +83,13 @@ public class BrowserTransferModel {
             }
             allDownloaded.set(true);
         });
+    }
+
+    @Value
+    public static class Item {
+        String name;
+        FileSystem.FileEntry fileEntry;
+        Path localFile;
+        BooleanProperty finishedDownload = new SimpleBooleanProperty();
     }
 }

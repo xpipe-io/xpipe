@@ -22,42 +22,22 @@ import java.util.stream.Collectors;
 @JsonTypeName("script")
 public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
 
+    private final ShellDialect minimumDialect;
+    private final String commands;
+    private final ExecutionType executionType;
+
     private String assemble(ShellControl shellControl, ExecutionType type) {
-        var targetType = type == ExecutionType.TERMINAL_ONLY
-                ? shellControl.getTargetTerminalShellDialect()
-                : shellControl.getShellDialect();
-        if ((executionType == type || executionType == ExecutionType.BOTH)
-                && minimumDialect.isCompatibleTo(targetType)) {
+        var targetType = type == ExecutionType.TERMINAL_ONLY ? shellControl.getTargetTerminalShellDialect() : shellControl.getShellDialect();
+        if ((executionType == type || executionType == ExecutionType.BOTH) && minimumDialect.isCompatibleTo(targetType)) {
             var shebang = commands.startsWith("#");
             // Fix new lines and shebang
-            var fixedCommands = commands.lines()
-                    .skip(shebang ? 1 : 0)
-                    .collect(Collectors.joining(
-                            shellControl.getShellDialect().getNewLine().getNewLineString()));
+            var fixedCommands = commands.lines().skip(shebang ? 1 : 0).collect(
+                    Collectors.joining(shellControl.getShellDialect().getNewLine().getNewLineString()));
             var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
             return targetType.sourceScriptCommand(shellControl, script);
         }
 
         return null;
-    }
-
-    @Override
-    public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
-        return scripts != null
-                ? scripts.stream().filter(Objects::nonNull).toList()
-                : List.of();
-    }
-
-    public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
-        // Prevent loop
-        all.add(this);
-        getEffectiveScripts().stream()
-                .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore()))
-                .forEach(scriptStoreDataStoreEntryRef -> {
-                    scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
-                });
-        all.remove(this);
-        all.add(this);
     }
 
     @Override
@@ -70,15 +50,27 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
         return executionType;
     }
 
-    private final ShellDialect minimumDialect;
-    private final String commands;
-    private final ExecutionType executionType;
-
     @Override
     public void checkComplete() throws Exception {
         Validators.nonNull(group);
         super.checkComplete();
         Validators.nonNull(executionType);
         Validators.nonNull(minimumDialect);
+    }
+
+    public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+        // Prevent loop
+        all.add(this);
+        getEffectiveScripts().stream().filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore())).forEach(
+                scriptStoreDataStoreEntryRef -> {
+                    scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
+                });
+        all.remove(this);
+        all.add(this);
+    }
+
+    @Override
+    public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
+        return scripts != null ? scripts.stream().filter(Objects::nonNull).toList() : List.of();
     }
 }

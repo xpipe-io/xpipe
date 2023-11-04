@@ -4,8 +4,8 @@ import io.xpipe.api.DataSource;
 import io.xpipe.app.test.DaemonExtensionTest;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
-import io.xpipe.core.store.FileStore;
 import io.xpipe.core.impl.TextSource;
+import io.xpipe.core.store.FileStore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,15 +17,11 @@ import java.util.List;
 
 public class TextFileTest extends DaemonExtensionTest {
 
-    static Path utf8File =
-            Path.of("ext/base/src/test/resources/utf8-bom-lf.txt").toAbsolutePath();
-    static Path utf16File =
-            Path.of("ext/base/src/test/resources/utf16-crlf.txt").toAbsolutePath();
-    static Path appendReferenceFile =
-            Path.of("ext/base/src/test/resources/append-reference.txt").toAbsolutePath();
+    static Path utf8File = Path.of("ext/base/src/test/resources/utf8-bom-lf.txt").toAbsolutePath();
+    static Path utf16File = Path.of("ext/base/src/test/resources/utf16-crlf.txt").toAbsolutePath();
+    static Path appendReferenceFile = Path.of("ext/base/src/test/resources/append-reference.txt").toAbsolutePath();
     static Path appendOutputFile;
-    static Path writeReferenceFile =
-            Path.of("ext/base/src/test/resources/write-reference.txt").toAbsolutePath();
+    static Path writeReferenceFile = Path.of("ext/base/src/test/resources/write-reference.txt").toAbsolutePath();
     static Path writeOutputFile;
 
     static DataSource utf8;
@@ -43,22 +39,12 @@ public class TextFileTest extends DaemonExtensionTest {
         writeReference = DataSource.create(null, "text", FileStore.local(writeReferenceFile));
 
         appendOutputFile = Files.createTempFile(null, null);
-        appendOutput = DataSource.create(
-                null,
-                TextSource.builder()
-                        .store(FileStore.local(appendOutputFile))
-                        .charset(StreamCharset.get("windows-1252"))
-                        .newLine(NewLine.LF)
-                        .build());
+        appendOutput = DataSource.create(null, TextSource.builder().store(FileStore.local(appendOutputFile)).charset(
+                StreamCharset.get("windows-1252")).newLine(NewLine.LF).build());
 
         writeOutputFile = Files.createTempFile(null, null);
-        writeOutput = DataSource.create(
-                null,
-                TextSource.builder()
-                        .store(FileStore.local(writeOutputFile))
-                        .charset(StreamCharset.UTF16_LE_BOM)
-                        .newLine(NewLine.CRLF)
-                        .build());
+        writeOutput = DataSource.create(null, TextSource.builder().store(FileStore.local(writeOutputFile)).charset(StreamCharset.UTF16_LE_BOM)
+                .newLine(NewLine.CRLF).build());
     }
 
     @Test
@@ -87,13 +73,8 @@ public class TextFileTest extends DaemonExtensionTest {
     @Test
     public void testWrite() throws IOException {
         var empty = Files.createTempFile(null, null);
-        var emptySource = DataSource.create(
-                null,
-                TextSource.builder()
-                        .store(FileStore.local(empty))
-                        .charset(StreamCharset.UTF32_BE)
-                        .newLine(NewLine.CRLF)
-                        .build());
+        var emptySource = DataSource.create(null, TextSource.builder().store(FileStore.local(empty)).charset(StreamCharset.UTF32_BE)
+                .newLine(NewLine.CRLF).build());
         emptySource.asText().forwardTo(writeOutput);
 
         var first = utf8.asText();

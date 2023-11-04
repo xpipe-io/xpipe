@@ -24,24 +24,19 @@ public class StoreEntryListStatusComp extends SimpleComp {
     private Region createGroupListHeader() {
         var label = new Label();
         label.textProperty().bind(Bindings.createStringBinding(() -> {
-            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory()) ? "Connections" : "Scripts";
+            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory()) ?
+                    "Connections" :
+                    "Scripts";
         }, StoreViewState.get().getActiveCategory()));
         label.getStyleClass().add("name");
 
-        var all = BindingsHelper.filteredContentBinding(
-                StoreViewState.get().getAllEntries(),
-                storeEntryWrapper -> {
-                    var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
-                    return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(storeRoot);
-                },
-                StoreViewState.get().getActiveCategory());
-        var shownList = BindingsHelper.filteredContentBinding(
-                all,
-                storeEntryWrapper -> {
-                    return storeEntryWrapper.shouldShow(
-                            StoreViewState.get().getFilterString().getValue());
-                },
-                StoreViewState.get().getFilterString());
+        var all = BindingsHelper.filteredContentBinding(StoreViewState.get().getAllEntries(), storeEntryWrapper -> {
+            var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
+            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(storeRoot);
+        }, StoreViewState.get().getActiveCategory());
+        var shownList = BindingsHelper.filteredContentBinding(all, storeEntryWrapper -> {
+            return storeEntryWrapper.shouldShow(StoreViewState.get().getFilterString().getValue());
+        }, StoreViewState.get().getFilterString());
         var count = new CountComp<>(shownList, all);
 
         var spacer = new Region();

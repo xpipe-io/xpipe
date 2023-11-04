@@ -17,17 +17,13 @@ public class AppCharsetter extends Charsetter {
         Charsetter.INSTANCE = new AppCharsetter();
     }
 
-    public Result read(FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con)
-            throws Exception {
+    public Result read(FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con) throws Exception {
         checkInit();
 
-        try (var is = in.get();
-                var bin = new BOMInputStream(is)) {
+        try (var is = in.get(); var bin = new BOMInputStream(is)) {
             ByteOrderMark bom = bin.getBOM();
             String charsetName = bom == null ? null : bom.getCharsetName();
-            var charset = charsetName != null
-                    ? StreamCharset.get(Charset.forName(charsetName), bom.getCharsetName() != null)
-                    : null;
+            var charset = charsetName != null ? StreamCharset.get(Charset.forName(charsetName), bom.getCharsetName() != null) : null;
 
             bin.mark(MAX_BYTES);
             var bytes = bin.readNBytes(MAX_BYTES);

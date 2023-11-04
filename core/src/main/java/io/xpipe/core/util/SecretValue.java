@@ -6,10 +6,10 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.function.Consumer;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
 public interface SecretValue {
-
-    SecretValue inPlace();
 
     static String toBase64e(byte[] b) {
         var base64 = Base64.getEncoder().encodeToString(b);
@@ -19,6 +19,8 @@ public interface SecretValue {
     static byte[] fromBase64e(String s) {
         return Base64.getDecoder().decode(s.replace("-", "/"));
     }
+
+    SecretValue inPlace();
 
     default void withSecretValue(Consumer<char[]> con) {
         var chars = getSecret();

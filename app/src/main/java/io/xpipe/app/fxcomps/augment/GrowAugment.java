@@ -25,38 +25,26 @@ public class GrowAugment<S extends CompStructure<?>> implements Augment<S> {
         }
 
         if (width) {
-            r.prefWidthProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> {
-                                var val = p.getWidth()
-                                        - p.getInsets().getLeft()
-                                        - p.getInsets().getRight();
-                                if (val <= 0) {
-                                    return Region.USE_COMPUTED_SIZE;
-                                }
+            r.prefWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+                var val = p.getWidth() - p.getInsets().getLeft() - p.getInsets().getRight();
+                if (val <= 0) {
+                    return Region.USE_COMPUTED_SIZE;
+                }
 
-                                // Floor to prevent rounding issues which cause an infinite growing
-                                return Math.floor(val);
-                            },
-                            p.widthProperty(),
-                            p.insetsProperty()));
+                // Floor to prevent rounding issues which cause an infinite growing
+                return Math.floor(val);
+            }, p.widthProperty(), p.insetsProperty()));
         }
         if (height) {
-            r.prefHeightProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> {
-                                var val = p.getHeight()
-                                        - p.getInsets().getTop()
-                                        - p.getInsets().getBottom();
-                                if (val <= 0) {
-                                    return Region.USE_COMPUTED_SIZE;
-                                }
+            r.prefHeightProperty().bind(Bindings.createDoubleBinding(() -> {
+                var val = p.getHeight() - p.getInsets().getTop() - p.getInsets().getBottom();
+                if (val <= 0) {
+                    return Region.USE_COMPUTED_SIZE;
+                }
 
-                                // Floor to prevent rounding issues which cause an infinite growing
-                                return Math.floor(val);
-                            },
-                            p.heightProperty(),
-                            p.insetsProperty()));
+                // Floor to prevent rounding issues which cause an infinite growing
+                return Math.floor(val);
+            }, p.heightProperty(), p.insetsProperty()));
         }
     }
 

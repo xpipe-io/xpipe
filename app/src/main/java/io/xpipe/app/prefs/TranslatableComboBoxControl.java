@@ -8,8 +8,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
-public class TranslatableComboBoxControl<V extends Translatable>
-        extends SimpleControl<SingleSelectionField<V>, StackPane> {
+public class TranslatableComboBoxControl<V extends Translatable> extends SimpleControl<SingleSelectionField<V>, StackPane> {
 
     private ComboBox<V> comboBox;
     private Label readOnlyLabel;
@@ -88,8 +87,6 @@ public class TranslatableComboBoxControl<V extends Translatable>
      */
     @Override
     public void setupEventHandlers() {
-        comboBox.valueProperty()
-                .addListener((observable, oldValue, newValue) ->
-                        field.select(comboBox.getSelectionModel().getSelectedIndex()));
+        comboBox.valueProperty().addListener((observable, oldValue, newValue) -> field.select(comboBox.getSelectionModel().getSelectedIndex()));
     }
 }

@@ -12,8 +12,7 @@ public class WriteStreamExchangeImpl extends WriteStreamExchange
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         var ds = getStoreEntryByName(msg.getName(), false);
         StreamDataStore store = ds.getStore().asNeeded();
-        try (var input = handler.receiveBody();
-                var output = store.openOutput()) {
+        try (var input = handler.receiveBody(); var output = store.openOutput()) {
             input.transferTo(output);
         }
         return WriteStreamExchange.Response.builder().build();

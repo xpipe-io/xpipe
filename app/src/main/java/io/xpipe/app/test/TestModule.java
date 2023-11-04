@@ -11,19 +11,19 @@ public abstract class TestModule<V> {
 
     private static final Map<Class<?>, Map<String, ?>> values = new LinkedHashMap<>();
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings(
+            {
+                    "unchecked", "rawtypes"
+            })
     public static <T> Map<String, T> get(Class<T> c, String... classes) {
         if (!values.containsKey(c)) {
-            List<Class<?>> loadedClasses = (List<Class<?>>) Arrays.stream(classes)
-                    .map(s -> {
-                        try {
-                            return Optional.of(Class.forName(s));
-                        } catch (ClassNotFoundException ex) {
-                            return Optional.empty();
-                        }
-                    })
-                    .flatMap(Optional::stream)
-                    .toList();
+            List<Class<?>> loadedClasses = (List<Class<?>>) Arrays.stream(classes).map(s -> {
+                try {
+                    return Optional.of(Class.forName(s));
+                } catch (ClassNotFoundException ex) {
+                    return Optional.empty();
+                }
+            }).flatMap(Optional::stream).toList();
             loadedClasses.forEach(o -> {
                 try {
                     var instance = (TestModule<?>) o.getConstructor().newInstance();
@@ -35,8 +35,7 @@ public abstract class TestModule<V> {
             });
         }
 
-        return (Map<String, T>) values.get(c).entrySet().stream()
-                .collect(Collectors.toMap(o -> o.getKey(), o -> ((Supplier<?>) o.getValue()).get()));
+        return (Map<String, T>) values.get(c).entrySet().stream().collect(Collectors.toMap(o -> o.getKey(), o -> ((Supplier<?>) o.getValue()).get()));
     }
 
     public static <T> Stream<Named<T>> getArguments(Class<T> c, String... classes) {

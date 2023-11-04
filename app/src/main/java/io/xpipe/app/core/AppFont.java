@@ -60,19 +60,16 @@ public class AppFont {
 
     public static void loadFonts() {
         TrackEvent.info("Loading fonts ...");
-        AppResources.with(
-                AppResources.XPIPE_MODULE,
-                "fonts",
-                path -> Files.walkFileTree(path, new SimpleFileVisitor<>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                        try (var in = Files.newInputStream(file)) {
-                            Font.loadFont(in, 12);
-                        } catch (Throwable t) {
-                            // Font loading can fail in rare cases. This is however not important, so we can just ignore it
-                        }
-                        return FileVisitResult.CONTINUE;
-                    }
-                }));
+        AppResources.with(AppResources.XPIPE_MODULE, "fonts", path -> Files.walkFileTree(path, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                try (var in = Files.newInputStream(file)) {
+                    Font.loadFont(in, 12);
+                } catch (Throwable t) {
+                    // Font loading can fail in rare cases. This is however not important, so we can just ignore it
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        }));
     }
 }

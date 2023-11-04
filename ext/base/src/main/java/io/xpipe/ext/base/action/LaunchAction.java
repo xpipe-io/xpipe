@@ -14,6 +14,68 @@ import lombok.Value;
 
 public class LaunchAction implements ActionProvider {
 
+    @Override
+    public String getId() {
+        return "launch";
+    }
+
+    @Override
+    public DataStoreCallSite<?> getDataStoreCallSite() {
+        return new DataStoreCallSite<LaunchableStore>() {
+
+            @Override
+            public boolean canLinkTo() {
+                return true;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<LaunchableStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<LaunchableStore> getApplicableClass() {
+                return LaunchableStore.class;
+            }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<LaunchableStore> o) {
+                return o.get().getValidity().isUsable() && o.getStore().canLaunch();
+            }
+
+            @Override
+            public ObservableValue<String> getName(DataStoreEntryRef<LaunchableStore> store) {
+                return AppI18n.observable("launch");
+            }
+
+            @Override
+            public String getIcon(DataStoreEntryRef<LaunchableStore> store) {
+                return "mdi2p-play";
+            }
+        };
+    }
+
+    @Override
+    public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
+        return new DefaultDataStoreCallSite<LaunchableStore>() {
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<LaunchableStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<LaunchableStore> getApplicableClass() {
+                return LaunchableStore.class;
+            }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<LaunchableStore> o) {
+                return o.get().getValidity().isUsable() && o.getStore().canLaunch();
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 
@@ -41,71 +103,5 @@ public class LaunchAction implements ActionProvider {
                 TerminalHelper.open(entry, storeName, command);
             }
         }
-    }
-
-    @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        return new DataStoreCallSite<LaunchableStore>() {
-
-            @Override
-            public boolean canLinkTo() {
-                return true;
-            }
-
-            @Override
-            public boolean isApplicable(DataStoreEntryRef<LaunchableStore> o) {
-                return o.get()
-                        .getValidity()
-                        .isUsable() && o.getStore().canLaunch();
-            }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<LaunchableStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<LaunchableStore> getApplicableClass() {
-                return LaunchableStore.class;
-            }
-
-            @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<LaunchableStore> store) {
-                return AppI18n.observable("launch");
-            }
-
-            @Override
-            public String getIcon(DataStoreEntryRef<LaunchableStore> store) {
-                return "mdi2p-play";
-            }
-        };
-    }
-
-    @Override
-    public String getId() {
-        return "launch";
-    }
-
-    @Override
-    public DefaultDataStoreCallSite<?> getDefaultDataStoreCallSite() {
-        return new DefaultDataStoreCallSite<LaunchableStore>() {
-
-            @Override
-            public boolean isApplicable(DataStoreEntryRef<LaunchableStore> o) {
-                return o.get()
-                        .getValidity()
-                        .isUsable() && o.getStore().canLaunch();
-            }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<LaunchableStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<LaunchableStore> getApplicableClass() {
-                return LaunchableStore.class;
-            }
-        };
     }
 }

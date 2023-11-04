@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,15 +17,16 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.None.class),
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.Reference.class),
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.InPlace.class),
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.Prompt.class),
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.CustomCommand.class),
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.PasswordManager.class)
-})
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
+@JsonSubTypes(
+        {
+                @JsonSubTypes.Type(value = SecretRetrievalStrategy.None.class), @JsonSubTypes.Type(value = SecretRetrievalStrategy.Reference.class),
+                @JsonSubTypes.Type(value = SecretRetrievalStrategy.InPlace.class), @JsonSubTypes.Type(value = SecretRetrievalStrategy.Prompt.class),
+                @JsonSubTypes.Type(value = SecretRetrievalStrategy.CustomCommand.class),
+                @JsonSubTypes.Type(value = SecretRetrievalStrategy.PasswordManager.class)
+        })
 public interface SecretRetrievalStrategy {
 
     SecretValue retrieve(String displayName, UUID id, int sub) throws Exception;
@@ -98,11 +99,12 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public boolean shouldCache() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
+
         @Override
-        public boolean isLocalAskpassCompatible() {
+        public boolean shouldCache() {
             return false;
         }
     }
@@ -116,11 +118,12 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public boolean shouldCache() {
+        public boolean isLocalAskpassCompatible() {
             return true;
         }
+
         @Override
-        public boolean isLocalAskpassCompatible() {
+        public boolean shouldCache() {
             return true;
         }
     }
@@ -134,13 +137,13 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public boolean shouldCache() {
-            return false;
+        public boolean isLocalAskpassCompatible() {
+            return true;
         }
 
         @Override
-        public boolean isLocalAskpassCompatible() {
-            return true;
+        public boolean shouldCache() {
+            return false;
         }
     }
 
@@ -167,12 +170,12 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public boolean shouldCache() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
 
         @Override
-        public boolean isLocalAskpassCompatible() {
+        public boolean shouldCache() {
             return false;
         }
     }
@@ -193,12 +196,12 @@ public interface SecretRetrievalStrategy {
         }
 
         @Override
-        public boolean shouldCache() {
+        public boolean isLocalAskpassCompatible() {
             return false;
         }
 
         @Override
-        public boolean isLocalAskpassCompatible() {
+        public boolean shouldCache() {
             return false;
         }
     }

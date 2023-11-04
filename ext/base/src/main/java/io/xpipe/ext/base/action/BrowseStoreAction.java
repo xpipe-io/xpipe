@@ -13,26 +13,19 @@ import lombok.Value;
 
 public class BrowseStoreAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
-
-        @Override
-        public void execute() {
-            BrowserModel.DEFAULT.openFileSystemAsync(entry.ref(),null, new SimpleBooleanProperty());
-            AppLayoutModel.get().selectBrowser();
-        }
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<ShellStore>() {
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<ShellStore> getApplicableClass() {
+                return ShellStore.class;
+            }
 
             @Override
             public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
@@ -48,16 +41,23 @@ public class BrowseStoreAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<ShellStore> store) {
                 return "mdi2f-folder-open-outline";
             }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<ShellStore> getApplicableClass() {
-                return ShellStore.class;
-            }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry entry;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+            BrowserModel.DEFAULT.openFileSystemAsync(entry.ref(), null, new SimpleBooleanProperty());
+            AppLayoutModel.get().selectBrowser();
+        }
     }
 }

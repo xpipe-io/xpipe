@@ -33,7 +33,9 @@ public class DefaultSecretValue extends AesSecretValue {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         var salt = new byte[16];
         new Random(keysize).nextBytes(salt);
-        KeySpec spec = new PBEKeySpec(new char[] {'X', 'P', 'E' << 1}, salt, 2048, keysize);
+        KeySpec spec = new PBEKeySpec(new char[]{
+                'X', 'P', 'E' << 1
+        }, salt, 2048, keysize);
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 }

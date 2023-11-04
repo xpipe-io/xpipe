@@ -75,16 +75,16 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputExchange(
-            REQ req, FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
+            REQ req, FailableBiConsumer<RES, InputStream, Exception> responseConsumer
+    ) {
         checkClosed();
 
         performInputOutputExchange(req, null, responseConsumer);
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> void performInputOutputExchange(
-            REQ req,
-            FailableConsumer<OutputStream, IOException> reqWriter,
-            FailableBiConsumer<RES, InputStream, Exception> responseConsumer) {
+            REQ req, FailableConsumer<OutputStream, IOException> reqWriter, FailableBiConsumer<RES, InputStream, Exception> responseConsumer
+    ) {
         checkClosed();
 
         try {
@@ -146,7 +146,8 @@ public abstract class BeaconConnection implements AutoCloseable {
     }
 
     public <REQ extends RequestMessage, RES extends ResponseMessage> RES performOutputExchange(
-            REQ req, FailableConsumer<OutputStream, Exception> reqWriter) {
+            REQ req, FailableConsumer<OutputStream, Exception> reqWriter
+    ) {
         checkClosed();
 
         try {

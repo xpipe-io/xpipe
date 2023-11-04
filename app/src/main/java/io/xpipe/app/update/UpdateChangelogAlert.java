@@ -29,22 +29,18 @@ public class UpdateChangelogAlert {
         }
         shown = true;
 
-        AppWindowHelper.showAlert(
-                alert -> {
-                    alert.setTitle(AppI18n.get("updateChangelogAlertTitle"));
-                    alert.setAlertType(Alert.AlertType.NONE);
-                    alert.initModality(Modality.NONE);
+        AppWindowHelper.showAlert(alert -> {
+            alert.setTitle(AppI18n.get("updateChangelogAlertTitle"));
+            alert.setAlertType(Alert.AlertType.NONE);
+            alert.initModality(Modality.NONE);
 
-                    var markdown = new MarkdownComp(update.getRawDescription(), s -> {
-                                var header = "<h1>" + AppI18n.get("whatsNew", update.getName()) + "</h1>";
-                                return header + s;
-                            })
-                            .createRegion();
-                    alert.getDialogPane().setContent(markdown);
+            var markdown = new MarkdownComp(update.getRawDescription(), s -> {
+                var header = "<h1>" + AppI18n.get("whatsNew", update.getName()) + "</h1>";
+                return header + s;
+            }).createRegion();
+            alert.getDialogPane().setContent(markdown);
 
-                    alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
-                },
-                null,
-                r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
+            alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
+        }, null, r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
     }
 }

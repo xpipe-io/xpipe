@@ -58,14 +58,8 @@ public class BrowserFileListCompEntry {
 
         var all = tv.getItems();
         var index = item != null ? all.indexOf(item) : all.size() - 1;
-        var min = Math.min(index, tv.getSelectionModel().getSelectedIndices().stream()
-                .mapToInt(value -> value)
-                .min()
-                .orElse(1));
-        var max = Math.max(index, tv.getSelectionModel().getSelectedIndices().stream()
-                .mapToInt(value -> value)
-                .max()
-                .orElse(all.indexOf(item)));
+        var min = Math.min(index, tv.getSelectionModel().getSelectedIndices().stream().mapToInt(value -> value).min().orElse(1));
+        var max = Math.max(index, tv.getSelectionModel().getSelectedIndices().stream().mapToInt(value -> value).max().orElse(all.indexOf(item)));
 
         var toSelect = new ArrayList<BrowserEntry>();
         for (int i = min; i <= max; i++) {
@@ -78,8 +72,7 @@ public class BrowserFileListCompEntry {
     }
 
     public boolean isSynthetic() {
-        return item != null
-                && item.getRawFileEntry().equals(model.getFileSystemModel().getCurrentParentDirectory());
+        return item != null && item.getRawFileEntry().equals(model.getFileSystemModel().getCurrentParentDirectory());
     }
 
     private boolean acceptsDrop(DragEvent event) {
@@ -98,20 +91,13 @@ public class BrowserFileListCompEntry {
         }
 
         // Prevent drag and drops of files into the current directory
-        if (cb.getBaseDirectory() != null && cb
-                        .getBaseDirectory()
-                        .getPath()
-                        .equals(model.getFileSystemModel().getCurrentDirectory().getPath())
-                && (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {
+        if (cb.getBaseDirectory() != null && cb.getBaseDirectory().getPath().equals(model.getFileSystemModel().getCurrentDirectory().getPath()) &&
+                (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {
             return false;
         }
 
         // Prevent dropping items onto themselves
-        if (item != null && cb.getEntries().contains(item.getRawFileEntry())) {
-            return false;
-        }
-
-        return true;
+        return item == null || !cb.getEntries().contains(item.getRawFileEntry());
     }
 
     public void onDragDrop(DragEvent event) {
@@ -122,9 +108,9 @@ public class BrowserFileListCompEntry {
         if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
             Dragboard db = event.getDragboard();
             var list = db.getFiles().stream().map(File::toPath).toList();
-            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                    ? item.getRawFileEntry()
-                    : model.getFileSystemModel().getCurrentDirectory();
+            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
+                    item.getRawFileEntry() :
+                    model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel().dropLocalFilesIntoAsync(target, list);
             event.setDropCompleted(true);
             event.consume();
@@ -138,9 +124,9 @@ public class BrowserFileListCompEntry {
             }
 
             var files = db.getEntries();
-            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                    ? item.getRawFileEntry()
-                    : model.getFileSystemModel().getCurrentDirectory();
+            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
+                    item.getRawFileEntry() :
+                    model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel().dropFilesIntoAsync(target, files, false);
             event.setDropCompleted(true);
             event.consume();
@@ -178,8 +164,7 @@ public class BrowserFileListCompEntry {
     }
 
     private void acceptDrag(DragEvent event) {
-        model.getDraggedOverEmpty()
-                .setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+        model.getDraggedOverEmpty().setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
         model.getDraggedOverDirectory().setValue(item);
         event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
     }
@@ -232,8 +217,7 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        var tv = ((TableView<BrowserEntry>)
-                row.getParent().getParent().getParent().getParent());
+        var tv = ((TableView<BrowserEntry>) row.getParent().getParent().getParent().getParent());
         tv.getSelectionModel().select(item);
     }
 

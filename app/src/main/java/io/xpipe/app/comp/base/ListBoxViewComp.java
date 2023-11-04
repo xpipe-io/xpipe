@@ -71,18 +71,14 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             // Clear cache of unused values
             cache.keySet().removeIf(t -> !all.contains(t));
 
-            var newShown = shown.stream()
-                    .map(v -> {
-                        if (!cache.containsKey(v)) {
-                            var comp = compFunction.apply(v);
-                            cache.put(v, comp != null ? comp.createRegion() : null);
-                        }
+            var newShown = shown.stream().map(v -> {
+                if (!cache.containsKey(v)) {
+                    var comp = compFunction.apply(v);
+                    cache.put(v, comp != null ? comp.createRegion() : null);
+                }
 
-                        return cache.get(v);
-                    })
-                    .filter(region -> region != null)
-                    .limit(limit)
-                    .toList();
+                return cache.get(v);
+            }).filter(region -> region != null).limit(limit).toList();
 
             for (int i = 0; i < newShown.size(); i++) {
                 var r = newShown.get(i);

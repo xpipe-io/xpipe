@@ -22,14 +22,14 @@ test {
 
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",
-            " -Dio.xpipe.beacon.port=21725" +
-            " -Dio.xpipe.app.mode=tray" +
-            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
-            " -Dio.xpipe.storage.persist=false" +
-            " -Dio.xpipe.app.writeSysOut=true" +
-            " -Dio.xpipe.app.writeLogs=false" +
-            " -Dio.xpipe.beacon.printMessages=false" +
-            " -Dio.xpipe.app.logLevel=trace"
+                   " -Dio.xpipe.beacon.port=21725" +
+                           " -Dio.xpipe.app.mode=tray" +
+                           " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+                           " -Dio.xpipe.storage.persist=false" +
+                           " -Dio.xpipe.app.writeSysOut=true" +
+                           " -Dio.xpipe.app.writeLogs=false" +
+                           " -Dio.xpipe.beacon.printMessages=false" +
+                           " -Dio.xpipe.app.logLevel=trace"
 
     // Use cmd window for tests
     if (!rootProject.ci && DefaultNativePlatform.currentOperatingSystem.isWindows()) {
@@ -55,13 +55,13 @@ task productionTest(type: Test) {
 
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",
-            " -Dio.xpipe.beacon.port=21725" +
-            " -Dio.xpipe.app.dataDir=$projectDir/local/" +
-            " -Dio.xpipe.storage.persist=false" +
-            " -Dio.xpipe.app.writeSysOut=true" +
-            " -Dio.xpipe.app.writeLogs=false" +
-            " -Dio.xpipe.beacon.printMessages=false" +
-            " -Dio.xpipe.app.logLevel=trace"
+                   " -Dio.xpipe.beacon.port=21725" +
+                           " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+                           " -Dio.xpipe.storage.persist=false" +
+                           " -Dio.xpipe.app.writeSysOut=true" +
+                           " -Dio.xpipe.app.writeLogs=false" +
+                           " -Dio.xpipe.beacon.printMessages=false" +
+                           " -Dio.xpipe.app.logLevel=trace"
 
     // Client properties
     systemProperty 'io.xpipe.beacon.printMessages', "true"

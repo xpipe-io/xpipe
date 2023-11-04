@@ -73,7 +73,7 @@ public class DataStateProviderImpl extends DataStateProvider {
 
         var r = entry.get().getStoreCache().get(key);
         if (r == null) {
-            r = def .get();
+            r = def.get();
             entry.get().setStoreCache(key, r);
         }
         return c.cast(r);

@@ -58,11 +58,9 @@ public class StandardStorage extends DataStorage {
 
                     var entry = getStoreEntryIfPresent(uuid);
                     if (entry.isEmpty()) {
-                        TrackEvent.withTrace("storage", "Deleting leftover store directory")
-                                .tag("uuid", uuid)
-                                .handle();
+                        TrackEvent.withTrace("storage", "Deleting leftover store directory").tag("uuid", uuid).handle();
                         FileUtils.forceDelete(file.toFile());
-                        gitStorageHandler.handleDeletion(file,uuid.toString());
+                        gitStorageHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
                     ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
@@ -91,11 +89,9 @@ public class StandardStorage extends DataStorage {
 
                     var entry = getStoreCategoryIfPresent(uuid);
                     if (entry.isEmpty()) {
-                        TrackEvent.withTrace("storage", "Deleting leftover category directory")
-                                .tag("uuid", uuid)
-                                .handle();
+                        TrackEvent.withTrace("storage", "Deleting leftover category directory").tag("uuid", uuid).handle();
                         FileUtils.forceDelete(file.toFile());
-                        gitStorageHandler.handleDeletion(file,uuid.toString());
+                        gitStorageHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
                     ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
@@ -137,7 +133,7 @@ public class StandardStorage extends DataStorage {
                         // IO exceptions are not expected
                         exception.set(ex);
                         directoriesToKeep.add(path);
-                    }  catch (Exception ex) {
+                    } catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                     }
@@ -174,27 +170,17 @@ public class StandardStorage extends DataStorage {
             }
 
             if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
-                storeCategories.add(new DataStoreCategory(
-                        categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
-                        DEFAULT_CATEGORY_UUID,
-                        "Default",
-                        Instant.now(),
-                        Instant.now(),
-                        true,
-                        ALL_CONNECTIONS_CATEGORY_UUID,
-                        StoreSortMode.ALPHABETICAL_ASC, false
-                ));
+                storeCategories.add(new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID, "Default",
+                        Instant.now(), Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, StoreSortMode.ALPHABETICAL_ASC, false));
             }
 
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
 
             storeCategories.forEach(dataStoreCategory -> {
-                if (dataStoreCategory.getParentCategory() != null
-                        && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory())
-                                .isEmpty()) {
+                if (dataStoreCategory.getParentCategory() != null && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory()).isEmpty()) {
                     dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
-                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID) && !dataStoreCategory.getUuid().equals(
-                        ALL_SCRIPTS_CATEGORY_UUID)) {
+                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID) &&
+                        !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)) {
                     dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
                 }
             });
@@ -223,7 +209,7 @@ public class StandardStorage extends DataStorage {
                         // IO exceptions are not expected
                         exception.set(ex);
                         directoriesToKeep.add(path);
-                    }  catch (Exception ex) {
+                    } catch (Exception ex) {
                         // Data corruption and schema changes are expected
 
                         // We only keep invalid entries in developer mode as there's no point in keeping them in
@@ -242,9 +228,7 @@ public class StandardStorage extends DataStorage {
                 }
 
                 storeEntries.forEach(dataStoreCategory -> {
-                    if (dataStoreCategory.getCategoryUuid() == null
-                            || getStoreCategoryIfPresent(dataStoreCategory.getCategoryUuid())
-                            .isEmpty()) {
+                    if (dataStoreCategory.getCategoryUuid() == null || getStoreCategoryIfPresent(dataStoreCategory.getCategoryUuid()).isEmpty()) {
                         dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
                 });
@@ -253,21 +237,19 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
 
-            var hasFixedLocal = storeEntries.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
-            if (!hasFixedLocal) {
-                var e = DataStoreEntry.createNew(
-                        LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
-                e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
-                e.setConfiguration(
-                        StorageElement.Configuration.builder().deletable(false).build());
-                storeEntries.add(e);
-                e.validate();
-            }
+        var hasFixedLocal = storeEntries.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
+        if (!hasFixedLocal) {
+            var e = DataStoreEntry.createNew(LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
+            e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
+            e.setConfiguration(StorageElement.Configuration.builder().deletable(false).build());
+            storeEntries.add(e);
+            e.validate();
+        }
 
-            var local = DataStorage.get().getStoreEntry(LOCAL_ID);
-            if (storeEntries.stream().noneMatch(entry -> entry.getColor() != null)) {
-                local.setColor(DataStoreColor.BLUE);
-            }
+        var local = DataStorage.get().getStoreEntry(LOCAL_ID);
+        if (storeEntries.stream().noneMatch(entry -> entry.getColor() != null)) {
+            local.setColor(DataStoreColor.BLUE);
+        }
 
         refreshValidities(true);
         storeEntries.forEach(entry -> {
@@ -298,11 +280,7 @@ public class StandardStorage extends DataStorage {
             FileUtils.forceMkdir(getStoresDir().toFile());
             FileUtils.forceMkdir(getCategoriesDir().toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .description("Unable to create storage directory " + getStoresDir())
-                    .terminal(true)
-                    .build()
-                    .handle();
+            ErrorEvent.fromThrowable(e).description("Unable to create storage directory " + getStoresDir()).terminal(true).build().handle();
         }
 
         var exception = new AtomicReference<Exception>();
@@ -316,26 +294,24 @@ public class StandardStorage extends DataStorage {
             } catch (IOException ex) {
                 // IO exceptions are not expected
                 exception.set(ex);
-            }  catch (Exception ex) {
+            } catch (Exception ex) {
                 // Data corruption and schema changes are expected
                 ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
             }
         });
 
-        storeEntries.stream()
-                .filter(dataStoreEntry -> dataStoreEntry.shouldSave())
-                .forEach(e -> {
-                    try {
-                        var exists = Files.exists(e.getDirectory());
-                        var dirty = e.isDirty();
-                        e.writeDataToDisk();
-                        gitStorageHandler.handleEntry(e, exists, dirty);
-                    } catch (Exception ex) {
-                        // Data corruption and schema changes are expected
-                        exception.set(ex);
-                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
-                    }
-                });
+        storeEntries.stream().filter(dataStoreEntry -> dataStoreEntry.shouldSave()).forEach(e -> {
+            try {
+                var exists = Files.exists(e.getDirectory());
+                var dirty = e.isDirty();
+                e.writeDataToDisk();
+                gitStorageHandler.handleEntry(e, exists, dirty);
+            } catch (Exception ex) {
+                // Data corruption and schema changes are expected
+                exception.set(ex);
+                ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+            }
+        });
 
         // Show one exception
         if (exception.get() != null) {

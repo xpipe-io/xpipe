@@ -8,13 +8,8 @@ public class QueryElement extends BaseQueryElement {
     private final QueryConverter<?> converter;
 
     public <T> QueryElement(
-            String description,
-            boolean newLine,
-            boolean required,
-            boolean quiet,
-            T value,
-            QueryConverter<T> converter,
-            boolean hidden) {
+            String description, boolean newLine, boolean required, boolean quiet, T value, QueryConverter<T> converter, boolean hidden
+    ) {
         super(description, newLine, required, hidden, quiet, value != null ? converter.toString(value) : null);
         this.converter = converter;
     }

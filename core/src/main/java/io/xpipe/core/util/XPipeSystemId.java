@@ -1,7 +1,7 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FileNames;
 
 import java.nio.file.Files;
 import java.util.UUID;
@@ -12,8 +12,7 @@ public class XPipeSystemId {
 
     public static void init() {
         try {
-            var file =
-                    XPipeInstallation.getDataDir().resolve("system_id");
+            var file = XPipeInstallation.getDataDir().resolve("system_id");
             if (!Files.exists(file)) {
                 Files.writeString(file, UUID.randomUUID().toString());
             }
@@ -38,8 +37,7 @@ public class XPipeSystemId {
         }
 
         try {
-            return UUID.fromString(proc.getShellDialect().getFileReadCommand(proc, file).readStdoutOrThrow()
-                            .trim());
+            return UUID.fromString(proc.getShellDialect().getFileReadCommand(proc, file).readStdoutOrThrow().trim());
         } catch (IllegalArgumentException ex) {
             // Handle invalid UUID content case
             return writeRandom(proc, file);
@@ -47,13 +45,9 @@ public class XPipeSystemId {
     }
 
     private static UUID writeRandom(ShellControl proc, String file) throws Exception {
-        proc.executeSimpleCommand(
-                proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)),
-                "Unable to access or create directory " + file);
+        proc.executeSimpleCommand(proc.getShellDialect().getMkdirsCommand(FileNames.getParent(file)), "Unable to access or create directory " + file);
         var id = UUID.randomUUID();
-        proc.getShellDialect()
-                .createTextFileWriteCommand(proc, id.toString(), file)
-                .execute();
+        proc.getShellDialect().createTextFileWriteCommand(proc, id.toString(), file).execute();
         return id;
     }
 }

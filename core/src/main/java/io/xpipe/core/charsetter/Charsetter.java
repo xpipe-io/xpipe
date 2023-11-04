@@ -76,8 +76,8 @@ public abstract class Charsetter {
     }
 
     public abstract Result read(
-            FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con)
-            throws Exception;
+            FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con
+    ) throws Exception;
 
     public Result detect(StreamDataStore store) throws Exception {
         Result result = new Result(null, null);
@@ -109,9 +109,7 @@ public abstract class Charsetter {
 
         if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof ShellStore m) {
             if (result.getNewLine() == null) {
-                result = new Result(
-                        result.getCharset(),
-                        m.getShellType() != null ? m.getShellType().getNewLine() : null);
+                result = new Result(result.getCharset(), m.getShellType() != null ? m.getShellType().getNewLine() : null);
             }
         }
 
@@ -137,10 +135,7 @@ public abstract class Charsetter {
             return null;
         }
 
-        return count.entrySet().stream()
-                .min(Comparator.comparingInt(Map.Entry::getValue))
-                .orElseThrow()
-                .getKey();
+        return count.entrySet().stream().min(Comparator.comparingInt(Map.Entry::getValue)).orElseThrow().getKey();
     }
 
     public Charset inferCharset(byte[] content) {

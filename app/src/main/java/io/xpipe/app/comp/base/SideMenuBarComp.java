@@ -55,16 +55,13 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         });
 
         {
-            var b = new IconButtonComp(
-                    "mdal-bug_report",
-                    () -> {
-                        var event = ErrorEvent.fromMessage("User Report");
-                        if (AppLogs.get().isWriteToFile()) {
-                            event.attachment(AppLogs.get().getSessionLogsDirectory());
-                        }
-                        UserReportComp.show(event.build());
-                    })
-                    .apply(new FancyTooltipAugment<>("reportIssue"));
+            var b = new IconButtonComp("mdal-bug_report", () -> {
+                var event = ErrorEvent.fromMessage("User Report");
+                if (AppLogs.get().isWriteToFile()) {
+                    event.attachment(AppLogs.get().getSessionLogsDirectory());
+                }
+                UserReportComp.show(event.build());
+            }).apply(new FancyTooltipAugment<>("reportIssue"));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
@@ -72,27 +69,26 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
-                    .apply(new FancyTooltipAugment<>("visitGithubRepository"));
+            var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB)).apply(
+                    new FancyTooltipAugment<>("visitGithubRepository"));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
             vbox.getChildren().add(b.createRegion());
         }
 
-//        {
-//            var b = new IconButtonComp("mdi2c-comment-processing-outline", () -> Hyperlinks.open(Hyperlinks.ROADMAP))
-//                    .apply(new FancyTooltipAugment<>("roadmap"));
-//            b.apply(struc -> {
-//                AppFont.setSize(struc.get(), 2);
-//            });
-//            vbox.getChildren().add(b.createRegion());
-//        }
+        //        {
+        //            var b = new IconButtonComp("mdi2c-comment-processing-outline", () -> Hyperlinks.open(Hyperlinks.ROADMAP))
+        //                    .apply(new FancyTooltipAugment<>("roadmap"));
+        //            b.apply(struc -> {
+        //                AppFont.setSize(struc.get(), 2);
+        //            });
+        //            vbox.getChildren().add(b.createRegion());
+        //        }
 
 
         {
-            var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
-                    .apply(new FancyTooltipAugment<>("discord"));
+            var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD)).apply(new FancyTooltipAugment<>("discord"));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
@@ -100,20 +96,14 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         {
-            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
-                    .apply(new FancyTooltipAugment<>("updateAvailableTooltip"));
+            var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded()).apply(
+                    new FancyTooltipAugment<>("updateAvailableTooltip"));
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
-            b.hide(PlatformThread.sync(Bindings.createBooleanBinding(
-                    () -> {
-                        return XPipeDistributionType.get()
-                                        .getUpdateHandler()
-                                        .getPreparedUpdate()
-                                        .getValue()
-                                == null;
-                    },
-                    XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+            b.hide(PlatformThread.sync(Bindings.createBooleanBinding(() -> {
+                return XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate().getValue() == null;
+            }, XPipeDistributionType.get().getUpdateHandler().getPreparedUpdate())));
             vbox.getChildren().add(b.createRegion());
         }
 

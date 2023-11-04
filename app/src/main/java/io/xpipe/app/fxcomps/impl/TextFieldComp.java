@@ -43,8 +43,7 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
             currentValue.setValue(n);
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
-                if (Objects.equals(text.getText(), n)
-                        || (n == null && text.getText().isEmpty())) {
+                if (Objects.equals(text.getText(), n) || (n == null && text.getText().isEmpty())) {
                     return;
                 }
 

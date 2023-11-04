@@ -44,11 +44,7 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, IV));
         var bytes = cipher.doFinal(c);
-        bytes = ByteBuffer.allocate(IV.length + bytes.length)
-                .order(ByteOrder.LITTLE_ENDIAN)
-                .put(IV)
-                .put(bytes)
-                .array();
+        bytes = ByteBuffer.allocate(IV.length + bytes.length).order(ByteOrder.LITTLE_ENDIAN).put(IV).put(bytes).array();
         return bytes;
     }
 

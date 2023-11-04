@@ -5,8 +5,7 @@ import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.OpenExchange;
 
-public class OpenExchangeImpl extends OpenExchange
-        implements MessageExchangeImpl<OpenExchange.Request, OpenExchange.Response> {
+public class OpenExchangeImpl extends OpenExchange implements MessageExchangeImpl<OpenExchange.Request, OpenExchange.Response> {
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {

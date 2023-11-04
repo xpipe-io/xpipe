@@ -5,15 +5,17 @@ import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type")
 public class JacksonizedValue {
 
     public JacksonizedValue() {}
 
-    @SneakyThrows
-    public String toString() {
+    @Override
+    public final int hashCode() {
         var tree = JacksonMapper.getDefault().valueToTree(this);
-        return tree.toPrettyString();
+        return tree.hashCode();
     }
 
     @Override
@@ -30,9 +32,9 @@ public class JacksonizedValue {
         return tree.equals(otherTree);
     }
 
-    @Override
-    public final int hashCode() {
+    @SneakyThrows
+    public String toString() {
         var tree = JacksonMapper.getDefault().valueToTree(this);
-        return tree.hashCode();
+        return tree.toPrettyString();
     }
 }

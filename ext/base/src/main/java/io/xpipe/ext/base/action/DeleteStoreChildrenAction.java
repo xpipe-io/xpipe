@@ -5,28 +5,12 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.DataStore;
 import io.xpipe.app.util.FixedHierarchyStore;
+import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 public class DeleteStoreChildrenAction implements ActionProvider {
-
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        @Override
-        public void execute() {
-            DataStorage.get().deleteChildren(store);
-        }
-    }
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
@@ -49,10 +33,7 @@ public class DeleteStoreChildrenAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return !(o.getStore() instanceof FixedHierarchyStore) && DataStorage.get()
-                                .getStoreChildren(o.get())
-                                .size()
-                        > 1;
+                return !(o.getStore() instanceof FixedHierarchyStore) && DataStorage.get().getStoreChildren(o.get()).size() > 1;
             }
 
             @Override
@@ -65,5 +46,21 @@ public class DeleteStoreChildrenAction implements ActionProvider {
                 return "mdal-delete_outline";
             }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry store;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return false;
+        }
+
+        @Override
+        public void execute() {
+            DataStorage.get().deleteChildren(store);
+        }
     }
 }

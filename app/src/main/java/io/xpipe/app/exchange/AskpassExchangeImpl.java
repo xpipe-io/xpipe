@@ -5,8 +5,7 @@ import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.AskpassExchange;
 
-public class AskpassExchangeImpl extends AskpassExchange
-        implements MessageExchangeImpl<AskpassExchange.Request, AskpassExchange.Response> {
+public class AskpassExchangeImpl extends AskpassExchange implements MessageExchangeImpl<AskpassExchange.Request, AskpassExchange.Response> {
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {

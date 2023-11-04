@@ -21,7 +21,10 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -71,19 +74,6 @@ public class BeaconClient implements AutoCloseable {
             //            }
 
             @Override
-            public <T extends ResponseMessage> T receiveResponse()
-                    throws ConnectorException, ClientException, ServerException {
-                try {
-                    sendEOF();
-                    getRawOutputStream().close();
-                } catch (IOException ex) {
-                    throw new ConnectorException(ex);
-                }
-
-                return super.receiveResponse();
-            }
-
-            @Override
             public void close() throws ConnectorException {
                 try {
                     getRawInputStream().readAllBytes();
@@ -92,6 +82,18 @@ public class BeaconClient implements AutoCloseable {
                 }
 
                 super.close();
+            }
+
+            @Override
+            public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
+                try {
+                    sendEOF();
+                    getRawOutputStream().close();
+                } catch (IOException ex) {
+                    throw new ConnectorException(ex);
+                }
+
+                return super.receiveResponse();
             }
         };
     }
@@ -147,8 +149,7 @@ public class BeaconClient implements AutoCloseable {
         msg.set("xPipeMessage", json);
 
         if (BeaconConfig.printMessages()) {
-            System.out.println(
-                    "Sending request to server of type " + req.getClass().getName());
+            System.out.println("Sending request to server of type " + req.getClass().getName());
         }
 
         sendObject(msg);
@@ -276,7 +277,9 @@ public class BeaconClient implements AutoCloseable {
         return out;
     }
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            property = "type")
     public abstract static class ClientInformation {
 
         public final CliClientInformation cli() {

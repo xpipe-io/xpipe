@@ -20,15 +20,13 @@ public class ModeExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        XPipeDaemonMode mode;
+        @NonNull XPipeDaemonMode mode;
     }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull
-        XPipeDaemonMode usedMode;
+        @NonNull XPipeDaemonMode usedMode;
     }
 }

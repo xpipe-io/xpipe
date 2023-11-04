@@ -12,13 +12,10 @@ import java.net.URL;
 
 public class AppTrayIcon {
 
-    private boolean shown = false;
-
     private final SystemTray tray;
-
     private final TrayIcon trayIcon;
-
     private final PopupMenu popupMenu = new PopupMenu();
+    private boolean shown = false;
 
     public AppTrayIcon() {
         ensureSystemTraySupported();
@@ -62,24 +59,26 @@ public class AppTrayIcon {
         });
     }
 
-    public final TrayIcon getAwtTrayIcon() {
-        return trayIcon;
-    }
-
-    private void ensureSystemTraySupported() {
-        if (!SystemTray.isSupported()) {
-            throw new UnsupportedOperationException(
-                    "SystemTray icons are not "
-                            + "supported by the current desktop environment.");
-        }
-    }
-
     private static Image loadImageFromURL(URL iconImagePath) {
         try {
             return ImageIO.read(iconImagePath);
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).handle();
             return AppImages.toAwtImage(AppImages.DEFAULT_IMAGE);
+        }
+    }
+
+    public static boolean isSupported() {
+        return Desktop.isDesktopSupported() && SystemTray.isSupported();
+    }
+
+    public final TrayIcon getAwtTrayIcon() {
+        return trayIcon;
+    }
+
+    private void ensureSystemTraySupported() {
+        if (!SystemTray.isSupported()) {
+            throw new UnsupportedOperationException("SystemTray icons are not " + "supported by the current desktop environment.");
         }
     }
 
@@ -135,11 +134,9 @@ public class AppTrayIcon {
 
     public void showInfoMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Information");
+            showMacAlert(title, message, "Information");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.INFO));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO));
         }
     }
 
@@ -149,11 +146,9 @@ public class AppTrayIcon {
 
     public void showWarningMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Warning");
+            showMacAlert(title, message, "Warning");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.WARNING));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.WARNING));
         }
     }
 
@@ -163,11 +158,9 @@ public class AppTrayIcon {
 
     public void showErrorMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Error");
+            showMacAlert(title, message, "Error");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.ERROR));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));
         }
     }
 
@@ -177,11 +170,9 @@ public class AppTrayIcon {
 
     public void showMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Message");
+            showMacAlert(title, message, "Message");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.NONE));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.NONE));
         }
     }
 
@@ -189,25 +180,15 @@ public class AppTrayIcon {
         this.showMessage(null, message);
     }
 
-    public static boolean isSupported() {
-        return Desktop.isDesktopSupported() && SystemTray.isSupported();
-    }
-
     private void showMacAlert(String subTitle, String message, String title) {
-        String execute = String.format(
-                "display notification \"%s\""
-                        + " with title \"%s\""
-                        + " subtitle \"%s\"",
-                message != null ? message : "",
-                title != null ? title : "",
-                subTitle != null ? subTitle : ""
-        );
+        String execute = String.format("display notification \"%s\"" + " with title \"%s\"" + " subtitle \"%s\"", message != null ? message : "",
+                title != null ? title : "", subTitle != null ? subTitle : "");
         try {
-            Runtime.getRuntime()
-                    .exec(new String[] { "osascript", "-e", execute });
+            Runtime.getRuntime().exec(new String[]{
+                    "osascript", "-e", execute
+            });
         } catch (IOException e) {
-            throw new UnsupportedOperationException(
-                    "Cannot run osascript with given parameters.");
+            throw new UnsupportedOperationException("Cannot run osascript with given parameters.");
         }
     }
 }
