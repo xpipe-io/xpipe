@@ -19,7 +19,6 @@ apply from: "$projectDir/gradle_scripts/sentry.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 apply from: "$projectDir/gradle_scripts/github-api.gradle"
 apply from: "$projectDir/gradle_scripts/flexmark.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/picocli.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/versioncompare.gradle"
 
 configurations {
@@ -35,6 +34,12 @@ dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.3'
 
+    implementation 'info.picocli:picocli:4.7.5'
+    implementation 'org.kohsuke:github-api:1.317'
+    implementation 'io.sentry:sentry:6.33.0'
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.2.Final'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'commons-io:commons-io:2.11.0'
     implementation 'net.java.dev.jna:jna-jpms:5.13.0'
     implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"

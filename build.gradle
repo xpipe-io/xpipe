@@ -2,6 +2,13 @@ import java.util.stream.Stream
 
 plugins {
     id "io.codearte.nexus-staging" version "0.30.0"
+    id 'org.gradlex.extra-java-module-info' version '1.5' apply false
+}
+
+allprojects { subproject ->
+    if (subproject.name != "cli") {
+        apply plugin: 'org.gradlex.extra-java-module-info'
+    }
 }
 
 def getArchName() {

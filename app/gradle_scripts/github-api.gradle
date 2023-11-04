@@ -1,30 +1,13 @@
-dependencies {
-    implementation files("${project.layout.buildDirectory.get()}/generated-modules/github-api-1.301.jar")
-}
-
-addDependenciesModuleInfo {
-    overwriteExistingFiles = true
-    jdepsExtraArgs = ['-q']
-    outputDirectory = file("${project.layout.buildDirectory.get()}/generated-modules")
-    modules {
-        module {
-            artifact 'org.kohsuke:github-api:1.301'
-            moduleInfoSource = '''
-                module org.kohsuke.github {
-                    exports org.kohsuke.github;
-                    exports org.kohsuke.github.function;
-                    exports org.kohsuke.github.authorization;
-                    exports org.kohsuke.github.extras;
-                    exports org.kohsuke.github.connector;
-                    
-                    requires java.logging;
-                    requires org.apache.commons.io;
-                    requires org.apache.commons.lang3;
-                    requires com.fasterxml.jackson.databind;
-                    
-                    opens org.kohsuke.github;
-                }
-            '''
-        }
+extraJavaModuleInfo {
+    module("org.kohsuke:github-api", "org.kohsuke.github") {
+        exports('org.kohsuke.github')
+        exports('org.kohsuke.github.function')
+        exports('org.kohsuke.github.authorization')
+        exports('org.kohsuke.github.extras')
+        exports('org.kohsuke.github.connector')
+        requires('java.logging')
+        requires('org.apache.commons.io')
+        requires('org.apache.commons.lang3')
+        requires('com.fasterxml.jackson.databind')
     }
 }

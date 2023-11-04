@@ -9,6 +9,8 @@ apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/extension.gradle"
 
 dependencies {
+    compileOnly 'org.apache.commons:commons-lang3:3.12.0'
+    compileOnly 'commons-io:commons-io:2.11.0'
     compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
     compileOnly 'net.java.dev.jna:jna-jpms:5.12.1'
     compileOnly 'net.java.dev.jna:jna-platform-jpms:5.12.1'

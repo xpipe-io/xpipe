@@ -40,6 +40,10 @@ apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
 
+configurations {
+    compileOnly.extendsFrom(dep)
+}
+
 dependencies {
     compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"
     compileOnly project(':core')
@@ -58,4 +62,9 @@ dependencies {
 
     testImplementation project(':app')
 }
+
+// Gradle complains about task dependencies even though these are declared as compiled dependencies. Why?
+compileJava.dependsOn(project(':core').compileJava)
+compileJava.dependsOn(project(':beacon').compileJava)
+compileJava.dependsOn(project(':app').compileJava)
 
