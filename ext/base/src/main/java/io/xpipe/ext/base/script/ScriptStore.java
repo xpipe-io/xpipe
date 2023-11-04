@@ -34,16 +34,11 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 
     public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> initScripts, List<DataStoreEntryRef<ScriptStore>> bringScripts) {
         var initFlattened = flatten(initScripts);
-        initFlattened.forEach(simpleScriptStore -> {
-            if (pc.getInitCommands().contains(simpleScriptStore)) {
-                return;
-            }
-
-            pc.initWith(simpleScriptStore);
-        });
+        var bringFlattened = flatten(bringScripts);
 
         pc.onInit(shellControl -> {
-            var bringFlattened = flatten(bringScripts);
+            passInitScripts(pc, initFlattened);
+
             var dir = initScriptsDirectory(shellControl, bringFlattened);
             if (dir != null) {
                 shellControl.initWith(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir), ScriptSnippet.ExecutionType.TERMINAL_ONLY));
@@ -52,12 +47,30 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         return pc;
     }
 
+    private static void passInitScripts(ShellControl pc, List<SimpleScriptStore> scriptStores) throws Exception {
+        scriptStores.forEach(simpleScriptStore -> {
+            if (pc.getInitCommands().contains(simpleScriptStore)) {
+                return;
+            }
+
+            if (!simpleScriptStore.getMinimumDialect().isCompatibleTo(pc.getShellDialect())) {
+                return;
+            }
+
+            pc.initWith(simpleScriptStore);
+        });
+    }
+
     private static String initScriptsDirectory(ShellControl proc, List<SimpleScriptStore> scriptStores) throws Exception {
         if (scriptStores.isEmpty()) {
             return null;
         }
 
         var applicable = scriptStores.stream().filter(simpleScriptStore -> simpleScriptStore.getMinimumDialect().isCompatibleTo(proc.getShellDialect())).toList();
+        if (applicable.isEmpty()) {
+            return null;
+        }
+
         var refs = applicable.stream().map(scriptStore -> {
             return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == scriptStore).findFirst().orElseThrow().<SimpleScriptStore>ref();
         }).toList();

@@ -13,6 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -43,17 +44,20 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
         return scripts != null
-                ? scripts.stream().filter(scriptStore -> scriptStore != null).toList()
+                ? scripts.stream().filter(Objects::nonNull).toList()
                 : List.of();
     }
 
     public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+        // Prevent loop
         all.add(this);
         getEffectiveScripts().stream()
                 .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore()))
                 .forEach(scriptStoreDataStoreEntryRef -> {
                     scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
                 });
+        all.remove(this);
+        all.add(this);
     }
 
     @Override
