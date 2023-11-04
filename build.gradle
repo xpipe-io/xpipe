@@ -45,7 +45,7 @@ project.ext {
     kebapProductName = isStage ? 'xpipe-ptb' : 'xpipe'
     publisher = 'XPipe UG (haftungsbeschränkt)'
     shortDescription = 'Your entire server infrastructure at your fingertips'
-    longDescription = 'XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire sever infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.'
+    longDescription = 'XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.'
     website = 'https://xpipe.io'
     sourceWebsite = 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'

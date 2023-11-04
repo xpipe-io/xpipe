@@ -345,7 +345,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         if (wrapper.getEntry().getProvider() != null && wrapper.getEntry().getProvider().canMoveCategories()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-            StoreViewState.get().getSortedCategories(wrapper.getCategory().getValue()).forEach(storeCategoryWrapper -> {
+            StoreViewState.get().getSortedCategories(wrapper.getCategory().getValue().getRoot()).forEach(storeCategoryWrapper -> {
                 MenuItem m = new MenuItem(storeCategoryWrapper.getName());
                 m.setOnAction(event -> {
                     wrapper.moveTo(storeCategoryWrapper.getCategory());

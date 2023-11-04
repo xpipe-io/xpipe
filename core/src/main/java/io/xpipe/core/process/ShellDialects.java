@@ -20,6 +20,8 @@ public class ShellDialects {
     public static ShellDialect ZSH;
     public static ShellDialect CSH;
     public static ShellDialect FISH;
+    public static ShellDialect UNSUPPORTED;
+    public static ShellDialect CISCO;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -40,6 +42,8 @@ public class ShellDialects {
             CSH = byName("csh");
             ASH = byName("ash");
             SH = byName("sh");
+            UNSUPPORTED = byName("unsupported");
+            CISCO = byName("cisco");
         }
 
         @Override

@@ -7,9 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.ProcessControlProvider;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
 import javafx.beans.binding.Bindings;
@@ -155,21 +153,25 @@ public final class OpenFileSystemModel {
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.ALL.stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
-                    TerminalHelper.open(entry.getEntry(), name,  fileSystem
-                            .getShell()
-                            .get()
-                            .subShell(adjustedPath)
-                            .initWith(fileSystem
-                                              .getShell()
-                                              .get()
-                                              .getShellDialect()
-                                              .getCdCommand(currentPath.get())));
+                    TerminalHelper.open(
+                            entry.getEntry(),
+                            name,
+                            fileSystem
+                                    .getShell()
+                                    .get()
+                                    .subShell(adjustedPath)
+                                    .initWith(new SimpleScriptSnippet(
+                                            fileSystem
+                                                    .getShell()
+                                                    .get()
+                                                    .getShellDialect()
+                                                    .getCdCommand(currentPath.get()),
+                                            ScriptSnippet.ExecutionType.BOTH)));
                 } else {
-                    TerminalHelper.open(entry.getEntry(), name,  fileSystem
-                            .getShell()
-                            .get()
-                            .command(adjustedPath)
-                            .withWorkingDirectory(directory));
+                    TerminalHelper.open(
+                            entry.getEntry(),
+                            name,
+                            fileSystem.getShell().get().command(adjustedPath).withWorkingDirectory(directory));
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -363,8 +365,9 @@ public final class OpenFileSystemModel {
             var fs = entry.getStore().createFileSystem();
             fs.open();
             this.fileSystem = fs;
-            this.local =
-                    fs.getShell().map(shellControl -> shellControl.hasLocalSystemAccess()).orElse(false);
+            this.local = fs.getShell()
+                    .map(shellControl -> shellControl.hasLocalSystemAccess())
+                    .orElse(false);
             this.cache.init();
         });
     }
@@ -393,7 +396,10 @@ public final class OpenFileSystemModel {
                     var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
                     var name = directory + " - " + entry.get().getName();
                     var toOpen = ProcessControlProvider.get().withDefaultScripts(connection);
-                    TerminalHelper.open(entry.getEntry(), name, toOpen.initWith(connection.getShellDialect().getCdCommand(directory)));
+                    TerminalHelper.open(
+                            entry.getEntry(),
+                            name,
+                            toOpen.initWith(new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory), ScriptSnippet.ExecutionType.BOTH)));
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                     connection.start();

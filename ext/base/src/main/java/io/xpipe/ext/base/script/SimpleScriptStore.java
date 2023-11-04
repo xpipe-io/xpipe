@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
 import lombok.Getter;
@@ -13,21 +13,14 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuperBuilder
 @Getter
 @Jacksonized
 @JsonTypeName("script")
-public class SimpleScriptStore extends ScriptStore {
-
-    public String prepareDumbScript(ShellControl shellControl) {
-        return assemble(shellControl, ExecutionType.DUMB_ONLY);
-    }
-
-    public String prepareTerminalScript(ShellControl shellControl) {
-        return assemble(shellControl, ExecutionType.TERMINAL_ONLY);
-    }
+public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
 
     private String assemble(ShellControl shellControl, ExecutionType type) {
         var targetType = type == ExecutionType.TERMINAL_ONLY
@@ -51,39 +44,35 @@ public class SimpleScriptStore extends ScriptStore {
     @Override
     public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
         return scripts != null
-                ? scripts.stream().filter(scriptStore -> scriptStore != null).toList()
+                ? scripts.stream().filter(Objects::nonNull).toList()
                 : List.of();
     }
 
     public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
+        // Prevent loop
         all.add(this);
         getEffectiveScripts().stream()
                 .filter(scriptStoreDataStoreEntryRef -> !all.contains(scriptStoreDataStoreEntryRef.getStore()))
                 .forEach(scriptStoreDataStoreEntryRef -> {
                     scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(all);
                 });
+        all.remove(this);
+        all.add(this);
     }
 
-    @Getter
-    public enum ExecutionType {
-        @JsonProperty("dumbOnly")
-        DUMB_ONLY("dumbOnly"),
-        @JsonProperty("terminalOnly")
-        TERMINAL_ONLY("terminalOnly"),
-        @JsonProperty("both")
-        BOTH("both");
+    @Override
+    public String content(ShellControl shellControl) {
+        return assemble(shellControl, executionType);
+    }
 
-        private final String id;
-
-        ExecutionType(String id) {
-            this.id = id;
-        }
+    @Override
+    public ScriptSnippet.ExecutionType executionType() {
+        return executionType;
     }
 
     private final ShellDialect minimumDialect;
     private final String commands;
     private final ExecutionType executionType;
-    private final boolean requiresElevation;
 
     @Override
     public void checkComplete() throws Exception {

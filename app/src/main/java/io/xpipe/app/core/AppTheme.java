@@ -200,7 +200,7 @@ public class AppTheme {
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
                 case OsType.Windows windows -> PRIMER_LIGHT;
-                case OsType.Linux linux -> NORD_LIGHT;
+                case OsType.Linux linux -> PRIMER_LIGHT;
                 case OsType.MacOs macOs -> CUPERTINO_LIGHT;
             };
         }
@@ -208,7 +208,7 @@ public class AppTheme {
         static Theme getDefaultDarkTheme() {
             return switch (OsType.getLocal()) {
                 case OsType.Windows windows -> PRIMER_DARK;
-                case OsType.Linux linux -> NORD_DARK;
+                case OsType.Linux linux -> PRIMER_DARK;
                 case OsType.MacOs macOs -> CUPERTINO_DARK;
             };
         }

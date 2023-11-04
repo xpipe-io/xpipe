@@ -15,10 +15,8 @@
 .bookmark-list .store-section-mini-comp .item:selected {
 -fx-border-width: 1px;
 -fx-border-radius: 4px;
--fx-border-insets: 0px 10px 0 0;
--fx-border-color: -color-accent-muted;
--fx-background-color: -color-bg-default;
+-fx-background-color: transparent, -color-accent-emphasis, -color-bg-overlay;
 -fx-background-radius: 4px;
--fx-background-insets: 0px 10px 0 0;
+-fx-background-insets: 1 11 1 1, 2 12 2 2, 3 13 3 3;
 -fx-padding: 0.25em 0.4em 0.25em 0.4em;
 }

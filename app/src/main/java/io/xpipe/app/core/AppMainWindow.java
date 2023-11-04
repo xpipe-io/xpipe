@@ -174,8 +174,8 @@ public class AppMainWindow {
             stage.setWidth(1280);
             stage.setHeight(720);
         } else {
-            stage.setX(310);
-            stage.setY(178);
+            stage.setX(312);
+            stage.setY(149);
             stage.setWidth(1296);
             stage.setHeight(759);
         }

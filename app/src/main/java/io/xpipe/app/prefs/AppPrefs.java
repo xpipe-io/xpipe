@@ -359,6 +359,9 @@ public class AppPrefs {
     private AppPreferencesFx preferencesFx;
     private boolean controlsSetup;
 
+    @Getter
+    private final Set<Field<?>> proRequiredSettings = new HashSet<>();
+
     private AppPrefs() {
         try {
             preferencesFx = createPreferences();

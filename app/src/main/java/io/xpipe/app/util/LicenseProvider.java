@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.storage.GitStorageHandler;
 import io.xpipe.core.process.ShellControl;
@@ -21,7 +22,7 @@ public abstract class LicenseProvider {
         public void init(ModuleLayer layer) {
             INSTANCE = ServiceLoader.load(layer, LicenseProvider.class).stream()
                                .map(ServiceLoader.Provider::get)
-                               .findFirst().orElseThrow();
+                               .findFirst().orElseThrow(() -> ExtensionException.corrupt("Missing license provider."));
         }
 
         @Override
@@ -34,6 +35,8 @@ public abstract class LicenseProvider {
             return true;
         }
     }
+
+    public abstract boolean hasLicense();
 
     public abstract LicensedFeature getFeature(String id);
 

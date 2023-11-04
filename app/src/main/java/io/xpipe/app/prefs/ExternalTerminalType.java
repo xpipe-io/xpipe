@@ -177,13 +177,21 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected Optional<Path> determineInstallation() {
-            Optional<String> launcherDir;
-            launcherDir = WindowsRegistry.readString(
+            var perUser = WindowsRegistry.readString(
                             WindowsRegistry.HKEY_CURRENT_USER,
                             "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
                             "InstallLocation")
-                    .map(p -> p + "\\Tabby.exe");
-            return launcherDir.map(Path::of);
+                    .map(p -> p + "\\Tabby.exe").map(Path::of);
+            if (perUser.isPresent()) {
+                return perUser;
+            }
+
+            var systemWide = WindowsRegistry.readString(
+                            WindowsRegistry.HKEY_LOCAL_MACHINE,
+                            "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
+                            "InstallLocation")
+                    .map(p -> p + "\\Tabby.exe").map(Path::of);
+            return systemWide;
         }
     };
 

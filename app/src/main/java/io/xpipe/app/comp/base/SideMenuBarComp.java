@@ -80,14 +80,14 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             vbox.getChildren().add(b.createRegion());
         }
 
-        {
-            var b = new IconButtonComp("mdi2c-comment-processing-outline", () -> Hyperlinks.open(Hyperlinks.ROADMAP))
-                    .apply(new FancyTooltipAugment<>("roadmap"));
-            b.apply(struc -> {
-                AppFont.setSize(struc.get(), 2);
-            });
-            vbox.getChildren().add(b.createRegion());
-        }
+//        {
+//            var b = new IconButtonComp("mdi2c-comment-processing-outline", () -> Hyperlinks.open(Hyperlinks.ROADMAP))
+//                    .apply(new FancyTooltipAugment<>("roadmap"));
+//            b.apply(struc -> {
+//                AppFont.setSize(struc.get(), 2);
+//            });
+//            vbox.getChildren().add(b.createRegion());
+//        }
 
 
         {

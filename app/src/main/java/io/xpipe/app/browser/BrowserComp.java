@@ -170,30 +170,45 @@ public class BrowserComp extends SimpleComp {
         var modifying = new SimpleBooleanProperty();
 
         // Handle selection from platform
-        tabs.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+        tabs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (modifying.get()) {
                 return;
             }
 
-            if (newValue.intValue() == -1) {
+            if (newValue == null) {
                 model.getSelected().setValue(null);
                 return;
             }
 
-            model.getSelected().setValue(model.getOpenFileSystems().get(newValue.intValue()));
+            var source = map.entrySet().stream()
+                    .filter(openFileSystemModelTabEntry ->
+                            openFileSystemModelTabEntry.getValue().equals(newValue))
+                    .findAny()
+                    .map(Map.Entry::getKey)
+                    .orElse(null);
+            model.getSelected().setValue(source);
         });
 
         // Handle selection from model
         model.getSelected().addListener((observable, oldValue, newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                var index = model.getOpenFileSystems().indexOf(newValue);
-                if (index == -1 || index >= tabs.getTabs().size()) {
+                if (newValue == null) {
                     tabs.getSelectionModel().select(null);
                     return;
                 }
 
-                var tab = tabs.getTabs().get(index);
-                tabs.getSelectionModel().select(tab);
+                var toSelect = map.entrySet().stream()
+                        .filter(openFileSystemModelTabEntry ->
+                                openFileSystemModelTabEntry.getKey().equals(newValue))
+                        .findAny()
+                        .map(Map.Entry::getValue)
+                        .orElse(null);
+                if (toSelect == null || !tabs.getTabs().contains(toSelect)) {
+                    tabs.getSelectionModel().select(null);
+                    return;
+                }
+
+                tabs.getSelectionModel().select(toSelect);
             });
         });
 

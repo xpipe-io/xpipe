@@ -19,4 +19,8 @@ public class ExtensionException extends RuntimeException {
     public ExtensionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
+
+    public static ExtensionException corrupt(String message) {
+        return new ExtensionException(message + ". Is the installation corrupt?");
+    }
 }

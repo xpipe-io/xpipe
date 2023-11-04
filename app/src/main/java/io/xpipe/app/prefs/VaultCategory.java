@@ -18,6 +18,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.SneakyThrows;
 
+import java.util.List;
+
 import static io.xpipe.app.prefs.AppPrefs.group;
 
 public class VaultCategory extends AppPrefsCategory {
@@ -69,6 +71,9 @@ public class VaultCategory extends AppPrefsCategory {
                     c.setPrefWidth(1000);
                     return c;
                 });
+        if (!pro) {
+            prefs.getProRequiredSettings().addAll(List.of(enable, remote));
+        }
         return Category.of(
                 "vault",
                 group(

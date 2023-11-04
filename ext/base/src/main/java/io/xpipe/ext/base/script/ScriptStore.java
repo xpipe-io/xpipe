@@ -1,9 +1,13 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.SimpleScriptSnippet;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.store.FileNames;
@@ -18,8 +22,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SuperBuilder
 @Getter
@@ -31,56 +33,67 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> initScripts, List<DataStoreEntryRef<ScriptStore>> bringScripts) {
-        pc.onInit(shellControl -> {
-            var initFlattened = flatten(initScripts);
-            var scripts = initFlattened.stream()
-                    .map(simpleScriptStore -> simpleScriptStore.prepareDumbScript(shellControl))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.joining("\n"));
-            if (!scripts.isBlank()) {
-                shellControl.executeSimpleBooleanCommand(scripts);
-            }
+        var initFlattened = flatten(initScripts);
+        var bringFlattened = flatten(bringScripts);
 
-            var terminalCommands = initFlattened.stream()
-                    .map(simpleScriptStore -> simpleScriptStore.prepareTerminalScript(shellControl))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.joining("\n"));
-            if (!terminalCommands.isBlank()) {
-                shellControl.initWithTerminal(terminalCommands);
-            }
-        });
         pc.onInit(shellControl -> {
-            var bringFlattened = flatten(bringScripts);
+            passInitScripts(pc, initFlattened);
+
             var dir = initScriptsDirectory(shellControl, bringFlattened);
             if (dir != null) {
-                shellControl.initWithTerminal(shellControl.getShellDialect().appendToPathVariableCommand(dir));
+                shellControl.initWith(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir), ScriptSnippet.ExecutionType.TERMINAL_ONLY));
             }
         });
         return pc;
     }
 
+    private static void passInitScripts(ShellControl pc, List<SimpleScriptStore> scriptStores) throws Exception {
+        scriptStores.forEach(simpleScriptStore -> {
+            if (pc.getInitCommands().contains(simpleScriptStore)) {
+                return;
+            }
+
+            if (!simpleScriptStore.getMinimumDialect().isCompatibleTo(pc.getShellDialect())) {
+                return;
+            }
+
+            pc.initWith(simpleScriptStore);
+        });
+    }
+
     private static String initScriptsDirectory(ShellControl proc, List<SimpleScriptStore> scriptStores) throws Exception {
-        if (scriptStores.size() == 0) {
+        if (scriptStores.isEmpty()) {
             return null;
         }
 
-        var refs = scriptStores.stream().map(scriptStore -> {
+        var applicable = scriptStores.stream().filter(simpleScriptStore -> simpleScriptStore.getMinimumDialect().isCompatibleTo(proc.getShellDialect())).toList();
+        if (applicable.isEmpty()) {
+            return null;
+        }
+
+        var refs = applicable.stream().map(scriptStore -> {
             return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == scriptStore).findFirst().orElseThrow().<SimpleScriptStore>ref();
         }).toList();
         var hash = refs.stream().mapToInt(value -> value.get().getName().hashCode() + value.getStore().hashCode()).sum();
         var xpipeHome = XPipeInstallation.getDataDir(proc);
-        var targetDir = FileNames.join(xpipeHome, "scripts");
+        var targetDir = FileNames.join(xpipeHome, "scripts", proc.getShellDialect().getId());
         var hashFile = FileNames.join(targetDir, "hash");
         var d = proc.getShellDialect();
         if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {
             var read = d.getFileReadCommand(proc, hashFile).readStdoutOrThrow();
-            var readHash = Integer.parseInt(read);
-            if (hash == readHash) {
-                return targetDir;
+            try {
+                var readHash = Integer.parseInt(read);
+                if (hash == readHash) {
+                    return targetDir;
+                }
+            } catch (NumberFormatException e) {
+                ErrorEvent.fromThrowable(e).omit().handle();
             }
         }
 
-        d.deleteFileOrDirectory(proc, targetDir).execute();
+        if (d.directoryExists(proc, targetDir).executeAndCheck()) {
+            d.deleteFileOrDirectory(proc, targetDir).execute();
+        }
         proc.executeSimpleCommand(d.getMkdirsCommand(targetDir));
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
@@ -90,7 +103,9 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
             d.createScriptTextFileWriteCommand(proc, content, scriptFile).execute();
 
             var chmod = d.getScriptPermissionsCommand(scriptFile);
-            proc.executeSimpleBooleanCommand(chmod);
+            if (chmod != null) {
+                proc.executeSimpleBooleanCommand(chmod);
+            }
         }
 
         d.createTextFileWriteCommand(proc, String.valueOf(hash), hashFile).execute();
@@ -101,7 +116,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         return DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
                         && scriptStore.getState().isDefault())
-                .map(e -> e.<ScriptStore>ref())
+                .map(DataStoreEntry::<ScriptStore>ref)
                 .toList();
     }
 
@@ -109,7 +124,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         return DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getStore() instanceof ScriptStore scriptStore
                         && scriptStore.getState().isBringToShell())
-                .map(e -> e.<ScriptStore>ref())
+                .map(DataStoreEntry::<ScriptStore>ref)
                 .toList();
     }
 
@@ -153,12 +168,6 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
 //        for (DataStoreEntryRef<ScriptStore> s : getEffectiveScripts()) {
 //         s.checkComplete();
 //        }
-    }
-
-    public LinkedHashSet<SimpleScriptStore> getFlattenedScripts() {
-        var set = new LinkedHashSet<SimpleScriptStore>();
-        queryFlattenedScripts(set);
-        return set;
     }
 
     protected abstract void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all);

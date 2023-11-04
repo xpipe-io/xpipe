@@ -41,6 +41,10 @@ public class ScanAlert {
     private static void showForShellStore(DataStoreEntry initial) {
         show(initial, (DataStoreEntry entry) -> {
             try (var sc = ((ShellStore) entry.getStore()).control().start()) {
+                if (!sc.getShellDialect().isSupportedShell()) {
+                    return null;
+                }
+
                 var providers = ScanProvider.getAll();
                 var applicable = new ArrayList<ScanProvider.ScanOperation>();
                 for (ScanProvider scanProvider : providers) {
