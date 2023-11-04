@@ -139,9 +139,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return perUser;
             }
 
-            var systemWide = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5",
-                    "InstallLocation").map(p -> p + "\\Tabby.exe").map(Path::of);
-            return systemWide;
+            return WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\71445fac-d6ef-5436-9da7-5a323762d7f5", "InstallLocation")
+                    .map(p -> p + "\\Tabby.exe").map(Path::of);
         }
     };
     ExternalTerminalType GNOME_TERMINAL = new PathType("app.gnomeTerminal", "gnome-terminal") {
@@ -521,12 +520,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
+        public boolean isAvailable() {
             return true;
         }
 
         @Override
-        public boolean isAvailable() {
+        public boolean isSelectable() {
             return true;
         }
     }

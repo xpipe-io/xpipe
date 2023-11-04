@@ -191,11 +191,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalEditorType {
 
-        private final String executable;
-
         public WindowsType(String id, String executable) {
             super(id, executable);
-            this.executable = executable;
         }
 
         public boolean detach() {

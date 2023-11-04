@@ -378,7 +378,7 @@ public abstract class DataStorage {
 
     public boolean isRootEntry(DataStoreEntry entry) {
         var noParent = DataStorage.get().getDisplayParent(entry).isEmpty();
-        var diffParentCategory = DataStorage.get().getDisplayParent(entry).map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid())).orElse(
+        boolean diffParentCategory = DataStorage.get().getDisplayParent(entry).map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid())).orElse(
                 false);
         var loop = isParentLoop(entry);
         return noParent || diffParentCategory || loop;

@@ -10,7 +10,7 @@ public interface ScriptSnippet {
     ExecutionType executionType();
 
     @Getter
-    public static enum ExecutionType {
+    enum ExecutionType {
         @JsonProperty("dumbOnly") DUMB_ONLY("dumbOnly"),
         @JsonProperty("terminalOnly") TERMINAL_ONLY("terminalOnly"),
         @JsonProperty("both") BOTH("both");

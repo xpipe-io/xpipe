@@ -8,12 +8,7 @@ import lombok.experimental.FieldDefaults;
         level = AccessLevel.PRIVATE)
 public class LicenseRequiredException extends RuntimeException {
 
-    String featureName;
-    boolean plural;
-
     public LicenseRequiredException(String featureName, boolean plural) {
         super(featureName + (plural ? " are" : " is") + " only supported with a professional license");
-        this.featureName = featureName;
-        this.plural = plural;
     }
 }

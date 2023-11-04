@@ -80,13 +80,13 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MACOS);
+        public boolean isAvailable() {
+            return getApplicationPath().isPresent();
         }
 
         @Override
-        public boolean isAvailable() {
-            return getApplicationPath().isPresent();
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.MACOS);
         }
     }
 
@@ -138,11 +138,6 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.WINDOWS);
-        }
-
-        @Override
         public boolean isAvailable() {
             var path = determineFromPath();
             if (path.isPresent() && Files.exists(path.get())) {
@@ -151,6 +146,11 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
             var installation = determineInstallation();
             return installation.isPresent() && Files.exists(installation.get());
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
         }
     }
 }

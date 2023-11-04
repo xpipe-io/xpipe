@@ -14,8 +14,6 @@ public class AppTrayIcon {
 
     private final SystemTray tray;
     private final TrayIcon trayIcon;
-    private final PopupMenu popupMenu = new PopupMenu();
-    private boolean shown = false;
 
     public AppTrayIcon() {
         ensureSystemTraySupported();
@@ -23,12 +21,13 @@ public class AppTrayIcon {
         tray = SystemTray.getSystemTray();
 
         var image = switch (OsType.getLocal()) {
-            case OsType.Windows windows -> "img/logo/logo_16x16.png";
-            case OsType.Linux linux -> "img/logo/logo_24x24.png";
-            case OsType.MacOs macOs -> "img/logo/logo_macos_tray_24x24.png";
+            case OsType.Windows _ -> "img/logo/logo_16x16.png";
+            case OsType.Linux _ -> "img/logo/logo_24x24.png";
+            case OsType.MacOs _ -> "img/logo/logo_macos_tray_24x24.png";
         };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
+        var popupMenu = new PopupMenu();
         this.trayIcon = new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
         this.trayIcon.setToolTip("XPipe");
         this.trayIcon.setImageAutoSize(true);
@@ -86,7 +85,6 @@ public class AppTrayIcon {
         EventQueue.invokeLater(() -> {
             try {
                 tray.add(this.trayIcon);
-                shown = true;
                 fixBackground();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable("Unable to add TrayIcon", e).handle();
@@ -128,7 +126,6 @@ public class AppTrayIcon {
     public void hide() {
         EventQueue.invokeLater(() -> {
             tray.remove(trayIcon);
-            shown = false;
         });
     }
 

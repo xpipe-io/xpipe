@@ -422,9 +422,7 @@ final class BrowserFileListComp extends SimpleComp {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
-        private final Node imageView = new PrettySvgComp(img, 24, 24).createRegion();
         private final StackPane textField = new LazyTextFieldComp(text).createStructure().get();
-        private final HBox graphic;
 
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
@@ -452,7 +450,8 @@ final class BrowserFileListComp extends SimpleComp {
             };
             text.addListener(listener);
 
-            graphic = new HBox(imageView, textField);
+            Node imageView = new PrettySvgComp(img, 24, 24).createRegion();
+            HBox graphic = new HBox(imageView, textField);
             graphic.setSpacing(10);
             graphic.setAlignment(Pos.CENTER_LEFT);
             HBox.setHgrow(textField, Priority.ALWAYS);

@@ -7,9 +7,7 @@ public class ExceptionConverter {
     public static String convertMessage(Throwable ex) {
         return switch (ex) {
             case ProcessOutputException e -> e.getMessage();
-            default -> {
-                yield ex.toString();
-            }
+            default -> ex.toString();
         };
     }
 }

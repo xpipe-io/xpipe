@@ -61,27 +61,17 @@ public class AppPrefs {
     final BooleanProperty performanceMode = typed(new SimpleBooleanProperty(false), Boolean.class);
     public final ObjectProperty<AppTheme.Theme> theme = typed(new SimpleObjectProperty<>(), AppTheme.Theme.class);
 
-    // Languages
-    // =========
     private final SingleSelectionField<AppTheme.Theme> themeControl = Field.ofSingleSelectionType(themeList, theme).render(
             () -> new TranslatableComboBoxControl<>());
-    // Password manager
-    // ================
     final StringProperty passwordManagerCommand = typed(new SimpleStringProperty(""), String.class);
-    // Git storage
-    // ===========
     public final BooleanProperty enableGitStorage = typed(new SimpleBooleanProperty(false), Boolean.class);
     final StringProperty storageGitRemote = typed(new SimpleStringProperty(""), String.class);
-    // External editor
-    // ===============
     final ObjectProperty<ExternalEditorType> externalEditor = typed(new SimpleObjectProperty<>(), ExternalEditorType.class);
     private final SingleSelectionField<ExternalEditorType> externalEditorControl = Field.ofSingleSelectionType(externalEditorList, externalEditor)
             .render(() -> new TranslatableComboBoxControl<>());
     final StringProperty customEditorCommand = typed(new SimpleStringProperty(""), String.class);
     private final StringField customEditorCommandControl = editable(
             StringField.ofStringType(customEditorCommand).render(() -> new SimpleTextControl()), externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
-    // Storage
-    // =======
     final ObjectProperty<Path> storageDirectory = typed(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), Path.class);
     final StringField storageDirectoryControl = PrefFields.ofPath(storageDirectory).validate(CustomValidators.absolutePath(),
             CustomValidators.directory());
@@ -94,60 +84,43 @@ public class AppPrefs {
     private final IntegerProperty tooltipDelayInternal = typed(new SimpleIntegerProperty(1000), Integer.class);
     private final IntegerProperty connectionTimeOut = typed(new SimpleIntegerProperty(10), Integer.class);
     private final BooleanProperty saveWindowLocationInternal = typed(new SimpleBooleanProperty(false), Boolean.class);
-
-    // Lock
-    // ====
     public final ReadOnlyBooleanProperty saveWindowLocation = saveWindowLocationInternal;
-    // External terminal
-    // =================
     private final ObjectProperty<ExternalTerminalType> terminalType = typed(new SimpleObjectProperty<>(), ExternalTerminalType.class);
-    private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(terminalTypeList, terminalType).render(
-            () -> new TranslatableComboBoxControl<>());
-    private final SimpleListProperty<ExternalTerminalType> terminalTypeList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class)));
+    private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(
+                    new SimpleListProperty<>(FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class))),
+                    terminalType)
+            .render(() -> new TranslatableComboBoxControl<>());
     @Getter
     private final Property<SecretValue> lockPassword = new SimpleObjectProperty<>();
     @Getter
     private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
-    // Window opacity
-    // ==============
     private final DoubleProperty windowOpacity = typed(new SimpleDoubleProperty(1.0), Double.class);
     private final DoubleField windowOpacityField = Field.ofDoubleType(windowOpacity).render(() -> {
         var r = new DoubleSliderControl(0.3, 1.0, 2);
         r.setMinWidth(200);
         return r;
     });
-    // Custom terminal
-    // ===============
     private final StringProperty customTerminalCommand = typed(new SimpleStringProperty(""), String.class);
     private final StringField customTerminalCommandControl = editable(
             StringField.ofStringType(customTerminalCommand).render(() -> new SimpleTextControl()),
             terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
     private final BooleanProperty preferTerminalTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanField preferTerminalTabsField = BooleanField.ofBooleanType(preferTerminalTabs).render(() -> new CustomToggleControl());
-    // Start behaviour
-    // ===============
     private final SimpleListProperty<StartupBehaviour> startupBehaviourList = new SimpleListProperty<>(
             FXCollections.observableArrayList(PrefsChoiceValue.getSupported(StartupBehaviour.class)));
     private final ObjectProperty<StartupBehaviour> startupBehaviour = typed(new SimpleObjectProperty<>(StartupBehaviour.GUI), StartupBehaviour.class);
     private final SingleSelectionField<StartupBehaviour> startupBehaviourControl = Field.ofSingleSelectionType(startupBehaviourList, startupBehaviour)
             .render(() -> new TranslatableComboBoxControl<>());
-    // Close behaviour
-    // ===============
     private final ObjectProperty<CloseBehaviour> closeBehaviour = typed(new SimpleObjectProperty<>(CloseBehaviour.QUIT), CloseBehaviour.class);
     private final SingleSelectionField<CloseBehaviour> closeBehaviourControl = Field.ofSingleSelectionType(closeBehaviourList, closeBehaviour).render(
             () -> new TranslatableComboBoxControl<>());
     private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
     private final BooleanProperty preferEditorTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanField preferEditorTabsField = BooleanField.ofBooleanType(preferEditorTabs).render(() -> new CustomToggleControl());
-    // Automatically update
-    // ====================
     private final BooleanProperty automaticallyCheckForUpdates = typed(new SimpleBooleanProperty(true), Boolean.class);
     private final BooleanField automaticallyCheckForUpdatesField = BooleanField.ofBooleanType(automaticallyCheckForUpdates).render(
             () -> new CustomToggleControl());
     private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
-    // Developer mode
-    // ==============
     private final BooleanProperty internalDeveloperMode = typed(new SimpleBooleanProperty(false), Boolean.class);
     private final BooleanProperty effectiveDeveloperMode = System.getProperty(DEVELOPER_MODE_PROP) != null ? new SimpleBooleanProperty(
             Boolean.parseBoolean(System.getProperty(DEVELOPER_MODE_PROP))) : internalDeveloperMode;

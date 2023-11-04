@@ -86,9 +86,8 @@ public class DataStoreEntry extends StorageElement {
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store
     ) {
-        var entry = new DataStoreEntry(null, uuid, categoryUuid, name, Instant.now(), Instant.now(), DataStorageWriter.storeToNode(store), true,
+        return new DataStoreEntry(null, uuid, categoryUuid, name, Instant.now(), Instant.now(), DataStorageWriter.storeToNode(store), true,
                 store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE, Configuration.defaultConfiguration(), null, false, null);
-        return entry;
     }
 
     @SneakyThrows

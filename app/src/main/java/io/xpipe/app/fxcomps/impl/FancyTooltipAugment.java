@@ -175,6 +175,16 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
                     weakPressedHandler.handle(null);
                 }
             }
+        }
+
+        private void ensureHoveredNodeIsVisible(Runnable visibleRunnable) {
+            final Window owner = getWindow(hoveredNode);
+            if (owner != null && owner.isShowing()) {
+                final boolean treeVisible = true; // NodeHelper.isTreeVisible(hoveredNode);
+                if (treeVisible && owner.isFocused()) {
+                    visibleRunnable.run();
+                }
+            }
         }        private final EventHandler<MouseEvent> moveHandler = (MouseEvent event) -> {
             // if tool tip is already showing, do nothing
             if (visibleTimer.getStatus() == Timeline.Status.RUNNING) {
@@ -209,16 +219,6 @@ public class FancyTooltipAugment<S extends CompStructure<?>> implements Augment<
                 uninstall(hoveredNode);
             }
         };
-
-        private void ensureHoveredNodeIsVisible(Runnable visibleRunnable) {
-            final Window owner = getWindow(hoveredNode);
-            if (owner != null && owner.isShowing()) {
-                final boolean treeVisible = true; // NodeHelper.isTreeVisible(hoveredNode);
-                if (treeVisible && owner.isFocused()) {
-                    visibleRunnable.run();
-                }
-            }
-        }
 
         private Window getWindow(final Node node) {
             final Scene scene = node == null ? null : node.getScene();
