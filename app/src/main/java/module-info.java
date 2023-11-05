@@ -48,9 +48,6 @@ open module io.xpipe.app {
     requires org.ocpsoft.prettytime;
     requires com.dlsc.preferencesfx;
     requires com.vladsch.flexmark;
-    requires com.vladsch.flexmark_util_data;
-    requires com.vladsch.flexmark_util_ast;
-    requires com.vladsch.flexmark_util_sequence;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
     requires net.synedra.validatorfx;

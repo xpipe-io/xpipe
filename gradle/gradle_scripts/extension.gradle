@@ -4,7 +4,6 @@ task copyRuntimeLibs(type: Copy) {
     exclude "${project.name}.jar"
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
-copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
 jar.dependsOn(copyRuntimeLibs)
 
 def dev = tasks.register('createDevOutput', Copy) {
@@ -64,7 +63,10 @@ dependencies {
 }
 
 // Gradle complains about task dependencies even though these are declared as compiled dependencies. Why?
-compileJava.dependsOn(project(':core').compileJava)
-compileJava.dependsOn(project(':beacon').compileJava)
-compileJava.dependsOn(project(':app').compileJava)
+compileJava.dependsOn(project(':core').getTasksByName('jar', true))
+compileJava.dependsOn(project(':beacon').getTasksByName('jar', true))
+compileJava.dependsOn(project(':app').getTasksByName('jar', true))
+if (project != project(':base')) {
+    compileJava.dependsOn(project(':base').getTasksByName('jar', true))
+}
 

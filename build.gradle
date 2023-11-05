@@ -6,9 +6,11 @@ plugins {
 }
 
 allprojects { subproject ->
-    if (subproject.name != "cli") {
-        apply plugin: 'org.gradlex.extra-java-module-info'
+    apply plugin: 'org.gradlex.extra-java-module-info'
+    extraJavaModuleInfo {
+        failOnMissingModuleInfo.set(false)
     }
+
 }
 
 def getArchName() {

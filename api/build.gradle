@@ -2,7 +2,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"

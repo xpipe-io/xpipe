@@ -6,7 +6,7 @@ It also contains various other types of shared build script components that are 
 As the [jlink](https://docs.oracle.com/en/java/javase/17/docs/specs/man/jlink.html) tool
 effectively requires proper modules as inputs but many established java
 libraries did not add proper support yet, using an approach like this is required.
-The modules are generated with the help of [moditect](https://github.com/moditect/moditect-gradle-plugin).
+The modules are generated with the help of [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
 The generated `module-info.java` file contains the necessary declarations to make a library work.
 While gradle already has a [similar system](https://docs.gradle.org/current/userguide/platforms.html)
 to better share dependencies, this system is lacking several features.
