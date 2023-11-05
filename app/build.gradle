@@ -12,13 +12,7 @@ configurations {
 
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/prettytime.gradle"
-apply from: "$projectDir/gradle_scripts/sentry.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
-apply from: "$projectDir/gradle_scripts/github-api.gradle"
-apply from: "$projectDir/gradle_scripts/flexmark.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/versioncompare.gradle"
 
 configurations {
     implementation.extendsFrom(dep)

@@ -10,7 +10,7 @@ allprojects { subproject ->
     extraJavaModuleInfo {
         failOnMissingModuleInfo.set(false)
     }
-
+    apply from: "$rootDir/modules.gradle"
 }
 
 def getArchName() {

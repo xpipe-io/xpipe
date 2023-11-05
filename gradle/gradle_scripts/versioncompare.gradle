@@ -1,5 +1,0 @@
-extraJavaModuleInfo {
-    module("io.github.g00fy2:versioncompare", "versioncompare") {
-        exportAllPackages()
-    }
-}

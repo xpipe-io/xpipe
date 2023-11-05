@@ -1,5 +1,0 @@
-extraJavaModuleInfo {
-    module("org.ocpsoft.prettytime:prettytime", "org.ocpsoft.prettytime") {
-        exportAllPackages()
-    }
-}

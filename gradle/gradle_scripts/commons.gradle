@@ -1,8 +1,0 @@
-extraJavaModuleInfo {
-    module("org.apache.commons:commons-lang3", "org.apache.commons.lang3") {
-        exportAllPackages()
-    }
-    module("commons-io:commons-io", "org.apache.commons.io") {
-        exportAllPackages()
-    }
-}

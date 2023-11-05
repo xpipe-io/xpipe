@@ -1,5 +1,0 @@
-extraJavaModuleInfo {
-    module("io.sentry:sentry", "io.sentry") {
-        exportAllPackages()
-    }
-}
