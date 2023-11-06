@@ -4,7 +4,7 @@ tasks.withType(JavaCompile).configureEach {
     modularity.inferModulePath = true
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:unchecked"
-    options.compilerArgs << "--enable-preview"
+    // options.compilerArgs << "--enable-preview"
 
     // These settings are explicitly specified as they can cause problems with annotation processors
     options.compilerArgs << "-implicit:none"

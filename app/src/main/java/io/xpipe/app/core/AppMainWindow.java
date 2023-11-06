@@ -182,7 +182,7 @@ public class AppMainWindow {
     }
 
     private void saveState() {
-        if (!AppPrefs.get().saveWindowLocation.get()) {
+        if (!AppPrefs.get().saveWindowLocation().get()) {
             return;
         }
 
@@ -201,7 +201,7 @@ public class AppMainWindow {
     }
 
     private WindowState loadState() {
-        if (!AppPrefs.get().saveWindowLocation.get()) {
+        if (!AppPrefs.get().saveWindowLocation().get()) {
             return null;
         }
 

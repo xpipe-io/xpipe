@@ -17,6 +17,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
+import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreEntryListStatusComp extends SimpleComp {
@@ -74,6 +75,8 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
     private Region createButtons() {
         var menu = new MenuButton(AppI18n.get("addConnections"), new FontIcon("mdi2p-plus-thick"));
+        menu.setAlignment(Pos.CENTER);
+        menu.setTextAlignment(TextAlignment.CENTER);
         AppFont.medium(menu);
         GrowAugment.create(true, false).augment(menu);
         StoreCreationMenu.addButtons(menu);

@@ -1,0 +1,10 @@
+.side-split-pane-comp.split-pane-divider {
+    -fx-padding: 1;
+}
+
+.side-split-pane-comp .split-pane-divider .horizontal-grabber {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-shape: " ";
+}

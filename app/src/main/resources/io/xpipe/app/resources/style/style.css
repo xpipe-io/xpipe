@@ -13,8 +13,8 @@
 -fx-padding: 1.2em;
 }
 
-.layout {
-
+.store-layout .split-pane-divider {
+    -fx-background-color: transparent;
 }
 
 .root:dark.background {
