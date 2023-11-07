@@ -121,6 +121,8 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
+        var node = DataStorageWriter.storeToNode(store);
+        var validity = DataStorageParser.storeFromNode(node) == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -128,9 +130,9 @@ public class DataStoreEntry extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
-                DataStorageWriter.storeToNode(store),
+                node,
                 true,
-                store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE,
+                validity,
                 Configuration.defaultConfiguration(),
                 null,
                 false, null

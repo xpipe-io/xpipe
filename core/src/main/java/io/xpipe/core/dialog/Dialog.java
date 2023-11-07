@@ -1,6 +1,7 @@
 package io.xpipe.core.dialog;
 
 import io.xpipe.core.charsetter.Charsetter;
+import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableSupplier;
 import io.xpipe.core.util.SecretValue;
 
@@ -27,7 +28,7 @@ import java.util.function.Supplier;
  */
 public abstract class Dialog {
 
-    private final List<Charsetter.FailableConsumer<?, Exception>> completion = new ArrayList<>();
+    private final List<FailableConsumer<?, Exception>> completion = new ArrayList<>();
     protected Object eval;
     private Supplier<?> evaluation;
 
@@ -416,7 +417,7 @@ public abstract class Dialog {
         return this;
     }
 
-    public Dialog onCompletion(Charsetter.FailableConsumer<?, Exception> s) {
+    public Dialog onCompletion(FailableConsumer<?, Exception> s) {
         completion.add(s);
         return this;
     }
@@ -426,7 +427,7 @@ public abstract class Dialog {
         return this;
     }
 
-    public Dialog onCompletion(List<Charsetter.FailableConsumer<?, Exception>> s) {
+    public Dialog onCompletion(List<FailableConsumer<?, Exception>> s) {
         completion.addAll(s);
         return this;
     }
@@ -440,8 +441,8 @@ public abstract class Dialog {
     public <T> void complete() throws Exception {
         if (evaluation != null) {
             eval = evaluation.get();
-            for (Charsetter.FailableConsumer<?, Exception> c : completion) {
-                Charsetter.FailableConsumer<T, Exception> ct = (Charsetter.FailableConsumer<T, Exception>) c;
+            for (FailableConsumer<?, Exception> c : completion) {
+                FailableConsumer<T, Exception> ct = (FailableConsumer<T, Exception>) c;
                 ct.accept((T) eval);
             }
         }

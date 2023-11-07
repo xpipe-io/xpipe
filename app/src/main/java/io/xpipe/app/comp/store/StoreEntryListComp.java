@@ -22,7 +22,7 @@ public class StoreEntryListComp extends SimpleComp {
                         StoreViewState.get().getCurrentTopLevelSection().getAllChildren(),
                         (StoreSection e) -> {
                             var custom = StoreSection.customSection(e, true).hgrow();
-                            return new HorizontalComp(List.of(Comp.hspacer(10), custom, Comp.hspacer(10)))
+                            return new HorizontalComp(List.of(Comp.hspacer(8), custom, Comp.hspacer(10)))
                                     .styleClass("top");
                         })
                 .apply(struc -> ((Region) struc.get().getContent()).setPadding(new Insets(10, 0, 10, 0)));

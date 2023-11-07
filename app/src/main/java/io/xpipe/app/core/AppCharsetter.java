@@ -2,6 +2,8 @@ package io.xpipe.app.core;
 
 import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.util.FailableConsumer;
+import io.xpipe.core.util.FailableSupplier;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 
@@ -17,7 +19,7 @@ public class AppCharsetter extends Charsetter {
         Charsetter.INSTANCE = new AppCharsetter();
     }
 
-    public Result read(FailableSupplier<InputStream, Exception> in, FailableConsumer<InputStreamReader, Exception> con)
+    public Result read(FailableSupplier<InputStream> in, FailableConsumer<InputStreamReader, Exception> con)
             throws Exception {
         checkInit();
 
