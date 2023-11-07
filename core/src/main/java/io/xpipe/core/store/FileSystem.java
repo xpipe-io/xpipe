@@ -21,7 +21,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
     @Value
     @NonFinal
     class FileEntry {
-        @NonNull
         FileSystem fileSystem;
 
         @NonNull
@@ -39,7 +38,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
         FileKind kind;
 
         public FileEntry(
-                @NonNull FileSystem fileSystem,
+                FileSystem fileSystem,
                 @NonNull String path,
                 Instant date,
                 boolean hidden,

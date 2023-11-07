@@ -3,6 +3,8 @@ package io.xpipe.app.util;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ShellControl;
 
 import java.util.Optional;
 
@@ -29,5 +31,31 @@ public class WindowsRegistry {
             ErrorEvent.fromThrowable(t).handle();
             return Optional.empty();
         }
+    }
+
+    public static Optional<String> readRemoteString(ShellControl shellControl, int hkey, String key, String valueName) throws Exception {
+        var command = CommandBuilder.of().add("reg", "query").addQuoted((hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER") + "\\" + key).add("/v").addQuoted(valueName);
+
+        String output;
+        try (var c = shellControl.command(command).start()) {
+            output = c.readStdoutDiscardErr();
+            if (c.getExitCode() != 0) {
+                return Optional.empty();
+            }
+        }
+
+        // Output has the following format:
+        // \n<Version information>\n\n<key>\t<registry type>\t<value>
+        if (output.contains("\t")) {
+            String[] parsed = output.split("\t");
+            return Optional.of(parsed[parsed.length - 1]);
+        }
+
+        if (output.contains("    ")) {
+            String[] parsed = output.split("    ");
+            return Optional.of(parsed[parsed.length - 1]);
+        }
+
+        return Optional.empty();
     }
 }

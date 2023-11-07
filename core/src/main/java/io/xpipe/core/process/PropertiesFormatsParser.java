@@ -6,8 +6,20 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class PropertiesFormatsParser {
+
+    @SneakyThrows
+    public static Map<String, String> parseLine(String line, String split, String quotes) {
+        var map = new LinkedHashMap<String, String>();
+        var pattern = Pattern.compile("(\\w+?)\\s*" + split + "\\s*" + quotes + "(.+?)" + quotes);
+        var matcher = pattern.matcher(line);
+        while (matcher.find()) {
+            map.put(matcher.group(1), matcher.group(2));
+        }
+        return map;
+    }
 
     @SneakyThrows
     public static Map<String, String> parse(String text, String split) {
