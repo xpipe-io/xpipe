@@ -23,6 +23,11 @@ public class JsonConfigHelper {
             if (Files.exists(in)) {
                 ObjectMapper o = JacksonMapper.getDefault();
                 node = o.readTree(Files.readAllBytes(in));
+
+                // Handle the results of loading fails
+                if (node.isMissingNode() || node.isNull()) {
+                    node = JsonNodeFactory.instance.objectNode();
+                }
             }
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).build().handle();
