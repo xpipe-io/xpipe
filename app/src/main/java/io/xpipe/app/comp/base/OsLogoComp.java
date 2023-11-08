@@ -6,8 +6,8 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.core.process.OsNameState;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.process.ShellStoreState;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -41,11 +41,11 @@ public class OsLogoComp extends SimpleComp {
                     }
 
                     var ps = wrapper.getPersistentState().getValue();
-                    if (!(ps instanceof ShellStoreState sss)) {
+                    if (!(ps instanceof OsNameState ons)) {
                         return null;
                     }
 
-                    return getImage(sss.getOsName());
+                    return getImage(ons.getOsName());
                 },
                 wrapper.getPersistentState(), state));
         var hide = BindingsHelper.map(img, s -> s != null);

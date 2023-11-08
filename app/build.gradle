@@ -110,7 +110,8 @@ project.ext {
             "-Xmx8g",
             "-Dio.xpipe.app.arch=$rootProject.arch",
             "-Dfile.encoding=UTF-8",
-            '-XX:+UseZGC',
+            // Disable this for now as it requires Windows 10+
+            // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe"
     ]
 }

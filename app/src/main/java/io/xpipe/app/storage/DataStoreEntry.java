@@ -99,6 +99,27 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentStateNode = storePersistentState;
     }
 
+    private DataStoreEntry(
+            Path directory,
+            UUID uuid,
+            UUID categoryUuid,
+            String name,
+            Instant lastUsed,
+            Instant lastModified,
+            DataStore store
+    ) {
+        super(directory, uuid, name, lastUsed, lastModified, false);
+        this.categoryUuid = categoryUuid;
+        this.store = store;
+        this.storeNode = null;
+        this.validity = Validity.COMPLETE;
+        this.configuration = Configuration.defaultConfiguration();
+        this.expanded = false;
+        this.color = null;
+        this.provider = null;
+        this.storePersistentStateNode = null;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
@@ -112,6 +133,18 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
+        return new DataStoreEntry(
+                null,
+                UUID.randomUUID(),
+                DataStorage.get().getSelectedCategory().getUuid(),
+                UUID.randomUUID().toString(),
+                Instant.now(),
+                Instant.now(),
+                store
+        );
     }
 
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
