@@ -47,7 +47,7 @@ public class AppExtensionManager {
         }
 
         if (load) {
-            INSTANCE.addNativeLibrariesToPath();
+            // INSTANCE.addNativeLibrariesToPath();
             try {
                 XPipeServiceProviders.load(INSTANCE.extendedLayer);
                 MessageExchangeImpls.loadAll();
