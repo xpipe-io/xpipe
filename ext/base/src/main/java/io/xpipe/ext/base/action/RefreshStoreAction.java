@@ -58,11 +58,6 @@ public class RefreshStoreAction implements ActionProvider  {
             }
 
             @Override
-            public ActiveType activeType() {
-                return ActiveType.ALWAYS_ENABLE;
-            }
-
-            @Override
             public ActionProvider.Action createAction(DataStoreEntryRef<FixedHierarchyStore> store) {
                 return new Action(store.get());
             }
