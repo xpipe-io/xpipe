@@ -18,22 +18,27 @@ import java.nio.file.Path;
 
 public class JsonConfigHelper {
 
-    public static ObjectNode readConfig(Path in) {
-        ObjectNode node = JsonNodeFactory.instance.objectNode();
+    public static JsonNode readRaw(Path in) {
         try {
             if (Files.exists(in)) {
                 ObjectMapper o = JacksonMapper.getDefault();
                 var read = o.readTree(Files.readAllBytes(in));
-
-                // Check the results of loading fails
-                if (read.isObject()) {
-                    return (ObjectNode) read;
-                }
+                return read;
             }
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).build().handle();
         }
-        return node;
+        return JsonNodeFactory.instance.missingNode();
+    }
+
+    public static ObjectNode readConfigObject(Path in) {
+        var read = readRaw(in);
+        // Check the results of loading fails
+        if (read.isObject()) {
+            return (ObjectNode) read;
+        }
+
+        return JsonNodeFactory.instance.objectNode();
     }
 
     public static void writeConfig(Path out, JsonNode node) {
