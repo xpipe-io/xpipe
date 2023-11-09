@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.util.JacksonMapper;
 import org.apache.commons.io.FileUtils;
@@ -17,16 +18,16 @@ import java.nio.file.Path;
 
 public class JsonConfigHelper {
 
-    public static JsonNode readConfig(Path in) {
-        JsonNode node = JsonNodeFactory.instance.objectNode();
+    public static ObjectNode readConfig(Path in) {
+        ObjectNode node = JsonNodeFactory.instance.objectNode();
         try {
             if (Files.exists(in)) {
                 ObjectMapper o = JacksonMapper.getDefault();
-                node = o.readTree(Files.readAllBytes(in));
+                var read = o.readTree(Files.readAllBytes(in));
 
-                // Handle the results of loading fails
-                if (node.isMissingNode() || node.isNull()) {
-                    node = JsonNodeFactory.instance.objectNode();
+                // Check the results of loading fails
+                if (read.isObject()) {
+                    return (ObjectNode) read;
                 }
             }
         } catch (IOException e) {

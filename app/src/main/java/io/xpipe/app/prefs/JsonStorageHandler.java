@@ -33,7 +33,7 @@ public class JsonStorageHandler implements StorageHandler {
 
     private JsonNode getContent(String key) {
         if (content == null) {
-            content = (ObjectNode) JsonConfigHelper.readConfig(file);
+            content = JsonConfigHelper.readConfig(file);
         }
         return content.get(key);
     }
