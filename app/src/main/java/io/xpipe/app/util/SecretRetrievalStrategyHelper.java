@@ -97,7 +97,7 @@ public class SecretRetrievalStrategyHelper {
                 .bindChoice(
                         () -> {
                             return switch (selected.get() - offset) {
-                                case 0 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.None());
+                                case 0 -> new SimpleObjectProperty<>(allowNone ? new SecretRetrievalStrategy.None() : null);
                                 case 1 -> inPlace;
                                 case 2 -> passwordManager;
                                 case 3 -> customCommand;

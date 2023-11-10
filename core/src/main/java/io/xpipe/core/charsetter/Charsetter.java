@@ -1,7 +1,5 @@
 package io.xpipe.core.charsetter;
 
-import io.xpipe.core.store.FileStore;
-import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StreamDataStore;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableSupplier;
@@ -109,13 +107,13 @@ public abstract class Charsetter {
             }
         }
 
-        if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof ShellStore m) {
-            if (result.getNewLine() == null) {
-                result = new Result(
-                        result.getCharset(),
-                        m.getShellType() != null ? m.getShellType().getNewLine() : null);
-            }
-        }
+//        if (store instanceof FileStore fileStore && fileStore.getFileSystem() instanceof ShellStore m) {
+//            if (result.getNewLine() == null) {
+//                result = new Result(
+//                        result.getCharset(),
+//                        m.getShellType() != null ? m.getShellType().getNewLine() : null);
+//            }
+//        }
 
         if (result.getCharset() == null) {
             result = new Result(StreamCharset.UTF8, result.getNewLine());
