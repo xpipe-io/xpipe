@@ -23,7 +23,8 @@ public class StoreLayoutComp extends SimpleComp {
                 AppLayoutModel.get().getSavedState().getSidebarWidth()).withOnDividerChange(aDouble -> {
             AppLayoutModel.get().getSavedState().setSidebarWidth(aDouble);
         }).createStructure();
-        struc.getLeft().setMaxWidth(400);
+        struc.getLeft().setMinWidth(260);
+        struc.getLeft().setMaxWidth(500);
         struc.get().getStyleClass().add("store-layout");
         return struc.get();
     }

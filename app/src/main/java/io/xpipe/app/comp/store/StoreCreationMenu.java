@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.comp.store.GuiDsStoreCreator;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -85,7 +84,7 @@ public class StoreCreationMenu {
             script.setGraphic(new FontIcon("mdi2s-script-text-outline"));
             script.textProperty().bind(AppI18n.observable("addScript"));
             script.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
+                GuiDsStoreCreator.showCreation(DataStoreProviders.byName("script").orElseThrow(),
                                                v -> DataStoreProvider.CreationCategory.SCRIPT.equals(v.getCreationCategory()));
                 event.consume();
             });

@@ -37,7 +37,7 @@ public class AppLayoutModel {
     }
 
     public static void init() {
-        var state = AppCache.get("layoutState", SavedState.class, () -> new SavedState(250, 300));
+        var state = AppCache.get("layoutState", SavedState.class, () -> new SavedState(260, 300));
         INSTANCE = new AppLayoutModel(state);
     }
 

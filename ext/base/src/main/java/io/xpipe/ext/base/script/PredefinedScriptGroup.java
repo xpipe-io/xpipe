@@ -6,17 +6,19 @@ import lombok.Setter;
 
 @Getter
 public enum PredefinedScriptGroup {
-    CLINK("Clink", null),
-    STARSHIP("Starship", "Sets up and enables the starship shell prompt");
+    CLINK("Clink", null, false),
+    STARSHIP("Starship", "Sets up and enables the starship shell prompt", true);
 
     private final String name;
     private final String description;
+    private final boolean expanded;
 
     @Setter
     private DataStoreEntryRef<ScriptGroupStore> entry;
 
-    PredefinedScriptGroup(String name, String description) {
+    PredefinedScriptGroup(String name, String description, boolean expanded) {
         this.name = name;
         this.description = description;
+        this.expanded = expanded;
     }
 }
