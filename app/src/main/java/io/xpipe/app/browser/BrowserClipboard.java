@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.property.Property;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class BrowserClipboard {
 
@@ -27,6 +29,11 @@ public class BrowserClipboard {
         UUID uuid;
         FileSystem.FileEntry baseDirectory;
         List<FileSystem.FileEntry> entries;
+
+        public String toClipboardString() {
+            return entries.stream().map(fileEntry -> "\"" + fileEntry.getPath() + "\"").collect(
+                    Collectors.joining(ShellDialects.getPlatformDefault().getNewLine().getNewLineString()));
+        }
     }
 
     public static final Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
@@ -67,9 +74,9 @@ public class BrowserClipboard {
     @SneakyThrows
     public static ClipboardContent startDrag(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
         var content = new ClipboardContent();
-        var idea = UUID.randomUUID();
-        currentDragClipboard = new Instance(idea, base, new ArrayList<>(selected));
-        content.putString(idea.toString());
+        var id = UUID.randomUUID();
+        currentDragClipboard = new Instance(id, base, new ArrayList<>(selected));
+        content.putString(currentDragClipboard.toClipboardString());
         return content;
     }
 
@@ -88,9 +95,13 @@ public class BrowserClipboard {
             return null;
         }
 
+        if (currentDragClipboard == null) {
+            return null;
+        }
+
         try {
-            var idea = UUID.fromString(dragboard.getString());
-            if (idea.equals(currentDragClipboard.uuid)) {
+            var s = dragboard.getString();
+            if (s != null && s.equals(currentDragClipboard.toClipboardString())) {
                 var current = currentDragClipboard;
                 currentDragClipboard = null;
                 return current;
