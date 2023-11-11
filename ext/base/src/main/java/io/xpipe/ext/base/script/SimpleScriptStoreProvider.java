@@ -201,6 +201,11 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public boolean editByDefault() {
+        return true;
+    }
+
+    @Override
     public boolean canMoveCategories() {
         return false;
     }
