@@ -51,7 +51,7 @@ public class StoreCreationMenu {
             cmd.setGraphic(new FontIcon("mdi2c-code-greater-than"));
             cmd.textProperty().bind(AppI18n.observable("addCommand"));
             cmd.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(null,
+                GuiDsStoreCreator.showCreation(DataStoreProviders.byName("cmd").orElseThrow(),
                         v -> DataStoreProvider.CreationCategory.COMMAND.equals(v.getCreationCategory()));
                 event.consume();
             });
