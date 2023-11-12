@@ -29,15 +29,19 @@
 }
 
 .store-header-bar .menu-button {
--fx-background-radius: 4px;
- -fx-border-radius: 4px;
+-fx-background-radius: 3px;
+ -fx-border-radius: 3px;
  -fx-border-width: 1px;
--fx-padding: 0;
+ -fx-padding: -3 0 -3 0;
  -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(208, 220, 252) 40%, rgba(219, 219, 255, 1) 50%, rgb(250, 242, 242) 100%);
 -fx-border-color: transparent;
 }
 
-.store-header-bar .menu-button:hover, .store-header-bar .menu-button:focused {
+.root:light .store-header-bar .menu-button {
+ -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(12, 11, 11) 40%, rgb(32, 32, 40) 50%, rgb(35, 29, 29) 100%);
+}
+
+.root:light .store-header-bar .menu-button:hover, .root:light .store-header-bar .menu-button:focused,.root:dark .store-header-bar .menu-button:hover, .root:dark .store-header-bar .menu-button:focused {
  -fx-background-color: -color-bg-default;
  -fx-border-color: -color-fg-default;
 }
@@ -158,17 +162,16 @@
 }
 
 .bar .filter-bar .text-field {
--fx-padding: 0.35em;
 -fx-text-fill: -color-fg-default;
 }
 
 .bar .filter-bar {
- -fx-padding: 2;
--fx-background-radius: 4px;
+ -fx-padding: -3 0 -3 0;
+-fx-background-radius: 3px;
  -fx-background-color: -color-bg-default;
  -fx-border-color: -color-fg-default;
  -fx-border-width: 0.05em;
--fx-border-radius: 4px;
+-fx-border-radius: 3px;
 }
 
 

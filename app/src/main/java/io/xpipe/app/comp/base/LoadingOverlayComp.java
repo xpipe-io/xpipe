@@ -34,11 +34,6 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
         var loadingOverlay = new StackPane(loading);
         loadingOverlay.getStyleClass().add("loading-comp");
-        loadingOverlay.getStyleClass().add("modal-pane");
-        loadingOverlay.visibleProperty().addListener((observable, oldValue, newValue) -> {
-            r.setOpacity(newValue ? r.getOpacity() * 0.25 : Math.min(1.0, r.getOpacity() * 4));
-        });
-
         loadingOverlay.setVisible(showLoading.getValue());
 
         var listener = new ChangeListener<Boolean>() {

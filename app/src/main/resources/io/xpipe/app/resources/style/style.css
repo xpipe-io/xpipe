@@ -68,3 +68,11 @@
  -fx-padding: 0;
 }
 
+.root:light .loading-comp {
+    -fx-background-color: rgba(100,100,100,0.5);
+}
+
+.root:dark .loading-comp {
+    -fx-background-color: rgba(0,0,0,0.5);
+}
+

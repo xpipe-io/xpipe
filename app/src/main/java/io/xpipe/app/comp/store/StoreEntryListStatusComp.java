@@ -3,12 +3,17 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.augment.GrowAugment;
+import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.impl.FilterComp;
+import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -16,11 +21,24 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreEntryListStatusComp extends SimpleComp {
+
+    private final Property<StoreSortMode> sortMode;
+
+    public StoreEntryListStatusComp() {
+        this.sortMode = new SimpleObjectProperty<>();
+        SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
+            sortMode.unbind();
+            sortMode.bindBidirectional(val.getSortMode());
+        });
+    }
 
     private Region createGroupListHeader() {
         var label = new Label();
@@ -45,12 +63,11 @@ public class StoreEntryListStatusComp extends SimpleComp {
                 StoreViewState.get().getFilterString());
         var count = new CountComp<>(shownList, all);
 
-        var spacer = new Region();
-
-        var topBar = new HBox(label, spacer, count.createRegion());
-        AppFont.setSize(topBar, 1);
+        var c = count.createRegion();
+        var topBar = new HBox(label, c, Comp.hspacer().createRegion(), createDateSortButton().createRegion(), Comp.hspacer(2).createRegion(), createAlphabeticalSortButton().createRegion());
+        AppFont.setSize(label, 1);
+        AppFont.setSize(c, 1);
         topBar.setAlignment(Pos.CENTER);
-        HBox.setHgrow(spacer, Priority.ALWAYS);
         topBar.getStyleClass().add("top");
         return topBar;
     }
@@ -66,11 +83,15 @@ public class StoreEntryListStatusComp extends SimpleComp {
         filter.shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
             s.getText().requestFocus();
         });
-        var r = new StackPane(filter.createRegion());
-        r.setAlignment(Pos.CENTER);
-        r.getStyleClass().add("filter-bar");
-        AppFont.medium(r);
-        return r;
+
+        var f = filter.createRegion();
+        var hbox = new HBox(createButtons(), f);
+        hbox.setSpacing(8);
+        hbox.setAlignment(Pos.CENTER);
+        HBox.setHgrow(f, Priority.ALWAYS);
+        f.getStyleClass().add("filter-bar");
+        AppFont.medium(hbox);
+        return hbox;
     }
 
     private Region createButtons() {
@@ -78,15 +99,96 @@ public class StoreEntryListStatusComp extends SimpleComp {
         menu.setAlignment(Pos.CENTER);
         menu.setTextAlignment(TextAlignment.CENTER);
         AppFont.medium(menu);
-        GrowAugment.create(true, false).augment(menu);
         StoreCreationMenu.addButtons(menu);
         menu.setOpacity(0.85);
+        menu.setMinWidth(Region.USE_PREF_SIZE);
         return menu;
+    }
+
+    private Comp<?> createAlphabeticalSortButton() {
+        var icon = Bindings.createStringBinding(
+                () -> {
+                    if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC) {
+                        return "mdi2s-sort-alphabetical-descending";
+                    }
+                    if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
+                        return "mdi2s-sort-alphabetical-ascending";
+                    }
+                    return "mdi2s-sort-alphabetical-descending";
+                },
+                sortMode);
+        var alphabetical = new IconButtonComp(icon, () -> {
+            if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC) {
+                sortMode.setValue(StoreSortMode.ALPHABETICAL_DESC);
+            } else if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
+                sortMode.setValue(StoreSortMode.ALPHABETICAL_ASC);
+            } else {
+                sortMode.setValue(StoreSortMode.ALPHABETICAL_ASC);
+            }
+        });
+        alphabetical.apply(alphabeticalR -> {
+            alphabeticalR
+                    .get()
+                    .opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC
+                                        || sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
+                                    return 1.0;
+                                }
+                                return 0.4;
+                            },
+                            sortMode));
+        });
+        alphabetical.accessibleTextKey("sortAlphabetical");
+        alphabetical.apply(new FancyTooltipAugment<>("sortAlphabetical"));
+        alphabetical.shortcut(new KeyCodeCombination(KeyCode.P, KeyCombination.SHORTCUT_DOWN));
+        return alphabetical;
+    }
+
+    private Comp<?> createDateSortButton() {
+        var icon = Bindings.createStringBinding(
+                () -> {
+                    if (sortMode.getValue() == StoreSortMode.DATE_ASC) {
+                        return "mdi2s-sort-clock-ascending-outline";
+                    }
+                    if (sortMode.getValue() == StoreSortMode.DATE_DESC) {
+                        return "mdi2s-sort-clock-descending-outline";
+                    }
+                    return "mdi2s-sort-clock-ascending-outline";
+                },
+                sortMode);
+        var date = new IconButtonComp(icon, () -> {
+            if (sortMode.getValue() == StoreSortMode.DATE_ASC) {
+                sortMode.setValue(StoreSortMode.DATE_DESC);
+            } else if (sortMode.getValue() == StoreSortMode.DATE_DESC) {
+                sortMode.setValue(StoreSortMode.DATE_ASC);
+            } else {
+                sortMode.setValue(StoreSortMode.DATE_ASC);
+            }
+        });
+        date.apply(dateR -> {
+            dateR.get()
+                    .opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                if (sortMode.getValue() == StoreSortMode.DATE_ASC
+                                        || sortMode.getValue() == StoreSortMode.DATE_DESC) {
+                                    return 1.0;
+                                }
+                                return 0.4;
+                            },
+                            sortMode));
+        });
+        date.accessibleTextKey("sortLastUsed");
+        date.apply(new FancyTooltipAugment<>("sortLastUsed"));
+        date.shortcut(new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
+        return date;
     }
 
     @Override
     public Region createSimple() {
-        var bar = new VBox(createGroupListHeader(), createGroupListFilter(), createButtons());
+        var bar = new VBox(createGroupListHeader(), createGroupListFilter());
         bar.setFillWidth(true);
         bar.getStyleClass().add("bar");
         bar.getStyleClass().add("store-header-bar");
