@@ -51,6 +51,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                     });
                 });
             });
+            b.accessibleText(e.name());
             vbox.getChildren().add(b.createRegion());
         });
 
@@ -64,7 +65,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                         }
                         UserReportComp.show(event.build());
                     })
-                    .apply(new FancyTooltipAugment<>("reportIssue"));
+                    .apply(new FancyTooltipAugment<>("reportIssue")).accessibleTextKey("reportIssue");
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
@@ -73,7 +74,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2g-github", () -> Hyperlinks.open(Hyperlinks.GITHUB))
-                    .apply(new FancyTooltipAugment<>("visitGithubRepository"));
+                    .apply(new FancyTooltipAugment<>("visitGithubRepository")).accessibleTextKey("visitGithubRepository");
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
@@ -92,7 +93,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2d-discord", () -> Hyperlinks.open(Hyperlinks.DISCORD))
-                    .apply(new FancyTooltipAugment<>("discord"));
+                    .apply(new FancyTooltipAugment<>("discord")).accessibleTextKey("discord");
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });
@@ -101,7 +102,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableAlert.showIfNeeded())
-                    .apply(new FancyTooltipAugment<>("updateAvailableTooltip"));
+                    .apply(new FancyTooltipAugment<>("updateAvailableTooltip")).accessibleTextKey("updateAvailableTooltip");
             b.apply(struc -> {
                 AppFont.setSize(struc.get(), 2);
             });

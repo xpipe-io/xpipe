@@ -70,7 +70,7 @@
 -fx-background-color: derive(-color-neutral-muted, 25%);
 }
 
-.store-entry-comp:hover {
+.store-entry-comp:hover, .store-entry-comp:focused {
     -fx-background-color: -color-neutral-muted;
 }
 
@@ -82,7 +82,7 @@
 -fx-opacity: 1.0;
 }
 
-.expand-button:hover {
+.expand-button:hover,.expand-button:focused  {
 -fx-background-color: -color-neutral-muted;
 }
 
@@ -101,7 +101,7 @@
 /* Section */
 
 .store-entry-section-comp .separator {
--fx-padding: 0 0.75em 0 0.75em;
+-fx-padding: 0 12px 0 35px;
 -fx-border-insets: 0px;
 }
 

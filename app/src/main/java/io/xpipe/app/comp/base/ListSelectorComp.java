@@ -35,6 +35,7 @@ public class ListSelectorComp<T> extends SimpleComp {
         for (var v : values) {
             var cb = new CheckBox(null);
             cbs.add(cb);
+            cb.setAccessibleText(toString.apply(v));
             cb.setSelected(selected.contains(v));
             cb.selectedProperty().addListener((c, o, n) -> {
                 if (n) {

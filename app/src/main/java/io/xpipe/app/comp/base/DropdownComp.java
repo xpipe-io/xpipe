@@ -49,6 +49,7 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
 
         button.setGraphic(graphic);
         button.getStyleClass().add("dropdown-comp");
+        button.setAccessibleText("Dropdown actions");
 
         return new SimpleCompStructure<>(button);
     }

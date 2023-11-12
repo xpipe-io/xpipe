@@ -1,13 +1,17 @@
 .category-button {
 -fx-opacity: 0.8;
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+    -fx-padding: 0 0 0 2;
+    -fx-background-insets: 0;
 }
 
 .category-button .settings {
 -fx-opacity: 1.0;
 }
 
- .category-button:hover .name * {
-    -fx-underline: true ;
+ .category-button:hover,  .category-button:focused {
+     -fx-background-color: -color-bg-default;
 }
 
 .category:selected .category-button {
@@ -20,11 +24,13 @@
 }
 
 .category .separator{
--fx-padding: 0;
+    -fx-padding: 0 5 0 5;
 }
 
 
 .category .separator .line {
 -fx-pref-height: 1;
+    -fx-background-color: -color-fg-default;
+    -fx-opacity: 0.5;
 }
 

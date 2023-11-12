@@ -144,7 +144,8 @@ public class ScanAlert {
                             BooleanScope.execute(loading, () -> {
                                 entry.get().get().setExpanded(true);
 
-                                for (var a : selected) {
+                                var copy = new ArrayList<>(selected);
+                                for (var a : copy) {
                                     try {
                                         a.getScanner().run();
                                     } catch (Exception ex) {

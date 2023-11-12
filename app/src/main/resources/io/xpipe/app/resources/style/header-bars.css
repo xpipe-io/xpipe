@@ -33,11 +33,11 @@
  -fx-border-radius: 4px;
  -fx-border-width: 1px;
 -fx-padding: 0;
--fx-background-color: -color-fg-default;
+ -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(208, 220, 252) 40%, rgba(219, 219, 255, 1) 50%, rgb(250, 242, 242) 100%);
 -fx-border-color: transparent;
 }
 
-.store-header-bar .menu-button:hover {
+.store-header-bar .menu-button:hover, .store-header-bar .menu-button:focused {
  -fx-background-color: -color-bg-default;
  -fx-border-color: -color-fg-default;
 }
@@ -55,15 +55,15 @@
  -fx-border-width: 4;
 }
 
-.store-header-bar .menu-button:hover > * {
+.store-header-bar .menu-button:hover > *, .store-header-bar .menu-button:focused > * {
  -fx-text-fill: -color-fg-default;
 }
 
-.store-header-bar .menu-button:hover > * > .ikonli-font-icon {
+.store-header-bar .menu-button:hover > * > .ikonli-font-icon, .store-header-bar .menu-button:focused > * > .ikonli-font-icon {
  -fx-icon-color: -color-fg-default;
 }
 
-.store-header-bar .menu-button:hover .arrow {
+.store-header-bar .menu-button:hover .arrow, .store-header-bar .menu-button:focused .arrow {
  -fx-border-color: -color-fg-default;
  -fx-border-width: 4;
 }
@@ -147,11 +147,14 @@
 }
 
 .bar .name {
+ -fx-font-weight: BOLD;
 -fx-text-fill: -color-fg-default;
 }
 
 .bar .count-comp {
+ -fx-font-weight: BOLD;
 -fx-padding: 0.0em 0em 0.0em 0.4em;
+ -fx-text-fill: -color-fg-muted;
 }
 
 .bar .filter-bar .text-field {
@@ -160,11 +163,12 @@
 }
 
 .bar .filter-bar {
+ -fx-padding: 2;
 -fx-background-radius: 4px;
--fx-background-color: -color-bg-default;
+ -fx-background-color: -color-bg-default;
+ -fx-border-color: -color-fg-default;
  -fx-border-width: 0.05em;
 -fx-border-radius: 4px;
--fx-border-color: -color-border-default;
 }
 
 

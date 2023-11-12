@@ -209,6 +209,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                             action.execute();
                         });
                     });
+            button.accessibleText(actionProvider.getName(wrapper.getEntry().ref()).getValue());
             button.apply(new FancyTooltipAugment<>(
                     actionProvider.getName(wrapper.getEntry().ref())));
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {

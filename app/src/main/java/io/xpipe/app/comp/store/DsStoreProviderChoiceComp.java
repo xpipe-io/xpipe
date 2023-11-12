@@ -60,6 +60,7 @@ public class DsStoreProviderChoiceComp extends Comp<CompStructure<ComboBox<Node>
         ComboBox<Node> cb = comboBox.build();
         cb.getStyleClass().add("data-source-type");
         cb.getStyleClass().add("choice-comp");
+        cb.setAccessibleText("Choose connection type");
         return new SimpleCompStructure<>(cb);
     }
 }
