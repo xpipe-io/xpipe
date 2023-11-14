@@ -33,7 +33,6 @@ public abstract class DataStorage {
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
 
     private static final String PERSIST_PROP = "io.xpipe.storage.persist";
-    private static final String IMMUTABLE_PROP = "io.xpipe.storage.immutable";
 
     private static DataStorage INSTANCE;
     protected final Path dir;
@@ -297,6 +296,10 @@ public abstract class DataStorage {
         var byId = getStoreEntryIfPresent(e.getUuid()).orElse(null);
         if (byId != null) {
             return byId;
+        }
+
+        if (getStoreCategoryIfPresent(e.getCategoryUuid()).isEmpty()) {
+            e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
         }
 
         var syntheticParent = getSyntheticParent(e);

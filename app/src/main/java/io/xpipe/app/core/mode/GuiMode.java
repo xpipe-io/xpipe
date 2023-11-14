@@ -6,7 +6,6 @@ import io.xpipe.app.core.AppMainWindow;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.update.CommercializationAlert;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.util.UnlockAlert;
 import javafx.stage.Stage;
@@ -24,7 +23,6 @@ public class GuiMode extends PlatformMode {
 
         UnlockAlert.showIfNeeded();
         UpdateChangelogAlert.showIfNeeded();
-        CommercializationAlert.showIfNeeded();
         AppGreetings.showIfNeeded();
 
         TrackEvent.info("mode", "Waiting for window setup completion ...");

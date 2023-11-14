@@ -26,6 +26,8 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final GitStorageHandler gitStorageHandler;
 
+    private boolean loaded;
+
     StandardStorage() {
         this.gitStorageHandler = LicenseProvider.get().createStorageHandler();
         this.gitStorageHandler.init(dir);
@@ -109,7 +111,6 @@ public class StandardStorage extends DataStorage {
     public synchronized void load() {
         this.gitStorageHandler.prepareForLoad();
 
-        var newSession = isNewSession();
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
 
@@ -170,6 +171,12 @@ public class StandardStorage extends DataStorage {
             if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
                 var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
                 cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
+                storeCategories.add(cat);
+            }
+
+            if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+                var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
+                cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
                 storeCategories.add(cat);
             }
 
@@ -289,9 +296,15 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
+
+        loaded = true;
     }
 
     public synchronized void save() {
+        if (!loaded) {
+            return;
+        }
+
         this.gitStorageHandler.prepareForSave();
 
         try {

@@ -230,6 +230,9 @@ public class AppMainWindow {
     }
 
     public void initialize() {
+        stage.setMinWidth(550);
+        stage.setMinHeight(400);
+
         initializeWindow();
         setupListeners();
         windowActive.set(true);
