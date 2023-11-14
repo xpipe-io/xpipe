@@ -65,8 +65,8 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
         var c = count.createRegion();
         var topBar = new HBox(label, c, Comp.hspacer().createRegion(), createDateSortButton().createRegion(), Comp.hspacer(2).createRegion(), createAlphabeticalSortButton().createRegion());
-        AppFont.setSize(label, 1);
-        AppFont.setSize(c, 1);
+        AppFont.setSize(label, 3);
+        AppFont.setSize(c, 3);
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top");
         return topBar;
@@ -83,6 +83,11 @@ public class StoreEntryListStatusComp extends SimpleComp {
         filter.shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
             s.getText().requestFocus();
         });
+        filter.apply(struc -> struc.get().sceneProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                            struc.getText().requestFocus();
+            }
+        }));
 
         var f = filter.createRegion();
         var hbox = new HBox(createButtons(), f);

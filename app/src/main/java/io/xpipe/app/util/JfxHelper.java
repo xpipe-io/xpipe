@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -13,10 +13,6 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class JfxHelper {
-
-    public static void fontSize(Node node, double relativeSize) {
-        node.setStyle(node.getStyle() + "-fx-font-size: " + (relativeSize) + "em;");
-    }
 
     public static Region createNamedEntry(String nameString, String descString) {
         var header = new Label(nameString);
@@ -61,18 +57,18 @@ public class JfxHelper {
         AppFont.header(header);
         var desc = new Label(descString);
         AppFont.small(desc);
-        var text = new VBox(header, desc);
-        text.setSpacing(2);
+        var text = new VBox(header, new Spacer(), desc);
 
         if (image == null) {
             return text;
         }
 
-        var size = AppFont.getPixelSize(1) + AppFont.getPixelSize(-2) + 8;
+        var size = 40;
         var graphic = PrettyImageHelper.ofFixedSquare(image, (int) size).createRegion();
 
         var hbox = new HBox(graphic, text);
         hbox.setAlignment(Pos.CENTER_LEFT);
+        hbox.setFillHeight(true);
         hbox.setSpacing(10);
 
         //        graphic.fitWidthProperty().bind(Bindings.createDoubleBinding(() -> header.getHeight() +

@@ -41,7 +41,7 @@
  -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(12, 11, 11) 40%, rgb(32, 32, 40) 50%, rgb(35, 29, 29) 100%);
 }
 
-.root:light .store-header-bar .menu-button:hover, .root:light .store-header-bar .menu-button:focused,.root:dark .store-header-bar .menu-button:hover, .root:dark .store-header-bar .menu-button:focused {
+.root:light .store-header-bar .menu-button:hover, .root:dark .store-header-bar .menu-button:hover {
  -fx-background-color: -color-bg-default;
  -fx-border-color: -color-fg-default;
 }
@@ -59,15 +59,15 @@
  -fx-border-width: 4;
 }
 
-.store-header-bar .menu-button:hover > *, .store-header-bar .menu-button:focused > * {
+.store-header-bar .menu-button:hover > * {
  -fx-text-fill: -color-fg-default;
 }
 
-.store-header-bar .menu-button:hover > * > .ikonli-font-icon, .store-header-bar .menu-button:focused > * > .ikonli-font-icon {
+.store-header-bar .menu-button:hover > * > .ikonli-font-icon {
  -fx-icon-color: -color-fg-default;
 }
 
-.store-header-bar .menu-button:hover .arrow, .store-header-bar .menu-button:focused .arrow {
+.store-header-bar .menu-button:hover .arrow {
  -fx-border-color: -color-fg-default;
  -fx-border-width: 4;
 }
