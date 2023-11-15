@@ -1,6 +1,6 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.charsetter.Charsetter;
+import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableFunction;
 
 import java.io.InputStream;
@@ -12,10 +12,11 @@ import java.util.function.Function;
 
 public interface CommandControl extends ProcessControl {
 
-    int UNASSIGNED_EXIT_CODE = -1;
-    int EXIT_TIMEOUT_EXIT_CODE = -2;
-    int START_FAILED_EXIT_CODE = -3;
-    int INTERNAL_ERROR_EXIT_CODE = -4;
+    // Keep these out of a normal exit code range
+    int UNASSIGNED_EXIT_CODE = -80001;
+    int EXIT_TIMEOUT_EXIT_CODE = -80002;
+    int START_FAILED_EXIT_CODE = -80003;
+    int INTERNAL_ERROR_EXIT_CODE = -80004;
 
     enum TerminalExitMode {
         KEEP_OPEN,
@@ -71,7 +72,7 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl exitTimeout(Integer timeout);
 
-    void withStdoutOrThrow(Charsetter.FailableConsumer<InputStreamReader, Exception> c);
+    void withStdoutOrThrow(FailableConsumer<InputStreamReader, Exception> c);
 
     String readStdoutDiscardErr() throws Exception;
 
@@ -84,6 +85,8 @@ public interface CommandControl extends ProcessControl {
     byte[] readRawBytesOrThrow() throws Exception;
 
     String readStdoutOrThrow() throws Exception;
+
+    String readStdoutAndWait() throws Exception;
 
     default boolean discardAndCheckExit() throws ProcessOutputException {
         try {

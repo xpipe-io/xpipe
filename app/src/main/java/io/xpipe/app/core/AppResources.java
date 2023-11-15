@@ -13,23 +13,49 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AppResources {
 
     public static final String XPIPE_MODULE = "io.xpipe.app";
 
-    private static ModuleFileSystem openFileSystem(String module) throws IOException {
+    private static final Map<String, ModuleFileSystem> fileSystems = new ConcurrentHashMap<>();
+
+    public static void reset() {
+        fileSystems.forEach((s, moduleFileSystem) -> {
+            try {
+                moduleFileSystem.close();
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).handle();
+            }
+        });
+        fileSystems.clear();
+    }
+
+    private static ModuleFileSystem openFileSystemIfNeeded(String module) throws IOException {
         var layer = AppExtensionManager.getInstance() != null
                 ? AppExtensionManager.getInstance().getExtendedLayer()
                 : null;
+
+        // Only cache file systems with extended layer
+        if (layer != null && fileSystems.containsKey(module)) {
+            return fileSystems.get(module);
+        }
+
         if (layer == null) {
             layer = ModuleLayer.boot();
         }
-        return (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
+
+        var fs = (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
+        if (AppExtensionManager.getInstance() != null) {
+            fileSystems.put(module, fs);
+        }
+        return fs;
     }
 
     public static Optional<URL> getResourceURL(String module, String file) {
-        try (var fs = openFileSystem(module)) {
+        try {
+            var fs = openFileSystemIfNeeded(module);
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
             var url = f.getWrappedPath().toUri().toURL();
             return Optional.of(url);
@@ -64,7 +90,8 @@ public class AppResources {
 
     private static void withResource(String module, String file, FailableConsumer<Path, IOException> con) {
         var path = module.startsWith("io.xpipe") ? module.replace('.', '/') + "/resources/" + file : file;
-        try (var fs = openFileSystem(module)) {
+        try {
+            var fs = openFileSystemIfNeeded(module);
             var f = fs.getPath(path);
             con.accept(f);
         } catch (IOException e) {
@@ -73,7 +100,8 @@ public class AppResources {
     }
 
     private static boolean withLocalDevResource(String module, String file, FailableConsumer<Path, IOException> con) {
-        try (var fs = openFileSystem(module)) {
+        try {
+            var fs = openFileSystemIfNeeded(module);
             var url = fs.getPath("").getWrappedPath().toUri().toURL();
             if (!url.getProtocol().equals("jar")) {
                 return false;

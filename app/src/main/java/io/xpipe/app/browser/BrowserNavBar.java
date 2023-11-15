@@ -79,7 +79,7 @@ public class BrowserNavBar extends SimpleComp {
 
                     struc.get().setPromptText("Overview of " + model.getName());
                 })
-                .shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), s -> {
+                .shortcut(new KeyCodeCombination(KeyCode.P, KeyCombination.SHORTCUT_DOWN), s -> {
                     s.get().requestFocus();
                 })
                 .accessibleText("Current path");

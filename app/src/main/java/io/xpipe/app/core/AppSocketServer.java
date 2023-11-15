@@ -45,8 +45,9 @@ public class AppSocketServer {
     }
 
     public static void init() {
+        int port = -1;
         try {
-            var port = BeaconConfig.getUsedPort();
+            port = BeaconConfig.getUsedPort();
             INSTANCE = new AppSocketServer(port);
             INSTANCE.createSocketListener();
 
@@ -56,7 +57,7 @@ public class AppSocketServer {
                     .handle();
         } catch (Exception ex) {
             // Not terminal!
-            ErrorEvent.fromThrowable(ex).build().handle();
+            ErrorEvent.fromThrowable(ex).description("Unable to start local socket server on port " + port).build().handle();
         }
     }
 

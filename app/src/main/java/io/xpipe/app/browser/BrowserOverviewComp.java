@@ -6,8 +6,10 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileSystem;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -27,22 +29,33 @@ public class BrowserOverviewComp extends SimpleComp {
     @Override
     @SneakyThrows
     protected Region createSimple() {
+        // The open file system might have already been closed
+        if (model.getFileSystem() == null) {
+            return new Region();
+        }
+
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
-        // TODO: May be move this into another thread
-        var common = sc.getOsType().determineInterestingPaths(sc).stream()
-                .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
-                .filter(entry -> {
-                    try {
-                        return sc.getShellDialect()
-                                .directoryExists(sc, entry.getPath())
-                                .executeAndCheck();
-                    } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
-                        return false;
-                    }
-                })
-                .toList();
-        var commonOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(common), false);
+
+        var commonPlatform = FXCollections.<FileSystem.FileEntry>observableArrayList();
+        ThreadHelper.runFailableAsync(() -> {
+            var common = sc.getOsType().determineInterestingPaths(sc).stream()
+                    .map(s -> FileSystem.FileEntry.ofDirectory(model.getFileSystem(), s))
+                    .filter(entry -> {
+                        try {
+                            return sc.getShellDialect()
+                                    .directoryExists(sc, entry.getPath())
+                                    .executeAndCheck();
+                        } catch (Exception e) {
+                            ErrorEvent.fromThrowable(e).handle();
+                            return false;
+                        }
+                    })
+                    .toList();
+            Platform.runLater(() -> {
+                commonPlatform.setAll(common);
+            });
+        });
+        var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
         var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview)
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
 

@@ -68,6 +68,7 @@ public class BaseMode extends OperationMode {
         StoreViewState.reset();
         DataStorage.reset();
         AppPrefs.reset();
+        AppResources.reset();
         AppExtensionManager.reset();
         AppDataLock.unlock();
         // Shut down socket server last to keep a non-daemon thread running

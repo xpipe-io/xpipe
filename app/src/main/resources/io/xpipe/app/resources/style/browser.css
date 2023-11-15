@@ -1,7 +1,21 @@
 .download-background {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px 0 0 0;
+    -fx-padding: 1em;
+}
+
+.transfer .button {
 -fx-border-color: -color-border-default;
--fx-border-width: 1px 0 0 0;
--fx-padding: 1em;
+-fx-border-width: 1px;
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-padding: 0.1em 0.2em;
+}
+
+.transfer .button:hover {
+    -fx-background-color: -color-bg-subtle;
+    -fx-opacity: 1.0;
 }
 
 .browser .welcome .button {

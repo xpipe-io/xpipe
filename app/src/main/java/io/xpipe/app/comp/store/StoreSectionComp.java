@@ -53,7 +53,9 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
                 .focusTraversable()
-                .accessibleText("Expand")
+                .accessibleText(Bindings.createStringBinding(() -> {
+                    return "Expand " + section.getWrapper().getName().getValue();
+                }, section.getWrapper().getName()))
                 .disable(BindingsHelper.persist(
                         Bindings.size(section.getShownChildren()).isEqualTo(0)))
                 .grow(false, true)
@@ -85,7 +87,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         return new VerticalComp(List.of(
                         new HorizontalComp(topEntryList)
                                 .apply(struc -> struc.get().setFillHeight(true)),
-                        Comp.separator().visible(expanded),
+                        Comp.separator().hide(BindingsHelper.persist(expanded.not())),
                         new HorizontalComp(List.of(content))
                                 .styleClass("content")
                                 .apply(struc -> struc.get().setFillHeight(true))

@@ -9,7 +9,6 @@ import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LockChangeAlert;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
@@ -58,7 +57,7 @@ public class VaultCategory extends AppPrefsCategory {
 
     @SneakyThrows
     public Category create() {
-        var pro = LicenseProvider.get().getFeature("gitVault").isSupported();
+        var pro = true;
         BooleanField enable = BooleanField.ofBooleanType(prefs.enableGitStorage)
                 .editable(pro)
                 .render(() -> {

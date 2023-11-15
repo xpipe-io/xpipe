@@ -18,7 +18,6 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Getter
@@ -38,6 +37,7 @@ public class BrowserModel {
 
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
+                selection.clear();
                 return;
             }
 
@@ -60,11 +60,13 @@ public class BrowserModel {
 
     public void reset() {
         var list = new ArrayList<BrowserSavedState.Entry>();
-        openFileSystems.forEach(model -> {
-            if (DataStorage.get().getStoreEntries().contains(model.getEntry().get())) {
-                list.add(new BrowserSavedState.Entry(model.getEntry().get().getUuid(), model.getCurrentPath().get()));
-            }
-        });
+        synchronized (BrowserModel.this) {
+            openFileSystems.forEach(model -> {
+                if (DataStorage.get().getStoreEntries().contains(model.getEntry().get())) {
+                    list.add(new BrowserSavedState.Entry(model.getEntry().get().getUuid(), model.getCurrentPath().get()));
+                }
+            });
+        }
 
         // Don't override state if it is empty
         if (list.size() == 0) {
@@ -86,8 +88,11 @@ public class BrowserModel {
         }
 
         var chosen = new ArrayList<>(selection);
-        for (OpenFileSystemModel openFileSystem : openFileSystems) {
-            closeFileSystemAsync(openFileSystem);
+
+        synchronized (BrowserModel.this) {
+            for (OpenFileSystemModel openFileSystem : openFileSystems) {
+                closeFileSystemAsync(openFileSystem);
+            }
         }
 
         if (chosen.size() == 0) {
@@ -101,9 +106,6 @@ public class BrowserModel {
 
     public void closeFileSystemAsync(OpenFileSystemModel open) {
         ThreadHelper.runAsync(() -> {
-            if (Objects.equals(selected.getValue(), open)) {
-                selected.setValue(null);
-            }
             open.closeSync();
             synchronized (BrowserModel.this) {
                 openFileSystems.remove(open);
@@ -111,33 +113,7 @@ public class BrowserModel {
         });
     }
 
-    public void openExistingFileSystemIfPresent(DataStoreEntryRef<? extends FileSystemStore> store) {
-        var found = openFileSystems.stream().filter(model -> Objects.equals(model.getEntry(), store)).findFirst();
-        if (found.isPresent()) {
-            selected.setValue(found.get());
-        } else {
-            openFileSystemAsync(store, null, null);
-        }
-    }
-
     public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, String path, BooleanProperty externalBusy) {
-        //        // Prevent multiple tabs in non browser modes
-        //        if (!mode.equals(Mode.BROWSER)) {
-        //            ThreadHelper.runFailableAsync(() -> {
-        //                var open = openFileSystems.size() > 0 ? openFileSystems.get(0) : null;
-        //                if (open != null) {
-        //                    open.closeSync();
-        //                    openFileSystems.remove(open);
-        //                }
-        //
-        //                var model = new OpenFileSystemModel(this, store);
-        //                openFileSystems.add(model);
-        //                selected.setValue(model);
-        //                model.switchSync(store);
-        //            });
-        //            return;
-        //        }
-
         if (store == null) {
             return;
         }
@@ -146,15 +122,15 @@ public class BrowserModel {
             OpenFileSystemModel model;
 
             try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+                model = new OpenFileSystemModel(this, store);
+                model.initFileSystem();
+                model.initSavedState();
                 // Prevent multiple calls from interfering with each other
                 synchronized (BrowserModel.this) {
-                    model = new OpenFileSystemModel(this, store);
-                    model.initFileSystem();
-                    model.initSavedState();
+                    openFileSystems.add(model);
+                    // The tab pane doesn't automatically select new tabs
+                    selected.setValue(model);
                 }
-
-                openFileSystems.add(model);
-                selected.setValue(model);
             }
             if (path != null) {
                 model.initWithGivenDirectory(path);

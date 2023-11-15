@@ -99,6 +99,27 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentStateNode = storePersistentState;
     }
 
+    private DataStoreEntry(
+            Path directory,
+            UUID uuid,
+            UUID categoryUuid,
+            String name,
+            Instant lastUsed,
+            Instant lastModified,
+            DataStore store
+    ) {
+        super(directory, uuid, name, lastUsed, lastModified, false);
+        this.categoryUuid = categoryUuid;
+        this.store = store;
+        this.storeNode = null;
+        this.validity = Validity.COMPLETE;
+        this.configuration = Configuration.defaultConfiguration();
+        this.expanded = false;
+        this.color = null;
+        this.provider = null;
+        this.storePersistentStateNode = null;
+    }
+
     @Override
     public boolean equals(Object o) {
         return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
@@ -114,6 +135,18 @@ public class DataStoreEntry extends StorageElement {
         return getName();
     }
 
+    public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
+        return new DataStoreEntry(
+                null,
+                UUID.randomUUID(),
+                DataStorage.get().getSelectedCategory().getUuid(),
+                UUID.randomUUID().toString(),
+                Instant.now(),
+                Instant.now(),
+                store
+        );
+    }
+
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
         return createNew(UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name, store);
     }
@@ -121,6 +154,8 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
+        var node = DataStorageWriter.storeToNode(store);
+        var validity = DataStorageParser.storeFromNode(node) == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -128,9 +163,9 @@ public class DataStoreEntry extends StorageElement {
                 name,
                 Instant.now(),
                 Instant.now(),
-                DataStorageWriter.storeToNode(store),
+                node,
                 true,
-                store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE,
+                validity,
                 Configuration.defaultConfiguration(),
                 null,
                 false, null

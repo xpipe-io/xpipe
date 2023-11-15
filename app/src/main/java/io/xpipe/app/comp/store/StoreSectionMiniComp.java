@@ -74,7 +74,9 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     .apply(struc -> struc.get().setMinWidth(20))
                     .apply(struc -> struc.get().setPrefWidth(20))
                     .focusTraversable()
-                    .accessibleText("Expand")
+                    .accessibleText(Bindings.createStringBinding(() -> {
+                        return "Expand " + section.getWrapper().getName().getValue();
+                    }, section.getWrapper().getName()))
                     .disable(BindingsHelper.persist(
                             Bindings.size(section.getAllChildren()).isEqualTo(0)))
                     .grow(false, true)

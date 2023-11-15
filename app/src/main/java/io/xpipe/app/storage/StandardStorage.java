@@ -26,6 +26,8 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final GitStorageHandler gitStorageHandler;
 
+    private boolean loaded;
+
     StandardStorage() {
         this.gitStorageHandler = LicenseProvider.get().createStorageHandler();
         this.gitStorageHandler.init(dir);
@@ -109,7 +111,6 @@ public class StandardStorage extends DataStorage {
     public synchronized void load() {
         this.gitStorageHandler.prepareForLoad();
 
-        var newSession = isNewSession();
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
 
@@ -173,6 +174,12 @@ public class StandardStorage extends DataStorage {
                 storeCategories.add(cat);
             }
 
+            if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+                var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
+                cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
+                storeCategories.add(cat);
+            }
+
             if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
                 storeCategories.add(new DataStoreCategory(
                         categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
@@ -218,7 +225,7 @@ public class StandardStorage extends DataStorage {
                             entry.setCategoryUuid(null);
                         }
 
-                        storeEntries.add(entry);
+                        storeEntries.put(entry, entry);
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(ex);
@@ -241,7 +248,7 @@ public class StandardStorage extends DataStorage {
                     ErrorEvent.fromThrowable(exception.get()).handle();
                 }
 
-                storeEntries.forEach(dataStoreCategory -> {
+                storeEntriesSet.forEach(dataStoreCategory -> {
                     if (dataStoreCategory.getCategoryUuid() == null
                             || getStoreCategoryIfPresent(dataStoreCategory.getCategoryUuid())
                             .isEmpty()) {
@@ -253,24 +260,24 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
 
-            var hasFixedLocal = storeEntries.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
+            var hasFixedLocal = storeEntriesSet.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
             if (!hasFixedLocal) {
                 var e = DataStoreEntry.createNew(
                         LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
                 e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
                 e.setConfiguration(
                         StorageElement.Configuration.builder().deletable(false).build());
-                storeEntries.add(e);
+                storeEntries.put(e, e);
                 e.validate();
             }
 
             var local = DataStorage.get().getStoreEntry(LOCAL_ID);
-            if (storeEntries.stream().noneMatch(entry -> entry.getColor() != null)) {
+            if (storeEntriesSet.stream().noneMatch(entry -> entry.getColor() != null)) {
                 local.setColor(DataStoreColor.BLUE);
             }
 
         refreshValidities(true);
-        storeEntries.forEach(entry -> {
+        storeEntriesSet.forEach(entry -> {
             var syntheticParent = getSyntheticParent(entry);
             syntheticParent.ifPresent(entry1 -> {
                 addStoreEntryIfNotPresent(entry1);
@@ -280,8 +287,8 @@ public class StandardStorage extends DataStorage {
 
         // Save to apply changes
         if (!hasFixedLocal) {
-            storeEntries.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
-            storeEntries.stream().filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).forEach(entry -> {
+            storeEntriesSet.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
+            storeEntriesSet.stream().filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).forEach(entry -> {
                 entry.dirty = true;
                 entry.setStoreNode(DataStorageWriter.storeToNode(entry.getStore()));
             });
@@ -289,9 +296,15 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
+
+        loaded = true;
     }
 
     public synchronized void save() {
+        if (!loaded) {
+            return;
+        }
+
         this.gitStorageHandler.prepareForSave();
 
         try {
@@ -322,7 +335,7 @@ public class StandardStorage extends DataStorage {
             }
         });
 
-        storeEntries.stream()
+        storeEntriesSet.stream()
                 .filter(dataStoreEntry -> dataStoreEntry.shouldSave())
                 .forEach(e -> {
                     try {

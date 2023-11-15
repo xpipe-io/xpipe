@@ -10,13 +10,25 @@ import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class AppLayoutModel {
+
+    @Data
+    @Builder
+    @Jacksonized
+    public static class SavedState {
+
+        double sidebarWidth;
+        double browserConnectionsWidth;
+    }
 
     private static AppLayoutModel INSTANCE;
 
@@ -25,13 +37,22 @@ public class AppLayoutModel {
     }
 
     public static void init() {
-        INSTANCE = new AppLayoutModel();
+        var state = AppCache.get("layoutState", SavedState.class, () -> new SavedState(260, 300));
+        INSTANCE = new AppLayoutModel(state);
     }
 
+    public static void reset() {
+        AppCache.update("layoutState", INSTANCE.savedState);
+        INSTANCE = null;
+    }
+
+    @Getter
+    private final SavedState savedState;
     private final List<Entry> entries;
     private final Property<Entry> selected;
 
-    public AppLayoutModel() {
+    public AppLayoutModel(SavedState savedState) {
+        this.savedState = savedState;
         this.entries = createEntryList();
         this.selected = new SimpleObjectProperty<>(entries.get(1));
     }

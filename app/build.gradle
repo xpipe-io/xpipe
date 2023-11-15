@@ -110,7 +110,8 @@ project.ext {
             "-Xmx8g",
             "-Dio.xpipe.app.arch=$rootProject.arch",
             "-Dfile.encoding=UTF-8",
-            '-XX:+UseZGC',
+            // Disable this for now as it requires Windows 10+
+            // '-XX:+UseZGC',
             "-Dvisualvm.display.name=XPipe"
     ]
 }
@@ -137,7 +138,7 @@ application {
 run {
     systemProperty 'io.xpipe.app.useVirtualThreads', 'false'
     systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_git3/"
+    systemProperty 'io.xpipe.app.dataDir', "$projectDir/local_git8/"
     systemProperty 'io.xpipe.app.writeLogs', "true"
     systemProperty 'io.xpipe.app.writeSysOut', "true"
     systemProperty 'io.xpipe.app.developerMode', "true"

@@ -9,9 +9,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public interface FileType {
 
@@ -45,10 +44,10 @@ public interface FileType {
 
                                 return "." + r;
                             })
-                            .toList();
+                            .collect(Collectors.toSet());
                     var darkIcon = split[2].trim();
                     var lightIcon = split.length > 3 ? split[3].trim() : darkIcon;
-                    ALL.add(new FileType.Simple(id, lightIcon, darkIcon, filter.toArray(String[]::new)));
+                    ALL.add(new FileType.Simple(id, lightIcon, darkIcon, filter));
                 }
             }
         });
@@ -59,9 +58,9 @@ public interface FileType {
 
         private final String id;
         private final IconVariant icon;
-        private final String[] endings;
+        private final Set<String> endings;
 
-        public Simple(String id, String lightIcon, String darkIcon, String... endings) {
+        public Simple(String id, String lightIcon, String darkIcon, Set<String> endings) {
             this.icon = new IconVariant(lightIcon, darkIcon);
             this.id = id;
             this.endings = endings;
@@ -73,8 +72,7 @@ public interface FileType {
                 return false;
             }
 
-            return Arrays.stream(endings)
-                    .anyMatch(ending -> entry.getPath().toLowerCase().endsWith(ending.toLowerCase()));
+            return endings.contains(entry.getPath().toLowerCase(Locale.ROOT));
         }
 
         @Override

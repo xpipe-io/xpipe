@@ -88,9 +88,6 @@ public final class BrowserFileListModel {
                         .toList()
                 : all.getValue();
 
-        Comparator<BrowserEntry> tableComparator = comparatorProperty.getValue();
-        var comparator =
-                tableComparator != null ? FILE_TYPE_COMPARATOR.thenComparing(tableComparator) : FILE_TYPE_COMPARATOR;
         var listCopy = new ArrayList<>(filtered);
         sort(listCopy);
         shown.setValue(listCopy);

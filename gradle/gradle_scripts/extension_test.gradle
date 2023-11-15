@@ -18,7 +18,7 @@ def daemonCommand = attachDebugger ? ':app:runAttachedDebugger' : ':app:run'
 test {
     workingDir = rootDir
 
-    jvmArgs += ["--enable-preview", "-Xmx2g"]
+    jvmArgs += ["-Xmx2g"]
 
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",
@@ -51,7 +51,7 @@ task productionTest(type: Test) {
     useJUnitPlatform()
     workingDir = rootDir
 
-    jvmArgs += ["--enable-preview", "-Xmx2g"]
+    jvmArgs += ["-Xmx2g"]
 
     // Daemon properties
     systemProperty "io.xpipe.beacon.daemonArgs",

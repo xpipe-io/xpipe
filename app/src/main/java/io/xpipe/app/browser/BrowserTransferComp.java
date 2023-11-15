@@ -73,8 +73,8 @@ public class BrowserTransferComp extends SimpleComp {
                         .apply(struc -> struc.get().setSpacing(10)),
                 button -> {
                     var p = new AnchorPane(button);
-                    AnchorPane.setRightAnchor(button, 20.0);
-                    AnchorPane.setTopAnchor(button, 20.0);
+                    AnchorPane.setRightAnchor(button, 10.0);
+                    AnchorPane.setTopAnchor(button, 10.0);
                     p.setPickOnBounds(false);
                     return p;
                 });
@@ -155,6 +155,6 @@ public class BrowserTransferComp extends SimpleComp {
                             });
                         }),
                 PlatformThread.sync(stage.getDownloading()));
-        return stack.createRegion();
+        return stack.styleClass("transfer").createRegion();
     }
 }

@@ -13,7 +13,7 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @Jacksonized
 @SuperBuilder
-public class ShellStoreState extends DataStoreState {
+public class ShellStoreState extends DataStoreState implements OsNameState {
 
     OsType osType;
     String osName;

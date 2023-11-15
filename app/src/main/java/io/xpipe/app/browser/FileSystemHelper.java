@@ -1,12 +1,11 @@
 package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.ConnectionFileSystem;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.LocalStore;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,28 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class FileSystemHelper {
-
-    public static String getStartDirectory(OpenFileSystemModel model) throws Exception {
-        // Handle special case when file system creation has failed
-        if (model.getFileSystem() == null) {
-            return null;
-        }
-
-        ConnectionFileSystem fileSystem = (ConnectionFileSystem) model.getFileSystem();
-        var current = !model.isLocal()
-                ? fileSystem
-                        .getShellControl()
-                        .executeSimpleStringCommand(
-                                fileSystem.getShellControl().getShellDialect().getPrintWorkingDirectoryCommand())
-                : fileSystem
-                        .getShell()
-                        .get()
-                        .getOsType()
-                        .getHomeDirectory(fileSystem.getShell().get());
-        var r = resolveDirectoryPath(model, evaluatePath(model, adjustPath(model, current)));
-        validateDirectoryPath(model, r);
-        return r;
-    }
 
     public static String adjustPath(OpenFileSystemModel model, String path) {
         if (path == null) {

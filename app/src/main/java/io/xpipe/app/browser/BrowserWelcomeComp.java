@@ -83,7 +83,7 @@ public class BrowserWelcomeComp extends SimpleComp {
                 ThreadHelper.runAsync(() -> {
                     model.restoreState(e, disable);
                 });
-            }).disable(disable).styleClass("color-box").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
+            }).accessibleText(DataStorage.get().getStoreDisplayName(entry.get())).disable(disable).styleClass("color-box").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
         }).apply(struc -> {
             VBox vBox = (VBox) struc.get().getContent();
             vBox.setSpacing(10);
@@ -102,7 +102,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var tile = new TileButtonComp("restore", "restoreAllSessions", "mdmz-restore", actionEvent -> {
             model.restoreState(state);
             actionEvent.consume();
-        }).grow(true, false);
+        }).grow(true, false).accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
 
         return layout;

@@ -16,14 +16,16 @@ import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.Identifiers;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import lombok.SneakyThrows;
@@ -199,6 +201,11 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public boolean editByDefault() {
+        return true;
+    }
+
+    @Override
     public boolean canMoveCategories() {
         return false;
     }
@@ -219,9 +226,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
 
     @Override
     public void storageInit() throws Exception {
-        var cat = DataStorage.get()
-                .addStoreCategoryIfNotPresent(DataStoreCategory.createNew(
-                        DataStorage.ALL_SCRIPTS_CATEGORY_UUID, DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID, "My scripts"));
         DataStorage.get()
                 .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
                         UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),
@@ -240,6 +244,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                             value.getName(),
                             store));
             e.setStoreInternal(store, false);
+            e.setExpanded(value.isExpanded());
             value.setEntry(e.ref());
         }
 

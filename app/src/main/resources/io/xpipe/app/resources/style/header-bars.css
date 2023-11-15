@@ -29,15 +29,19 @@
 }
 
 .store-header-bar .menu-button {
--fx-background-radius: 4px;
- -fx-border-radius: 4px;
+-fx-background-radius: 3px;
+ -fx-border-radius: 3px;
  -fx-border-width: 1px;
--fx-padding: 0;
--fx-background-color: -color-fg-default;
+ -fx-padding: -3 0 -3 0;
+ -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(208, 220, 252) 40%, rgba(219, 219, 255, 1) 50%, rgb(250, 242, 242) 100%);
 -fx-border-color: transparent;
 }
 
-.store-header-bar .menu-button:hover {
+.root:light .store-header-bar .menu-button {
+ -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(12, 11, 11) 40%, rgb(32, 32, 40) 50%, rgb(35, 29, 29) 100%);
+}
+
+.root:light .store-header-bar .menu-button:hover, .root:dark .store-header-bar .menu-button:hover {
  -fx-background-color: -color-bg-default;
  -fx-border-color: -color-fg-default;
 }
@@ -147,24 +151,27 @@
 }
 
 .bar .name {
+ -fx-font-weight: BOLD;
 -fx-text-fill: -color-fg-default;
 }
 
 .bar .count-comp {
+ -fx-font-weight: BOLD;
 -fx-padding: 0.0em 0em 0.0em 0.4em;
+ -fx-text-fill: -color-fg-muted;
 }
 
 .bar .filter-bar .text-field {
--fx-padding: 0.35em;
 -fx-text-fill: -color-fg-default;
 }
 
 .bar .filter-bar {
--fx-background-radius: 4px;
--fx-background-color: -color-bg-default;
+ -fx-padding: -3 0 -3 0;
+-fx-background-radius: 3px;
+ -fx-background-color: -color-bg-default;
+ -fx-border-color: -color-fg-default;
  -fx-border-width: 0.05em;
--fx-border-radius: 4px;
--fx-border-color: -color-border-default;
+-fx-border-radius: 3px;
 }
 
 

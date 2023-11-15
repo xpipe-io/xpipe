@@ -6,10 +6,8 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
@@ -23,7 +21,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -32,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -128,6 +124,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         StoreCreationMenu.addButtons(m);
                         return m;
                     })
+                    .accessibleTextKey("addConnection")
                     .padding(new Insets(-2))
                     .styleClass(Styles.RIGHT_PILL)
                     .grow(false, true);
@@ -153,26 +150,6 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         }
 
         return popover;
-    }
-
-    protected Region createGraphic(T s) {
-        var provider = DataStoreProviders.byStore(s);
-        var imgView = PrettyImageHelper.ofFixedSquare(provider.getDisplayIconFileName(s), 16)
-                .createRegion();
-
-        var name = DataStorage.get().getUsableStores().stream()
-                .filter(e -> e.equals(s))
-                .findAny()
-                .flatMap(store -> {
-                    if (mode == Mode.PROXY && ShellStore.isLocal(store.asNeeded())) {
-                        return Optional.of(AppI18n.get("none"));
-                    }
-
-                    return DataStorage.get().getStoreDisplayName(store);
-                })
-                .orElse(AppI18n.get("unknown"));
-
-        return new Label(name, imgView);
     }
 
     private String toName(DataStoreEntry entry) {
@@ -226,7 +203,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                 })
                 .styleClass("choice-comp");
 
-        var r = button.grow(true, false).createRegion();
+        var r = button.grow(true, false).accessibleText("Select connection").createRegion();
         var icon = new FontIcon("mdal-keyboard_arrow_down");
         icon.setDisable(true);
         icon.setPickOnBounds(false);

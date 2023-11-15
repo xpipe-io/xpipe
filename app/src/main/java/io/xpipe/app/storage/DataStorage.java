@@ -33,7 +33,6 @@ public abstract class DataStorage {
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
 
     private static final String PERSIST_PROP = "io.xpipe.storage.persist";
-    private static final String IMMUTABLE_PROP = "io.xpipe.storage.immutable";
 
     private static DataStorage INSTANCE;
     protected final Path dir;
@@ -41,8 +40,10 @@ public abstract class DataStorage {
     @Getter
     protected final List<DataStoreCategory> storeCategories;
 
+    protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
+
     @Getter
-    protected final Set<DataStoreEntry> storeEntries;
+    protected final Set<DataStoreEntry> storeEntriesSet;
 
     @Getter
     @Setter
@@ -53,7 +54,8 @@ public abstract class DataStorage {
 
     public DataStorage() {
         this.dir = AppPrefs.get().storageDirectory().getValue();
-        this.storeEntries = Collections.newSetFromMap(new ConcurrentHashMap<>());
+        this.storeEntries = new ConcurrentHashMap<>();
+        this.storeEntriesSet = storeEntries.keySet();
         this.storeCategories = new CopyOnWriteArrayList<>();
     }
 
@@ -138,7 +140,7 @@ public abstract class DataStorage {
         var changed = new AtomicBoolean(false);
         do {
             changed.set(false);
-            storeEntries.forEach(dataStoreEntry -> {
+            storeEntries.keySet().forEach(dataStoreEntry -> {
                 if (makeValid ? dataStoreEntry.tryMakeValid() : dataStoreEntry.tryMakeInvalid()) {
                     changed.set(true);
                 }
@@ -241,7 +243,7 @@ public abstract class DataStorage {
     public void deleteChildren(DataStoreEntry e) {
         var c = getDeepStoreChildren(e);
         c.forEach(entry -> entry.finalizeEntry());
-        this.storeEntries.removeAll(c);
+        this.storeEntriesSet.removeAll(c);
         this.listeners.forEach(l -> l.onStoreRemove(c.toArray(DataStoreEntry[]::new)));
         refreshValidities(false);
         saveAsync();
@@ -257,7 +259,7 @@ public abstract class DataStorage {
                 .toList();
 
         toDelete.forEach(entry -> entry.finalizeEntry());
-        this.storeEntries.removeAll(toDelete);
+        this.storeEntriesSet.removeAll(toDelete);
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
         refreshValidities(false);
         saveAsync();
@@ -286,13 +288,18 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry addStoreEntryIfNotPresent(@NonNull DataStoreEntry e) {
-        if (storeEntries.contains(e)) {
-            return e;
+        var found = storeEntries.get(e);
+        if (found != null) {
+            return found;
         }
 
         var byId = getStoreEntryIfPresent(e.getUuid()).orElse(null);
         if (byId != null) {
             return byId;
+        }
+
+        if (getStoreCategoryIfPresent(e.getCategoryUuid()).isEmpty()) {
+            e.setCategoryUuid(DEFAULT_CATEGORY_UUID);
         }
 
         var syntheticParent = getSyntheticParent(e);
@@ -307,7 +314,7 @@ public abstract class DataStorage {
         }
 
         e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
-        this.storeEntries.add(e);
+        this.storeEntries.put(e, e);
         displayParent.ifPresent(p -> {
             p.setChildrenCache(null);
         });
@@ -321,7 +328,7 @@ public abstract class DataStorage {
 
     public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
         for (DataStoreEntry e : es) {
-            if (storeEntries.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
+            if (storeEntriesSet.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
                 return;
             }
 
@@ -337,7 +344,7 @@ public abstract class DataStorage {
             }
 
             e.setDirectory(getStoresDir().resolve(e.getUuid().toString()));
-            this.storeEntries.add(e);
+            this.storeEntries.put(e, e);
             displayParent.ifPresent(p -> {
                 p.setChildrenCache(null);
             });
@@ -379,7 +386,7 @@ public abstract class DataStorage {
             return;
         }
 
-        storeEntries.forEach(entry -> {
+        storeEntriesSet.forEach(entry -> {
             if (entry.getCategoryUuid().equals(cat.getUuid())) {
                 entry.setCategoryUuid(DEFAULT_CATEGORY_UUID);
             }
@@ -459,7 +466,7 @@ public abstract class DataStorage {
         try {
             var provider = entry.getProvider();
             return Optional.ofNullable(provider.getDisplayParent(entry))
-                    .filter(dataStoreEntry -> storeEntries.contains(dataStoreEntry));
+                    .filter(dataStoreEntry -> storeEntriesSet.contains(dataStoreEntry));
         } catch (Exception ex) {
             return Optional.empty();
         }
@@ -559,7 +566,7 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {
-        return storeEntries.stream()
+        return storeEntriesSet.stream()
                 .filter(n -> n.getStore() == store
                         || (n.getStore() != null
                                 && Objects.equals(store.getClass(), n.getStore().getClass())
@@ -592,7 +599,7 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull String name) {
-        return storeEntries.stream()
+        return storeEntriesSet.stream()
                 .filter(n -> n.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
@@ -614,7 +621,11 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(UUID id) {
-        return storeEntries.stream().filter(e -> e.getUuid().equals(id)).findAny();
+        return storeEntriesSet.stream().filter(e -> e.getUuid().equals(id)).findAny();
+    }
+
+    public Set<DataStoreEntry> getStoreEntries() {
+        return storeEntriesSet;
     }
 
     public DataStoreEntry getOrCreateNewSyntheticEntry(DataStoreEntry parent, String name, DataStore store) {

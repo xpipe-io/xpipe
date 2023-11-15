@@ -13,8 +13,8 @@
 -fx-padding: 1.2em;
 }
 
-.layout {
-
+.store-layout .split-pane-divider {
+    -fx-background-color: transparent;
 }
 
 .root:dark.background {
@@ -34,7 +34,7 @@
     -fx-border-color: -color-neutral-emphasis;
 }
 
-.edit-button.icon-button-comp:hover {
+.edit-button.icon-button-comp:hover, .edit-button.icon-button-comp:focused {
     -fx-background-color: -color-accent-muted;
 }
 
@@ -66,5 +66,13 @@
 .jfx-list-view {
  -fx-background-insets: 0;
  -fx-padding: 0;
+}
+
+.root:light .loading-comp {
+    -fx-background-color: rgba(100,100,100,0.5);
+}
+
+.root:dark .loading-comp {
+    -fx-background-color: rgba(0,0,0,0.5);
 }
 

@@ -1,6 +1,7 @@
 package io.xpipe.app.fxcomps;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.augment.Augment;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
@@ -83,6 +84,15 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().setPrefHeight(height));
     }
 
+
+    public Comp<S> maxWidth(int width) {
+        return apply(struc -> struc.get().setMaxWidth(width));
+    }
+
+    public Comp<S> maxHeight(int height) {
+        return apply(struc -> struc.get().setMaxHeight(height));
+    }
+
     public Comp<S> hgrow() {
         return apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
     }
@@ -130,8 +140,16 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().getStyleClass().add(styleClass));
     }
 
+    public Comp<S> accessibleText(ObservableValue<String> text) {
+        return apply(struc -> struc.get().accessibleTextProperty().bind(text));
+    }
+
     public Comp<S> accessibleText(String text) {
         return apply(struc -> struc.get().setAccessibleText(text));
+    }
+
+    public Comp<S> accessibleTextKey(String key) {
+        return apply(struc -> struc.get().accessibleTextProperty().bind(AppI18n.observable(key)));
     }
 
     public Comp<S> grow(boolean width, boolean height) {

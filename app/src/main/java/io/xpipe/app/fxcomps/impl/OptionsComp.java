@@ -97,6 +97,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     extendedDescription.getStyleClass().add(Styles.ACCENT);
                     extendedDescription.setPadding(new Insets(0, 6, 0, 6));
                     extendedDescription.getStyleClass().add("long-description");
+                    extendedDescription.setAccessibleText("Help");
                     AppFont.header(extendedDescription);
                     extendedDescription.setOnAction(e -> popover.show(extendedDescription));
 

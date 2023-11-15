@@ -112,8 +112,7 @@ public class AppPrefs {
         return connectionTimeOut;
     }
 
-    private final BooleanProperty saveWindowLocationInternal = typed(new SimpleBooleanProperty(false), Boolean.class);
-    public final ReadOnlyBooleanProperty saveWindowLocation = saveWindowLocationInternal;
+    private final BooleanProperty saveWindowLocation = typed(new SimpleBooleanProperty(true), Boolean.class);
 
     // External terminal
     // =================
@@ -334,6 +333,10 @@ public class AppPrefs {
 
     public ObservableDoubleValue windowOpacity() {
         return windowOpacity;
+    }
+
+    public ObservableBooleanValue saveWindowLocation() {
+        return saveWindowLocation;
     }
 
     public ObservableBooleanValue developerDisableUpdateVersionCheck() {
@@ -591,7 +594,7 @@ public class AppPrefs {
                                 Setting.of("useSystemFont", BooleanField.ofBooleanType(useSystemFontInternal).render(() -> new CustomToggleControl()), useSystemFontInternal),
                                 Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
                                 Setting.of("language", languageControl, languageInternal)),
-                        Group.of("windowOptions", Setting.of("saveWindowLocation", BooleanField.ofBooleanType(saveWindowLocationInternal).render(() -> new CustomToggleControl()), saveWindowLocationInternal))),
+                        Group.of("windowOptions", Setting.of("saveWindowLocation", BooleanField.ofBooleanType(saveWindowLocation).render(() -> new CustomToggleControl()), saveWindowLocation))),
                 Category.of(
                         "connections",
                         Group.of(

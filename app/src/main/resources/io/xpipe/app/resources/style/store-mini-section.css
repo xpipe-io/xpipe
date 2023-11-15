@@ -22,7 +22,7 @@
 -fx-background-color: transparent;
 }
 
-.store-section-mini-comp .item:hover {
+.store-section-mini-comp .item:hover, .store-section-mini-comp .item:focused {
 -fx-background-color: -color-accent-subtle;
 }
 
@@ -36,7 +36,7 @@
 -fx-border-color: -color-border-subtle;
 }
 
-.store-section-mini-comp .expand-button:hover {
+.store-section-mini-comp .expand-button:hover, .store-section-mini-comp .expand-button:focused {
 -fx-background-color: -color-neutral-muted;
 }
 

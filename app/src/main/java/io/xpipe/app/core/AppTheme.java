@@ -35,6 +35,7 @@ public class AppTheme {
     private static final PseudoClass DARK = PseudoClass.getPseudoClass("dark");
     private static final PseudoClass PRETTY = PseudoClass.getPseudoClass("pretty");
     private static final PseudoClass PERFORMANCE = PseudoClass.getPseudoClass("performance");
+    private static boolean init;
 
     public static void initThemeHandlers(Window stage) {
         if (AppPrefs.get() == null) {
@@ -60,6 +61,10 @@ public class AppTheme {
     }
 
     public static void init() {
+        if (init) {
+            return;
+        }
+
         if (AppPrefs.get() == null) {
             Theme.getDefaultLightTheme().apply();
             return;
@@ -97,6 +102,8 @@ public class AppTheme {
         AppPrefs.get().theme.addListener((c, o, n) -> {
             changeTheme(n);
         });
+
+        init = true;
     }
 
     private static void setDefault(boolean dark) {

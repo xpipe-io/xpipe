@@ -32,9 +32,14 @@ public class EditStoreAction implements ActionProvider {
         return new DefaultDataStoreCallSite<>() {
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+                if (o.get()
+                        .getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+                    return false;
+                }
+
                 return o.get()
                         .getValidity()
-                        .equals(DataStoreEntry.Validity.INCOMPLETE);
+                        .equals(DataStoreEntry.Validity.INCOMPLETE) || o.get().getProvider().editByDefault();
             }
 
             @Override

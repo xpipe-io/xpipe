@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
@@ -41,68 +42,52 @@ public class StoreCategoryComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var i = Bindings.createStringBinding(
-                () -> {
-                    if (!DataStorage.get().supportsSharing()) {
-                        return "mdal-keyboard_arrow_right";
-                    }
+        var i = Bindings.createStringBinding(() -> {
+            if (!DataStorage.get().supportsSharing()) {
+                return "mdal-keyboard_arrow_right";
+            }
 
-                    return category.getShare().getValue() ?
-                            "mdi2a-account-convert" : "mdi2a-account-cancel";
-                },
-                category.getShare());
+            return category.getShare().getValue() ? "mdi2a-account-convert" : "mdi2a-account-cancel";
+        }, category.getShare());
         var icon = new IconButtonComp(i).apply(struc -> AppFont.small(struc.get())).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER);
             struc.get().setPadding(new Insets(0, 0, 6, 0));
+            struc.get().setFocusTraversable(false);
         });
-        var name = new LazyTextFieldComp(category.nameProperty())
-                .apply(struc -> {
-                    struc.get().prefWidthProperty().unbind();
-                    struc.get().setPrefWidth(150);
-                    struc.getTextField().minWidthProperty().bind(struc.get().widthProperty());
-                })
-                .styleClass("name")
-                .createRegion();
+        var name = new LazyTextFieldComp(category.nameProperty()).apply(struc -> {
+            struc.get().prefWidthProperty().unbind();
+            struc.get().setPrefWidth(150);
+            struc.getTextField().minWidthProperty().bind(struc.get().widthProperty());
+        }).styleClass("name").createRegion();
         var showing = new SimpleBooleanProperty();
-        var settings = new IconButtonComp("mdomz-settings")
-                .styleClass("settings")
-                .apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, () -> {
+        var settings = new IconButtonComp("mdomz-settings").styleClass("settings").apply(
+                new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, () -> {
                     var cm = createContextMenu(name);
                     showing.bind(cm.showingProperty());
                     return cm;
                 }));
-        var shownList = BindingsHelper.filteredContentBinding(
-                category.getContainedEntries(),
-                storeEntryWrapper -> {
-                    return storeEntryWrapper.shouldShow(
-                            StoreViewState.get().getFilterString().getValue());
-                },
-                StoreViewState.get().getFilterString());
+        var shownList = BindingsHelper.filteredContentBinding(category.getContainedEntries(), storeEntryWrapper -> {
+            return storeEntryWrapper.shouldShow(StoreViewState.get().getFilterString().getValue());
+        }, StoreViewState.get().getFilterString());
         var count = new CountComp<>(shownList, category.getContainedEntries(), string -> "(" + string + ")");
         var hover = new SimpleBooleanProperty();
-        var h = new HorizontalComp(List.of(
-                icon,
-                Comp.hspacer(4),
-                Comp.of(() -> name),
-                Comp.hspacer(),
-                count.hide(BindingsHelper.persist(hover.or(showing))),
-                settings.hide(BindingsHelper.persist(hover.not().and(showing.not())))));
-        h.apply(struc -> hover.bind(struc.get().hoverProperty()));
-        h.apply(struc -> struc.get().setOnMouseClicked(event -> {
-            category.select();
-            event.consume();
-        }));
-        h.apply(new ContextMenuAugment<>(
-                mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, () -> createContextMenu(name)));
+        var focus = new SimpleBooleanProperty();
+        var h = new HorizontalComp(
+                List.of(icon, Comp.hspacer(4), Comp.of(() -> name), Comp.hspacer(), count.hide(BindingsHelper.persist(hover.or(showing).or(focus))),
+                        settings.hide(BindingsHelper.persist(hover.not().and(showing.not()).and(focus.not())))));
+        h.apply(new ContextMenuAugment<>(mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY, () -> createContextMenu(name)));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
-        h.styleClass("category-button");
-        var l = category.getChildren()
-                .sorted(Comparator.comparing(
-                        storeCategoryWrapper -> storeCategoryWrapper.getName().toLowerCase(Locale.ROOT)));
+
+        var categoryButton = new ButtonComp(null, h.createRegion(), category::select).styleClass("category-button").apply(
+                struc -> hover.bind(struc.get().hoverProperty())).apply(struc -> focus.bind(struc.get().focusedProperty())).accessibleText(
+                category.nameProperty()).grow(true, false);
+
+        var l = category.getChildren().sorted(Comparator.comparing(storeCategoryWrapper -> storeCategoryWrapper.getName().toLowerCase(Locale.ROOT)));
         var children = new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper));
 
         var emptyBinding = Bindings.isEmpty(category.getChildren());
-        var v = new VerticalComp(List.of(h, Comp.separator().hide(emptyBinding), Comp.vspacer(5).hide(emptyBinding), children.hide(emptyBinding)));
+        var v = new VerticalComp(
+                List.of(categoryButton, children.hide(emptyBinding)));
         v.styleClass("category");
         v.apply(struc -> {
             SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
@@ -119,9 +104,7 @@ public class StoreCategoryComp extends SimpleComp {
 
         var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
-            DataStorage.get()
-                    .addStoreCategory(
-                            DataStoreCategory.createNew(category.getCategory().getUuid(), "New category"));
+            DataStorage.get().addStoreCategory(DataStoreCategory.createNew(category.getCategory().getUuid(), "New category"));
         });
         contextMenu.getItems().add(newCategory);
 
@@ -132,14 +115,14 @@ public class StoreCategoryComp extends SimpleComp {
             } else {
                 return AppI18n.get("share");
             }
-        },category.getShare()));
+        }, category.getShare()));
         share.graphicProperty().bind(Bindings.createObjectBinding(() -> {
             if (category.getShare().getValue()) {
                 return new FontIcon("mdi2b-block-helper");
             } else {
                 return new FontIcon("mdi2s-share");
             }
-        },category.getShare()));
+        }, category.getShare()));
         share.setOnAction(event -> {
             category.getShare().setValue(!category.getShare().getValue());
         });

@@ -50,7 +50,7 @@ public class AppCache {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
-                var tree = JsonConfigHelper.readConfig(path);
+                var tree = JsonConfigHelper.readRaw(path);
                 if (tree.isMissingNode()) {
                     return notPresent.get();
                 }

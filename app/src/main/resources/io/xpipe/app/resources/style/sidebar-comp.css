@@ -20,7 +20,7 @@
 -fx-opacity: 1.0;
 }
 
-.sidebar-comp .icon-button-comp:hover {
+.sidebar-comp .icon-button-comp:hover, .sidebar-comp .icon-button-comp:focused {
 -fx-border-color: -color-accent-muted;
 -fx-background-color: -color-neutral-muted;
 }

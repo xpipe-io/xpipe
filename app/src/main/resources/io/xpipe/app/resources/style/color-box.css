@@ -8,6 +8,16 @@
     -fx-border-color: derive(-color-border-default, -10%);
 }
 
+.root:dark .color-box.gray {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, 13%) 40%, derive(-color-bg-default, 11%) 50%, derive(-color-bg-default, 14%) 100%);
+    -fx-border-color: -color-border-default;
+}
+
+.root:light .color-box.gray {
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, derive(-color-bg-default, -5%) 40%, derive(-color-bg-default, -3%) 50%, derive(-color-bg-default, -5%) 100%);
+    -fx-border-color: derive(-color-border-default, -10%);
+}
+
 .color-box > .separator .line {
     -fx-border-color: -color-border-default;
 }

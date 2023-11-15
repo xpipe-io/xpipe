@@ -22,6 +22,10 @@ import java.util.List;
 
 public interface DataStoreProvider {
 
+    default boolean editByDefault() {
+        return false;
+    }
+
     default boolean canMoveCategories() {
         return true;
     }
