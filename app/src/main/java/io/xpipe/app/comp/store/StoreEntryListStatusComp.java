@@ -11,10 +11,12 @@ import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -94,7 +96,15 @@ public class StoreEntryListStatusComp extends SimpleComp {
         hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER);
         HBox.setHgrow(f, Priority.ALWAYS);
+
         f.getStyleClass().add("filter-bar");
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            f.setPadding(new Insets(0));
+        } else {
+            f.setPadding(new Insets(-3, 0, -3, 0));
+        }
+
+
         AppFont.medium(hbox);
         return hbox;
     }
@@ -107,6 +117,13 @@ public class StoreEntryListStatusComp extends SimpleComp {
         StoreCreationMenu.addButtons(menu);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
+
+        if (OsType.getLocal().equals(OsType.MACOS)) {
+            menu.setPadding(new Insets(0));
+        } else {
+            menu.setPadding(new Insets(-3, 0, -3, 0));
+        }
+
         return menu;
     }
 
