@@ -63,8 +63,8 @@ public class AboutComp extends Comp<CompStructure<?>> {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new TileButtonComp("termsOfService", "termsOfServiceDescription", "mdi2c-card-text-outline", e -> {
-                            Hyperlinks.open(Hyperlinks.TOS);
+                        new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
+                            Hyperlinks.open(Hyperlinks.EULA);
                             e.consume();
                         })
                                 .grow(true, false),

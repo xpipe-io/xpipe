@@ -120,9 +120,9 @@ This mainly concerns the features only available in the professional tier and th
 
 You have more questions? Then check out the [FAQ](https://xpipe.io/faq).
 
-For information about the security model of XPipe, see the [security page](/SECURITY.md).
+For information about the security model of XPipe, see the [security page](https://docs.xpipe.io/security).
 
-For information about the privacy policy of XPipe, see the [privacy page](/PRIVACY.md).
+For information about the privacy policy of XPipe, see the [privacy page](https://docs.xpipe.io/privacy-policy).
 
 In case you're interested in development, check out the [contributing page](/CONTRIBUTING.md).
 
