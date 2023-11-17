@@ -161,7 +161,7 @@ public class AppWindowHelper {
     public static void setupContent(
             Stage stage, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
         var baseComp = contentFunc.apply(stage);
-        var content = loading != null ? new LoadingOverlayComp(baseComp, loading) : baseComp;
+        var content = loading != null ? LoadingOverlayComp.noProgress(baseComp, loading) : baseComp;
         var contentR = content.createRegion();
         AppFont.small(contentR);
         var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
@@ -175,7 +175,7 @@ public class AppWindowHelper {
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F6)) {
                 var newBaseComp = contentFunc.apply(stage);
-                var newComp = loading != null ? new LoadingOverlayComp(newBaseComp, loading) : newBaseComp;
+                var newComp = loading != null ? LoadingOverlayComp.noProgress(newBaseComp, loading) : newBaseComp;
                 var newR = newComp.createRegion();
                 AppFont.medium(newR);
                 scene.setRoot(bindSize ? new Pane(newR) : newR);

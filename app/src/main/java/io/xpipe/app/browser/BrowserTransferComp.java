@@ -80,7 +80,7 @@ public class BrowserTransferComp extends SimpleComp {
                 });
 
         var listBox = new VerticalComp(List.of(list, dragNotice)).padding(new Insets(10, 10, 5, 10));
-        var stack = new LoadingOverlayComp(
+        var stack = LoadingOverlayComp.noProgress(
                 new StackComp(List.of(backgroundStack, listBox, clearPane))
                         .apply(DragOverPseudoClassAugment.create())
                         .apply(struc -> {

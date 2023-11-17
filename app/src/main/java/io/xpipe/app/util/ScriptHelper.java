@@ -125,10 +125,6 @@ public class ScriptHelper {
                 .getShellDialect()
                 .createScriptTextFileWriteCommand(processControl, content, file)
                 .execute();
-        var e = processControl.getShellDialect().getScriptPermissionsCommand(file);
-        if (e != null) {
-            processControl.executeSimpleCommand(e, "Failed to set script permissions of " + file);
-        }
         return file;
     }
 

@@ -84,7 +84,6 @@ public class ConnectionFileSystem implements FileSystem {
         try (var pc = shellControl
                 .getShellDialect()
                 .createFileExistsCommand(shellControl, file)
-                .complex()
                 .start()) {
             return pc.discardAndCheckExit();
         }
@@ -124,7 +123,6 @@ public class ConnectionFileSystem implements FileSystem {
     public void mkdirs(String file) throws Exception {
         try (var pc = shellControl
                 .command(proc -> proc.getShellDialect().getMkdirsCommand(file))
-                .complex()
                 .start()) {
             pc.discardOrThrow();
         }

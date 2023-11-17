@@ -403,6 +403,10 @@ final class BrowserFileListComp extends SimpleComp {
         VirtualFlow<?> flow = (VirtualFlow<?>) skin.getChildren().get(1);
         ScrollBar vbar = (ScrollBar) flow.getChildrenUnmodifiable().get(2);
 
+        if (!vbar.isVisible()) {
+            return;
+        }
+
         double proximity = 100;
         Bounds tableBounds = tableView.localToScene(tableView.getBoundsInParent());
         double dragY = event.getSceneY();

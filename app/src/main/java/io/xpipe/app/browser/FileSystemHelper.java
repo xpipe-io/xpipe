@@ -104,7 +104,12 @@ public class FileSystemHelper {
             throw ErrorEvent.unreportable(new IllegalArgumentException(String.format("Directory %s does not exist", path)));
         }
 
-        model.getFileSystem().directoryAccessible(path);
+        try {
+            model.getFileSystem().directoryAccessible(path);
+        } catch (Exception ex) {
+            ErrorEvent.unreportable(ex);
+            throw ex;
+        }
     }
 
     private static FileSystem localFileSystem;
@@ -229,7 +234,7 @@ public class FileSystemHelper {
 
             if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
-            } else {
+            } else if (sourceFile.getKind() == FileKind.FILE) {
                 try (var in = sourceFile.getFileSystem().openInput(sourceFile.getPath());
                         var out = target.getFileSystem().openOutput(targetFile)) {
                     in.transferTo(out);

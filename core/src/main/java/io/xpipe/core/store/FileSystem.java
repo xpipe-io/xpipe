@@ -115,7 +115,10 @@ public interface FileSystem extends Closeable, AutoCloseable {
     Stream<FileEntry> listFiles(String file) throws Exception;
 
     default List<FileEntry> listFilesRecursively(String file) throws Exception {
-        var base = listFiles(file).toList();
+        List<FileEntry> base;
+        try (var filesStream = listFiles(file)) {
+            base = filesStream.toList();
+        }
         return base.stream()
                 .flatMap(fileEntry -> {
                     if (fileEntry.getKind() != FileKind.DIRECTORY) {
