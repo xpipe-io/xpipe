@@ -16,10 +16,6 @@ import java.util.List;
 
 public class AboutComp extends Comp<CompStructure<?>> {
 
-    private Region createDepsList() {
-        return new ThirdPartyDependencyListComp().createRegion();
-    }
-
     private Comp<?> createLinks() {
         return new OptionsBuilder()
                 .addComp(

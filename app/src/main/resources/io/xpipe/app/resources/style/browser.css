@@ -231,7 +231,7 @@
 }
 
 .browser .table-view:drag-into-current .table-row-cell {
-    -fx-opacity: 0.8;
+    -fx-opacity: 0.65;
 }
 
 .browser .table-row-cell:file:hover,.table-row-cell:folder:hover {
