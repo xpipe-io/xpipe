@@ -161,6 +161,7 @@ public class SentryErrorHandler implements ErrorHandler {
                         : "false");
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
+        s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
 
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && ee.isShouldSendDiagnostics()) {

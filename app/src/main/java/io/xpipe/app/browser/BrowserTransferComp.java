@@ -21,8 +21,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 public class BrowserTransferComp extends SimpleComp {
 
@@ -123,13 +126,19 @@ public class BrowserTransferComp extends SimpleComp {
                                 var files = stage.getItems().stream()
                                         .map(item -> {
                                             try {
-                                                return item.getLocalFile()
+                                                var file = item.getLocalFile();
+                                                if (!Files.exists(file)) {
+                                                    return Optional.<File>empty();
+                                                }
+
+                                                return Optional.of(file
                                                         .toRealPath()
-                                                        .toFile();
+                                                        .toFile());
                                             } catch (IOException e) {
                                                 throw new RuntimeException(e);
                                             }
                                         })
+                                        .flatMap(Optional::stream)
                                         .toList();
                                 Dragboard db = struc.get().startDragAndDrop(TransferMode.MOVE);
                                 var cc = new ClipboardContent();
@@ -146,6 +155,7 @@ public class BrowserTransferComp extends SimpleComp {
                                 event.consume();
                             });
                             struc.get().setOnDragDone(event -> {
+                                // macOS does always report false here
                                 if (!event.isAccepted()) {
                                     return;
                                 }

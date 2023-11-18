@@ -25,8 +25,10 @@ public class AppResources {
         fileSystems.forEach((s, moduleFileSystem) -> {
             try {
                 moduleFileSystem.close();
-            } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).handle();
+            } catch (IOException ignored) {
+                // Usually when updating, a SIGTERM is sent to this application.
+                // However, it takes a while to shut down but the installer is deleting files meanwhile.
+                // It can happen that the jar it does not exist anymore
             }
         });
         fileSystems.clear();
