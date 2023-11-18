@@ -164,7 +164,6 @@ public class StoreEntryListStatusComp extends SimpleComp {
         });
         alphabetical.accessibleTextKey("sortAlphabetical");
         alphabetical.apply(new FancyTooltipAugment<>("sortAlphabetical"));
-        alphabetical.shortcut(new KeyCodeCombination(KeyCode.P, KeyCombination.SHORTCUT_DOWN));
         return alphabetical;
     }
 
@@ -204,7 +203,6 @@ public class StoreEntryListStatusComp extends SimpleComp {
         });
         date.accessibleTextKey("sortLastUsed");
         date.apply(new FancyTooltipAugment<>("sortLastUsed"));
-        date.shortcut(new KeyCodeCombination(KeyCode.L, KeyCombination.SHORTCUT_DOWN));
         return date;
     }
 

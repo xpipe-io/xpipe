@@ -9,18 +9,25 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
+    public static LoadingOverlayComp noProgress(Comp<?> comp, ObservableValue<Boolean> loading) {
+        return new LoadingOverlayComp(comp, loading, new SimpleDoubleProperty(-1));
+    }
+
     private final Comp<?> comp;
     private final ObservableValue<Boolean> showLoading;
+    private final ObservableValue<Number> progress;
 
-    public LoadingOverlayComp(Comp<?> comp, ObservableValue<Boolean> loading) {
+    public LoadingOverlayComp(Comp<?> comp, ObservableValue<Boolean> loading, ObservableValue<Number> progress) {
         this.comp = comp;
         this.showLoading = PlatformThread.sync(loading);
+        this.progress = PlatformThread.sync(progress);
     }
 
     @Override
@@ -29,7 +36,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         var r = compStruc.get();
 
         var loading = new RingProgressIndicator(0, false);
-        loading.setProgress(-1);
+        loading.progressProperty().bind(progress);
         loading.visibleProperty().bind(Bindings.not(AppPrefs.get().performanceMode()));
 
         var loadingOverlay = new StackPane(loading);

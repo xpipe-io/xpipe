@@ -1,13 +1,12 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.controls.Tile;
-import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.OptionsBuilder;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 
 public class PropertiesComp extends SimpleComp {
@@ -15,19 +14,13 @@ public class PropertiesComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var title = Comp.of(() -> {
-            var image = new ImageView(AppImages.image("logo/logo_48x48.png"));
-            image.setPreserveRatio(true);
-            image.setSmooth(true);
-            image.setFitHeight(40);
-            var label = new Label(AppI18n.get("xPipeClient"), image);
-            label.getStyleClass().add("header");
-            AppFont.setSize(label, 5);
-            return new Tile(AppI18n.get("xPipeClient"), "Version " + AppProperties.get().getVersion() + " ("
-                    + AppProperties.get().getArch() + ")", image);
+            return JfxHelper.createNamedEntry(AppI18n.get("xPipeClient"), "Version " + AppProperties.get().getVersion() + " ("
+                    + AppProperties.get().getArch() + ")", "logo/logo_48x48.png");
         });
 
         var section = new OptionsBuilder()
                 .addComp(title, null)
+                .addComp(Comp.vspacer(10))
                 .name("build")
                 .addComp(
                         new LabelComp(AppProperties.get().getBuild()),
