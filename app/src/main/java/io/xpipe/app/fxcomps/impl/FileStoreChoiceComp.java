@@ -57,6 +57,12 @@ public class FileStoreChoiceComp extends SimpleComp {
         var layout = new HorizontalComp(List.of(fileSystemChoiceComp, fileNameComp, fileBrowseButton))
                 .apply(struc -> struc.get().setFillHeight(true));
 
+        layout.apply(struc -> {
+            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+                    struc.get().getChildren().get(1).requestFocus();
+            });
+        });
+
         return layout.createRegion();
     }
 }

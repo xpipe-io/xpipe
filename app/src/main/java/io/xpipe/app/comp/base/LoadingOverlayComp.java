@@ -72,7 +72,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                 }
             }
         };
-        PlatformThread.sync(showLoading).addListener(listener);
+        showLoading.addListener(listener);
 
         var stack = new StackPane(r, loadingOverlay);
 

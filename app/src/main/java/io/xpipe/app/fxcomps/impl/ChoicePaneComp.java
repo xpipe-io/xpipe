@@ -63,6 +63,8 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
                 } else {
                     vbox.getChildren().set(1, region);
                 }
+
+                region.requestFocus();
             }
         });
 

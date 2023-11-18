@@ -49,10 +49,15 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
 
         var nameRegions = new ArrayList<Region>();
 
+        Region firstComp = null;
+
         for (var entry : getEntries()) {
             Region compRegion = null;
             if (entry.comp() != null) {
                 compRegion = entry.comp().createRegion();
+            }
+            if (firstComp == null) {
+                firstComp = compRegion;
             }
 
             if (entry.name() != null && entry.description() != null) {
@@ -161,6 +166,13 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
             nameRegions.forEach(r -> r.minWidthProperty().bind(nameWidthBinding));
         }
+
+        Region finalFirstComp = firstComp;
+        pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (finalFirstComp != null && newValue) {
+                finalFirstComp.requestFocus();
+            }
+        });
 
         return new SimpleCompStructure<>(pane);
     }

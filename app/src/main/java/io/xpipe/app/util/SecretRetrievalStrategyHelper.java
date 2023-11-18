@@ -54,7 +54,6 @@ public class SecretRetrievalStrategyHelper {
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
         var content = new TextFieldComp(cmdProperty);
         return new OptionsBuilder()
-                .name("command")
                 .addComp(content, cmdProperty)
                 .bind(
                         () -> {
