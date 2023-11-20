@@ -138,6 +138,8 @@ public interface ShellDialect {
 
     String getPrintExitCodeCommand(String prefix, String suffix);
 
+    int assignMissingExitCode();
+
     default String getPrintEnvironmentVariableCommand(String name) {
         return getPrintVariableCommand(name);
     }
