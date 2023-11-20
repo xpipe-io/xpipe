@@ -136,7 +136,7 @@ public interface ShellDialect {
 
     String getUsernameVariableName();
 
-    String getPrintExitCodeCommand(String prefix);
+    String getPrintExitCodeCommand(String prefix, String suffix);
 
     default String getPrintEnvironmentVariableCommand(String name) {
         return getPrintVariableCommand(name);
