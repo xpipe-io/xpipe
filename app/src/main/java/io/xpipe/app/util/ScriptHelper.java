@@ -44,12 +44,12 @@ public class ScriptHelper {
         }
     }
 
-    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
+    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, String displayName)
             throws Exception {
-        return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, login, displayName);
+        return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, displayName);
     }
 
-    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, boolean login, String displayName)
+    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, String displayName)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
