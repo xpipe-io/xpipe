@@ -53,7 +53,7 @@ public class BrowserEntry {
     }
 
     public String getFileName() {
-        return FileNames.getFileName(getRawFileEntry().getPath());
+        return getRawFileEntry().getName();
     }
 
     public String getOptionallyQuotedFileName() {

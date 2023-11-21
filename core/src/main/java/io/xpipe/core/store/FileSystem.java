@@ -3,7 +3,6 @@ package io.xpipe.core.store;
 import io.xpipe.core.process.ShellControl;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -24,9 +23,14 @@ public interface FileSystem extends Closeable, AutoCloseable {
         FileSystem fileSystem;
 
         @NonNull
-                @NonFinal
-                @Setter
+        @NonFinal
         String path;
+
+        @NonFinal
+        String extension;
+
+        @NonFinal
+        String name;
 
         Instant date;
         boolean hidden;
@@ -50,10 +54,18 @@ public interface FileSystem extends Closeable, AutoCloseable {
             this.mode = mode;
             this.kind = kind;
             this.path = kind == FileKind.DIRECTORY ? FileNames.toDirectory(path) : path;
+            this.extension = FileNames.getExtension(path);
+            this.name = FileNames.getFileName(path);
             this.date = date;
             this.hidden = hidden;
             this.executable = executable;
             this.size = size;
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+            this.extension = FileNames.getExtension(path);
+            this.name = FileNames.getFileName(path);
         }
 
         public FileEntry resolved() {

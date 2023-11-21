@@ -96,7 +96,7 @@ public class FileNames {
         }
 
         var name = FileNames.getFileName(file);
-        var split = file.split("\\.");
+        var split = name.split("\\.");
         if (split.length == 0) {
             return null;
         }

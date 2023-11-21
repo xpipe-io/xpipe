@@ -72,7 +72,7 @@ public interface FileType {
                 return false;
             }
 
-            return endings.contains(entry.getPath().toLowerCase(Locale.ROOT));
+            return (entry.getExtension() != null && endings.contains("." + entry.getExtension().toLowerCase(Locale.ROOT))) || endings.contains(entry.getName());
         }
 
         @Override
