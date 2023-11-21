@@ -59,22 +59,18 @@ public class BrowserNavBar extends SimpleComp {
                                 .pseudoClassStateChanged(
                                         INVISIBLE,
                                         !val && !model.getInOverview().get());
+
+                        if (val) {
+                            Platform.runLater(() -> {
+                                struc.get().end();
+                            });
+                        }
                     });
 
                     SimpleChangeListener.apply(model.getInOverview(), val -> {
                         struc.get()
                                 .pseudoClassStateChanged(
                                         INVISIBLE, !val && !struc.get().isFocused());
-                    });
-
-                    struc.get().setOnMouseClicked(event -> {
-                        if (struc.get().isFocused()) {
-                            return;
-                        }
-
-                        struc.get().end();
-                        struc.get().selectAll();
-                        struc.get().requestFocus();
                     });
 
                     struc.get().setPromptText("Overview of " + model.getName());

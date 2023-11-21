@@ -54,7 +54,7 @@ final class BrowserBookmarkList extends SimpleComp {
         };
         var selectedCategory = new SimpleObjectProperty<>(StoreViewState.get().getActiveCategory().getValue());
         var section = StoreSectionMiniComp.createList(
-                StoreSection.createTopLevel(StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory), (s, comp) -> {
+                StoreSection.createTopLevel(StoreViewState.get().getAllEntries(), storeEntryWrapper -> true, filterText, selectedCategory), (s, comp) -> {
                     BooleanProperty busy = new SimpleBooleanProperty(false);
                     comp.disable(Bindings.createBooleanBinding(() -> {
                         return busy.get() || !applicable.test(s.getWrapper());
