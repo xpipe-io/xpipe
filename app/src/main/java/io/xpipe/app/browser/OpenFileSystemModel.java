@@ -152,7 +152,7 @@ public final class OpenFileSystemModel {
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.ALL.stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
+                if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
                     TerminalHelper.open(
                             entry.getEntry(),
                             name,

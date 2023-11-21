@@ -23,6 +23,10 @@ public class ShellDialects {
     public static ShellDialect UNSUPPORTED;
     public static ShellDialect CISCO;
 
+    public static List<ShellDialect> getStartableDialects() {
+        return ALL.stream().filter(dialect -> dialect.getOpenCommand() != null).toList();
+    }
+
     public static class Loader implements ModuleLayerLoader {
 
         @Override
