@@ -12,7 +12,11 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
@@ -97,6 +101,16 @@ public class SentryErrorHandler implements ErrorHandler {
             var msgField = Throwable.class.getDeclaredField("detailMessage");
             msgField.setAccessible(true);
             msgField.set(copy, null);
+
+            if (copy instanceof FileSystemException) {
+                var fileField = FileSystemException.class.getDeclaredField("file");
+                fileField.setAccessible(true);
+                fileField.set(copy, null);
+
+                var otherField = FileSystemException.class.getDeclaredField("other");
+                otherField.setAccessible(true);
+                otherField.set(copy, null);
+            }
 
             var causeField = Throwable.class.getDeclaredField("cause");
             causeField.setAccessible(true);
