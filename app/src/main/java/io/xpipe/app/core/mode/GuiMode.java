@@ -22,7 +22,6 @@ public class GuiMode extends PlatformMode {
         super.onSwitchTo();
 
         UnlockAlert.showIfNeeded();
-        UpdateChangelogAlert.showIfNeeded();
         AppGreetings.showIfNeeded();
 
         TrackEvent.info("mode", "Waiting for window setup completion ...");
@@ -37,6 +36,8 @@ public class GuiMode extends PlatformMode {
             AppMainWindow.getInstance().show();
         });
         TrackEvent.info("mode", "Window setup complete");
+
+        UpdateChangelogAlert.showIfNeeded();
     }
 
     @Override
