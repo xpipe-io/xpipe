@@ -170,7 +170,25 @@ task runAttachedDebugger(type: JavaExec) {
     systemProperties run.systemProperties
 }
 
-task writeLicenses(type: DefaultTask) {
+processResources {
+    doLast {
+        def cssFiles = fileTree(dir: "$sourceSets.main.output.resourcesDir/io/xpipe/app/resources/style")
+        cssFiles.include "**/*.css"
+        cssFiles.each { css ->
+            logger.info("converting CSS to BSS ${css}");
+
+            javaexec {
+                workingDir = project.projectDir
+                jvmArgs += "--module-path=$sourceSets.main.runtimeClasspath.asPath,"
+                jvmArgs += "--add-modules=javafx.graphics"
+                main = "com.sun.javafx.css.parser.Css2Bin"
+                args css
+            }
+
+            delete css
+        }
+    }
+
     doLast {
         def resourcesDir = new File(sourceSets.main.output.resourcesDir, "io/xpipe/app/resources/third-party")
         resourcesDir.mkdirs()
@@ -180,7 +198,6 @@ task writeLicenses(type: DefaultTask) {
         }
     }
 }
-processResources.finalizedBy(writeLicenses)
 
 distTar {
     enabled = false;

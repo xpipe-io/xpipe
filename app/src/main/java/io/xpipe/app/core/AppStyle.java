@@ -54,9 +54,13 @@ public class AppStyle {
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try {
                             var bytes = Files.readAllBytes(file);
-                            var s = "data:text/css;base64,"
-                                    + Base64.getEncoder().encodeToString(bytes);
-                            STYLESHEET_CONTENTS.put(file, s);
+                            if (file.getFileName().toString().endsWith(".bss")) {
+                                var s = "data:application/octet-stream;base64," + Base64.getEncoder().encodeToString(bytes);
+                                STYLESHEET_CONTENTS.put(file, s);
+                            } else if (file.getFileName().toString().endsWith(".css")) {
+                                var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
+                                STYLESHEET_CONTENTS.put(file, s);
+                            }
                         } catch (IOException ex) {
                             ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
                         }
