@@ -595,6 +595,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 pc.osascriptCommand(String.format(
                                 """
                                 activate application "Terminal"
+                                delay 1
                                 tell app "Terminal" to do script %s
                                 """,
                                 suffix))
