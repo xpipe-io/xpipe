@@ -232,7 +232,7 @@ public class AppTheme {
         }
 
         public void apply() {
-            Application.setUserAgentStylesheet(theme.getUserAgentStylesheet());
+            Application.setUserAgentStylesheet(theme.getUserAgentStylesheetBSS());
         }
 
         @Override
