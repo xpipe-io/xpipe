@@ -84,6 +84,13 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().setPrefHeight(height));
     }
 
+    public <T extends Comp<S>> T onSceneAssign(Augment<S> augment) {
+        return apply(struc -> struc.get().sceneProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                augment.augment(struc);
+            }
+        }));
+    }
 
     public Comp<S> maxWidth(int width) {
         return apply(struc -> struc.get().setMaxWidth(width));

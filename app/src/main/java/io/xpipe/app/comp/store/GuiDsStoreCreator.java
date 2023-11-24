@@ -266,6 +266,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
         providerChoice.apply(GrowAugment.create(true, false));
+        providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
 
         SimpleChangeListener.apply(provider, n -> {
             if (n != null) {
