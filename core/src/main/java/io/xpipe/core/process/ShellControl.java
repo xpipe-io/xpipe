@@ -155,7 +155,9 @@ public interface ShellControl extends ProcessControl {
     }
     ShellControl elevationPassword(FailableSupplier<SecretValue> value);
 
-    ShellControl initWith(ScriptSnippet snippet);
+    ShellControl withInitSnippet(ScriptSnippet snippet);
+
+    ShellControl removeInitSnippet(ScriptSnippet snippet);
 
     ShellControl additionalTimeout(int ms);
 

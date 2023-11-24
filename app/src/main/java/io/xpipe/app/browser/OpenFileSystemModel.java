@@ -160,7 +160,7 @@ public final class OpenFileSystemModel {
                                     .getShell()
                                     .get()
                                     .subShell(adjustedPath)
-                                    .initWith(new SimpleScriptSnippet(
+                                    .withInitSnippet(new SimpleScriptSnippet(
                                             fileSystem
                                                     .getShell()
                                                     .get()
@@ -363,6 +363,9 @@ public final class OpenFileSystemModel {
     public void initFileSystem() throws Exception {
         BooleanScope.execute(busy, () -> {
             var fs = entry.getStore().createFileSystem();
+            if (fs.getShell().isPresent()) {
+                ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+            }
             fs.open();
             this.fileSystem = fs;
             this.local = fs.getShell()
@@ -392,17 +395,23 @@ public final class OpenFileSystemModel {
             }
 
             BooleanScope.execute(busy, () -> {
-                if (entry.getStore() instanceof ShellStore s) {
-                    var connection = ((ConnectionFileSystem) fileSystem).getShellControl();
-                    var name = directory + " - " + entry.get().getName();
-                    var toOpen = ProcessControlProvider.get().withDefaultScripts(connection);
-                    TerminalHelper.open(
-                            entry.getEntry(),
-                            name,
-                            toOpen.initWith(new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory), ScriptSnippet.ExecutionType.BOTH)));
+                if (fileSystem.getShell().isPresent()) {
+                    var connection = fileSystem.getShell().get();
+                    var snippet = directory != null ? new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory),
+                            ScriptSnippet.ExecutionType.BOTH) : null;
+                    if (snippet != null) {
+                        connection.withInitSnippet(snippet);
+                    }
 
-                    // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
-                    connection.start();
+                    try {
+                        var name = (directory != null ? directory + " - " : "") + entry.get().getName();
+                        TerminalHelper.open(entry.getEntry(), name, connection);
+
+                        // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
+                        connection.start();
+                    } finally {
+                        connection.removeInitSnippet(snippet);
+                    }
                 }
             });
         });
