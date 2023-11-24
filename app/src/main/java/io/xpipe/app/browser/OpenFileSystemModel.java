@@ -40,6 +40,7 @@ public final class OpenFileSystemModel {
     private final String name;
     private final String tooltip;
     private boolean local;
+    private int customScriptsStartIndex;
 
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
         this.browserModel = browserModel;
@@ -364,6 +365,7 @@ public final class OpenFileSystemModel {
         BooleanScope.execute(busy, () -> {
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
+                this.customScriptsStartIndex = fs.getShell().get().getInitCommands().size();
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
             }
             fs.open();
@@ -400,7 +402,7 @@ public final class OpenFileSystemModel {
                     var snippet = directory != null ? new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory),
                             ScriptSnippet.ExecutionType.BOTH) : null;
                     if (snippet != null) {
-                        connection.withInitSnippet(snippet);
+                        connection.getInitCommands().add(customScriptsStartIndex,snippet);
                     }
 
                     try {
@@ -410,7 +412,7 @@ public final class OpenFileSystemModel {
                         // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
                         connection.start();
                     } finally {
-                        connection.removeInitSnippet(snippet);
+                        connection.getInitCommands().remove(snippet);
                     }
                 }
             });
