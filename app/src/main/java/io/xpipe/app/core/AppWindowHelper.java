@@ -6,7 +6,10 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -18,6 +21,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -72,6 +76,7 @@ public class AppWindowHelper {
             });
 
             centerToMainWindow(stage);
+            clampWindow(stage);
         });
         return stage;
     }
@@ -193,6 +198,51 @@ public class AppWindowHelper {
                 event.consume();
             }
         });
+    }
+
+    public static void clampWindow(Stage stage) {
+        var allScreenBounds = computeWindowScreenBounds(stage);
+        double x = stage.getX();
+        if (x < allScreenBounds.getMinX()) {
+            stage.setX(x = allScreenBounds.getMinX());
+        }
+        double y = stage.getY();
+        if (y < allScreenBounds.getMinY()) {
+            stage.setY(y = allScreenBounds.getMinY());
+        }
+        double w = stage.getWidth();
+        double h = stage.getHeight();
+        if (x + w > allScreenBounds.getMaxX()) {
+            stage.setWidth(allScreenBounds.getMaxX() - x);
+        }
+        if (y + h > allScreenBounds.getMaxY()) {
+            stage.setHeight(allScreenBounds.getMaxY() - y);
+        }
+    }
+
+    private static Bounds computeWindowScreenBounds(Stage stage) {
+        double minX = Double.POSITIVE_INFINITY ;
+        double minY = Double.POSITIVE_INFINITY ;
+        double maxX = Double.NEGATIVE_INFINITY ;
+        double maxY = Double.NEGATIVE_INFINITY ;
+        for (Screen screen : Screen.getScreensForRectangle(new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()))) {
+            Rectangle2D screenBounds = screen.getBounds();
+            if (screenBounds.getMinX() < minX) {
+                minX = screenBounds.getMinX();
+            }
+            if (screenBounds.getMinY() < minY) {
+                minY = screenBounds.getMinY() ;
+            }
+            if (screenBounds.getMaxX() > maxX) {
+                maxX = screenBounds.getMaxX();
+            }
+            if (screenBounds.getMaxY() > maxY) {
+                maxY = screenBounds.getMaxY() ;
+            }
+        }
+        // Taskbar adjustment
+        maxY -= 50;
+        return new BoundingBox(minX, minY, maxX-minX, maxY-minY);
     }
 
     private static void bindSize(Stage stage, Region r) {
