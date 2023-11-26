@@ -71,6 +71,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                         for (int i = 0; i < elements.size(); i++) {
                             // add to GridPane
                             Element element = elements.get(i);
+                            var offset = preferencesGroup.getTitle() != null ? 15 : 0;
                             if (element instanceof Field f) {
                                 SimpleControl c = (SimpleControl) f.getRenderer();
                                 c.setField(f);
@@ -126,8 +127,6 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                     styleClass.append("-last");
                                 }
 
-                                var offset = preferencesGroup.getTitle() != null ? 15 : 0;
-
                                 GridPane.setMargin(descriptionLabel, new Insets(SPACING, 0, 0, offset));
                                 GridPane.setMargin(node, new Insets(SPACING, 0, 0, offset));
 
@@ -144,6 +143,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                             if (element instanceof LazyNodeElement<?> nodeElement) {
                                 var node = nodeElement.getNode();
                                 grid.add(node, 0, i + rowAmount);
+                                GridPane.setMargin(node, new Insets(SPACING, 0, 0, offset));
                             }
                         }
                     }

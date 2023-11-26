@@ -9,15 +9,17 @@ import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.LockChangeAlert;
+import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import lombok.SneakyThrows;
-
-import java.util.List;
 
 import static io.xpipe.app.prefs.AppPrefs.group;
 
@@ -57,22 +59,25 @@ public class VaultCategory extends AppPrefsCategory {
 
     @SneakyThrows
     public Category create() {
-        var pro = true;
         BooleanField enable = BooleanField.ofBooleanType(prefs.enableGitStorage)
-                .editable(pro)
                 .render(() -> {
                     return new CustomToggleControl();
                 });
         StringField remote = StringField.ofStringType(prefs.storageGitRemote)
-                .editable(pro)
                 .render(() -> {
                     var c = new SimpleTextControl();
                     c.setPrefWidth(1000);
                     return c;
                 });
-        if (!pro) {
-            prefs.getProRequiredSettings().addAll(List.of(enable, remote));
-        }
+
+        var openDataDir = lazyNode(
+                "openDataDir", new OptionsBuilder().name("openDataDir").description("openDataDirDescription").addComp(
+                        new ButtonComp(AppI18n.observable("openDataDirButton"), () -> {
+                            DesktopHelper.browsePath(DataStorage.get().getDataDir());
+                        })
+                                ).buildComp().padding(new Insets(25, 0, 0, 0)),
+                null);
+
         return Category.of(
                 "vault",
                 group(
@@ -84,7 +89,8 @@ public class VaultCategory extends AppPrefsCategory {
                         Setting.of(
                                 "storageGitRemote",
                                 remote,
-                                prefs.storageGitRemote)),
+                                prefs.storageGitRemote),
+                        openDataDir),
                 group(
                         "storage",
                         STORAGE_DIR_FIXED

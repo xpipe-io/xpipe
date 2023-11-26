@@ -113,6 +113,10 @@ public abstract class DataStorage {
         return dir.resolve("stores");
     }
 
+    public Path getDataDir() {
+        return dir.resolve("data");
+    }
+
     protected Path getStreamsDir() {
         return dir.resolve("streams");
     }
@@ -174,6 +178,10 @@ public abstract class DataStorage {
     }
 
     public void updateCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
+        if (getStoreCategoryIfPresent(entry.getUuid()).map(category -> category.equals(newCategory)).orElse(false)) {
+            return;
+        }
+
         var children = getDeepStoreChildren(entry);
         var toRemove = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
         listeners.forEach(storageListener -> storageListener.onStoreRemove(toRemove));
@@ -518,6 +526,7 @@ public abstract class DataStorage {
 
     private List<DataStoreEntry> getHierarchy(DataStoreEntry entry) {
         var es = new ArrayList<DataStoreEntry>();
+        es.add(entry);
 
         DataStoreEntry current = entry;
         while ((current = getDisplayParent(current).orElse(null)) != null) {

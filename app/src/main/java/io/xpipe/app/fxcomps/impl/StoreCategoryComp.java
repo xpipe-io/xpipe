@@ -43,7 +43,7 @@ public class StoreCategoryComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var i = Bindings.createStringBinding(() -> {
-            if (!DataStorage.get().supportsSharing()) {
+            if (!DataStorage.get().supportsSharing() || category.getCategory().getParentCategory() == null) {
                 return "mdal-keyboard_arrow_right";
             }
 
@@ -108,25 +108,27 @@ public class StoreCategoryComp extends SimpleComp {
         });
         contextMenu.getItems().add(newCategory);
 
-        var share = new MenuItem();
-        share.textProperty().bind(Bindings.createStringBinding(() -> {
-            if (category.getShare().getValue()) {
-                return AppI18n.get("unshare");
-            } else {
-                return AppI18n.get("share");
-            }
-        }, category.getShare()));
-        share.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-            if (category.getShare().getValue()) {
-                return new FontIcon("mdi2b-block-helper");
-            } else {
-                return new FontIcon("mdi2s-share");
-            }
-        }, category.getShare()));
-        share.setOnAction(event -> {
-            category.getShare().setValue(!category.getShare().getValue());
-        });
-        contextMenu.getItems().add(share);
+        if (category.getCategory().getParentCategory() != null) {
+            var share = new MenuItem();
+            share.textProperty().bind(Bindings.createStringBinding(() -> {
+                if (category.getShare().getValue()) {
+                    return AppI18n.get("unshare");
+                } else {
+                    return AppI18n.get("share");
+                }
+            }, category.getShare()));
+            share.graphicProperty().bind(Bindings.createObjectBinding(() -> {
+                if (category.getShare().getValue()) {
+                    return new FontIcon("mdi2b-block-helper");
+                } else {
+                    return new FontIcon("mdi2s-share");
+                }
+            }, category.getShare()));
+            share.setOnAction(event -> {
+                category.getShare().setValue(!category.getShare().getValue());
+            });
+            contextMenu.getItems().add(share);
+        }
 
         var refresh = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-360"));
         refresh.setOnAction(event -> {

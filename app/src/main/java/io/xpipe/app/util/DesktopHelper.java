@@ -5,6 +5,7 @@ import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 
 import java.awt.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class DesktopHelper {
@@ -27,6 +28,10 @@ public class DesktopHelper {
 
     public static void browsePath(Path file) {
         if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+            return;
+        }
+
+        if (!Files.exists(file)) {
             return;
         }
 

@@ -19,8 +19,26 @@ public class StorageJacksonModule extends SimpleModule {
     public void setupModule(SetupContext context) {
         addSerializer(DataStoreEntryRef.class, new DataStoreEntryRefSerializer());
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
+        addSerializer(LocalFileReference.class, new LocalFileReferenceSerializer());
+        addDeserializer(LocalFileReference.class, new LocalFileReferenceDeserializer());
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
+    }
+
+    public static class LocalFileReferenceSerializer extends JsonSerializer<LocalFileReference> {
+
+        @Override
+        public void serialize(LocalFileReference value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.serialize());
+        }
+    }
+
+    public static class LocalFileReferenceDeserializer extends JsonDeserializer<LocalFileReference> {
+
+        @Override
+        public LocalFileReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return LocalFileReference.of(p.getValueAsString());
+        }
     }
 
     @SuppressWarnings("all")

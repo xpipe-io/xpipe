@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import atlantafx.base.theme.Styles;
-import com.dlsc.formsfx.model.structure.Element;
 import com.dlsc.preferencesfx.model.Category;
 import com.dlsc.preferencesfx.model.Group;
 import com.dlsc.preferencesfx.model.Setting;
@@ -10,10 +9,9 @@ import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ShellDialects;
-import javafx.beans.property.Property;
+import io.xpipe.core.store.LocalStore;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,9 +28,6 @@ public class PasswordCategory extends AppPrefsCategory {
 
     @SneakyThrows
     public Category create() {
-        var ctr = Setting.class.getDeclaredConstructor(String.class, Element.class, Property.class);
-        ctr.setAccessible(true);
-
         var testPasswordManagerValue = new SimpleStringProperty();
         Runnable test = () -> {
             prefs.save();

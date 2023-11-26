@@ -11,3 +11,7 @@ You can then use this repository in all XPipe application instances the same way
 ## Connection list
 
 %s
+
+## Additional data
+
+You can sync arbitrary files between systems by putting them into the data subdirectory at `%%USERPROFILE%%\.xpipe\storage\data` or `~/.xpipe/storage/data`.
