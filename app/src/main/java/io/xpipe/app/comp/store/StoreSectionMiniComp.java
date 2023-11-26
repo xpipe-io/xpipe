@@ -45,14 +45,17 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         BooleanProperty expanded;
         if (section.getWrapper() != null) {
             var root = new ButtonComp(section.getWrapper().nameProperty(), () -> {})
-                    .apply(struc -> struc.get()
-                            .setGraphic(PrettyImageHelper.ofFixedSmallSquare(section.getWrapper()
-                                            .getEntry()
-                                            .getProvider()
-                                            .getDisplayIconFileName(section.getWrapper()
-                                                    .getEntry()
-                                                    .getStore()))
-                                    .createRegion()))
+                    .apply(struc -> {
+                        var provider = section.getWrapper()
+                                .getEntry()
+                                .getProvider();
+                        struc.get()
+                                .setGraphic(PrettyImageHelper.ofFixedSmallSquare(provider != null ? provider
+                                                .getDisplayIconFileName(section.getWrapper()
+                                                        .getEntry()
+                                                        .getStore()) : null)
+                                        .createRegion());
+                    })
                     .apply(struc -> {
                         struc.get().setAlignment(Pos.CENTER_LEFT);
                     })
