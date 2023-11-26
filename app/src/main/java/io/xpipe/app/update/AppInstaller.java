@@ -277,7 +277,6 @@ public class AppInstaller {
             public void installLocal(String file) throws Exception {
                 var command = new LocalStore()
                         .control()
-                        .subShell(ShellDialects.BASH)
                         .command(String.format(
                                 """
                                         function exec {
@@ -287,7 +286,7 @@ public class AppInstaller {
                                         }
 
                                         cd ~
-                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                        exec || echo "Update failed ..." && read -rs -k 1 key
                                         """,
                                 file, file));
                 TerminalHelper.open("XPipe Updater", command);
