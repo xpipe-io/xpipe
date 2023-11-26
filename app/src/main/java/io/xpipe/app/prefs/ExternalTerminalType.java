@@ -673,6 +673,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                     end tell
                                 end if
                                 tell application "%s"
+                                    activate
                                     create window with default profile command "%s"
                                 end tell
                                 """,
