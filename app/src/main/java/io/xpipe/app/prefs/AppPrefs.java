@@ -66,7 +66,7 @@ public class AppPrefs {
     private static final int tooltipDelayMax = 1500;
     private static final int editorReloadTimeoutMin = 0;
     private static final int editorReloadTimeoutMax = 1500;
-    private static final Path DEFAULT_STORAGE_DIR =
+    public static final Path DEFAULT_STORAGE_DIR =
             AppProperties.get().getDataDir().resolve("storage");
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
