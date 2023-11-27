@@ -47,7 +47,7 @@ public class UnlockAlert {
                     .ifPresentOrElse(t -> {}, () -> canceled.set(true));
 
             if (canceled.get()) {
-                ErrorEvent.fromMessage("Unlock cancelled").term().omit().handle();
+                ErrorEvent.fromMessage("Unlock cancelled").expected().term().omit().handle();
                 return;
             }
 
