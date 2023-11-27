@@ -21,9 +21,6 @@ public enum PlatformState {
     @Setter
     private static PlatformState current = PlatformState.NOT_INITIALIZED;
 
-    public static boolean HAS_GRAPHICS;
-    public static boolean PLATFORM_LOADED;
-
     public static void teardown() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             // Fix to preserve clipboard contents after shutdown
@@ -56,22 +53,11 @@ public enum PlatformState {
         }
 
         try {
-            GraphicsDevice[] screenDevices =
-                    GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-            HAS_GRAPHICS = screenDevices != null && screenDevices.length > 0;
-        } catch (HeadlessException e) {
-            TrackEvent.warn(e.getMessage());
-            HAS_GRAPHICS = false;
-            return Optional.of(e);
-        }
-
-        try {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.setImplicitExit(false);
             Platform.startup(latch::countDown);
             try {
                 latch.await();
-                PLATFORM_LOADED = true;
                 PlatformState.setCurrent(PlatformState.RUNNING);
                 return Optional.empty();
             } catch (InterruptedException e) {
@@ -80,16 +66,13 @@ public enum PlatformState {
         } catch (Throwable t) {
             // Check if we already exited
             if ("Platform.exit has been called".equals(t.getMessage())) {
-                PLATFORM_LOADED = true;
                 PlatformState.setCurrent(PlatformState.EXITED);
                 return Optional.of(t);
             } else if ("Toolkit already initialized".equals(t.getMessage())) {
-                PLATFORM_LOADED = true;
                 PlatformState.setCurrent(PlatformState.RUNNING);
                 return Optional.empty();
             } else {
                 // Platform initialization has failed in this case
-                PLATFORM_LOADED = false;
                 PlatformState.setCurrent(PlatformState.EXITED);
                 TrackEvent.error(t.getMessage());
                 return Optional.of(t);
