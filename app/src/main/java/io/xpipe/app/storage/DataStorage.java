@@ -38,6 +38,9 @@ public abstract class DataStorage {
     protected final Path dir;
 
     @Getter
+    protected boolean loaded;
+
+    @Getter
     protected final List<DataStoreCategory> storeCategories;
 
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;

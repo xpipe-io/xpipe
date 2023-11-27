@@ -25,8 +25,6 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final GitStorageHandler gitStorageHandler;
 
-    private boolean loaded;
-
     StandardStorage() {
         this.gitStorageHandler = GitStorageHandler.getInstance();
         this.gitStorageHandler.init(dir);
