@@ -19,6 +19,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.ValidationException;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -370,6 +371,9 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 }
                 messageProp.setValue(newMessage);
                 changedSinceError.setValue(false);
+                if (ex instanceof ValidationException) {
+                    ErrorEvent.unreportable(ex);
+                }
                 ErrorEvent.fromThrowable(ex).omit().handle();
             }
         });

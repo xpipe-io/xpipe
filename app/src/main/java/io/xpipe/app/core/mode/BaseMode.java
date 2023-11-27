@@ -50,10 +50,10 @@ public class BaseMode extends OperationMode {
         AppPrefs.init();
         AppCharsets.init();
         AppCharsetter.init();
+        AppSocketServer.init();
         DataStorage.init();
         AppFileWatcher.init();
         FileBridge.init();
-        AppSocketServer.init();
         TrackEvent.info("mode", "Finished base components initialization");
         initialized = true;
     }

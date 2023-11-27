@@ -24,7 +24,8 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         header = "Launches the XPipe daemon.",
         sortOptions = false,
-        showEndOfOptionsDelimiterInUsageHelp = true)
+        showEndOfOptionsDelimiterInUsageHelp = true,
+subcommands = {LauncherHelpCommand.class})
 public class LauncherCommand implements Callable<Integer> {
 
     @CommandLine.Option(

@@ -1,13 +1,13 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.core.process.ProcessControlProvider;
 
 import java.nio.file.Path;
 
 public interface GitStorageHandler {
 
     static GitStorageHandler getInstance() {
-        return LicenseProvider.get().createStorageHandler();
+        return (GitStorageHandler) ProcessControlProvider.get().createStorageHandler();
     }
 
     boolean supportsShare();

@@ -32,4 +32,5 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellControl createLocalProcessControl(boolean stoppable);
 
+    public abstract Object createStorageHandler();
 }

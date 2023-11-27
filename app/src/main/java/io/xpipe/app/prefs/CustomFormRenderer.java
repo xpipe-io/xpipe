@@ -88,6 +88,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                                         c.getNode().disabledProperty().not());
 
                                 var descriptionLabel = new Label();
+                                descriptionLabel.setMaxWidth(600);
                                 AppFont.medium(descriptionLabel);
                                 descriptionLabel.setWrapText(true);
                                 descriptionLabel
@@ -142,6 +143,9 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
 
                             if (element instanceof LazyNodeElement<?> nodeElement) {
                                 var node = nodeElement.getNode();
+                                if (node instanceof Region r) {
+                                    r.setMaxWidth(600);
+                                }
                                 grid.add(node, 0, i + rowAmount);
                                 GridPane.setMargin(node, new Insets(SPACING, 0, 0, offset));
                             }

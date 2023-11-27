@@ -70,8 +70,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         }
 
         var refs = applicable.stream().map(scriptStore -> {
-            return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == scriptStore).findFirst().orElseThrow().<SimpleScriptStore>ref();
-        }).toList();
+            return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == scriptStore).findFirst().map(entry -> entry.<SimpleScriptStore>ref());
+        }).flatMap(Optional::stream).toList();
         var hash = refs.stream().mapToInt(value -> value.get().getName().hashCode() + value.getStore().hashCode()).sum();
         var xpipeHome = XPipeInstallation.getDataDir(proc);
         var targetDir = FileNames.join(xpipeHome, "scripts", proc.getShellDialect().getId());

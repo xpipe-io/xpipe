@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.storage.GitStorageHandler;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.ModuleLayerLoader;
 
@@ -47,6 +46,4 @@ public abstract class LicenseProvider {
     public abstract void init();
 
     public abstract Comp<?> overviewPage();
-
-    public abstract GitStorageHandler createStorageHandler();
 }
