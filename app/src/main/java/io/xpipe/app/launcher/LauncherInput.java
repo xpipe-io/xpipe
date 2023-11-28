@@ -39,7 +39,7 @@ public abstract class LauncherInput {
 
         var requiresPlatform = all.stream().anyMatch(launcherInput -> launcherInput.requiresJavaFXPlatform());
         if (requiresPlatform) {
-            OperationMode.switchTo(OperationMode.GUI);
+            OperationMode.switchToSyncIfPossible(OperationMode.GUI);
         }
         var hasGui = OperationMode.get() == OperationMode.GUI;
 

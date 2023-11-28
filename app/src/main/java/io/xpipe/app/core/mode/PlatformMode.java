@@ -13,8 +13,8 @@ public abstract class PlatformMode extends OperationMode {
 
     @Override
     public boolean isSupported() {
-        PlatformState.initPlatform();
-        return PlatformState.getCurrent() == PlatformState.RUNNING;
+        var r = PlatformState.initPlatformIfNeeded();
+        return r;
     }
 
     @Override
@@ -24,11 +24,7 @@ public abstract class PlatformMode extends OperationMode {
         }
 
         TrackEvent.info("mode", "Platform mode initial setup");
-        var r = PlatformState.initPlatform();
-        if (r.isPresent()) {
-            throw r.get();
-        }
-
+        PlatformState.initPlatformOrThrow();
         AppFont.loadFonts();
         AppTheme.init();
         AppStyle.init();

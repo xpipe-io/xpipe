@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 
@@ -12,8 +11,16 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     public void handle(ErrorEvent event) {
         log.handle(event);
 
-        if (!OperationMode.GUI.isSupported() || event.isOmitted()) {
+        if (event.isOmitted()) {
             ErrorAction.ignore().handle(event);
+            return;
+        }
+
+        if (!startupGui(throwable -> {
+            var second = ErrorEvent.fromThrowable(throwable).build();
+            log.handle(second);
+            ErrorAction.ignore().handle(second);
+        })) {
             return;
         }
 
@@ -21,14 +28,6 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     }
 
     private void handleGui(ErrorEvent event) {
-        if (!startupGui(throwable -> {
-            log.handle(ErrorEvent.fromThrowable(throwable).build());
-            ErrorAction.ignore().handle(event);
-        })) {
-            return;
-        }
-
-
         if (event.getThrowable() instanceof LicenseRequiredException lex) {
             LicenseProvider.get().showLicenseAlert(lex);
             event.setShouldSendDiagnostics(true);

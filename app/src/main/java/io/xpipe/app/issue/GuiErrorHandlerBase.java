@@ -8,21 +8,16 @@ import java.util.function.Consumer;
 public class GuiErrorHandlerBase {
 
     protected boolean startupGui(Consumer<Throwable> onFail) {
-        var ex = PlatformState.initPlatform();
-        if (ex.isPresent()) {
-            onFail.accept(ex.get());
-            return false;
-        }
-
         try {
+            PlatformState.initPlatformOrThrow();
             AppProperties.init();
             AppState.init();
             AppExtensionManager.init(false);
             AppI18n.init();
             AppStyle.init();
             AppTheme.init();
-        } catch (Throwable r) {
-            onFail.accept(r);
+        } catch (Throwable ex) {
+            onFail.accept(ex);
             return false;
         }
 

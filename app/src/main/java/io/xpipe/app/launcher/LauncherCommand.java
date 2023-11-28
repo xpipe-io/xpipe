@@ -13,6 +13,7 @@ import io.xpipe.beacon.exchange.FocusExchange;
 import io.xpipe.beacon.exchange.OpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
+import lombok.SneakyThrows;
 import picocli.CommandLine;
 
 import java.awt.*;
@@ -118,11 +119,12 @@ public class LauncherCommand implements Callable<Integer> {
     }
 
     @Override
+    @SneakyThrows
     public Integer call() {
         checkStart();
         // Initialize base mode first to have access to the preferences to determine effective mode
-        OperationMode.switchTo(OperationMode.BACKGROUND);
-        OperationMode.switchTo(OperationMode.map(getEffectiveMode()));
+        OperationMode.switchToSyncOrThrow(OperationMode.BACKGROUND);
+        OperationMode.switchToSyncOrThrow(OperationMode.map(getEffectiveMode()));
         LauncherInput.handle(inputs);
 
         // URL open operations have to be handled in a special way on macOS!

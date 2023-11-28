@@ -21,6 +21,9 @@ public enum PlatformState {
     @Setter
     private static PlatformState current = PlatformState.NOT_INITIALIZED;
 
+    @Getter
+    private static Exception lastError;
+
     public static void teardown() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             // Fix to preserve clipboard contents after shutdown
@@ -36,14 +39,24 @@ public enum PlatformState {
         setCurrent(PlatformState.EXITED);
     }
 
-    public static void initPlatformOrThrow() throws Throwable {
-        var r = PlatformState.initPlatform();
-        if (r.isPresent()) {
-            throw r.get();
+    public static void initPlatformOrThrow() throws Exception {
+        initPlatformIfNeeded();
+        if (lastError != null) {
+            throw lastError;
         }
     }
 
-    public static Optional<Throwable> initPlatform() {
+    public static boolean initPlatformIfNeeded() {
+        if (current == NOT_INITIALIZED) {
+            var t = PlatformState.initPlatform().orElse(null);
+            lastError = t instanceof Exception e ? e : t != null ? new Exception(t) : null;
+        }
+
+        return current == RUNNING;
+    }
+
+
+    private static Optional<Throwable> initPlatform() {
         if (current == EXITED) {
             return Optional.of(new IllegalStateException("Platform has already exited"));
         }

@@ -26,7 +26,7 @@ public class ModeExchangeImpl extends ModeExchange
                                     .toList()));
         }
 
-        OperationMode.switchTo(mode);
+        OperationMode.switchToSyncIfPossible(mode);
         return ModeExchange.Response.builder()
                 .usedMode(OperationMode.map(OperationMode.get()))
                 .build();

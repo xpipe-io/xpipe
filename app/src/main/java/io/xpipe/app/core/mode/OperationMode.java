@@ -4,6 +4,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
+import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
@@ -121,10 +122,21 @@ public abstract class OperationMode {
     }
 
     public static void switchToAsync(OperationMode newMode) {
-        ThreadHelper.createPlatformThread("mode switcher", false, () -> switchTo(newMode)).start();
+        ThreadHelper.createPlatformThread("mode switcher", false, () -> {
+                switchToSyncIfPossible(newMode);
+        }).start();
     }
 
-    public static void switchTo(OperationMode newMode) {
+    public static void switchToSyncOrThrow(OperationMode newMode) throws Throwable {
+        TrackEvent.info("Attempting to switch mode to " + newMode.getId());
+
+        if (!newMode.isSupported()) {
+            throw PlatformState.getLastError() != null ? PlatformState.getLastError() : new IllegalStateException("Unsupported operation mode: " + newMode.getId());
+        }
+
+        set(newMode);
+    }
+    public static void switchToSyncIfPossible(OperationMode newMode) {
         TrackEvent.info("Attempting to switch mode to " + newMode.getId());
 
         if (newMode.equals(TRAY) && !TRAY.isSupported()) {
@@ -141,6 +153,7 @@ public abstract class OperationMode {
 
         set(newMode);
     }
+
 
     public static void switchUp(OperationMode newMode) {
         if (newMode == BACKGROUND) {

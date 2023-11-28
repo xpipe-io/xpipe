@@ -16,9 +16,16 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     public void handle(ErrorEvent event) {
         log.handle(event);
 
-        if (!OperationMode.GUI.isSupported() || event.isOmitted() || OperationMode.isInShutdown()) {
-            SentryErrorHandler.getInstance().handle(event);
+        if (event.isOmitted() || OperationMode.isInShutdown()) {
+            ErrorAction.ignore().handle(event);
             OperationMode.halt(1);
+            return;
+        }
+
+        if (!startupGui(throwable -> {
+            handleWithSecondaryException(event, throwable);
+            ErrorAction.ignore().handle(event);
+        })) {
             return;
         }
 
@@ -26,13 +33,6 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     }
 
     private void handleGui(ErrorEvent event) {
-        if (!startupGui(throwable -> {
-            handleSecondaryException(event, throwable);
-            ErrorAction.ignore().handle(event);
-        })) {
-            return;
-        }
-
         try {
             AppProperties.init();
             AppState.init();
@@ -43,7 +43,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             ErrorHandlerComp.showAndTryWait(event, true);
         } catch (Throwable r) {
             event.clearAttachments();
-            handleSecondaryException(event, r);
+            handleWithSecondaryException(event, r);
             return;
         }
 
@@ -54,13 +54,12 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         OperationMode.halt(1);
     }
 
-    private void handleSecondaryException(ErrorEvent event, Throwable t) {
-        log.handle(event);
-        SentryErrorHandler.getInstance().handle(event);
+    private void handleWithSecondaryException(ErrorEvent event, Throwable t) {
+        ErrorAction.ignore().handle(event);
 
         var second = ErrorEvent.fromThrowable(t).build();
         log.handle(second);
-        SentryErrorHandler.getInstance().handle(ErrorEvent.fromThrowable(t).build());
+        ErrorAction.ignore().handle(second);
         OperationMode.halt(1);
     }
 
@@ -89,7 +88,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         } catch (Throwable t) {
             var event = ErrorEvent.fromThrowable(t).build();
             log.handle(event);
-            SentryErrorHandler.getInstance().handle(event);
+            ErrorAction.ignore().handle(event);
             OperationMode.halt(1);
         }
     }
