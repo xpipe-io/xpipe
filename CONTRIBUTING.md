@@ -35,6 +35,10 @@ This is due to the fact that some components are only included in the release ve
 XPipe is able to automatically detect your local installation and fetch the required
 components from it when it is run in a development environment.
 
+Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
+It is therefore recommended to always check out the matching version tag for your local repository and local XPipe installation.
+You can find the available version tags at https://github.com/xpipe-io/xpipe/tags
+
 You need to have GraalVM Community Edition for Java 21 installed as a JDK to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running the `setup.sh` script.
 On Windows, you have to manually install the JDK.
