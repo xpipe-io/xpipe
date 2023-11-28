@@ -108,7 +108,7 @@ public class StoreCategoryComp extends SimpleComp {
         });
         contextMenu.getItems().add(newCategory);
 
-        if (category.getCategory().canShare()) {
+        if (DataStorage.get().supportsSharing() && category.getCategory().canShare()) {
             var share = new MenuItem();
             share.textProperty().bind(Bindings.createStringBinding(() -> {
                 if (category.getShare().getValue()) {
