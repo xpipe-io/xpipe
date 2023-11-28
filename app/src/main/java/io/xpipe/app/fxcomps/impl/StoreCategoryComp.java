@@ -43,7 +43,7 @@ public class StoreCategoryComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var i = Bindings.createStringBinding(() -> {
-            if (!DataStorage.get().supportsSharing() || category.getCategory().getParentCategory() == null) {
+            if (!DataStorage.get().supportsSharing() || !category.getCategory().canShare()) {
                 return "mdal-keyboard_arrow_right";
             }
 
@@ -108,7 +108,7 @@ public class StoreCategoryComp extends SimpleComp {
         });
         contextMenu.getItems().add(newCategory);
 
-        if (category.getCategory().getParentCategory() != null) {
+        if (category.getCategory().canShare()) {
             var share = new MenuItem();
             share.textProperty().bind(Bindings.createStringBinding(() -> {
                 if (category.getShare().getValue()) {
@@ -130,11 +130,11 @@ public class StoreCategoryComp extends SimpleComp {
             contextMenu.getItems().add(share);
         }
 
-        var refresh = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-360"));
-        refresh.setOnAction(event -> {
+        var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
+        rename.setOnAction(event -> {
             text.requestFocus();
         });
-        contextMenu.getItems().add(refresh);
+        contextMenu.getItems().add(rename);
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.setOnAction(event -> {

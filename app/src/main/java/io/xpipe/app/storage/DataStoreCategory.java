@@ -101,6 +101,30 @@ public class DataStoreCategory extends StorageElement {
         return new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, share);
     }
 
+    public boolean canShare() {
+        if (parentCategory == null) {
+            return false;
+        }
+
+        if (getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean shouldShareChildren() {
+        if (parentCategory == null) {
+            return true;
+        }
+
+        if (!canShare()) {
+            return false;
+        }
+
+        return isShare();
+    }
+
     @Override
     public Path[] getShareableFiles() {
         return new Path[] {directory.resolve("category.json")};

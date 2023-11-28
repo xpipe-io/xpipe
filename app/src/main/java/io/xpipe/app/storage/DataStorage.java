@@ -104,9 +104,12 @@ public abstract class DataStorage {
             return;
         }
 
+        INSTANCE.onReset();
         INSTANCE.save();
         INSTANCE = null;
     }
+
+    protected void onReset() {}
 
     public static DataStorage get() {
         return INSTANCE;

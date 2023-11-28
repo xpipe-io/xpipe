@@ -30,6 +30,11 @@ public class StandardStorage extends DataStorage {
         this.gitStorageHandler.init(dir);
     }
 
+    @Override
+    protected void onReset() {
+        gitStorageHandler.onReset();
+    }
+
     private boolean isNewSession() {
         return XPipeSession.get().isNewSystemSession();
     }
