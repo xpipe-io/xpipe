@@ -580,6 +580,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         return true;
     }
 
+    default boolean shouldClear() {
+        return true;
+    }
+
     default void launch(LaunchConfiguration configuration) throws Exception {}
 
     class MacOsTerminalType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
@@ -704,6 +708,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         public WarpType() {
             super("app.warp", "Warp");
+        }
+
+        @Override
+        public boolean shouldClear() {
+            return false;
         }
 
         @Override

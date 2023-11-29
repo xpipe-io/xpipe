@@ -16,7 +16,7 @@ public interface ProcessControl extends AutoCloseable {
 
     void resetData();
 
-    String prepareTerminalOpen(String displayName) throws Exception;
+    String prepareTerminalOpen(TerminalInitScriptConfig config) throws Exception;
 
     void closeStdin() throws IOException;
 

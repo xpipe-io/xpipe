@@ -7,13 +7,13 @@ import io.xpipe.app.prefs.ExternalTerminalType;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ProcessControl;
+import io.xpipe.core.process.TerminalInitScriptConfig;
 
 import java.io.IOException;
 
 public class TerminalHelper {
 
     public static void open(String title, ProcessControl cc) throws Exception {
-        var command = cc.prepareTerminalOpen(title);
         open(null, title, cc);
     }
 
@@ -29,7 +29,7 @@ public class TerminalHelper {
                 : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;
-                var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(adjustedTitle));
+                var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(new TerminalInitScriptConfig(adjustedTitle, type.shouldClear())));
         var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, adjustedTitle, cleanTitle, file);
         try {
             type.launch(config);

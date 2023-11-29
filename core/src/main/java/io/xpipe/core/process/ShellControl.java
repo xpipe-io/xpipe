@@ -76,9 +76,9 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
-    String prepareTerminalOpen(String displayName) throws Exception;
+    String prepareTerminalOpen(TerminalInitScriptConfig config) throws Exception;
 
-    String prepareIntermediateTerminalOpen(String content, String displayName) throws Exception;
+    String prepareIntermediateTerminalOpen(String content, TerminalInitScriptConfig config) throws Exception;
 
     String getSystemTemporaryDirectory();
 

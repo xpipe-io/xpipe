@@ -1,12 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -44,18 +41,18 @@ public class ScriptHelper {
         }
     }
 
-    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, String displayName)
+    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, TerminalInitScriptConfig config)
             throws Exception {
-        return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, displayName);
+        return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, config);
     }
 
-    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, String displayName)
+    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, TerminalInitScriptConfig config)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
 
         var clear = t.clearDisplayCommand();
-        if (clear != null) {
+        if (clear != null && config.isClearScreen()) {
             content += clear + nl;
         }
 
@@ -71,8 +68,8 @@ public class ScriptHelper {
             content += nl + applyProfilesCommand + nl;
         }
 
-        if (displayName != null) {
-            content += nl + t.changeTitleCommand(displayName)  + nl;
+        if (config.getDisplayName() != null) {
+            content += nl + t.changeTitleCommand(config.getDisplayName())  + nl;
         }
 
         content += nl + String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
