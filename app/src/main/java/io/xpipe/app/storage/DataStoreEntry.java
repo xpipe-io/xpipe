@@ -202,14 +202,14 @@ public class DataStoreEntry extends StorageElement {
         );
     }
 
-    public static DataStoreEntry fromDirectory(Path dir) throws Exception {
+    public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
         var entryFile = dir.resolve("entry.json");
         var storeFile = dir.resolve("store.json");
         var stateFile = dir.resolve("state.json");
         if (!Files.exists(entryFile) || !Files.exists(storeFile)) {
-            return null;
+            return Optional.empty();
         }
 
         if (!Files.exists(stateFile)) {
@@ -262,18 +262,8 @@ public class DataStoreEntry extends StorageElement {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }
-        return createExisting(
-                dir,
-                uuid,
-                categoryUuid,
-                name,
-                lastUsed,
-                lastModified,
-                storeNode,
-                configuration,
-                persistentState,
-                expanded,
-                color);
+        return Optional.of(
+                createExisting(dir, uuid, categoryUuid, name, lastUsed, lastModified, storeNode, configuration, persistentState, expanded, color));
     }
 
     public void setInRefresh(boolean newRefresh) {

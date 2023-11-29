@@ -135,7 +135,7 @@ public class StandardStorage extends DataStorage {
                         }
 
                         var c = DataStoreCategory.fromDirectory(path);
-                        storeCategories.add(c);
+                        c.ifPresent(storeCategories::add);
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(ex);
@@ -218,16 +218,16 @@ public class StandardStorage extends DataStorage {
                         }
 
                         var entry = DataStoreEntry.fromDirectory(path);
-                        if (entry == null) {
+                        if (entry.isEmpty()) {
                             return;
                         }
 
-                        var foundCat = getStoreCategoryIfPresent(entry.getCategoryUuid());
+                        var foundCat = getStoreCategoryIfPresent(entry.get().getCategoryUuid());
                         if (foundCat.isEmpty()) {
-                            entry.setCategoryUuid(null);
+                            entry.get().setCategoryUuid(null);
                         }
 
-                        storeEntries.put(entry, entry);
+                        storeEntries.put(entry.get(), entry.get());
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(ex);
