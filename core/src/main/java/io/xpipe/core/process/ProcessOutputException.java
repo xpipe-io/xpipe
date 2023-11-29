@@ -44,8 +44,8 @@ public class ProcessOutputException extends Exception {
         this.output = output;
     }
 
-    public boolean isTimeOut() {
-        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
+    public boolean isIrregularExit() {
+        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE || exitCode == CommandControl.START_FAILED_EXIT_CODE || exitCode == CommandControl.UNASSIGNED_EXIT_CODE || exitCode == CommandControl.INTERNAL_ERROR_EXIT_CODE;
     }
 
     public boolean isKill() {

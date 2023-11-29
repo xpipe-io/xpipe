@@ -93,7 +93,7 @@ public interface CommandControl extends ProcessControl {
             discardOrThrow();
             return true;
         } catch (ProcessOutputException ex) {
-            if (ex.isTimeOut()) {
+            if (ex.isIrregularExit()) {
                 throw ex;
             }
 
