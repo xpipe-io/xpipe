@@ -13,10 +13,12 @@ import java.util.function.Function;
 public interface CommandControl extends ProcessControl {
 
     // Keep these out of a normal exit code range
-    int UNASSIGNED_EXIT_CODE = -80001;
-    int EXIT_TIMEOUT_EXIT_CODE = -80002;
-    int START_FAILED_EXIT_CODE = -80003;
-    int INTERNAL_ERROR_EXIT_CODE = -80004;
+    // They have to be in range of 0 - 255 in order to work on all systems
+    int UNASSIGNED_EXIT_CODE = 160;
+    int EXIT_TIMEOUT_EXIT_CODE = 161;
+    int START_FAILED_EXIT_CODE = 162;
+    int INTERNAL_ERROR_EXIT_CODE = 163;
+    int ELEVATION_FAILED_EXIT_CODE = 164;
 
     enum TerminalExitMode {
         KEEP_OPEN,

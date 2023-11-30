@@ -30,6 +30,7 @@ public class ProcessOutputException extends Exception {
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
                     case CommandControl.UNASSIGNED_EXIT_CODE -> "Process exited with unknown state. Did an external process interfere?" + errorSuffix;
                     case CommandControl.INTERNAL_ERROR_EXIT_CODE -> "Process execution failed" + errorSuffix;
+                    case CommandControl.ELEVATION_FAILED_EXIT_CODE -> "Process elevation failed" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
                 };
         return new ProcessOutputException(message, exitCode, combinedError);
@@ -45,7 +46,7 @@ public class ProcessOutputException extends Exception {
     }
 
     public boolean isIrregularExit() {
-        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE || exitCode == CommandControl.START_FAILED_EXIT_CODE || exitCode == CommandControl.UNASSIGNED_EXIT_CODE || exitCode == CommandControl.INTERNAL_ERROR_EXIT_CODE;
+        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE || exitCode == CommandControl.START_FAILED_EXIT_CODE || exitCode == CommandControl.UNASSIGNED_EXIT_CODE || exitCode == CommandControl.INTERNAL_ERROR_EXIT_CODE || exitCode == CommandControl.ELEVATION_FAILED_EXIT_CODE;
     }
 
     public boolean isKill() {
