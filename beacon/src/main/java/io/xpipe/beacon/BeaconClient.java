@@ -46,6 +46,7 @@ public class BeaconClient implements AutoCloseable {
 
     public static BeaconClient connect(ClientInformation information) throws Exception {
         var socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
+        socket.setSoTimeout(5000);
         var client = new BeaconClient(socket, socket.getInputStream(), socket.getOutputStream());
         client.sendObject(JacksonMapper.getDefault().valueToTree(information));
         return client;

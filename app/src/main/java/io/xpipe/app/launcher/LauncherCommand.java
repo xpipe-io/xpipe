@@ -8,6 +8,7 @@ import io.xpipe.app.issue.LogErrorHandler;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.beacon.BeaconException;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.exchange.FocusExchange;
 import io.xpipe.beacon.exchange.OpenExchange;
@@ -40,7 +41,7 @@ public class LauncherCommand implements Callable<Integer> {
     final List<String> inputs = List.of();
 
     public static void runLauncher(String[] args) {
-        event("Launcher received commands: " + Arrays.asList(args));
+        TrackEvent.builder().category("launcher").type("debug").message("Launcher received commands: " + Arrays.asList(args)).handle();
 
         var cmd = new CommandLine(new LauncherCommand());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
@@ -66,32 +67,29 @@ public class LauncherCommand implements Callable<Integer> {
         cmd.execute(args);
     }
 
-    private static TrackEvent.TrackEventBuilder event(String msg) {
-        return TrackEvent.builder().category("launcher").type("debug").message(msg);
-    }
-
     private void checkStart() {
-        if (BeaconServer.isRunning()) {
-            try (var con = new LauncherConnection()) {
-                con.constructSocket();
-                con.performSimpleExchange(
-                        FocusExchange.Request.builder().mode(getEffectiveMode()).build());
-                if (!inputs.isEmpty()) {
-                    con.performSimpleExchange(
-                            OpenExchange.Request.builder().arguments(inputs).build());
-                }
+        try {
+            if (BeaconServer.isRunning()) {
+                try (var con = new LauncherConnection()) {
+                    con.constructSocket();
+                    con.performSimpleExchange(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
+                    if (!inputs.isEmpty()) {
+                        con.performSimpleExchange(OpenExchange.Request.builder().arguments(inputs).build());
+                    }
 
-                if (OsType.getLocal().equals(OsType.MACOS)) {
-                    Desktop.getDesktop().setOpenURIHandler(e -> {
-                        con.performSimpleExchange(OpenExchange.Request.builder()
-                                .arguments(List.of(e.getURI().toString()))
-                                .build());
-                    });
-                    ThreadHelper.sleep(1000);
+                    if (OsType.getLocal().equals(OsType.MACOS)) {
+                        Desktop.getDesktop().setOpenURIHandler(e -> {
+                            con.performSimpleExchange(OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                        });
+                        ThreadHelper.sleep(1000);
+                    }
                 }
+                TrackEvent.info("Another instance is already running on this port. Quitting ...");
+                OperationMode.halt(1);
             }
-            TrackEvent.info("Another instance is already running on this port. Quitting ...");
-            OperationMode.halt(1);
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).description("Unable to connect to existing running daemon instance as it did not respond." +
+                    " Either try to kill the process xpiped manually or use the command xpipe daemon stop --force if the CLI is in your path.").handle();
         }
 
         // Even in case we are unable to reach another beacon server
