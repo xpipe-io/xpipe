@@ -43,6 +43,7 @@ public abstract class PlatformMode extends OperationMode {
         while (App.getApp() == null) {
             ThreadHelper.sleep(100);
         }
+        TrackEvent.info("mode", "Application startup finished ...");
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
         // You can still update manually in the about tab

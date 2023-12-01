@@ -230,14 +230,22 @@ public abstract class OperationMode {
     }
 
     public static void shutdown(boolean inShutdownHook, boolean hasError) {
-        // In case we are stuck while in shutdown, allow for an external kill command to instantly exit this application
+        // In case we are stuck while in shutdown, instantly exit this application
         if (inShutdown && inShutdownHook) {
-            TrackEvent.info("Received SIGTERM while in shutdown. Halting ...");
+            TrackEvent.info("Received another shutdown request while in shutdown hook. Halting ...");
             OperationMode.halt(1);
         }
 
         if (inShutdown) {
             return;
+        }
+
+        // Run a timer to always exit after some time in case we get stuck
+        if (inShutdownHook) {
+            ThreadHelper.runAsync(() -> {
+                ThreadHelper.sleep(15000);
+                OperationMode.halt(1);
+            });
         }
 
         inShutdown = true;
