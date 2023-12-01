@@ -10,7 +10,7 @@ public class BeaconDaemonController {
     private static boolean alreadyStarted;
 
     public static void start(XPipeDaemonMode mode) throws Exception {
-        if (BeaconServer.isRunning()) {
+        if (BeaconServer.isReachable()) {
             alreadyStarted = true;
             return;
         }
@@ -25,7 +25,7 @@ public class BeaconDaemonController {
         }
 
         waitForStartup(process, custom);
-        if (!BeaconServer.isRunning()) {
+        if (!BeaconServer.isReachable()) {
             throw new AssertionError();
         }
     }
@@ -35,11 +35,11 @@ public class BeaconDaemonController {
             return;
         }
 
-        if (!BeaconServer.isRunning()) {
+        if (!BeaconServer.isReachable()) {
             return;
         }
 
-        var client = BeaconClient.connect(BeaconClient.ApiClientInformation.builder()
+        var client = BeaconClient.establishConnection(BeaconClient.ApiClientInformation.builder()
                 .version("?")
                 .language("Java API Test")
                 .build());
@@ -65,7 +65,7 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder()
+            var s = BeaconClient.tryEstablishConnection(BeaconClient.ApiClientInformation.builder()
                     .version("?")
                     .language("Java")
                     .build());
@@ -84,7 +84,7 @@ public class BeaconDaemonController {
             } catch (InterruptedException ignored) {
             }
 
-            var r = BeaconServer.isRunning();
+            var r = BeaconServer.isReachable();
             if (!r) {
                 return;
             }

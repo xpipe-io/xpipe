@@ -192,6 +192,9 @@ public class AppSocketServer {
             }
             var information =
                     JacksonMapper.getDefault().treeToValue(informationNode, BeaconClient.ClientInformation.class);
+            try (var blockOut = BeaconFormat.writeBlocks(clientSocket.getOutputStream())) {
+                blockOut.write("\"ACK\"".getBytes(StandardCharsets.UTF_8));
+            }
 
             TrackEvent.builder()
                     .category("beacon")

@@ -139,7 +139,11 @@ public class ErrorHandlerComp extends SimpleComp {
         var r = JfxHelper.createNamedEntry(a.getName(), a.getDescription());
         var b = new ButtonComp(null, r, () -> {
             takenAction.setValue(a);
-            if (a.handle(event)) {
+            try {
+                if (a.handle(event)) {
+                    stage.close();
+                }
+            } catch (Exception ignored) {
                 stage.close();
             }
         });

@@ -48,12 +48,17 @@ public class BeaconClient implements AutoCloseable {
         this.out = out;
     }
 
-    public static BeaconClient connect(ClientInformation information) throws Exception {
+    public static BeaconClient establishConnection(ClientInformation information) throws Exception {
         var socket = new Socket();
         socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort()), 5000);
         socket.setSoTimeout(5000);
         var client = new BeaconClient(socket, socket.getInputStream(), socket.getOutputStream());
         client.sendObject(JacksonMapper.getDefault().valueToTree(information));
+        var res = client.receiveObject();
+        if (!res.isTextual() || !"ACK".equals(res.asText())) {
+            throw new BeaconException("Daemon responded with invalid acknowledgement");
+        }
+        socket.setSoTimeout(0);
         return client;
     }
 
@@ -102,9 +107,9 @@ public class BeaconClient implements AutoCloseable {
         };
     }
 
-    public static Optional<BeaconClient> tryConnect(ClientInformation information) {
+    public static Optional<BeaconClient> tryEstablishConnection(ClientInformation information) {
         try {
-            return Optional.of(connect(information));
+            return Optional.of(establishConnection(information));
         } catch (Exception ex) {
             return Optional.empty();
         }
@@ -190,6 +195,10 @@ public class BeaconClient implements AutoCloseable {
     }
 
     public <T extends ResponseMessage> T receiveResponse() throws ConnectorException, ClientException, ServerException {
+        return parseResponse(receiveObject());
+    }
+
+    private JsonNode receiveObject() throws ConnectorException, ClientException, ServerException {
         JsonNode node;
         try (InputStream blockIn = BeaconFormat.readBlocks(in)) {
             node = JacksonMapper.getDefault().readTree(blockIn);
@@ -216,7 +225,7 @@ public class BeaconClient implements AutoCloseable {
             throw ce.get().throwException();
         }
 
-        return parseResponse(node);
+        return node;
     }
 
     private Optional<ClientErrorMessage> parseClientError(JsonNode node) throws ConnectorException {
@@ -305,18 +314,6 @@ public class BeaconClient implements AutoCloseable {
         }
     }
 
-    @JsonTypeName("reachableCheck")
-    @Value
-    @Builder
-    @Jacksonized
-    @EqualsAndHashCode(callSuper = false)
-    public static class ReachableCheckInformation extends ClientInformation {
-
-        @Override
-        public String toDisplayString() {
-            return "Reachable check";
-        }
-    }
 
     @JsonTypeName("daemon")
     @Value

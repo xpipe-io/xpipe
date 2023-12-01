@@ -10,7 +10,6 @@ public class BeaconJacksonModule extends SimpleModule {
         context.registerSubtypes(
                 new NamedType(BeaconClient.ApiClientInformation.class),
                 new NamedType(BeaconClient.CliClientInformation.class),
-                new NamedType(BeaconClient.DaemonInformation.class),
-                new NamedType(BeaconClient.ReachableCheckInformation.class));
+                new NamedType(BeaconClient.DaemonInformation.class));
     }
 }

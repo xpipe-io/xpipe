@@ -78,7 +78,7 @@ public final class XPipeApiConnection extends BeaconConnection {
             } catch (InterruptedException ignored) {
             }
 
-            var s = BeaconClient.tryConnect(BeaconClient.ApiClientInformation.builder()
+            var s = BeaconClient.tryEstablishConnection(BeaconClient.ApiClientInformation.builder()
                     .version("?")
                     .language("Java")
                     .build());
@@ -96,7 +96,7 @@ public final class XPipeApiConnection extends BeaconConnection {
             } catch (InterruptedException ignored) {
             }
 
-            var r = BeaconServer.isRunning();
+            var r = BeaconServer.isReachable();
             if (!r) {
                 return;
             }
@@ -105,7 +105,7 @@ public final class XPipeApiConnection extends BeaconConnection {
 
     @Override
     protected void constructSocket() {
-        if (!BeaconServer.isRunning()) {
+        if (!BeaconServer.isReachable()) {
             try {
                 start();
             } catch (Exception ex) {
@@ -122,7 +122,7 @@ public final class XPipeApiConnection extends BeaconConnection {
         }
 
         try {
-            beaconClient = BeaconClient.connect(BeaconClient.ApiClientInformation.builder()
+            beaconClient = BeaconClient.establishConnection(BeaconClient.ApiClientInformation.builder()
                     .version("?")
                     .language("Java")
                     .build());

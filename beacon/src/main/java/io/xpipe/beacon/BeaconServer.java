@@ -8,6 +8,9 @@ import io.xpipe.core.util.XPipeInstallation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.List;
 
 /**
@@ -15,9 +18,9 @@ import java.util.List;
  */
 public class BeaconServer {
 
-    public static boolean isRunning() {
-        try (var ignored = BeaconClient.connect(
-                BeaconClient.ReachableCheckInformation.builder().build())) {
+    public static boolean isReachable() {
+        try (var socket = new Socket()) {
+            socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort()), 5000);
             return true;
         } catch (Exception e) {
             return false;

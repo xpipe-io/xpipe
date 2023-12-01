@@ -9,7 +9,7 @@ public class LauncherConnection extends BeaconConnection {
     @Override
     protected void constructSocket() {
         try {
-            beaconClient = BeaconClient.connect(
+            beaconClient = BeaconClient.establishConnection(
                     BeaconClient.DaemonInformation.builder().build());
         } catch (Exception ex) {
             throw new BeaconException("Unable to connect to running xpipe daemon", ex);

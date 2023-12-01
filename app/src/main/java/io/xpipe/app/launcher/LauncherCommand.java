@@ -2,6 +2,7 @@ package io.xpipe.app.launcher;
 
 import io.xpipe.app.core.AppDataLock;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.LogErrorHandler;
@@ -18,6 +19,7 @@ import lombok.SneakyThrows;
 import picocli.CommandLine;
 
 import java.awt.*;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +71,7 @@ public class LauncherCommand implements Callable<Integer> {
 
     private void checkStart() {
         try {
-            if (BeaconServer.isRunning()) {
+            if (BeaconServer.isReachable()) {
                 try (var con = new LauncherConnection()) {
                     con.constructSocket();
                     con.performSimpleExchange(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
@@ -87,18 +89,17 @@ public class LauncherCommand implements Callable<Integer> {
                 TrackEvent.info("Another instance is already running on this port. Quitting ...");
                 OperationMode.halt(1);
             }
+
+            // Even in case we are unable to reach another beacon server
+            // there might be another instance running, for example
+            // starting up or listening on another port
+            if (!AppDataLock.lock()) {
+                throw new IOException("Data directory " + AppProperties.get().getDataDir().toString() + " is already locked");
+            }
         } catch (Exception ex) {
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
-            ErrorEvent.fromThrowable(ex).description("Unable to connect to existing running daemon instance as it did not respond." +
+            ErrorEvent.fromThrowable(ex).term().description("Unable to connect to existing running daemon instance as it did not respond." +
                     " Either try to kill the process xpiped manually or use the command " + cli + " daemon stop --force.").handle();
-        }
-
-        // Even in case we are unable to reach another beacon server
-        // there might be another instance running, for example
-        // starting up or listening on another port
-        if (!AppDataLock.lock()) {
-            TrackEvent.info("Data directory is already locked. Quitting ...");
-            OperationMode.halt(1);
         }
     }
 
