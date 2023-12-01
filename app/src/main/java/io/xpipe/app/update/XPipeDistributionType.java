@@ -30,13 +30,14 @@ public enum XPipeDistributionType {
         this.updateHandlerSupplier = updateHandlerSupplier;
     }
 
-    public static XPipeDistributionType get() {
+    public static void init() {
         if (type != null) {
-            return type;
+            return;
         }
 
         if (!ModuleHelper.isImage()) {
-            return (type = DEVELOPMENT);
+            type = DEVELOPMENT;
+            return;
         }
 
         if (!XPipeSession.get().isNewBuildSession()) {
@@ -47,19 +48,29 @@ public enum XPipeDistributionType {
                     .findAny()
                     .orElse(null);
             if (cachedType != null) {
-                return (type = cachedType);
+                type = cachedType;
+                return;
             }
         }
 
         var det = determine();
+
         // Don't cache unknown type
         if (det == UNKNOWN) {
-            return UNKNOWN;
+            return;
         }
 
         type = det;
         AppCache.update("dist", type.getId());
         TrackEvent.withInfo("Determined distribution type").tag("type",type.getId()).handle();
+    }
+
+    public static XPipeDistributionType get() {
+        if (type == null) {
+            TrackEvent.withWarn("Distribution type requested before init").handle();
+            return UNKNOWN;
+        }
+
         return type;
     }
 

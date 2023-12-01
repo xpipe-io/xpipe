@@ -6,6 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LockedSecretValue;
@@ -47,6 +48,7 @@ public class BaseMode extends OperationMode {
         LicenseProvider.get().init();
         AppAntivirusAlert.showIfNeeded();
         LocalStore.init();
+        XPipeDistributionType.init();
         AppPrefs.init();
         AppCharsets.init();
         AppCharsetter.init();
