@@ -13,6 +13,7 @@ import io.xpipe.beacon.exchange.FocusExchange;
 import io.xpipe.beacon.exchange.OpenExchange;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.util.XPipeInstallation;
 import lombok.SneakyThrows;
 import picocli.CommandLine;
 
@@ -87,8 +88,9 @@ public class LauncherCommand implements Callable<Integer> {
                 OperationMode.halt(1);
             }
         } catch (Exception ex) {
+            var cli = XPipeInstallation.getLocalDefaultCliExecutable();
             ErrorEvent.fromThrowable(ex).description("Unable to connect to existing running daemon instance as it did not respond." +
-                    " Either try to kill the process xpiped manually or use the command xpipe daemon stop --force if the CLI is in your path.").handle();
+                    " Either try to kill the process xpiped manually or use the command " + cli + " daemon stop --force.").handle();
         }
 
         // Even in case we are unable to reach another beacon server

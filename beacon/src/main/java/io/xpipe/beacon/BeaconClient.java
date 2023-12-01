@@ -21,8 +21,12 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -45,7 +49,8 @@ public class BeaconClient implements AutoCloseable {
     }
 
     public static BeaconClient connect(ClientInformation information) throws Exception {
-        var socket = new Socket(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort());
+        var socket = new Socket();
+        socket.connect(new InetSocketAddress(InetAddress.getLoopbackAddress(), BeaconConfig.getUsedPort()), 5000);
         socket.setSoTimeout(5000);
         var client = new BeaconClient(socket, socket.getInputStream(), socket.getOutputStream());
         client.sendObject(JacksonMapper.getDefault().valueToTree(information));
