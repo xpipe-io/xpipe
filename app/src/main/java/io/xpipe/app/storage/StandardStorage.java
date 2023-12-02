@@ -4,7 +4,6 @@ import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
@@ -180,20 +179,14 @@ public class StandardStorage extends DataStorage {
             if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
                 var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
                 cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
+                cat.setShare(true);
                 storeCategories.add(cat);
             }
 
             if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
-                storeCategories.add(new DataStoreCategory(
-                        categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
-                        DEFAULT_CATEGORY_UUID,
-                        "Default",
-                        Instant.now(),
-                        Instant.now(),
-                        true,
-                        ALL_CONNECTIONS_CATEGORY_UUID,
-                        StoreSortMode.ALPHABETICAL_ASC, false
-                ));
+                var cat = new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID, "Default",
+                        Instant.now(), Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, StoreSortMode.ALPHABETICAL_ASC, true);
+                storeCategories.add(cat);
             }
 
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
