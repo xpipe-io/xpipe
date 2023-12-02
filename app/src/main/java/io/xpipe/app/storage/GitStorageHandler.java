@@ -16,15 +16,17 @@ public interface GitStorageHandler {
 
     void init(Path dir);
 
-    void prepareForLoad();
+    void beforeStorageLoad();
 
-    void prepareForSave();
+    void afterStorageLoad();
+
+    void beforeStorageSave();
+
+    void afterStorageSave();
 
     void handleEntry(DataStoreEntry entry, boolean exists, boolean dirty);
 
     void handleCategory(DataStoreCategory category, boolean exists, boolean dirty);
 
     void handleDeletion(Path target, String name);
-
-    void postSave();
 }

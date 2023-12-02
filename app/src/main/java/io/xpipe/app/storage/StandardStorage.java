@@ -4,6 +4,7 @@ import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
@@ -111,7 +112,7 @@ public class StandardStorage extends DataStorage {
     }
 
     public synchronized void load() {
-        this.gitStorageHandler.prepareForLoad();
+        this.gitStorageHandler.beforeStorageLoad();
 
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
@@ -300,6 +301,7 @@ public class StandardStorage extends DataStorage {
         deleteLeftovers();
 
         loaded = true;
+        this.gitStorageHandler.afterStorageLoad();
     }
 
     public synchronized void save() {
@@ -307,7 +309,7 @@ public class StandardStorage extends DataStorage {
             return;
         }
 
-        this.gitStorageHandler.prepareForSave();
+        this.gitStorageHandler.beforeStorageSave();
 
         try {
             FileUtils.forceMkdir(getStoresDir().toFile());
@@ -358,7 +360,7 @@ public class StandardStorage extends DataStorage {
         }
 
         deleteLeftovers();
-        gitStorageHandler.postSave();
+        gitStorageHandler.afterStorageSave();
     }
 
     @Override

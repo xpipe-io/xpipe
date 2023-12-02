@@ -244,6 +244,7 @@ public abstract class OperationMode {
         if (inShutdownHook) {
             ThreadHelper.runAsync(() -> {
                 ThreadHelper.sleep(15000);
+                TrackEvent.info("Shutdown took too long. Halting ...");
                 OperationMode.halt(1);
             });
         }
