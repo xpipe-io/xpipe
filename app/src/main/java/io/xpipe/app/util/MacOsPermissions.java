@@ -57,9 +57,7 @@ public class MacOsPermissions {
                                     a.getButtonTypes().clear();
                                     a.getButtonTypes().add(ButtonType.CANCEL);
                                     alert.set(a);
-                                },
-                                null,
-                                buttonType -> {
+                                }, buttonType -> {
                                     alert.get().close();
                                     state.set(false);
                                 });

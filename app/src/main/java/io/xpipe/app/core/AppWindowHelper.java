@@ -6,14 +6,11 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.BoundingBox;
-import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -23,7 +20,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -76,12 +75,17 @@ public class AppWindowHelper {
             });
 
             centerToMainWindow(stage);
-            clampWindow(stage);
+            clampWindow(stage).ifPresent(rectangle2D -> {
+                stage.setX(rectangle2D.getMinX());
+                stage.setY(rectangle2D.getMinY());
+                stage.setWidth(rectangle2D.getWidth());
+                stage.setHeight(rectangle2D.getHeight());
+            });
         });
         return stage;
     }
 
-    private static void centerToMainWindow(Stage childStage) {
+    private static void centerToMainWindow(Window childStage) {
         if (App.getApp() == null) {
             return;
         }
@@ -92,7 +96,7 @@ public class AppWindowHelper {
     }
 
     public static void showAlert(
-            Consumer<Alert> c, ObservableValue<Boolean> loading, Consumer<Optional<ButtonType>> bt) {
+            Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
         ThreadHelper.runAsync(() -> {
             var r = showBlockingAlert(c);
             if (bt != null) {
@@ -101,30 +105,28 @@ public class AppWindowHelper {
         });
     }
 
-    public static void showAndWaitForWindow(Supplier<Stage> s) {
-        if (!Platform.isFxApplicationThread()) {
-            CountDownLatch latch = new CountDownLatch(1);
-            Platform.runLater(() -> {
-                s.get().showAndWait();
-                latch.countDown();
-            });
-            try {
-                latch.await();
-            } catch (InterruptedException ignored) {
-            }
-        } else {
-            s.get().showAndWait();
-        }
-    }
-
     public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
+        Supplier<Alert> supplier = () -> {
+            Alert a = AppWindowHelper.createEmptyAlert();
+            AppFont.normal(a.getDialogPane());
+            var s = (Stage) a.getDialogPane().getScene().getWindow();
+            a.getDialogPane().getScene().getWindow().setOnShown(event -> {
+                clampWindow((Stage) a.getDialogPane().getScene().getWindow()).ifPresent(rectangle2D -> {
+                    s.setX(rectangle2D.getMinX());
+                    s.setY(rectangle2D.getMinY());
+                    // Somehow we have to set max size as setting the normal size does not work?
+                    s.setMaxWidth(rectangle2D.getWidth());
+                    s.setMaxHeight(rectangle2D.getHeight());
+                });
+            });
+            return a;
+        };
+
         AtomicReference<Optional<ButtonType>> result = new AtomicReference<>();
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
-                Alert a = AppWindowHelper.createEmptyAlert();
-                AppFont.normal(a.getDialogPane());
-
+                Alert a = supplier.get();
                 c.accept(a);
                 result.set(a.showAndWait());
                 latch.countDown();
@@ -134,15 +136,8 @@ public class AppWindowHelper {
             } catch (InterruptedException ignored) {
             }
         } else {
-            Alert a = createEmptyAlert();
-            AppFont.normal(a.getDialogPane());
+            Alert a = supplier.get();
             c.accept(a);
-
-            Button button = (Button) a.getDialogPane().lookupButton(ButtonType.OK);
-            if (button != null) {
-                button.getStyleClass().add("ok-button");
-            }
-
             result.set(a.showAndWait());
         }
         return result.get();
@@ -200,32 +195,70 @@ public class AppWindowHelper {
         });
     }
 
-    public static void clampWindow(Stage stage) {
+    private static Optional<Rectangle2D> clampWindow(Stage stage) {
+        if (!areNumbersValid(stage.getWidth(), stage.getHeight())) {
+            return Optional.empty();
+        }
+
         var allScreenBounds = computeWindowScreenBounds(stage);
-        double x = stage.getX();
-        if (x < allScreenBounds.getMinX()) {
-            stage.setX(x = allScreenBounds.getMinX());
+        if (!areNumbersValid(allScreenBounds.getMinX(), allScreenBounds.getMinY(), allScreenBounds.getMaxX(), allScreenBounds.getMaxY())) {
+            return Optional.empty();
         }
-        double y = stage.getY();
-        if (y < allScreenBounds.getMinY()) {
-            stage.setY(y = allScreenBounds.getMinY());
+
+        // Alerts do not have a custom x/y set, but we are able to handle that
+
+        boolean changed = false;
+
+        double x = 0;
+        if (areNumbersValid(stage.getX())) {
+            x = stage.getX();
+            if (x < allScreenBounds.getMinX()) {
+                x = allScreenBounds.getMinX();
+                changed = true;
+            }
         }
+
+        double y = 0;
+        if (areNumbersValid(stage.getY())) {
+            y = stage.getY();
+            if (y < allScreenBounds.getMinY()) {
+                y = allScreenBounds.getMinY();
+                changed = true;
+            }
+        }
+
         double w = stage.getWidth();
         double h = stage.getHeight();
         if (x + w > allScreenBounds.getMaxX()) {
-            stage.setWidth(allScreenBounds.getMaxX() - x);
+            w = allScreenBounds.getMaxX() - x;
+            changed = true;
         }
         if (y + h > allScreenBounds.getMaxY()) {
-            stage.setHeight(allScreenBounds.getMaxY() - y);
+            h = allScreenBounds.getMaxY() - y;
+            changed = true;
         }
+
+        return changed ? Optional.of(new Rectangle2D(x, y, w, h)) : Optional.empty();
     }
 
-    private static Bounds computeWindowScreenBounds(Stage stage) {
+    private static boolean areNumbersValid(double... args) {
+        return Arrays.stream(args).allMatch(Double::isFinite);
+    }
+
+    private static List<Screen> getWindowScreens(Stage stage) {
+        if (!areNumbersValid(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight())) {
+            return stage.getOwner() != null && stage.getOwner() instanceof Stage ownerStage ? getWindowScreens(ownerStage) : List.of(Screen.getPrimary());
+        }
+
+        return Screen.getScreensForRectangle(new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()));
+    }
+
+    private static Rectangle2D computeWindowScreenBounds(Stage stage) {
         double minX = Double.POSITIVE_INFINITY ;
         double minY = Double.POSITIVE_INFINITY ;
         double maxX = Double.NEGATIVE_INFINITY ;
         double maxY = Double.NEGATIVE_INFINITY ;
-        for (Screen screen : Screen.getScreensForRectangle(new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()))) {
+        for (Screen screen : getWindowScreens(stage)) {
             Rectangle2D screenBounds = screen.getBounds();
             if (screenBounds.getMinX() < minX) {
                 minX = screenBounds.getMinX();
@@ -242,7 +275,7 @@ public class AppWindowHelper {
         }
         // Taskbar adjustment
         maxY -= 50;
-        return new BoundingBox(minX, minY, maxX-minX, maxY-minY);
+        return new Rectangle2D(minX, minY, maxX-minX, maxY-minY);
     }
 
     private static void bindSize(Stage stage, Region r) {
