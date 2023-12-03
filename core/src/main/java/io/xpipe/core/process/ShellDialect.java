@@ -84,14 +84,6 @@ public interface ShellDialect {
         return "cd \"" + directory + "\"";
     }
 
-    default String getPushdCommand(String directory) {
-        return "pushd \"" + directory + "\"";
-    }
-
-    default String getPopdCommand() {
-        return "popd";
-    }
-
     String getScriptFileEnding();
 
     void addInlineVariablesToCommand(Map<String, String> variables, CommandBuilder command);
@@ -108,9 +100,20 @@ public interface ShellDialect {
         sc.writeLine("exit");
     }
 
-    default String getExitCommand() {
+    default String getPassthroughExitCommand() {
         return "exit";
     }
+
+    default String getNormalExitCommand() {
+        return "exit 0";
+    }
+
+    ElevationConfig determineElevationConfig(ShellControl shellControl) throws Exception;
+
+
+    ElevationResult elevateDumbCommand(ShellControl shellControl, CommandConfiguration command, String message) throws Exception;
+
+    String elevateTerminalCommand(ShellControl shellControl, String command, String message) throws Exception;
 
     String environmentVariable(String name);
 

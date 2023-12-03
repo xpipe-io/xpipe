@@ -14,7 +14,7 @@ public class ProcessOutputException extends Exception {
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
 
-    public static ProcessOutputException of(int exitCode, String... messages) {
+    public static ProcessOutputException of(long exitCode, String... messages) {
         var combinedError = Arrays.stream(messages)
                 .filter(s -> s != null && !s.isBlank())
                 .map(s -> s.strip())
@@ -23,7 +23,7 @@ public class ProcessOutputException extends Exception {
         var hasMessage = !combinedError.isBlank();
         var errorSuffix = hasMessage ? ":\n" + combinedError : "";
         var message =
-                switch (exitCode) {
+                switch ((int) exitCode) {
                     case CommandControl
                             .START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed"
                             + errorSuffix;
@@ -36,10 +36,10 @@ public class ProcessOutputException extends Exception {
         return new ProcessOutputException(message, exitCode, combinedError);
     }
 
-    private final int exitCode;
+    private final long exitCode;
     private final String output;
 
-    private ProcessOutputException(String message, int exitCode, String output) {
+    private ProcessOutputException(String message, long exitCode, String output) {
         super(message);
         this.exitCode = exitCode;
         this.output = output;

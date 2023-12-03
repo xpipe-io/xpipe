@@ -61,7 +61,7 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl withCustomCharset(Charset charset);
 
-    int getExitCode();
+    long getExitCode();
 
     default CommandControl elevated(String message) {
         return elevated(message, (v) -> true);

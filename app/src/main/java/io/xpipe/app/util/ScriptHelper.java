@@ -77,7 +77,7 @@ public class ScriptHelper {
         if (toExecuteInShell != null) {
             // Normalize line endings
             content += String.join(nl, toExecuteInShell.lines().toList()) + nl;
-            content += nl + t.getExitCommand() + nl;
+            content += nl + t.getPassthroughExitCommand() + nl;
         }
 
         return createExecScript(t, processControl, t.initFileName(processControl), content);

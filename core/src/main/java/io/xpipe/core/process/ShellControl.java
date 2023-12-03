@@ -140,7 +140,7 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    ElevationResult buildElevatedCommand(String input, String prefix) throws Exception;
+    ElevationResult buildElevatedCommand(CommandConfiguration input, String prefix) throws Exception;
 
     void restart() throws Exception;
 
