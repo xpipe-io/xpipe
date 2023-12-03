@@ -27,6 +27,7 @@ public class AskpassAlert {
 
         var found = SecretManager.get(ref);
         if (found.isPresent()) {
+            requests.add(requestId);
             return found.get();
         }
 
