@@ -41,6 +41,9 @@ public abstract class DataStorage {
     protected boolean loaded;
 
     @Getter
+    protected boolean disposed;
+
+    @Getter
     protected final List<DataStoreCategory> storeCategories;
 
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
@@ -104,9 +107,14 @@ public abstract class DataStorage {
             return;
         }
 
-        INSTANCE.onReset();
-        INSTANCE.save();
+        INSTANCE.dispose();
         INSTANCE = null;
+    }
+
+    private synchronized void dispose() {
+        onReset();
+        save();
+        disposed = true;
     }
 
     protected void onReset() {}

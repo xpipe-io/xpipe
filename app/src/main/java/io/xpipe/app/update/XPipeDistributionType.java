@@ -84,6 +84,7 @@ public enum XPipeDistributionType {
         }
 
         try (var sc = LocalStore.getShell()) {
+            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the production behavior
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
                 try (var chocoOut =
                         sc.command("choco search --local-only -r xpipe").start()) {
@@ -100,6 +101,7 @@ public enum XPipeDistributionType {
                 }
             }
 
+            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the production behavior
             if (OsType.getLocal().equals(OsType.MACOS)) {
                 try (var brewOut = sc.command("brew list --casks --versions").start()) {
                     var out = brewOut.readStdoutDiscardErr();

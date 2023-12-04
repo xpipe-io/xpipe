@@ -298,7 +298,7 @@ public class StandardStorage extends DataStorage {
     }
 
     public synchronized void save() {
-        if (!loaded) {
+        if (!loaded || disposed) {
             return;
         }
 

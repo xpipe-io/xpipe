@@ -4,6 +4,7 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.fxcomps.SimpleComp;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -41,7 +42,7 @@ public class FileStoreChoiceComp extends SimpleComp {
                 .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    StandaloneFileBrowser.openSingleFile(() -> null, fileStore -> {
+                    StandaloneFileBrowser.openSingleFile(() -> hideFileSystem ? DataStorage.get().local().ref() : null, fileStore -> {
                         if (fileStore == null) {
                             filePath.setValue(null);
                             fileSystem.setValue(null);
