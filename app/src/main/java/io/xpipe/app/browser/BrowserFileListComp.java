@@ -190,6 +190,7 @@ final class BrowserFileListComp extends SimpleComp {
                             browserAction.execute(fileList.getFileSystemModel(), selected);
                         });
                     });
+            event.consume();
         });
     }
 

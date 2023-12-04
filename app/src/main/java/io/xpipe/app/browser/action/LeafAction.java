@@ -20,6 +20,11 @@ public interface LeafAction extends BrowserAction {
     default Button toButton(OpenFileSystemModel model, List<BrowserEntry> selected) {
         var b = new Button();
         b.setOnAction(event -> {
+            // Only accept shortcut actions in the current tab
+            if (!model.equals(model.getBrowserModel().getSelected().getValue())) {
+                return;
+            }
+
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.execute(model.getBusy(), () -> {
                     execute(model, selected);

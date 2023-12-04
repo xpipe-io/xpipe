@@ -10,6 +10,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -95,6 +96,10 @@ public class BrowserFileListCompEntry {
 
         if (model.getFileSystemModel().getCurrentDirectory() == null) {
             return false;
+        }
+
+        if (!Objects.equals(model.getFileSystemModel().getFileSystem(), cb.getEntries().get(0).getFileSystem())) {
+            return true;
         }
 
         // Prevent drag and drops of files into the current directory
