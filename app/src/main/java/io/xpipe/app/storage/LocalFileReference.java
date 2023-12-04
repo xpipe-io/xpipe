@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileNames;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -13,14 +14,26 @@ import java.util.regex.Matcher;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LocalFileReference {
 
-    private static Path lastDataDir;
+    private static String lastDataDir;
 
-    private static Path getDataDir() {
+    private static String getDataDir() {
         if (DataStorage.get() == null) {
-            return lastDataDir != null ? lastDataDir : AppPrefs.DEFAULT_STORAGE_DIR;
+            return lastDataDir != null ? lastDataDir : normalized(AppPrefs.DEFAULT_STORAGE_DIR);
         }
 
-        return lastDataDir = DataStorage.get().getDataDir();
+        return lastDataDir = normalized(DataStorage.get().getDataDir());
+    }
+
+    private static String normalized(Path p) {
+        return p.normalize().toString().replaceAll("\\\\", "/");
+    }
+
+    private static String normalized(String s) {
+        try {
+            return Path.of(s).normalize().toString().replaceAll("\\\\", "/");
+        } catch (InvalidPathException ex) {
+            return s;
+        }
     }
 
     public static LocalFileReference of(String s) {
@@ -28,15 +41,11 @@ public class LocalFileReference {
             return null;
         }
 
+        var ns = normalized(s.trim());
         // Replacement order is important
-        var replaced = s.trim().replace("<DATA>", getDataDir().toString())
-                .replace("~",System.getProperty("user.home"));
-        try {
-            var normalized = Path.of(replaced).normalize().toString().replaceAll("\\\\", "/");
-            return new LocalFileReference(normalized);
-        } catch (InvalidPathException ex) {
-            return new LocalFileReference(replaced);
-        }
+        var replaced = ns.replace("<DATA>", getDataDir())
+                .replace("~", normalized(System.getProperty("user.home")));
+        return new LocalFileReference(normalized(replaced));
     }
 
     @NonNull
@@ -48,13 +57,10 @@ public class LocalFileReference {
 
     public String serialize() {
         var start = getDataDir();
-        try {
-            var normalizedPath = Path.of(path);
-            if (normalizedPath.startsWith(start)) {
-                return "<DATA>" + "/" + start.relativize(normalizedPath);
-            }
-        } catch (InvalidPathException ignored) {}
-
+        var normalizedPath = normalized(path);
+        if (normalizedPath.startsWith(start)) {
+            return "<DATA>" + "/" + FileNames.relativize(start, normalizedPath);
+        }
         return path;
     }
 }
