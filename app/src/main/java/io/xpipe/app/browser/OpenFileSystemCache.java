@@ -32,7 +32,7 @@ public class OpenFileSystemCache {
     public void init() throws Exception {
         ShellControl sc = model.getFileSystem().getShell().get();
         ShellDialect d = sc.getShellDialect();
-        username = sc.executeSimpleStringCommand(d.getPrintVariableCommand(d.getUsernameVariableName()));
+        username = d.printUsernameCommand(sc).readStdoutOrThrow();
     }
 
     public boolean isRoot() {

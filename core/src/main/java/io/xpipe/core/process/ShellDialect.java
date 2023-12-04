@@ -137,7 +137,7 @@ public interface ShellDialect {
 
     String getPrintVariableCommand(String name);
 
-    String getUsernameVariableName();
+    CommandControl printUsernameCommand(ShellControl shellControl);
 
     String getPrintExitCodeCommand(String prefix, String suffix);
 
