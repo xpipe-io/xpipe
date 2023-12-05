@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,6 +58,8 @@ public abstract class DataStorage {
 
     @Getter
     private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
+
+    protected final ReentrantLock busyIo = new ReentrantLock();
 
     public DataStorage() {
         this.dir = AppPrefs.get().storageDirectory().getValue();
@@ -146,8 +149,16 @@ public abstract class DataStorage {
     public abstract void load();
 
     public void saveAsync() {
-        // TODO: Don't make this a daemon thread to guarantee proper saving
-        ThreadHelper.unstarted(this::save).start();
+        // If we are already loading or saving, don't queue up another operation.
+        // This could otherwise lead to thread starvation with virtual threads
+        // Technically the load and save operations also return instantly if locked, but let's not even create new threads here
+        if (busyIo.isLocked()) {
+            return;
+        }
+
+        ThreadHelper.runAsync(() -> {
+            save();
+        });
     }
 
     public abstract void save();

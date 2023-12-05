@@ -110,7 +110,11 @@ public class StandardStorage extends DataStorage {
         }
     }
 
-    public synchronized void load() {
+    public void load() {
+        if (!busyIo.tryLock()) {
+            return;
+        }
+
         this.gitStorageHandler.beforeStorageLoad();
 
         var storesDir = getStoresDir();
@@ -294,11 +298,16 @@ public class StandardStorage extends DataStorage {
         deleteLeftovers();
 
         loaded = true;
+        busyIo.unlock();
         this.gitStorageHandler.afterStorageLoad();
     }
 
-    public synchronized void save() {
+    public void save() {
         if (!loaded || disposed) {
+            return;
+        }
+
+        if (!busyIo.tryLock()) {
             return;
         }
 
@@ -354,6 +363,7 @@ public class StandardStorage extends DataStorage {
 
         deleteLeftovers();
         gitStorageHandler.afterStorageSave();
+        busyIo.unlock();
     }
 
     @Override
