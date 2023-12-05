@@ -30,6 +30,7 @@ public class AppProperties {
     boolean image;
     boolean staging;
     boolean useVirtualThreads;
+    boolean debugThreads;
     Path dataDir;
     boolean showcase;
 
@@ -50,6 +51,9 @@ public class AppProperties {
         useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
+        debugThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.debugThreads"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
         dataDir = XPipeInstallation.getDataDir();
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)

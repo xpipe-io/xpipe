@@ -2,22 +2,29 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.FailableRunnable;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadHelper {
 
-    public static Thread unstarted(Runnable r) {
-        return AppProperties.get().isUseVirtualThreads() ? Thread.ofVirtual().unstarted(r) : Thread.ofPlatform().unstarted(r);
+    private static final AtomicInteger counter = new AtomicInteger();
+
+    private static Runnable wrap(Runnable r) {
+        return () -> {
+            if (AppProperties.get().isDebugThreads()) {
+                TrackEvent.trace("Started. Active threads: " + counter.incrementAndGet());
+            }
+            r.run();
+            if (AppProperties.get().isDebugThreads()) {
+                TrackEvent.trace("Finished. Active threads: " + counter.decrementAndGet());
+            }
+        };
     }
 
-    public static Thread unstartedFailable(FailableRunnable<Exception> r) {
-        return unstarted(() -> {
-            try {
-                r.run();
-            } catch (Throwable e) {
-                ErrorEvent.fromThrowable(e).handle();
-            }
-        });
+    public static Thread unstarted(Runnable r) {
+        return AppProperties.get().isUseVirtualThreads() ? Thread.ofVirtual().unstarted(wrap(r)) : Thread.ofPlatform().unstarted(wrap(r));
     }
 
     public static Thread runAsync(Runnable r) {
