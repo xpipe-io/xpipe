@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.SequencedCollection;
 
 public class CommandBuilder {
 
@@ -118,6 +119,11 @@ public class CommandBuilder {
 
             return sc.getShellDialect().fileArgument(s);
         });
+        return this;
+    }
+
+    public CommandBuilder addFiles(SequencedCollection<String> s) {
+        s.forEach(this::addFile);
         return this;
     }
 

@@ -39,6 +39,7 @@ open module io.xpipe.ext.base {
             BrowseInNativeManagerAction,
             EditFileAction,
             RunAction,
+            ChmodAction,
             CopyAction,
             CopyPathAction,
             PasteAction,
