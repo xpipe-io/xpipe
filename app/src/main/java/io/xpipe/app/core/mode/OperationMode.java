@@ -241,7 +241,7 @@ public abstract class OperationMode {
         }
 
         // Run a timer to always exit after some time in case we get stuck
-        if (inShutdownHook) {
+        if (!hasError) {
             ThreadHelper.runAsync(() -> {
                 ThreadHelper.sleep(25000);
                 TrackEvent.info("Shutdown took too long. Halting ...");
