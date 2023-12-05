@@ -13,7 +13,7 @@ import java.util.*;
 public class AskpassAlert {
 
     private static final Set<UUID> cancelledRequests = new HashSet<>();
-    private static final Set<UUID> requests = new HashSet<>();
+    private static final Map<UUID, SecretManager.SecretReference> requests = new HashMap<>();
 
     public static SecretValue query(String prompt, UUID requestId, UUID secretId, int sub) {
         if (cancelledRequests.contains(requestId)) {
@@ -21,13 +21,13 @@ public class AskpassAlert {
         }
 
         var ref = new SecretManager.SecretReference(secretId, sub);
-        if (SecretManager.get(ref).isPresent() && requests.contains(requestId)) {
+        if (SecretManager.get(ref).isPresent() && ref.equals(requests.get(requestId))) {
             SecretManager.clear(ref);
         }
 
         var found = SecretManager.get(ref);
         if (found.isPresent()) {
-            requests.add(requestId);
+            requests.put(requestId, ref);
             return found.get();
         }
 
@@ -50,7 +50,7 @@ public class AskpassAlert {
 
         // If the result is null, assume that the operation was aborted by the user
         if (r != null && SecretManager.shouldCacheForPrompt(prompt)) {
-            requests.add(requestId);
+            requests.put(requestId,ref);
             SecretManager.set(ref, r);
         } else {
             cancelledRequests.add(requestId);
