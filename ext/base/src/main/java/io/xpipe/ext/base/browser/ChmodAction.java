@@ -53,6 +53,6 @@ public class ChmodAction implements BranchAction {
 
     @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return List.of(new Chmod("400"), new Chmod("600"), new Chmod("644"), new Chmod("700"), new Chmod("777"), new Chmod("u+x"), new Chmod("a+x"));
+        return List.of(new Chmod("400"), new Chmod("600"), new Chmod("644"), new Chmod("700"), new Chmod("755"), new Chmod("777"), new Chmod("u+x"), new Chmod("a+x"));
     }
 }
