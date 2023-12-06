@@ -122,9 +122,15 @@ public class LauncherCommand implements Callable<Integer> {
     @SneakyThrows
     public Integer call() {
         checkStart();
+
         // Initialize base mode first to have access to the preferences to determine effective mode
         OperationMode.switchToSyncOrThrow(OperationMode.BACKGROUND);
-        OperationMode.switchToSyncOrThrow(OperationMode.map(getEffectiveMode()));
+
+        var effective = OperationMode.map(getEffectiveMode());
+        if (effective != OperationMode.BACKGROUND) {
+            OperationMode.switchToSyncOrThrow(effective);
+        }
+
         LauncherInput.handle(inputs);
 
         // URL open operations have to be handled in a special way on macOS!
