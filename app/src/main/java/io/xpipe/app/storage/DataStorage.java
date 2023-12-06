@@ -415,7 +415,11 @@ public abstract class DataStorage {
     }
 
     public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
-        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)) {
+        if (cat.getParentCategory() == null) {
+            return;
+        }
+
+        if (cat.getUuid().equals(DEFAULT_CATEGORY_UUID) || cat.getUuid().equals(PREDEFINED_SCRIPTS_CATEGORY_UUID)) {
             return;
         }
 
