@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.SimpleScriptSnippet;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
@@ -163,6 +164,13 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     public static class State extends DataStoreState {
         boolean isDefault;
         boolean bringToShell;
+
+        @Override
+        public void merge(DataStoreState newer) {
+            var s = (State) newer;
+            isDefault = s.isDefault;
+            bringToShell = s.bringToShell;
+        }
     }
 
     @Override

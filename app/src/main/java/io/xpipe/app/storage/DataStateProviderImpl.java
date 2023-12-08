@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class DataStateProviderImpl extends DataStateProvider {
 
     @Override
-    public void setState(DataStore store, Object value) {
+    public void setState(DataStore store, DataStoreState value) {
         if (DataStorage.get() == null) {
             return;
         }

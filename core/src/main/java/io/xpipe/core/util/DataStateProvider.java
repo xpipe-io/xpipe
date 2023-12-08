@@ -20,7 +20,7 @@ public abstract class DataStateProvider {
         return INSTANCE;
     }
 
-    public abstract void setState(DataStore store, Object value);
+    public abstract void setState(DataStore store, DataStoreState value);
 
     public abstract <T extends DataStoreState> T getState(DataStore store, Supplier<T> def);
 

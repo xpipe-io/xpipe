@@ -59,7 +59,7 @@ public class DataStoreEntry extends StorageElement {
     UUID categoryUuid;
 
     @NonFinal
-    Object storePersistentState;
+    DataStoreState storePersistentState;
 
     @NonFinal
     JsonNode storePersistentStateNode;
@@ -284,7 +284,7 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public void setStorePersistentState(Object value) {
+    public void setStorePersistentState(DataStoreState value) {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);

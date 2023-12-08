@@ -5,10 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.DataStoreId;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.core.store.*;
 import io.xpipe.core.util.UuidHelper;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -255,7 +252,7 @@ public abstract class DataStorage {
                                     nc.getStore().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId())
                             .findFirst()
                             .orElse(null);
-                    return new Pair<>(entry, found);
+                    return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(entry, found);
                 })
                 .filter(en -> en.getValue() != null)
                 .toList();
@@ -268,6 +265,13 @@ public abstract class DataStorage {
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
             pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
+
+            // Update state by merging
+            if (pair.getKey().getStorePersistentState() != null && pair.getValue().get().getStorePersistentState() != null) {
+                var mergedState = pair.getKey().getStorePersistentState().deepCopy();
+                mergedState.merge(pair.getValue().get().getStorePersistentState());
+                pair.getKey().setStorePersistentState(mergedState);
+            }
         });
         saveAsync();
         return !newChildren.isEmpty();

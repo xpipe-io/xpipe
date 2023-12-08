@@ -5,9 +5,15 @@ import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
-public class DataStoreState {
+public abstract class DataStoreState {
 
     public DataStoreState() {}
+
+    protected static <T> T useNewer(T older, T newer) {
+        return newer != null ? newer : older;
+    }
+
+    public abstract void merge(DataStoreState newer);
 
     @SneakyThrows
     public String toString() {

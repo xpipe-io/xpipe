@@ -27,4 +27,13 @@ public class ShellStoreState extends DataStoreState implements OsNameState {
     public boolean isRunning() {
         return running != null ? running : false;
     }
+
+    @Override
+    public void merge(DataStoreState newer) {
+        var shellStoreState = (ShellStoreState) newer;
+        osType = useNewer(osType, shellStoreState.getOsType());
+        osName = useNewer(osName, shellStoreState.getOsName());
+        shellDialect = useNewer(shellDialect, shellStoreState.getShellDialect());
+        running = useNewer(running, shellStoreState.getRunning());
+    }
 }
