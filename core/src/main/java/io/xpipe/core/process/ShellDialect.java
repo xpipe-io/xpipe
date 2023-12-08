@@ -121,6 +121,8 @@ public interface ShellDialect {
         return ";";
     }
 
+    String getDiscardOperator();
+
     default String getOrConcatenationOperator() {
         return "||";
     }

@@ -36,6 +36,11 @@ public class CommandBuilder {
         }
     }
 
+    public CommandBuilder discardOutput() {
+        elements.add(sc -> sc.getShellDialect().getDiscardOperator());
+        return this;
+    }
+
     public CommandBuilder addSeparator(String s) {
         elements.add(sc -> sc.getShellDialect().getConcatenationOperator());
         return this;
