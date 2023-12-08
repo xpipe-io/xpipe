@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.util.regex.Matcher;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class LocalFileReference {
+public class ContextualFileReference {
 
     private static String lastDataDir;
 
@@ -36,7 +36,7 @@ public class LocalFileReference {
         }
     }
 
-    public static LocalFileReference of(String s) {
+    public static ContextualFileReference of(String s) {
         if (s == null) {
             return null;
         }
@@ -45,7 +45,7 @@ public class LocalFileReference {
         // Replacement order is important
         var replaced = ns.replace("<DATA>", getDataDir())
                 .replace("~", normalized(System.getProperty("user.home")));
-        return new LocalFileReference(normalized(replaced));
+        return new ContextualFileReference(normalized(replaced));
     }
 
     @NonNull

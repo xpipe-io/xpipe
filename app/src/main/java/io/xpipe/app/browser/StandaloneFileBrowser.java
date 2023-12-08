@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.FileStore;
+import io.xpipe.app.util.FileReference;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.Property;
 import javafx.stage.FileChooser;
@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 public class StandaloneFileBrowser {
 
     public static void localOpenFileChooser(
-            Property<FileStore> fileStoreProperty, Window owner, Map<String, List<String>> extensions) {
+            Property<FileReference> fileStoreProperty, Window owner, Map<String, List<String>> extensions) {
         PlatformThread.runLaterIfNeeded(() -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(AppI18n.get("browseFileTitle"));
@@ -34,12 +34,12 @@ public class StandaloneFileBrowser {
 
             File file = fileChooser.showOpenDialog(owner);
             if (file != null && file.exists()) {
-                fileStoreProperty.setValue(FileStore.local(file.toPath()));
+                fileStoreProperty.setValue(FileReference.local(file.toPath()));
             }
         });
     }
 
-    public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileStore> file) {
+    public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER);
             var comp = new BrowserComp(model)
@@ -55,7 +55,7 @@ public class StandaloneFileBrowser {
         });
     }
 
-    public static void saveSingleFile(Property<FileStore> file) {
+    public static void saveSingleFile(Property<FileReference> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_SAVE);
             var comp = new BrowserComp(model)

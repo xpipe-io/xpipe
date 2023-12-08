@@ -4,7 +4,7 @@ import io.xpipe.api.DataSource;
 import io.xpipe.app.test.DaemonExtensionTest;
 import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.charsetter.StreamCharset;
-import io.xpipe.core.store.FileStore;
+import io.xpipe.app.util.FileReference;
 import io.xpipe.core.impl.TextSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,15 +38,15 @@ public class TextFileTest extends DaemonExtensionTest {
     @BeforeAll
     public static void setupStorage() throws Exception {
         utf8 = getSource("text", "utf8-bom-lf.txt");
-        utf16 = DataSource.create(null, "text", FileStore.local(utf16File));
-        appendReference = DataSource.create(null, "text", FileStore.local(appendReferenceFile));
-        writeReference = DataSource.create(null, "text", FileStore.local(writeReferenceFile));
+        utf16 = DataSource.create(null, "text", FileReference.local(utf16File));
+        appendReference = DataSource.create(null, "text", FileReference.local(appendReferenceFile));
+        writeReference = DataSource.create(null, "text", FileReference.local(writeReferenceFile));
 
         appendOutputFile = Files.createTempFile(null, null);
         appendOutput = DataSource.create(
                 null,
                 TextSource.builder()
-                        .store(FileStore.local(appendOutputFile))
+                        .store(FileReference.local(appendOutputFile))
                         .charset(StreamCharset.get("windows-1252"))
                         .newLine(NewLine.LF)
                         .build());
@@ -55,7 +55,7 @@ public class TextFileTest extends DaemonExtensionTest {
         writeOutput = DataSource.create(
                 null,
                 TextSource.builder()
-                        .store(FileStore.local(writeOutputFile))
+                        .store(FileReference.local(writeOutputFile))
                         .charset(StreamCharset.UTF16_LE_BOM)
                         .newLine(NewLine.CRLF)
                         .build());
@@ -90,7 +90,7 @@ public class TextFileTest extends DaemonExtensionTest {
         var emptySource = DataSource.create(
                 null,
                 TextSource.builder()
-                        .store(FileStore.local(empty))
+                        .store(FileReference.local(empty))
                         .charset(StreamCharset.UTF32_BE)
                         .newLine(NewLine.CRLF)
                         .build());

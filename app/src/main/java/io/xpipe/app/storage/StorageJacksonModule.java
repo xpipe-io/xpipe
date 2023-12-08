@@ -19,25 +19,25 @@ public class StorageJacksonModule extends SimpleModule {
     public void setupModule(SetupContext context) {
         addSerializer(DataStoreEntryRef.class, new DataStoreEntryRefSerializer());
         addDeserializer(DataStoreEntryRef.class, new DataStoreEntryRefDeserializer());
-        addSerializer(LocalFileReference.class, new LocalFileReferenceSerializer());
-        addDeserializer(LocalFileReference.class, new LocalFileReferenceDeserializer());
+        addSerializer(ContextualFileReference.class, new LocalFileReferenceSerializer());
+        addDeserializer(ContextualFileReference.class, new LocalFileReferenceDeserializer());
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
     }
 
-    public static class LocalFileReferenceSerializer extends JsonSerializer<LocalFileReference> {
+    public static class LocalFileReferenceSerializer extends JsonSerializer<ContextualFileReference> {
 
         @Override
-        public void serialize(LocalFileReference value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(ContextualFileReference value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             jgen.writeString(value.serialize());
         }
     }
 
-    public static class LocalFileReferenceDeserializer extends JsonDeserializer<LocalFileReference> {
+    public static class LocalFileReferenceDeserializer extends JsonDeserializer<ContextualFileReference> {
 
         @Override
-        public LocalFileReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return LocalFileReference.of(p.getValueAsString());
+        public ContextualFileReference deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return ContextualFileReference.of(p.getValueAsString());
         }
     }
 

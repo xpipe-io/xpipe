@@ -550,10 +550,9 @@ public abstract class DataStorage {
         return children;
     }
 
-    public List<DataStore> getUsableStores() {
+    public List<DataStoreEntry> getUsableEntries() {
         return new ArrayList<>(getStoreEntries().stream()
                 .filter(entry -> entry.getValidity().isUsable())
-                .map(DataStoreEntry::getStore)
                 .toList());
     }
 

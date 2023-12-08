@@ -5,7 +5,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileStore;
+import io.xpipe.app.util.FileReference;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -30,7 +30,7 @@ public class BrowserModel {
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
     @Setter
-    private Consumer<List<FileStore>> onFinish;
+    private Consumer<List<FileReference>> onFinish;
 
     public BrowserModel(Mode mode) {
         this.mode = mode;
@@ -100,7 +100,7 @@ public class BrowserModel {
         }
 
         var stores = chosen.stream().map(
-                entry -> new FileStore(entry.getRawFileEntry().getFileSystem().getStore(), entry.getRawFileEntry().getPath())).toList();
+                entry -> new FileReference(selected.getValue().getEntry(), entry.getRawFileEntry().getPath())).toList();
         onFinish.accept(stores);
     }
 
