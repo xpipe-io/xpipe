@@ -4,7 +4,9 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.LocalStore;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -142,15 +144,27 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     void launch(Path file) throws Exception;
 
-    class LinuxPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
+    class GenericPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
-        public LinuxPathType(String id, String command) {
+        public GenericPathType(String id, String command) {
             super(id, command);
         }
 
         @Override
-        public void launch(Path file) throws IOException {
-            new ProcessBuilder(List.of(executable, file.toString())).start();
+        public void launch(Path file) throws Exception {
+            LocalStore.getShell().executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return true;
+        }
+    }
+
+    class LinuxPathType extends GenericPathType {
+
+        public LinuxPathType(String id, String command) {
+            super(id, command);
         }
 
         @Override
@@ -193,9 +207,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
+    ExternalEditorType FLEET = new GenericPathType("app.fleet", "fleet");
+    ExternalEditorType INTELLIJ = new GenericPathType("app.intellij", "idea");
+    ExternalEditorType PYCHARM = new GenericPathType("app.pycharm", "pycharm");
+    ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm");
+    ExternalEditorType CLION = new GenericPathType("app.clion", "clion");
+
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+    List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
@@ -209,6 +230,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 if (OsType.getLocal().equals(OsType.MACOS)) {
                     all.addAll(MACOS_EDITORS);
                 }
+                all.addAll(CROSS_PLATFORM_EDITORS);
                 all.add(CUSTOM);
                 return all;
             })
