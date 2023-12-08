@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -118,6 +119,20 @@ public class AppWindowHelper {
                     s.setMaxWidth(rectangle2D.getWidth());
                     s.setMaxHeight(rectangle2D.getHeight());
                 });
+            });
+            a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
+                    if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+                        s.close();
+                        event.consume();
+                        return;
+                    }
+                }
+
+                if (event.getCode().equals(KeyCode.ESCAPE)) {
+                    s.close();
+                    event.consume();
+                }
             });
             return a;
         };
