@@ -75,14 +75,18 @@ public class XPipeInstallation {
 
     @SneakyThrows
     public static Path getCurrentInstallationBasePath() {
-        Path path =
-                Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
+        // We should always have a command associated with the current process, otherwise something went seriously wrong
+        // Resolve any possible links to a real path
+        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
+        // Check if the process was started using a relative path, and adapt it if necessary
         if (!path.isAbsolute()) {
             path = Path.of(System.getProperty("user.dir")).resolve(path).toRealPath();
         }
 
         var name = path.getFileName().toString();
+        // Check if we launched the JVM via a start script instead of the native executable
         if (name.endsWith("java") || name.endsWith("java.exe")) {
+            // If we are not an image, we are probably running in a development environment where we want to use the working directory
             var isImage = ModuleHelper.isImage();
             if (!isImage) {
                 return Path.of(System.getProperty("user.dir"));
@@ -138,6 +142,7 @@ public class XPipeInstallation {
     }
 
     private static Path getLocalInstallationBasePathForJavaExecutable(Path executable) {
+        // Resolve root path of installation relative to the java executable in a JPackage installation
         if (OsType.getLocal().equals(OsType.MACOS)) {
             return executable
                     .getParent()
@@ -154,6 +159,7 @@ public class XPipeInstallation {
     }
 
     private static Path getLocalInstallationBasePathForDaemonExecutable(Path executable) {
+        // Resolve root path of installation relative to executable in a JPackage installation
         if (OsType.getLocal().equals(OsType.MACOS)) {
             return executable.getParent().getParent().getParent();
         } else if (OsType.getLocal().equals(OsType.LINUX)) {
