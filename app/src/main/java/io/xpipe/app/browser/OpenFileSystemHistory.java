@@ -18,6 +18,22 @@ public final class OpenFileSystemHistory {
     private final BooleanBinding canGoForth =
             Bindings.createBooleanBinding(() -> cursor.get() < history.size() - 1, cursor);
 
+    public List<String> getForwardHistory(int max) {
+        var l = new ArrayList<String>();
+        for (var i = cursor.get() + 1; i < Math.min(history.size(), cursor.get() + max); i++) {
+            l.add(history.get(i));
+        }
+        return l;
+    }
+
+    public List<String> getBackwardHistory(int max) {
+        var l = new ArrayList<String>();
+        for (var i = cursor.get() - 1; i >= Math.max(0, cursor.get() - max); i--) {
+            l.add(history.get(i));
+        }
+        return l;
+    }
+
     public String getCurrent() {
         return history.size() > 0 ? history.get(cursor.get()) : null;
     }

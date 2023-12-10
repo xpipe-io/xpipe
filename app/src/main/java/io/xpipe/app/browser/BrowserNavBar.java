@@ -6,7 +6,10 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.impl.*;
+import io.xpipe.app.fxcomps.impl.HorizontalComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.StackComp;
+import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
@@ -16,14 +19,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class BrowserNavBar extends SimpleComp {
 
@@ -51,7 +58,7 @@ public class BrowserNavBar extends SimpleComp {
         });
 
         var pathBar = new TextFieldComp(path, true)
-                .styleClass(Styles.RIGHT_PILL)
+                .styleClass(Styles.CENTER_PILL)
                 .styleClass("path-text")
                 .apply(struc -> {
                     SimpleChangeListener.apply(struc.get().focusedProperty(), val -> {
@@ -92,14 +99,22 @@ public class BrowserNavBar extends SimpleComp {
                 .styleClass("path-graphic")
                 .createRegion();
 
-        var graphicButton = new Button(null, breadcrumbsGraphic);
-        graphicButton.setAccessibleText("Directory options");
-        graphicButton.getStyleClass().add(Styles.LEFT_PILL);
-        graphicButton.getStyleClass().add("path-graphic-button");
+        var homeButton = new Button(null, breadcrumbsGraphic);
+        homeButton.setAccessibleText("Directory options");
+        homeButton.getStyleClass().add(Styles.LEFT_PILL);
+        homeButton.getStyleClass().add("path-graphic-button");
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, () -> {
                     return model.getInOverview().get() ? null : new BrowserContextMenu(model, null);
                 })
-                .augment(new SimpleCompStructure<>(graphicButton));
+                .augment(new SimpleCompStructure<>(homeButton));
+
+
+        var historyButton = new Button(null, new FontIcon("mdi2h-history"));
+        historyButton.setAccessibleText("History");
+        historyButton.getStyleClass().add(Styles.RIGHT_PILL);
+        // historyButton.getStyleClass().add("path-graphic-button");
+        new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, this::createContextMenu)
+                .augment(new SimpleCompStructure<>(historyButton));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
 
@@ -120,13 +135,21 @@ public class BrowserNavBar extends SimpleComp {
                 })
                 .grow(false, true);
 
-        var topBox = new HorizontalComp(List.of(Comp.of(() -> graphicButton), stack))
+        var topBox = new HorizontalComp(List.of(Comp.of(() -> homeButton), stack, Comp.of(() -> historyButton)))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> {
                     ((Region) struc.get().getChildren().get(0))
                             .minHeightProperty()
                             .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
                     ((Region) struc.get().getChildren().get(0))
+                            .maxHeightProperty()
+                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+
+
+                    ((Region) struc.get().getChildren().get(2))
+                            .minHeightProperty()
+                            .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
+                    ((Region) struc.get().getChildren().get(2))
                             .maxHeightProperty()
                             .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
                 })
@@ -136,5 +159,46 @@ public class BrowserNavBar extends SimpleComp {
                 .hgrow();
 
         return topBox.createRegion();
+    }
+
+    private ContextMenu createContextMenu() {
+        if (model.getCurrentDirectory() == null) {
+            return null;
+        }
+
+        var cm = new ContextMenu();
+
+        var f = model.getHistory().getForwardHistory(8).stream().filter(Objects::nonNull).toList();
+        new LinkedList<>(f)
+                .descendingIterator()
+                .forEachRemaining(s -> cm.getItems().add(new MenuItem(s)));
+        if (!f.isEmpty()) {
+            cm.getItems().add(new SeparatorMenuItem());
+        }
+
+        if (model.getHistory().getCurrent() != null) {
+            var current = new MenuItem("> " + model.getHistory().getCurrent());
+            current.setDisable(true);
+            cm.getItems().add(current);
+        }
+
+        var b = model.getHistory().getBackwardHistory(Integer.MAX_VALUE).stream().filter(Objects::nonNull).toList();
+        if (!b.isEmpty()) {
+            cm.getItems().add(new SeparatorMenuItem());
+        }
+        b.forEach(s -> {
+            cm.getItems().add(new MenuItem(s));
+        });
+
+        for (int i = 15; i > 0; i--) {
+            cm.getItems().add(new MenuItem("abc"));
+        }
+        cm.addEventHandler(Menu.ON_SHOWING, e -> {
+            Node content = cm.getSkin().getNode();
+            if (content instanceof Region r) {
+                r.setMaxHeight(600);
+            }
+        });
+        return cm;
     }
 }

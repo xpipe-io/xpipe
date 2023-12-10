@@ -15,6 +15,18 @@
     -fx-spacing: 20px;
 }
 
+.context-menu .menu-up-arrow, .context-menu .menu-down-arrow {
+    -fx-padding: 5;
+    -fx-background-color: -color-bg-default;
+}
+
+.context-menu .scroll-arrow {
+    -fx-padding: 5;
+    -fx-background-color: -color-fg-muted;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1 0 1 0;
+}
+
 .context-menu .separator {
     -fx-padding: 0;
 }
