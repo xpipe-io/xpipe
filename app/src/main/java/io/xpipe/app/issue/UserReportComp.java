@@ -67,6 +67,7 @@ public class UserReportComp extends SimpleComp {
                             return file.getFileName().toString();
                         },
                         includedDiagnostics,
+                        file -> false,
                         false)
                 .styleClass("attachment-list");
         return new TitledPaneComp(AppI18n.observable("additionalErrorAttachments"), list, 100)

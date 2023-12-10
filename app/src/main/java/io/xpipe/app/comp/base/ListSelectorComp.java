@@ -16,6 +16,7 @@ import lombok.Value;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
@@ -24,6 +25,7 @@ public class ListSelectorComp<T> extends SimpleComp {
     List<T> values;
     Function<T, String> toString;
     ListProperty<T> selected;
+    Predicate<T> disable;
     boolean showAllSelector;
 
     @Override
@@ -34,6 +36,9 @@ public class ListSelectorComp<T> extends SimpleComp {
         var cbs = new ArrayList<CheckBox>();
         for (var v : values) {
             var cb = new CheckBox(null);
+            if (disable.test(v)) {
+                cb.setDisable(true);
+            }
             cbs.add(cb);
             cb.setAccessibleText(toString.apply(v));
             cb.setSelected(selected.contains(v));
@@ -46,15 +51,29 @@ public class ListSelectorComp<T> extends SimpleComp {
             });
             var l = new Label(toString.apply(v), cb);
             l.setGraphicTextGap(9);
-            l.setOnMouseClicked(event -> cb.setSelected(!cb.isSelected()));
+            l.setOnMouseClicked(event -> {
+                if (disable.test(v)) {
+                    return;
+                }
+
+                cb.setSelected(!cb.isSelected());
+                event.consume();
+            });
+            l.opacityProperty().bind(cb.opacityProperty());
             vbox.getChildren().add(l);
         }
 
         if (showAllSelector) {
             var allSelector = new CheckBox(null);
-            allSelector.setSelected(values.size() == selected.size());
+            allSelector.setSelected(values.stream().filter(t -> !disable.test(t)).count() == selected.size());
             allSelector.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                cbs.forEach(checkBox -> checkBox.setSelected(newValue));
+                cbs.forEach(checkBox -> {
+                    if (checkBox.isDisabled()) {
+                        return;
+                    }
+
+                    checkBox.setSelected(newValue);
+                });
             });
             var l = new Label(null, allSelector);
             l.textProperty().bind(AppI18n.observable("selectAll"));

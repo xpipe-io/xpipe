@@ -35,9 +35,11 @@ public class AskpassAlert {
         var r = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);
-//                    alert.getDialogPane().setHeader(
-//                            AppWindowHelper.alertContentText(prompt));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
+
+//                    alert.getDialogPane().getScene().getWindow().setOnShown(event -> {
+//                        ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
+//                    });
 
                     var text = new SecretFieldComp(prop).createRegion();
                     alert.getDialogPane().setContent(new StackPane(text));

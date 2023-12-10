@@ -7,6 +7,7 @@ import lombok.NonNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -105,6 +106,13 @@ public interface ShellControl extends ProcessControl {
     default String executeSimpleStringCommand(String command) throws Exception {
         try (CommandControl c = command(command).start()) {
             return c.readStdoutOrThrow();
+        }
+    }
+
+    default Optional<String> executeSimpleStringCommandAndCheck(String command) throws Exception {
+        try (CommandControl c = command(command).start()) {
+            var out = c.readStdoutDiscardErr();
+            return c.getExitCode() == 0 ? Optional.of(out) : Optional.empty();
         }
     }
 

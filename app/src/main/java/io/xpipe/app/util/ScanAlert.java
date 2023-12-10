@@ -114,8 +114,10 @@ public class ScanAlert {
                                                     return;
                                                 }
 
-                                                selected.setAll(a.stream().filter(scanOperation -> scanOperation.isDefaultSelected()).toList());
-                                                var r = new ListSelectorComp<>(a, scanOperation -> AppI18n.get(scanOperation.getNameKey()), selected,
+                                                selected.setAll(a.stream().filter(scanOperation -> scanOperation.isDefaultSelected() && !scanOperation.isDisabled()).toList());
+                                                var r = new ListSelectorComp<ScanProvider.ScanOperation>(a,
+                                                        scanOperation -> AppI18n.get(scanOperation.getNameKey()),
+                                                        selected,scanOperation -> scanOperation.isDisabled(),
                                                         a.size() > 3).createRegion();
                                                 stackPane.getChildren().add(r);
                                             });
