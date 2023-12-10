@@ -12,6 +12,12 @@ public class BooleanScope implements AutoCloseable {
         }
     }
 
+    public static <E extends Throwable> void executeExclusive(BooleanProperty prop, FailableRunnable<E> r) throws E {
+        try (var ignored = new BooleanScope(prop).exclusive().start()) {
+            r.run();
+        }
+    }
+
     private final BooleanProperty prop;
     private boolean invert;
     private boolean forcePlatform;

@@ -50,7 +50,7 @@ public class BrowserNavBar extends SimpleComp {
         });
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {
-                BooleanScope.execute(model.getBusy(), () -> {
+                BooleanScope.executeExclusive(model.getBusy(), () -> {
                     var changed = model.cdSyncOrRetry(newValue, true);
                     changed.ifPresent(s -> Platform.runLater(() -> path.set(s)));
                 });

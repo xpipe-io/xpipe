@@ -111,7 +111,7 @@ public final class OpenFileSystemModel {
 
     public void cdAsync(String path) {
         ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.execute(busy, () -> {
+            BooleanScope.executeExclusive(busy, () -> {
                 cdSync(path);
             });
         });
