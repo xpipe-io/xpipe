@@ -19,7 +19,7 @@ public class BackAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-        model.backSync();
+        model.backSync(1);
     }
 
     @Override

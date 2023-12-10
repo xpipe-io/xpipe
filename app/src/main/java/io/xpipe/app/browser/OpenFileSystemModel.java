@@ -419,11 +419,11 @@ public final class OpenFileSystemModel {
         });
     }
 
-    public void backSync() throws Exception {
-        cdSyncWithoutCheck(history.back());
+    public void backSync(int i) throws Exception {
+        cdSyncWithoutCheck(history.back(i));
     }
 
-    public void forthSync() throws Exception {
-        cdSyncWithoutCheck(history.forth());
+    public void forthSync(int i) throws Exception {
+        cdSyncWithoutCheck(history.forth(i));
     }
 }

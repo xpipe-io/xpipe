@@ -28,9 +28,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class BrowserNavBar extends SimpleComp {
 
@@ -168,31 +166,56 @@ public class BrowserNavBar extends SimpleComp {
 
         var cm = new ContextMenu();
 
-        var f = model.getHistory().getForwardHistory(8).stream().filter(Objects::nonNull).toList();
-        new LinkedList<>(f)
-                .descendingIterator()
-                .forEachRemaining(s -> cm.getItems().add(new MenuItem(s)));
+        var f = model.getHistory().getForwardHistory(8).stream().toList();
+        for (int i = f.size() - 1; i >= 0; i--) {
+            if (f.get(i) == null) {
+                continue;
+            }
+
+            var mi = new MenuItem(f.get(i));
+            int target = i + 1;
+            mi.setOnAction(event -> {
+                ThreadHelper.runFailableAsync(() -> {
+                    BooleanScope.executeExclusive(model.getBusy(), () -> {
+                        model.forthSync(target);
+                    });
+                });
+                event.consume();
+            });
+            cm.getItems().add(mi);
+        }
         if (!f.isEmpty()) {
             cm.getItems().add(new SeparatorMenuItem());
         }
 
         if (model.getHistory().getCurrent() != null) {
-            var current = new MenuItem("> " + model.getHistory().getCurrent());
+            var current = new MenuItem(model.getHistory().getCurrent());
             current.setDisable(true);
             cm.getItems().add(current);
         }
 
-        var b = model.getHistory().getBackwardHistory(Integer.MAX_VALUE).stream().filter(Objects::nonNull).toList();
+        var b = model.getHistory().getBackwardHistory(Integer.MAX_VALUE).stream().toList();
         if (!b.isEmpty()) {
             cm.getItems().add(new SeparatorMenuItem());
         }
-        b.forEach(s -> {
-            cm.getItems().add(new MenuItem(s));
-        });
+        for (int i = 0; i < b.size(); i++) {
+            if (b.get(i) == null) {
+                continue;
+            }
 
-        for (int i = 15; i > 0; i--) {
-            cm.getItems().add(new MenuItem("abc"));
+            var mi = new MenuItem(b.get(i));
+            int target = i + 1;
+            mi.setOnAction(event -> {
+                ThreadHelper.runFailableAsync(() -> {
+                    BooleanScope.executeExclusive(model.getBusy(), () -> {
+                        model.backSync(target);
+                    });
+                });
+                event.consume();
+            });
+            cm.getItems().add(mi);
         }
+
         cm.addEventHandler(Menu.ON_SHOWING, e -> {
             Node content = cm.getSkin().getNode();
             if (content instanceof Region r) {

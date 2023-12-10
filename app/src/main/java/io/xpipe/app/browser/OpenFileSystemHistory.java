@@ -53,18 +53,26 @@ public final class OpenFileSystemHistory {
     }
 
     public String back() {
+        return back(1);
+    }
+
+    public String back(int i) {
         if (!canGoBack.get()) {
             return null;
         }
-        cursor.set(cursor.get() - 1);
+        cursor.set(Math.max(0, cursor.get() - i));
         return history.get(cursor.get());
     }
 
     public String forth() {
+        return forth(1);
+    }
+
+    public String forth(int i) {
         if (!canGoForth.get()) {
             return null;
         }
-        cursor.set(cursor.get() + 1);
+        cursor.set(Math.min(history.size() - 1, cursor.get() + i));
         return history.get(cursor.get());
     }
 

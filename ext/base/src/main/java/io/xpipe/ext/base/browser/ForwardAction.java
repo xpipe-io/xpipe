@@ -19,7 +19,7 @@ public class ForwardAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
-        model.forthSync();
+        model.forthSync(1);
     }
 
     @Override
