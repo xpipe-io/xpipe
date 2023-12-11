@@ -128,5 +128,6 @@ In case you're interested in development, check out the [contributing page](/CON
 
 If you want to talk you can also join:
 
-- The [XPipe Discord Server](https://discord.gg/8y89vS8cRb)
+[![Discord](https://discordapp.com/api/guilds/979695018782646285/widget.png?style=banner2)](https://discord.gg/8y89vS8cRb)
+
 - The [XPipe Slack Server](https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
