@@ -142,7 +142,7 @@ public class StandardStorage extends DataStorage {
                         c.ifPresent(storeCategories::add);
                     } catch (IOException ex) {
                         // IO exceptions are not expected
-                        exception.set(ex);
+                        exception.set(new IOException("Unable to load data from " + path.toString() + ". Is it corrupted?", ex));
                         directoriesToKeep.add(path);
                     }  catch (Exception ex) {
                         // Data corruption and schema changes are expected
@@ -228,7 +228,7 @@ public class StandardStorage extends DataStorage {
                         storeEntries.put(entry.get(), entry.get());
                     } catch (IOException ex) {
                         // IO exceptions are not expected
-                        exception.set(ex);
+                        exception.set(new IOException("Unable to load data from " + path.toString() + ". Is it corrupted?", ex));
                         directoriesToKeep.add(path);
                     }  catch (Exception ex) {
                         // Data corruption and schema changes are expected
