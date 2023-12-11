@@ -20,7 +20,7 @@ It currently supports:
 - Can create desktop shortcuts that automatically open remote connections in your terminal
 - Group all your connections into hierarchical categories
 
-![connections](https://github.com/xpipe-io/xpipe/assets/72509152/3a690fe3-29b8-43fc-a1d1-1dee9be71d4d)
+![connections](https://github.com/xpipe-io/xpipe/assets/72509152/5df3169a-4150-4478-a3de-ae1f9748c3c8)
 
 ## Remote File Manager
 
@@ -30,7 +30,7 @@ It currently supports:
 - Dynamically elevate sessions with sudo when required without having to restart the session
 - Integrates with your local desktop environment for a seamless transfer of local files
 
-![browser](https://github.com/xpipe-io/xpipe/assets/72509152/60d70293-c513-4f12-b242-30610ce5ab5d)
+![browser](https://github.com/xpipe-io/xpipe/assets/72509152/4d4e4e54-17c1-4ebe-acf8-f615cfce8b3f)
 
 ## Terminal Launcher
 
@@ -54,7 +54,7 @@ It currently supports:
 - Setup shell init environments for connections to fully customize your work environment for every purpose
 - Open custom shells and custom remote connections by providing your own commands
 
-![scripts](https://github.com/xpipe-io/xpipe/assets/72509152/2d473f7b-ae1d-4dd1-86a3-02658b094da5)
+![scripts](https://github.com/xpipe-io/xpipe/assets/72509152/56533f22-b689-4201-b58a-eebe0a6d517a)
 
 # Downloads
 
@@ -130,4 +130,3 @@ If you want to talk you can also join:
 
 - The [XPipe Discord Server](https://discord.gg/8y89vS8cRb)
 - The [XPipe Slack Server](https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg)
-
