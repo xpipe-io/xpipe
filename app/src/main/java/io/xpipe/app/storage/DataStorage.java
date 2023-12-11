@@ -161,6 +161,38 @@ public abstract class DataStorage {
     public abstract void save();
 
     public abstract boolean supportsSharing();
+    public boolean shouldShare(DataStoreCategory entry) {
+        if (!entry.canShare()) {
+            return false;
+        }
+
+        DataStoreCategory c = entry;
+        do {
+            if (!c.shouldShareChildren()) {
+                return false;
+            }
+        } while ((c = DataStorage.get()
+                .getStoreCategoryIfPresent(c.getParentCategory())
+                .orElse(null))
+                != null);
+        return true;
+    }
+
+    public boolean shouldShare(DataStoreEntry entry) {
+        if (!shouldShare(DataStorage.get()
+                .getStoreCategoryIfPresent(entry.getCategoryUuid())
+                .orElseThrow())) {
+            return false;
+        }
+
+        DataStoreEntry c = entry;
+        do {
+            if (!c.getProvider().isShareable(c)) {
+                return false;
+            }
+        } while ((c = DataStorage.get().getDisplayParent(c).orElse(null)) != null);
+        return true;
+    }
 
     protected void refreshValidities(boolean makeValid) {
         var changed = new AtomicBoolean(false);

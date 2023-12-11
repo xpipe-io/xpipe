@@ -122,8 +122,8 @@ public interface DataStoreProvider {
 
     default void storageInit() throws Exception {}
 
-    default boolean isShareable() {
-        return false;
+    default boolean isShareable(DataStoreEntry entry) {
+        return true;
     }
 
     default String summaryString(StoreEntryWrapper wrapper) {

@@ -57,7 +57,7 @@ public class ShareStoreAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-                return o.get().getProvider().isShareable();
+                return o.get().getProvider().isShareable(o.get());
             }
 
             @Override

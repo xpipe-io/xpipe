@@ -90,11 +90,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean isShareable() {
-        return true;
-    }
-
-    @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         SimpleScriptStore st = store.getStore().asNeeded();
         return st.getGroup().get();

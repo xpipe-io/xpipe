@@ -24,10 +24,6 @@ import java.util.List;
 
 public class ScriptGroupStoreProvider implements DataStoreProvider {
 
-    public boolean isShareable() {
-        return true;
-    }
-
     @Override
     public Comp<?> customEntryComp(StoreSection sec, boolean preferLarge) {
         ScriptGroupStore s = sec.getWrapper().getEntry().getStore().asNeeded();
