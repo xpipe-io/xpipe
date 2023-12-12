@@ -36,6 +36,8 @@ public interface ShellControl extends ProcessControl {
 
     String getOsName();
 
+    boolean isLicenseCheck();
+
     UUID getSystemId();
 
     ReentrantLock getLock();
