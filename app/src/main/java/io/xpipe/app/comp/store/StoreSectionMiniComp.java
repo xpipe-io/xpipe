@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.storage.DataStoreColor;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,6 +21,7 @@ import javafx.scene.layout.VBox;
 import lombok.Builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -122,6 +124,25 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
                     struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
                 })
+                .apply(struc -> {
+                    if (section.getWrapper() != null) {
+                        SimpleChangeListener.apply(section.getWrapper().getColor(), val -> {
+                            if (section.getDepth() != 1) {
+                                return;
+                            }
+
+                            struc.get().getStyleClass().removeIf(
+                                    s -> Arrays.stream(DataStoreColor.values()).anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
+                            struc.get().getStyleClass().remove("none");
+                            struc.get().getStyleClass().add("color-box");
+                            if (val != null) {
+                                struc.get().getStyleClass().add(val.getId());
+                            } else {
+                                struc.get().getStyleClass().add("none");
+                            }
+                        });
+                    }
+        })
                 .createStructure();
     }
 }
