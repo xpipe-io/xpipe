@@ -15,10 +15,9 @@ It currently supports:
 ## Connection Hub
 
 - Easily connect to and access all kinds of remote connections in one place
-- Securely stores all information exclusively on your computer and encrypts all secret information
 - Allows you to create specific login environments on any system to instantly jump into a properly set up environment for every use case
 - Can create desktop shortcuts that automatically open remote connections in your terminal
-- Group all your connections into hierarchical categories
+- Organize all your connections into hierarchical categories to keep a good overview
 
 ![connections](https://github.com/xpipe-io/xpipe/assets/72509152/5df3169a-4150-4478-a3de-ae1f9748c3c8)
 
@@ -55,6 +54,13 @@ It currently supports:
 - Open custom shells and custom remote connections by providing your own commands
 
 ![scripts](https://github.com/xpipe-io/xpipe/assets/72509152/56533f22-b689-4201-b58a-eebe0a6d517a)
+
+## Secure Vault
+
+- Securely stores all information exclusively on your system,
+  optionally with a custom master passphrase to further encrypt secrets
+- Supports syncing your vault data via your own remote git repository
+- Can integrate with your password manager to fetch secrets and not store them itself
 
 # Downloads
 
