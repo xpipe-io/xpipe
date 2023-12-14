@@ -62,6 +62,14 @@ public class CommandBuilder {
         return this;
     }
 
+
+    public CommandBuilder add(int index, String... s) {
+        for (String s1 : s) {
+            elements.add(index++, new Fixed(s1));
+        }
+        return this;
+    }
+
     public CommandBuilder remove(String s) {
         elements.removeIf(element -> element instanceof Fixed fixed && s.equals(fixed.string));
         return this;
@@ -69,6 +77,21 @@ public class CommandBuilder {
 
     public CommandBuilder addQuoted(String s) {
         elements.add(sc -> {
+            if (s == null) {
+                return null;
+            }
+
+            if (sc == null) {
+                return "\"" + s + "\"";
+            }
+
+            return sc.getShellDialect().quoteArgument(s);
+        });
+        return this;
+    }
+
+    public CommandBuilder addQuoted(int index, String s) {
+        elements.add(index, sc -> {
             if (s == null) {
                 return null;
             }
