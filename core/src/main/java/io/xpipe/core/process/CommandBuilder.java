@@ -15,14 +15,24 @@ public class CommandBuilder {
 
     private final List<Element> elements = new ArrayList<>();
     @Getter
-    private final Map<String, String> environmentVariables = new LinkedHashMap<>();
+    private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
 
-    public CommandBuilder envrironment(String k, String v) {
+    public CommandBuilder fixedEnvrironment(String k, String v) {
+        environmentVariables.put(k, new Fixed(v));
+        return this;
+    }
+
+    public CommandBuilder envrironment(String k, Element v) {
         environmentVariables.put(k, v);
         return this;
     }
 
-    public CommandBuilder envrironment(Map<String, String> map) {
+    public CommandBuilder fixedEnvrironment(Map<String, String> map) {
+        map.forEach((s, s2) -> fixedEnvrironment(s, s2));
+        return this;
+    }
+
+    public CommandBuilder envrironment(Map<String, Element> map) {
         environmentVariables.putAll(map);
         return this;
     }
@@ -180,7 +190,14 @@ public class CommandBuilder {
 
     public String build(ShellControl sc) throws Exception {
         var s = buildBase(sc);
-        return sc.getShellDialect().addInlineVariablesToCommand(environmentVariables, s);
+        LinkedHashMap<String, String> map = new LinkedHashMap<>();
+        for (var e : environmentVariables.entrySet()) {
+            var v = e.getValue().evaluate(sc);
+            if (v != null) {
+                map.put(e.getKey(), v);
+            }
+        }
+        return sc.getShellDialect().addInlineVariablesToCommand(map, s);
     }
 
     public CommandControl buildCommand(ShellControl sc) {
