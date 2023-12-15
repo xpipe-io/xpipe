@@ -1,11 +1,9 @@
 package io.xpipe.core.process;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.SequencedCollection;
+import java.util.*;
 
 public class CommandBuilder {
 
@@ -16,6 +14,18 @@ public class CommandBuilder {
     private CommandBuilder() {}
 
     private final List<Element> elements = new ArrayList<>();
+    @Getter
+    private final Map<String, String> environmentVariables = new LinkedHashMap<>();
+
+    public CommandBuilder envrironment(String k, String v) {
+        environmentVariables.put(k, v);
+        return this;
+    }
+
+    public CommandBuilder envrironment(Map<String, String> map) {
+        environmentVariables.putAll(map);
+        return this;
+    }
 
     public interface Element {
 
@@ -155,7 +165,7 @@ public class CommandBuilder {
         return this;
     }
 
-    public String build(ShellControl sc) throws Exception {
+    public String buildBase(ShellControl sc) throws Exception {
         List<String> list = new ArrayList<>();
         for (Element element : elements) {
             String evaluate = element.evaluate(sc);
@@ -166,6 +176,11 @@ public class CommandBuilder {
             list.add(evaluate);
         }
         return String.join(" ", list);
+    }
+
+    public String build(ShellControl sc) throws Exception {
+        var s = buildBase(sc);
+        return sc.getShellDialect().addInlineVariablesToCommand(environmentVariables, s);
     }
 
     public CommandControl buildCommand(ShellControl sc) {

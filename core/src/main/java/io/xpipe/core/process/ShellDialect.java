@@ -86,7 +86,7 @@ public interface ShellDialect {
 
     String getScriptFileEnding();
 
-    void addInlineVariablesToCommand(Map<String, String> variables, CommandBuilder command);
+    String addInlineVariablesToCommand(Map<String, String> variables, String command);
 
     Stream<FileSystem.FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
 
