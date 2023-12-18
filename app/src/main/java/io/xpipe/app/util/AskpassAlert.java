@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.core.util.SecretValue;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.StackPane;
@@ -43,6 +44,13 @@ public class AskpassAlert {
 
                     var text = new SecretFieldComp(prop).createRegion();
                     alert.getDialogPane().setContent(new StackPane(text));
+
+                    alert.setOnShown(event -> {
+                        // Wait 1 pulse before focus so that the scene can be assigned to text
+                        Platform.runLater(text::requestFocus);
+                        event.consume();
+                    });
+
                 })
                 .filter(b -> b.getButtonData().isDefaultButton() && prop.getValue() != null)
                 .map(t -> {
