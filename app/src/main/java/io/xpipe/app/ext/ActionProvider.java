@@ -59,6 +59,10 @@ public interface ActionProvider {
         return true;
     }
 
+    default String getProFeatureId() {
+        return null;
+    }
+
     interface LauncherCallSite {
 
         String getId();

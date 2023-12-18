@@ -20,10 +20,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.DesktopShortcuts;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
@@ -273,9 +270,21 @@ public abstract class StoreEntryComp extends SimpleComp {
             var item = actionProvider.canLinkTo()
                     ? new Menu(null, new FontIcon(icon))
                     : new MenuItem(null, new FontIcon(icon));
+
+            var proRequired = p.getKey().getProFeatureId() != null &&
+                    !LicenseProvider.get().getFeature(p.getKey().getProFeatureId()).isSupported();
+            if (proRequired) {
+                item.setDisable(true);
+                item.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
+            }
+
             Menu menu = actionProvider.canLinkTo() ? (Menu) item : null;
                 item.setOnAction(event -> {
                     if (menu != null && !event.getTarget().equals(menu)) {
+                        return;
+                    }
+
+                    if (menu.isDisable()) {
                         return;
                     }
 

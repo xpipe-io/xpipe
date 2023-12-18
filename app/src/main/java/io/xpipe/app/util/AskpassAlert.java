@@ -38,10 +38,6 @@ public class AskpassAlert {
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
-//                    alert.getDialogPane().getScene().getWindow().setOnShown(event -> {
-//                        ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
-//                    });
-
                     var text = new SecretFieldComp(prop).createRegion();
                     alert.getDialogPane().setContent(new StackPane(text));
 
