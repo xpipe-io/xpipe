@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.comp.base.ModalOverlayComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
@@ -373,7 +374,11 @@ public final class OpenFileSystemModel {
             this.local = fs.getShell()
                     .map(shellControl -> shellControl.hasLocalSystemAccess())
                     .orElse(false);
+
             this.cache.init();
+            for (BrowserAction b : BrowserAction.ALL) {
+                b.init(this);
+            }
         });
     }
 

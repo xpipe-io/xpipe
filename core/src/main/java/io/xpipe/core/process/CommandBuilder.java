@@ -131,7 +131,7 @@ public class CommandBuilder {
                 return sub.buildSimple();
             }
 
-            return sub.build(sc);
+            return sub.buildString(sc);
         });
         return this;
     }
@@ -188,7 +188,7 @@ public class CommandBuilder {
         return String.join(" ", list);
     }
 
-    public String build(ShellControl sc) throws Exception {
+    public String buildString(ShellControl sc) throws Exception {
         var s = buildBase(sc);
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (var e : environmentVariables.entrySet()) {
@@ -200,7 +200,7 @@ public class CommandBuilder {
         return sc.getShellDialect().addInlineVariablesToCommand(map, s);
     }
 
-    public CommandControl buildCommand(ShellControl sc) {
+    public CommandControl build(ShellControl sc) {
         return sc.command(this);
     }
 

@@ -5,10 +5,12 @@ import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.fxcomps.impl.FancyTooltipAugment;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -48,6 +50,11 @@ public interface LeafAction extends BrowserAction {
             b.setDisable(!isActive(model, selected));
         });
 
+        if (getProFeatureId() != null && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
+            b.setDisable(true);
+            b.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
+        }
+
         return b;
     }
 
@@ -70,6 +77,12 @@ public interface LeafAction extends BrowserAction {
         }
         mi.setMnemonicParsing(false);
         mi.setDisable(!isActive(model, selected));
+
+        if (getProFeatureId() != null && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
+            mi.setDisable(true);
+            mi.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
+        }
+
         return mi;
     }
 

@@ -39,6 +39,12 @@ public interface BrowserAction {
                 .orElseThrow();
     }
 
+    default void init(OpenFileSystemModel model) throws Exception {}
+
+    default String getProFeatureId() {
+        return null;
+    }
+
     default Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return null;
     }

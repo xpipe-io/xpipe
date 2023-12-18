@@ -234,7 +234,7 @@ public interface ShellControl extends ProcessControl {
         return command(sc-> {
             var b = CommandBuilder.of();
             builder.accept(b);
-            return b.build(sc);
+            return b.buildString(sc);
         });
     }
 
@@ -243,7 +243,7 @@ public interface ShellControl extends ProcessControl {
     }
 
     default CommandControl command(CommandBuilder builder) {
-        return command(shellProcessControl -> builder.build(shellProcessControl));
+        return command(shellProcessControl -> builder.buildString(shellProcessControl));
     }
 
     void exitAndWait() throws IOException;

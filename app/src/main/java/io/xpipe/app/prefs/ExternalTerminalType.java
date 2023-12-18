@@ -250,7 +250,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .addQuoted(configuration.getTitle())
                         .add("--")
                         .addFile(configuration.getScriptFile())
-                        .build(pc);
+                        .buildString(pc);
                 // In order to fix this bug which also affects us:
                 // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                 toExecute = "GNOME_TERMINAL_SCREEN=\"\" nohup " + toExecute + " </dev/null &>/dev/null & disown";
@@ -789,7 +789,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
                 var toExecute = executable + " "
                         + toCommand(configuration.getTitle(), configuration.getScriptFile())
-                                .build(pc);
+                                .buildString(pc);
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
                     toExecute = "start \"" + configuration.getTitle() + "\" " + toExecute;
                 } else {
