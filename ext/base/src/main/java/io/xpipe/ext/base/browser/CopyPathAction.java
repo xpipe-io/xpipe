@@ -6,15 +6,13 @@ import io.xpipe.app.browser.action.BranchAction;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.LeafAction;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FileNames;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,9 +58,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         var s = entries.stream()
                                 .map(entry -> entry.getRawFileEntry().getPath())
                                 .collect(Collectors.joining("\n"));
-                        var selection = new StringSelection(s);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(selection, selection);
+                        ClipboardHelper.copyText(s);
                     }
                 },
                 new LeafAction() {
@@ -94,9 +90,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         var s = entries.stream()
                                 .map(entry -> entry.getRawFileEntry().getPath())
                                 .collect(Collectors.joining("\n"));
-                        var selection = new StringSelection(s);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(selection, selection);
+                        ClipboardHelper.copyText(s);
                     }
                 },
                 new LeafAction() {
@@ -124,9 +118,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         var s = entries.stream()
                                 .map(entry -> "\"" + entry.getRawFileEntry().getPath() + "\"")
                                 .collect(Collectors.joining("\n"));
-                        var selection = new StringSelection(s);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(selection, selection);
+                        ClipboardHelper.copyText(s);
                     }
                 },
                 new LeafAction() {
@@ -156,9 +148,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                 .map(entry -> FileNames.getFileName(
                                         entry.getRawFileEntry().getPath()))
                                 .collect(Collectors.joining("\n"));
-                        var selection = new StringSelection(s);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(selection, selection);
+                        ClipboardHelper.copyText(s);
                     }
                 },
                 new LeafAction() {
@@ -200,9 +190,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                 .map(entry -> FileNames.getFileName(
                                         entry.getRawFileEntry().getPath()))
                                 .collect(Collectors.joining("\n"));
-                        var selection = new StringSelection(s);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(selection, selection);
+                        ClipboardHelper.copyText(s);
                     }
                 },
                 new LeafAction() {
@@ -235,9 +223,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                         + FileNames.getFileName(
                                                 entry.getRawFileEntry().getPath()) + "\"")
                                 .collect(Collectors.joining("\n"));
-                        var selection = new StringSelection(s);
-                        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                        clipboard.setContents(selection, selection);
+                        ClipboardHelper.copyText(s);
                     }
                 });
     }

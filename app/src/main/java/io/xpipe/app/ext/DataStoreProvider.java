@@ -57,7 +57,7 @@ public interface DataStoreProvider {
     }
 
     default Comp<?> customEntryComp(StoreSection s, boolean preferLarge) {
-        return StoreEntryComp.create(s.getWrapper(),true, null, preferLarge);
+        return StoreEntryComp.create(s.getWrapper(), null, preferLarge);
     }
 
     default Comp<?> customSectionComp(StoreSection section, boolean topLevel) {

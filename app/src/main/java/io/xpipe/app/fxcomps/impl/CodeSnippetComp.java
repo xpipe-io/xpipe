@@ -4,6 +4,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.ClipboardHelper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
@@ -13,10 +14,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.InlineCssTextArea;
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 
 public class CodeSnippetComp extends Comp<CompStructure<?>> {
 
@@ -67,9 +64,7 @@ public class CodeSnippetComp extends Comp<CompStructure<?>> {
         var button = new Button();
         button.setGraphic(new FontIcon("mdoal-content_copy"));
         button.setOnAction(e -> {
-            var string = new StringSelection(value.getValue().getRawString());
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(string, string);
+            ClipboardHelper.copyText(value.getValue().getRawString());
         });
         button.getStyleClass().add("copy");
         button.getStyleClass().add("button-comp");

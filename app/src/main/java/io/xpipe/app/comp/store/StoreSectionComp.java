@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -108,15 +109,17 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         return;
                     }
 
-                    struc.get().getStyleClass().removeIf(s -> Arrays.stream(DataStoreColor.values())
+                    var newList = new ArrayList<>(struc.get().getStyleClass());
+                    newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
                             .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
-                    struc.get().getStyleClass().remove("none");
-                    struc.get().getStyleClass().add("color-box");
+                    newList.remove("none");
+                    newList.add("color-box");
                     if (val != null) {
-                        struc.get().getStyleClass().add(val.getId());
+                        newList.add(val.getId());
                     } else {
-                        struc.get().getStyleClass().add("none");
+                        newList.add("none");
                     }
+                    struc.get().getStyleClass().setAll(newList);
                 }))
                 .apply(struc -> {
                     struc.get().pseudoClassStateChanged(ROOT, topLevel);

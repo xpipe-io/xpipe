@@ -28,10 +28,6 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.ColumnConstraints;
@@ -39,16 +35,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
     public static StoreEntryComp create(
-            StoreEntryWrapper entry, boolean showIcon, Comp<?> content, boolean preferLarge) {
+            StoreEntryWrapper entry, Comp<?> content, boolean preferLarge) {
         if (!preferLarge) {
             return new DenseStoreEntryComp(entry, true, content);
         } else {
@@ -331,10 +324,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                     l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
                     l.setOnAction(event -> {
                         ThreadHelper.runFailableAsync(() -> {
-                            var selection = new StringSelection(url);
-                            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                             AppActionLinkDetector.setLastDetectedAction(url);
-                            clipboard.setContents(selection, selection);
+                            ClipboardHelper.copyUrl(url);
                         });
                     });
                     menu.getItems().add(l);

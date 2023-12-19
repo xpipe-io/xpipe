@@ -5,14 +5,11 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.SecretHelper;
 import io.xpipe.core.store.DataStore;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
-
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 
 public class ShareStoreAction implements ActionProvider {
 
@@ -33,11 +30,9 @@ public class ShareStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            var string = create(store.getStore());
-            var selection = new StringSelection(string);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            AppActionLinkDetector.setLastDetectedAction(string);
-            clipboard.setContents(selection, selection);
+            var url = create(store.getStore());
+            AppActionLinkDetector.setLastDetectedAction(url);
+            ClipboardHelper.copyUrl(url);
         }
     }
 
