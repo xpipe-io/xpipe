@@ -129,7 +129,7 @@ public interface ShellDialect {
 
     String getScriptPermissionsCommand(String file);
 
-    String prepareAskpassContent(ShellControl sc, String fileName, List<String> s) throws Exception;
+    String prepareAskpassContent(ShellControl sc, String fileName, List<String> s, String errorMessage) throws Exception;
 
     String getSetEnvironmentVariableCommand(String variable, String value);
 

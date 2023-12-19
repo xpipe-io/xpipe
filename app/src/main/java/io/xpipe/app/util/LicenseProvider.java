@@ -46,4 +46,6 @@ public abstract class LicenseProvider {
     public abstract void init();
 
     public abstract Comp<?> overviewPage();
+
+    public abstract boolean hasPaidLicense();
 }

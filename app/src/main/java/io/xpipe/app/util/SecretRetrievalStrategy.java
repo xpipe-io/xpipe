@@ -44,7 +44,7 @@ public interface SecretRetrievalStrategy {
 
         @Override
         public boolean isLocalAskpassCompatible() {
-            return false;
+            return true;
         }
 
         @Override
@@ -119,25 +119,6 @@ public interface SecretRetrievalStrategy {
         public boolean shouldCache() {
             return true;
         }
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return true;
-        }
-    }
-
-    @JsonTypeName("dynamicPrompt")
-    class DynamicPrompt implements SecretRetrievalStrategy {
-
-        @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) {
-            return AskpassAlert.query(displayName, UUID.randomUUID(), id, sub);
-        }
-
-        @Override
-        public boolean shouldCache() {
-            return false;
-        }
-
         @Override
         public boolean isLocalAskpassCompatible() {
             return true;

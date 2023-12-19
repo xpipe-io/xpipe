@@ -165,7 +165,7 @@ public class SentryErrorHandler implements ErrorHandler {
             atts.forEach(attachment -> s.addAttachment(attachment));
         }
 
-        s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasLicense()));
+        s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasPaidLicense()));
         s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
         s.setTag(

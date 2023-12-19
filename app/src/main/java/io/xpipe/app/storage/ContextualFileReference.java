@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -42,17 +42,23 @@ public class ContextualFileReference {
         }
 
         var ns = normalized(s.trim());
-        // Replacement order is important
-        var replaced = ns.replace("<DATA>", getDataDir())
-                .replace("~", normalized(System.getProperty("user.home")));
+
+        String replaced;
+        var withHomeResolved = ns.replace("~", normalized(System.getProperty("user.home")));
+        // Only replace ~ if it is part of data dir, otherwise keep it raw
+        if (withHomeResolved.startsWith(getDataDir())) {
+            replaced = withHomeResolved.replace("<DATA>", getDataDir());
+        } else {
+            replaced = ns.replace("<DATA>", getDataDir());
+        }
         return new ContextualFileReference(normalized(replaced));
     }
 
     @NonNull
     private final String path;
 
-    public String toString() {
-        return path.replaceAll("/", Matcher.quoteReplacement(OsType.getLocal().getFileSystemSeparator()));
+    public String toFilePath(ShellControl sc) {
+        return path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/"));
     }
 
     public String serialize() {

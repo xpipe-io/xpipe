@@ -1,5 +1,6 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.*;
 import lombok.NonNull;
@@ -15,6 +16,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 public interface ShellControl extends ProcessControl {
+
+    Optional<ShellStore> getSourceStore();
+
+    ShellControl withSourceStore(ShellStore store);
 
     List<ScriptSnippet> getInitCommands();
 
@@ -43,6 +48,8 @@ public interface ShellControl extends ProcessControl {
     ReentrantLock getLock();
 
     ShellControl onInit(FailableConsumer<ShellControl, Exception> pc);
+
+    ShellControl onPreInit(FailableConsumer<ShellControl, Exception> pc);
 
     default <T extends ShellStoreState> ShellControl withShellStateInit(StatefulDataStore<T> store) {
         return onInit(shellControl -> {
@@ -168,6 +175,10 @@ public interface ShellControl extends ProcessControl {
     ShellControl withInitSnippet(ScriptSnippet snippet);
 
     ShellControl additionalTimeout(int ms);
+
+    default ShellControl disableTimeout() {
+        return additionalTimeout(Integer.MAX_VALUE);
+    }
 
     FailableSupplier<SecretValue> getElevationPassword();
 
