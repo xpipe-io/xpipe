@@ -172,7 +172,7 @@ public interface ShellControl extends ProcessControl {
     FailableSupplier<SecretValue> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getOpenCommand(), (sc) -> type.getLoginOpenCommand())
+        return subShell(p -> type.getLoginOpenCommand(), (sc) -> type.getLoginOpenCommand())
                 .elevationPassword(getElevationPassword());
     }
 
@@ -186,21 +186,12 @@ public interface ShellControl extends ProcessControl {
     }
 
     default ShellControl identicalSubShell() {
-        return subShell(p -> p.getShellDialect().getOpenCommand(), (sc) -> sc.getShellDialect().getOpenCommand())
+        return subShell(p -> p.getShellDialect().getLoginOpenCommand(), (sc) -> sc.getShellDialect().getLoginOpenCommand())
                 .elevationPassword(getElevationPassword());
     }
 
     default ShellControl subShell(@NonNull String command) {
         return subShell(processControl -> command, (sc) -> command);
-    }
-
-    default ShellControl enforcedDialect(ShellDialect type) throws Exception {
-        start();
-        if (getShellDialect().equals(type)) {
-            return this;
-        } else {
-            return subShell(type).start();
-        }
     }
 
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc) throws Exception {

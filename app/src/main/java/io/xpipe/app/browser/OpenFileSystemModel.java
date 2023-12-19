@@ -149,6 +149,7 @@ public final class OpenFileSystemModel {
         // Handle commands typed into navigation bar
         if (allowCommands
                 && evaluatedPath != null
+                && !evaluatedPath.isBlank()
                 && !FileNames.isAbsolute(evaluatedPath)
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
