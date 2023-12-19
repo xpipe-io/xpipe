@@ -4,8 +4,8 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.XPipeSession;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeInstallation;
@@ -79,11 +79,11 @@ public enum XPipeDistributionType {
             return PORTABLE;
         }
 
-        if (!LocalStore.isLocalShellInitialized()) {
+        if (!LocalShell.isLocalShellInitialized()) {
             return UNKNOWN;
         }
 
-        try (var sc = LocalStore.getShell()) {
+        try (var sc = LocalShell.getShell()) {
             // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the production behavior
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
                 try (var chocoOut =

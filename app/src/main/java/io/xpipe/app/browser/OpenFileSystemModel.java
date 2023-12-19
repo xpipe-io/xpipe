@@ -35,7 +35,7 @@ public final class OpenFileSystemModel {
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final BrowserModel browserModel;
     private OpenFileSystemSavedState savedState;
-    private final OpenFileSystemCache cache = new OpenFileSystemCache(this);
+    private OpenFileSystemCache cache;
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final String name;
@@ -375,7 +375,7 @@ public final class OpenFileSystemModel {
                     .map(shellControl -> shellControl.hasLocalSystemAccess())
                     .orElse(false);
 
-            this.cache.init();
+            this.cache = new OpenFileSystemCache(this);
             for (BrowserAction b : BrowserAction.ALL) {
                 b.init(this);
             }

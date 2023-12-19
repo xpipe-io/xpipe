@@ -3,10 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.LocalStore;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -152,7 +152,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            LocalStore.getShell().executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
+            LocalShell.getShell().executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
         }
 
         @Override

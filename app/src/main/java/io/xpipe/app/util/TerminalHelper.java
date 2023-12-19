@@ -29,7 +29,7 @@ public class TerminalHelper {
                 : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;
-                var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(new TerminalInitScriptConfig(adjustedTitle, type.shouldClear())));
+                var file = ScriptHelper.createLocalExecScript(cc.prepareTerminalOpen(new TerminalInitScriptConfig(adjustedTitle, type.shouldClear(), color != null)));
         var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, adjustedTitle, cleanTitle, file);
         try {
             type.launch(config);

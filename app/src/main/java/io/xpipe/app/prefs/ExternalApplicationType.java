@@ -2,7 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -44,7 +44,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         protected Optional<Path> getApplicationPath() {
-            try (ShellControl pc = LocalStore.getShell().start()) {
+            try (ShellControl pc = LocalShell.getShell().start()) {
                 try (var c = pc.command(String.format(
                                 "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister "
                                         + "-dump | grep -o \"/.*%s.app\" | grep -v -E \"Caches|TimeMachine|Temporary|.Trash|/Volumes/%s\" | uniq",
@@ -100,7 +100,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         public boolean isAvailable() {
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
@@ -122,7 +122,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
-            try (var cc = LocalStore.getShell()
+            try (var cc = LocalShell.getShell()
                     .command(ShellDialects.getPlatformDefault().getWhichCommand(executable))
                     .start()) {
                 var out = cc.readStdoutDiscardErr();

@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
@@ -36,7 +35,7 @@ public class ScriptHelper {
 
     @SneakyThrows
     public static String createLocalExecScript(String content) {
-        try (var l = LocalStore.getShell().start()) {
+        try (var l = LocalShell.getShell().start()) {
             return createExecScript(l, content);
         }
     }

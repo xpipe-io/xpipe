@@ -3,15 +3,11 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.ApplicationHelper;
-import io.xpipe.app.util.MacOsPermissions;
-import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
 import lombok.Value;
 
@@ -28,7 +24,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalStore.getShell()
+            LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("start")
                             .addQuoted(configuration.getTitle())
@@ -99,7 +95,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             // backslash of a filepath to escape the closing quote in the title argument
             // So just remove that slash
             var fixedName = FileNames.removeTrailingSlash(configuration.getTitle());
-            LocalStore.getShell()
+            LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("wt", "-w", "1", "nt", "--title")
                             .addQuoted(fixedName)
@@ -127,7 +123,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .addQuoted("colors.primary.background='%s'"
                                 .formatted(configuration.getColor().toHexString()));
             }
-            LocalStore.getShell()
+            LocalShell.getShell()
                     .executeSimpleCommand(b.add("-t")
                             .addQuoted(configuration.getTitle())
                             .add("-e")
@@ -242,7 +238,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 ApplicationHelper.checkIsInPath(pc, executable, toTranslatedString(), null);
 
                 var toExecute = CommandBuilder.of()
@@ -478,7 +474,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalStore.getShell()
+            LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
                             .addQuoted("Alacritty.app")
@@ -502,7 +498,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 pc.osascriptCommand(String.format(
                                 """
                                         if application "Kitty" is running then
@@ -594,7 +590,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 var suffix = "\"" + configuration.getScriptFile().replaceAll("\"", "\\\\\"") + "\"";
                 pc.osascriptCommand(String.format(
                                 """
@@ -627,7 +623,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             }
 
             var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $CMD";
-            try (var pc = LocalStore.getShell()) {
+            try (var pc = LocalShell.getShell()) {
                 var toExecute = ApplicationHelper.replaceFileArgument(format, "CMD", configuration.getScriptFile());
                 // We can't be sure whether the command is blocking or not, so always make it not blocking
                 if (pc.getOsType().equals(OsType.WINDOWS)) {
@@ -663,7 +659,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 throw new IllegalStateException("iTerm installation not found");
             }
 
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 var a = app.get().toString();
                 pc.osascriptCommand(String.format(
                                 """
@@ -695,7 +691,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalStore.getShell()
+            LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
                             .addQuoted("Tabby.app")
@@ -721,7 +717,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return;
             }
 
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 pc.osascriptCommand(String.format(
                                 """
                         tell application "Warp" to activate
@@ -756,7 +752,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         public boolean isAvailable() {
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand(executable));
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
@@ -779,7 +775,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            try (ShellControl pc = LocalStore.getShell()) {
+            try (ShellControl pc = LocalShell.getShell()) {
                 if (!ApplicationHelper.isInPath(pc, executable)) {
                     throw ErrorEvent.unreportable(
                             new IOException(

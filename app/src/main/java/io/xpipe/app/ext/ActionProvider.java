@@ -16,6 +16,16 @@ public interface ActionProvider {
 
     List<ActionProvider> ALL = new ArrayList<>();
 
+    static void initProviders() {
+        for (ActionProvider actionProvider : ALL) {
+            try {
+                actionProvider.init();
+            } catch (Throwable t) {
+                ErrorEvent.fromThrowable(t).handle();
+            }
+        }
+    }
+
     class Loader implements ModuleLayerLoader {
 
         @Override
@@ -49,6 +59,9 @@ public interface ActionProvider {
         boolean requiresJavaFXPlatform();
 
         void execute() throws Exception;
+    }
+
+    default void init() {
     }
 
     default String getId() {

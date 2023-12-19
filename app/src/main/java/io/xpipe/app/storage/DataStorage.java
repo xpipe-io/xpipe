@@ -56,6 +56,8 @@ public abstract class DataStorage {
     @Getter
     private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
 
+    private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
+
     protected final ReentrantLock busyIo = new ReentrantLock();
 
     public DataStorage() {
@@ -356,6 +358,14 @@ public abstract class DataStorage {
         this.listeners.forEach(l -> l.onCategoryAdd(cat));
     }
 
+    public void addStoreEntryInProgress(@NonNull DataStoreEntry e) {
+        this.storeEntriesInProgress.put(e, e);
+    }
+
+    public void removeStoreEntryInProgress(@NonNull DataStoreEntry e) {
+        this.storeEntriesInProgress.remove(e);
+    }
+
     public DataStoreEntry addStoreEntryIfNotPresent(@NonNull DataStoreEntry e) {
         var found = storeEntries.get(e);
         if (found != null) {
@@ -636,6 +646,12 @@ public abstract class DataStorage {
 
     public DataStoreEntry getStoreEntry(@NonNull DataStore store) {
         return getStoreEntryIfPresent(store).orElseThrow(() -> new IllegalArgumentException("Store not found"));
+    }
+
+    public Optional<DataStoreEntry> getStoreEntryInProgressIfPresent(@NonNull DataStore store) {
+        return storeEntriesInProgress.keySet().stream()
+                .filter(n -> n.getStore() == store)
+                .findFirst();
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store) {

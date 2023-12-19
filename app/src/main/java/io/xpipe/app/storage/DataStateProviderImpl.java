@@ -15,7 +15,8 @@ public class DataStateProviderImpl extends DataStateProvider {
             return;
         }
 
-        var entry = DataStorage.get().getStoreEntryIfPresent(store);
+        var entry = DataStorage.get().getStoreEntryIfPresent(store)
+                .or(() -> DataStorage.get().getStoreEntryInProgressIfPresent(store));
         if (entry.isEmpty()) {
             return;
         }

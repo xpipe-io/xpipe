@@ -64,7 +64,7 @@ public interface ShellDialect {
 
     void prepareDumbTerminalCommands(ShellControl sc) throws Exception;
 
-    String prepareProperTerminalCommands();
+    String prepareTerminalEnvironmentCommands();
 
     String appendToPathVariableCommand(String entry);
 

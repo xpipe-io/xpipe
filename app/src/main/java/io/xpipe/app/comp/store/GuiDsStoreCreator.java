@@ -345,7 +345,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     .getValue()
                     .getValidationResult()
                     .getMessages()
-                    .get(0)
+                    .getFirst()
                     .getText();
             TrackEvent.info(msg);
             var newMessage = msg;
@@ -360,6 +360,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         ThreadHelper.runAsync(() -> {
             try (var b = new BooleanScope(busy).start()) {
+                DataStorage.get().addStoreEntryInProgress(entry.getValue());
                 entry.getValue().validateOrThrow();
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);
@@ -375,6 +376,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     ErrorEvent.unreportable(ex);
                 }
                 ErrorEvent.fromThrowable(ex).omit().handle();
+            } finally {
+                DataStorage.get().removeStoreEntryInProgress(entry.getValue());
             }
         });
         return false;

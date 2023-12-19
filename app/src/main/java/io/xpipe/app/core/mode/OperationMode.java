@@ -4,10 +4,10 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
@@ -184,7 +184,7 @@ public abstract class OperationMode {
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
             var exec = XPipeInstallation.createExternalAsyncLaunchCommand(XPipeInstallation.getLocalDefaultInstallationBasePath(), XPipeDaemonMode.GUI, "");
-            LocalStore.getShell().executeSimpleCommand(exec);
+            LocalShell.getShell().executeSimpleCommand(exec);
         });
     }
 

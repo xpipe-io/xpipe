@@ -172,7 +172,7 @@ public interface ShellControl extends ProcessControl {
     FailableSupplier<SecretValue> getElevationPassword();
 
     default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getOpenCommand(), (sc, command) -> command)
+        return subShell(p -> type.getOpenCommand(), (sc, command) -> command != null ? command : type.getLoginOpenCommand())
                 .elevationPassword(getElevationPassword());
     }
 

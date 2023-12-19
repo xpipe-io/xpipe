@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileSystem;
@@ -71,7 +70,7 @@ public class FileOpener {
     }
 
     public static void openInDefaultApplication(String file) {
-        try (var pc = LocalStore.getShell().start()) {
+        try (var pc = LocalShell.getShell().start()) {
             if (pc.getOsType().equals(OsType.WINDOWS)) {
                 pc.executeSimpleCommand("start \"\" \"" + file + "\"");
             } else if (pc.getOsType().equals(OsType.LINUX)) {

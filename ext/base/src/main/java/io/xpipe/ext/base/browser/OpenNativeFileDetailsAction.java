@@ -3,8 +3,8 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 
@@ -32,7 +32,7 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                     // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as
                     // long as the parent process is running.
                     // So let's keep one process running
-                    LocalStore.getLocalPowershell().command(content).notComplex().execute();
+                    LocalShell.getLocalPowershell().command(content).notComplex().execute();
                 }
                 case OsType.Linux linux -> {
                     var dbus = String.format(

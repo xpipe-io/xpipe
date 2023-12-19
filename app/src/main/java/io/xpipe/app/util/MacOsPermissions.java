@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
-import io.xpipe.core.store.LocalStore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.Alert;
@@ -15,7 +14,7 @@ public class MacOsPermissions {
     public static boolean waitForAccessibilityPermissions() throws Exception {
         AtomicReference<Alert> alert = new AtomicReference<>();
         var state = new SimpleBooleanProperty(true);
-        try (var pc = LocalStore.getShell().start()) {
+        try (var pc = LocalShell.getShell().start()) {
             while (state.get()) {
                 // We can't wait in the platform thread, so just return instantly
                 if (Platform.isFxApplicationThread()) {

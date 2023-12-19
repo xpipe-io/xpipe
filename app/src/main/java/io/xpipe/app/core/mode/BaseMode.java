@@ -3,14 +3,15 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
-import io.xpipe.app.issue.*;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.FileBridge;
+import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.LockedSecretValue;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -47,7 +48,7 @@ public class BaseMode extends OperationMode {
         AppI18n.init();
         LicenseProvider.get().init();
         AppAntivirusAlert.showIfNeeded();
-        LocalStore.init();
+        LocalShell.init();
         XPipeDistributionType.init();
         AppPrefs.init();
         AppCharsets.init();
@@ -56,6 +57,7 @@ public class BaseMode extends OperationMode {
         DataStorage.init();
         AppFileWatcher.init();
         FileBridge.init();
+        ActionProvider.initProviders();
         TrackEvent.info("mode", "Finished base components initialization");
         initialized = true;
     }

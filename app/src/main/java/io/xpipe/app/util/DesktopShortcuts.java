@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -21,7 +20,7 @@ public class DesktopShortcuts {
                         %%PWS%% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('%%SHORTCUT%%'); $S.IconLocation='%s'; $S.WindowStyle=7; $S.TargetPath = '%%TARGET%%'; $S.Arguments = 'open %s'; $S.Save()"
                         """,
                 shortcutTarget, shortcutPath, icon, target);
-        LocalStore.getShell().executeSimpleCommand(content);
+        LocalShell.getShell().executeSimpleCommand(content);
     }
 
     private static void createLinuxShortcut(String target, String name) throws Exception {
@@ -55,7 +54,7 @@ public class DesktopShortcuts {
                         """,
                 exec, target);
 
-        try (var pc = LocalStore.getShell()) {
+        try (var pc = LocalShell.getShell()) {
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/MacOS"));
             pc.executeSimpleCommand(pc.getShellDialect().getMkdirsCommand(base + "/Contents/Resources"));
 

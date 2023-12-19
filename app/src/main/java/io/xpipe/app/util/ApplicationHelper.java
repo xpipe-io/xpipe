@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.FailableSupplier;
 
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class ApplicationHelper {
     }
 
     public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {
-        try (var sc = LocalStore.getShell().start()) {
+        try (var sc = LocalShell.getShell().start()) {
             var cmd = detach ? ScriptHelper.createDetachCommand(sc, s.apply(sc)) : s.apply(sc);
             TrackEvent.withDebug("proc", "Executing local application")
                     .tag("command", cmd)
