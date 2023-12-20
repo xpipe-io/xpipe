@@ -176,6 +176,7 @@ public class CommandBuilder {
     }
 
     public String buildBase(ShellControl sc) throws Exception {
+        sc.getShellDialect().prepareCommandForShell(this);
         List<String> list = new ArrayList<>();
         for (Element element : elements) {
             String evaluate = element.evaluate(sc);

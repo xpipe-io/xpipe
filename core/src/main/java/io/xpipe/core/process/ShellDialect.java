@@ -155,6 +155,8 @@ public interface ShellDialect {
         return getOpenCommand();
     }
 
+    default void prepareCommandForShell(CommandBuilder b) {}
+
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
 
     String runScriptCommand(ShellControl parent, String file);

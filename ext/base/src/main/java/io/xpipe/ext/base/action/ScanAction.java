@@ -37,6 +37,11 @@ public class ScanAction implements ActionProvider {
             }
 
             @Override
+            public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+                return o.get().getProvider().canHaveSubShells();
+            }
+
+            @Override
             public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
                 return AppI18n.observable("scanConnections");
             }

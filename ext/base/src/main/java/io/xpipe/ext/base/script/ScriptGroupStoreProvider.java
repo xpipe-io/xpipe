@@ -102,11 +102,6 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean canHaveSubShells() {
-        return false;
-    }
-
-    @Override
     public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
         ScriptGroupStore scriptStore = wrapper.getEntry().getStore().asNeeded();
         return new SimpleStringProperty(scriptStore.getDescription());
