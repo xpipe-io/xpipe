@@ -277,7 +277,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                         return;
                     }
 
-                    if (menu.isDisable()) {
+                    if (menu != null && menu.isDisable()) {
                         return;
                     }
 
