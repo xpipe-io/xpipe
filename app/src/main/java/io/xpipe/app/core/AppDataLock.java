@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -22,7 +23,13 @@ public class AppDataLock {
             var file = getLockFile().toFile();
             Files.createDirectories(file.toPath().getParent());
             if (!Files.exists(file.toPath())) {
-                Files.createFile(file.toPath());
+                try {
+                    // It is possible that another instance creates the lock at almost the same time
+                    // If it already exists, we lost the race
+                    Files.createFile(file.toPath());
+                } catch (FileAlreadyExistsException f) {
+                    return false;
+                }
             }
             channel = new RandomAccessFile(file, "rw").getChannel();
             lock = channel.tryLock();
