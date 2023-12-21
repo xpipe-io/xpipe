@@ -1,5 +1,6 @@
 package io.xpipe.app.fxcomps.impl;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -54,6 +55,7 @@ public class SvgView {
 
     private WebView createWebView() {
         var wv = new WebView();
+        wv.getEngine().setUserDataDirectory(AppProperties.get().getDataDir().resolve("webview").toFile());
         // Sometimes a web view might not render when the background is set to transparent, at least according to stack
         // overflow
         wv.setPageFill(Color.valueOf("#00000001"));

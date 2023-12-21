@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
@@ -47,6 +48,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     @SneakyThrows
     private WebView createWebView() {
         var wv = new WebView();
+        wv.getEngine().setUserDataDirectory(AppProperties.get().getDataDir().resolve("webview").toFile());
         wv.setPageFill(Color.TRANSPARENT);
         var theme = AppPrefs.get() != null && AppPrefs.get().theme.getValue().isDark() ? "web/github-markdown-dark.css" : "web/github-markdown-light.css";
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme)
