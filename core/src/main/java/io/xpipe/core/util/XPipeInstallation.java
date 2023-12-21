@@ -55,7 +55,7 @@ public class XPipeInstallation {
     public static String createExternalAsyncLaunchCommand(
             String installationBase, XPipeDaemonMode mode, String arguments) {
         var suffix = (arguments != null ? " " + arguments : "");
-        var modeOption = mode != null ? " --mode " + mode.getDisplayName() : null;
+        var modeOption = mode != null ? " --mode " + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
             return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix
                     + " & disown";
