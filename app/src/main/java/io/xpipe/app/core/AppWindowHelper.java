@@ -111,14 +111,18 @@ public class AppWindowHelper {
             Alert a = AppWindowHelper.createEmptyAlert();
             AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
-            a.getDialogPane().getScene().getWindow().setOnShown(event -> {
-                clampWindow((Stage) a.getDialogPane().getScene().getWindow()).ifPresent(rectangle2D -> {
+            s.setOnShown(event -> {
+                // Force recomputation of window bounds to properly position it on some linux systems
+                s.setX(s.getX() + 1);
+
+                clampWindow(s).ifPresent(rectangle2D -> {
                     s.setX(rectangle2D.getMinX());
                     s.setY(rectangle2D.getMinY());
                     // Somehow we have to set max size as setting the normal size does not work?
                     s.setMaxWidth(rectangle2D.getWidth());
                     s.setMaxHeight(rectangle2D.getHeight());
                 });
+                event.consume();
             });
             a.getDialogPane().getScene().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
