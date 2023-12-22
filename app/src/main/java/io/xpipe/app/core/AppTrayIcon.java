@@ -12,12 +12,8 @@ import java.net.URL;
 
 public class AppTrayIcon {
 
-    private boolean shown = false;
-
     private final SystemTray tray;
-
     private final TrayIcon trayIcon;
-
     private final PopupMenu popupMenu = new PopupMenu();
 
     public AppTrayIcon() {
@@ -87,7 +83,6 @@ public class AppTrayIcon {
         EventQueue.invokeLater(() -> {
             try {
                 tray.add(this.trayIcon);
-                shown = true;
                 fixBackground();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable("Unable to add TrayIcon", e).handle();
@@ -129,7 +124,6 @@ public class AppTrayIcon {
     public void hide() {
         EventQueue.invokeLater(() -> {
             tray.remove(trayIcon);
-            shown = false;
         });
     }
 
