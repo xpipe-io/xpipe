@@ -85,7 +85,7 @@ public interface DataStoreProvider {
                         return null;
                     }
 
-                    return createInsightsMarkdown(store.getValue());
+                    return "## Insights\n\n" + createInsightsMarkdown(store.getValue());
                 },
                 store);
         return new MarkdownComp(content, s -> s)

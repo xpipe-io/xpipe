@@ -22,6 +22,7 @@ apply from: "$projectDir/gradle_scripts/github-api.gradle"
 apply from: "$projectDir/gradle_scripts/flexmark.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/picocli.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/versioncompare.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/markdowngenerator.gradle"
 
 configurations {
     implementation.extendsFrom(dep)

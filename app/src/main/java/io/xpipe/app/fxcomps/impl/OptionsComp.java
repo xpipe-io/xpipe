@@ -104,7 +104,10 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     extendedDescription.getStyleClass().add("long-description");
                     extendedDescription.setAccessibleText("Help");
                     AppFont.header(extendedDescription);
-                    extendedDescription.setOnAction(e -> popover.show(extendedDescription));
+                    extendedDescription.setOnAction(e -> {
+                        popover.show(extendedDescription);
+                        e.consume();
+                    });
 
                     var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
                     descriptionBox.setSpacing(5);

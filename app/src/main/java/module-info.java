@@ -83,6 +83,7 @@ open module io.xpipe.app {
     requires jdk.management.agent;
     requires com.jthemedetector;
     requires versioncompare;
+    requires net.steppschuh.markdowngenerator;
 
     // Required by extensions
     requires java.security.jgss;

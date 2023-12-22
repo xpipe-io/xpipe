@@ -17,6 +17,7 @@ import io.xpipe.app.fxcomps.impl.DataStoreListChoiceComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.MarkdownBuilder;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.store.DataStore;
@@ -34,8 +35,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SimpleScriptStoreProvider implements DataStoreProvider {
+
+    public String createInsightsMarkdown(DataStore store) {
+        var s = (SimpleScriptStore) store;
+
+        var builder = MarkdownBuilder.of().addParagraph("XPipe will run the script in ")
+                .addCode(s.getMinimumDialect() != null ? s.getMinimumDialect().getDisplayName() : "default").add(" shells");
+
+        if (s.getEffectiveScripts() != null && !s.getEffectiveScripts().isEmpty()) {
+            builder.add(" with the following scripts prior").addCodeBlock(s.getEffectiveScripts().stream()
+                    .map(scriptStoreDataStoreEntryRef -> scriptStoreDataStoreEntryRef.get().getName()).collect(
+                    Collectors.joining("\n")));
+        }
+
+        if (s.getCommands() != null) {
+            builder.addParagraph("with command contents").addCodeBlock(s.getCommands());
+        }
+
+        return builder.build();
+    }
 
     @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {

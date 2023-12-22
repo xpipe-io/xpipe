@@ -212,7 +212,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 () -> {
                     return provider.getValue() == null
                             || store.getValue() == null
-                            || !store.getValue().isComplete();
+                            || !store.getValue().isComplete()
+                            || provider.getValue().createInsightsMarkdown(store.getValue()) == null;
                 },
                 provider,
                 store);
@@ -225,8 +226,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                                             .createRegion()
                                     : null;
                         }),
-                        true)
-                .disable(disable)
+                true)
+                .hide(disable)
                 .styleClass("button-comp");
     }
 
