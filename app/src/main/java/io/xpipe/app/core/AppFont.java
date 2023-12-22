@@ -58,7 +58,15 @@ public class AppFont {
         node.setStyle(node.getStyle() + "-fx-font-size: " + (baseSize + off) + "pt;");
     }
 
-    public static void loadFonts() {
+    public static void verifyFontLoadingFunctional() {
+        try {
+            Font.getDefault();
+        } catch (Throwable t) {
+            throw new IllegalStateException("Font loading is not working. Check whether your system is properly configured with fontconfig", t);
+        }
+    }
+
+    public static void init() {
         TrackEvent.info("Loading fonts ...");
         AppResources.with(
                 AppResources.XPIPE_MODULE,

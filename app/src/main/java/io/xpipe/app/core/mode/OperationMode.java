@@ -102,6 +102,7 @@ public abstract class OperationMode {
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
             XPipeSystemId.init();
+            AppFont.verifyFontLoadingFunctional();
             TrackEvent.info("mode", "Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();

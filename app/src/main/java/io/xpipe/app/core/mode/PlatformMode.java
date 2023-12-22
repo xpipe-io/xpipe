@@ -25,7 +25,7 @@ public abstract class PlatformMode extends OperationMode {
 
         TrackEvent.info("mode", "Platform mode initial setup");
         PlatformState.initPlatformOrThrow();
-        AppFont.loadFonts();
+        AppFont.init();
         AppTheme.init();
         AppStyle.init();
         AppImages.init();
