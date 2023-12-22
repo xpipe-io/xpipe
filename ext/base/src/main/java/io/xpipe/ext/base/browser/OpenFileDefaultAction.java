@@ -44,6 +44,6 @@ public class OpenFileDefaultAction implements LeafAction {
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Open";
+        return "Open with default application";
     }
 }

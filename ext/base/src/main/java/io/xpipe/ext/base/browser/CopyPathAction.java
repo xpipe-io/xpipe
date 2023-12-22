@@ -45,7 +45,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                             entries.get(0).getRawFileEntry().getPath(), 50);
                         }
 
-                        return "Absolute Path";
+                        return "Absolute Paths";
                     }
 
                     @Override
@@ -70,7 +70,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                             entries.get(0).getRawFileEntry().getPath(), 50);
                         }
 
-                        return "Absolute Link Path";
+                        return "Absolute Link Paths";
                     }
 
                     @Override
@@ -103,7 +103,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                     + "\"";
                         }
 
-                        return "Absolute Path (Quoted)";
+                        return "Absolute Paths (Quoted)";
                     }
 
                     @Override
@@ -133,7 +133,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                             50);
                         }
 
-                        return "File Name";
+                        return "File Names";
                     }
 
                     @Override
@@ -163,7 +163,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                             50);
                         }
 
-                        return "Link File Name";
+                        return "Link File Names";
                     }
 
                     @Override
@@ -206,7 +206,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                                     + "\"";
                         }
 
-                        return "File Name (Quoted)";
+                        return "File Names (Quoted)";
                     }
 
                     @Override
