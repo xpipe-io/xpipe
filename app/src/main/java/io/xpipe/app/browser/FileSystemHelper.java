@@ -57,10 +57,15 @@ public class FileSystemHelper {
             return path;
         }
 
-        return shell.get()
-                .getShellDialect()
-                .evaluateExpression(shell.get(), path)
-                .readStdoutOrThrow();
+        try {
+            return shell.get()
+                    .getShellDialect()
+                    .evaluateExpression(shell.get(), path)
+                    .readStdoutOrThrow();
+        } catch (Exception ex) {
+            ErrorEvent.unreportable(ex);
+            throw ex;
+        }
     }
 
     public static String resolveDirectoryPath(OpenFileSystemModel model, String path) throws Exception {
