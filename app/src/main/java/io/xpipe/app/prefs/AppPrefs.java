@@ -231,35 +231,35 @@ public class AppPrefs {
             .editable(System.getProperty(DEVELOPER_MODE_PROP) == null)
             .render(() -> new CustomToggleControl());
 
-    private final BooleanProperty developerDisableUpdateVersionCheck =
+    final BooleanProperty developerDisableUpdateVersionCheck =
             typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField developerDisableUpdateVersionCheckField =
+    final BooleanField developerDisableUpdateVersionCheckField =
             BooleanField.ofBooleanType(developerDisableUpdateVersionCheck).render(() -> new CustomToggleControl());
     private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
             bindDeveloperTrue(developerDisableUpdateVersionCheck);
 
-    private final BooleanProperty developerDisableGuiRestrictions =
+    final BooleanProperty developerDisableGuiRestrictions =
             typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField developerDisableGuiRestrictionsField =
+    final BooleanField developerDisableGuiRestrictionsField =
             BooleanField.ofBooleanType(developerDisableGuiRestrictions).render(() -> new CustomToggleControl());
     private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
             bindDeveloperTrue(developerDisableGuiRestrictions);
 
-    private final BooleanProperty developerShowHiddenProviders = typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField developerShowHiddenProvidersField =
+    final BooleanProperty developerShowHiddenProviders = typed(new SimpleBooleanProperty(false), Boolean.class);
+    final BooleanField developerShowHiddenProvidersField =
             BooleanField.ofBooleanType(developerShowHiddenProviders).render(() -> new CustomToggleControl());
     private final ObservableBooleanValue developerShowHiddenProvidersEffective =
             bindDeveloperTrue(developerShowHiddenProviders);
 
-    private final BooleanProperty developerShowHiddenEntries = typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField developerShowHiddenEntriesField =
+    final BooleanProperty developerShowHiddenEntries = typed(new SimpleBooleanProperty(false), Boolean.class);
+    final BooleanField developerShowHiddenEntriesField =
             BooleanField.ofBooleanType(developerShowHiddenEntries).render(() -> new CustomToggleControl());
     private final ObservableBooleanValue developerShowHiddenEntriesEffective =
             bindDeveloperTrue(developerShowHiddenEntries);
 
-    private final BooleanProperty developerDisableConnectorInstallationVersionCheck =
+    final BooleanProperty developerDisableConnectorInstallationVersionCheck =
             typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanField developerDisableConnectorInstallationVersionCheckField = BooleanField.ofBooleanType(
+    final BooleanField developerDisableConnectorInstallationVersionCheckField = BooleanField.ofBooleanType(
                     developerDisableConnectorInstallationVersionCheck)
             .render(() -> new CustomToggleControl());
     private final ObservableBooleanValue developerDisableConnectorInstallationVersionCheckEffective =
@@ -627,28 +627,7 @@ public class AppPrefs {
                                         .applyVisibility(VisibilityProperty.of(
                                                 terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
                                 Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs))),
-                Category.of(
-                        "developer",
-                        Setting.of(
-                                "developerDisableUpdateVersionCheck",
-                                developerDisableUpdateVersionCheckField,
-                                developerDisableUpdateVersionCheck),
-                        Setting.of(
-                                "developerDisableGuiRestrictions",
-                                developerDisableGuiRestrictionsField,
-                                developerDisableGuiRestrictions),
-                        Setting.of(
-                                "developerDisableConnectorInstallationVersionCheck",
-                                developerDisableConnectorInstallationVersionCheckField,
-                                developerDisableConnectorInstallationVersionCheck),
-                        Setting.of(
-                                "developerShowHiddenEntries",
-                                developerShowHiddenEntriesField,
-                                developerShowHiddenEntries),
-                        Setting.of(
-                                "developerShowHiddenProviders",
-                                developerShowHiddenProvidersField,
-                                developerShowHiddenProviders)),
+                new DeveloperCategory(this).create(),
                 Category.of("troubleshoot", Group.of(troubleshoot))));
 
         categories.get(categories.size() - 2).setVisibilityProperty(VisibilityProperty.of(developerMode()));
