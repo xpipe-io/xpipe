@@ -7,7 +7,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.process.SimpleScriptSnippet;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.DataStoreState;
@@ -179,7 +178,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     @Override
-    public void checkComplete() throws Exception {
+    public void checkComplete() throws Throwable {
         Validators.isType(group, ScriptGroupStore.class);
         if (scripts != null) {
             Validators.contentNonNull(scripts);

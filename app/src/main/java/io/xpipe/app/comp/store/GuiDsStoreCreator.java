@@ -364,7 +364,7 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                 entry.getValue().validateOrThrow();
                 finished.setValue(true);
                 PlatformThread.runLaterIfNeeded(parent::next);
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 var newMessage = ExceptionConverter.convertMessage(ex);
                 // Temporary fix for equal error message not showing up again
                 if (Objects.equals(newMessage, messageProp.getValue())) {

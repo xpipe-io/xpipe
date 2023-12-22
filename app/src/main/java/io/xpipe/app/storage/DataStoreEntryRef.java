@@ -14,7 +14,7 @@ public class DataStoreEntryRef<T extends DataStore> {
         this.entry = entry;
     }
 
-    public void checkComplete() throws Exception {
+    public void checkComplete() throws Throwable {
         getStore().checkComplete();
     }
 

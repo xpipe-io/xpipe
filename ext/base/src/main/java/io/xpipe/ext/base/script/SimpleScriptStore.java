@@ -75,7 +75,7 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
     private final ExecutionType executionType;
 
     @Override
-    public void checkComplete() throws Exception {
+    public void checkComplete() throws Throwable {
         Validators.nonNull(group);
         super.checkComplete();
         Validators.nonNull(executionType);

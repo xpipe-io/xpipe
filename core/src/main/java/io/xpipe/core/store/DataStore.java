@@ -19,12 +19,12 @@ public interface DataStore {
         try {
             checkComplete();
             return true;
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
             return false;
         }
     }
 
-    default void checkComplete() throws Exception {}
+    default void checkComplete() throws Throwable {}
 
     /**
      * Casts this instance to the required type without checking whether a cast is possible.

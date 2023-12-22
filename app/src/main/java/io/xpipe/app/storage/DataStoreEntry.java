@@ -385,12 +385,12 @@ public class DataStoreEntry extends StorageElement {
     public void validate() {
         try {
             validateOrThrow();
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).handle();
         }
     }
 
-    public void validateOrThrow() throws Exception {
+    public void validateOrThrow() throws Throwable {
         try {
             store.checkComplete();
             setInRefresh(true);
