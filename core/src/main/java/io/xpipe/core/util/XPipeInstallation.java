@@ -5,6 +5,7 @@ import io.xpipe.core.store.FileNames;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -77,10 +78,10 @@ public class XPipeInstallation {
     public static Path getCurrentInstallationBasePath() {
         // We should always have a command associated with the current process, otherwise something went seriously wrong
         // Resolve any possible links to a real path
-        Path path = Path.of(ProcessHandle.current().info().command().orElseThrow()).toRealPath();
+        Path path = toRealPathIfPossible(Path.of(ProcessHandle.current().info().command().orElseThrow()));
         // Check if the process was started using a relative path, and adapt it if necessary
         if (!path.isAbsolute()) {
-            path = Path.of(System.getProperty("user.dir")).resolve(path).toRealPath();
+            path = toRealPathIfPossible(Path.of(System.getProperty("user.dir")).resolve(path));
         }
 
         var name = path.getFileName().toString();
@@ -94,6 +95,16 @@ public class XPipeInstallation {
             return getLocalInstallationBasePathForJavaExecutable(path);
         } else {
             return getLocalInstallationBasePathForDaemonExecutable(path);
+        }
+    }
+
+    private static Path toRealPathIfPossible(Path p) {
+        try {
+            // Under certain conditions, e.g. when running on a ramdisk, path resolution might fail.
+            // This is however not a big problem in that case, so we ignore it
+            return p.toRealPath();
+        } catch (IOException e) {
+            return p;
         }
     }
 
