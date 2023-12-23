@@ -1,17 +1,20 @@
 package io.xpipe.app.util;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import lombok.Getter;
 
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class LicenseRequiredException extends RuntimeException {
 
-    String featureName;
-    boolean plural;
+    @Getter
+    private final LicensedFeature feature;
 
-    public LicenseRequiredException(String featureName, boolean plural) {
+    public LicenseRequiredException(LicensedFeature feature) {
+        super(feature.getDisplayName() + (feature.isPlural() ? " are" : " is") + " only supported with a professional license");
+        this.feature = feature;
+    }
+
+
+    public LicenseRequiredException(String featureName, boolean plural, LicensedFeature feature) {
         super(featureName + (plural ? " are" : " is") + " only supported with a professional license");
-        this.featureName = featureName;
-        this.plural = plural;
+        this.feature = feature;
     }
 }
