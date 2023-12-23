@@ -28,7 +28,7 @@ public interface ShellControl extends ProcessControl {
     ShellDialect getTargetTerminalShellDialect();
 
     default boolean hasLocalSystemAccess() {
-        return getSystemId().equals(XPipeSystemId.getLocal());
+        return getSystemId() != null && getSystemId().equals(XPipeSystemId.getLocal());
     }
 
     boolean isLocal();
