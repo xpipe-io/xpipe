@@ -7,8 +7,8 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,9 +20,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import lombok.SneakyThrows;
 
-import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.util.function.UnaryOperator;
 
@@ -79,11 +77,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                     String toBeopen = engine.getLoadWorker().getMessage().trim().replace("Loading ", "");
                     if (toBeopen.contains("http://") || toBeopen.contains("https://")) {
                         engine.getLoadWorker().cancel();
-                        try {
-                            Desktop.getDesktop().browse(URI.create(toBeopen));
-                        } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).omit().handle();
-                        }
+                        Hyperlinks.open(toBeopen);
                     }
                 }));
     }
