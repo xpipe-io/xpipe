@@ -706,6 +706,10 @@ public abstract class DataStorage {
             return "?";
         }
 
+        if (!store.getValidity().isUsable()) {
+            return "?";
+        }
+
         return store.getProvider().browserDisplayName(store.getStore());
     }
 
