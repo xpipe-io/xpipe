@@ -13,7 +13,7 @@ public class Hyperlinks {
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String SLACK = "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
 
-    static final String[] browsers = {"xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla"};
+    static final String[] browsers = {"xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"};
 
     @SuppressWarnings("deprecation")
     public static void open(String uri) {
@@ -36,7 +36,7 @@ public class Hyperlinks {
                     }
                 }
                 if (browser == null) {
-                    throw new Exception("No web browser found");
+                    throw new Exception("No web browser or URL opener found to open " + uri);
                 }
             }
         } catch (Exception e) {
