@@ -293,7 +293,7 @@ public final class OpenFileSystemModel {
 
                 var abs = FileNames.join(getCurrentDirectory().getPath(), name);
                 if (fileSystem.directoryExists(abs)) {
-                    throw new IllegalStateException(String.format("Directory %s already exists", abs));
+                    throw ErrorEvent.unreportable(new IllegalStateException(String.format("Directory %s already exists", abs)));
                 }
 
                 fileSystem.mkdirs(abs);

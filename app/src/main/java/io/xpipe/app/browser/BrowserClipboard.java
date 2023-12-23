@@ -73,6 +73,10 @@ public class BrowserClipboard {
 
     @SneakyThrows
     public static ClipboardContent startDrag(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
+        if (selected.isEmpty()) {
+            return null;
+        }
+
         var content = new ClipboardContent();
         var id = UUID.randomUUID();
         currentDragClipboard = new Instance(id, base, new ArrayList<>(selected));
@@ -82,6 +86,11 @@ public class BrowserClipboard {
 
     @SneakyThrows
     public static void startCopy(FileSystem.FileEntry base, List<FileSystem.FileEntry> selected) {
+        if (selected.isEmpty()) {
+            currentCopyClipboard.setValue(null);
+            return;
+        }
+
         var id = UUID.randomUUID();
         currentCopyClipboard.setValue(new Instance(id, base, new ArrayList<>(selected)));
     }
