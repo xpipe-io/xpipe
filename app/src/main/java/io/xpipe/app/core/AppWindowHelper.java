@@ -294,7 +294,16 @@ public class AppWindowHelper {
         }
         // Taskbar adjustment
         maxY -= 50;
-        return new Rectangle2D(minX, minY, maxX-minX, maxY-minY);
+
+        var w = maxX-minX;
+        var h = maxY-minY;
+
+        // This should not happen but on weird Linux systems nothing is impossible
+        if (w < 0 || h < 0) {
+            return new Rectangle2D(0,0,1920,1080);
+        }
+        
+        return new Rectangle2D(minX, minY, w, h);
     }
 
     private static void bindSize(Stage stage, Region r) {
