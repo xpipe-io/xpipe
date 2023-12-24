@@ -11,6 +11,7 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.impl.DataStoreChoiceComp;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.ShellStore;
@@ -138,7 +139,6 @@ public class ScanAlert {
                                 return;
                             }
 
-
                             Platform.runLater(() -> {
                                 window.close();
                             });
@@ -148,6 +148,12 @@ public class ScanAlert {
 
                                 var copy = new ArrayList<>(selected);
                                 for (var a : copy) {
+                                    // If the user decided to remove the selected entry
+                                    // while the scan is running, just return instantly
+                                    if (!DataStorage.get().getStoreEntriesSet().contains(entry.get().get())) {
+                                        return;
+                                    }
+
                                     try {
                                         a.getScanner().run();
                                     } catch (Exception ex) {
