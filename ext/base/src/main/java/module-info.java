@@ -50,6 +50,7 @@ open module io.xpipe.ext.base {
             JavapAction,
             JarAction;
     provides ActionProvider with
+            CloneStoreAction,
             RefreshStoreAction,
             ScanAction,
             LaunchAction,

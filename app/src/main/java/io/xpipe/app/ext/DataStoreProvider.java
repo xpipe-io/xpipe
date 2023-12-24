@@ -101,6 +101,10 @@ public interface DataStoreProvider {
         return null;
     }
 
+    default boolean canClone() {
+        return getCreationCategory() != null;
+    }
+
     default DataStoreEntry getDisplayParent(DataStoreEntry store) {
         return getSyntheticParent(store);
     }
