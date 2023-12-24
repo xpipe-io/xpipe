@@ -212,6 +212,16 @@ public class AppWindowHelper {
                 event.consume();
             }
         });
+
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
+                if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
+                    stage.close();
+                    event.consume();
+                    return;
+                }
+            }
+        });
     }
 
     private static Optional<Rectangle2D> clampWindow(Stage stage) {
