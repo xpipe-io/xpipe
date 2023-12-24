@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import com.jfoenix.controls.JFXTabPane;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -200,7 +201,7 @@ public abstract class MultiStepComp extends Comp<CompStructure<VBox>> {
         var nextText = Bindings.createStringBinding(
                 () -> isLastPage() ? AppI18n.get("finishStep") : AppI18n.get("nextStep"), currentStep);
         var nextButton = new ButtonComp(nextText, null, comp::next)
-                .apply(struc -> struc.get().setDefaultButton(true))
+                .styleClass(Styles.ACCENT)
                 .styleClass("next");
 
         var previousButton = new ButtonComp(AppI18n.observable("previousStep"), null, comp::previous)

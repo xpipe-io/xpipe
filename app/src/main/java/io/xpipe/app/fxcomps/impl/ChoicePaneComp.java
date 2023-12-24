@@ -9,6 +9,7 @@ import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -29,8 +30,14 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var list = FXCollections.observableArrayList(entries);
+        var list    = FXCollections.observableArrayList(entries);
         var cb = new ComboBox<>(list);
+        cb.setOnKeyPressed(event -> {
+            if (!cb.isShowing() && event.getCode().equals(KeyCode.ENTER)) {
+                cb.show();
+                event.consume();
+            }
+        });
         cb.getSelectionModel().select(selected.getValue());
         cb.setConverter(new StringConverter<>() {
             @Override
@@ -63,8 +70,12 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
                 } else {
                     vbox.getChildren().set(1, region);
                 }
+            }
+        });
 
-                region.requestFocus();
+        cb.showingProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue && vbox.getChildren().size() > 1) {
+                vbox.getChildren().get(1).requestFocus();
             }
         });
 
