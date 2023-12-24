@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -89,6 +90,8 @@ public interface CommandControl extends ProcessControl {
     String readStdoutOrThrow() throws Exception;
 
     String readStdoutAndWait() throws Exception;
+
+    Optional<String> readStdoutIfPossible() throws Exception;
 
     default boolean discardAndCheckExit() throws ProcessOutputException {
         try {
