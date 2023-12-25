@@ -119,6 +119,11 @@ public class StoreViewState {
             public void onStoreAdd(DataStoreEntry... entry) {
                 var l = Arrays.stream(entry).map(StoreEntryWrapper::new).peek(storeEntryWrapper -> storeEntryWrapper.update()).toList();
                 Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
                     synchronized (this) {
                         allEntries.addAll(l);
                     }
@@ -158,6 +163,11 @@ public class StoreViewState {
                             .toList();
                 }
                 Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
                     synchronized (this) {
                         allEntries.removeAll(l);
                     }
@@ -170,6 +180,11 @@ public class StoreViewState {
                 var l = new StoreCategoryWrapper(category);
                 l.update();
                 Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
                     synchronized (this) {
                         categories.add(l);
                     }
@@ -191,6 +206,11 @@ public class StoreViewState {
                 }
 
                 Platform.runLater(() -> {
+                    // Don't update anything if we have already reset
+                    if (INSTANCE == null) {
+                        return;
+                    }
+
                     synchronized (this) {
                         categories.remove(found.get());
                     }
