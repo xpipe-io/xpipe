@@ -35,7 +35,7 @@ dependencies {
 
     compileOnly 'org.hamcrest:hamcrest:2.2'
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.3'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.10.1'
 
     implementation 'net.java.dev.jna:jna-jpms:5.13.0'
     implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
