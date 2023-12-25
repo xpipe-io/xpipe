@@ -1,6 +1,7 @@
-package io.xpipe.app.core;
+package io.xpipe.app.core.check;
 
 import io.xpipe.app.comp.base.MarkdownComp;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.WindowsRegistry;
@@ -13,9 +14,9 @@ import javafx.scene.control.ButtonType;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public class AppAntivirusAlert {
+public class AppAvBlockCheck {
 
-    public static Optional<String> detect() {
+    private static Optional<String> detect() {
         var bitdefender = WindowsRegistry.readString(WindowsRegistry.HKEY_LOCAL_MACHINE,"SOFTWARE\\Bitdefender", "InstallDir");
         if (bitdefender.isPresent()) {
             return Optional.of("Bitdefender");
@@ -24,7 +25,7 @@ public class AppAntivirusAlert {
         return Optional.empty();
     }
 
-    public static void showIfNeeded() throws Throwable {
+    public static void check() throws Throwable {
         // Only show this on first launch on windows
         if (OsType.getLocal() != OsType.WINDOWS || !AppState.get().isInitialLaunch()) {
             return;

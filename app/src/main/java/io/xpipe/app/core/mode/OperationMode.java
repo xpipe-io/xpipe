@@ -1,6 +1,8 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.check.AppTempCheck;
+import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
@@ -95,8 +97,8 @@ public abstract class OperationMode {
             AppProperties.init();
             AppState.init();
             XPipeSession.init(AppProperties.get().getBuildUuid());
-            AppChecks.checkDirectoryPermissions();
-            AppChecks.checkTemp();
+            AppUserDirectoryCheck.check();
+            AppTempCheck.check();
             AppLogs.init();
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();

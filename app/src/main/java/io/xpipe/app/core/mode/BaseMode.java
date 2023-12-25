@@ -3,6 +3,8 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.check.AppAvBlockCheck;
+import io.xpipe.app.core.check.AppMalwarebytesCheck;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -47,7 +49,8 @@ public class BaseMode extends OperationMode {
         // Also loaded before antivirus alert to localize that
         AppI18n.init();
         LicenseProvider.get().init();
-        AppAntivirusAlert.showIfNeeded();
+        AppAvBlockCheck.check();
+        AppMalwarebytesCheck.check();
         LocalShell.init();
         XPipeDistributionType.init();
         AppPrefs.init();
