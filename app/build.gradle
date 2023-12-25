@@ -37,7 +37,7 @@ dependencies {
     compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.3'
     compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.3'
 
-    implementation 'net.java.dev.jna:jna-jpms:5.13.0'
+    implementation 'net.java.dev.jna:jna-jpms:5.14.0'
     implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"
     implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.15.2"
