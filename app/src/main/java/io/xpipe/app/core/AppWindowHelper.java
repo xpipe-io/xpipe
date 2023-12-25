@@ -310,7 +310,7 @@ public class AppWindowHelper {
 
         // This should not happen but on weird Linux systems nothing is impossible
         if (w < 0 || h < 0) {
-            return new Rectangle2D(0,0,1920,1080);
+            return new Rectangle2D(0,0,800, 600);
         }
         
         return new Rectangle2D(minX, minY, w, h);
