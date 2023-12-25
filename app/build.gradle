@@ -54,7 +54,7 @@ dependencies {
         exclude group: 'org.openjfx', module: 'javafx-fxml'
     }
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
-    implementation 'io.xpipe:modulefs:0.1.4'
+    implementation 'io.xpipe:modulefs:0.1.5'
     implementation 'com.jfoenix:jfoenix:9.0.10'
     implementation 'org.controlsfx:controlsfx:11.1.2'
     implementation 'net.synedra:validatorfx:0.4.2'
