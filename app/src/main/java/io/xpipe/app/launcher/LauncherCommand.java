@@ -99,7 +99,7 @@ public class LauncherCommand implements Callable<Integer> {
         } catch (Exception ex) {
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
             ErrorEvent.fromThrowable(ex).term().description("Unable to connect to existing running daemon instance as it did not respond." +
-                    " Either try to kill the process xpiped manually or use the command " + cli + " daemon stop --force.").handle();
+                    " Either try to kill the process xpiped manually or use the command \"" + cli + "\" daemon stop --force.").handle();
         }
     }
 
