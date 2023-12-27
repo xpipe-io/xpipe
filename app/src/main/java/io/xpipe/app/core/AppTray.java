@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 
@@ -32,6 +33,11 @@ public class AppTray {
 
     @SneakyThrows
     public void show() {
+        // Even though we check at startup, it seems like the support can change at runtime
+        if (!SystemTray.isSupported()) {
+            return;
+        }
+
         icon.show();
     }
 
