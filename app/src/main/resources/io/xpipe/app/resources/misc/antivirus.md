@@ -1,6 +1,6 @@
 ### Information about antivirus programs
 
-XPipe detected that you are running %s. As a result, you might run into a few problems due to %s detecting suspicious activity when XPipe is interacting with your shell programs. This can range from severy slowdowns, notifications, up to full isolation of XPipe and your shell programs, effectively making the application unusable and causing errors.
+XPipe detected that you are running %s. As a result, you might run into a few problems due to %s detecting suspicious activity when XPipe is interacting with your shell programs. This can range from severe slowdowns, notifications, up to full isolation of XPipe and your shell programs, effectively making the application unusable and causing errors.
 
 %s
 
