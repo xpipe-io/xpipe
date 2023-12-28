@@ -154,6 +154,16 @@ public class AppPrefs {
     private final BooleanField preferTerminalTabsField =
             BooleanField.ofBooleanType(preferTerminalTabs).render(() -> new CustomToggleControl());
 
+
+    // Fast terminal
+    // ===========
+    public final BooleanProperty enableFastTerminalStartup = typed(new SimpleBooleanProperty(false), Boolean.class);
+    public ObservableBooleanValue enableFastTerminalStartup() {
+        return enableFastTerminalStartup;
+    }
+    private final BooleanField enableFastTerminalStartupField =
+            BooleanField.ofBooleanType(enableFastTerminalStartup).render(() -> new CustomToggleControl());
+
     // Password manager
     // ================
     final StringProperty passwordManagerCommand = typed(new SimpleStringProperty(""), String.class);
@@ -626,7 +636,8 @@ public class AppPrefs {
                                 Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
                                         .applyVisibility(VisibilityProperty.of(
                                                 terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
-                                Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs))),
+                                Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs),
+                                Setting.of("enableFastTerminalStartup", enableFastTerminalStartupField, enableFastTerminalStartup))),
                 new DeveloperCategory(this).create(),
                 Category.of("troubleshoot", Group.of(troubleshoot))));
 

@@ -90,7 +90,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                     return targetDir;
                 }
             } catch (NumberFormatException e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEvent.fromThrowable(e).expected().omit().handle();
             }
         }
 
