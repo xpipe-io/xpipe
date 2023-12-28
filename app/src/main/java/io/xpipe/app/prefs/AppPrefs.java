@@ -636,8 +636,9 @@ public class AppPrefs {
                                 Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
                                         .applyVisibility(VisibilityProperty.of(
                                                 terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
-                                Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs),
-                                Setting.of("enableFastTerminalStartup", enableFastTerminalStartupField, enableFastTerminalStartup))),
+                                Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs)
+                                //Setting.of("enableFastTerminalStartup", enableFastTerminalStartupField, enableFastTerminalStartup)
+                                )),
                 new DeveloperCategory(this).create(),
                 Category.of("troubleshoot", Group.of(troubleshoot))));
 

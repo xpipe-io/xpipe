@@ -35,6 +35,11 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
             var initFlattened = flatten(initScripts);
             var bringFlattened = flatten(bringScripts);
 
+            // Optimize if we have nothing to do
+            if (initFlattened.isEmpty() && bringFlattened.isEmpty()) {
+                return pc;
+            }
+
             pc.onInit(shellControl -> {
                 passInitScripts(pc, initFlattened);
 
