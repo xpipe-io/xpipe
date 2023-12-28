@@ -31,18 +31,23 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
     }
 
     public static ShellControl controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> initScripts, List<DataStoreEntryRef<ScriptStore>> bringScripts) {
-        var initFlattened = flatten(initScripts);
-        var bringFlattened = flatten(bringScripts);
+        try {
+            var initFlattened = flatten(initScripts);
+            var bringFlattened = flatten(bringScripts);
 
-        pc.onInit(shellControl -> {
-            passInitScripts(pc, initFlattened);
+            pc.onInit(shellControl -> {
+                passInitScripts(pc, initFlattened);
 
-            var dir = initScriptsDirectory(shellControl, bringFlattened);
-            if (dir != null) {
-                shellControl.withInitSnippet(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir), ScriptSnippet.ExecutionType.TERMINAL_ONLY));
-            }
-        });
-        return pc;
+                var dir = initScriptsDirectory(shellControl, bringFlattened);
+                if (dir != null) {
+                    shellControl.withInitSnippet(new SimpleScriptSnippet(shellControl.getShellDialect().appendToPathVariableCommand(dir),
+                            ScriptSnippet.ExecutionType.TERMINAL_ONLY));
+                }
+            });
+            return pc;
+        } catch (Throwable t) {
+            throw new RuntimeException("Unable to set up scripts", t);
+        }
     }
 
     private static void passInitScripts(ShellControl pc, List<SimpleScriptStore> scriptStores) throws Exception {
