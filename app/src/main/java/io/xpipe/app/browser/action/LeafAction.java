@@ -59,7 +59,8 @@ public interface LeafAction extends BrowserAction {
     }
 
     default MenuItem toItem(OpenFileSystemModel model, List<BrowserEntry> selected, UnaryOperator<String> nameFunc) {
-        var mi = new MenuItem(nameFunc.apply(getName(model, selected)));
+        var name = nameFunc.apply(getName(model, selected));
+        var mi = new MenuItem(name);
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.execute(model.getBusy(), () -> {
@@ -80,7 +81,7 @@ public interface LeafAction extends BrowserAction {
 
         if (getProFeatureId() != null && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
             mi.setDisable(true);
-            mi.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
+            mi.setText(mi.getText() + " (Pro)");
         }
 
         return mi;

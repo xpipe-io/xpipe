@@ -268,27 +268,28 @@ public abstract class StoreEntryComp extends SimpleComp {
                     !LicenseProvider.get().getFeature(p.getKey().getProFeatureId()).isSupported();
             if (proRequired) {
                 item.setDisable(true);
-                item.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
+                item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)",name));
+            } else {
+                item.textProperty().bind(name);
             }
 
             Menu menu = actionProvider.canLinkTo() ? (Menu) item : null;
-                item.setOnAction(event -> {
-                    if (menu != null && !event.getTarget().equals(menu)) {
-                        return;
-                    }
+            item.setOnAction(event -> {
+                if (menu != null && !event.getTarget().equals(menu)) {
+                    return;
+                }
 
-                    if (menu != null && menu.isDisable()) {
-                        return;
-                    }
+                if (menu != null && menu.isDisable()) {
+                    return;
+                }
 
-                    contextMenu.hide();
-                    ThreadHelper.runFailableAsync(() -> {
-                        var action = actionProvider.createAction(
-                                wrapper.getEntry().ref());
-                        action.execute();
-                    });
+                contextMenu.hide();
+                ThreadHelper.runFailableAsync(() -> {
+                    var action = actionProvider.createAction(
+                            wrapper.getEntry().ref());
+                    action.execute();
                 });
-            item.textProperty().bind(name);
+            });
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
                 item.visibleProperty().bind(p.getValue());
             } else if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ALWAYS_SHOW) {
