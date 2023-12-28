@@ -52,7 +52,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
         }
 
         if (s.getCommands() != null) {
-            builder.addParagraph("with command contents").addCodeBlock(s.getCommands());
+            builder.add(" with command contents").addCodeBlock(s.getCommands());
         }
 
         return builder.build();
