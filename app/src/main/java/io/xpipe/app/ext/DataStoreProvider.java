@@ -8,6 +8,7 @@ import io.xpipe.app.comp.store.StoreSectionComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.dialog.Dialog;
@@ -85,12 +86,17 @@ public interface DataStoreProvider {
                         return null;
                     }
 
-                    return "## Insights\n\n" + createInsightsMarkdown(store.getValue());
+                    try {
+                        return "## Insights\n\n" + createInsightsMarkdown(store.getValue());
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable(ex).handle();
+                        return "?";
+                    }
                 },
                 store);
         return new MarkdownComp(content, s -> s)
                 .apply(struc -> struc.get().setPrefWidth(450))
-                .apply(struc -> struc.get().setPrefHeight(200));
+                .apply(struc -> struc.get().setPrefHeight(250));
     }
 
     default String createInsightsMarkdown(DataStore store) {
