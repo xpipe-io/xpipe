@@ -1,23 +1,30 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.RingProgressIndicator;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.Indicator;
 import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.layout.StackPane;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
+
+import java.time.Duration;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
     public static LoadingOverlayComp noProgress(Comp<?> comp, ObservableValue<Boolean> loading) {
-        return new LoadingOverlayComp(comp, loading, new SimpleDoubleProperty(-1));
+        return new LoadingOverlayComp(comp, loading, new SimpleDoubleProperty(50));
     }
 
     private final Comp<?> comp;
@@ -30,16 +37,24 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         this.progress = PlatformThread.sync(progress);
     }
 
+    private static final double FPS = 30.0;
+    private static final double cycleDurationSeconds = 4.0;
+
     @Override
     public CompStructure<StackPane> createBase() {
         var compStruc = comp.createStructure();
         var r = compStruc.get();
 
-        var loading = new RingProgressIndicator(0, false);
-        loading.progressProperty().bind(progress);
-        loading.visibleProperty().bind(Bindings.not(AppPrefs.get().performanceMode()));
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        EventStream<?> ticks = EventStreams.ticks(Duration.ofMillis((long) (1000 / FPS)), scheduler, Platform::runLater);
 
-        var loadingOverlay = new StackPane(loading);
+
+        var pane = new StackPane();
+        Parent node = new Indicator(ticks, (int) (FPS * cycleDurationSeconds)).getNode();
+        pane.getChildren().add(node);
+        pane.setAlignment(Pos.CENTER);
+
+        var loadingOverlay = new StackPane(pane);
         loadingOverlay.getStyleClass().add("loading-comp");
         loadingOverlay.setVisible(showLoading.getValue());
 
@@ -76,13 +91,13 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
         var stack = new StackPane(r, loadingOverlay);
 
-        loading.prefWidthProperty()
+        pane.prefWidthProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
                             return Math.min(r.getHeight() - 20, 50);
                         },
                         r.heightProperty()));
-        loading.prefHeightProperty().bind(loading.prefWidthProperty());
+        pane.prefHeightProperty().bind(pane.prefWidthProperty());
 
         return new SimpleCompStructure<>(stack);
     }
