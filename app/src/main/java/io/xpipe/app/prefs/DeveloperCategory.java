@@ -7,8 +7,10 @@ import com.dlsc.preferencesfx.model.Setting;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.ProcessOutputException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -34,7 +36,11 @@ public class DeveloperCategory extends AppPrefsCategory {
             }
 
             ThreadHelper.runFailableAsync(() -> {
-                LocalShell.getShell().executeSimpleStringCommandAndCheck(cmd);
+                try {
+                    TrackEvent.info(LocalShell.getShell().executeSimpleStringCommand(cmd));
+                } catch (ProcessOutputException ex) {
+                    TrackEvent.error(ex.getOutput());
+                }
             });
         };
 
