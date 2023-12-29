@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppAvCheck;
+import io.xpipe.app.core.check.AppShellCheck;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -50,6 +51,7 @@ public class BaseMode extends OperationMode {
         LicenseProvider.get().init();
         AppAvCheck.check();
         LocalShell.init();
+        AppShellCheck.check();
         XPipeDistributionType.init();
         AppPrefs.init();
         AppCharsets.init();
