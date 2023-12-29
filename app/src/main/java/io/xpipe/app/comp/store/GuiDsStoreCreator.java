@@ -110,13 +110,22 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     name.getValue(),
                     store.getValue());
             var p = provider.getValue().getDisplayParent(testE);
+
+            var targetCategory = p != null
+                    ? p.getCategoryUuid()
+                    : DataStorage.get()
+                    .getSelectedCategory()
+                    .getUuid();
+            var rootCategory = DataStorage.get().getRootCategory(DataStorage.get().getStoreCategoryIfPresent(targetCategory).orElseThrow());
+            // Don't put connections in the scripts category ever
+            if (!provider.getValue().getCreationCategory().equals(DataStoreProvider.CreationCategory.SCRIPT) &&
+                    rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
+                targetCategory = DataStorage.get().getDefaultCategory().getUuid();
+            }
+
             return DataStoreEntry.createNew(
                     UUID.randomUUID(),
-                    p != null
-                            ? p.getCategoryUuid()
-                            : DataStorage.get()
-                            .getSelectedCategory()
-                            .getUuid(),
+                    targetCategory,
                     name.getValue(),
                     store.getValue());
         }, name, store);
