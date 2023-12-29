@@ -39,7 +39,6 @@
 
 .root:pretty .store-entry-grid .icon {
 -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.5, 0, 1);
-
 }
 
 .root:pretty .store-entry-grid .icon > * {
