@@ -64,7 +64,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
-            DataStoreEntry existingEntry, boolean exists,
+            DataStoreEntry existingEntry,
+            boolean exists,
             boolean staticDisplay) {
         this.parent = parent;
         this.provider = provider;
@@ -333,6 +334,11 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
 
         if (store.getValue() == null) {
             return false;
+        }
+
+        // We didn't change anything
+        if (existingEntry.getStore().equals(store.getValue())) {
+            return true;
         }
 
         if (messageProp.getValue() != null && !changedSinceError.get()) {
