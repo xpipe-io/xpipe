@@ -5,6 +5,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -46,10 +47,13 @@ public class DenseStoreEntryComp extends StoreEntryComp {
     }
 
     protected Region createContent() {
-        var name = createName().createRegion();
-
         var grid = new GridPane();
         grid.setHgap(8);
+
+        var name = createName().createRegion();
+        name.maxWidthProperty().bind(Bindings.createDoubleBinding(() -> {
+            return grid.getWidth() / 2.5;
+        }, grid.widthProperty()));
 
         if (showIcon) {
             var storeIcon = createIcon(30, 25);
@@ -58,7 +62,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             GridPane.setHalignment(storeIcon, HPos.CENTER);
         }
 
-        var customSize = content != null ? 200 : 0;
+        var customSize = content != null ? 100 : 0;
         var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
 
@@ -70,7 +74,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
-        grid.addRow(0, name);
+        grid.addRow(0, new HBox(name));
 
         var info = createInformation(grid);
         grid.addRow(0, info);

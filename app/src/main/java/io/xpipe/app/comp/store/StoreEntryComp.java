@@ -61,7 +61,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
     public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH =
-            App.getApp().getStage().widthProperty().divide(2.2);
+            App.getApp().getStage().widthProperty().divide(2.2).add(-100);
     public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH =
             App.getApp().getStage().widthProperty().divide(2.2).add(-200);
     protected final StoreEntryWrapper wrapper;
