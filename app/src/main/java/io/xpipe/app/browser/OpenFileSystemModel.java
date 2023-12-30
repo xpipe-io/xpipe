@@ -162,7 +162,7 @@ public final class OpenFileSystemModel {
                             fileSystem
                                     .getShell()
                                     .get()
-                                    .subShell(adjustedPath)
+                                    .subShell(processControl -> adjustedPath, (sc) -> adjustedPath)
                                     .withInitSnippet(new SimpleScriptSnippet(
                                             fileSystem
                                                     .getShell()
