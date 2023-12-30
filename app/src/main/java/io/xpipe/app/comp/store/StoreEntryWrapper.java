@@ -9,9 +9,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import lombok.Getter;
 
@@ -39,6 +37,7 @@ public class StoreEntryWrapper {
     private final MapProperty<String, Object> cache = new SimpleMapProperty<>(FXCollections.observableHashMap());
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
+    private final Property<String> summary = new SimpleObjectProperty<>();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -84,24 +83,6 @@ public class StoreEntryWrapper {
         });
     }
 
-    public ObservableValue<String> summary() {
-        return PlatformThread.sync(Bindings.createStringBinding(
-                () -> {
-                    if (!validity.getValue().isUsable()) {
-                        return null;
-                    }
-
-                    try {
-                        return entry.getProvider().summaryString(this);
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                        return null;
-                    }
-                },
-                validity,
-                persistentState));
-    }
-
     private void setupListeners() {
         name.addListener((c, o, n) -> {
             entry.setName(n);
@@ -136,6 +117,17 @@ public class StoreEntryWrapper {
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 
         category.setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
+
+        if (!entry.getValidity().isUsable()) {
+            summary.setValue(null);
+        } else {
+            try {
+                summary.setValue(entry.getProvider().summaryString(this));
+            } catch (Exception ex) {
+                // Summary creation might fail or have a bug
+                ErrorEvent.fromThrowable(ex).handle();
+            }
+        }
 
         actionProviders.keySet().forEach(dataStoreActionProvider -> {
             if (!isInStorage()) {

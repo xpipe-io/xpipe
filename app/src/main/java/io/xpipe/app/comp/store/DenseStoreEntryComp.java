@@ -32,7 +32,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        var summary = wrapper.summary();
+        var summary = wrapper.getSummary();
         var info = wrapper.getEntry().getProvider().informationString(wrapper);
         SimpleChangeListener.apply(grid.hoverProperty(), val -> {
             if (val && summary.getValue() != null && wrapper.getEntry().getProvider().alwaysShowSummary()) {

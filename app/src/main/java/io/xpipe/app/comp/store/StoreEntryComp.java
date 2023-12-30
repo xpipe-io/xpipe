@@ -120,7 +120,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     protected Label createSummary() {
         var summary = new Label();
-        summary.textProperty().bind(wrapper.summary());
+        summary.textProperty().bind(wrapper.getSummary());
         summary.getStyleClass().add("summary");
         AppFont.small(summary);
         return summary;
