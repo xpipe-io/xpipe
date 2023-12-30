@@ -104,6 +104,10 @@ public class FileSystemHelper {
             return;
         }
 
+        if (model.getFileSystem() == null) {
+            return;
+        }
+
         var shell = model.getFileSystem().getShell();
         if (shell.isEmpty()) {
             return;
