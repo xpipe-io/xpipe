@@ -116,7 +116,7 @@ public abstract class LauncherInput {
 
             var dir = Files.isDirectory(file) ? file : file.getParent();
             AppLayoutModel.get().selectBrowser();
-            BrowserModel.DEFAULT.openFileSystemAsync( DataStorage.get().local().ref(), dir.toString(), null);
+            BrowserModel.DEFAULT.openFileSystemAsync( DataStorage.get().local().ref(), model -> dir.toString(), null);
         }
 
         @Override

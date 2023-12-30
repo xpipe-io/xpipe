@@ -4,8 +4,9 @@ import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.FileReference;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -19,6 +20,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Getter
 public class BrowserModel {
@@ -54,7 +56,7 @@ public class BrowserModel {
     public void restoreState(BrowserSavedState.Entry e, BooleanProperty busy) {
         var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         storageEntry.ifPresent(entry -> {
-            openFileSystemAsync(entry.ref(), e.getPath(), busy);
+            openFileSystemAsync(entry.ref(), model -> e.getPath(), busy);
         });
     }
 
@@ -113,7 +115,7 @@ public class BrowserModel {
         });
     }
 
-    public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, String path, BooleanProperty externalBusy) {
+    public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, Function<OpenFileSystemModel, String> path, BooleanProperty externalBusy) {
         if (store == null) {
             return;
         }
@@ -133,7 +135,7 @@ public class BrowserModel {
                 }
             }
             if (path != null) {
-                model.initWithGivenDirectory(path);
+                model.initWithGivenDirectory(FileNames.toDirectory(path.apply(model)));
             } else {
                 model.initWithDefaultDirectory();
             }
