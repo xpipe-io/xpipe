@@ -8,6 +8,12 @@ import java.util.stream.Collectors;
 @Getter
 public class ProcessOutputException extends Exception {
 
+    public static ProcessOutputException withParagraph(String customPrefix, ProcessOutputException ex) {
+        var messageSuffix = ex.getOutput() != null ? ex.getOutput() : "";
+        var message = customPrefix  + "\n\n" + messageSuffix;
+        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
+    }
+
     public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
         var messageSuffix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ":\n" + ex.getOutput() : "";
         var message = customPrefix + messageSuffix;
