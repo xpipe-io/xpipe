@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 public interface ShellControl extends ProcessControl {
 
@@ -59,14 +58,6 @@ public interface ShellControl extends ProcessControl {
             s.setRunning(true);
             s.setOsName(shellControl.getOsName());
             store.setState(s);
-        });
-    }
-
-    default ShellControl withSupportCheckInit(Predicate<ShellControl> predicate, String name) {
-        return onInit(shellControl -> {
-            if (!predicate.test(shellControl)) {
-
-            }
         });
     }
 
@@ -197,12 +188,9 @@ public interface ShellControl extends ProcessControl {
     }
 
     default ShellControl identicalSubShell() {
-        return subShell(p -> p.getShellDialect().getLoginOpenCommand(), (sc) -> sc.getShellDialect().getLoginOpenCommand())
-                .elevationPassword(getElevationPassword());
-    }
-
-    default ShellControl subShell(@NonNull String command) {
-        return subShell(processControl -> command, (sc) -> command);
+        return subShell(p -> p.getShellDialect().getLoginOpenCommand(),
+                (sc) -> sc.getShellDialect().getLoginOpenCommand()
+        ).elevationPassword(getElevationPassword());
     }
 
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc) throws Exception {
