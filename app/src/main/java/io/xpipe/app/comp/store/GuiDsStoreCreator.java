@@ -337,22 +337,13 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         }
 
         // We didn't change anything
-        if (existingEntry.getStore().equals(store.getValue())) {
+        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
             return true;
         }
 
         if (messageProp.getValue() != null && !changedSinceError.get()) {
             if (AppPrefs.get().developerMode().getValue() && showInvalidConfirmAlert()) {
                 return true;
-            }
-        }
-
-        if (!exists) {
-            if (name.getValue() != null
-                    && DataStorage.get().getStoreEntryIfPresent(name.getValue()).isPresent()) {
-                messageProp.setValue("Store with name " + name.getValue() + " does already exist");
-                changedSinceError.setValue(false);
-                return false;
             }
         }
 
