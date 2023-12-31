@@ -75,9 +75,7 @@ public class CustomFormRenderer extends PreferencesFxFormRenderer {
                             if (element instanceof Field f) {
                                 SimpleControl c = (SimpleControl) f.getRenderer();
                                 c.setField(f);
-                                AppFont.normal(c.getFieldLabel());
-                                c.getFieldLabel().setPrefHeight(AppFont.getPixelSize(1));
-                                c.getFieldLabel().setMaxHeight(AppFont.getPixelSize(1));
+                                AppFont.header(c.getFieldLabel());
                                 c.getFieldLabel().textProperty().unbind();
                                 c.getFieldLabel().textProperty().bind(Bindings.createStringBinding(() -> {
                                     return f.labelProperty().get() + (AppPrefs.get().getProRequiredSettings().contains(f) ? " (Pro)" : "");

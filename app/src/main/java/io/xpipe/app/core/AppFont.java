@@ -2,8 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.OsType;
-import javafx.css.Size;
-import javafx.css.SizeUnits;
 import javafx.scene.Node;
 import javafx.scene.text.Font;
 
@@ -14,19 +12,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 public class AppFont {
-
-    public static double em(double emSize) {
-        return getPixelSize() * emSize;
-    }
-
-    public static double getPixelSize() {
-        return getPixelSize(0);
-    }
-
-    public static double getPixelSize(int off) {
-        var baseSize = OsType.getLocal() == OsType.LINUX ? 11 : 12;
-        return new Size(baseSize + off, SizeUnits.PT).pixels();
-    }
 
     public static void header(Node node) {
         setSize(node, +1);

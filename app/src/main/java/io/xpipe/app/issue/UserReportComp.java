@@ -105,8 +105,8 @@ public class UserReportComp extends SimpleComp {
         layout.setCenter(reportSection);
         layout.setBottom(buttons);
         layout.getStyleClass().add("error-report");
-        layout.setPrefWidth(AppFont.em(35));
-        layout.setPrefHeight(AppFont.em(30));
+        layout.setPrefWidth(600);
+        layout.setPrefHeight(550);
         return layout;
     }
 

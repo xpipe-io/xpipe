@@ -91,8 +91,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         });
 
         this.apply(r -> {
-            r.get().setPrefWidth(AppFont.em(40));
-            r.get().setPrefHeight(AppFont.em(45));
+            r.get().setPrefWidth(650);
+            r.get().setPrefHeight(750);
         });
 
         this.validator.addListener((observable, oldValue, newValue) -> {
