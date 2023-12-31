@@ -58,14 +58,6 @@ public class AppFont {
         node.setStyle(node.getStyle() + "-fx-font-size: " + (baseSize + off) + "pt;");
     }
 
-    public static void verifyFontLoadingFunctional() {
-        try {
-            Font.getDefault();
-        } catch (Throwable t) {
-            throw new IllegalStateException("Unable to load any fonts. Check whether your system is properly configured with fontconfig", t);
-        }
-    }
-
     public static void init() {
         TrackEvent.info("Loading fonts ...");
         AppResources.with(
@@ -75,7 +67,7 @@ public class AppFont {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try (var in = Files.newInputStream(file)) {
-                            Font.loadFont(in, 12);
+                            Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 12);
                         } catch (Throwable t) {
                             // Font loading can fail in rare cases. This is however not important, so we can just ignore it
                         }

@@ -282,6 +282,18 @@ public class XPipeInstallation {
         return path;
     }
 
+    public static Path getBundledFontsPath() {
+        var install = getCurrentInstallationBasePath();
+        var type = OsType.getLocal();
+        if (type.equals(OsType.WINDOWS)) {
+            return install.resolve("app").resolve("fonts");
+        } else if (type.equals(OsType.LINUX)) {
+            return install.resolve("app").resolve("fonts");
+        } else {
+            return install.resolve("Contents").resolve("Resources").resolve("fonts");
+        }
+    }
+
     public static String getDaemonDebugScriptPath(OsType type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "scripts", "xpiped_debug.bat");
