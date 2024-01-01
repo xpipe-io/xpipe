@@ -15,6 +15,7 @@ public class ShellDialects {
     public static ShellDialect CMD;
     public static ShellDialect ASH;
     public static ShellDialect SH;
+    public static ShellDialect SH_BSD;
     public static ShellDialect DASH;
     public static ShellDialect BASH;
     public static ShellDialect ZSH;
@@ -35,19 +36,20 @@ public class ShellDialects {
                 ALL.add(moduleLayerLoaderProvider.get());
             });
 
-            CMD = byName("cmd");
-            POWERSHELL = byName("powershell");
-            POWERSHELL_CORE = byName("pwsh");
-            OPNSENSE = byName("opnsense");
-            FISH = byName("fish");
-            DASH = byName("dash");
-            BASH = byName("bash");
-            ZSH = byName("zsh");
-            CSH = byName("csh");
-            ASH = byName("ash");
-            SH = byName("sh");
-            UNSUPPORTED = byName("unsupported");
-            CISCO = byName("cisco");
+            CMD = byId("cmd");
+            POWERSHELL = byId("powershell");
+            POWERSHELL_CORE = byId("pwsh");
+            OPNSENSE = byId("opnsense");
+            FISH = byId("fish");
+            DASH = byId("dash");
+            BASH = byId("bash");
+            ZSH = byId("zsh");
+            CSH = byId("csh");
+            ASH = byId("ash");
+            SH = byId("sh");
+            SH_BSD = byId("shBsd");
+            UNSUPPORTED = byId("unsupported");
+            CISCO = byId("cisco");
         }
 
         @Override
@@ -61,7 +63,7 @@ public class ShellDialects {
         }
     }
 
-    private static ShellDialect byName(String name) {
+    private static ShellDialect byId(String name) {
         return ALL.stream()
                 .filter(shellType -> shellType.getId().equals(name))
                 .findFirst()

@@ -26,6 +26,8 @@ public interface ShellDialect {
                 .collect(Collectors.joining(" "));
     }
 
+    String getExecutableName();
+
     default boolean isSupportedShell() {
         return true;
     }
