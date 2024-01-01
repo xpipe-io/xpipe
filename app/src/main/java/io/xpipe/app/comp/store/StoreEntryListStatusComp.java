@@ -99,7 +99,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
 
         f.getStyleClass().add("filter-bar");
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            f.setPadding(new Insets(0));
+            f.setPadding(new Insets(-2, 0, -2, 0));
         } else {
             f.setPadding(new Insets(-3, 0, -3, 0));
         }
@@ -119,7 +119,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         menu.setMinWidth(Region.USE_PREF_SIZE);
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            menu.setPadding(new Insets(0));
+            menu.setPadding(new Insets(-2, 0, -2, 0));
         } else {
             menu.setPadding(new Insets(-3, 0, -3, 0));
         }

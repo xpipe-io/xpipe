@@ -48,7 +48,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         hbox.setSpacing(15);
 
         if (state == null) {
-            var header = new Label("Here you will be able to see where you left off last time you exited XPipe.");
+            var header = new Label("Here you will be able to see where you left off last time.");
             vbox.getChildren().add(header);
             hbox.setPadding(new Insets(40, 40, 40, 50));
             return new VBox(hbox);
@@ -69,8 +69,8 @@ public class BrowserWelcomeComp extends SimpleComp {
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
         var header = new LabelComp(Bindings.createStringBinding(() -> {
-            return !empty.get() ? "Last time you were connected to the following systems:" :
-                    "Here you will be able to see where you left off last time you exited XPipe.";
+            return !empty.get() ? "You were recently connected to the following systems:" :
+                    "Here you will be able to see where you left off last time.";
         }, empty)).createRegion();
         header.getStyleClass().add(Styles.TEXT_MUTED);
         vbox.getChildren().add(header);
