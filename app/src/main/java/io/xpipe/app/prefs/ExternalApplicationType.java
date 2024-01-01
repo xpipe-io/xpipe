@@ -65,13 +65,9 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                         }
                     }).sorted(Comparator.comparingInt(value -> value.length())).toList();
 
-                    // Prefer app in proper applications directory
-                    var app = valid.stream().filter(s -> s.contains("/Applications")).findFirst();
-                    if (app.isPresent()) {
-                        return app.map(Path::of);
-                    }
-
-                    return valid.stream().findFirst().map(Path::of);
+                    // Require app in proper applications directory
+                    var app = valid.stream().filter(s -> s.contains("Applications")).findFirst();
+                    return app.map(Path::of);
                 }
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().handle();
