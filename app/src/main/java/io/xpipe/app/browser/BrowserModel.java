@@ -65,9 +65,9 @@ public class BrowserModel {
 
     public void reset() {
         synchronized (BrowserModel.this) {
-            openFileSystems.forEach(model -> {
-                closeFileSystemSync(model);
-            });
+            for (OpenFileSystemModel o : new ArrayList<>(openFileSystems)) {
+                closeFileSystemSync(o);
+            }
             if (savedState != null) {
                 savedState.save();
             }
