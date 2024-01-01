@@ -289,13 +289,15 @@ public class BindingsHelper {
         var newSet = new HashSet<>(newList);
 
         // Only add missing element
-        if (targetSet.size() + 1 == newList.size() && newSet.containsAll(targetSet)) {
+        if (target.size() + 1 == newList.size() && newSet.containsAll(targetSet)) {
             var l = new HashSet<>(newSet);
             l.removeAll(targetSet);
-            var found = l.iterator().next();
-            var index = newList.indexOf(found);
-            target.add(index, found);
-            return;
+            if (l.size() > 0) {
+                var found = l.iterator().next();
+                var index = newList.indexOf(found);
+                target.add(index, found);
+                return;
+            }
         }
 
         // Only remove not needed element

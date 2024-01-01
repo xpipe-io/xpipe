@@ -84,7 +84,7 @@ final class BrowserBookmarkList extends SimpleComp {
                     });
                 });
         var category = new DataStoreCategoryChoiceComp(StoreViewState.get().getAllConnectionsCategory(), StoreViewState.get().getActiveCategory(),
-                selectedCategory).styleClass(Styles.LEFT_PILL).grow(false, true);
+                selectedCategory).styleClass(Styles.LEFT_PILL);
         var filter = new FilterComp(filterText).styleClass(Styles.RIGHT_PILL).hgrow().apply(struc -> {});
 
         var top = new HorizontalComp(List.of(category, filter.hgrow())).styleClass("categories").apply(struc -> {

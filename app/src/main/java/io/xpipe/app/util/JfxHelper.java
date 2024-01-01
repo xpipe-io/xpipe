@@ -58,6 +58,7 @@ public class JfxHelper {
         var desc = new Label(descString);
         AppFont.small(desc);
         var text = new VBox(header, new Spacer(), desc);
+        text.setAlignment(Pos.CENTER_LEFT);
 
         if (image == null) {
             return text;

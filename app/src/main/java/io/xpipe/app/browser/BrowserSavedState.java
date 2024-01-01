@@ -1,26 +1,39 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.core.AppCache;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
 import java.util.UUID;
 
-@Value
-@Jacksonized
-@Builder
-@Getter
-public class BrowserSavedState {
+public interface BrowserSavedState {
 
-    static BrowserSavedState load() {
-        return AppCache.get("browser-state", BrowserSavedState.class, () -> {
-            return null;
-        });
+    static BrowserSavedState none() {
+        return new BrowserSavedState() {
+            @Override
+            public void add(Entry entry) {
+
+            }
+
+            @Override
+            public void save() {
+
+            }
+
+            @Override
+            public ObservableList<Entry> getEntries() {
+                return FXCollections.observableArrayList();
+            }
+        };
     }
+
+    public void add(Entry entry);
+
+    void save();
+
+    ObservableList<Entry> getEntries();
 
     @Value
     @Jacksonized
@@ -29,11 +42,5 @@ public class BrowserSavedState {
 
         UUID uuid;
         String path;
-    }
-
-    @NonNull List<Entry> lastSystems;
-
-    public void save() {
-        AppCache.update("browser-state", this);
     }
 }

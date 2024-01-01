@@ -5,13 +5,11 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ScanAlert;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
@@ -26,7 +24,6 @@ public class StoreIntroComp extends SimpleComp {
     public Region createSimple() {
         var title = new Label(AppI18n.get("storeIntroTitle"));
         AppFont.setSize(title, 7);
-        title.getStyleClass().add("title-header");
 
         var introDesc = new Label(AppI18n.get("storeIntroDescription"));
 
@@ -41,22 +38,10 @@ public class StoreIntroComp extends SimpleComp {
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
-        var dofi = new FontIcon("mdi2b-book-open-variant");
-        var documentation = new Label(AppI18n.get("introDocumentation"), dofi);
-        documentation.heightProperty().addListener((c, o, n) -> {
-            dofi.iconSizeProperty().set(n.intValue());
-        });
-        var docLink = new Hyperlink(Hyperlinks.DOCUMENTATION);
-        docLink.setOnAction(e -> {
-            Hyperlinks.open(Hyperlinks.DOCUMENTATION);
-        });
-        var docLinkPane = new StackPane(docLink);
-        docLinkPane.setAlignment(Pos.CENTER);
-
-        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 180).createRegion();
-        var hbox = new HBox(img, new VBox(
-                title, introDesc, new Separator(Orientation.HORIZONTAL), machine
-        ));
+        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 150).createRegion();
+        var text = new VBox(title, introDesc, new Separator(Orientation.HORIZONTAL), machine);
+        text.setAlignment(Pos.CENTER_LEFT);
+        var hbox = new HBox(img, text);
         hbox.setSpacing(35);
         hbox.setAlignment(Pos.CENTER);
 

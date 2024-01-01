@@ -22,7 +22,7 @@ public class BrowserGreetingComp extends SimpleComp {
             text = "Good afternoon";
         }
         var r = new Label(text);
-        AppFont.setSize(r, 12);
+        AppFont.setSize(r, 7);
         return r;
     }
 }

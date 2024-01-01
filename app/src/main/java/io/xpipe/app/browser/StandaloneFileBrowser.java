@@ -41,7 +41,7 @@ public class StandaloneFileBrowser {
 
     public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
         PlatformThread.runLaterIfNeeded(() -> {
-            var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER);
+            var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER, null);
             var comp = new BrowserComp(model)
                     .apply(struc -> struc.get().setPrefSize(1200, 700))
                     .apply(struc -> AppFont.normal(struc.get()));
@@ -57,7 +57,7 @@ public class StandaloneFileBrowser {
 
     public static void saveSingleFile(Property<FileReference> file) {
         PlatformThread.runLaterIfNeeded(() -> {
-            var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_SAVE);
+            var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_SAVE, null);
             var comp = new BrowserComp(model)
                     .apply(struc -> struc.get().setPrefSize(1200, 700))
                     .apply(struc -> AppFont.normal(struc.get()));

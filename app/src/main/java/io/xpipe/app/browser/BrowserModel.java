@@ -25,17 +25,20 @@ import java.util.function.Function;
 @Getter
 public class BrowserModel {
 
-    public static final BrowserModel DEFAULT = new BrowserModel(Mode.BROWSER);
+    public static final BrowserModel DEFAULT = new BrowserModel(Mode.BROWSER, BrowserSavedStateImpl.load());
+
     private final Mode mode;
     private final ObservableList<OpenFileSystemModel> openFileSystems = FXCollections.observableArrayList();
     private final Property<OpenFileSystemModel> selected = new SimpleObjectProperty<>();
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
+    private final BrowserSavedState savedState;
     @Setter
     private Consumer<List<FileReference>> onFinish;
 
-    public BrowserModel(Mode mode) {
+    public BrowserModel(Mode mode, BrowserSavedState savedState) {
         this.mode = mode;
+        this.savedState = savedState;
 
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
@@ -48,7 +51,7 @@ public class BrowserModel {
     }
 
     public void restoreState(BrowserSavedState state) {
-        state.getLastSystems().forEach(e -> {
+        state.getEntries().forEach(e -> {
             restoreState(e, null);
         });
     }
@@ -61,27 +64,14 @@ public class BrowserModel {
     }
 
     public void reset() {
-        var list = new ArrayList<BrowserSavedState.Entry>();
         synchronized (BrowserModel.this) {
             openFileSystems.forEach(model -> {
-                if (DataStorage.get().getStoreEntries().contains(model.getEntry().get())) {
-                    list.add(new BrowserSavedState.Entry(model.getEntry().get().getUuid(), model.getCurrentPath().get()));
-                }
+                closeFileSystemSync(model);
             });
+            if (savedState != null) {
+                savedState.save();
+            }
         }
-
-        // Don't override state if it is empty
-        if (list.size() == 0) {
-            return;
-        }
-
-        var meaningful = list.size() > 1 || list.stream().allMatch(s -> s.getPath() != null);
-        if (!meaningful) {
-            return;
-        }
-
-        var state = BrowserSavedState.builder().lastSystems(list).build();
-        state.save();
     }
 
     public void finishChooser() {
@@ -108,11 +98,18 @@ public class BrowserModel {
 
     public void closeFileSystemAsync(OpenFileSystemModel open) {
         ThreadHelper.runAsync(() -> {
-            open.closeSync();
-            synchronized (BrowserModel.this) {
-                openFileSystems.remove(open);
-            }
+            closeFileSystemSync(open);
         });
+    }
+
+    private void closeFileSystemSync(OpenFileSystemModel open) {
+        if (DataStorage.get().getStoreEntries().contains(open.getEntry().get()) && savedState != null && open.getCurrentPath().get() != null) {
+            savedState.add(new BrowserSavedState.Entry(open.getEntry().get().getUuid(), open.getCurrentPath().get()));
+        }
+        open.closeSync();
+        synchronized (BrowserModel.this) {
+            openFileSystems.remove(open);
+        }
     }
 
     public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, Function<OpenFileSystemModel, String> path, BooleanProperty externalBusy) {
