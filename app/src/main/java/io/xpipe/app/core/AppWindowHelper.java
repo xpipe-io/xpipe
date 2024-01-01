@@ -112,9 +112,6 @@ public class AppWindowHelper {
             AppFont.normal(a.getDialogPane());
             var s = (Stage) a.getDialogPane().getScene().getWindow();
             s.setOnShown(event -> {
-                // Force recomputation of window bounds to properly position it on some linux systems
-                s.setX(s.getX() + 1);
-
                 clampWindow(s).ifPresent(rectangle2D -> {
                     s.setX(rectangle2D.getMinX());
                     s.setY(rectangle2D.getMinY());
