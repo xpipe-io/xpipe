@@ -8,7 +8,7 @@ public class AppFontCheck {
         try {
             Font.getDefault();
         } catch (Throwable t) {
-            throw new IllegalStateException("Unable to load any fonts. Check whether your system is properly configured with fontconfig", t);
+            throw new IllegalStateException("Unable to load any fonts. Check whether your system is properly configured with fontconfig and you have any fonts installed", t);
         }
     }
 

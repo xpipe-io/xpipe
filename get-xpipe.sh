@@ -127,8 +127,10 @@ install() {
   case "$uname_str" in
   Linux)
     if [ -f "/etc/debian_version" ]; then
-      DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "$file"
+      info "Installing file $file with apt"
+      DEBIAN_FRONTEND=noninteractive sudo apt install -qy "$file"
     else
+      info "Installing file $file with rpm"
       sudo rpm -i "$file"
     fi
     ;;

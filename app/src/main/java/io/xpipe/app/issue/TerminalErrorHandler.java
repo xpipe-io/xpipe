@@ -26,6 +26,8 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             handleWithSecondaryException(event, throwable);
             ErrorAction.ignore().handle(event);
         })) {
+            // Exit if we couldn't initialize the GUI
+            OperationMode.halt(1);
             return;
         }
 
