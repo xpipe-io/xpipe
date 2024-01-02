@@ -106,13 +106,18 @@ public class ErrorHandlerComp extends SimpleComp {
         Platform.runLater(() -> {
             if (!showing.get()) {
                 showing.set(true);
-                var window = AppWindowHelper.sideWindow(
-                        AppI18n.get("errorHandler"),
-                        w -> {
-                            return setUpComp(event, w, finishLatch);
-                        },
-                        true,
-                        null);
+                Stage window = null;
+                try {
+                    window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> {
+                        return setUpComp(event, w, finishLatch);
+                    }, true, null);
+                } catch (Throwable t) {
+                    showLatch.countDown();
+                    finishLatch.countDown();
+                    showing.set(false);
+                    t.printStackTrace();
+                    return;
+                }
                 // An exception is thrown when show and wait is called
                 // within an animation or layout processing task, so use show
                 try {

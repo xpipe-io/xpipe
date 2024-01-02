@@ -142,10 +142,15 @@ public class AppWindowHelper {
         if (!Platform.isFxApplicationThread()) {
             CountDownLatch latch = new CountDownLatch(1);
             Platform.runLater(() -> {
-                Alert a = supplier.get();
-                c.accept(a);
-                result.set(a.showAndWait());
-                latch.countDown();
+                try {
+                    Alert a = supplier.get();
+                    c.accept(a);
+                    result.set(a.showAndWait());
+                } catch (Throwable t) {
+                    result.set(Optional.empty());
+                } finally {
+                    latch.countDown();
+                }
             });
             try {
                 latch.await();
