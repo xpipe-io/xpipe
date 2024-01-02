@@ -25,7 +25,7 @@ public class ShellDialects {
     public static ShellDialect CISCO;
 
     public static List<ShellDialect> getStartableDialects() {
-        return ALL.stream().filter(dialect -> dialect.getOpenCommand() != null).toList();
+        return ALL.stream().filter(dialect -> dialect.getOpenCommand() != null).filter(dialect -> dialect != SH_BSD).toList();
     }
 
     public static class Loader implements ModuleLayerLoader {
