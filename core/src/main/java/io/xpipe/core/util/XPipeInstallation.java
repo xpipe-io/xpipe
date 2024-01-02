@@ -283,6 +283,10 @@ public class XPipeInstallation {
     }
 
     public static Path getBundledFontsPath() {
+        if (!ModuleHelper.isImage()) {
+            return Path.of("dist", "fonts");
+        }
+
         var install = getCurrentInstallationBasePath();
         var type = OsType.getLocal();
         if (type.equals(OsType.WINDOWS)) {
