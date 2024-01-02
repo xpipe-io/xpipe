@@ -40,7 +40,7 @@ public interface ShellDialect {
         return other.equals(this);
     }
 
-    default ShellDialect getDumbReplacementDialect() {
+    default ShellDialect getDumbReplacementDialect(ShellControl parent) {
         return this;
     }
 
