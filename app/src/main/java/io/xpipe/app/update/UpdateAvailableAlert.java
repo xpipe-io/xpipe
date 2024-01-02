@@ -24,7 +24,7 @@ public class UpdateAvailableAlert {
                     alert.setAlertType(Alert.AlertType.NONE);
 
                     var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> {
-                                var header = "<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
+                                var header = "&nbsp;<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
                                 return header + s;
                             })
                             .createRegion();

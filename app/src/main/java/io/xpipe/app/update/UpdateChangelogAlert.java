@@ -36,7 +36,7 @@ public class UpdateChangelogAlert {
                     alert.initModality(Modality.NONE);
 
                     var markdown = new MarkdownComp(update.getRawDescription(), s -> {
-                                var header = "<h1>" + AppI18n.get("whatsNew", update.getName()) + "</h1>";
+                                var header = "&nbsp;<h1>" + AppI18n.get("whatsNew", update.getName()) + "</h1>";
                                 return header + s;
                             })
                             .createRegion();
