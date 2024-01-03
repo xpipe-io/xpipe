@@ -81,7 +81,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         GrowAugment.create(true, false).augment(new SimpleCompStructure<>(r));
         button.getStyleClass().add("store-entry-comp");
         button.setPadding(Insets.EMPTY);
-        button.setMaxWidth(3000);
+        button.setMaxWidth(5000);
         button.setFocusTraversable(true);
         button.accessibleTextProperty()
                 .bind(wrapper.nameProperty());

@@ -1,6 +1,5 @@
 package io.xpipe.app.fxcomps.impl;
 
-import atlantafx.base.controls.PasswordTextField;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
@@ -8,6 +7,7 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.SecretHelper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import java.util.Objects;
@@ -26,7 +26,7 @@ public class SecretFieldComp extends Comp<CompStructure<TextField>> {
 
     @Override
     public CompStructure<TextField> createBase() {
-        var text = new PasswordTextField();
+        var text = new PasswordField();
         text.getStyleClass().add("secret-field-comp");
         text.setText(value.getValue() != null ? value.getValue().getSecretValue() : null);
         text.textProperty().addListener((c, o, n) -> {
