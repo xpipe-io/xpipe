@@ -223,6 +223,9 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     return provider.getValue() == null
                             || store.getValue() == null
                             || !store.getValue().isComplete()
+                            // When switching providers, both observables change one after another.
+                            // So temporarily there might be a store class mismatch
+                            || provider.getValue().getStoreClasses().stream().noneMatch(aClass -> aClass.isAssignableFrom(store.getValue().getClass()))
                             || provider.getValue().createInsightsMarkdown(store.getValue()) == null;
                 },
                 provider,
