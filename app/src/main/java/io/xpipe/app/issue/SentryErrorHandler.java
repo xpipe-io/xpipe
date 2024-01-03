@@ -118,7 +118,11 @@ public class SentryErrorHandler implements ErrorHandler {
 
             return copy;
         } catch (Exception e) {
-            if (AppLogs.get() != null) AppLogs.get().logException("Unable to adjust exception", e);
+            // This can fail for example when the underlying exception is not serializable
+            // and comes from some third party library
+            if (AppLogs.get() != null) {
+                AppLogs.get().logException("Unable to adjust exception", e);
+            }
             return throwable;
         }
     }

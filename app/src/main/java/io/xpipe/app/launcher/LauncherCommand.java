@@ -47,14 +47,14 @@ public class LauncherCommand implements Callable<Integer> {
 
         var cmd = new CommandLine(new LauncherCommand());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-            var event = ErrorEvent.fromThrowable("Launcher command error occurred", ex).term().build();
+            var event = ErrorEvent.fromThrowable(ex).term().build();
             // Print error in case we launched from the command-line
             new LogErrorHandler().handle(event);
             event.handle();
             return 1;
         });
         cmd.setParameterExceptionHandler((ex, args1) -> {
-            var event = ErrorEvent.fromThrowable("Launcher parameter error occurred", ex).term().build();
+            var event = ErrorEvent.fromThrowable(ex).term().build();
             // Print error in case we launched from the command-line
             new LogErrorHandler().handle(event);
             event.handle();
@@ -65,8 +65,15 @@ public class LauncherCommand implements Callable<Integer> {
         cmd.setOut(new PrintWriter(AppLogs.get().getOriginalSysOut()));
         cmd.setErr(new PrintWriter(AppLogs.get().getOriginalSysErr()));
 
-        cmd.parseArgs(args);
-        cmd.execute(args);
+        try {
+            cmd.parseArgs(args);
+            cmd.execute(args);
+        } catch (Throwable t) {
+            var e = ErrorEvent.fromThrowable(t).term().build();
+            // Print error in case we launched from the command-line
+            new LogErrorHandler().handle(e);
+            e.handle();
+        }
     }
 
     private void checkStart() {
