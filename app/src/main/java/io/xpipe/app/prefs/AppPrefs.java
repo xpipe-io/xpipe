@@ -147,7 +147,7 @@ public class AppPrefs {
     // ===============
     private final StringProperty customTerminalCommand = typed(new SimpleStringProperty(""), String.class);
     private final StringField customTerminalCommandControl = editable(
-            StringField.ofStringType(customTerminalCommand).render(() -> new SimpleTextControl()),
+            StringField.ofStringType(customTerminalCommand).placeholder("customTerminalPlaceholder").render(() -> new SimpleTextControl()),
             terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
 
     private final BooleanProperty preferTerminalTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
@@ -208,7 +208,7 @@ public class AppPrefs {
 
     final StringProperty customEditorCommand = typed(new SimpleStringProperty(""), String.class);
     private final StringField customEditorCommandControl = editable(
-            StringField.ofStringType(customEditorCommand).render(() -> new SimpleTextControl()),
+            StringField.ofStringType(customEditorCommand).placeholder("customEditorPlaceholder").render(() -> new SimpleTextControl()),
             externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
     private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
 

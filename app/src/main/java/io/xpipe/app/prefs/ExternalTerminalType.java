@@ -311,6 +311,19 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
+    ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix") {
+
+        @Override
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("-t").addQuoted(name).add("-e").addFile(file);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
+
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator") {
 
         @Override
@@ -535,6 +548,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     XFCE,
                     ELEMENTARY,
                     GNOME_TERMINAL,
+                    TILIX,
                     TERMINATOR,
                     KITTY,
                     TERMINOLOGY,
