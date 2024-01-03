@@ -24,17 +24,27 @@ distZip {
     enabled = false;
 }
 
+
 import org.gradle.crypto.checksum.Checksum
+
+import java.util.stream.Collectors
+
 def distDir = layout.buildDirectory.get().dir('dist')
 task createChecksums(type: Checksum) {
     inputFiles.setFrom(distDir.dir('artifacts').getAsFileTree().files)
-    outputDirectory.set(layout.buildDirectory.dir("dist/checksums"))
+    outputDirectory.set(layout.buildDirectory.dir("dist/checksums/artifacts"))
     checksumAlgorithm.set(Checksum.Algorithm.SHA256)
 
     doLast {
-        for (final def file in distDir.dir('checksums').getAsFileTree().files) {
-            artifactChecksums.put(file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}, file.text.trim())
+        def artifactChecksumsSha256Hex = new HashMap<String, String>()
+        for (final def file in outputDirectory.get().getAsFileTree().files) {
+            def name = file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}
+            artifactChecksumsSha256Hex.put(name, file.text.trim())
         }
+
+        file(layout.buildDirectory.dir("dist/checksums/sha256sums.txt")).text = artifactChecksumsSha256Hex.entrySet().stream()
+                .map(e -> e.getValue() + ' ' + e.getKey())
+                .collect(Collectors.joining('\n'))
     }
 }
 
