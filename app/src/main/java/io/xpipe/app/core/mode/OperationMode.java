@@ -1,7 +1,6 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.check.AppFontCheck;
 import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -105,7 +104,6 @@ public abstract class OperationMode {
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
             XPipeSystemId.init();
-            AppFontCheck.check();
             TrackEvent.info("mode", "Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();

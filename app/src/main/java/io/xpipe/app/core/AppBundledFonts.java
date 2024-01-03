@@ -26,7 +26,7 @@ public class AppBundledFonts {
             var proc = fc.start();
             var out = new String(proc.getInputStream().readAllBytes());
             proc.waitFor(1, TimeUnit.SECONDS);
-            return proc.exitValue() == 0 && !out.isEmpty();
+            return proc.exitValue() == 0 && !out.isBlank();
         } catch (Exception e) {
             return false;
         }
