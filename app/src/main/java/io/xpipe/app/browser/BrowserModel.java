@@ -51,12 +51,16 @@ public class BrowserModel {
     }
 
     public void restoreState(BrowserSavedState state) {
-        state.getEntries().forEach(e -> {
-            restoreState(e, null);
+        ThreadHelper.runAsync(() -> {
+            state.getEntries().forEach(e -> {
+                restoreStateAsync(e, null);
+            });
+            // Don't try to run everything in parallel as that can be taxing
+            ThreadHelper.sleep(1000);
         });
     }
 
-    public void restoreState(BrowserSavedState.Entry e, BooleanProperty busy) {
+    public void restoreStateAsync(BrowserSavedState.Entry e, BooleanProperty busy) {
         var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         storageEntry.ifPresent(entry -> {
             openFileSystemAsync(entry.ref(), model -> e.getPath(), busy);

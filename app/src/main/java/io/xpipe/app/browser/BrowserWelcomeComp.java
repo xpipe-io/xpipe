@@ -88,7 +88,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             var disable = new SimpleBooleanProperty();
             return new ButtonComp(null, content, () -> {
                 ThreadHelper.runAsync(() -> {
-                    model.restoreState(e, disable);
+                    model.restoreStateAsync(e, disable);
                 });
             }).accessibleText(DataStorage.get().getStoreDisplayName(entry.get())).disable(disable).styleClass("color-listBox").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
         }).apply(struc -> {
