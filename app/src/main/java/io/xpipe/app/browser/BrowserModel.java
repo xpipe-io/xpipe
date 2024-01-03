@@ -54,9 +54,9 @@ public class BrowserModel {
         ThreadHelper.runAsync(() -> {
             state.getEntries().forEach(e -> {
                 restoreStateAsync(e, null);
+                // Don't try to run everything in parallel as that can be taxing
+                ThreadHelper.sleep(1000);
             });
-            // Don't try to run everything in parallel as that can be taxing
-            ThreadHelper.sleep(1000);
         });
     }
 
