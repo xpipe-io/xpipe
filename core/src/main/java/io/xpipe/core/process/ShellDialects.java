@@ -10,6 +10,7 @@ public class ShellDialects {
 
     public static final List<ShellDialect> ALL = new ArrayList<>();
     public static ShellDialect OPNSENSE;
+    public static ShellDialect PFSENSE;
     public static ShellDialect POWERSHELL;
     public static ShellDialect POWERSHELL_CORE;
     public static ShellDialect CMD;
@@ -40,6 +41,7 @@ public class ShellDialects {
             POWERSHELL = byId("powershell");
             POWERSHELL_CORE = byId("pwsh");
             OPNSENSE = byId("opnsense");
+            PFSENSE = byId("pfsense");
             FISH = byId("fish");
             DASH = byId("dash");
             BASH = byId("bash");
