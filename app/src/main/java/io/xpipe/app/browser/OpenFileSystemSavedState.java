@@ -132,6 +132,7 @@ public class OpenFileSystemSavedState {
         }
 
         lastDirectory = dir;
+        // After 10 seconds
         TIMEOUT_TIMER.schedule(
                 new TimerTask() {
                     @Override
@@ -149,7 +150,7 @@ public class OpenFileSystemSavedState {
                         });
                     }
                 },
-                20000);
+                10000);
     }
 
     private void updateRecent(String dir) {
