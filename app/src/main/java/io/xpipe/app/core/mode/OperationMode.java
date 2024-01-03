@@ -104,7 +104,6 @@ public abstract class OperationMode {
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
-            AppProperties.setDynamicProperties();
             XPipeSystemId.init();
             AppFontCheck.check();
             TrackEvent.info("mode", "Finished initial setup");

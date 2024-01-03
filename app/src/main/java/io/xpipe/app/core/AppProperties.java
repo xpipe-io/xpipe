@@ -68,11 +68,6 @@ public class AppProperties {
         }
     }
 
-    public static void setDynamicProperties() {
-        System.setProperty("prism.fontdir", XPipeInstallation.getBundledFontsPath().toString());
-        System.setProperty("prism.embeddedfonts", "true");
-    }
-
     public static void logArguments(String[] args) {
         TrackEvent.withInfo("Detected arguments")
                 .tag("list", Arrays.asList(args))

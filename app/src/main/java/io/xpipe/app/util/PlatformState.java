@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppBundledFonts;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import javafx.application.Platform;
@@ -74,6 +75,9 @@ public enum PlatformState {
             TrackEvent.warn(e.getMessage());
             return Optional.of(e);
         }
+
+        // Check if we have no fonts and set properties to load bundled ones
+        AppBundledFonts.init();
 
         try {
             CountDownLatch latch = new CountDownLatch(1);
