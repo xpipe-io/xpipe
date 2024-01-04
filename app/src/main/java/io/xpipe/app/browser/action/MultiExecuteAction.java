@@ -12,10 +12,6 @@ import java.util.List;
 
 public abstract class MultiExecuteAction implements BranchAction {
 
-    protected String filesArgument(List<BrowserEntry> entries) {
-        return entries.size() == 1 ? entries.get(0).getOptionallyQuotedFileName() : "(" + entries.size() + ")";
-    }
-
     protected abstract String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry);
 
     @Override
@@ -38,8 +34,14 @@ public abstract class MultiExecuteAction implements BranchAction {
                     }
 
                     @Override
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppPrefs.get().terminalType().getValue() != null;
+                    }
+
+                    @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "in " + AppPrefs.get().terminalType().getValue().toTranslatedString();
+                        var t = AppPrefs.get().terminalType().getValue();
+                        return "in " + (t != null ? t.toTranslatedString() : "?");
                     }
                 },
                 new LeafAction() {
