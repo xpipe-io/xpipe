@@ -115,6 +115,7 @@ Alternatively, you can also use your favorite package manager (if supported):
 - [choco](https://community.chocolatey.org/packages/xpipe): `choco install xpipe`
 - [AUR package](https://aur.archlinux.org/packages/xpipe): `yay -S xpipe`
 - [Homebrew](https://github.com/xpipe-io/homebrew-tap): `brew install --cask xpipe-io/tap/xpipe`
+- [nixpkg](https://github.com/xpipe-io/nixpkg): Although there is not a merged nixpkgs package, you can install it by following the linked repository instructions
 
 ## Open source model
 
