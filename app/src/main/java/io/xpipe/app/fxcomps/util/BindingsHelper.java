@@ -304,8 +304,10 @@ public class BindingsHelper {
         if (target.size() - 1 == newList.size() && targetSet.containsAll(newSet)) {
             var l = new HashSet<>(targetSet);
             l.removeAll(newSet);
-            target.remove(l.iterator().next());
-            return;
+            if (l.size() > 0) {
+                target.remove(l.iterator().next());
+                return;
+            }
         }
 
         // Other cases are more difficult
