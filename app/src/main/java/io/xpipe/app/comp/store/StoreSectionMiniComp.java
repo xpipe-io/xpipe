@@ -103,8 +103,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                 section.getAllChildren()) : section.getShownChildren();
         var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
             return StoreSectionMiniComp.builder().section(e).augment(this.augment).build();
-        }).withLimit(100)
-                .hgrow();
+        }).withLimit(100).minHeight(0).hgrow();
 
         list.add(new HorizontalComp(List.of(content))
                          .styleClass("content")
