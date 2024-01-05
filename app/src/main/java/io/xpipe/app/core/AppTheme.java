@@ -70,34 +70,38 @@ public class AppTheme {
             return;
         }
 
-        OsThemeDetector detector = OsThemeDetector.getDetector();
-        if (AppPrefs.get().theme.getValue() == null) {
-            try {
-                setDefault(detector.isDark());
-            } catch (Throwable ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
-                setDefault(false);
+        try {
+            OsThemeDetector detector = OsThemeDetector.getDetector();
+            if (AppPrefs.get().theme.getValue() == null) {
+                try {
+                    setDefault(detector.isDark());
+                } catch (Throwable ex) {
+                    ErrorEvent.fromThrowable(ex).omit().handle();
+                    setDefault(false);
+                }
             }
-        }
-        var t = AppPrefs.get().theme.getValue();
 
+            // The gnome detector sometimes runs into issues, also it's not that important
+            if (!OsType.getLocal().equals(OsType.LINUX)) {
+                detector.registerListener(dark -> {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        if (dark && !AppPrefs.get().theme.getValue().isDark()) {
+                            AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
+                        }
+
+                        if (!dark && AppPrefs.get().theme.getValue().isDark()) {
+                            AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
+                        }
+                    });
+                });
+            }
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omit().handle();
+        }
+
+        var t = AppPrefs.get().theme.getValue();
         t.apply();
         TrackEvent.debug("Set theme " + t.getId() + " for scene");
-
-        // The gnome detector sometimes runs into issues, also it's not that important
-        if (!OsType.getLocal().equals(OsType.LINUX)) {
-            detector.registerListener(dark -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    if (dark && !AppPrefs.get().theme.getValue().isDark()) {
-                        AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
-                    }
-
-                    if (!dark && AppPrefs.get().theme.getValue().isDark()) {
-                        AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
-                    }
-                });
-            });
-        }
 
         AppPrefs.get().theme.addListener((c, o, n) -> {
             changeTheme(n);
