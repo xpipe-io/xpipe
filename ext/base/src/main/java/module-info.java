@@ -59,7 +59,7 @@ open module io.xpipe.ext.base {
             DeleteStoreChildrenAction,
             BrowseStoreAction;
     provides DataStoreProvider with
-            ScriptGroupStoreProvider,
             SimpleScriptStoreProvider,
+            ScriptGroupStoreProvider,
             InMemoryStoreProvider;
 }

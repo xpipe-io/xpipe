@@ -3,7 +3,6 @@ package io.xpipe.app.ext;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.store.DataStore;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -17,7 +16,6 @@ public class DataStoreProviders {
         if (ALL == null) {
             ALL = ServiceLoader.load(layer, DataStoreProvider.class).stream()
                     .map(ServiceLoader.Provider::get)
-                    .sorted(Comparator.comparing(DataStoreProvider::getId))
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
