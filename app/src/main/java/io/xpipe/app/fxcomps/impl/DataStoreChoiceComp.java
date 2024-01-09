@@ -132,7 +132,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             var top = new HorizontalComp(List.of(category, filter.hgrow(), addButton))
                     .styleClass("top")
                     .apply(struc -> struc.get().setFillHeight(true))
-                    .createRegion();
+                    .createStructure().get();
             var r = section.vgrow().createRegion();
             var content = new VBox(top, r);
             content.setFillWidth(true);
@@ -146,6 +146,12 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             popover.setHeaderAlwaysVisible(true);
             popover.setDetachable(true);
             popover.setTitle(AppI18n.get("selectConnection"));
+            popover.setOnShowing(event -> {
+                Platform.runLater(() -> {
+                    ((StackPane) top.getChildren().get(1)).getChildren().get(1).requestFocus();
+                });
+                event.consume();
+            });
             AppFont.small(popover.getContentNode());
         }
 
