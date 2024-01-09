@@ -29,6 +29,8 @@ public interface LeafAction extends BrowserAction {
 
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.execute(model.getBusy(), () -> {
+                    // Start shell in case we exited
+                    model.getFileSystem().getShell().orElseThrow().start();
                     execute(model, selected);
                 });
             });
@@ -64,6 +66,8 @@ public interface LeafAction extends BrowserAction {
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.execute(model.getBusy(), () -> {
+                    // Start shell in case we exited
+                    model.getFileSystem().getShell().orElseThrow().start();
                     execute(model, selected);
                 });
             });

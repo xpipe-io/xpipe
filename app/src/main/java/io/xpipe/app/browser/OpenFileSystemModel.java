@@ -131,6 +131,9 @@ public final class OpenFileSystemModel {
             return Optional.empty();
         }
 
+        // Start shell in case we exited
+        getFileSystem().getShell().orElseThrow().start();
+
         // Fix common issues with paths
         var adjustedPath = FileSystemHelper.adjustPath(this, path);
         if (!Objects.equals(path, adjustedPath)) {

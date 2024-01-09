@@ -16,6 +16,8 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    List<UUID> getExitUuids();
+
     Optional<ShellStore> getSourceStore();
 
     ShellControl withSourceStore(ShellStore store);
