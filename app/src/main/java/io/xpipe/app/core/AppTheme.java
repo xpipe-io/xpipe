@@ -124,6 +124,10 @@ public class AppTheme {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
+            if (AppMainWindow.getInstance() == null) {
+                return;
+            }
+
             var window = AppMainWindow.getInstance().getStage();
             var scene = window.getScene();
             Pane root = (Pane) scene.getRoot();
