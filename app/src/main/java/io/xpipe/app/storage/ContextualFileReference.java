@@ -9,6 +9,7 @@ import lombok.NonNull;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.regex.Matcher;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,6 +34,24 @@ public class ContextualFileReference {
             return Path.of(s).normalize().toString().replaceAll("\\\\", "/");
         } catch (InvalidPathException ex) {
             return s;
+        }
+    }
+
+    public static Optional<ContextualFileReference> parseIfInDataDirectory(String s) {
+        var cf = of(s);
+        if (cf.serialize().contains("<DATA>")) {
+            return Optional.of(cf);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<String> resolveIfInDataDirectory(ShellControl shellControl, String s) {
+        if (s.contains("<DATA>")) {
+            var cf = of(s);
+            return Optional.of(cf.toFilePath(shellControl));
+        } else {
+            return Optional.empty();
         }
     }
 
