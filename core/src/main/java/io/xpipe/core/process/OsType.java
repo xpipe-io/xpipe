@@ -141,14 +141,14 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
             try (CommandControl c = pc.command("lsb_release -a").start()) {
                 var text = c.readStdoutDiscardErr();
                 if (c.getExitCode() == 0) {
-                    return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", null);
+                    return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", "Unknown");
                 }
             }
 
             try (CommandControl c = pc.command("cat /etc/*release").start()) {
                 var text = c.readStdoutDiscardErr();
                 if (c.getExitCode() == 0) {
-                    return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", null);
+                    return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", "Unknown");
                 }
             }
 
