@@ -49,7 +49,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '21.0.1'
+    javafxVersion = '20.0.2'
 }
 
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {
