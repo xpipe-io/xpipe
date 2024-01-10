@@ -51,7 +51,7 @@ public class OsLogoComp extends SimpleComp {
         var hide = BindingsHelper.map(img, s -> s != null);
         return new StackComp(List.of(
                         new SystemStateComp(state).hide(hide),
-                        PrettyImageHelper.ofSvg(img, 24, 24).visible(hide)))
+                        PrettyImageHelper.ofRasterized(img, 24, 24).visible(hide)))
                 .createRegion();
     }
 
@@ -66,8 +66,9 @@ public class OsLogoComp extends SimpleComp {
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
-                    list.filter(path -> !path.toString().endsWith(LINUX_DEFAULT)).map(path -> FileNames.getFileName(path.toString())).forEach(path -> {
-                        var base = FileNames.getBaseName(path).replace("-dark", "") + ".svg";
+                    list.filter(path -> path.toString().endsWith(".svg") && !path.toString().endsWith(LINUX_DEFAULT))
+                            .map(path -> FileNames.getFileName(path.toString())).forEach(path -> {
+                        var base = FileNames.getBaseName(path).replace("-dark", "") + "-24.png";
                         ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
                     });
                 }

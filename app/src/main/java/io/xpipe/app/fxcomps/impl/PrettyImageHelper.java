@@ -23,10 +23,10 @@ public class PrettyImageHelper {
     }
 
     public static Comp<?> ofFixedSquare(String img, int size) {
-        return ofFixed(img, size, size);
+        return ofFixedSize(img, size, size);
     }
 
-    public static Comp<?> ofFixed(String img, int w, int h) {
+    public static Comp<?> ofFixedSize(String img, int w, int h) {
         if (img == null) {
             return new PrettyImageComp(new SimpleStringProperty(null), w, h);
         }
@@ -39,13 +39,16 @@ public class PrettyImageHelper {
         }
     }
 
-
     public static  Comp<?> ofSvg(ObservableValue<String> img, int w, int h) {
         return new PrettySvgComp(img, w, h);
     }
 
+    public static  Comp<?> ofRasterized(ObservableValue<String> img, int w, int h) {
+        return new PrettyImageComp(img, w, h);
+    }
+
     public static  Comp<?> ofFixedSmallSquare(String img) {
-        return ofFixed(img, 16, 16);
+        return ofFixedSize(img, 16, 16);
     }
 
 }

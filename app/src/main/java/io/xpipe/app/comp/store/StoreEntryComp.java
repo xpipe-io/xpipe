@@ -160,7 +160,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 : wrapper.getEntry()
                         .getProvider()
                         .getDisplayIconFileName(wrapper.getEntry().getStore());
-        var imageComp = PrettyImageHelper.ofFixed(img, w, h);
+        var imageComp = PrettyImageHelper.ofFixedSize(img, w, h);
         var storeIcon = imageComp.createRegion();
         if (wrapper.getValidity().getValue().isUsable()) {
             new FancyTooltipAugment<>(new SimpleStringProperty(
