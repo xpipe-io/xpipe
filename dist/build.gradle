@@ -66,8 +66,6 @@ clean {
     }
 }
 
-dist.finalizedBy(createChecksums)
-
 apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
