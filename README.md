@@ -102,11 +102,19 @@ powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.c
 
 ####  Linux / MacOS
 
-The script supports installation via `apt`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
+The script supports installation via `apt`, `dnf`, `yum`, `zypper`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
 
 ```
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
+
+####  NixOS
+
+There's an official `xpipe` nixpkg available that you can install.
+This one is however not always up to date.
+
+There is also a custom repository that contains the latest up-to-date releases: https://github.com/xpipe-io/nixpkg
+You can install XPipe by following the instructions in the linked repository.
 
 ### Package managers
 
@@ -115,7 +123,6 @@ Alternatively, you can also use your favorite package manager (if supported):
 - [choco](https://community.chocolatey.org/packages/xpipe): `choco install xpipe`
 - [AUR package](https://aur.archlinux.org/packages/xpipe): `yay -S xpipe`
 - [Homebrew](https://github.com/xpipe-io/homebrew-tap): `brew install --cask xpipe-io/tap/xpipe`
-- [nixpkg](https://github.com/xpipe-io/nixpkg): You can install XPipe by following the linked repository instructions
 
 ## Open source model
 
