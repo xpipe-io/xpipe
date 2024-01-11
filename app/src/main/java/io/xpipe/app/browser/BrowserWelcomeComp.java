@@ -81,7 +81,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var listBox = new ListBoxViewComp<>(list, list, e -> {
             var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
             var graphic = entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
-            var view = PrettyImageHelper.ofFixedSize(graphic, 50, 40);
+            var view = PrettyImageHelper.ofFixedSquare(graphic, 45);
             view.padding(new Insets(2, 8, 2, 8));
             var content =
                     JfxHelper.createNamedEntry(DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);

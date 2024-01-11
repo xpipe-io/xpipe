@@ -269,11 +269,6 @@ public class AppWindowHelper {
             changed = true;
         }
 
-        // This should not happen but on weird Linux systems nothing is impossible
-        if (w < 0 || h < 0) {
-            return Optional.empty();
-        }
-
         return changed ? Optional.of(new Rectangle2D(x, y, w, h)) : Optional.empty();
     }
 

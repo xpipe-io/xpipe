@@ -14,7 +14,7 @@ public interface ProcessControl extends AutoCloseable {
 
     ProcessControl withExceptionConverter(ExceptionConverter converter);
 
-    void resetData(boolean cache);
+    void resetData();
 
     String prepareTerminalOpen(TerminalInitScriptConfig config) throws Exception;
 
@@ -33,7 +33,7 @@ public interface ProcessControl extends AutoCloseable {
     @Override
     void close() throws Exception;
 
-    void kill();
+    void kill() throws Exception;
 
     ProcessControl start() throws Exception;
 

@@ -242,10 +242,6 @@
     -fx-background-color: -color-success-subtle;
 }
 
-.root.nord .browser .table-row-cell:selected, .root.nord .browser .table-row-cell:hover:selected {
-    -fx-background-color: -color-success-7;
-}
-
 .browser .table-row-cell:folder:drag-over {
     -fx-background-color: -color-success-muted;
 }

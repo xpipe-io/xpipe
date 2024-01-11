@@ -56,7 +56,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         }, grid.widthProperty()));
 
         if (showIcon) {
-            var storeIcon = createIcon(30, 24);
+            var storeIcon = createIcon(30, 25);
             grid.getColumnConstraints().add(new ColumnConstraints(46));
             grid.add(storeIcon, 0, 0);
             GridPane.setHalignment(storeIcon, HPos.CENTER);

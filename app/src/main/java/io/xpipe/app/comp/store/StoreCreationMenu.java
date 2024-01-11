@@ -3,9 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.util.ScanAlert;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -14,71 +12,84 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class StoreCreationMenu {
 
     public static void addButtons(MenuButton menu) {
-        var automatically = new MenuItem();
-        automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
-        automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
-        automatically.setOnAction(event -> {
-            ScanAlert.showAsync(null);
-            event.consume();
-        });
-        menu.getItems().add(automatically);
-        menu.getItems().add(new SeparatorMenuItem());
-
-        menu.getItems().add(category("addHost", "mdi2h-home-plus",
-                DataStoreProvider.CreationCategory.HOST, "ssh"));
-
-        menu.getItems().add(category("addShell", "mdi2t-text-box-multiple",
-                DataStoreProvider.CreationCategory.SHELL, null));
-
-        menu.getItems().add(category("addScript", "mdi2s-script-text-outline",
-                DataStoreProvider.CreationCategory.SCRIPT, "script"));
-
-        menu.getItems().add(category("addCommand", "mdi2c-code-greater-than",
-                DataStoreProvider.CreationCategory.COMMAND, "cmd"));
-
-        menu.getItems().add(category("addTunnel", "mdi2v-vector-polyline-plus",
-                DataStoreProvider.CreationCategory.TUNNEL, null));
-
-        menu.getItems().add(category("addDatabase", "mdi2d-database-plus",
-                DataStoreProvider.CreationCategory.DATABASE, null));
-    }
-
-    private static MenuItem category(String name, String graphic, DataStoreProvider.CreationCategory category, String defaultProvider) {
-        var sub = DataStoreProviders.getAll().stream().filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory())).toList();
-        if (sub.size() < 2) {
-            var item = new MenuItem();
-            item.setGraphic(new FontIcon(graphic));
-            item.textProperty().bind(AppI18n.observable(name));
-            item.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(defaultProvider != null ? DataStoreProviders.byName(defaultProvider).orElseThrow() : null,
-                        v -> category.equals(v.getCreationCategory()));
+        {
+            var automatically = new MenuItem();
+            automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
+            automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
+            automatically.setOnAction(event -> {
+                ScanAlert.showAsync(null);
                 event.consume();
             });
-            return item;
+            menu.getItems().add(automatically);
+            menu.getItems().add(new SeparatorMenuItem());
         }
 
-        var menu = new Menu();
-        menu.setGraphic(new FontIcon(graphic));
-        menu.textProperty().bind(AppI18n.observable(name));
-        menu.setOnAction(event -> {
-            if (event.getTarget() != menu) {
-                return;
-            }
-
-            GuiDsStoreCreator.showCreation(defaultProvider != null ? DataStoreProviders.byName(defaultProvider).orElseThrow() : null,
-                    v -> category.equals(v.getCreationCategory()));
-            event.consume();
-        });
-        sub.forEach(dataStoreProvider -> {
-            var item = new MenuItem(dataStoreProvider.getDisplayName());
-            item.setGraphic(PrettyImageHelper.ofFixedSmallSquare(dataStoreProvider.getDisplayIconFileName(null)).createRegion());
-            item.setOnAction(event -> {
-                GuiDsStoreCreator.showCreation(dataStoreProvider,
-                        v -> category.equals(v.getCreationCategory()));
+        {
+            var host = new MenuItem();
+            host.setGraphic(new FontIcon("mdi2h-home-plus"));
+            host.textProperty().bind(AppI18n.observable("addHost"));
+            host.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(DataStoreProviders.byName("ssh").orElseThrow(),
+                        v -> DataStoreProvider.CreationCategory.HOST.equals(v.getCreationCategory()));
                 event.consume();
             });
-            menu.getItems().add(item);
-        });
-        return menu;
+            menu.getItems().add(host);
+        }
+        {
+            var shell = new MenuItem();
+            shell.setGraphic(new FontIcon("mdi2t-text-box-multiple"));
+            shell.textProperty().bind(AppI18n.observable("addShell"));
+            shell.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(null,
+                        v -> DataStoreProvider.CreationCategory.SHELL.equals(v.getCreationCategory()));
+                event.consume();
+            });
+            menu.getItems().add(shell);
+        }
+        {
+            var cmd = new MenuItem();
+            cmd.setGraphic(new FontIcon("mdi2c-code-greater-than"));
+            cmd.textProperty().bind(AppI18n.observable("addCommand"));
+            cmd.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(DataStoreProviders.byName("cmd").orElseThrow(),
+                        v -> DataStoreProvider.CreationCategory.COMMAND.equals(v.getCreationCategory()));
+                event.consume();
+            });
+            menu.getItems().add(cmd);
+        }
+        {
+            var db = new MenuItem();
+            db.setGraphic(new FontIcon("mdi2d-database-plus"));
+            db.textProperty().bind(AppI18n.observable("addDatabase"));
+            db.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(null,
+                        v -> DataStoreProvider.CreationCategory.DATABASE.equals(v.getCreationCategory()));
+                event.consume();
+            });
+            menu.getItems().add(db);
+        }
+        {
+            var tunnel = new MenuItem();
+            tunnel.setGraphic(new FontIcon("mdi2v-vector-polyline-plus"));
+            tunnel.textProperty().bind(AppI18n.observable("addTunnel"));
+            tunnel.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(null,
+                        v -> DataStoreProvider.CreationCategory.TUNNEL.equals(v.getCreationCategory()));
+                event.consume();
+            });
+            menu.getItems().add(tunnel);
+        }
+        {
+            var script = new MenuItem();
+            script.setGraphic(new FontIcon("mdi2s-script-text-outline"));
+            script.textProperty().bind(AppI18n.observable("addScript"));
+            script.setOnAction(event -> {
+                GuiDsStoreCreator.showCreation(DataStoreProviders.byName("script").orElseThrow(),
+                                               v -> DataStoreProvider.CreationCategory.SCRIPT.equals(v.getCreationCategory()));
+                event.consume();
+            });
+            menu.getItems().add(script);
+        }
     }
+
 }

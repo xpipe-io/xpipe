@@ -22,9 +22,8 @@ public class ShellDialects {
     public static ShellDialect ZSH;
     public static ShellDialect CSH;
     public static ShellDialect FISH;
-
+    public static ShellDialect UNSUPPORTED;
     public static ShellDialect CISCO;
-    public static ShellDialect RBASH;
 
     public static List<ShellDialect> getStartableDialects() {
         return ALL.stream().filter(dialect -> dialect.getOpenCommand() != null).filter(dialect -> dialect != SH_BSD).toList();
@@ -51,8 +50,8 @@ public class ShellDialects {
             ASH = byId("ash");
             SH = byId("sh");
             SH_BSD = byId("shBsd");
+            UNSUPPORTED = byId("unsupported");
             CISCO = byId("cisco");
-            RBASH = byId("rbash");
         }
 
         @Override

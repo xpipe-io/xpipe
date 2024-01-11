@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppImages;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileNames;
 import javafx.beans.binding.Bindings;
@@ -79,7 +78,6 @@ public class PrettyImageComp extends SimpleComp {
                             } else if (AppImages.hasNormalImage(image.getValue().replace("-dark", ""))) {
                                 return AppImages.image(image.getValue().replace("-dark", ""));
                             } else {
-                                TrackEvent.withWarn("Image file not found").tag("file",image.getValue()).handle();
                                 return null;
                             }
                         },

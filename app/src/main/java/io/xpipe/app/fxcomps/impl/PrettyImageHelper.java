@@ -6,49 +6,37 @@ import io.xpipe.core.store.FileNames;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
-import java.util.Optional;
-
 public class PrettyImageHelper {
 
-    public static Optional<Comp<?>> rasterizedIfExists(String img, int width, int height) {
+    public static Comp<?> ofFixedSquare(String img, int size) {
         if (img != null && img.endsWith(".svg")) {
             var base = FileNames.getBaseName(img);
-            var renderedName = base + "-" + height + ".png";
-            if (AppImages.hasNormalImage(base + "-" + height + ".png")) {
-                return Optional.of(new PrettyImageComp(new SimpleStringProperty(renderedName), width, height));
+            var renderedName = base + "-" + size + ".png";
+            if (AppImages.hasNormalImage(base + "-" + size + ".png")) {
+                return new PrettyImageComp(new SimpleStringProperty(renderedName), size, size);
+            } else {
+                return new PrettySvgComp(new SimpleStringProperty(img), size, size);
             }
         }
 
-        return Optional.empty();
+        return new PrettyImageComp(new SimpleStringProperty(img), size, size);
     }
 
-    public static Comp<?> ofFixedSquare(String img, int size) {
-        return ofFixedSize(img, size, size);
-    }
-
-    public static Comp<?> ofFixedSize(String img, int w, int h) {
-        if (img == null) {
-            return new PrettyImageComp(new SimpleStringProperty(null), w, h);
+    public static Comp<?> ofFixed(String img, int w, int h) {
+        if (w == h) {
+            return ofFixedSquare(img, w);
         }
 
-        var rasterized = rasterizedIfExists(img, w, h);
-        if (rasterized.isPresent()) {
-            return rasterized.get();
-        } else {
-            return img.endsWith(".svg") ? new PrettySvgComp(new SimpleStringProperty(img), w, h) : new PrettyImageComp(new SimpleStringProperty(img), w, h);
-        }
+        return img.endsWith(".svg") ? new PrettySvgComp(new SimpleStringProperty(img), w, h) : new PrettyImageComp(new SimpleStringProperty(img), w, h);
     }
+
 
     public static  Comp<?> ofSvg(ObservableValue<String> img, int w, int h) {
         return new PrettySvgComp(img, w, h);
     }
 
-    public static  Comp<?> ofRasterized(ObservableValue<String> img, int w, int h) {
-        return new PrettyImageComp(img, w, h);
-    }
-
     public static  Comp<?> ofFixedSmallSquare(String img) {
-        return ofFixedSize(img, 16, 16);
+        return ofFixed(img, 16, 16);
     }
 
 }

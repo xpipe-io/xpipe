@@ -53,7 +53,7 @@ public class FileSystemHelper {
         }
 
         var shell = model.getFileSystem().getShell();
-        if (shell.isEmpty() || !shell.get().isRunning()) {
+        if (shell.isEmpty()) {
             return path;
         }
 

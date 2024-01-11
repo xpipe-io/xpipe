@@ -13,6 +13,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ShellStore;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -105,7 +106,18 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                                                            selectedCategory).styleClass(Styles.LEFT_PILL);
             var filter = new FilterComp(filterText)
                     .styleClass(Styles.CENTER_PILL)
-                    .hgrow();
+                    .hgrow()
+                    .apply(struc -> {
+                        popover.setOnShowing(event -> {
+                            Platform.runLater(() -> {
+                                Platform.runLater(() -> {
+                                    Platform.runLater(() -> {
+                                        struc.getText().requestFocus();
+                                    });
+                                });
+                            });
+                        });
+                    });
 
             var addButton = Comp.of(() -> {
                         MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
@@ -120,16 +132,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             var top = new HorizontalComp(List.of(category, filter.hgrow(), addButton))
                     .styleClass("top")
                     .apply(struc -> struc.get().setFillHeight(true))
-                    .apply(struc -> {
-                        // Ugly solution to focus the text field
-                        // Somehow this does not work through the normal on shown listeners
-                        struc.get().getChildren().get(0).focusedProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue) {
-                                ((StackPane) struc.get().getChildren().get(1)).getChildren().get(1).requestFocus();
-                            }
-                        });
-                    })
-                    .createStructure().get();
+                    .createRegion();
             var r = section.vgrow().createRegion();
             var content = new VBox(top, r);
             content.setFillWidth(true);
