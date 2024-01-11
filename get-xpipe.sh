@@ -95,31 +95,6 @@ parse_os_name() {
   return 0
 }
 
-uninstall() {
-  local uname_str="$(uname -s)"
-  case "$uname_str" in
-  Linux)
-    if [ -d "/opt/$kebap_product_name" ]; then
-      info "Uninstalling previous version"
-      if [ -f "/etc/debian_version" ]; then
-        DEBIAN_FRONTEND=noninteractive sudo apt-get remove -qy "$kebap_product_name"
-      else
-        sudo rpm -e "$kebap_product_name"
-      fi
-    fi
-    ;;
-  Darwin)
-    if [ -d "/Applications/$product_name.app" ]; then
-      info "Uninstalling previous version"
-      sudo "/Applications/$product_name.app/Contents/Resources/scripts/uninstall.sh"
-    fi
-    ;;
-  *)
-    exit 1
-    ;;
-  esac
-}
-
 install() {
   local uname_str="$(uname -s)"
   local file="$1"
@@ -128,7 +103,19 @@ install() {
   Linux)
     if [ -f "/etc/debian_version" ]; then
       info "Installing file $file with apt"
+      sudo apt update
       DEBIAN_FRONTEND=noninteractive sudo apt install -qy "$file"
+    elif [ -x "$(command -v zypper)" ]; then
+      info "Installing file $file with zypper"
+      sudo zypper refresh
+      sudo zypper install -y "$file"
+    elif [ -x "$(command -v dnf)" ]; then
+      info "Installing file $file with dnf"
+      sudo dnf install -y --refresh "$file"
+    elif [ -x "$(command -v yum)" ]; then
+      info "Installing file $file with yum"
+      sudo yum clean expire-cache
+      sudo yum install -y "$file"
     else
       info "Installing file $file with rpm"
       sudo rpm -i "$file"
@@ -249,7 +236,6 @@ if [ "$exit_status" != 0 ]; then
   exit "$exit_status"
 fi
 
-uninstall
 install "$download_archive"
 
 exit_status="$?"
