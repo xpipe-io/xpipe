@@ -66,7 +66,7 @@ It currently supports:
 
 Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
 
-### Installers
+## Installers
 
 Installers are the easiest way to get started and come with an optional automatic update functionality. The following installers are available:
 
@@ -78,7 +78,7 @@ Installers are the easiest way to get started and come with an optional automati
 - [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
 - [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
 
-### Portable
+## Portable
 
 If you don't like installers, you can also use portable versions that are packaged as an archive. The following portable versions are available:
 
@@ -88,11 +88,11 @@ If you don't like installers, you can also use portable versions that are packag
 - [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
 - [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
 
-### Command-line
+## Command-line
 
 You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
 
-#### Windows
+### Windows
 
 This script will automatically install the `.msi` for you.
 
@@ -100,7 +100,7 @@ This script will automatically install the `.msi` for you.
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
-####  Linux / MacOS
+###  Linux / MacOS
 
 The script supports installation via `apt`, `dnf`, `yum`, `zypper`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
 
@@ -108,15 +108,15 @@ The script supports installation via `apt`, `dnf`, `yum`, `zypper`, `rpm`, and `
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
 
-####  NixOS
+###  NixOS
 
 There's an official `xpipe` nixpkg available that you can install.
 This one is however not always up to date.
 
-There is also a custom repository that contains the latest up-to-date releases: https://github.com/xpipe-io/nixpkg
+There is also a custom repository that contains the latest up-to-date releases: https://github.com/xpipe-io/nixpkg.
 You can install XPipe by following the instructions in the linked repository.
 
-### Package managers
+## Package managers
 
 Alternatively, you can also use your favorite package manager (if supported):
 
@@ -124,13 +124,15 @@ Alternatively, you can also use your favorite package manager (if supported):
 - [AUR package](https://aur.archlinux.org/packages/xpipe): `yay -S xpipe`
 - [Homebrew](https://github.com/xpipe-io/homebrew-tap): `brew install --cask xpipe-io/tap/xpipe`
 
+# Further information
+
 ## Open source model
 
 XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
 
 This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository.
 
-## Further information
+## More links
 
 You have more questions? Then check out the [FAQ](https://xpipe.io/faq).
 
