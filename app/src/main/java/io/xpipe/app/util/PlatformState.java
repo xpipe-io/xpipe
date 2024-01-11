@@ -69,10 +69,11 @@ public enum PlatformState {
         try {
             // Weird fix to ensure that macOS quit operation works while in tray.
             // Maybe related to https://bugs.openjdk.org/browse/JDK-8318129 as it prints the same error if not called
-            // The headless is not needed though but still done
+            // The headless check is not needed though but still done
             GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         } catch (HeadlessException e) {
             TrackEvent.warn(e.getMessage());
+            PlatformState.setCurrent(PlatformState.EXITED);
             return Optional.of(e);
         }
 

@@ -138,22 +138,23 @@ public abstract class OperationMode {
 
         set(newMode);
     }
-    public static void switchToSyncIfPossible(OperationMode newMode) {
+    public static boolean switchToSyncIfPossible(OperationMode newMode) {
         TrackEvent.info("Attempting to switch mode to " + newMode.getId());
 
         if (newMode.equals(TRAY) && !TRAY.isSupported()) {
             TrackEvent.info("Tray is not available, using base instead");
             set(BACKGROUND);
-            return;
+            return false;
         }
 
         if (newMode.equals(GUI) && !GUI.isSupported()) {
             TrackEvent.info("Gui is not available, using base instead");
             set(BACKGROUND);
-            return;
+            return false;
         }
 
         set(newMode);
+        return true;
     }
 
 
