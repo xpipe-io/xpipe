@@ -2,8 +2,10 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.Deobfuscator;
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.IMarkerFactory;
@@ -35,7 +37,7 @@ public class AppLogs {
     private static final String WRITE_LOGS_PROP = "io.xpipe.app.writeLogs";
     private static final String DEBUG_PLATFORM_PROP = "io.xpipe.app.debugPlatform";
     private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
-    private static final String DEFAULT_LOG_LEVEL = "debug";
+    private static final String DEFAULT_LOG_LEVEL = "info";
 
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
@@ -95,6 +97,15 @@ public class AppLogs {
 
     public static void init() {
         var logDir = AppProperties.get().getDataDir().resolve("logs");
+
+        if (XPipeSession.get().isNewBuildSession()) {
+            try {
+                FileUtils.cleanDirectory(logDir.toFile());
+            } catch (Exception ex) {
+                ErrorEvent.fromThrowable(ex).handle();
+            }
+        }
+
         var shouldLogToFile = shouldWriteLogs();
 
         var now = Instant.now();
@@ -236,8 +247,8 @@ public class AppLogs {
 
     private static String determineLogLevel() {
         if (System.getProperty(LOG_LEVEL_PROP) != null) {
-            String p = System.getProperty(WRITE_SYSOUT_PROP);
-            return DEFAULT_LEVELS.contains(p) ? p : "trace";
+            String p = System.getProperty(LOG_LEVEL_PROP);
+            return DEFAULT_LEVELS.contains(p) ? p : "info";
         }
 
         return DEFAULT_LOG_LEVEL;

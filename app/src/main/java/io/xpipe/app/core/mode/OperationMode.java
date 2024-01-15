@@ -100,6 +100,7 @@ public abstract class OperationMode {
             AppUserDirectoryCheck.check();
             AppTempCheck.check();
             AppLogs.init();
+            AppDebugModeNotice.printIfNeeded();
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();

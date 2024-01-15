@@ -26,6 +26,8 @@ public interface CommandControl extends ProcessControl {
         CLOSE
     }
 
+    void setSensitive();
+
     CommandControl withExceptionConverter(ExceptionConverter converter);
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
