@@ -102,6 +102,9 @@ public class XPipeUrlAction implements ActionProvider {
                         var entry = DataStorage.get()
                                 .getStoreEntryIfPresent(UUID.fromString(args.get(1)))
                                 .orElseThrow();
+                        if (!entry.getValidity().isUsable()) {
+                            return null;
+                        }
                         return new LaunchAction(entry);
                     }
                     case "action" -> {
@@ -112,6 +115,9 @@ public class XPipeUrlAction implements ActionProvider {
                         var entry = DataStorage.get()
                                 .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
                                 .orElseThrow();
+                        if (!entry.getValidity().isUsable()) {
+                            return null;
+                        }
                         return new CallAction(provider, entry);
                     }
                     default -> {
