@@ -1,6 +1,5 @@
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
-
 import java.util.stream.Collectors
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
@@ -44,35 +43,6 @@ if (Integer.parseInt(macVersion.substring(0, 1)) == 0) {
     macVersion = "1" + macVersion.substring(1)
 }
 
-task prepareJavafxJmods(type: DefaultTask) {
-    doLast {
-        def currentOS = DefaultNativePlatform.currentOperatingSystem;
-        def platform = null
-        if (currentOS.isWindows()) {
-            platform = 'windows'
-        } else if (currentOS.isLinux()) {
-            platform = 'linux'
-        } else if (currentOS.isMacOsX()) {
-            platform = 'osx'
-        }
-        def assetName = "openjfx-${javafxVersion}_${platform}-${arch == 'x86_64' ? 'x64' : 'aarch64'}_bin-jmods.zip"
-        def url = "https://download2.gluonhq.com/openjfx/${javafxVersion}/${assetName}"
-
-        if (!file(layout.buildDirectory.file('javafx.zip')).exists()) {
-            download.run {
-                src url
-                dest layout.buildDirectory.file('javafx.zip')
-                overwrite false
-            }
-        }
-
-        copy {
-            from zipTree(layout.buildDirectory.file('javafx.zip'))
-            into layout.buildDirectory.dir('dist')
-        }
-    }
-}
-
 jlink {
     imageDir = file("${project.layout.buildDirectory.get()}/image")
     options = [
@@ -83,7 +53,16 @@ jlink {
             // '--strip-native-commands'
     ]
 
-    addExtraModulePath(layout.buildDirectory.dir("dist/javafx-jmods-${javafxVersion}").get().toString())
+    def currentOS = DefaultNativePlatform.currentOperatingSystem;
+    def platform = null
+    if (currentOS.isWindows()) {
+        platform = 'windows'
+    } else if (currentOS.isLinux()) {
+        platform = 'linux'
+    } else if (currentOS.isMacOsX()) {
+        platform = 'osx'
+    }
+    addExtraModulePath(layout.projectDirectory.dir("javafx/${platform}/${arch}").toString())
 
     launcher {
         moduleName = 'io.xpipe.app'
@@ -112,7 +91,6 @@ jlink {
 }
 
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
-tasks.named('jlink').get().dependsOn(prepareJavafxJmods)
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
 def extModules = project.allExtensions.toList()
