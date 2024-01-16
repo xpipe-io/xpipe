@@ -47,7 +47,7 @@ On Windows, you have to manually install the JDK.
 
 You can use the gradle wrapper to build and run the project:
 - `gradlew app:run` will run the desktop application. You can set various useful properties in `app/build.gradle`
-- `gradlew dist` will create a distributable production version in `dist/build/dist/base`.
+- `gradlew clean dist` will create a distributable production version in `dist/build/dist/base`.
 - `gradlew <project>:test` will run the tests of the specified project.
 
 You are also able to properly debug the built production application through two different methods:
