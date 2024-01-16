@@ -25,7 +25,7 @@ application {
 }
 
 def appDependencies = project(':app').configurations.findByName('runtimeClasspath').getFiles().stream()
-        .filter(f -> !f.name.startsWith('javafx')) // Remove JavaFX dependencies
+        .filter(f -> !fullVersion || !f.name.startsWith('javafx')) // Remove JavaFX dependencies
         .collect(Collectors.toMap(f -> f.toPath().getFileName().toString(), f -> f, (f1, f2) -> f1))
         .values()
 def appModuleNames = ['app']
@@ -53,16 +53,18 @@ jlink {
             // '--strip-native-commands'
     ]
 
-    def currentOS = DefaultNativePlatform.currentOperatingSystem;
-    def platform = null
-    if (currentOS.isWindows()) {
-        platform = 'windows'
-    } else if (currentOS.isLinux()) {
-        platform = 'linux'
-    } else if (currentOS.isMacOsX()) {
-        platform = 'osx'
+    if (fullVersion) {
+        def currentOS = DefaultNativePlatform.currentOperatingSystem;
+        def platform = null
+        if (currentOS.isWindows()) {
+            platform = 'windows'
+        } else if (currentOS.isLinux()) {
+            platform = 'linux'
+        } else if (currentOS.isMacOsX()) {
+            platform = 'osx'
+        }
+        addExtraModulePath(layout.projectDirectory.dir("javafx/${platform}/${arch}").toString())
     }
-    addExtraModulePath(layout.projectDirectory.dir("javafx/${platform}/${arch}").toString())
 
     launcher {
         moduleName = 'io.xpipe.app'

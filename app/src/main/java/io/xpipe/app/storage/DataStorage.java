@@ -39,9 +39,6 @@ public abstract class DataStorage {
     protected boolean loaded;
 
     @Getter
-    protected boolean disposed;
-
-    @Getter
     protected final List<DataStoreCategory> storeCategories;
 
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
@@ -115,8 +112,7 @@ public abstract class DataStorage {
 
     private synchronized void dispose() {
         onReset();
-        save();
-        disposed = true;
+        save(true);
     }
 
     protected void onReset() {}
@@ -156,11 +152,11 @@ public abstract class DataStorage {
         }
 
         ThreadHelper.runAsync(() -> {
-            save();
+            save(false);
         });
     }
 
-    public abstract void save();
+    public abstract void save(boolean dispose);
 
     public abstract boolean supportsSharing();
     public boolean shouldShare(DataStoreCategory entry) {

@@ -18,7 +18,7 @@ public class ImpersistentStorage extends DataStorage {
     }
 
     @Override
-    public void save() {
+    public void save(boolean dispose) {
         var storesDir = getStoresDir();
 
         TrackEvent.info("Storage persistence is disabled. Deleting storage contents ...");

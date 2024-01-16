@@ -9,7 +9,9 @@ import java.util.UUID;
 public interface SelfReferentialStore extends DataStore {
 
     default DataStoreEntry getSelfEntry() {
-        return DataStorage.get().getStoreEntries().stream().filter(dataStoreEntry -> dataStoreEntry.getStore() == this).findFirst().orElseGet(() -> {
+        return DataStorage.get().getStoreEntryIfPresent(this).or(() -> {
+            return DataStorage.get().getStoreEntryInProgressIfPresent(this);
+        }).orElseGet(() -> {
             return DataStoreEntry.createNew(UUID.randomUUID(),DataStorage.DEFAULT_CATEGORY_UUID, "Invalid", this);
         });
     }

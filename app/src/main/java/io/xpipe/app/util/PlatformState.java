@@ -27,10 +27,10 @@ public enum PlatformState {
 
     public static void teardown() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            // Fix to preserve clipboard contents after shutdown
-            var string = Clipboard.getSystemClipboard().getString();
-            var s = new StringSelection(string);
             try {
+                // Fix to preserve clipboard contents after shutdown
+                var string = Clipboard.getSystemClipboard().getString();
+                var s = new StringSelection(string);
                 Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
             } catch (IllegalStateException ignored) {
             }

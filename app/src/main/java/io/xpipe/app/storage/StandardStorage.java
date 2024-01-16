@@ -25,6 +25,9 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final GitStorageHandler gitStorageHandler;
 
+    @Getter
+    private boolean disposed;
+
     StandardStorage() {
         this.gitStorageHandler = GitStorageHandler.getInstance();
         this.gitStorageHandler.init(dir);
@@ -119,10 +122,12 @@ public class StandardStorage extends DataStorage {
 
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
+        var dataDir = getDataDir();
 
         try {
             FileUtils.forceMkdir(storesDir.toFile());
             FileUtils.forceMkdir(categoriesDir.toFile());
+            FileUtils.forceMkdir(dataDir.toFile());
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).terminal(true).build().handle();
         }
@@ -292,7 +297,7 @@ public class StandardStorage extends DataStorage {
                 entry.dirty = true;
                 entry.setStoreNode(DataStorageWriter.storeToNode(entry.getStore()));
             });
-            save();
+            save(false);
         }
 
         deleteLeftovers();
@@ -302,7 +307,7 @@ public class StandardStorage extends DataStorage {
         this.gitStorageHandler.afterStorageLoad();
     }
 
-    public void save() {
+    public void save(boolean dispose) {
         if (!loaded || disposed) {
             return;
         }
@@ -363,6 +368,9 @@ public class StandardStorage extends DataStorage {
 
         deleteLeftovers();
         gitStorageHandler.afterStorageSave();
+        if (dispose) {
+            disposed = true;
+        }
         busyIo.unlock();
     }
 

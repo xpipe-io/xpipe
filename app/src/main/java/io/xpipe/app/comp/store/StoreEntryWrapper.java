@@ -98,6 +98,11 @@ public class StoreEntryWrapper {
     }
 
     public void update() {
+        // We are probably in shutdown then
+        if (StoreViewState.get() == null) {
+            return;
+        }
+
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
