@@ -49,7 +49,7 @@ public class ContextualFileReference {
     public static Optional<String> resolveIfInDataDirectory(ShellControl shellControl, String s) {
         if (s.contains("<DATA>")) {
             var cf = of(s);
-            return Optional.of(cf.toFilePath(shellControl));
+            return Optional.of(cf.toAbsoluteFilePath(shellControl));
         } else {
             return Optional.empty();
         }
@@ -76,7 +76,7 @@ public class ContextualFileReference {
     @NonNull
     private final String path;
 
-    public String toFilePath(ShellControl sc) {
+    public String toAbsoluteFilePath(ShellControl sc) {
         return path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/"));
     }
 
