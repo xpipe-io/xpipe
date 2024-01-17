@@ -185,10 +185,14 @@ public abstract class DataStorage {
 
         DataStoreEntry c = entry;
         do {
+            if (c.getStore() instanceof LocalStore && entry.getProvider().isShareableFromLocalMachine()) {
+                return true;
+            }
+
             if (!c.getProvider().isShareable(c)) {
                 return false;
             }
-        } while ((c = DataStorage.get().getDisplayParent(c).orElse(null)) != null);
+        } while ((c = DataStorage.get().getDefaultDisplayParent(c).orElse(null)) != null);
         return true;
     }
 
@@ -205,8 +209,8 @@ public abstract class DataStorage {
     }
 
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
-        var oldParent = DataStorage.get().getDisplayParent(entry);
-        var newParent = DataStorage.get().getDisplayParent(newEntry);
+        var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
+        var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var diffParent = Objects.equals(oldParent, newParent);
 
         newEntry.finalizeEntry();
@@ -263,7 +267,7 @@ public abstract class DataStorage {
         }
 
         var oldChildren = getStoreEntries().stream()
-                .filter(other -> e.equals(getDisplayParent(other).orElse(null)))
+                .filter(other -> e.equals(getDefaultDisplayParent(other).orElse(null)))
                 .toList();
         var toRemove = oldChildren.stream()
                 .filter(entry -> newChildren.stream()
@@ -382,7 +386,7 @@ public abstract class DataStorage {
             addStoreEntryIfNotPresent(syntheticParent.get());
         }
 
-        var displayParent = syntheticParent.or(() -> getDisplayParent(e));
+        var displayParent = syntheticParent.or(() -> getDefaultDisplayParent(e));
         if (displayParent.isPresent()) {
             displayParent.get().setExpanded(true);
             e.setCategoryUuid(displayParent.get().getCategoryUuid());
@@ -412,7 +416,7 @@ public abstract class DataStorage {
                 addStoreEntryIfNotPresent(syntheticParent.get());
             }
 
-            var displayParent = syntheticParent.or(() -> getDisplayParent(e));
+            var displayParent = syntheticParent.or(() -> getDefaultDisplayParent(e));
             if (displayParent.isPresent()) {
                 displayParent.get().setExpanded(true);
                 e.setCategoryUuid(displayParent.get().getCategoryUuid());
@@ -450,7 +454,7 @@ public abstract class DataStorage {
     public void deleteStoreEntry(@NonNull DataStoreEntry store) {
         store.finalizeEntry();
         this.storeEntries.remove(store);
-        getDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
+        getDefaultDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
         this.listeners.forEach(l -> l.onStoreRemove(store));
         refreshValidities(false);
         saveAsync();
@@ -479,9 +483,9 @@ public abstract class DataStorage {
     // Get operations
 
     public boolean isRootEntry(DataStoreEntry entry) {
-        var noParent = DataStorage.get().getDisplayParent(entry).isEmpty();
+        var noParent = DataStorage.get().getDefaultDisplayParent(entry).isEmpty();
         var diffParentCategory = DataStorage.get()
-                .getDisplayParent(entry)
+                .getDefaultDisplayParent(entry)
                 .map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid()))
                 .orElse(false);
         var loop = isParentLoop(entry);
@@ -492,7 +496,7 @@ public abstract class DataStorage {
         var es = new HashSet<DataStoreEntry>();
 
         DataStoreEntry current = entry;
-        while ((current = getDisplayParent(current).orElse(null)) != null) {
+        while ((current = getDefaultDisplayParent(current).orElse(null)) != null) {
             if (es.contains(current)) {
                 return true;
             }
@@ -514,7 +518,7 @@ public abstract class DataStorage {
 
         var current = entry;
         Optional<DataStoreEntry> parent;
-        while ((parent = getDisplayParent(current)).isPresent()) {
+        while ((parent = getDefaultDisplayParent(current)).isPresent()) {
             current = parent.get();
             if (isRootEntry(current)) {
                 break;
@@ -537,7 +541,7 @@ public abstract class DataStorage {
         }
     }
 
-    public Optional<DataStoreEntry> getDisplayParent(DataStoreEntry entry) {
+    public Optional<DataStoreEntry> getDefaultDisplayParent(DataStoreEntry entry) {
         if (entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return Optional.empty();
         }
@@ -580,7 +584,7 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    var parent = getDisplayParent(other);
+                    var parent = getDefaultDisplayParent(other);
                     return parent.isPresent() && parent.get().equals(entry) && !isParentLoop(entry);
                 })
                 .collect(Collectors.toSet());
@@ -599,7 +603,7 @@ public abstract class DataStorage {
         es.add(entry);
 
         DataStoreEntry current = entry;
-        while ((current = getDisplayParent(current).orElse(null)) != null) {
+        while ((current = getDefaultDisplayParent(current).orElse(null)) != null) {
             if (es.contains(current)) {
                 break;
             }

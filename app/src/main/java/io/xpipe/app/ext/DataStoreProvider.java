@@ -132,6 +132,10 @@ public interface DataStoreProvider {
 
     default void storageInit() throws Exception {}
 
+    default boolean isShareableFromLocalMachine() {
+        return false;
+    }
+
     default boolean isShareable(DataStoreEntry entry) {
         return true;
     }
