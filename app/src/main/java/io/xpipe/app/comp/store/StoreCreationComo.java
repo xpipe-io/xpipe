@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
+public class StoreCreationComo extends MultiStepComp.Step<CompStructure<?>> {
 
     MultiStepComp parent;
     Property<DataStoreProvider> provider;
@@ -55,17 +55,15 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
     StringProperty name;
     DataStoreEntry existingEntry;
-    boolean exists;
     boolean staticDisplay;
 
-    public GuiDsStoreCreator(
+    public StoreCreationComo(
             MultiStepComp parent,
             Property<DataStoreProvider> provider,
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
             DataStoreEntry existingEntry,
-            boolean exists,
             boolean staticDisplay) {
         this.parent = parent;
         this.provider = provider;
@@ -73,7 +71,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
         this.filter = filter;
         this.name = new SimpleStringProperty(initialName != null && !initialName.isEmpty() ? initialName : null);
         this.existingEntry = existingEntry;
-        this.exists = exists;
         this.staticDisplay = staticDisplay;
         this.store.addListener((c, o, n) -> {
             changedSinceError.setValue(true);
@@ -148,7 +145,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     });
                 },
                 true,
-                true,
                 e);
     }
 
@@ -169,7 +165,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     }
                 },
                 false,
-                false,
                 null);
     }
 
@@ -179,7 +174,6 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
             DataStore s,
             Predicate<DataStoreProvider> filter,
             Consumer<DataStoreEntry> con,
-            boolean exists,
             boolean staticDisplay,
             DataStoreEntry existingEntry) {
         var prop = new SimpleObjectProperty<>(provider);
@@ -192,8 +186,8 @@ public class GuiDsStoreCreator extends MultiStepComp.Step<CompStructure<?>> {
                     window -> {
                         return new MultiStepComp() {
 
-                            private final GuiDsStoreCreator creator = new GuiDsStoreCreator(
-                                    this, prop, store, filter, initialName, existingEntry, exists, staticDisplay);
+                            private final StoreCreationComo creator = new StoreCreationComo(
+                                    this, prop, store, filter, initialName, existingEntry, staticDisplay);
 
                             @Override
                             protected List<Entry> setup() {

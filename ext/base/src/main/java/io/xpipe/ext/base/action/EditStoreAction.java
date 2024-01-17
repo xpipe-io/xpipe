@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.comp.store.GuiDsStoreCreator;
+import io.xpipe.app.comp.store.StoreCreationComo;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -23,7 +23,7 @@ public class EditStoreAction implements ActionProvider {
 
         @Override
         public void execute() {
-            GuiDsStoreCreator.showEdit(store);
+            StoreCreationComo.showEdit(store);
         }
     }
 

@@ -364,6 +364,8 @@ public class DataStoreEntry extends StorageElement {
         provider = e.provider;
         childrenCache = null;
         validity = store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        storePersistentState = e.storePersistentState;
+        storePersistentStateNode = e.storePersistentStateNode;
         notifyUpdate();
     }
 
