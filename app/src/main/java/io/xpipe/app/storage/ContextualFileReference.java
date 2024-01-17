@@ -80,6 +80,10 @@ public class ContextualFileReference {
         return path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/"));
     }
 
+    public boolean isInDataDirectory() {
+        return serialize().contains("<DATA>");
+    }
+
     public String serialize() {
         var start = getDataDir();
         var normalizedPath = normalized(path);
