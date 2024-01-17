@@ -45,7 +45,7 @@ public class StandaloneFileBrowser {
             var comp = new BrowserComp(model)
                     .apply(struc -> struc.get().setPrefSize(1200, 700))
                     .apply(struc -> AppFont.normal(struc.get()));
-            var window = AppWindowHelper.sideWindow(AppI18n.get("openFileTitle"), stage -> comp, true, null);
+            var window = AppWindowHelper.sideWindow(AppI18n.get("openFileTitle"), stage -> comp, false, null);
             model.setOnFinish(fileStores -> {
                 file.accept(fileStores.size() > 0 ? fileStores.get(0) : null);
                 window.close();

@@ -115,13 +115,16 @@ public class BrowserNavBar extends SimpleComp {
                 .augment(new SimpleCompStructure<>(historyButton));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model).grow(false, true);
-
         var stack = new StackComp(List.of(pathBar, breadcrumbs))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .hgrow()
                 .apply(struc -> {
                     var t = struc.get().getChildren().get(0);
                     var b = struc.get().getChildren().get(1);
+                    b.setOnMouseClicked(event -> {
+                        t.requestFocus();
+                        event.consume();
+                    });
                     b.visibleProperty()
                             .bind(Bindings.createBooleanBinding(
                                     () -> {

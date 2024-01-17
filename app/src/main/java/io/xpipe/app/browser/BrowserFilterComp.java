@@ -66,6 +66,10 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
             }
         });
 
+        var box = new HBox(text, button);
+        box.getStyleClass().add("browser-filter");
+        box.setAlignment(Pos.CENTER);
+
         text.setPrefWidth(0);
         text.setFocusTraversable(false);
         button.getStyleClass().add(Styles.FLAT);
@@ -84,9 +88,6 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
             }
         });
         button.prefHeightProperty().bind(text.heightProperty());
-
-        var box = new HBox(text, button);
-        box.setAlignment(Pos.CENTER);
         return new Structure(box, (TextField) text, button);
     }
 

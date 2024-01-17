@@ -115,10 +115,32 @@
     -fx-shape: null;
 }
 
-.browser .tool-bar {
+.browser .top-bar {
     -fx-border-width: 1 0 1 0;
--fx-border-color: -color-border-default;
+    -fx-border-color: -color-border-default;
     -fx-padding: 5px 10px ;
+}
+
+.browser .top-bar > .button {
+    -fx-background-insets: 0;
+    -fx-background-color: 0;
+}
+
+.browser .top-bar > .menu-button {
+    -fx-background-insets: 0;
+    -fx-background-color: 0;
+}
+
+.browser .top-bar > .button:hover {
+    -fx-background-color: -color-accent-subtle;
+}
+
+.browser .top-bar > .menu-button:hover {
+    -fx-background-color: -color-accent-subtle;
+}
+
+.browser .top-bar .browser-filter .button:hover {
+    -fx-background-color: -color-accent-subtle;
 }
 
 .browser .status-bar {
@@ -198,8 +220,8 @@
 
 .chooser-bar {
 -fx-border-color: -color-border-default;
--fx-border-width: 0.1em 0 0 0;
--fx-padding: 1em;
+-fx-border-width: 1 0 0 0;
+-fx-padding: 0.4em 0.7em;
 -fx-background-color: -color-neutral-muted;
 }
 

@@ -12,13 +12,14 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
-import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -62,14 +63,17 @@ public class OpenFileSystemComp extends SimpleComp {
         var filter = new BrowserFilterComp(model, model.getFilter()).createStructure();
         Shortcuts.addShortcut(filter.toggleButton(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN));
 
-        var topBar = new ToolBar();
-        topBar.getItems()
+        var topBar = new HBox();
+        topBar.setAlignment(Pos.CENTER);
+        topBar.getStyleClass().add("top-bar");
+        topBar.getChildren()
                 .setAll(
                         overview,
                         backBtn,
                         forthBtn,
                         new Spacer(10),
-                        new BrowserNavBar(model).createRegion(),
+                        new BrowserNavBar(model).hgrow().createRegion(),
+                        new Spacer(5),
                         filter.get(),
                         refreshBtn,
                         terminalBtn,

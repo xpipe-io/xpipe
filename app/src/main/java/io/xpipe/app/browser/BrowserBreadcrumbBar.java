@@ -39,6 +39,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
             Callback<Breadcrumbs.BreadCrumbItem<String>, ? extends Node> dividerFactory) {
 
         var breadcrumbs = new Breadcrumbs<String>();
+        breadcrumbs.setMinWidth(0);
         SimpleChangeListener.apply(PlatformThread.sync(model.getCurrentPath()), val -> {
             if (val == null) {
                 breadcrumbs.setSelectedCrumb(null);

@@ -114,12 +114,12 @@ public class BrowserComp extends SimpleComp {
         });
         var spacer = new Spacer(Orientation.HORIZONTAL);
         var button = new Button("Select");
+        button.setPadding(new Insets(5, 10, 5, 10));
         button.setOnAction(event -> model.finishChooser());
         button.setDefaultButton(true);
         var bottomBar = new HBox(selectedLabel, selected, spacer, button);
         HBox.setHgrow(selected, Priority.ALWAYS);
         bottomBar.setAlignment(Pos.CENTER);
-        bottomBar.setPadding(new Insets(15));
         bottomBar.getStyleClass().add("chooser-bar");
 
         var layout = new VBox(r, bottomBar);
