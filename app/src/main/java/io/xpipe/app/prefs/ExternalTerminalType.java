@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Value;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -85,6 +86,43 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public boolean isSelectable() {
             return OsType.getLocal().equals(OsType.WINDOWS);
+        }
+    };
+
+    ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new ExternalTerminalType() {
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            // A weird behavior in Windows Terminal causes the trailing
+            // backslash of a filepath to escape the closing quote in the title argument
+            // So just remove that slash
+            var fixedName = FileNames.removeTrailingSlash(configuration.getTitle());
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .addFile(getPath().toString())
+                            .add("-w", "1", "nt", "--title")
+                            .addQuoted(fixedName)
+                            .addFile(configuration.getScriptFile()));
+        }
+
+        private Path getPath() {
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local).resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe");
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return Files.exists(getPath());
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
+        }
+
+        @Override
+        public String getId() {
+            return "app.windowsTerminalPreview";
         }
     };
 
@@ -195,9 +233,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
             @Override
             protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-                ThreadHelper.runFailableAsync(() -> {
-                    new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start").addFile(configuration.getScriptFile())).execute();
-                });
+                new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start")
+                        .addFile(configuration.getScriptFile())).execute();
             }
 
             @Override
@@ -566,6 +603,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     TABBY_WINDOWS,
                     ALACRITTY_WINDOWS,
                     WEZ_WINDOWS,
+                    WINDOWS_TERMINAL_PREVIEW,
                     WINDOWS_TERMINAL,
                     PWSH_WINDOWS,
                     POWERSHELL_WINDOWS,
