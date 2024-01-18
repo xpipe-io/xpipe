@@ -52,6 +52,10 @@ project.ext {
     javafxVersion = '20.0.2'
 }
 
+if (isFullRelease && rawVersion.contains("-")) {
+    throw new IllegalArgumentException("Releases must have canonical versions")
+}
+
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {
     def fileName = file(f).getName()
     def text = file(f).text
