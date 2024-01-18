@@ -98,7 +98,7 @@ public class AppLogs {
     public static void init() {
         var logDir = AppProperties.get().getDataDir().resolve("logs");
 
-        if (XPipeSession.get().isNewBuildSession()) {
+        if (XPipeSession.get().isNewBuildSession() && Files.exists(logDir)) {
             try {
                 FileUtils.cleanDirectory(logDir.toFile());
             } catch (Exception ex) {
