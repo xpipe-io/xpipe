@@ -512,18 +512,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType WEZ_MACOS = new MacOsType("app.wezMacOs", "WezTerm") {
 
         @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-
-        @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("WezTerm.app")
+            var c = CommandBuilder.of()
+                            .addFile(getApplicationPath().orElseThrow().resolve("Contents").resolve("MacOS")
+                                    .resolve("wezterm-gui").toString())
                             .add("start")
-                            .addFile(configuration.getScriptFile()));
+                            .addFile(configuration.getScriptFile()).buildString(LocalShell.getShell());
+            c = ScriptHelper.createDetachCommand(LocalShell.getShell(), c);
+            LocalShell.getShell().executeSimpleCommand(c);
         }
     };
 
