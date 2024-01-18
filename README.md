@@ -66,63 +66,92 @@ It currently supports:
 
 Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
 
-## Installers
+## Windows
 
-Installers are the easiest way to get started and come with an optional automatic update functionality. The following installers are available:
+Installers are the easiest way to get started and come with an optional automatic update functionality:
 
 - [Windows .msi Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
-- [Linux .deb Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.deb)
-- [Linux .deb Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-arm64.deb)
-- [Linux .rpm Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.rpm)
-- [Linux .rpm Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-arm64.rpm)
-- [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
-- [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
 
-## Portable
-
-If you don't like installers, you can also use portable versions that are packaged as an archive. The following portable versions are available:
-
-- [Windows .zip Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
-- [Linux .tar.gz Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
-- [Linux .tar.gz Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.tar.gz)
-- [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
-- [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
-
-## Command-line
-
-You can also install XPipe by pasting the installation command into your terminal. This will perform the full setup automatically.
-
-### Windows
-
-This script will automatically install the `.msi` for you.
+You can also install XPipe by pasting the installation command into your terminal. This will perform the setup automatically:
 
 ```
 powershell -ExecutionPolicy Bypass -Command iwr "https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.ps1" -OutFile "$env:TEMP\get-xpipe.ps1" ";"  "&" "$env:TEMP\get-xpipe.ps1"
 ```
 
-###  Linux / MacOS
+If you don't like installers, you can also use a portable version that is packaged as an archive:
 
-The script supports installation via `apt`, `dnf`, `yum`, `zypper`, `rpm`, and `pacman` on Linux, plus a `.pkg` install on macOS:
+- [Windows .zip Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
+
+Alternatively, you can also use [choco](https://community.chocolatey.org/packages/xpipe) to install it with `choco install xpipe`.
+
+## Linux
+
+You can install XPipe by pasting the installation command into your terminal. This will perform the setup automatically.
+The script supports installation via `apt`, `dnf`, `yum`, `zypper`, `rpm`, and `pacman` on Linux:
 
 ```
 bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
 ```
 
-###  NixOS
+### Debian-based distros
 
-There's an official `xpipe` nixpkg available that you can install.
-This one is however not always up to date.
+The following debian installers are available:
+
+- [Linux .deb Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.deb)
+- [Linux .deb Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-arm64.deb)
+
+Note that you should use apt to install the package with `sudo apt install <file>` as other package managers, for example dpkg,
+are not able to resolve and install any dependency packages.
+
+### RHEL-based distros
+
+The following rpm installers are available:
+
+- [Linux .rpm Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.rpm)
+- [Linux .rpm Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-arm64.rpm)
+
+The same applies here, you should use a package manager that supports resolving and installing required dependencies if needed.
+
+### Arch
+
+There is an official [AUR package](https://aur.archlinux.org/packages/xpipe) available that you can either install manually or via an AUR helper such as with `yay -S xpipe`.
+
+### NixOS
+
+There's an official [xpipe nixpkg](https://search.nixos.org/packages?channel=unstable&show=xpipe&from=0&size=50&sort=relevance&type=packages&query=xpipe) available that you can install with `nix-env -iA nixos.xpipe`. This one is however not always up to date.
 
 There is also a custom repository that contains the latest up-to-date releases: https://github.com/xpipe-io/nixpkg.
 You can install XPipe by following the instructions in the linked repository.
 
-## Package managers
+### Portable
 
-Alternatively, you can also use your favorite package manager (if supported):
+In case you prefer to use an archive version that you can extract anywhere, you can use these:
 
-- [choco](https://community.chocolatey.org/packages/xpipe): `choco install xpipe`
-- [AUR package](https://aur.archlinux.org/packages/xpipe): `yay -S xpipe`
-- [Homebrew](https://github.com/xpipe-io/homebrew-tap): `brew install --cask xpipe-io/tap/xpipe`
+- [Linux .tar.gz Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.tar.gz)
+- [Linux .tar.gz Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.tar.gz)
+
+Note that this assumes that you have some basic packages for graphical systems already installed
+as it is not a perfect standalone version. It should however run on most systems.
+
+## macOS
+
+Installers are the easiest way to get started and come with an optional automatic update functionality:
+
+- [MacOS .pkg Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-x86_64.pkg)
+- [MacOS .pkg Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-macos-arm64.pkg)
+
+You also can install XPipe by pasting the installation command into your terminal. This will perform the `.pkg` install automatically:
+
+```
+bash <(curl -sL https://raw.githubusercontent.com/xpipe-io/xpipe/master/get-xpipe.sh)
+```
+
+If you don't like installers, you can also use a portable version that is packaged as an archive:
+
+- [MacOS .dmg Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-x86_64.dmg)
+- [MacOS .dmg Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-macos-arm64.dmg)
+
+Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-tap) to install XPipe with `brew install --cask xpipe-io/tap/xpipe`.
 
 # Further information
 
