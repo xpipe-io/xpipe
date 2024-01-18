@@ -38,6 +38,10 @@ task createChecksums(type: Checksum) {
     doLast {
         def artifactChecksumsSha256Hex = new HashMap<String, String>()
         for (final def file in outputDirectory.get().getAsFileTree().files) {
+            if (file.toString().endsWith('mapping.map')) {
+                continue
+            }
+
             def name = file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}
             artifactChecksumsSha256Hex.put(name, file.text.trim())
         }

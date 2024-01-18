@@ -4,7 +4,6 @@ import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
@@ -36,10 +35,6 @@ public class StandardStorage extends DataStorage {
     @Override
     protected void onReset() {
         gitStorageHandler.onReset();
-    }
-
-    private boolean isNewSession() {
-        return XPipeSession.get().isNewSystemSession();
     }
 
     private void deleteLeftovers() {
