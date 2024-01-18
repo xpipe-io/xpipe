@@ -8,6 +8,7 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
 import lombok.Value;
 
@@ -154,7 +155,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 }
             }
 
-            Optional<Path> finalLocation = location;
             execute(location.get(), configuration);
         }
 
@@ -191,28 +191,39 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
-    //    ExternalTerminalType WEZ_WINDOWS = new WindowsType("app.wezWindows", "wezterm") {
-    //
-    //        @Override
-    //        protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-    //            ThreadHelper.runFailableAsync(() -> {
-    //                new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start", "-e",
-    // "cmd", "/c").addFile(configuration.getScriptFile())).execute();
-    //            });
-    //        }
-    //
-    //        @Override
-    //        protected Optional<Path> determineInstallation() {
-    //            Optional<String> launcherDir;
-    //            launcherDir = WindowsRegistry.readString(
-    //                            WindowsRegistry.HKEY_LOCAL_MACHINE,
-    //
-    // "Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
-    //                            "InstallLocation")
-    //                    .map(p -> p + "\\wezterm.exe");
-    //            return launcherDir.map(Path::of);
-    //        }
-    //    };
+        ExternalTerminalType WEZ_WINDOWS = new WindowsType("app.wezWindows", "wezterm-gui") {
+
+            @Override
+            protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
+                ThreadHelper.runFailableAsync(() -> {
+                    new LocalStore().control().command(CommandBuilder.of().addFile(file.toString()).add("start").addFile(configuration.getScriptFile())).execute();
+                });
+            }
+
+            @Override
+            protected Optional<Path> determineInstallation() {
+                Optional<String> launcherDir;
+                launcherDir = WindowsRegistry.readString(
+                                WindowsRegistry.HKEY_LOCAL_MACHINE,
+                                "Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BCF6F0DA-5B9A-408D-8562-F680AE6E1EAF}_is1",
+                                "InstallLocation")
+                        .map(p -> p + "\\wezterm-gui.exe");
+                return launcherDir.map(Path::of);
+            }
+        };
+
+    ExternalTerminalType WEZ_LINUX = new SimplePathType("app.wezLinux", "wezterm-gui") {
+
+        @Override
+        protected CommandBuilder toCommand(String name, String file) {
+            return CommandBuilder.of().add("start").addFile(file);
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    };
 
     //    ExternalTerminalType HYPER_WINDOWS = new WindowsFullPathType("app.hyperWindows") {
     //
@@ -498,6 +509,24 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
 
+    ExternalTerminalType WEZ_MACOS = new MacOsType("app.wezMacOs", "WezTerm") {
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return false;
+        }
+
+        @Override
+        public void launch(LaunchConfiguration configuration) throws Exception {
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("WezTerm.app")
+                            .add("start")
+                            .addFile(configuration.getScriptFile()));
+        }
+    };
+
     ExternalTerminalType KITTY_MACOS = new MacOsType("app.kittyMacOs", "kitty") {
 
         @Override
@@ -540,10 +569,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     List<ExternalTerminalType> ALL = Stream.of(
                     TABBY_WINDOWS,
                     ALACRITTY_WINDOWS,
+                    WEZ_WINDOWS,
                     WINDOWS_TERMINAL,
                     PWSH_WINDOWS,
                     POWERSHELL_WINDOWS,
                     CMD,
+                    WEZ_LINUX,
                     KONSOLE,
                     XFCE,
                     ELEMENTARY,
@@ -564,6 +595,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     ALACRITTY_MACOS,
                     KITTY_MACOS,
                     WARP,
+                    WEZ_MACOS,
                     MACOS_TERMINAL,
                     CUSTOM)
             .filter(terminalType -> terminalType.isSelectable())
