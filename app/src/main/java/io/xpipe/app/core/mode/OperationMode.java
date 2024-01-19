@@ -211,6 +211,11 @@ public abstract class OperationMode {
                 OperationMode.halt(1);
             }
 
+            // In case we perform any operations such as opening a terminal
+            // give it some time to open while this process is still alive
+            // Otherwise it might quit because the parent process is dead already
+            ThreadHelper.sleep(1000);
+
             OperationMode.halt(0);
         };
 
