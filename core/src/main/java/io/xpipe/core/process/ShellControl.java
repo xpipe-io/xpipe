@@ -208,7 +208,9 @@ public interface ShellControl extends ProcessControl {
     ShellControl subShell(
             FailableFunction<ShellControl, String, Exception> command, TerminalOpenFunction terminalCommand);
 
-    void executeLine(String command) throws Exception;
+    void writeLineAndReadEcho(String command) throws Exception;
+
+    void writeLineAndReadEcho(String command, boolean log) throws Exception;
 
     void cd(String directory) throws Exception;
 
