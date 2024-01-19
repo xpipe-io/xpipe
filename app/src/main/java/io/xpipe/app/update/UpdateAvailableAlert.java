@@ -10,6 +10,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 public class UpdateAvailableAlert {
 
     public static void showIfNeeded() {
@@ -23,8 +27,11 @@ public class UpdateAvailableAlert {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
                     alert.setAlertType(Alert.AlertType.NONE);
 
+                    var date = u.getReleaseDate() != null ?
+                            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                                    .format(u.getReleaseDate().atZone(ZoneId.systemDefault())) : "Latest";
                     var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> {
-                                var header = "&nbsp;<h1>" + AppI18n.get("whatsNew", u.getVersion()) + "</h1>";
+                                var header = "&nbsp;<h1>" + AppI18n.get("whatsNew", u.getVersion(), date) + "</h1>";
                                 return header + s;
                             })
                             .createRegion();

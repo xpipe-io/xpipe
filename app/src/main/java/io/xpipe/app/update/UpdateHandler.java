@@ -184,6 +184,7 @@ public abstract class UpdateHandler {
                 XPipeDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
+                lastUpdateCheckResult.getValue().getReleaseDate(),
                 null,
                 changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
@@ -269,6 +270,7 @@ public abstract class UpdateHandler {
         String downloadUrl;
         AppInstaller.InstallerAssetType assetType;
         Instant checkTime;
+        Instant releaseDate;
         boolean isUpdate;
     }
 
@@ -280,6 +282,7 @@ public abstract class UpdateHandler {
         String sourceDist;
         String version;
         String releaseUrl;
+        Instant releaseDate;
         Path file;
         String body;
         AppInstaller.InstallerAssetType assetType;
