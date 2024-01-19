@@ -2,7 +2,7 @@ package io.xpipe.app.browser.action;
 
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
-import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public abstract class ExecuteApplicationAction implements LeafAction, Applicatio
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         for (BrowserEntry entry : entries) {
             var command = detach()
-                    ? ScriptHelper.createDetachCommand(sc, createCommand(model, entry))
+                    ? ApplicationHelper.createDetachCommand(sc, createCommand(model, entry))
                     : createCommand(model, entry);
             try (var cc = sc.command(command)
                     .withWorkingDirectory(model.getCurrentDirectory().getPath())

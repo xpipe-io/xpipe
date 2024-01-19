@@ -67,7 +67,7 @@ public class TroubleshootComp extends Comp<CompStructure<?>> {
                                                     XPipeInstallation.getDaemonDebugScriptPath(sc.getOsType()));
                                             if (sc.getOsType().equals(OsType.WINDOWS)) {
                                                 sc.executeSimpleCommand(
-                                                        ScriptHelper.createDetachCommand(sc, "\"" + script + "\""));
+                                                        ApplicationHelper.createDetachCommand(sc, "\"" + script + "\""));
                                             } else {
                                                 TerminalHelper.open("XPipe Debug", LocalShell.getShell().command("\"" + script + "\""));
                                             }

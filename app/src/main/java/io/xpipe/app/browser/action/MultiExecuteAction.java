@@ -3,7 +3,7 @@ package io.xpipe.app.browser.action;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.core.process.ShellControl;
 import org.apache.commons.io.FilenameUtils;
@@ -51,7 +51,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = ScriptHelper.createDetachCommand(pc, createCommand(pc, model, entry));
+                                        var cmd = ApplicationHelper.createDetachCommand(pc, createCommand(pc, model, entry));
                                         pc.command(cmd)
                                                 .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())

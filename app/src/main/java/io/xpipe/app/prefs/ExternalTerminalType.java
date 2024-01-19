@@ -555,7 +555,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                                     .resolve("wezterm-gui").toString())
                             .add("start")
                             .addFile(configuration.getScriptFile()).buildString(LocalShell.getShell());
-            c = ScriptHelper.createDetachCommand(LocalShell.getShell(), c);
+            c = ApplicationHelper.createDetachCommand(LocalShell.getShell(), c);
             LocalShell.getShell().executeSimpleCommand(c);
         }
     };
