@@ -73,7 +73,7 @@ public class StoreEntryWrapper {
     }
 
     public void editDialog() {
-        StoreCreationComo.showEdit(entry);
+        StoreCreationComp.showEdit(entry);
     }
 
     public void delete() {

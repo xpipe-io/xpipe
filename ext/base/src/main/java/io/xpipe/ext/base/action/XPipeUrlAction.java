@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.action;
 
 import io.xpipe.app.comp.store.StoreViewState;
-import io.xpipe.app.comp.store.StoreCreationComo;
+import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -75,7 +75,7 @@ public class XPipeUrlAction implements ActionProvider {
             }
 
             var entry = DataStoreEntry.createNew(UUID.randomUUID(), StoreViewState.get().getActiveCategory().getValue().getCategory().getUuid(), "", store);
-            StoreCreationComo.showEdit(entry);
+            StoreCreationComp.showEdit(entry);
         }
     }
 

@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class StoreCreationComo extends MultiStepComp.Step<CompStructure<?>> {
+public class StoreCreationComp extends MultiStepComp.Step<CompStructure<?>> {
 
     MultiStepComp parent;
     Property<DataStoreProvider> provider;
@@ -57,7 +57,7 @@ public class StoreCreationComo extends MultiStepComp.Step<CompStructure<?>> {
     DataStoreEntry existingEntry;
     boolean staticDisplay;
 
-    public StoreCreationComo(
+    public StoreCreationComp(
             MultiStepComp parent,
             Property<DataStoreProvider> provider,
             Property<DataStore> store,
@@ -186,7 +186,7 @@ public class StoreCreationComo extends MultiStepComp.Step<CompStructure<?>> {
                     window -> {
                         return new MultiStepComp() {
 
-                            private final StoreCreationComo creator = new StoreCreationComo(
+                            private final StoreCreationComp creator = new StoreCreationComp(
                                     this, prop, store, filter, initialName, existingEntry, staticDisplay);
 
                             @Override
