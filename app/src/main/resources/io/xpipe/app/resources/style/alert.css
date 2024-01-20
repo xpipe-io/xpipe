@@ -1,3 +1,11 @@
+.dialog-pane:no-header {
+    -fx-padding: 0;
+}
+
+.dialog-pane:header {
+    -fx-pref-height: 2em;
+}
+
 .dialog-pane .button {
     -fx-font-size: 0.8em;
     -fx-border-width: 1px;
@@ -6,14 +14,11 @@
     -fx-padding: 6;
 }
 
-.dialog-pane:no-header > * {
-    -fx-padding: 0;
-}
-
 .dialog-pane > *.button-bar > *.container {
     -fx-padding: 12;
     -fx-border-color: -color-border-default;
     -fx-background-color: -color-bg-subtle;
+    -fx-border-width: 1 0 0 0;
 }
 
 .dialog-pane:header .header-panel {
@@ -44,10 +49,6 @@
     -fx-font-size: 1.0em;
     -fx-wrap-text: true;
     -fx-text-fill: -color-fg-default;
-}
-
-.dialog-pane:header {
-    -fx-pref-height: 2em;
 }
 
 .dialog-pane:header > *.label.content{
