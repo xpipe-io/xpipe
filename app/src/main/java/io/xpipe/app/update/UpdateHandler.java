@@ -227,7 +227,8 @@ public abstract class UpdateHandler {
                 var performedUpdate = new PerformedUpdate(
                         preparedUpdate.getValue().getVersion(),
                         preparedUpdate.getValue().getBody(),
-                        preparedUpdate.getValue().getVersion());
+                        preparedUpdate.getValue().getVersion(),
+                        preparedUpdate.getValue().getReleaseDate());
                 AppCache.update("performedUpdate", performedUpdate);
             }
         });
@@ -256,6 +257,7 @@ public abstract class UpdateHandler {
         String name;
         String rawDescription;
         String newVersion;
+        Instant releaseDate;
     }
 
     @Value

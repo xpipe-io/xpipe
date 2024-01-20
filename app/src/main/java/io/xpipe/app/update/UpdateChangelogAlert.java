@@ -9,6 +9,10 @@ import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 public class UpdateChangelogAlert {
 
     private static boolean shown = false;
@@ -35,8 +39,11 @@ public class UpdateChangelogAlert {
                     alert.setAlertType(Alert.AlertType.NONE);
                     alert.initModality(Modality.NONE);
 
+                    var date = update.getReleaseDate() != null ?
+                            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                                    .format(update.getReleaseDate().atZone(ZoneId.systemDefault())) : "Latest";
                     var markdown = new MarkdownComp(update.getRawDescription(), s -> {
-                                var header = "&nbsp;<h1>" + AppI18n.get("whatsNew", update.getName()) + "</h1>";
+                                var header = "&nbsp;<h1>" + AppI18n.get("whatsNew", update.getName(), date) + "</h1>";
                                 return header + s;
                             })
                             .createRegion();
