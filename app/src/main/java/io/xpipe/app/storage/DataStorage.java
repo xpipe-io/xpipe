@@ -211,12 +211,12 @@ public abstract class DataStorage {
     public void updateEntry(DataStoreEntry entry, DataStoreEntry newEntry) {
         var oldParent = DataStorage.get().getDefaultDisplayParent(entry);
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
-        var diffParent = Objects.equals(oldParent, newParent);
+        var sameParent = Objects.equals(oldParent, newParent);
 
         newEntry.finalizeEntry();
 
         var children = getDeepStoreChildren(entry);
-        if (!diffParent) {
+        if (!sameParent) {
             var toRemove = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreRemove(toRemove));
         }
@@ -224,11 +224,11 @@ public abstract class DataStorage {
         entry.applyChanges(newEntry);
         entry.initializeEntry();
 
-        if (!diffParent) {
+        if (!sameParent) {
             var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
-            refreshValidities(true);
         }
+        refreshValidities(true);
 
         saveAsync();
     }
