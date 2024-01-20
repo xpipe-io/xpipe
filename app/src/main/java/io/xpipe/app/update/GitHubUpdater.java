@@ -79,7 +79,7 @@ public class GitHubUpdater extends UpdateHandler {
                 ghAsset.get().getBrowserDownloadUrl(),
                 assetType,
                 Instant.now(),
-                rel.get().getCreatedAt().toInstant(),
+                rel.get().getCreatedAt() != null ? rel.get().getCreatedAt().toInstant() : null,
                 isUpdate));
         return lastUpdateCheckResult.getValue();
     }

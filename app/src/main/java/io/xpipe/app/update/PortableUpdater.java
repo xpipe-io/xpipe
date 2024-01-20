@@ -50,7 +50,7 @@ public class PortableUpdater extends UpdateHandler {
                 null,
                 null,
                 Instant.now(),
-                rel.get().getCreatedAt().toInstant(),
+                rel.get().getCreatedAt() != null ? rel.get().getCreatedAt().toInstant() : null,
                 isUpdate));
         return lastUpdateCheckResult.getValue();
     }
