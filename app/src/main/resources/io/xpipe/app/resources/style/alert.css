@@ -1,21 +1,23 @@
 .dialog-pane .button {
--fx-font-size: 0.8em;
--fx-border-width: 1px;
--fx-border-radius: 2px;
--fx-background-radius: 2px;
+    -fx-font-size: 0.8em;
+    -fx-border-width: 1px;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+    -fx-padding: 6;
 }
 
 .dialog-pane:no-header > * {
     -fx-padding: 0;
 }
 
-.dialog-pane:no-header > *.button-bar > *.container {
--fx-border-width: 1px 0 0 0;
--fx-border-color: -color-neutral-emphasis;
+.dialog-pane > *.button-bar > *.container {
+    -fx-padding: 12;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-subtle;
 }
 
 .dialog-pane:header .header-panel {
--fx-background-color: -color-neutral-muted;
+-fx-background-color: -color-bg-default;
 }
 
 .dialog-pane:header .header-panel .graphic-container {
@@ -25,9 +27,9 @@
 .dialog-pane:header > .content {
 -fx-border-width: 2px 0 0 0;
 -fx-border-color:-color-accent-fg;
--fx-background-color: -color-neutral-muted;
+-fx-background-color: -color-bg-default;
     -fx-border-insets: 0 1.333em 1em 1em;
-    -fx-padding: 1.333em 0 0 0;
+    -fx-padding: 0.7em 0 0 0;
 }
 
 .content-text {
@@ -46,11 +48,6 @@
 
 .dialog-pane:header {
     -fx-pref-height: 2em;
-}
-
-.dialog-pane:header > *.button-bar > *.container {
--fx-border-width: 1px 0 0 0;
--fx-border-color: -color-neutral-emphasis;
 }
 
 .dialog-pane:header > *.label.content{
