@@ -56,7 +56,7 @@ public class OsLogoComp extends SimpleComp {
     }
 
     private static final Map<String, String> ICONS = new HashMap<>();
-    private static final String LINUX_DEFAULT = "linux.svg";
+    private static final String LINUX_DEFAULT = "linux-24.png";
 
     private String getImage(String name) {
         if (name == null) {
