@@ -303,11 +303,12 @@ public class StandardStorage extends DataStorage {
     }
 
     public void save(boolean dispose) {
-        if (!loaded || disposed) {
+        if (!busyIo.tryLock()) {
             return;
         }
 
-        if (!busyIo.tryLock()) {
+        if (!loaded || disposed) {
+            busyIo.unlock();
             return;
         }
 
