@@ -101,6 +101,7 @@ project.ext {
             "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
             "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.app",
             "--add-opens", "java.base/java.lang=io.xpipe.app",
+            "--add-opens", "java.base/java.nio.file=io.xpipe.app",
             "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
             "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
             "--add-opens", "java.base/java.lang=io.xpipe.core",
