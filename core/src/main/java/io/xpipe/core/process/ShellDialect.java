@@ -10,23 +10,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
-
-    static String flatten(List<String> command) {
-        return command.stream()
-                .map(s -> s.contains(" ")
-                                && !(s.startsWith("\"") && s.endsWith("\""))
-                                && !(s.startsWith("'") && s.endsWith("'"))
-                        ? "\"" + s + "\""
-                        : s)
-                .collect(Collectors.joining(" "));
-    }
-
-    String getExecutableName();
 
     default boolean isSupportedShell() {
         return true;
@@ -43,6 +30,8 @@ public interface ShellDialect {
     default ShellDialect getDumbReplacementDialect(ShellControl parent) {
         return this;
     }
+
+    String getExecutableName();
 
     String getCatchAllVariable();
 

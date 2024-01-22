@@ -5,7 +5,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -119,7 +118,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var cc = LocalShell.getShell()
-                    .command(ShellDialects.getPlatformDefault().getWhichCommand(executable))
+                    .command(var1 -> var1.getShellDialect().getWhichCommand(executable))
                     .start()) {
                 var out = cc.readStdoutDiscardErr();
                 var exit = cc.getExitCode();

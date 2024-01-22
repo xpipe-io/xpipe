@@ -10,7 +10,6 @@ import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.util.TerminalHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.LocalStore;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -41,10 +40,9 @@ public class PasswordCategory extends AppPrefsCategory {
                         "Password test",
                         new LocalStore()
                                 .control()
-                                .command(cmd
+                                .command(sc -> cmd
                                         + "\n"
-                                        + ShellDialects.getPlatformDefault()
-                                                .getEchoCommand("Is this your password?", false))
+                                        + sc.getShellDialect().getEchoCommand("Is this your password?", false))
                                 .terminalExitMode(CommandControl.TerminalExitMode.KEEP_OPEN));
             });
         };

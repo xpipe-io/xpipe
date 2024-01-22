@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 
 public class XPipeInstallation {
@@ -212,7 +211,7 @@ public class XPipeInstallation {
     }
 
     public static String queryInstallationVersion(ShellControl p, String exec) throws Exception {
-        try (CommandControl c = p.command(List.of(exec, "version")).start()) {
+        try (CommandControl c = p.command(CommandBuilder.of().addFile(exec).add("version")).start()) {
             return c.readStdoutOrThrow();
         } catch (ProcessOutputException ex) {
             return "?";

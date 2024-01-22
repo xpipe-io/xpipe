@@ -4,6 +4,7 @@ import io.xpipe.core.util.ModuleLayerLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 public class ShellDialects {
@@ -71,15 +72,19 @@ public class ShellDialects {
                 .filter(shellType -> shellType.getId().equals(name))
                 .findFirst()
                 .orElseThrow();
+	}
+	
+    public static boolean isPowershell(ShellControl sc) {
+        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
     }
 
-    public static ShellDialect getPlatformDefault() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return CMD;
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return BASH;
-        } else {
-            return ZSH;
-        }
+    public static ShellDialect byName(String name) {
+        return byNameIfPresent(name).orElseThrow();
+    }
+
+    public static Optional<ShellDialect> byNameIfPresent(String name) {
+        return ALL.stream()
+                .filter(shellType -> shellType.getId().equals(name))
+                .findFirst();
     }
 }

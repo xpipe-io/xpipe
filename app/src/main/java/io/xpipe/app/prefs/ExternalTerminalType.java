@@ -7,6 +7,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
@@ -134,11 +135,14 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             // backslash of a filepath to escape the closing quote in the title argument
             // So just remove that slash
             var fixedName = FileNames.removeTrailingSlash(configuration.getTitle());
+            var toExec = !ShellDialects.isPowershell(LocalShell.getShell()) ?
+                    CommandBuilder.of().addFile(configuration.getScriptFile()) :
+                    CommandBuilder.of().add("powershell", "-ExecutionPolicy", "Bypass", "-File").addQuoted(configuration.getScriptFile());
             LocalShell.getShell()
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("wt", "-w", "1", "nt", "--title")
                             .addQuoted(fixedName)
-                            .addFile(configuration.getScriptFile()));
+                            .addSub(toExec));
         }
 
         @Override

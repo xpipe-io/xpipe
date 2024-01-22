@@ -2,8 +2,8 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ProcessOutputException;
-import io.xpipe.core.process.ShellDialects;
 
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ public class AppShellCheck {
                     - The operating system is not supported
                     
                     You can reach out to us if you want to properly diagnose the cause individually and hopefully fix it.
-                    """.formatted(ShellDialects.getPlatformDefault().getDisplayName(), err.get());
+                    """.formatted(ProcessControlProvider.get().getEffectiveLocalDialect().getDisplayName(), err.get());
             ErrorEvent.fromMessage(msg).handle();
         }
     }

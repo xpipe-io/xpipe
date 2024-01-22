@@ -33,4 +33,8 @@ public abstract class ProcessControlProvider {
     public abstract ShellControl createLocalProcessControl(boolean stoppable);
 
     public abstract Object createStorageHandler();
+
+    public abstract ShellDialect getEffectiveLocalDialect();
+
+    public abstract ShellDialect getFallbackDialect();
 }

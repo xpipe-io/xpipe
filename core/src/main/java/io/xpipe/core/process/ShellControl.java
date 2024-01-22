@@ -236,10 +236,6 @@ public interface ShellControl extends ProcessControl {
         });
     }
 
-    default CommandControl command(List<String> command) {
-        return command(shellProcessControl -> ShellDialect.flatten(command));
-    }
-
     default CommandControl command(CommandBuilder builder) {
         return command(shellProcessControl -> builder.buildString(shellProcessControl));
     }

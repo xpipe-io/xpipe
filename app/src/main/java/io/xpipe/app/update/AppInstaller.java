@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalHelper;
-import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
@@ -18,7 +15,6 @@ import lombok.Getter;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 public class AppInstaller {
 
@@ -125,19 +121,19 @@ public class AppInstaller {
                 var exec = XPipeInstallation.getInstallationExecutable(
                         shellControl, XPipeInstallation.getDefaultInstallationBasePath(shellControl));
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir(shellControl), "logs");
-                var cmd = new ArrayList<>(java.util.List.of(
+                var cmd = CommandBuilder.of().add(
                         "start",
                         "/wait",
                         "msiexec",
-                        "/i",
-                        file,
-                        "/l*",
-                        FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log"),
+                        "/i").addFile(
+                        file).add(
+                        "/l*").addFile(
+                        FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log")).add(
                         "/qb",
-                        "&",
+                        "&").addFile(
                         exec
                         // "/qf"
-                        ));
+                        );
                 try (CommandControl c = shellControl.command(cmd).start()) {
                     c.discardOrThrow();
                 }
