@@ -39,6 +39,9 @@ public class StoreCreationMenu {
         menu.getItems().add(category("addTunnel", "mdi2v-vector-polyline-plus",
                 DataStoreProvider.CreationCategory.TUNNEL, null));
 
+        menu.getItems().add(category("addCluster", "mdi2d-domain-plus",
+                DataStoreProvider.CreationCategory.CLUSTER, null));
+
         menu.getItems().add(category("addDatabase", "mdi2d-database-plus",
                 DataStoreProvider.CreationCategory.DATABASE, null));
     }

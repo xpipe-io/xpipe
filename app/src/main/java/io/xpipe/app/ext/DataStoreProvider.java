@@ -201,6 +201,7 @@ public interface DataStoreProvider {
         SHELL,
         COMMAND,
         TUNNEL,
-        SCRIPT
+        SCRIPT,
+        CLUSTER
     }
 }
