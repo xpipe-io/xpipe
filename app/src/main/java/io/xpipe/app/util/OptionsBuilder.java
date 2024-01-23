@@ -144,6 +144,11 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder disable(boolean b) {
+        lastCompHeadReference.disable(new SimpleBooleanProperty(b));
+        return this;
+    }
+
     public OptionsBuilder nonNull() {
         var e = lastNameReference;
         var p = props.get(props.size() - 1);

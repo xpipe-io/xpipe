@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class CommandBuilder {
 
@@ -166,6 +167,21 @@ public class CommandBuilder {
             }
 
             return sc.getShellDialect().fileArgument(s);
+        });
+        return this;
+    }
+
+    public CommandBuilder addFile(Function<ShellControl, String> f) {
+        elements.add(sc -> {
+            if (f == null) {
+                return null;
+            }
+
+            if (sc == null) {
+                return "\"" + f.apply(null) + "\"";
+            }
+
+            return sc.getShellDialect().fileArgument(f.apply(sc));
         });
         return this;
     }

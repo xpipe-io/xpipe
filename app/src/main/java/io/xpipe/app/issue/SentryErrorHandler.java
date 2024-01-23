@@ -48,6 +48,8 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setTag("arch", System.getProperty("os.arch"));
                     options.setDist(XPipeDistributionType.get().getId());
                     options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
+                    options.setCacheDirPath(AppProperties.get().getDataDir().resolve("cache").toString());
+                    options.setAttachThreads(false);
                 });
             }
             init = true;

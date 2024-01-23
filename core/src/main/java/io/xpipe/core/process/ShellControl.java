@@ -144,12 +144,6 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    default String executeSimpleStringCommand(ShellDialect type, String command) throws Exception {
-        try (var sub = subShell(type).start()) {
-            return sub.executeSimpleStringCommand(command);
-        }
-    }
-
     ElevationResult buildElevatedCommand(CommandConfiguration input, String prefix) throws Exception;
 
     void restart() throws Exception;

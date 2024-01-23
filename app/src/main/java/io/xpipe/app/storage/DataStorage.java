@@ -270,28 +270,48 @@ public abstract class DataStorage {
                 .filter(other -> e.equals(getDefaultDisplayParent(other).orElse(null)))
                 .toList();
         var toRemove = oldChildren.stream()
-                .filter(entry -> newChildren.stream()
-                        .noneMatch(
-                                nc -> nc.getStore().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId()))
+                .filter(oc -> {
+                    var oid = ((FixedChildStore) oc.getStore()).getFixedId();
+                    if (oid.isEmpty()) {
+                        return false;
+                    }
+
+                    return newChildren.stream().filter(nc -> nc.getStore().getFixedId().isPresent()).noneMatch(nc -> {
+                        return nc.getStore().getFixedId().getAsInt() == oid.getAsInt();
+                    });
+                })
                 .toList();
         var toAdd = newChildren.stream()
-                .filter(entry -> oldChildren.stream()
-                        .noneMatch(oc -> ((FixedChildStore) oc.getStore()).getFixedId()
-                                == entry.getStore().getFixedId()))
+                .filter(nc -> {
+                    var nid = nc.getStore().getFixedId();
+                    // These can't be automatically generated
+                    if (nid.isEmpty()) {
+                        return false;
+                    }
+
+                    return oldChildren.stream().filter(oc -> ((FixedChildStore) oc.getStore()).getFixedId().isPresent()).noneMatch(oc -> {
+                        return ((FixedChildStore) oc.getStore()).getFixedId().getAsInt() == nid.getAsInt();
+                    });
+                })
                 .toList();
         var toUpdate = oldChildren.stream()
-                .map(entry -> {
+                .map(oc -> {
+                    var oid = ((FixedChildStore) oc.getStore()).getFixedId();
+                    if (oid.isEmpty()) {
+                        return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, null);
+                    }
+
                     var found = newChildren.stream()
-                            .filter(nc ->
-                                    nc.getStore().getFixedId() == ((FixedChildStore) entry.getStore()).getFixedId())
+                            .filter(nc -> nc.getStore().getFixedId().isPresent())
+                            .filter(nc -> nc.getStore().getFixedId().getAsInt() == oid.getAsInt())
                             .findFirst()
                             .orElse(null);
-                    return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(entry, found);
+                    return new Pair<DataStoreEntry, DataStoreEntryRef<? extends FixedChildStore>>(oc, found);
                 })
                 .filter(en -> en.getValue() != null)
                 .toList();
 
-        if (newChildren.size() > 0) {
+        if (!newChildren.isEmpty()) {
             e.setExpanded(true);
         }
 
