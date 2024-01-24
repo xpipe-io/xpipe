@@ -8,6 +8,7 @@ import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystemStore;
+import io.xpipe.core.util.FailableFunction;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,7 +21,6 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 @Getter
 public class BrowserModel {
@@ -116,7 +116,7 @@ public class BrowserModel {
         }
     }
 
-    public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, Function<OpenFileSystemModel, String> path, BooleanProperty externalBusy) {
+    public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, FailableFunction<OpenFileSystemModel, String, Exception> path, BooleanProperty externalBusy) {
         if (store == null) {
             return;
         }
