@@ -25,7 +25,7 @@ public class AppShellCheck {
                     
                     You can reach out to us if you want to properly diagnose the cause individually and hopefully fix it.
                     """.formatted(ShellDialects.getPlatformDefault().getDisplayName(), err.get());
-            ErrorEvent.fromMessage(msg).handle();
+            ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
         }
     }
 
