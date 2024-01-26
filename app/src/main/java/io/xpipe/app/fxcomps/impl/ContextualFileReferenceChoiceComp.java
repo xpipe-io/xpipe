@@ -3,6 +3,8 @@ package io.xpipe.app.fxcomps.impl;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -18,6 +20,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -80,6 +83,15 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                 var f = data.resolve(FileNames.getFileName(filePath.getValue()));
                 var source = Path.of(filePath.getValue());
                 if (Files.exists(source)) {
+                    var shouldCopy = AppWindowHelper.showBlockingAlert(alert -> {
+                        alert.setTitle(AppI18n.get("confirmGitShareTitle"));
+                        alert.setHeaderText(AppI18n.get("confirmGitShareHeader"));
+                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                    }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
+                    if (!shouldCopy) {
+                        return;
+                    }
+
                     Files.copy(source, f, StandardCopyOption.REPLACE_EXISTING);
                     Platform.runLater(() -> {
                         filePath.setValue(f.toString());
