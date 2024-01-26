@@ -25,6 +25,23 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    ExternalEditorType VSCODIUM_WINDOWS = new WindowsType("app.vscodium", "codium.cmd") {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                    .resolve("Programs")
+                    .resolve("VSCodium")
+                    .resolve("bin")
+                    .resolve("codium.cmd"));
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+    };
+
     ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd") {
 
         @Override
@@ -73,9 +90,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
+    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code");
 
-    };
+    LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium");
 
     LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor");
 
@@ -119,9 +136,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
 
-    ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code") {
+    ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
 
-    };
+    ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "Visual Studio Code");
 
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
@@ -213,9 +230,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm");
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion");
 
-    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
-    List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
+    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
+    List<LinuxPathType> LINUX_EDITORS = List.of(ExternalEditorType.VSCODIUM_LINUX, VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
+    List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
