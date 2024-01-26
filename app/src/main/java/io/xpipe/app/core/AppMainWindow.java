@@ -240,13 +240,6 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
-
-        // Due to some weird GTK bug, we have to set these sizes every time we show a window even though they have been previously set
-        // This does not work every time however
-        stage.setX(stage.getX());
-        stage.setY(stage.getY());
-        stage.setWidth(stage.getWidth());
-        stage.setHeight(stage.getHeight());
     }
 
     private void setupContent(Comp<?> content) {
