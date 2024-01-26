@@ -9,8 +9,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 
-import java.io.IOException;
-
 public class TerminalHelper {
 
     public static void open(String title, ProcessControl cc) throws Exception {
@@ -34,10 +32,7 @@ public class TerminalHelper {
         try {
             type.launch(config);
         } catch (Exception ex) {
-            throw ErrorEvent.unreportable(new IOException(
-                    "Unable to launch terminal " + type.toTranslatedString() + ": " + ex.getMessage()
-                            + ".\nMaybe try to use a different terminal in the settings.",
-                    ex));
+            throw ErrorEvent.unreportable(ex);
         }
     }
 }
