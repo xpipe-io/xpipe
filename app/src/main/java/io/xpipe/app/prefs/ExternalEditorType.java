@@ -138,7 +138,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
 
-    ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "Visual Studio Code");
+    ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium");
 
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
