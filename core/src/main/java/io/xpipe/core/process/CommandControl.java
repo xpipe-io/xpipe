@@ -81,6 +81,8 @@ public interface CommandControl extends ProcessControl {
 
     String readStdoutDiscardErr() throws Exception;
 
+    String readStderrDiscardStdout() throws Exception;
+
     void discardOrThrow() throws Exception;
 
     void accumulateStdout(Consumer<String> con);
