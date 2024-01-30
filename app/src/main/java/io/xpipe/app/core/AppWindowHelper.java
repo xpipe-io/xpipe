@@ -64,6 +64,10 @@ public class AppWindowHelper {
             String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
         var stage = new Stage();
         stage.setTitle(title);
+        if (AppMainWindow.getInstance() != null) {
+            stage.initOwner(AppMainWindow.getInstance().getStage());
+        }
+
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
