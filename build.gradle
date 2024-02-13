@@ -126,7 +126,7 @@ def testTasks = [
 
 tasks.register('testReport', TestReport) {
     getDestinationDirectory().set(file("$rootProject.buildDir/reports/all"))
-    getTestResults().from(testTasks.stream().map {
+    getTestResults().from(testTasks.stream().filter {!it.isEmpty()}.map {
         file("${it.project.buildDir.get(0)}/test-results/${it.name.get(0)}/binary")
     }.toList())
 }
