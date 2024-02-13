@@ -62,7 +62,7 @@ dependencies {
     }
 }
 
-apply from: "$rootDir/gradle/gradle_scripts/junit_suite.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"
 
 import org.gradle.internal.os.OperatingSystem
 
