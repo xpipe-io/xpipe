@@ -1,0 +1,37 @@
+apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
+
+testing {
+    suites {
+        localTest(JvmTestSuite) {
+            useJUnitJupiter()
+
+            dependencies {
+                implementation project(':core')
+                implementation project(':beacon')
+                implementation project(':app')
+                implementation project(':base')
+                implementation project()
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        workingDir = rootDir
+
+                        jvmArgs += ["-Xmx2g"]
+                        jvmArgs += jvmRunArgs
+
+                        systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
+                        systemProperty 'io.xpipe.app.useVirtualThreads', "false"
+                        systemProperty "io.xpipe.beacon.port", "21725"
+                        systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
+                        systemProperty "io.xpipe.app.dataDir", "$projectDir/local/"
+                        systemProperty "io.xpipe.app.logLevel", "trace"
+                        systemProperty "io.xpipe.app.writeSysOut", "true"
+                        systemProperty "io.xpipe.app.mode", "tray"
+                    }
+                }
+            }
+        }
+    }
+}

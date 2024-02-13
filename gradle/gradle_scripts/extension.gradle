@@ -44,7 +44,7 @@ project.tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/junit_suite.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"
 
 localTest {
     dependencies {

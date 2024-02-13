@@ -1,5 +1,7 @@
-package io.xpipe.beacon;
+package io.xpipe.beacon.test;
 
+import io.xpipe.beacon.BeaconClient;
+import io.xpipe.beacon.BeaconServer;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 

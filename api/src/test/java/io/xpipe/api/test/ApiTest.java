@@ -1,6 +1,6 @@
 package io.xpipe.api.test;
 
-import io.xpipe.beacon.BeaconDaemonController;
+import io.xpipe.beacon.test.BeaconDaemonController;
 import io.xpipe.core.util.XPipeDaemonMode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
