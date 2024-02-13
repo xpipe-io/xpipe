@@ -6,11 +6,15 @@ import io.xpipe.ext.base.action.*;
 import io.xpipe.ext.base.browser.*;
 import io.xpipe.ext.base.script.ScriptGroupStoreProvider;
 import io.xpipe.ext.base.script.SimpleScriptStoreProvider;
+import io.xpipe.ext.base.store.StorePauseAction;
+import io.xpipe.ext.base.store.StoreStartAction;
+import io.xpipe.ext.base.store.StoreStopAction;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
     exports io.xpipe.ext.base.action;
     exports io.xpipe.ext.base.script;
+    exports io.xpipe.ext.base.store;
 
     requires java.desktop;
     requires io.xpipe.core;
@@ -21,8 +25,6 @@ open module io.xpipe.ext.base {
     requires static net.synedra.validatorfx;
     requires static io.xpipe.app;
     requires org.kordamp.ikonli.javafx;
-    requires com.sun.jna;
-    requires com.sun.jna.platform;
     requires atlantafx.base;
 
     provides BrowserAction with
@@ -49,7 +51,7 @@ open module io.xpipe.ext.base {
             UnzipAction,
             JavapAction,
             JarAction;
-    provides ActionProvider with
+    provides ActionProvider with StoreStopAction, StoreStartAction, StorePauseAction,
             CloneStoreAction,
             RefreshStoreAction,
             ScanAction,

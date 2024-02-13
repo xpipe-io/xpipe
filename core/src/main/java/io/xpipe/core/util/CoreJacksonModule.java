@@ -36,7 +36,7 @@ public class CoreJacksonModule extends SimpleModule {
     @Override
     public void setupModule(SetupContext context) {
         context.registerSubtypes(
-                new NamedType(DefaultSecretValue.class),
+                new NamedType(InPlaceSecretValue.class),
                 new NamedType(StdinDataStore.class),
                 new NamedType(StdoutDataStore.class),
                 new NamedType(LocalStore.class),
@@ -64,7 +64,8 @@ public class CoreJacksonModule extends SimpleModule {
         addDeserializer(Path.class, new LocalPathDeserializer());
 
         addSerializer(OsType.class, new OsTypeSerializer());
-        addDeserializer(OsType.class, new OsTypeDeserializer());
+        addDeserializer(OsType.Local.class, new OsTypeLocalDeserializer());
+        addDeserializer(OsType.Any.class, new OsTypeAnyDeserializer());
 
         context.setMixInAnnotations(Throwable.class, ThrowableTypeMixIn.class);
 
@@ -144,12 +145,23 @@ public class CoreJacksonModule extends SimpleModule {
         }
     }
 
-    public static class OsTypeDeserializer extends JsonDeserializer<OsType> {
+    public static class OsTypeLocalDeserializer extends JsonDeserializer<OsType.Local> {
 
         @Override
-        public OsType deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+        public OsType.Local deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.MACOS);
             var n = p.getValueAsString();
-            return Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.MACOS).filter(osType -> osType.getName().equals(n)).findFirst().orElse(null);
+            return stream.filter(osType -> osType.getName().equals(n)).findFirst().orElse(null);
+        }
+    }
+
+    public static class OsTypeAnyDeserializer extends JsonDeserializer<OsType.Any> {
+
+        @Override
+        public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS);
+            var n = p.getValueAsString();
+            return stream.filter(osType -> osType.getName().equals(n)).findFirst().orElse(null);
         }
     }
 

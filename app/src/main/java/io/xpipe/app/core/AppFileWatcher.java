@@ -114,7 +114,7 @@ public class AppFileWatcher {
             this.baseDir = dir;
             this.listener = listener;
             createRecursiveWatchers(dir);
-            TrackEvent.withTrace("watcher", "Added watched directory")
+            TrackEvent.withTrace("Added watched directory")
                     .tag("location", dir)
                     .handle();
         }
@@ -177,7 +177,7 @@ public class AppFileWatcher {
             }
 
             // Handle event
-            TrackEvent.withTrace("watcher", "Watch event")
+            TrackEvent.withTrace("Watch event")
                     .tag("baseDir", baseDir)
                     .tag("file", baseDir.relativize(file))
                     .tag("kind", event.kind().name())

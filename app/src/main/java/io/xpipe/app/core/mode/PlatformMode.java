@@ -23,27 +23,27 @@ public abstract class PlatformMode extends OperationMode {
             return;
         }
 
-        TrackEvent.info("mode", "Platform mode initial setup");
+        TrackEvent.info("Platform mode initial setup");
         PlatformState.initPlatformOrThrow();
         AppFont.init();
         AppTheme.init();
         AppStyle.init();
         AppImages.init();
         AppLayoutModel.init();
-        TrackEvent.info("mode", "Finished essential component initialization before platform");
+        TrackEvent.info("Finished essential component initialization before platform");
 
-        TrackEvent.info("mode", "Launching application ...");
+        TrackEvent.info("Launching application ...");
         ThreadHelper.createPlatformThread("app", false, () -> {
-                    TrackEvent.info("mode", "Application thread started");
+                    TrackEvent.info("Application thread started");
                     Application.launch(App.class);
                 })
                 .start();
 
-        TrackEvent.info("mode", "Waiting for platform application startup ...");
+        TrackEvent.info("Waiting for platform application startup ...");
         while (App.getApp() == null) {
             ThreadHelper.sleep(100);
         }
-        TrackEvent.info("mode", "Application startup finished ...");
+        TrackEvent.info("Application startup finished ...");
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
         // You can still update manually in the about tab
@@ -56,12 +56,12 @@ public abstract class PlatformMode extends OperationMode {
 
     @Override
     public void finalTeardown() throws Throwable {
-        TrackEvent.info("mode", "Shutting down platform components");
+        TrackEvent.info("Shutting down platform components");
         onSwitchFrom();
         StoreViewState.reset();
         AppLayoutModel.reset();
         PlatformState.teardown();
-        TrackEvent.info("mode", "Platform shutdown finished");
+        TrackEvent.info("Platform shutdown finished");
         BACKGROUND.finalTeardown();
     }
 }

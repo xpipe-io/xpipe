@@ -7,7 +7,8 @@ lib/
 dev.properties
 extensions.txt
 dev_storage
-local*/
+local/
+local_*/
 .vs
 .vscode
 obj
@@ -15,3 +16,5 @@ out
 bin
 .DS_Store
 ComponentsGenerated.wxs
+!dist/javafx/**/lib
+!dist/javafx/**/bin

@@ -1,0 +1,79 @@
+apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
+
+testing {
+    suites {
+        localTest(JvmTestSuite) {
+            useJUnitJupiter()
+
+            dependencies {
+                implementation project(':core')
+                implementation project(':beacon')
+                implementation project(':app')
+                implementation project(':base')
+                implementation project()
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        workingDir = rootDir
+
+                        jvmArgs += ["-Xmx2g"]
+                        jvmArgs += jvmRunArgs
+
+                        systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
+                        systemProperty 'io.xpipe.app.useVirtualThreads', "false"
+                        systemProperty "io.xpipe.beacon.port", "21725"
+                        systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
+                        systemProperty "io.xpipe.app.dataDir", "$projectDir/local/"
+                        systemProperty "io.xpipe.app.logLevel", "trace"
+                        systemProperty "io.xpipe.app.writeSysOut", "true"
+                        systemProperty "io.xpipe.app.mode", "tray"
+                    }
+                }
+            }
+        }
+
+        remoteTest(JvmTestSuite) {
+            useJUnitJupiter()
+
+            dependencies {
+                implementation project(':core')
+                implementation project(':beacon')
+                implementation project(':app')
+                implementation project()
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        workingDir = projectDir
+
+                        jvmArgs += ["-Xmx2g"]
+                        jvmArgs += jvmRunArgs
+
+                        def attachDebugger = System.getProperty('idea.debugger.dispatch.addr') != null
+                        def daemonCommand = attachDebugger ? ':app:runAttachedDebugger' : ':app:run'
+                        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+                            systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
+                        } else {
+                            systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir/gradlew\" --console=plain $daemonCommand"
+                        }
+                        systemProperty "io.xpipe.beacon.daemonArgs",
+                                       " -Dio.xpipe.beacon.port=21725" +
+                                               " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+                                               " -Dio.xpipe.storage.persist=false" +
+                                               " -Dio.xpipe.app.writeSysOut=true" +
+                                               " -Dio.xpipe.app.writeLogs=false" +
+                                               " -Dio.xpipe.beacon.printMessages=true" +
+                                               " -Dio.xpipe.app.logLevel=trace"
+
+                        systemProperty 'io.xpipe.beacon.printDaemonOutput', "true"
+                        systemProperty "io.xpipe.beacon.port", "21725"
+                        systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
+                    }
+                }
+            }
+        }
+    }
+}

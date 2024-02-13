@@ -35,7 +35,7 @@ public class XPipeInstanceHelper {
 
     public static boolean isSupported(ShellStore host) {
         try (var pc = host.control().start();
-                var cmd = pc.command(List.of("xpipe"))) {
+                var cmd = pc.command("xpipe")) {
             cmd.discardOrThrow();
             return true;
         } catch (Exception e) {

@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -10,7 +11,6 @@ import io.xpipe.core.util.FailableSupplier;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.function.Function;
 
 public class ApplicationHelper {
 
@@ -24,10 +24,10 @@ public class ApplicationHelper {
         return format.replace("\"$" + variable + "\"", fileString).replace("$" + variable, fileString);
     }
 
-    public static void executeLocalApplication(Function<ShellControl, String> s, boolean detach) throws Exception {
+    public static void executeLocalApplication(CommandBuilder b, boolean detach) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var cmd = detach ? createDetachCommand(sc, s.apply(sc)) : s.apply(sc);
-            TrackEvent.withDebug("proc", "Executing local application")
+            var cmd = detach ? createDetachCommand(sc, b.buildString(sc)) : b.buildString(sc);
+            TrackEvent.withDebug("Executing local application")
                     .tag("command", cmd)
                     .handle();
             try (var c = sc.command(cmd).start()) {

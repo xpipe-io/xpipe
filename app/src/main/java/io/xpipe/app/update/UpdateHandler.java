@@ -107,7 +107,7 @@ public abstract class UpdateHandler {
     }
 
     protected void event(String msg) {
-        TrackEvent.builder().category("updater").type("info").message(msg).handle();
+        TrackEvent.builder().type("info").message(msg).handle();
     }
 
     protected final boolean isUpdate(String releaseVersion) {
@@ -220,21 +220,26 @@ public abstract class UpdateHandler {
         event("Executing update ...");
         OperationMode.executeAfterShutdown(() -> {
             try {
-                executeUpdateAndCloseImpl();
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            } finally {
                 var performedUpdate = new PerformedUpdate(
                         preparedUpdate.getValue().getVersion(),
                         preparedUpdate.getValue().getBody(),
                         preparedUpdate.getValue().getVersion(),
                         preparedUpdate.getValue().getReleaseDate());
                 AppCache.update("performedUpdate", performedUpdate);
+
+                executeUpdateOnCloseImpl();
+
+                // In case we perform any operations such as opening a terminal
+                // give it some time to open while this process is still alive
+                // Otherwise it might quit because the parent process is dead already
+                ThreadHelper.sleep(1000);
+            } catch (Throwable ex) {
+                ex.printStackTrace();
             }
         });
     }
 
-    public void executeUpdateAndCloseImpl() throws Exception {
+    public void executeUpdateOnCloseImpl() throws Exception {
         throw new UnsupportedOperationException();
     }
 

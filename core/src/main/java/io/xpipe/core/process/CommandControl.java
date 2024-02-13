@@ -75,8 +75,6 @@ public interface CommandControl extends ProcessControl {
     @Override
     CommandControl start() throws Exception;
 
-    CommandControl exitTimeout(Integer timeout);
-
     void withStdoutOrThrow(FailableConsumer<InputStreamReader, Exception> c);
 
     String readStdoutDiscardErr() throws Exception;

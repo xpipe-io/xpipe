@@ -13,7 +13,6 @@ import io.xpipe.app.util.XPipeSession;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
-import io.xpipe.core.util.XPipeSystemId;
 import javafx.application.Platform;
 import lombok.Getter;
 
@@ -93,7 +92,7 @@ public abstract class OperationMode {
             //                throw new OutOfMemoryError();
             //            }
 
-            TrackEvent.info("mode", "Initial setup");
+            TrackEvent.info("Initial setup");
             AppProperties.init();
             AppState.init();
             XPipeSession.init(AppProperties.get().getBuildUuid());
@@ -104,8 +103,7 @@ public abstract class OperationMode {
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();
-            XPipeSystemId.init();
-            TrackEvent.info("mode", "Finished initial setup");
+            TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).term().handle();
         }
@@ -211,11 +209,6 @@ public abstract class OperationMode {
                 OperationMode.halt(1);
             }
 
-            // In case we perform any operations such as opening a terminal
-            // give it some time to open while this process is still alive
-            // Otherwise it might quit because the parent process is dead already
-            ThreadHelper.sleep(1000);
-
             OperationMode.halt(0);
         };
 
@@ -250,7 +243,7 @@ public abstract class OperationMode {
         }
 
         // Run a timer to always exit after some time in case we get stuck
-        if (!hasError) {
+        if (!hasError && !AppProperties.get().isDevelopmentEnvironment()) {
             ThreadHelper.runAsync(() -> {
                 ThreadHelper.sleep(25000);
                 TrackEvent.info("Shutdown took too long. Halting ...");

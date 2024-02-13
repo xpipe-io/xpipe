@@ -43,7 +43,7 @@ public class LauncherCommand implements Callable<Integer> {
     final List<String> inputs = List.of();
 
     public static void runLauncher(String[] args) {
-        TrackEvent.builder().category("launcher").type("debug").message("Launcher received commands: " + Arrays.asList(args)).handle();
+        TrackEvent.builder().type("debug").message("Launcher received commands: " + Arrays.asList(args)).handle();
 
         var cmd = new CommandLine(new LauncherCommand());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {

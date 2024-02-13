@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -63,6 +65,9 @@ public class AppWindowHelper {
     public static Stage sideWindow(
             String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
         var stage = new Stage();
+        if (AppMainWindow.getInstance() != null) {
+            stage.initOwner(AppMainWindow.getInstance().getStage());
+        }
         stage.setTitle(title);
         if (AppMainWindow.getInstance() != null) {
             stage.initOwner(AppMainWindow.getInstance().getStage());
@@ -71,6 +76,10 @@ public class AppWindowHelper {
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
+
+        if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
+            stage.initModality(Modality.WINDOW_MODAL);
+        }
 
         stage.setOnShown(e -> {
             // If we set the theme pseudo classes earlier when the window is not shown
@@ -108,6 +117,24 @@ public class AppWindowHelper {
                 bt.accept(r);
             }
         });
+    }
+
+    public static void setContent(Alert alert, String s) {
+        alert.getDialogPane().setMinWidth(505);
+        alert.getDialogPane().setPrefWidth(505);
+        alert.getDialogPane().setMaxWidth(505);
+        alert.getDialogPane().setContent(AppWindowHelper.alertContentText(s));
+    }
+
+    public static boolean showConfirmationAlert(ObservableValue<String> title, ObservableValue<String> header, ObservableValue<String> content) {
+        return AppWindowHelper.showBlockingAlert(alert -> {
+                    alert.titleProperty().bind(title);
+                    alert.headerTextProperty().bind(header);
+                    setContent(alert, content.getValue());
+                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                })
+                .map(b -> b.getButtonData().isDefaultButton())
+                .orElse(false);
     }
 
     public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {

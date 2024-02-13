@@ -1,0 +1,21 @@
+.dialog-comp {
+    -fx-background-color: -color-bg-default;
+}
+
+.dialog-comp .scroll-pane {
+    -fx-padding: 0;
+}
+
+.dialog-comp .buttons .button {
+    -fx-padding: 6 12 6 12;
+    -fx-border-width: 1px;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
+}
+
+.dialog-comp .buttons {
+    -fx-padding: 10;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-width: 1 0 0 0;
+}

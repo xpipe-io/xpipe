@@ -1,12 +1,13 @@
 package io.xpipe.app.fxcomps.impl;
 
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.util.SecretHelper;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
@@ -14,14 +15,25 @@ import java.util.Objects;
 
 public class SecretFieldComp extends Comp<CompStructure<TextField>> {
 
-    private final Property<SecretValue> value;
+    public static SecretFieldComp ofString(Property<String> s) {
+        var prop = new SimpleObjectProperty<InPlaceSecretValue>(s.getValue() != null ? InPlaceSecretValue.of(s.getValue()) : null);
+        prop.addListener((observable, oldValue, newValue) -> {
+            s.setValue(newValue != null ? new String(newValue.getSecret()) : null);
+        });
+        s.addListener((observableValue, s1, t1) -> {
+            prop.set(t1 != null ? InPlaceSecretValue.of(t1) : null);
+        });
+        return new SecretFieldComp(prop);
+    }
 
-    public SecretFieldComp(Property<SecretValue> value) {
+    private final Property<InPlaceSecretValue> value;
+
+    public SecretFieldComp(Property<InPlaceSecretValue> value) {
         this.value = value;
     }
 
-    protected SecretValue encrypt(char[] c) {
-        return SecretHelper.encrypt(c);
+    protected InPlaceSecretValue encrypt(char[] c) {
+        return InPlaceSecretValue.of(c);
     }
 
     @Override
@@ -42,6 +54,7 @@ public class SecretFieldComp extends Comp<CompStructure<TextField>> {
                 text.setText(n != null ? n.getSecretValue() : null);
             });
         });
+        AppFont.small(text);
         return new SimpleCompStructure<>(text);
     }
 }

@@ -56,7 +56,7 @@ public abstract class QueryConverter<T> {
 
         @Override
         protected String toString(SecretValue value) {
-            return value.getSecretValue();
+            return new String(value.getSecret());
         }
     };
 

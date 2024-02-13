@@ -35,10 +35,6 @@ public interface DataStoreProvider {
         return false;
     }
 
-    default ModuleInstall getRequiredAdditionalInstallation() {
-        return null;
-    }
-
     default void validate() {
         for (Class<?> storeClass : getStoreClasses()) {
             if (!JacksonizedValue.class.isAssignableFrom(storeClass)) {

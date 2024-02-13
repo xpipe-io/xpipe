@@ -3,6 +3,8 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppBundledFonts;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.scene.input.Clipboard;
 import lombok.Getter;
@@ -79,6 +81,23 @@ public enum PlatformState {
 
         // Check if we have no fonts and set properties to load bundled ones
         AppBundledFonts.init();
+
+        if (AppPrefs.get() != null) {
+            var s = AppPrefs.get().uiScale().getValue();
+            if (s != null) {
+                var i = Math.min(300, Math.max(25, s));
+                var value = i + "%";
+                switch (OsType.getLocal()) {
+                    case OsType.Linux linux -> {
+                        System.setProperty("glass.gtk.uiScale",value);
+                    }
+                    case OsType.Windows windows -> {
+                        System.setProperty("glass.win.uiScale",value);
+                    }
+                    default -> {}
+                }
+            }
+        }
 
         try {
             CountDownLatch latch = new CountDownLatch(1);

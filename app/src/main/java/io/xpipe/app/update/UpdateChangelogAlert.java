@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.Hyperlinks;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -20,7 +21,13 @@ public class UpdateChangelogAlert {
     public static void showIfNeeded() {
         var update = XPipeDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !XPipeDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
-            ErrorEvent.fromMessage("Update did not succeed").handle();
+            ErrorEvent.fromMessage("""
+            Update installation did not succeed.
+            
+            Note that you can also install the latest version manually from %s
+            if there are any problems with the automatic update installation.
+            """.formatted(Hyperlinks.GITHUB + "/releases/latest")
+            ).handle();
             return;
         }
 

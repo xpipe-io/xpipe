@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 
 public class XPipeInstallation {
@@ -212,16 +211,34 @@ public class XPipeInstallation {
     }
 
     public static String queryInstallationVersion(ShellControl p, String exec) throws Exception {
-        try (CommandControl c = p.command(List.of(exec, "version")).start()) {
+        try (CommandControl c = p.command(CommandBuilder.of().addFile(exec).add("version")).start()) {
             return c.readStdoutOrThrow();
         } catch (ProcessOutputException ex) {
             return "?";
         }
     }
 
-    public static String getInstallationExecutable(ShellControl p, String installation) {
-        var executable = getDaemonExecutablePath(p.getOsType());
-        return FileNames.join(installation, executable);
+    public static Path getLocalBundledToolsDirectory() {
+        Path path = getCurrentInstallationBasePath();
+
+        // Check for development environment
+        if (!ModuleHelper.isImage()) {
+            if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                return path.resolve("dist").resolve("bundled_bin").resolve("windows");
+            } else if (OsType.getLocal().equals(OsType.LINUX)) {
+                return path.resolve("dist").resolve("bundled_bin").resolve("linux");
+            } else {
+                return path.resolve("dist").resolve("bundled_bin").resolve("osx");
+            }
+        }
+
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+            return path.resolve("app").resolve("bundled");
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+            return path.resolve("app").resolve("bundled");
+        } else {
+            return path.resolve("Contents").resolve("Resources").resolve("bundled");
+        }
     }
 
     public static String getLocalDefaultCliExecutable() {
@@ -298,7 +315,7 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getDaemonDebugScriptPath(OsType type) {
+    public static String getDaemonDebugScriptPath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "scripts", "xpiped_debug.bat");
         } else if (type.equals(OsType.LINUX)) {
@@ -308,7 +325,7 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getDaemonDebugAttachScriptPath(OsType type) {
+    public static String getDaemonDebugAttachScriptPath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "scripts", "xpiped_debug_attach.bat");
         } else if (type.equals(OsType.LINUX)) {
@@ -318,7 +335,7 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getDaemonExecutablePath(OsType type) {
+    public static String getDaemonExecutablePath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("app", "xpiped.exe");
         } else if (type.equals(OsType.LINUX)) {
@@ -328,7 +345,7 @@ public class XPipeInstallation {
         }
     }
 
-    public static String getRelativeCliExecutablePath(OsType type) {
+    public static String getRelativeCliExecutablePath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
             return FileNames.join("cli", "bin", "xpipe.exe");
         } else if (type.equals(OsType.LINUX)) {

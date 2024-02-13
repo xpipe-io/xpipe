@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.store.ShellStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -154,9 +155,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
             return null;
         }
 
-        if (mode == Mode.PROXY
-                && entry.getStore() instanceof ShellStore
-                && ShellStore.isLocal(entry.getStore().asNeeded())) {
+        if (mode == Mode.PROXY && entry.getStore() instanceof LocalStore) {
             return AppI18n.get("none");
         }
 

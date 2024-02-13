@@ -2,7 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.property.Property;
@@ -32,7 +32,7 @@ public class BrowserClipboard {
 
         public String toClipboardString() {
             return entries.stream().map(fileEntry -> "\"" + fileEntry.getPath() + "\"").collect(
-                    Collectors.joining(ShellDialects.getPlatformDefault().getNewLine().getNewLineString()));
+                    Collectors.joining(ProcessControlProvider.get().getEffectiveLocalDialect().getNewLine().getNewLineString()));
         }
     }
 

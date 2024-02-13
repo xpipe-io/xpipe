@@ -48,7 +48,8 @@ module io.xpipe.beacon {
             RemoveStoreExchange,
             StoreAddExchange,
             ReadDrainExchange,
-            AskpassExchange,
+            AskpassExchange, TerminalWaitExchange,
+            TerminalLaunchExchange,
             ListStoresExchange,
             DialogExchange,
             VersionExchange;

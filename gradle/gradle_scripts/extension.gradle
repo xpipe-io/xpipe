@@ -1,14 +1,14 @@
-task copyRuntimeLibs(type: Copy) {
-    into project.jar.destinationDirectory
-    from configurations.runtimeClasspath
-    exclude "${project.name}.jar"
-    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-}
-copyRuntimeLibs.dependsOn(addDependenciesModuleInfo)
-jar.dependsOn(copyRuntimeLibs)
+//task copyRuntimeLibs(type: Copy) {
+//    into project.jar.destinationDirectory
+//    from configurations.runtimeClasspath
+//    exclude "${project.name}.jar"
+//    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+//}
+// Do we need this?
+// jar.dependsOn(copyRuntimeLibs)
 
 def dev = tasks.register('createDevOutput', Copy) {
-    mustRunAfter copyRuntimeLibs, jar
+    mustRunAfter jar
 
     if (project.allExtensions.contains(project)) {
         var source = "${project.jar.destinationDirectory.get()}"
@@ -19,7 +19,7 @@ def dev = tasks.register('createDevOutput', Copy) {
 jar.finalizedBy(dev)
 
 tasks.register('createExtOutput', Copy) {
-    mustRunAfter copyRuntimeLibs, jar
+    mustRunAfter jar
 
     if (!file("${project.jar.destinationDirectory.get()}_prod").exists()) {
         copy {
@@ -35,13 +35,33 @@ tasks.register('createExtOutput', Copy) {
     into "${project.jar.destinationDirectory.get()}_ext"
 }
 
+project.tasks.withType(org.gradle.jvm.tasks.Jar).configureEach {
+    if (it.name != 'jar') {
+        it.destinationDirectory = project.layout.buildDirectory.dir('libs_test')
+    }
+}
+
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/extension_test.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/junit_suite.gradle"
+
+localTest {
+    dependencies {
+        if (project.name != 'base') {
+            implementation project(':base')
+        }
+
+        testImplementation project(":$project.name")
+    }
+}
+
+configurations {
+    compileOnly.extendsFrom(javafx)
+}
 
 dependencies {
-    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"
+    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.16.1"
     compileOnly project(':core')
     compileOnly project(':beacon')
     compileOnly project(':app')
@@ -50,12 +70,14 @@ dependencies {
         exclude group: 'org.openjfx', module: 'javafx-base'
         exclude group: 'org.openjfx', module: 'javafx-controls'
     }
+    compileOnly 'commons-io:commons-io:2.15.1'
+    compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
 
     if (project != project(':base')) {
         compileOnly project(':base')
-        testImplementation project(':base')
     }
-
-    testImplementation project(':app')
 }
+
+// To fix https://github.com/gradlex-org/extra-java-module-info/issues/101#issuecomment-1934761334
+configurations.javaModulesMergeJars.shouldResolveConsistentlyWith(configurations.compileClasspath)
 

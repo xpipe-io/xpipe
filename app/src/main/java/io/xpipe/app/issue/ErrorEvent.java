@@ -8,6 +8,7 @@ import lombok.Singular;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Builder
 @Getter
@@ -61,12 +62,31 @@ public class ErrorEvent {
         return builder().description(msg);
     }
 
-    public void handle() {
-        EventHandler.get().modify(this);
-        EventHandler.get().handle(this);
+    public List<Throwable> getThrowableChain() {
+        var list = new ArrayList<Throwable>();
+        Throwable t = getThrowable();
+        while (t != null) {
+            list.addFirst(t);
+            t = t.getCause();
+        }
+        return list;
     }
 
+    private boolean shouldIgnore(Throwable throwable) {
+        return (throwable != null && HANDLED.stream().anyMatch(t -> t == throwable) && !terminal) ||
+                (throwable != null && throwable.getCause() != throwable && shouldIgnore(throwable.getCause()));
+    }
 
+    public void handle() {
+        // Check object identity to allow for multiple exceptions with same trace
+        if (shouldIgnore(throwable)) {
+            return;
+        }
+
+        EventHandler.get().modify(this);
+        EventHandler.get().handle(this);
+        HANDLED.add(throwable);
+    }
 
     public void addAttachment(Path file) {
         attachments = new ArrayList<>(attachments);
@@ -101,6 +121,7 @@ public class ErrorEvent {
     }
 
     private static final Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
+    private static final Set<Throwable> HANDLED = new CopyOnWriteArraySet<>();
 
     public static <T extends Throwable> T unreportableIfEndsWith(T t, String... s) {
         return unreportableIf(

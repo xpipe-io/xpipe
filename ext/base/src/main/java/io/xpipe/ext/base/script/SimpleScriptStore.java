@@ -24,7 +24,7 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
 
     private String assemble(ShellControl shellControl, ExecutionType type) {
         var targetType = type == ExecutionType.TERMINAL_ONLY
-                ? shellControl.getTargetTerminalShellDialect()
+                ? shellControl.getOriginalShellDialect()
                 : shellControl.getShellDialect();
         if ((executionType == type || executionType == ExecutionType.BOTH)
                 && minimumDialect.isCompatibleTo(targetType)) {

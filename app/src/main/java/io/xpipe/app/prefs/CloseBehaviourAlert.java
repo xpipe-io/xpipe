@@ -35,7 +35,7 @@ public class CloseBehaviourAlert {
                     var vb = new VBox();
                     vb.setSpacing(7);
                     for (var cb : PrefsChoiceValue.getSupported(CloseBehaviour.class)) {
-                        RadioButton rb = new RadioButton(cb.toTranslatedString());
+                        RadioButton rb = new RadioButton(cb.toTranslatedString().getValue());
                         rb.setToggleGroup(group);
                         rb.selectedProperty().addListener((c, o, n) -> {
                             if (n) {

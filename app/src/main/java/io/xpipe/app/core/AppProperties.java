@@ -101,6 +101,11 @@ public class AppProperties {
         return INSTANCE;
     }
 
+    public boolean isDevelopmentEnvironment() {
+        return !AppProperties.get().isImage()
+                && AppProperties.get().isDeveloperMode();
+    }
+
     public boolean isDeveloperMode() {
         if (AppPrefs.get() == null) {
             return false;

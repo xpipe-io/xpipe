@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ApplicationHelper;
-import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellControl;
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,10 +24,11 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        TerminalHelper.open(model.getEntry().getEntry(), FilenameUtils.getBaseName(
-                                                entry.getRawFileEntry().getPath()), pc.command(createCommand(pc, model, entry))
-                                                .withWorkingDirectory(model.getCurrentDirectory()
-                                                                              .getPath()));
+                                        TerminalLauncher.open(
+                                                model.getEntry().getEntry(),
+                                                FilenameUtils.getBaseName(entry.getRawFileEntry().getPath()),
+                                                model.getCurrentDirectory() != null ? model.getCurrentDirectory().getPath() : null,
+                                                pc.command(createCommand(pc, model, entry)));
                                     }
                                 },
                                 false);

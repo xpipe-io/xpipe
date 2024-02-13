@@ -1,6 +1,8 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.fxcomps.SimpleComp;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -11,6 +13,16 @@ public class BrowserGreetingComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var r = new Label(getText());
+        AppLayoutModel.get().getSelected().addListener((observableValue, entry, t1) -> {
+            r.setText(getText());
+        });
+        AppFont.setSize(r, 7);
+        r.getStyleClass().add(Styles.TEXT_BOLD);
+        return r;
+    }
+
+    private String getText() {
         var ldt = LocalDateTime.now();
         var hour = ldt.getHour();
         String text;
@@ -21,8 +33,6 @@ public class BrowserGreetingComp extends SimpleComp {
         } else {
             text = "Good afternoon";
         }
-        var r = new Label(text);
-        AppFont.setSize(r, 7);
-        return r;
+        return text;
     }
 }

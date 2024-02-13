@@ -6,8 +6,8 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ClipboardHelper;
-import io.xpipe.app.util.SecretHelper;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.InPlaceSecretValue;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
@@ -25,7 +25,7 @@ public class ShareStoreAction implements ActionProvider {
 
         public static String create(DataStore store) {
             return "xpipe://addStore/"
-                    + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
+                    + InPlaceSecretValue.of(store.toString()).getEncryptedValue();
         }
 
         @Override

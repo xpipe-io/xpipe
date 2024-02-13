@@ -69,11 +69,6 @@ public class BrowserComp extends SimpleComp {
                         return true;
                     }
 
-                    // Also show on local
-                    if (model.getSelected().getValue() != null) {
-                        // return model.getSelected().getValue().isLocal();
-                    }
-
                     return false;
                 }, model.getOpenFileSystems(), model.getSelected())));
         localDownloadStage.prefHeight(200);

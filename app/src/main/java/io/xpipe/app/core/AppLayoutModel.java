@@ -5,7 +5,7 @@ import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.DeveloperTabComp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.prefs.PrefsComp;
+import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -79,7 +79,7 @@ public class AppLayoutModel {
                         AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
                 new Entry(
-                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new PrefsComp(this))));
+                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp())));
         // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
         // StorageLayoutComp()),
         // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())

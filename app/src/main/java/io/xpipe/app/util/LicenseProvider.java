@@ -21,7 +21,7 @@ public abstract class LicenseProvider {
         public void init(ModuleLayer layer) {
             INSTANCE = ServiceLoader.load(layer, LicenseProvider.class).stream()
                                .map(ServiceLoader.Provider::get)
-                               .findFirst().orElseThrow(() -> ExtensionException.corrupt("Missing license provider."));
+                               .findFirst().orElseThrow(() -> ExtensionException.corrupt("Missing license provider"));
         }
 
         @Override

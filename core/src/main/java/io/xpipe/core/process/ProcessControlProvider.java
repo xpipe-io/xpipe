@@ -1,6 +1,5 @@
 package io.xpipe.core.process;
 
-import io.xpipe.core.util.FailableFunction;
 import lombok.NonNull;
 
 import java.util.ServiceLoader;
@@ -22,15 +21,23 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellControl sub(
             ShellControl parent,
-            @NonNull FailableFunction<ShellControl, String, Exception> commandFunction,
-            ShellControl.TerminalOpenFunction terminalCommand);
+            @NonNull ShellOpenFunction commandFunction,
+            ShellOpenFunction terminalCommand);
 
     public abstract CommandControl command(
             ShellControl parent,
-            @NonNull FailableFunction<ShellControl, String, Exception> command,
-            FailableFunction<ShellControl, String, Exception> terminalCommand);
+            CommandBuilder command,
+            CommandBuilder terminalCommand);
 
     public abstract ShellControl createLocalProcessControl(boolean stoppable);
 
     public abstract Object createStorageHandler();
+
+    public abstract ShellDialect getEffectiveLocalDialect();
+
+    public abstract void toggleFallbackShell();
+
+    public abstract ShellDialect getDefaultLocalDialect();
+
+    public abstract ShellDialect getFallbackDialect();
 }

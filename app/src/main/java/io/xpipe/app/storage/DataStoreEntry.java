@@ -258,7 +258,7 @@ public class DataStoreEntry extends StorageElement {
         // Store loading is prone to errors.
         JsonNode storeNode = null;
         try {
-            storeNode = mapper.readTree(storeFile.toFile());
+            storeNode = DataStorageEncryption.readPossiblyEncryptedNode(mapper.readTree(storeFile.toFile()));
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }
@@ -381,6 +381,11 @@ public class DataStoreEntry extends StorageElement {
             lastModified = Instant.now();
         }
         childrenCache = null;
+        dirty = true;
+    }
+
+    public void reassignStore() {
+        this.storeNode = DataStorageWriter.storeToNode(store);
         dirty = true;
     }
 
@@ -513,21 +518,13 @@ public class DataStoreEntry extends StorageElement {
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);
-        var storeString = mapper.writeValueAsString(storeNode);
+        var storeString = mapper.writeValueAsString(DataStorageEncryption.encryptNodeIfNeeded(storeNode));
 
         FileUtils.forceMkdir(directory.toFile());
         Files.writeString(directory.resolve("state.json"), stateString);
         Files.writeString(directory.resolve("entry.json"), entryString);
         Files.writeString(directory.resolve("store.json"), storeString);
         dirty = false;
-    }
-
-    public ObjectNode getResolvedNode() {
-        if (store == null) {
-            return null;
-        }
-
-        return JacksonMapper.getDefault().valueToTree(store);
     }
 
     @Getter

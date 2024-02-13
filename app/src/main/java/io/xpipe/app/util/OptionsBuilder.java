@@ -1,11 +1,12 @@
 package io.xpipe.app.util;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.*;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
@@ -13,10 +14,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import net.synedra.validatorfx.Check;
 
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class OptionsBuilder {
@@ -93,6 +97,10 @@ public class OptionsBuilder {
         entries.add(entry);
     }
 
+    public OptionsBuilder nameAndDescription(String key) {
+        return name(key).description(key + "Description");
+    }
+
     public OptionsBuilder sub(OptionsBuilder builder) {
         return sub(builder, null);
     }
@@ -134,7 +142,7 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder decorate(Check c) {
+    public OptionsBuilder check(Check c) {
         lastCompHeadReference.apply(s -> c.decorates(s.get()));
         return this;
     }
@@ -144,6 +152,16 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder disable(ObservableValue<Boolean> b) {
+        lastCompHeadReference.disable(b);
+        return this;
+    }
+
+    public OptionsBuilder hide(ObservableValue<Boolean> b) {
+        lastCompHeadReference.hide(b);
+        return this;
+	}
+	
     public OptionsBuilder disable(boolean b) {
         lastCompHeadReference.disable(new SimpleBooleanProperty(b));
         return this;
@@ -152,25 +170,30 @@ public class OptionsBuilder {
     public OptionsBuilder nonNull() {
         var e = lastNameReference;
         var p = props.get(props.size() - 1);
-        return decorate(Validator.nonNull(ownValidator, e, p));
+        return check(Validator.nonNull(ownValidator, e, p));
+    }
+
+    public OptionsBuilder withValidator(Consumer<Validator> val) {
+        val.accept(ownValidator);
+        return this;
     }
 
     public OptionsBuilder nonEmpty() {
         var e = lastNameReference;
         var p = props.get(props.size() - 1);
-        return decorate(Validator.nonEmpty(ownValidator, e, (ReadOnlyListProperty<?>) p));
+        return check(Validator.nonEmpty(ownValidator, e, (ReadOnlyListProperty<?>) p));
     }
 
     public OptionsBuilder validate() {
         var e = lastNameReference;
         var p = props.get(props.size() - 1);
-        return decorate(Validator.nonNull(ownValidator, e, p));
+        return check(Validator.nonNull(ownValidator, e, p));
     }
 
     public OptionsBuilder nonNull(Validator v) {
         var e = lastNameReference;
         var p = props.get(props.size() - 1);
-        return decorate(Validator.nonNull(v, e, p));
+        return check(Validator.nonNull(v, e, p));
     }
 
     private void pushComp(Comp<?> comp) {
@@ -194,6 +217,13 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addToggle(Property<Boolean> prop) {
+        var comp = new ToggleSwitchComp(prop, null);
+        pushComp(comp);
+        props.add(prop);
+        return this;
+    }
+
+    public OptionsBuilder addYesNoToggle(Property<Boolean> prop) {
         var comp = new ToggleGroupComp<>(
                 prop,
                 new SimpleObjectProperty<>(Map.of(
@@ -205,6 +235,27 @@ public class OptionsBuilder {
 
     public OptionsBuilder addString(Property<String> prop) {
         return addString(prop, false);
+    }
+
+    public OptionsBuilder addPath(Property<Path> prop) {
+        var string = new SimpleStringProperty(prop.getValue() != null ? prop.getValue().toString() : null);
+        var comp = new TextFieldComp(string, true);
+        string.addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                prop.setValue(null);
+                return;
+            }
+
+            try {
+                var p = Path.of(newValue);
+                prop.setValue(p);
+            } catch (InvalidPathException ignored) {
+
+            }
+        });
+        pushComp(comp);
+        props.add(prop);
+        return this;
     }
 
     public OptionsBuilder addString(Property<String> prop, boolean lazy) {
@@ -263,7 +314,7 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addSecret(Property<SecretValue> prop) {
+    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop) {
         var comp = new SecretFieldComp(prop);
         pushComp(comp);
         props.add(prop);

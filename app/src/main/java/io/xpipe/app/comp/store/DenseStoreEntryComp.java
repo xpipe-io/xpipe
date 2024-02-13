@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -32,16 +31,18 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 : Comp.empty();
         information.setGraphic(state.createRegion());
 
-        var summary = wrapper.getSummary();
         var info = wrapper.getEntry().getProvider().informationString(wrapper);
-        SimpleChangeListener.apply(grid.hoverProperty(), val -> {
-            if (val && summary.getValue() != null && wrapper.getEntry().getProvider().alwaysShowSummary()) {
-                information.textProperty().bind(PlatformThread.sync(summary));
-            } else {
-                information.textProperty().bind(PlatformThread.sync(info));
-
-            }
-        });
+        var summary = wrapper.getSummary();
+        if (wrapper.getEntry().getProvider() != null) {
+            information.textProperty().bind(PlatformThread.sync(Bindings.createStringBinding(() -> {
+                var val = summary.getValue();
+                if (val != null && grid.isHover() && wrapper.getEntry().getProvider().alwaysShowSummary()) {
+                    return val;
+                } else {
+                    return info.getValue();
+                }
+            }, grid.hoverProperty(), info, summary)));
+        }
 
         return information;
     }

@@ -28,7 +28,7 @@ public class AppStyle {
         loadStylesheets();
 
         if (AppPrefs.get() != null) {
-            AppPrefs.get().useSystemFont.addListener((c, o, n) -> {
+            AppPrefs.get().useSystemFont().addListener((c, o, n) -> {
                 changeFontUsage(n);
             });
         }
@@ -48,7 +48,7 @@ public class AppStyle {
                     return;
                 }
 
-                TrackEvent.trace("core", "Loading styles for module " + module.getName());
+                TrackEvent.trace("Loading styles for module " + module.getName());
                 Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -93,7 +93,7 @@ public class AppStyle {
     }
 
     public static void addStylesheets(Scene scene) {
-        if (AppPrefs.get() != null && !AppPrefs.get().useSystemFont.get()) {
+        if (AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue()) {
             scene.getStylesheets().add(FONT_CONTENTS);
         }
 

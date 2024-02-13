@@ -18,12 +18,13 @@ public class BrowseInNativeManagerAction implements LeafAction {
         ShellDialect d = sc.getShellDialect();
         for (BrowserEntry entry : entries) {
             var e = entry.getRawFileEntry().getPath();
+            var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
                     if (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
-                        sc.executeSimpleCommand("explorer " + d.fileArgument(e));
+                        sc.executeSimpleCommand("explorer " + d.fileArgument(localFile));
                     } else {
-                        sc.executeSimpleCommand("explorer /select," + d.fileArgument(e));
+                        sc.executeSimpleCommand("explorer /select," + d.fileArgument(localFile));
                     }
                 }
                 case OsType.Linux linux -> {
@@ -34,13 +35,13 @@ public class BrowseInNativeManagerAction implements LeafAction {
                             """
                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
                                                 """,
-                            action, entry.getRawFileEntry().getPath());
+                            action, localFile);
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
                     sc.executeSimpleCommand(
                             "open " + (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY ? "" : "-R ")
-                                    + d.fileArgument(entry.getRawFileEntry().getPath()));
+                                    + d.fileArgument(localFile));
                 }
             }
         }
@@ -58,7 +59,7 @@ public class BrowseInNativeManagerAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.isLocal();
+        return model.getFileSystem().getShell().orElseThrow().getLocalSystemAccess().supportsFileSystemAccess();
     }
 
     @Override

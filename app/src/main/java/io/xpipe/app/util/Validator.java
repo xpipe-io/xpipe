@@ -11,7 +11,26 @@ import javafx.collections.ObservableList;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public interface Validator {
+
+    public static Check absolutePath(Validator v, ObservableValue<Path> s) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") == null || !((Path) c.get("val")).isAbsolute()) {
+                c.error(AppI18n.get("app.notAnAbsolutePath"));
+            }
+        });
+    }
+
+    public static Check directory(Validator v, ObservableValue<Path> s) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") instanceof Path p && (!Files.exists(p) || !Files.isDirectory(p))) {
+                c.error(AppI18n.get("app.notADirectory"));
+            }
+        });
+    }
 
     static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
         return v.createCheck().dependsOn("val", s).withMethod(c -> {

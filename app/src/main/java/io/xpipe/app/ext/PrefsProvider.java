@@ -1,8 +1,6 @@
 package io.xpipe.app.ext;
 
-import com.dlsc.formsfx.model.structure.Field;
 import io.xpipe.core.util.ModuleLayerLoader;
-import javafx.beans.value.ObservableBooleanValue;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -44,12 +42,7 @@ public abstract class PrefsProvider {
                 .orElseThrow();
     }
 
-    protected <T extends Field<?>> T editable(T o, ObservableBooleanValue v) {
-        o.editableProperty().bind(v);
-        return o;
-    }
-
     public abstract void addPrefs(PrefsHandler handler);
 
-    public abstract void init();
+    public abstract void initDefaultValues();
 }

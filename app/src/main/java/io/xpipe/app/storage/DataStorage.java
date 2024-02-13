@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -12,7 +13,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -58,11 +61,14 @@ public abstract class DataStorage {
     protected final ReentrantLock busyIo = new ReentrantLock();
 
     public DataStorage() {
-        this.dir = AppPrefs.get().storageDirectory().getValue();
+        var prefsDir = AppPrefs.get().storageDirectory().getValue();
+        this.dir = !Files.exists(prefsDir) || !Files.isDirectory(prefsDir) ? AppPrefs.DEFAULT_STORAGE_DIR : prefsDir;
         this.storeEntries = new ConcurrentHashMap<>();
         this.storeEntriesSet = storeEntries.keySet();
         this.storeCategories = new CopyOnWriteArrayList<>();
     }
+
+    public abstract String getVaultKey();
 
     public DataStoreCategory getDefaultCategory() {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
@@ -101,6 +107,12 @@ public abstract class DataStorage {
         });
     }
 
+    public void forceRewrite() {
+        getStoreEntries().forEach(dataStoreEntry -> {
+            dataStoreEntry.reassignStore();
+        });
+    }
+
     public static void reset() {
         if (INSTANCE == null) {
             return;
@@ -113,6 +125,54 @@ public abstract class DataStorage {
     private synchronized void dispose() {
         onReset();
         save(true);
+    }
+
+    protected void setupBuiltinCategories() {
+        var categoriesDir = getCategoriesDir();
+        var allConnections = getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID);
+        if (allConnections.isEmpty()) {
+            var cat = DataStoreCategory.createNew(null, ALL_CONNECTIONS_CATEGORY_UUID, "All connections");
+            cat.setDirectory(categoriesDir.resolve(ALL_CONNECTIONS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            allConnections.get().setParentCategory(null);
+        }
+
+        var allScripts = getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID);
+        if (allScripts.isEmpty()) {
+            var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
+            cat.setDirectory(categoriesDir.resolve(ALL_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            allScripts.get().setParentCategory(null);
+        }
+
+        if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+            var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
+            cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        }
+
+        if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+            var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
+            cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        }
+
+        if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
+            storeCategories.add(
+                    new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID, "Default", Instant.now(),
+                            Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, StoreSortMode.ALPHABETICAL_ASC, false));
+        }
+
+        storeCategories.forEach(dataStoreCategory -> {
+            if (dataStoreCategory.getParentCategory() != null && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory()).isEmpty()) {
+                dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
+            } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID) &&
+                    !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)) {
+                dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
+            }
+        });
     }
 
     protected void onReset() {}

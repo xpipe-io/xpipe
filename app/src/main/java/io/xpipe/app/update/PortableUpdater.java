@@ -27,7 +27,7 @@ public class PortableUpdater extends UpdateHandler {
                 .createRegion();
     }
 
-    public void executeUpdateAndCloseImpl() {
+    public void executeUpdateOnCloseImpl() {
         throw new UnsupportedOperationException();
     }
 

@@ -1,13 +1,13 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.controls.Spacer;
+import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
-import io.xpipe.app.comp.base.MultiStepComp;
 import io.xpipe.app.comp.base.PopupMenuButtonComp;
-import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -25,12 +25,14 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
@@ -41,9 +43,10 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class StoreCreationComp extends MultiStepComp.Step<CompStructure<?>> {
+public class StoreCreationComp extends DialogComp {
 
-    MultiStepComp parent;
+    Stage window;
+    Consumer<DataStoreEntry> consumer;
     Property<DataStoreProvider> provider;
     Property<DataStore> store;
     Predicate<DataStoreProvider> filter;
@@ -58,14 +61,15 @@ public class StoreCreationComp extends MultiStepComp.Step<CompStructure<?>> {
     boolean staticDisplay;
 
     public StoreCreationComp(
-            MultiStepComp parent,
+            Stage window, Consumer<DataStoreEntry> consumer,
             Property<DataStoreProvider> provider,
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
             String initialName,
             DataStoreEntry existingEntry,
             boolean staticDisplay) {
-        this.parent = parent;
+        this.window = window;
+        this.consumer = consumer;
         this.provider = provider;
         this.store = store;
         this.filter = filter;
@@ -178,36 +182,13 @@ public class StoreCreationComp extends MultiStepComp.Step<CompStructure<?>> {
             DataStoreEntry existingEntry) {
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
-        var loading = new SimpleBooleanProperty();
-        var name = "addConnection";
-        Platform.runLater(() -> {
-            var stage = AppWindowHelper.sideWindow(
-                    AppI18n.get(name),
-                    window -> {
-                        return new MultiStepComp() {
+        DialogComp.showWindow("addConnection", stage -> new StoreCreationComp(
+                stage, con, prop, store, filter, initialName, existingEntry, staticDisplay));
+    }
 
-                            private final StoreCreationComp creator = new StoreCreationComp(
-                                    this, prop, store, filter, initialName, existingEntry, staticDisplay);
-
-                            @Override
-                            protected List<Entry> setup() {
-                                loading.bind(creator.busy);
-                                return List.of(new Entry(AppI18n.observable("a"), creator));
-                            }
-
-                            @Override
-                            protected void finish() {
-                                window.close();
-                                if (creator.entry.getValue() != null) {
-                                    con.accept(creator.entry.getValue());
-                                }
-                            }
-                        };
-                    },
-                    false,
-                    loading);
-            stage.show();
-        });
+    @Override
+    protected ObservableValue<Boolean> busy() {
+        return busy;
     }
 
     @Override
@@ -259,18 +240,97 @@ public class StoreCreationComp extends MultiStepComp.Step<CompStructure<?>> {
                 .build();
     }
 
+    private void commit() {
+        if (finished.get()) {
+            return;
+        }
+        finished.setValue(true);
+
+        if (entry.getValue() != null) {
+            consumer.accept(entry.getValue());
+        }
+
+        PlatformThread.runLaterIfNeeded(() -> {
+            window.close();
+        });
+    }
+
     @Override
-    public CompStructure<? extends Region> createBase() {
+    protected void finish() {
+        if (finished.get()) {
+            return;
+        }
+
+        if (store.getValue() == null) {
+            return;
+        }
+
+        // We didn't change anything
+        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
+            commit();
+            return;
+        }
+
+        if (messageProp.getValue() != null && !changedSinceError.get()) {
+            if (AppPrefs.get().developerMode().getValue() && showInvalidConfirmAlert()) {
+                commit();
+                return;
+            }
+        }
+
+        if (!validator.getValue().validate()) {
+            var msg = validator
+                    .getValue()
+                    .getValidationResult()
+                    .getMessages()
+                    .getFirst()
+                    .getText();
+            TrackEvent.info(msg);
+            var newMessage = msg;
+            // Temporary fix for equal error message not showing up again
+            if (Objects.equals(newMessage, messageProp.getValue())) {
+                newMessage = newMessage + " ";
+            }
+            messageProp.setValue(newMessage);
+            changedSinceError.setValue(false);
+            return;
+        }
+
+        ThreadHelper.runAsync(() -> {
+            try (var b = new BooleanScope(busy).start()) {
+                DataStorage.get().addStoreEntryInProgress(entry.getValue());
+                entry.getValue().validateOrThrow();
+                commit();
+            } catch (Throwable ex) {
+                var newMessage = ExceptionConverter.convertMessage(ex);
+                // Temporary fix for equal error message not showing up again
+                if (Objects.equals(newMessage, messageProp.getValue())) {
+                    newMessage = newMessage + " ";
+                }
+                messageProp.setValue(newMessage);
+                changedSinceError.setValue(false);
+                if (ex instanceof ValidationException) {
+                    ErrorEvent.unreportable(ex);
+                }
+                ErrorEvent.fromThrowable(ex).omit().handle();
+            } finally {
+                DataStorage.get().removeStoreEntryInProgress(entry.getValue());
+            }
+        });
+    }
+
+    @Override
+    public Comp<?> content() {
         var back = Comp.of(this::createLayout);
         var message = new ErrorOverlayComp(back, messageProp);
-        return message.createStructure();
+        return message;
     }
 
     private Region createLayout() {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         layout.setPadding(new Insets(20));
-        var providerChoice = new DataStoreProviderChoiceComp(filter, provider, staticDisplay);
+        var providerChoice = new StoreProviderChoiceComp(filter, provider, staticDisplay);
         if (staticDisplay) {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
@@ -297,93 +357,9 @@ public class StoreCreationComp extends MultiStepComp.Step<CompStructure<?>> {
 
         var sep = new Separator();
         sep.getStyleClass().add("spacer");
-        var top = new VBox(providerChoice.createRegion(), sep);
+        var top = new VBox(providerChoice.createRegion(), new Spacer(7, Orientation.VERTICAL), sep);
         top.getStyleClass().add("top");
         layout.setTop(top);
         return layout;
-    }
-
-    @Override
-    public boolean canContinue() {
-        if (provider.getValue() != null) {
-            var install = provider.getValue().getRequiredAdditionalInstallation();
-            if (install != null && !AppExtensionManager.getInstance().isInstalled(install)) {
-                ThreadHelper.runAsync(() -> {
-                    try (var ignored = new BooleanScope(busy).start()) {
-                        AppExtensionManager.getInstance().installIfNeeded(install);
-                        /*
-                        TODO: Use reload
-                         */
-                        finished.setValue(true);
-                        OperationMode.shutdown(false, false);
-                        PlatformThread.runLaterIfNeeded(parent::next);
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                    }
-                });
-                return false;
-            }
-        }
-
-        if (finished.get()) {
-            return true;
-        }
-
-        if (store.getValue() == null) {
-            return false;
-        }
-
-        // We didn't change anything
-        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            return true;
-        }
-
-        if (messageProp.getValue() != null && !changedSinceError.get()) {
-            if (AppPrefs.get().developerMode().getValue() && showInvalidConfirmAlert()) {
-                return true;
-            }
-        }
-
-        if (!validator.getValue().validate()) {
-            var msg = validator
-                    .getValue()
-                    .getValidationResult()
-                    .getMessages()
-                    .getFirst()
-                    .getText();
-            TrackEvent.info(msg);
-            var newMessage = msg;
-            // Temporary fix for equal error message not showing up again
-            if (Objects.equals(newMessage, messageProp.getValue())) {
-                newMessage = newMessage + " ";
-            }
-            messageProp.setValue(newMessage);
-            changedSinceError.setValue(false);
-            return false;
-        }
-
-        ThreadHelper.runAsync(() -> {
-            try (var b = new BooleanScope(busy).start()) {
-                DataStorage.get().addStoreEntryInProgress(entry.getValue());
-                entry.getValue().validateOrThrow();
-                finished.setValue(true);
-                PlatformThread.runLaterIfNeeded(parent::next);
-            } catch (Throwable ex) {
-                var newMessage = ExceptionConverter.convertMessage(ex);
-                // Temporary fix for equal error message not showing up again
-                if (Objects.equals(newMessage, messageProp.getValue())) {
-                    newMessage = newMessage + " ";
-                }
-                messageProp.setValue(newMessage);
-                changedSinceError.setValue(false);
-                if (ex instanceof ValidationException) {
-                    ErrorEvent.unreportable(ex);
-                }
-                ErrorEvent.fromThrowable(ex).omit().handle();
-            } finally {
-                DataStorage.get().removeStoreEntryInProgress(entry.getValue());
-            }
-        });
-        return false;
     }
 }

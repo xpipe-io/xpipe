@@ -1,7 +1,18 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 import java.util.stream.Stream
 
 plugins {
     id "io.codearte.nexus-staging" version "0.30.0"
+    id 'org.gradlex.extra-java-module-info' version '1.8' apply false
+}
+
+allprojects { subproject ->
+    apply plugin: 'org.gradlex.extra-java-module-info'
+    extraJavaModuleInfo {
+        failOnMissingModuleInfo.set(false)
+    }
+    apply from: "$rootDir/modules.gradle"
 }
 
 def getArchName() {
@@ -19,6 +30,19 @@ def getArchName() {
     }
 
     return arch
+}
+
+def getPlatformName() {
+    def currentOS = DefaultNativePlatform.currentOperatingSystem;
+    def platform = null
+    if (currentOS.isWindows()) {
+        platform = 'windows'
+    } else if (currentOS.isLinux()) {
+        platform = 'linux'
+    } else if (currentOS.isMacOsX()) {
+        platform = 'osx'
+    }
+    return platform;
 }
 
 project.ext {
@@ -49,7 +73,23 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '20.0.2'
+    javafxVersion = '22-ea+27'
+    platformName = getPlatformName()
+    artifactChecksums = new HashMap<String, String>()
+    jvmRunArgs = [
+            "--add-opens", "java.base/java.lang=io.xpipe.app",
+            "--add-opens", "java.base/java.lang=io.xpipe.core",
+            "--add-opens", "java.desktop/java.awt=io.xpipe.app",
+            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
+            "--add-opens", "java.base/java.nio.file=io.xpipe.app",
+            "-Xmx8g",
+            "-Dio.xpipe.app.arch=$rootProject.arch",
+            "-Dfile.encoding=UTF-8",
+            // Disable this for now as it requires Windows 10+
+            // '-XX:+UseZGC',
+            "-Dvisualvm.display.name=XPipe"
+    ]
+    useBundledJavaFx = fullVersion && !(platformName == 'linux' && arch == 'arm64')
 }
 
 if (isFullRelease && rawVersion.contains("-")) {
@@ -72,4 +112,33 @@ def replaceVariablesInFile(String f, Map<String, String> replacements) {
     def temp = "$build/$fileName"
     file(temp).text = replaced
     return file(temp)
+}
+
+def testTasks = [
+        project(':core').getTasksByName('test', true),
+        project(':api').getTasksByName('test', true),
+        project(':app').getTasksByName('test', true),
+        project(':base').getTasksByName('localTest', true),
+        project(':jdbc').getTasksByName('localTest', true),
+        project(':proc').getTasksByName('localTest', true),
+        project(':cli').getTasksByName('remoteTest', true),
+]
+
+tasks.register('testReport', TestReport) {
+    getDestinationDirectory().set(file("$rootProject.buildDir/reports/all"))
+    getTestResults().from(testTasks.stream().map {
+        file("${it.project.buildDir.get(0)}/test-results/${it.name.get(0)}/binary")
+    }.toList())
+}
+
+task testAll(type: DefaultTask) {
+    for (final def t in testTasks) {
+        t.forEach {dependsOn(it.getTaskDependencies())}
+    }
+    doFirst {
+        for (final def t in testTasks) {
+            t.forEach {it.executeTests()}
+        }
+    }
+    finalizedBy(testReport)
 }

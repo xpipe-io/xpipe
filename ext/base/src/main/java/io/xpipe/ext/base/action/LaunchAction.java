@@ -5,7 +5,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.store.LaunchableStore;
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.ext.base.script.ScriptStore;
@@ -28,7 +28,7 @@ public class LaunchAction implements ActionProvider {
         public void execute() throws Exception {
             var storeName = DataStorage.get().getStoreDisplayName(entry);
             if (entry.getStore() instanceof ShellStore s) {
-                TerminalHelper.open(entry, storeName, ScriptStore.controlWithDefaultScripts(s.control()));
+                TerminalLauncher.open(entry, storeName, null, ScriptStore.controlWithDefaultScripts(s.control()));
                 return;
             }
 
@@ -38,7 +38,7 @@ public class LaunchAction implements ActionProvider {
                     return;
                 }
 
-                TerminalHelper.open(entry, storeName, command);
+                TerminalLauncher.open(entry, storeName, null, command);
             }
         }
     }

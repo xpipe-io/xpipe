@@ -21,10 +21,7 @@ public class AskpassExchange implements MessageExchange {
     @Builder
     @Value
     public static class Request implements RequestMessage {
-        @NonNull
-        UUID storeId;
-
-        int subId;
+        UUID secretId;
 
         @NonNull
         UUID request;

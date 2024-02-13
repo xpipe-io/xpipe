@@ -7,7 +7,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.update.UpdateChangelogAlert;
-import io.xpipe.app.util.UnlockAlert;
 import javafx.stage.Stage;
 
 public class GuiMode extends PlatformMode {
@@ -21,10 +20,9 @@ public class GuiMode extends PlatformMode {
     public void onSwitchTo() throws Throwable {
         super.onSwitchTo();
 
-        UnlockAlert.showIfNeeded();
         AppGreetings.showIfNeeded();
 
-        TrackEvent.info("mode", "Waiting for window setup completion ...");
+        TrackEvent.info("Waiting for window setup completion ...");
         PlatformThread.runLaterIfNeededBlocking(() -> {
             if (AppMainWindow.getInstance() == null) {
                 try {
@@ -35,7 +33,7 @@ public class GuiMode extends PlatformMode {
             }
             AppMainWindow.getInstance().show();
         });
-        TrackEvent.info("mode", "Window setup complete");
+        TrackEvent.info("Window setup complete");
 
         UpdateChangelogAlert.showIfNeeded();
     }
@@ -43,7 +41,7 @@ public class GuiMode extends PlatformMode {
     @Override
     public void onSwitchFrom() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            TrackEvent.info("mode", "Closing windows");
+            TrackEvent.info("Closing windows");
             Stage.getWindows().stream().toList().forEach(w -> {
                 w.hide();
             });

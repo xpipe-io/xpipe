@@ -18,7 +18,6 @@ public class TrackEvent {
     private final Instant instant = Instant.now();
     private String type;
     private String message;
-    private String category;
 
     @Singular
     private Map<String, Object> tags;
@@ -26,28 +25,12 @@ public class TrackEvent {
     @Singular
     private List<Object> elements;
 
-    public static TrackEventBuilder storage() {
-        return TrackEvent.builder().category("storage");
-    }
-
     public static TrackEventBuilder fromMessage(String type, String message) {
         return builder().type(type).message(message);
     }
 
-    public static void simple(String type, String message) {
-        builder().type(type).message(message).build().handle();
-    }
-
     public static TrackEventBuilder withInfo(String message) {
         return builder().type("info").message(message);
-    }
-
-    public static TrackEventBuilder withInfo(String category, String message) {
-        return builder().category(category).type("info").message(message);
-    }
-
-    public static TrackEventBuilder withWarn(String category, String message) {
-        return builder().category(category).type("warn").message(message);
     }
 
     public static TrackEventBuilder withWarn(String message) {
@@ -56,10 +39,6 @@ public class TrackEvent {
 
     public static TrackEventBuilder withTrace(String message) {
         return builder().type("trace").message(message);
-    }
-
-    public static TrackEventBuilder withTrace(String cat, String message) {
-        return builder().category(cat).type("trace").message(message);
     }
 
     public static void info(String message) {
@@ -74,28 +53,12 @@ public class TrackEvent {
         return builder().type("debug").message(message);
     }
 
-    public static TrackEventBuilder withDebug(String cat, String message) {
-        return builder().category(cat).type("debug").message(message);
-    }
-
-    public static void debug(String cat, String message) {
-        builder().category(cat).type("debug").message(message).build().handle();
-    }
-
     public static void debug(String message) {
         builder().type("debug").message(message).build().handle();
     }
 
     public static void trace(String message) {
         builder().type("trace").message(message).build().handle();
-    }
-
-    public static void info(String cat, String message) {
-        builder().category(cat).type("info").message(message).build().handle();
-    }
-
-    public static void trace(String cat, String message) {
-        builder().category(cat).type("trace").message(message).build().handle();
     }
 
     public static TrackEventBuilder withError(String message) {
@@ -142,19 +105,8 @@ public class TrackEvent {
 
     public static class TrackEventBuilder {
 
-        public TrackEventBuilder trace() {
-            this.type("trace");
-            return this;
-        }
-
-        public TrackEventBuilder windowCategory() {
-            this.category("window");
-            return this;
-        }
-
         public TrackEventBuilder copy() {
             var copy = builder();
-            copy.category = category;
             copy.message = message;
             copy.tags$key = new ArrayList<>(tags$key);
             copy.tags$value = new ArrayList<>(tags$value);

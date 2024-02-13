@@ -23,19 +23,19 @@ public class TrayMode extends PlatformMode {
         super.onSwitchTo();
         PlatformThread.runLaterIfNeededBlocking(() -> {
             if (AppTray.get() == null) {
-                TrackEvent.info("mode", "Initializing tray");
+                TrackEvent.info("Initializing tray");
                 AppTray.init();
             }
 
             AppTray.get().show();
-            TrackEvent.info("mode", "Finished tray initialization");
+            TrackEvent.info("Finished tray initialization");
         });
     }
 
     @Override
     public void onSwitchFrom() {
         if (AppTray.get() != null) {
-            TrackEvent.info("mode", "Closing tray");
+            TrackEvent.info("Closing tray");
             PlatformThread.runLaterIfNeededBlocking(() -> AppTray.get().hide());
         }
     }

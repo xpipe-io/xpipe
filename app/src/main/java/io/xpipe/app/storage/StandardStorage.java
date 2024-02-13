@@ -1,18 +1,19 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,12 +25,19 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final GitStorageHandler gitStorageHandler;
 
+    private String vaultKey;
+
     @Getter
     private boolean disposed;
 
     StandardStorage() {
         this.gitStorageHandler = GitStorageHandler.getInstance();
         this.gitStorageHandler.init(dir);
+    }
+
+    @Override
+    public String getVaultKey() {
+        return vaultKey;
     }
 
     @Override
@@ -60,7 +68,7 @@ public class StandardStorage extends DataStorage {
 
                     var entry = getStoreEntryIfPresent(uuid);
                     if (entry.isEmpty()) {
-                        TrackEvent.withTrace("storage", "Deleting leftover store directory")
+                        TrackEvent.withTrace("Deleting leftover store directory")
                                 .tag("uuid", uuid)
                                 .handle();
                         FileUtils.forceDelete(file.toFile());
@@ -93,7 +101,7 @@ public class StandardStorage extends DataStorage {
 
                     var entry = getStoreCategoryIfPresent(uuid);
                     if (entry.isEmpty()) {
-                        TrackEvent.withTrace("storage", "Deleting leftover category directory")
+                        TrackEvent.withTrace("Deleting leftover category directory")
                                 .tag("uuid", uuid)
                                 .handle();
                         FileUtils.forceDelete(file.toFile());
@@ -108,9 +116,50 @@ public class StandardStorage extends DataStorage {
         }
     }
 
+    private void initVaultKey() throws IOException {
+        var file = dir.resolve("vaultkey");
+        if (Files.exists(file)) {
+            var s = Files.readString(file);
+            vaultKey = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
+        } else {
+            Files.createDirectories(dir);
+            vaultKey = UUID.randomUUID().toString();
+            Files.writeString(file,Base64.getEncoder().encodeToString(vaultKey.getBytes(StandardCharsets.UTF_8)));
+        }
+    }
+
+    private void initSystemInfo() throws IOException {
+        var file = dir.resolve("systeminfo");
+        if (Files.exists(file)) {
+            var s = Files.readString(file);
+            if (!LocalShell.getShell().getOsName().equals(s)) {
+                ErrorEvent.fromMessage("This vault was originally created on a different system running " + s +
+                        ". Sharing connection information between systems directly might cause some problems." +
+                        " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings."
+                ).expected().handle();
+            }
+        } else {
+            Files.createDirectories(dir);
+            var s = LocalShell.getShell().getOsName();
+            Files.writeString(file, s);
+        }
+    }
+
     public void load() {
         if (!busyIo.tryLock()) {
             return;
+        }
+
+        try {
+            initSystemInfo();
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).build().handle();
+        }
+
+        try {
+            initVaultKey();
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
         }
 
         this.gitStorageHandler.beforeStorageLoad();
@@ -156,55 +205,8 @@ public class StandardStorage extends DataStorage {
                 ErrorEvent.fromThrowable(exception.get()).handle();
             }
 
-            var allConnections = getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID);
-            if (allConnections.isEmpty()) {
-                var cat = DataStoreCategory.createNew(null, ALL_CONNECTIONS_CATEGORY_UUID, "All connections");
-                cat.setDirectory(categoriesDir.resolve(ALL_CONNECTIONS_CATEGORY_UUID.toString()));
-                storeCategories.add(cat);
-            } else {
-                allConnections.get().setParentCategory(null);
-            }
-
-            var allScripts = getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID);
-            if (allScripts.isEmpty()) {
-                var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
-                cat.setDirectory(categoriesDir.resolve(ALL_SCRIPTS_CATEGORY_UUID.toString()));
-                storeCategories.add(cat);
-            } else {
-                allScripts.get().setParentCategory(null);
-            }
-
-            if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
-                var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
-                cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
-                storeCategories.add(cat);
-            }
-
-            if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
-                var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
-                cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
-                cat.setShare(true);
-                storeCategories.add(cat);
-            }
-
-            if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
-                var cat = new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID, "Default",
-                        Instant.now(), Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, StoreSortMode.ALPHABETICAL_ASC, true);
-                storeCategories.add(cat);
-            }
-
+            setupBuiltinCategories();
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
-
-            storeCategories.forEach(dataStoreCategory -> {
-                if (dataStoreCategory.getParentCategory() != null
-                        && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory())
-                                .isEmpty()) {
-                    dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
-                } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID) && !dataStoreCategory.getUuid().equals(
-                        ALL_SCRIPTS_CATEGORY_UUID)) {
-                    dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
-                }
-            });
 
             try (var dirs = Files.list(storesDir)) {
                 dirs.filter(Files::isDirectory).forEach(path -> {
@@ -260,21 +262,35 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
 
-            var hasFixedLocal = storeEntriesSet.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
-            if (!hasFixedLocal) {
-                var e = DataStoreEntry.createNew(
-                        LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
-                e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
-                e.setConfiguration(
-                        StorageElement.Configuration.builder().deletable(false).build());
-                storeEntries.put(e, e);
-                e.validate();
-            }
+        var hasFixedLocal = storeEntriesSet.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
 
-            var local = DataStorage.get().getStoreEntry(LOCAL_ID);
-            if (storeEntriesSet.stream().noneMatch(entry -> entry.getColor() != null)) {
-                local.setColor(DataStoreColor.BLUE);
+        if (hasFixedLocal) {
+            var local = getStoreEntry(LOCAL_ID);
+            if (local.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+                try {
+                    storeEntries.remove(local);
+                    local.deleteFromDisk();
+                    hasFixedLocal = false;
+                } catch (IOException ex) {
+                    ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+                }
             }
+        }
+
+        if (!hasFixedLocal) {
+            var e = DataStoreEntry.createNew(
+                    LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
+            e.setDirectory(getStoresDir().resolve(LOCAL_ID.toString()));
+            e.setConfiguration(
+                    StorageElement.Configuration.builder().deletable(false).build());
+            storeEntries.put(e, e);
+            e.validate();
+        }
+
+        var local = DataStorage.get().getStoreEntry(LOCAL_ID);
+        if (storeEntriesSet.stream().noneMatch(entry -> entry.getColor() != null)) {
+            local.setColor(DataStoreColor.BLUE);
+        }
 
         refreshValidities(true);
         storeEntriesSet.forEach(entry -> {

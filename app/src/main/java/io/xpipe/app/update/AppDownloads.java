@@ -58,7 +58,7 @@ public class AppDownloads {
                     FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
             Files.write(downloadFile, bytes);
 
-            TrackEvent.withInfo("installation", "Downloaded asset")
+            TrackEvent.withInfo("Downloaded asset")
                     .tag("version", version)
                     .tag("url", url)
                     .tag("size", FileUtils.byteCountToDisplaySize(bytes.length))

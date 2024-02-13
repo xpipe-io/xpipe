@@ -49,7 +49,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             return;
         }
 
-        if (OperationMode.isInStartup()) {
+        if (OperationMode.isInStartup() && !AppProperties.get().isDevelopmentEnvironment()) {
             handleProbableUpdate();
         }
 

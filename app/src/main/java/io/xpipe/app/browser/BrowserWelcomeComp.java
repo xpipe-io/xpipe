@@ -1,10 +1,10 @@
 package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
@@ -72,7 +72,7 @@ public class BrowserWelcomeComp extends SimpleComp {
             return !empty.get() ? "You were recently connected to the following systems:" :
                     "Here you will be able to see where you left off last time.";
         }, empty)).createRegion();
-        header.getStyleClass().add(Styles.TEXT_MUTED);
+        AppFont.setSize(header, 1);
         vbox.getChildren().add(header);
 
         var storeList = new VBox();

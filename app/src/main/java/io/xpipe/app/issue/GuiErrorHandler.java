@@ -3,6 +3,8 @@ package io.xpipe.app.issue;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 
+import java.util.stream.Stream;
+
 public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler {
 
     private final ErrorHandler log = new LogErrorHandler();
@@ -28,8 +30,10 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     }
 
     private void handleGui(ErrorEvent event) {
-        if (event.getThrowable() instanceof LicenseRequiredException lex) {
-            LicenseProvider.get().showLicenseAlert(lex);
+        var lex = event.getThrowableChain().stream().flatMap(throwable -> throwable instanceof LicenseRequiredException le ?
+                Stream.of(le) : Stream.of()).findFirst();
+        if (lex.isPresent()) {
+            LicenseProvider.get().showLicenseAlert(lex.get());
             event.setShouldSendDiagnostics(true);
             ErrorAction.ignore().handle(event);
         } else {

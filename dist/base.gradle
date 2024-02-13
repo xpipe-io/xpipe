@@ -58,6 +58,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/licenses"
             }
             copy {
+                from "$projectDir/bundled_bin/$platformName"
+                into "$distDir/base/app/bundled"
+            }
+            copy {
                 from "$distDir/docs/html5"
                 into "$distDir/base/cli/docs"
             }
@@ -133,6 +137,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$distDir/docs/manpage"
                 into "$distDir/base/cli/man"
             }
+            copy {
+                from "$projectDir/bundled_bin/$platformName"
+                into "$distDir/base/app/bundled"
+            }
         }
     }
 } else {
@@ -170,6 +178,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             copy {
                 from "$projectDir/fonts"
                 into "$distDir/$app/Contents/Resources/fonts"
+            }
+            copy {
+                from "$projectDir/bundled_bin/$platformName"
+                into "$distDir/$app/Contents/Resources/bundled"
             }
 
             copy {

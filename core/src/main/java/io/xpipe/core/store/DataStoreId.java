@@ -43,6 +43,10 @@ public class DataStoreId {
             throw new IllegalArgumentException("Names are null");
         }
 
+        if (Arrays.stream(names).anyMatch(s -> s == null)) {
+            throw new IllegalArgumentException("Name is null");
+        }
+
         if (Arrays.stream(names).anyMatch(s -> s.contains("" + SEPARATOR))) {
             throw new IllegalArgumentException(
                     "Separator character " + SEPARATOR + " is not allowed in the names");
@@ -67,9 +71,9 @@ public class DataStoreId {
             throw new IllegalArgumentException("String is null");
         }
 
-        var split = s.split(String.valueOf(SEPARATOR));
+        var split = s.split(String.valueOf(SEPARATOR), -1);
 
-        var names = Arrays.stream(split).toList();
+        var names = Arrays.stream(split).map(String::trim).map(String::toLowerCase).toList();
         if (names.stream().anyMatch(s1 -> s1.isEmpty())) {
             throw new IllegalArgumentException("Name must not be empty");
         }

@@ -2,11 +2,14 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -103,6 +106,32 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                 return false;
             }
         }
+
+        protected void launch(String title, String args) throws Exception {
+            try (ShellControl pc = LocalShell.getShell()) {
+                if (!ApplicationHelper.isInPath(pc, executable)) {
+                    throw ErrorEvent.unreportable(
+                            new IOException(
+                                    "Executable " + executable
+                                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
+                }
+
+                if (ShellDialects.isPowershell(pc)) {
+                    var cmd = CommandBuilder.of().add("Start-Process", "-FilePath").addFile(executable).add("-ArgumentList")
+                            .add(pc.getShellDialect().literalArgument(args));
+                    pc.executeSimpleCommand(cmd);
+                    return;
+                }
+
+                var toExecute = executable + " " + args;
+                if (pc.getOsType().equals(OsType.WINDOWS)) {
+                    toExecute = "start \"" + title + "\" " + toExecute;
+                } else {
+                    toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                }
+                pc.executeSimpleCommand(toExecute);
+            }
+        }
     }
 
     public abstract static class WindowsType extends ExternalApplicationType {
@@ -119,7 +148,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var cc = LocalShell.getShell()
-                    .command(ShellDialects.getPlatformDefault().getWhichCommand(executable))
+                    .command(CommandBuilder.ofFunction(var1 -> var1.getShellDialect().getWhichCommand(executable)))
                     .start()) {
                 var out = cc.readStdoutDiscardErr();
                 var exit = cc.getExitCode();

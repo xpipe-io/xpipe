@@ -1,5 +1,4 @@
-import java.util.stream.Collectors
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
@@ -24,17 +23,13 @@ application {
     mainClass = 'io.xpipe.app.Main'
 }
 
-def appDependencies = project(':app').configurations.findByName('runtimeClasspath').getFiles().stream()
-        .filter(f -> !fullVersion || !f.name.startsWith('javafx')) // Remove JavaFX dependencies
-        .collect(Collectors.toMap(f -> f.toPath().getFileName().toString(), f -> f, (f1, f2) -> f1))
-        .values()
-def appModuleNames = ['app']
-appDependencies.removeIf(f -> appModuleNames.stream()
-        .anyMatch(m -> f.toPath().getFileName().toString().contains("${m}.jar")))
-def appModuleOutputFiles = ["${project(':app').buildDir}/libs/app.jar"]
 dependencies {
-    implementation files(appDependencies.toArray())
-    implementation files(appModuleOutputFiles.toArray())
+    implementation project(':app')
+    if (!useBundledJavaFx) {
+        configurations.javafx.getAsFileTree().getFiles().forEach {
+            implementation files(it)
+        }
+    }
 }
 
 // Mac does not like a zero major version
@@ -53,17 +48,8 @@ jlink {
             // '--strip-native-commands'
     ]
 
-    if (fullVersion) {
-        def currentOS = DefaultNativePlatform.currentOperatingSystem;
-        def platform = null
-        if (currentOS.isWindows()) {
-            platform = 'windows'
-        } else if (currentOS.isLinux()) {
-            platform = 'linux'
-        } else if (currentOS.isMacOsX()) {
-            platform = 'osx'
-        }
-        addExtraModulePath(layout.projectDirectory.dir("javafx/${platform}/${arch}").toString())
+    if (useBundledJavaFx) {
+        addExtraModulePath(layout.projectDirectory.dir("javafx/${platformName}/${arch}").toString())
     }
 
     launcher {

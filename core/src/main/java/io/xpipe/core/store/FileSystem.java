@@ -104,7 +104,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     InputStream openInput(String file) throws Exception;
 
-    OutputStream openOutput(String file) throws Exception;
+    OutputStream openOutput(String file, long totalBytes) throws Exception;
 
     boolean fileExists(String file) throws Exception;
 

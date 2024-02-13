@@ -5,9 +5,9 @@ import io.xpipe.app.comp.store.StoreCreationComp;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.store.LaunchableStore;
-import io.xpipe.core.util.DefaultSecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Value;
@@ -53,7 +53,7 @@ public class XPipeUrlAction implements ActionProvider {
                     return;
                 }
 
-                TerminalHelper.open(storeName, command);
+                TerminalLauncher.open(storeName, command);
             }
         }
     }
@@ -92,7 +92,7 @@ public class XPipeUrlAction implements ActionProvider {
             public Action createAction(List<String> args) throws Exception {
                 switch (args.get(0)) {
                     case "addStore" -> {
-                        var storeString = DefaultSecretValue.builder()
+                        var storeString = InPlaceSecretValue.builder()
                                 .encryptedValue(args.get(1))
                                 .build();
                         var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);

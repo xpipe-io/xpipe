@@ -2,25 +2,30 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 dependencies {
     testImplementation 'org.hamcrest:hamcrest:2.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.3'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 tasks.withType(Test) {
+    jvmArgs += ["-Xmx2g"]
     useJUnitPlatform()
     testLogging {
         events TestLogEvent.FAILED,
                TestLogEvent.PASSED,
                TestLogEvent.SKIPPED,
-               TestLogEvent.STANDARD_OUT
+               TestLogEvent.STANDARD_OUT,
+               TestLogEvent.STANDARD_ERROR,
+                TestLogEvent.STARTED
 
         exceptionFormat = 'full'
         showExceptions = true
         showCauses true
         showStandardStreams = true
     }
+
+    outputs.upToDateWhen {false}
 
     afterSuite { desc, result ->
         if (!desc.parent) { // will match the outermost suite
@@ -29,17 +34,5 @@ tasks.withType(Test) {
             def repeatLength = startItem.length() + output.length() + endItem.length()
             println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
         }
-    }
-}
-
-sourceSets {
-    test {
-        // With this, the project at least compiles in eclipse (although with disabled tests)
-//        if (System.getProperty('idea.active') == null) {
-//            java {
-//                srcDirs = []
-//            }
-//        }
-        output.resourcesDir("${project.layout.buildDirectory.get()}/classes/java/test")
     }
 }

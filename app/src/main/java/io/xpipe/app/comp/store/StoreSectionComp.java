@@ -38,7 +38,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = StandardStoreEntryComp.customSection(section, topLevel)
+        var root = StoreEntryComp.customSection(section, topLevel)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var button = new IconButtonComp(
                         Bindings.createStringBinding(

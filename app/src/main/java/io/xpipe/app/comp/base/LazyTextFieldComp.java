@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import com.jfoenix.controls.JFXTextField;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -28,7 +27,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
     @Override
     public LazyTextFieldComp.Structure createBase() {
         var sp = new StackPane();
-        var r = new JFXTextField();
+        var r = new TextField();
 
         r.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ESCAPE)) {

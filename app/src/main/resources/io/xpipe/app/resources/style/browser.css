@@ -123,12 +123,12 @@
 
 .browser .top-bar > .button {
     -fx-background-insets: 0;
-    -fx-background-color: 0;
+    -fx-background-color: transparent;
 }
 
 .browser .top-bar > .menu-button {
     -fx-background-insets: 0;
-    -fx-background-color: 0;
+    -fx-background-color: transparent;
 }
 
 .browser .top-bar > .button:hover {

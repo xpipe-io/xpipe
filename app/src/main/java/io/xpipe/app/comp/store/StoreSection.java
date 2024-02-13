@@ -70,7 +70,7 @@ public class StoreSection {
                     var current = mappedSortMode.getValue();
                     if (current != null) {
                         return c.thenComparing(current.comparator())
-                                .compare(o1, o2);
+                                .compare(current.representative(o1), current.representative(o2));
                     } else {
                         return c.compare(o1, o2);
                     }

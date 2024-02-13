@@ -4,11 +4,9 @@ import io.xpipe.app.issue.ErrorEvent;
 
 public class Hyperlinks {
 
-    public static final String DOCUMENTATION = "https://docs.xpipe.io";
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String PRIVACY = "https://docs.xpipe.io/privacy-policy";
     public static final String EULA = "https://docs.xpipe.io/end-user-license-agreement";
-    public static final String PREVIEW = "https://docs.xpipe.io/preview";
     public static final String SECURITY = "https://docs.xpipe.io/security";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
     public static final String SLACK = "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";

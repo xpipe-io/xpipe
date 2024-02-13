@@ -1,6 +1,8 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,8 +18,8 @@ public enum SupportedLocale implements PrefsChoiceValue {
     private final String id;
 
     @Override
-    public String toTranslatedString() {
-        return locale.getDisplayName();
+    public ObservableValue<String> toTranslatedString() {
+        return new SimpleStringProperty(locale.getDisplayName());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import lombok.Getter;
 
@@ -72,10 +73,10 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public OutputStream openOutput(String file) throws Exception {
+    public OutputStream openOutput(String file, long totalBytes) throws Exception {
         return shellControl
                 .getShellDialect()
-                .createStreamFileWriteCommand(shellControl, file)
+                .createStreamFileWriteCommand(shellControl, file, totalBytes)
                 .startExternalStdin();
     }
 
@@ -122,7 +123,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void mkdirs(String file) throws Exception {
         try (var pc = shellControl
-                .command(proc -> proc.getShellDialect().getMkdirsCommand(file))
+                .command(CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file)))
                 .start()) {
             pc.discardOrThrow();
         }

@@ -20,7 +20,7 @@ public class SinkExchangeImpl extends SinkExchange
         ShellStore store = ds.getStore().asNeeded();
         try (var fs = store.createFileSystem();
                 var inputStream = handler.receiveBody();
-                var output = fs.openOutput(msg.getPath())) {
+                var output = fs.openOutput(msg.getPath(), -1)) {
             inputStream.transferTo(output);
         }
 

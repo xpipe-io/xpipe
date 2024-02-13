@@ -11,7 +11,14 @@ import java.util.stream.Stream;
 
 public interface StoreSortMode {
 
+    StoreSection representative(StoreSection s);
+
     StoreSortMode ALPHABETICAL_DESC = new StoreSortMode() {
+        @Override
+        public StoreSection representative(StoreSection s) {
+            return s;
+        }
+
         @Override
         public String getId() {
             return "alphabetical-desc";
@@ -26,6 +33,11 @@ public interface StoreSortMode {
 
     StoreSortMode ALPHABETICAL_ASC = new StoreSortMode() {
         @Override
+        public StoreSection representative(StoreSection s) {
+            return s;
+        }
+
+        @Override
         public String getId() {
             return "alphabetical-asc";
         }
@@ -39,6 +51,14 @@ public interface StoreSortMode {
     };
 
     StoreSortMode DATE_DESC = new StoreSortMode() {
+        @Override
+        public StoreSection representative(StoreSection s) {
+            var c = comparator();
+            return Stream.of(s.getShownChildren().stream().max((o1, o2) -> {
+                return c.compare(representative(o1), representative(o2));
+            }).orElse(s), s).max(c).orElseThrow();
+        }
+
         @Override
         public String getId() {
             return "date-desc";
@@ -56,6 +76,14 @@ public interface StoreSortMode {
     };
 
     StoreSortMode DATE_ASC = new StoreSortMode() {
+        @Override
+        public StoreSection representative(StoreSection s) {
+            var c = comparator();
+            return Stream.of(s.getShownChildren().stream().min((o1, o2) -> {
+                return c.compare(representative(o1), representative(o2));
+            }).orElse(s), s).min(c).orElseThrow();
+        }
+
         @Override
         public String getId() {
             return "date-asc";

@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -70,7 +71,7 @@ public class StoreViewState {
 
     private StoreViewState() {
         initContent();
-        addStorageListeners();
+        addListeners();
     }
 
     private void updateContent() {
@@ -112,7 +113,20 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
-    private void addStorageListeners() {
+    private void addListeners() {
+        if (AppPrefs.get() != null) {
+            AppPrefs.get().condenseConnectionDisplay().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    synchronized (this) {
+                        var l = new ArrayList<>(allEntries);
+                        allEntries.clear();
+                        allEntries.setAll(l);
+                    }
+                });
+            });
+        }
+
+
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
             @Override

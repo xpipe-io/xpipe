@@ -1,12 +1,10 @@
 
 plugins {
-    id 'org.beryx.jlink' version '2.26.0'
-    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+    id 'org.beryx.jlink' version '3.0.1'
     id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'org.jreleaser' version '1.8.0'
     id("com.netflix.nebula.ospackage") version "11.4.0"
     id 'org.gradle.crypto.checksum' version '1.4.0'
-    id 'de.undercouch.download' version '5.5.0'
 }
 
 repositories {
@@ -90,5 +88,5 @@ if (rootProject.fullVersion) {
     apply from: 'aur.gradle'
     apply from: 'nix.gradle'
     apply from: 'choco.gradle'
-    apply from: 'test.gradle'
+    apply from: 'install.gradle'
 }

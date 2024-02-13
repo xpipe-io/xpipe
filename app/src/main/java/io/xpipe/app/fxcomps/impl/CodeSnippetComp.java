@@ -9,10 +9,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import org.fxmisc.richtext.InlineCssTextArea;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class CodeSnippetComp extends Comp<CompStructure<?>> {
@@ -36,7 +36,7 @@ public class CodeSnippetComp extends Comp<CompStructure<?>> {
                 (int) (color.getRed() * 255), (int) (color.getGreen() * 255), (int) (color.getBlue() * 255));
     }
 
-    private void fillArea(VBox lineNumbers, InlineCssTextArea s) {
+    private void fillArea(VBox lineNumbers, TextArea s) {
         lineNumbers.getChildren().clear();
         s.clear();
 
@@ -47,8 +47,7 @@ public class CodeSnippetComp extends Comp<CompStructure<?>> {
             lineNumbers.getChildren().add(numberLabel);
 
             for (var el : line.elements()) {
-                String hex = toRGBCode(el.color());
-                s.append(el.text(), "-fx-fill: " + hex + ";");
+                s.appendText(el.text());
             }
 
             boolean last = number == value.getValue().lines().size();
@@ -74,7 +73,7 @@ public class CodeSnippetComp extends Comp<CompStructure<?>> {
 
     @Override
     public CompStructure<?> createBase() {
-        var s = new InlineCssTextArea();
+        var s = new javafx.scene.control.TextArea();
         s.setEditable(false);
         s.setBackground(null);
         s.getStyleClass().add("code-snippet");

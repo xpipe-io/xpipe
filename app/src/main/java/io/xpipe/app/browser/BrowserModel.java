@@ -70,6 +70,12 @@ public class BrowserModel {
     public void reset() {
         synchronized (BrowserModel.this) {
             for (OpenFileSystemModel o : new ArrayList<>(openFileSystems)) {
+                // Don't close busy connections gracefully
+                // as we otherwise might lock up
+                if (o.isBusy()) {
+                    continue;
+                }
+
                 closeFileSystemSync(o);
             }
             if (savedState != null) {

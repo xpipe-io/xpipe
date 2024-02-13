@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ApplicationHelper;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -18,14 +17,14 @@ import java.util.function.Supplier;
 
 public interface ExternalEditorType extends PrefsChoiceValue {
 
-    ExternalEditorType NOTEPAD = new WindowsType("app.notepad", "notepad") {
+    ExternalEditorType NOTEPAD = new WindowsType("app.notepad", "notepad", false) {
         @Override
         protected Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
         }
     };
 
-    ExternalEditorType VSCODIUM_WINDOWS = new WindowsType("app.vscodium", "codium.cmd") {
+    ExternalEditorType VSCODIUM_WINDOWS = new WindowsType("app.vscodium", "codium.cmd", false) {
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -35,14 +34,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("bin")
                     .resolve("codium.cmd"));
         }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
     };
 
-    ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd") {
+    ExternalEditorType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd", false) {
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -52,14 +46,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("bin")
                     .resolve("code.cmd"));
         }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
     };
 
-    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType("app.vscodeInsiders", "code-insiders.cmd") {
+    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType("app.vscodeInsiders", "code-insiders.cmd", false) {
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -69,14 +58,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                                        .resolve("bin")
                                        .resolve("code-insiders.cmd"));
         }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
     };
 
-    ExternalEditorType NOTEPADPLUSPLUS_WINDOWS = new WindowsType("app.notepad++", "notepad++") {
+    ExternalEditorType NOTEPADPLUSPLUS = new WindowsType("app.notepad++", "notepad++", false) {
 
         @Override
         protected Optional<Path> determineInstallation() {
@@ -91,7 +75,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code");
-
+	
     LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium");
 
     LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor");
@@ -120,12 +104,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             }
 
             ApplicationHelper.executeLocalApplication(
-                    shellControl -> String.format(
-                            "open -a %s %s",
-                            shellControl
-                                    .getShellDialect()
-                                    .fileArgument(execFile.orElseThrow().toString()),
-                            shellControl.getShellDialect().fileArgument(file.toString())),
+                    CommandBuilder.of().add("open", "-a").addFile(execFile.orElseThrow().toString()).addFile(file.toString()),
                     false);
         }
     }
@@ -139,7 +118,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
 
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium");
-
+	
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
         @Override
@@ -150,7 +129,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             }
 
             var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            ApplicationHelper.executeLocalApplication(sc -> ApplicationHelper.replaceFileArgument(format, "FILE", file.toString()), true);
+            ApplicationHelper.executeLocalApplication(
+                    CommandBuilder.of().add(ApplicationHelper.replaceFileArgument(format, "FILE", file.toString())), true);
         }
 
         @Override
@@ -163,13 +143,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     class GenericPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
 
-        public GenericPathType(String id, String command) {
+        private final boolean detach;
+
+        public GenericPathType(String id, String command, boolean detach) {
             super(id, command);
+            this.detach = detach;
         }
 
         @Override
         public void launch(Path file) throws Exception {
-            LocalShell.getShell().executeSimpleCommand(CommandBuilder.of().add(executable).addFile(file.toString()));
+            ApplicationHelper.executeLocalApplication(CommandBuilder.of().add(executable).addFile(file.toString()), detach);
         }
 
         @Override
@@ -181,7 +164,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     class LinuxPathType extends GenericPathType {
 
         public LinuxPathType(String id, String command) {
-            super(id, command);
+            super(id, command, true);
         }
 
         @Override
@@ -193,15 +176,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     abstract class WindowsType extends ExternalApplicationType.WindowsType
             implements ExternalEditorType {
 
-        private final String executable;
+        private final boolean detach;
 
-        public WindowsType(String id, String executable) {
+        public WindowsType(String id, String executable, boolean detach) {
             super(id, executable);
-            this.executable = executable;
-        }
-
-        public boolean detach() {
-            return true;
+            this.detach = detach;
         }
 
         @Override
@@ -216,22 +195,19 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
             Optional<Path> finalLocation = location;
             ApplicationHelper.executeLocalApplication(
-                    sc -> String.format(
-                            "%s %s",
-                            sc.getShellDialect().fileArgument(finalLocation.get().toString()),
-                            sc.getShellDialect().fileArgument(file.toString())),
-                    detach());
+                    CommandBuilder.of().addFile(finalLocation.get().toString()).addFile(file.toString()),
+                    detach);
         }
     }
 
-    ExternalEditorType FLEET = new GenericPathType("app.fleet", "fleet");
-    ExternalEditorType INTELLIJ = new GenericPathType("app.intellij", "idea");
-    ExternalEditorType PYCHARM = new GenericPathType("app.pycharm", "pycharm");
-    ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm");
-    ExternalEditorType CLION = new GenericPathType("app.clion", "clion");
+    ExternalEditorType FLEET = new GenericPathType("app.fleet", "fleet", false);
+    ExternalEditorType INTELLIJ = new GenericPathType("app.intellij", "idea", false);
+    ExternalEditorType PYCHARM = new GenericPathType("app.pycharm", "pycharm", false);
+    ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false);
+    ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false);
 
-    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS_WINDOWS, NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS = List.of(ExternalEditorType.VSCODIUM_LINUX, VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
+    List<ExternalEditorType> WINDOWS_EDITORS = List.of(VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
+    List<LinuxPathType> LINUX_EDITORS = List.of(VSCODIUM_LINUX, VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
@@ -258,7 +234,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         var customProperty = AppPrefs.get().customEditorCommand;
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             typeProperty.set(WINDOWS_EDITORS.stream()
-                    .filter(externalEditorType -> externalEditorType.isAvailable())
+                    .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
                     .orElse(null));
         }
@@ -278,7 +254,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 }
             } else {
                 typeProperty.set(LINUX_EDITORS.stream()
-                        .filter(externalEditorType -> externalEditorType.isAvailable())
+                        .filter(ExternalApplicationType.PathApplication::isAvailable)
                         .findFirst()
                         .orElse(null));
             }
@@ -286,7 +262,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
             typeProperty.set(MACOS_EDITORS.stream()
-                    .filter(externalEditorType -> externalEditorType.isAvailable())
+                    .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
                     .orElse(null));
         }

@@ -17,17 +17,18 @@ public class OpenNativeFileDetailsAction implements LeafAction {
         ShellControl sc = model.getFileSystem().getShell().get();
         for (BrowserEntry entry : entries) {
             var e = entry.getRawFileEntry().getPath();
+            var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
-                    var parent = FileNames.getParent(e);
+                    var parent = FileNames.getParent(localFile);
                     // If we execute this on a drive root there will be no parent, so we have to check for that!
                     var content = parent != null
                             ? String.format(
                                     "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')",
-                                    FileNames.getParent(e), FileNames.getFileName(e))
+                                    FileNames.getParent(localFile), FileNames.getFileName(localFile))
                             : String.format(
                                     "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
-                                    e);
+                            localFile);
 
                     // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as
                     // long as the parent process is running.
@@ -39,16 +40,15 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                             """
                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
                                                 """,
-                            entry.getRawFileEntry().getPath());
+                            localFile);
                     sc.executeSimpleCommand(dbus);
                 }
                 case OsType.MacOs macOs -> {
                     sc.osascriptCommand(String.format(
                                     """
                              set fileEntry to (POSIX file "%s") as text
-                             tell application "Finder" to open information window of file fileEntry
-                             """,
-                                    entry.getRawFileEntry().getPath()))
+                             tell application "Finder" to open information window of alias fileEntry
+                             """, localFile))
                             .execute();
                 }
             }
@@ -67,8 +67,8 @@ public class OpenNativeFileDetailsAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        var sc = model.getFileSystem().getShell();
-        return model.isLocal();
+        var sc = model.getFileSystem().getShell().orElseThrow();
+        return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }
 
     @Override

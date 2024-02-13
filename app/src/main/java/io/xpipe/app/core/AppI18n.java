@@ -51,7 +51,7 @@ public class AppI18n {
         i.load();
 
         if (AppPrefs.get() != null) {
-            AppPrefs.get().language.addListener((c, o, n) -> {
+            AppPrefs.get().language().addListener((c, o, n) -> {
                 i.clear();
                 i.load();
             });
@@ -210,7 +210,7 @@ public class AppI18n {
 
     private boolean matchesLocale(Path f) {
         var l = AppPrefs.get() != null
-                ? AppPrefs.get().language.getValue().getLocale()
+                ? AppPrefs.get().language().getValue().getLocale()
                 : SupportedLocale.ENGLISH.getLocale();
         var name = FilenameUtils.getBaseName(f.getFileName().toString());
         var ending = "_" + l.toLanguageTag();
@@ -311,7 +311,7 @@ public class AppI18n {
 
         this.prettyTime = new PrettyTime(
                 AppPrefs.get() != null
-                        ? AppPrefs.get().language.getValue().getLocale()
+                        ? AppPrefs.get().language().getValue().getLocale()
                         : SupportedLocale.ENGLISH.getLocale());
     }
 }

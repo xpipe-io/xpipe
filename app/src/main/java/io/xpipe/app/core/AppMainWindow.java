@@ -83,7 +83,6 @@ public class AppMainWindow {
 
     private void logChange() {
         TrackEvent.withDebug("Window resize")
-                .windowCategory()
                 .tag("x", stage.getX())
                 .tag("y", stage.getY())
                 .tag("width", stage.getWidth())
@@ -98,7 +97,6 @@ public class AppMainWindow {
         applyState(state);
 
         TrackEvent.withDebug("Window initialized")
-                .windowCategory()
                 .tag("x", stage.getX())
                 .tag("y", stage.getY())
                 .tag("width", stage.getWidth())

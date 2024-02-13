@@ -24,7 +24,7 @@ public abstract class LauncherInput {
             return;
         }
 
-        TrackEvent.withDebug("launcher", "Handling arguments")
+        TrackEvent.withDebug("Handling arguments")
                 .elements(arguments)
                 .handle();
 

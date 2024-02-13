@@ -48,8 +48,10 @@ public class SentryErrorHandler implements ErrorHandler {
                     options.setTag("arch", System.getProperty("os.arch"));
                     options.setDist(XPipeDistributionType.get().getId());
                     options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
-                    options.setCacheDirPath(AppProperties.get().getDataDir().resolve("cache").toString());
+                    options.setSendModules(false);
                     options.setAttachThreads(false);
+                    options.setEnableDeduplication(false);
+                    options.setCacheDirPath(AppProperties.get().getDataDir().resolve("cache").toString());
                 });
             }
             init = true;
@@ -147,7 +149,7 @@ public class SentryErrorHandler implements ErrorHandler {
         return Sentry.captureEvent(event, sc -> fillScope(ee, sc));
     }
 
-    private static void fillScope(ErrorEvent ee, Scope s) {
+    private static void fillScope(ErrorEvent ee, IScope s) {
         if (ee.isShouldSendDiagnostics()) {
             var atts = ee.getAttachments().stream()
                     .map(d -> {

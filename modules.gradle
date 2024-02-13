@@ -1,0 +1,68 @@
+extraJavaModuleInfo {
+    module("markdowngenerator-1.3.1.1.jar", "net.steppschuh.markdowngenerator") {
+        exportAllPackages()
+    }
+}
+
+extraJavaModuleInfo {
+    module("de.vandermeer:asciitable", "de.vandermeer.asciitable") {
+        exportAllPackages()
+        requires('de.vandermeer.skb_interfaces')
+        requires('de.vandermeer.ascii_utf_themes')
+        requires('org.apache.commons.lang3')
+    }
+
+    module("de.vandermeer:skb-interfaces", "de.vandermeer.skb_interfaces") {
+        exportAllPackages()
+        requires('org.apache.commons.lang3')
+    }
+
+    module("de.vandermeer:ascii-utf-themes", "de.vandermeer.ascii_utf_themes") {
+        exportAllPackages()
+        requires('org.apache.commons.lang3')
+        requires('de.vandermeer.skb_interfaces')
+    }
+}
+
+extraJavaModuleInfo {
+    module("org.ocpsoft.prettytime:prettytime", "org.ocpsoft.prettytime") {
+        exportAllPackages()
+    }
+}
+
+extraJavaModuleInfo {
+    module("com.vladsch.flexmark:flexmark", "com.vladsch.flexmark") {
+        mergeJar('com.vladsch.flexmark:flexmark-util-data')
+        mergeJar('com.vladsch.flexmark:flexmark-util-format')
+        mergeJar('com.vladsch.flexmark:flexmark-util-ast')
+        mergeJar('com.vladsch.flexmark:flexmark-util-sequence')
+        mergeJar('com.vladsch.flexmark:flexmark-util-builder')
+        mergeJar('com.vladsch.flexmark:flexmark-util-html')
+        mergeJar('com.vladsch.flexmark:flexmark-util-dependency')
+        mergeJar('com.vladsch.flexmark:flexmark-util-collection')
+        mergeJar('com.vladsch.flexmark:flexmark-util-misc')
+        mergeJar('com.vladsch.flexmark:flexmark-util-visitor')
+        exportAllPackages()
+    }
+}
+
+extraJavaModuleInfo {
+    module("org.kohsuke:github-api", "org.kohsuke.github") {
+        exports('org.kohsuke.github')
+        exports('org.kohsuke.github.function')
+        exports('org.kohsuke.github.authorization')
+        exports('org.kohsuke.github.extras')
+        exports('org.kohsuke.github.connector')
+        requires('java.logging')
+        requires('org.apache.commons.io')
+        requires('org.apache.commons.lang3')
+        requires('com.fasterxml.jackson.databind')
+        overrideModuleName()
+    }
+}
+
+extraJavaModuleInfo {
+    module("io.sentry:sentry", "io.sentry") {
+        exportAllPackages()
+    }
+}

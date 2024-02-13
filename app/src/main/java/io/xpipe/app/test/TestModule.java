@@ -12,15 +12,11 @@ public abstract class TestModule<V> {
     private static final Map<Class<?>, Map<String, ?>> values = new LinkedHashMap<>();
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T> Map<String, T> get(Class<T> c, String... classes) {
+    public static <T> Map<String, T> get(Class<T> c, Module module, String... classes) {
         if (!values.containsKey(c)) {
-            List<Class<?>> loadedClasses = (List<Class<?>>) Arrays.stream(classes)
+            List<Class<?>> loadedClasses = Arrays.stream(classes)
                     .map(s -> {
-                        try {
-                            return Optional.of(Class.forName(s));
-                        } catch (ClassNotFoundException ex) {
-                            return Optional.empty();
-                        }
+                        return Optional.<Class<?>>of(Class.forName(module, s));
                     })
                     .flatMap(Optional::stream)
                     .toList();
@@ -39,9 +35,9 @@ public abstract class TestModule<V> {
                 .collect(Collectors.toMap(o -> o.getKey(), o -> ((Supplier<?>) o.getValue()).get()));
     }
 
-    public static <T> Stream<Named<T>> getArguments(Class<T> c, String... classes) {
+    public static <T> Stream<Named<T>> getArguments(Class<T> c, Module module, String... classes) {
         Stream.Builder<Named<T>> argumentBuilder = Stream.builder();
-        for (var s : TestModule.get(c, classes).entrySet()) {
+        for (var s : TestModule.get(c, module, classes).entrySet()) {
             argumentBuilder.add(Named.of(s.getKey(), s.getValue()));
         }
         return argumentBuilder.build();

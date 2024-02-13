@@ -42,7 +42,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     public static StoreEntryComp create(
             StoreEntryWrapper entry, Comp<?> content, boolean preferLarge) {
-        if (!preferLarge) {
+        var forceCondensed = AppPrefs.get() != null && AppPrefs.get().condenseConnectionDisplay().get();
+        if (!preferLarge || forceCondensed) {
             return new DenseStoreEntryComp(entry, true, content);
         } else {
             return new StandardStoreEntryComp(entry, content);
@@ -54,7 +55,10 @@ public abstract class StoreEntryComp extends SimpleComp {
         if (prov != null) {
             return prov.customEntryComp(e, topLevel);
         } else {
-            return new StandardStoreEntryComp(e.getWrapper(), null);
+            var forceCondensed = AppPrefs.get() != null && AppPrefs.get().condenseConnectionDisplay().get();
+            return forceCondensed ?
+                    new DenseStoreEntryComp(e.getWrapper(), true, null) :
+                    new StandardStoreEntryComp(e.getWrapper(), null);
         }
     }
 

@@ -1,10 +1,9 @@
 package io.xpipe.app.ext;
 
-import com.dlsc.preferencesfx.model.Setting;
-
-import java.util.List;
+import io.xpipe.app.fxcomps.Comp;
+import javafx.beans.property.Property;
 
 public interface PrefsHandler {
 
-    void addSetting(List<String> category, String group, Setting<?, ?> setting, Class<?> c);
+    <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp);
 }

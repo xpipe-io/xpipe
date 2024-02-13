@@ -2,11 +2,11 @@ package io.xpipe.core.process;
 
 import io.xpipe.core.store.ShellStore;
 import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.core.util.*;
+import io.xpipe.core.util.FailableConsumer;
+import io.xpipe.core.util.FailableFunction;
 import lombok.NonNull;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +16,10 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    UUID getElevationSecretId();
+
+    void setParentSystemAccess(ParentSystemAccess access);
+
     List<UUID> getExitUuids();
 
     Optional<ShellStore> getSourceStore();
@@ -24,17 +28,11 @@ public interface ShellControl extends ProcessControl {
 
     List<ScriptSnippet> getInitCommands();
 
-    ShellControl withTargetTerminalShellDialect(ShellDialect d);
+    ParentSystemAccess getParentSystemAccess();
 
-    ShellDialect getTargetTerminalShellDialect();
-
-    default boolean hasLocalSystemAccess() {
-        return getSystemId() != null && getSystemId().equals(XPipeSystemId.getLocal());
-    }
+    ParentSystemAccess getLocalSystemAccess();
 
     boolean isLocal();
-
-    ShellControl changesHosts();
 
     ShellControl getMachineRootSession();
 
@@ -44,19 +42,19 @@ public interface ShellControl extends ProcessControl {
 
     boolean isLicenseCheck();
 
-    UUID getSystemId();
-
     ReentrantLock getLock();
 
-    ShellControl onInit(FailableConsumer<ShellControl, Exception> pc);
+    void setOriginalShellDialect(ShellDialect dialect);
 
-    ShellControl onPreInit(FailableConsumer<ShellControl, Exception> pc);
+    ShellDialect getOriginalShellDialect();
+
+    ShellControl onInit(FailableConsumer<ShellControl, Exception> pc);
 
     default <T extends ShellStoreState> ShellControl withShellStateInit(StatefulDataStore<T> store) {
         return onInit(shellControl -> {
             var s = store.getState();
             s.setOsType(shellControl.getOsType());
-            s.setShellDialect(shellControl.getShellDialect());
+            s.setShellDialect(shellControl.getOriginalShellDialect());
             s.setRunning(true);
             s.setOsName(shellControl.getOsName());
             store.setState(s);
@@ -79,15 +77,9 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
-    String prepareTerminalOpen(TerminalInitScriptConfig config) throws Exception;
-
-    String prepareIntermediateTerminalOpen(String content, TerminalInitScriptConfig config) throws Exception;
+    String prepareIntermediateTerminalOpen(String content, TerminalInitScriptConfig config, FailableFunction<ShellControl, String, Exception> workingDirectory) throws Exception;
 
     String getSystemTemporaryDirectory();
-
-    String getSubTemporaryDirectory();
-
-    void checkRunning();
 
     default CommandControl osascriptCommand(String script) {
         return command(String.format(
@@ -144,49 +136,58 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    ElevationResult buildElevatedCommand(CommandConfiguration input, String prefix) throws Exception;
-
-    void restart() throws Exception;
-
-    OsType getOsType();
-
-    ElevationConfig getElevationConfig() throws Exception;
-
-    ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
-
-    default ShellControl elevationPassword(SecretValue value) {
-        return elevationPassword(() -> value);
-    }
-    ShellControl elevationPassword(FailableSupplier<SecretValue> value);
-
-    ShellControl withInitSnippet(ScriptSnippet snippet);
-
-    ShellControl additionalTimeout(int ms);
-
-    default ShellControl disableTimeout() {
-        return additionalTimeout(Integer.MAX_VALUE);
-    }
-
-    FailableSupplier<SecretValue> getElevationPassword();
-
-    default ShellControl subShell(@NonNull ShellDialect type) {
-        return subShell(p -> type.getLoginOpenCommand(), (sc) -> type.getLoginOpenCommand())
-                .elevationPassword(getElevationPassword());
-    }
-
-    interface TerminalOpenFunction {
-
-        String prepareWithoutInitCommand(ShellControl sc) throws Exception;
-
-        default String prepareWithInitCommand(ShellControl sc, @NonNull String command) throws Exception {
-            return command;
+    default String executeSimpleStringCommand(ShellDialect type, String command) throws Exception {
+        try (var sub = subShell(type).start()) {
+            return sub.executeSimpleStringCommand(command);
         }
     }
 
+    ShellControl withSecurityPolicy(ShellSecurityPolicy policy);
+
+    ShellSecurityPolicy getEffectiveSecurityPolicy();
+
+    String buildElevatedCommand(CommandConfiguration input, String prefix, CountDown countDown) throws Exception;
+
+    void restart() throws Exception;
+
+    OsType.Any getOsType();
+
+    ShellControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
+
+    ShellControl withInitSnippet(ScriptSnippet snippet);
+
+    default ShellControl subShell(@NonNull ShellDialect type) {
+        var o = new ShellOpenFunction() {
+
+            @Override
+            public CommandBuilder prepareWithoutInitCommand() throws Exception {
+                return CommandBuilder.of().add(sc -> type.getLoginOpenCommand(sc));
+            }
+
+            @Override
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) throws Exception {
+                return CommandBuilder.ofString(command);
+            }
+        };
+        var s = singularSubShell(o);
+        s.setParentSystemAccess(ParentSystemAccess.identity());
+        return s;
+    }
+
     default ShellControl identicalSubShell() {
-        return subShell(p -> p.getShellDialect().getLoginOpenCommand(),
-                (sc) -> sc.getShellDialect().getLoginOpenCommand()
-        ).elevationPassword(getElevationPassword());
+        var o = new ShellOpenFunction() {
+
+            @Override
+            public CommandBuilder prepareWithoutInitCommand() throws Exception {
+                return CommandBuilder.of().add(sc -> sc.getShellDialect().getLoginOpenCommand(sc));
+            }
+
+            @Override
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) throws Exception {
+                return CommandBuilder.ofString(command);
+            }
+        };
+        return singularSubShell(o);
     }
 
     default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc) throws Exception {
@@ -200,7 +201,9 @@ public interface ShellControl extends ProcessControl {
     }
 
     ShellControl subShell(
-            FailableFunction<ShellControl, String, Exception> command, TerminalOpenFunction terminalCommand);
+            ShellOpenFunction command, ShellOpenFunction terminalCommand);
+
+    ShellControl singularSubShell(ShellOpenFunction command);
 
     void writeLineAndReadEcho(String command) throws Exception;
 
@@ -211,31 +214,19 @@ public interface ShellControl extends ProcessControl {
     @Override
     ShellControl start();
 
-    CommandControl command(FailableFunction<ShellControl, String, Exception> command);
-
-    CommandControl command(
-            FailableFunction<ShellControl, String, Exception> command,
-            FailableFunction<ShellControl, String, Exception> terminalCommand);
-
-    default CommandControl command(String... command) {
-        var c = Arrays.stream(command).filter(s -> s != null).toArray(String[]::new);
-        return command(shellProcessControl -> String.join("\n", c));
+    default CommandControl command(String command) {
+        return command(CommandBuilder.ofFunction(shellProcessControl -> command));
     }
 
-    default CommandControl buildCommand(Consumer<CommandBuilder> builder) {
-        return command(sc-> {
-            var b = CommandBuilder.of();
-            builder.accept(b);
-            return b.buildString(sc);
-        });
-    }
-
-    default CommandControl command(List<String> command) {
-        return command(shellProcessControl -> ShellDialect.flatten(command));
+    default CommandControl command(Consumer<CommandBuilder> builder) {
+        var b = CommandBuilder.of();
+        builder.accept(b);
+        return command(b);
     }
 
     default CommandControl command(CommandBuilder builder) {
-        return command(shellProcessControl -> builder.buildString(shellProcessControl));
+        var sc = ProcessControlProvider.get().command(this, builder, builder);
+        return sc;
     }
 
     void exitAndWait() throws IOException;

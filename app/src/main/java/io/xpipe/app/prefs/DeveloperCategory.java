@@ -1,32 +1,32 @@
 package io.xpipe.app.prefs;
 
 import atlantafx.base.theme.Styles;
-import com.dlsc.preferencesfx.model.Category;
-import com.dlsc.preferencesfx.model.Group;
-import com.dlsc.preferencesfx.model.Setting;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ProcessOutputException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import lombok.SneakyThrows;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
 public class DeveloperCategory extends AppPrefsCategory {
 
-    public DeveloperCategory(AppPrefs prefs) {
-        super(prefs);
+    @Override
+    protected String getId() {
+        return "developer";
     }
 
-    @SneakyThrows
-    public Category create() {
+    @Override
+    protected Comp<?> create() {
+        var prefs = AppPrefs.get();
         var localCommand = new SimpleStringProperty();
         Runnable test = () -> {
             prefs.save();
@@ -44,9 +44,7 @@ public class DeveloperCategory extends AppPrefsCategory {
             });
         };
 
-        var runLocalCommand = lazyNode(
-                "shellCommandTest",
-                new HorizontalComp(List.of(
+        var runLocalCommand = new HorizontalComp(List.of(
                                 new TextFieldComp(localCommand)
                                         .apply(struc -> struc.get().setPromptText("Local command"))
                                         .styleClass(Styles.LEFT_PILL)
@@ -56,32 +54,17 @@ public class DeveloperCategory extends AppPrefsCategory {
                                         .grow(false, true)))
                         .padding(new Insets(15, 0, 0, 0))
                         .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                        .apply(struc -> struc.get().setFillHeight(true)),
-                null);
-        return Category.of(
-                "developer", Group.of(
-                Setting.of(
-                        "developerDisableUpdateVersionCheck",
-                        prefs.developerDisableUpdateVersionCheckField,
-                        prefs.developerDisableUpdateVersionCheck),
-                Setting.of(
-                        "developerDisableGuiRestrictions",
-                        prefs.developerDisableGuiRestrictionsField,
-                        prefs.developerDisableGuiRestrictions),
-                Setting.of(
-                        "developerDisableConnectorInstallationVersionCheck",
-                        prefs.developerDisableConnectorInstallationVersionCheckField,
-                        prefs.developerDisableConnectorInstallationVersionCheck),
-                Setting.of(
-                        "developerShowHiddenEntries",
-                        prefs.developerShowHiddenEntriesField,
-                        prefs.developerShowHiddenEntries),
-                Setting.of(
-                        "developerShowHiddenProviders",
-                        prefs.developerShowHiddenProvidersField,
-                        prefs.developerShowHiddenProviders)),
-                Group.of("shellCommandTest",
-                runLocalCommand)
-        );
+                        .apply(struc -> struc.get().setFillHeight(true));
+        return new OptionsBuilder()
+                .addTitle("developer")
+                .sub(new OptionsBuilder()
+                    .nameAndDescription("developerDisableUpdateVersionCheck")
+                    .addToggle(prefs.developerDisableUpdateVersionCheck)
+                    .nameAndDescription("developerDisableGuiRestrictions")
+                    .addToggle(prefs.developerDisableGuiRestrictions)
+                    .nameAndDescription("shellCommandTest")
+                    .addComp(runLocalCommand)
+                )
+                .buildComp();
     }
 }

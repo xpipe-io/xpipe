@@ -42,7 +42,7 @@ public class GitHubUpdater extends UpdateHandler {
         preparedUpdate.setValue(rel);
     }
 
-    public void executeUpdateAndCloseImpl() throws Exception {
+    public void executeUpdateOnCloseImpl() throws Exception {
         var downloadFile = preparedUpdate.getValue().getFile();
         if (!Files.exists(downloadFile)) {
             return;

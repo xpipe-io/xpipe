@@ -50,13 +50,13 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
         var nameRegions = new ArrayList<Region>();
 
         Region firstComp = null;
-
         for (var entry : getEntries()) {
             Region compRegion = null;
             if (entry.comp() != null) {
                 compRegion = entry.comp().createRegion();
             }
             if (firstComp == null) {
+                compRegion.getStyleClass().add("first");
                 firstComp = compRegion;
             }
 
