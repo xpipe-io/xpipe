@@ -32,6 +32,10 @@ public class DataStorageEncryption {
             }
 
             var read = secret.getInternalSecret().mapSecretValueFailable(chars -> {
+                if (chars.length == 0) {
+                    return JsonNodeFactory.instance.missingNode();
+                }
+
                 return JacksonMapper.getDefault().readTree(new CharArrayReader(chars));
             });
             if (read != null) {

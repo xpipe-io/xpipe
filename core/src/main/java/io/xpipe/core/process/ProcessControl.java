@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 public interface ProcessControl extends AutoCloseable {
 
@@ -14,6 +15,7 @@ public interface ProcessControl extends AutoCloseable {
         <T extends Throwable> T convert(T t);
     }
 
+    UUID getUuid();
 
     ProcessControl withExceptionConverter(ExceptionConverter converter);
 

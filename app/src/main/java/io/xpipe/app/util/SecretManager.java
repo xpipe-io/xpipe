@@ -51,8 +51,15 @@ public class SecretManager {
             return null;
         }
 
-        var p = expectAskpass(UUID.randomUUID(), UuidHelper.generateFromObject(store, sub), List.of(strategy.query()), SecretQuery.prompt(false), CountDown.of());
-        return p.process(prompt);
+        var uuid = UUID.randomUUID();
+        var p = expectAskpass(uuid, UuidHelper.generateFromObject(store, sub), List.of(strategy.query()), SecretQuery.prompt(false), CountDown.of());
+        var r = p.process(prompt);
+        completeRequest(uuid);
+        return r;
+    }
+
+    public static void completeRequest(UUID request) {
+        progress.removeIf(secretQueryProgress -> secretQueryProgress.getRequestId().equals(request));
     }
 
     public static void clearAll(Object store) {
