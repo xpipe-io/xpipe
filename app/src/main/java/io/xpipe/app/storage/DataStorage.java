@@ -285,6 +285,12 @@ public abstract class DataStorage {
         entry.initializeEntry();
 
         if (!sameParent) {
+            if (oldParent.isPresent()) {
+                oldParent.get().setChildrenCache(null);
+            }
+            if (newParent.isPresent()) {
+                newParent.get().setChildrenCache(null);
+            }
             var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
         }

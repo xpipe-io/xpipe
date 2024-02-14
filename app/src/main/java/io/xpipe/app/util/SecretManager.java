@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.CountDown;
 import io.xpipe.core.util.SecretReference;
 import io.xpipe.core.util.SecretValue;
@@ -59,7 +60,9 @@ public class SecretManager {
     }
 
     public static void completeRequest(UUID request) {
-        progress.removeIf(secretQueryProgress -> secretQueryProgress.getRequestId().equals(request));
+        if (progress.removeIf(secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))) {
+            TrackEvent.withTrace("Completed secret request").tag("uuid", request).handle();
+        }
     }
 
     public static void clearAll(Object store) {

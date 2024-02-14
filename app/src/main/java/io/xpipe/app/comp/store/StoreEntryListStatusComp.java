@@ -37,8 +37,15 @@ public class StoreEntryListStatusComp extends SimpleComp {
     public StoreEntryListStatusComp() {
         this.sortMode = new SimpleObjectProperty<>();
         SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
-            sortMode.unbind();
-            sortMode.bindBidirectional(val.getSortMode());
+            sortMode.setValue(val.getSortMode().getValue());
+        });
+        sortMode.addListener((observable, oldValue, newValue) -> {
+            var cat = StoreViewState.get().getActiveCategory().getValue();
+            if (cat == null) {
+                return;
+            }
+
+            cat.getSortMode().setValue(newValue);
         });
     }
 

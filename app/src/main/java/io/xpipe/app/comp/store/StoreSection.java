@@ -117,7 +117,7 @@ public class StoreSection {
         }
 
         var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
-            // Legacy implementation that does not use caches. Use for testing
+            // Legacy implementation that does not use children caches. Use for testing
 //            if (true) return DataStorage.get()
 //                    .getDisplayParent(other.getEntry())
 //                    .map(found -> found.equals(e.getEntry()))

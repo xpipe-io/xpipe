@@ -25,7 +25,10 @@ public class CommandBuilder {
     private CommandBuilder() {}
 
     @Getter
-    private final CountDown countDown = CountDown.of();
+    private CountDown countDown;
+    @Getter
+    private UUID uuid;
+
     private final List<Element> elements = new ArrayList<>();
     @Getter
     private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
@@ -220,6 +223,9 @@ public class CommandBuilder {
     }
 
     public String buildCommandBase(ShellControl sc) throws Exception {
+        countDown = CountDown.of();
+        uuid = UUID.randomUUID();
+
         for (FailableConsumer<ShellControl, Exception> s : setup) {
             s.accept(sc);
         }
