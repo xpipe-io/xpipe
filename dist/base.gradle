@@ -190,8 +190,8 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             }
             file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text
                     .replaceAll("__PRODUCT__", productName)
-                    .replaceAll("__PACKAGE_ID__", "io.xpipe.$kebapProductName")
-                    .replaceAll("__VERSION__", version.toString())
+                    .replaceAll("__PRODUCT_KEBAP__", kebapProductName)
+                    .replaceAll("__VERSION__", versionString)
 
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))
