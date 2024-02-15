@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -38,6 +39,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
         model.getSelected().addListener((c, o, n) -> {
             if (o != null && o.equals(model.getEntries().get(2))) {
                 AppPrefs.get().save();
+                DataStorage.get().saveAsync();
             }
         });
         AppFont.normal(pane);

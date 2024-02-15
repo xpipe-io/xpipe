@@ -122,7 +122,7 @@ public class StoreCreationComp extends DialogComp {
             // Don't put connections in the scripts category ever
             if ((provider.getValue().getCreationCategory() == null || !provider.getValue().getCreationCategory().equals(DataStoreProvider.CreationCategory.SCRIPT)) &&
                     rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
-                targetCategory = DataStorage.get().getDefaultCategory().getUuid();
+                targetCategory = DataStorage.get().getDefaultConnectionsCategory().getUuid();
             }
 
             return DataStoreEntry.createNew(

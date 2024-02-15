@@ -42,7 +42,6 @@ public class StandardStorage extends DataStorage {
 
     @Override
     protected void onReset() {
-        gitStorageHandler.onReset();
     }
 
     private void deleteLeftovers() {

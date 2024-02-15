@@ -10,8 +10,6 @@ public interface GitStorageHandler {
         return (GitStorageHandler) ProcessControlProvider.get().createStorageHandler();
     }
 
-    void onReset();
-
     boolean supportsShare();
 
     void init(Path dir);

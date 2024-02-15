@@ -70,7 +70,7 @@ public abstract class DataStorage {
 
     public abstract String getVaultKey();
 
-    public DataStoreCategory getDefaultCategory() {
+    public DataStoreCategory getDefaultConnectionsCategory() {
         return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
     }
 

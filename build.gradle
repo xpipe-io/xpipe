@@ -87,7 +87,8 @@ project.ext {
             "-Dfile.encoding=UTF-8",
             // Disable this for now as it requires Windows 10+
             // '-XX:+UseZGC',
-            "-Dvisualvm.display.name=XPipe"
+            "-Dvisualvm.display.name=XPipe",
+            "-Dapple.awt.application.appearance=system"
     ]
     useBundledJavaFx = fullVersion && !(platformName == 'linux' && arch == 'arm64')
 }
