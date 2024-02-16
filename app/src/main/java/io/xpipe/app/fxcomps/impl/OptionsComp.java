@@ -12,7 +12,6 @@ import io.xpipe.app.fxcomps.util.PlatformThread;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -100,10 +99,9 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
                     extendedDescription.getStyleClass().add(Styles.BUTTON_OUTLINED);
                     extendedDescription.getStyleClass().add(Styles.ACCENT);
-                    extendedDescription.setPadding(new Insets(0, 6, 0, 6));
                     extendedDescription.getStyleClass().add("long-description");
                     extendedDescription.setAccessibleText("Help");
-                    AppFont.header(extendedDescription);
+                    AppFont.normal(extendedDescription);
                     extendedDescription.setOnAction(e -> {
                         popover.show(extendedDescription);
                         e.consume();

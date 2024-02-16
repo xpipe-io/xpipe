@@ -15,3 +15,7 @@
 .options-comp .description {
 -fx-opacity: 0.75;
 }
+
+.options-comp .long-description {
+    -fx-padding: 0 6 0 6;
+}
