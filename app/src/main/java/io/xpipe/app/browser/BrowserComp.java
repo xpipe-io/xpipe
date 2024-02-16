@@ -58,7 +58,7 @@ public class BrowserComp extends SimpleComp {
             FileIconManager.loadIfNecessary();
         });
 
-        var bookmarksList = new BrowserBookmarkList(model).vgrow();
+        var bookmarksList = new BrowserBookmarkComp(model).vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage()).hide(
                 PlatformThread.sync(Bindings.createBooleanBinding(() -> {
                     if (model.getOpenFileSystems().size() == 0) {

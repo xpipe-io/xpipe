@@ -32,7 +32,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Predicate;
 
-final class BrowserBookmarkList extends SimpleComp {
+final class BrowserBookmarkComp extends SimpleComp {
 
     public static final Timer DROP_TIMER = new Timer("dnd", true);
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
@@ -40,7 +40,7 @@ final class BrowserBookmarkList extends SimpleComp {
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
 
-    BrowserBookmarkList(BrowserModel model) {
+    BrowserBookmarkComp(BrowserModel model) {
         this.model = model;
     }
 
@@ -87,7 +87,7 @@ final class BrowserBookmarkList extends SimpleComp {
                 selectedCategory).styleClass(Styles.LEFT_PILL);
         var filter = new FilterComp(filterText).styleClass(Styles.RIGHT_PILL).hgrow().apply(struc -> {});
 
-        var top = new HorizontalComp(List.of(category, filter.hgrow())).styleClass("categories").apply(struc -> {
+        var top = new HorizontalComp(List.of(category.minWidth(Region.USE_PREF_SIZE), filter.hgrow())).styleClass("categories").apply(struc -> {
             AppFont.medium(struc.get());
             struc.get().setFillHeight(true);
         }).createRegion();
