@@ -89,6 +89,11 @@ public class AppPrefs {
         return language;
     }
 
+    final BooleanProperty dontAutomaticallyStartVmSshServer = map(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
+    public ObservableBooleanValue dontAutomaticallyStartVmSshServer() {
+        return dontAutomaticallyStartVmSshServer;
+    }
+
     final BooleanProperty dontAcceptNewHostKeys = map(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
     public ObservableBooleanValue dontAcceptNewHostKeys() {
         return dontAcceptNewHostKeys;

@@ -24,10 +24,12 @@ public class SecurityCategory extends AppPrefsCategory {
                         .addToggle(prefs.denyTempScriptCreation)
                         .nameAndDescription("disableCertutilUse")
                         .addToggle(prefs.disableCertutilUse)
-                        .nameAndDescription("disableTerminalRemotePasswordPreparation")
-                        .addToggle(prefs.disableTerminalRemotePasswordPreparation)
                         .nameAndDescription("dontAcceptNewHostKeys")
                         .addToggle(prefs.dontAcceptNewHostKeys)
+                        .nameAndDescription("dontAutomaticallyStartVmSshServer")
+                        .addToggle(prefs.dontAutomaticallyStartVmSshServer)
+                        .nameAndDescription("disableTerminalRemotePasswordPreparation")
+                        .addToggle(prefs.disableTerminalRemotePasswordPreparation)
                 );
         return builder.buildComp();
     }

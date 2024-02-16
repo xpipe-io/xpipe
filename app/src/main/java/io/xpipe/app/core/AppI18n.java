@@ -161,6 +161,7 @@ public class AppI18n {
                     || caller.equals(FancyTooltipAugment.class)
                     || caller.equals(PrefsChoiceValue.class)
                     || caller.equals(Translatable.class)
+                    || caller.equals(AppWindowHelper.class)
                     || caller.equals(OptionsBuilder.class)) {
                 continue;
             }

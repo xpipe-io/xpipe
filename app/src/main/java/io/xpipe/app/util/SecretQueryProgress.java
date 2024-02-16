@@ -22,10 +22,17 @@ public class SecretQueryProgress {
     public SecretQueryProgress(UUID requestId, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
         this.requestId = requestId;
         this.storeId = storeId;
-        this.suppliers = suppliers;
+        this.suppliers = new ArrayList<>(suppliers);
         this.fallback = fallback;
         this.countDown = countDown;
         this.seenPrompts = new ArrayList<>();
+    }
+
+    public void advance(int count) {
+        for (int i = 0; i < count; i++) {
+            seenPrompts.add(null);
+            suppliers.add(SecretQuery.prompt(false));
+        }
     }
 
     public SecretValue process(String prompt) {

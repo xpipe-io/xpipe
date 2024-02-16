@@ -232,7 +232,7 @@ public abstract class UpdateHandler {
                 // In case we perform any operations such as opening a terminal
                 // give it some time to open while this process is still alive
                 // Otherwise it might quit because the parent process is dead already
-                ThreadHelper.sleep(1000);
+                ThreadHelper.sleep(2000);
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }

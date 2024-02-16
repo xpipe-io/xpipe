@@ -47,13 +47,14 @@ public class SecretManager {
         return true;
     }
 
-    public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, Object store, int sub) {
-        if (!strategy.expectsPrompt()) {
+    public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, UUID secretId, int sub) {
+        if (!strategy.expectsQuery()) {
             return null;
         }
 
         var uuid = UUID.randomUUID();
-        var p = expectAskpass(uuid, UuidHelper.generateFromObject(store, sub), List.of(strategy.query()), SecretQuery.prompt(false), CountDown.of());
+        var p = expectAskpass(uuid, secretId, List.of(strategy.query()), SecretQuery.prompt(false), CountDown.of());
+        p.advance(sub);
         var r = p.process(prompt);
         completeRequest(uuid);
         return r;

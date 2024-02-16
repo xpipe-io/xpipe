@@ -24,7 +24,7 @@ public interface SecretRetrievalStrategy {
 
     SecretQuery query();
 
-    default boolean expectsPrompt() {
+    default boolean expectsQuery() {
         return true;
     }
 
@@ -37,7 +37,7 @@ public interface SecretRetrievalStrategy {
             return null;
         }
 
-        public boolean expectsPrompt() {
+        public boolean expectsQuery() {
             return false;
         }
     }

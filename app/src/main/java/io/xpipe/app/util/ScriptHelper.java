@@ -136,12 +136,12 @@ public class ScriptHelper {
         }
     }
 
-    public static String createAskpassPreparedScript(SecretValue pass, ShellControl parent, boolean forceExecutable, String errorMessage)
+    public static String createTerminalPreparedAskpassScript(SecretValue pass, ShellControl parent, boolean forceExecutable)
             throws Exception {
-        return createAskpassPreparedScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable, errorMessage);
+        return createTerminalPreparedAskpassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable);
     }
 
-    public static String createAskpassPreparedScript(List<SecretValue> pass, ShellControl parent, boolean forceExecutable, String errorMessage)
+    public static String createTerminalPreparedAskpassScript(List<SecretValue> pass, ShellControl parent, boolean forceExecutable)
             throws Exception {
         var scriptType = parent.getShellDialect();
 
@@ -150,10 +150,10 @@ public class ScriptHelper {
             scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
         }
 
-        return createAskpassPreparedScript(pass, parent, scriptType, errorMessage);
+        return createTerminalPreparedAskpassScript(pass, parent, scriptType);
     }
 
-    private static String createAskpassPreparedScript(List<SecretValue> pass, ShellControl parent, ShellDialect type, String errorMessage)
+    private static String createTerminalPreparedAskpassScript(List<SecretValue> pass, ShellControl parent, ShellDialect type)
             throws Exception {
         var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSystemTemporaryDirectory();
@@ -166,7 +166,7 @@ public class ScriptHelper {
                                 file,
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
-                                        .toList(), errorMessage);
+                                        .toList());
                 return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
@@ -176,7 +176,7 @@ public class ScriptHelper {
                             file,
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
-                                    .toList(), errorMessage);
+                                    .toList());
             return createExecScript(parent.getShellDialect(), parent, file, content);
         }
     }
