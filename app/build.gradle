@@ -64,12 +64,6 @@ dependencies {
 
 apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"
 
-import org.gradle.internal.os.OperatingSystem
-
-if (OperatingSystem.current() == OperatingSystem.LINUX) {
-    jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=io.xpipe.app")
-}
-
 def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList();
 jar {
     finalizedBy(extensionJarDepList)

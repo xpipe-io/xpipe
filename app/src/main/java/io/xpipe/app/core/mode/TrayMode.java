@@ -3,6 +3,7 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.core.AppTray;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.*;
+import io.xpipe.core.process.OsType;
 
 import java.awt.*;
 
@@ -10,7 +11,7 @@ public class TrayMode extends PlatformMode {
 
     @Override
     public boolean isSupported() {
-        return super.isSupported() && Desktop.isDesktopSupported() && SystemTray.isSupported();
+        return !OsType.getLocal().equals(OsType.MACOS) && super.isSupported() && Desktop.isDesktopSupported() && SystemTray.isSupported();
     }
 
     @Override

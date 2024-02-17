@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
 import io.xpipe.app.comp.AppLayoutComp;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -12,9 +13,13 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.stage.Stage;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.desktop.AppReopenedEvent;
+import java.awt.desktop.AppReopenedListener;
+import java.awt.desktop.SystemEventListener;
 
 @Getter
 public class App extends Application {
@@ -27,6 +32,7 @@ public class App extends Application {
     }
 
     @Override
+    @SneakyThrows
     public void start(Stage primaryStage) {
         TrackEvent.info("Application launched");
         APP = this;
@@ -50,6 +56,17 @@ public class App extends Application {
         if (OsType.getLocal().equals(OsType.MACOS)) {
             Desktop.getDesktop().setPreferencesHandler(e -> {
                 AppLayoutModel.get().selectSettings();
+            });
+
+            // Do it this way to prevent IDE inspections from complaining
+            var c = Class.forName(ModuleLayer.boot().findModule("java.desktop").orElseThrow(),
+                    "com.apple.eawt.Application");
+            var m = c.getDeclaredMethod("addAppEventListener", SystemEventListener.class);
+            m.invoke(c.getMethod("getApplication").invoke(null), new AppReopenedListener() {
+                @Override
+                public void appReopened(AppReopenedEvent e) {
+                    OperationMode.switchToAsync(OperationMode.GUI);
+                }
             });
         }
 
