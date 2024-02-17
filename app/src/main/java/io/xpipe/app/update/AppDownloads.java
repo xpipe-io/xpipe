@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.HttpHelper;
+import io.xpipe.core.util.JacksonMapper;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
@@ -79,6 +80,18 @@ public class AppDownloads {
         }
 
         try {
+            var url = URI.create("https://api.xpipe.io/changelog?from=" + AppProperties.get().getVersion() +
+                    "&to=" + version + "&stage=" + AppProperties.get().isStaging()).toURL();
+            var bytes = HttpHelper.executeGet(url, aFloat -> {});
+            var string = new String(bytes, StandardCharsets.UTF_8);
+            var json = JacksonMapper.getDefault().readTree(string);
+            var changelog = json.required("changelog").asText();
+            return Optional.of(changelog);
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
+        }
+
+        try {
             var asset = release.get().listAssets().toList().stream()
                     .filter(ghAsset -> ghAsset.getName().equals("changelog.md"))
                     .findAny();
@@ -94,12 +107,6 @@ public class AppDownloads {
             ErrorEvent.fromThrowable(t).omitted(omitErrors).handle();
             return Optional.empty();
         }
-    }
-
-    public static String getLatestVersion() throws IOException {
-        return getLatestSuitableRelease()
-                .map(ghRelease -> ghRelease.getTagName())
-                .orElse("?");
     }
 
     public static Optional<GHRelease> getLatestIncludingPreRelease() throws IOException {

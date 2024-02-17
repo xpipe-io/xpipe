@@ -184,7 +184,6 @@ public abstract class UpdateHandler {
                 XPipeDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
-                lastUpdateCheckResult.getValue().getReleaseDate(),
                 null,
                 changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
@@ -223,8 +222,7 @@ public abstract class UpdateHandler {
                 var performedUpdate = new PerformedUpdate(
                         preparedUpdate.getValue().getVersion(),
                         preparedUpdate.getValue().getBody(),
-                        preparedUpdate.getValue().getVersion(),
-                        preparedUpdate.getValue().getReleaseDate());
+                        preparedUpdate.getValue().getVersion());
                 AppCache.update("performedUpdate", performedUpdate);
 
                 executeUpdateOnCloseImpl();
@@ -262,7 +260,6 @@ public abstract class UpdateHandler {
         String name;
         String rawDescription;
         String newVersion;
-        Instant releaseDate;
     }
 
     @Value
@@ -277,7 +274,6 @@ public abstract class UpdateHandler {
         String downloadUrl;
         AppInstaller.InstallerAssetType assetType;
         Instant checkTime;
-        Instant releaseDate;
         boolean isUpdate;
     }
 
@@ -289,7 +285,6 @@ public abstract class UpdateHandler {
         String sourceDist;
         String version;
         String releaseUrl;
-        Instant releaseDate;
         Path file;
         String body;
         AppInstaller.InstallerAssetType assetType;
