@@ -16,6 +16,11 @@ public interface ParentSystemAccess {
             }
 
             @Override
+            public boolean supportsExecutableEnvironment() {
+                return false;
+            }
+
+            @Override
             public String translateFromLocalSystemPath(String path) {
                 throw new UnsupportedOperationException();
             }
@@ -29,6 +34,12 @@ public interface ParentSystemAccess {
 
     static ParentSystemAccess identity() {
         return new ParentSystemAccess() {
+
+            @Override
+            public boolean supportsExecutableEnvironment() {
+                return true;
+            }
+
             @Override
             public boolean supportsFileSystemAccess() {
                 return true;
@@ -65,6 +76,11 @@ public interface ParentSystemAccess {
                 }
 
                 @Override
+                public boolean supportsExecutableEnvironment() {
+                    return a1.supportsExecutableEnvironment() && a2.supportsExecutableEnvironment();
+                }
+
+                @Override
                 public String translateFromLocalSystemPath(String path) throws Exception {
                     return a2.translateFromLocalSystemPath(a1.translateFromLocalSystemPath(path));
                 }
@@ -83,6 +99,8 @@ public interface ParentSystemAccess {
     boolean supportsFileSystemAccess();
 
     boolean supportsExecutables();
+
+    boolean supportsExecutableEnvironment();
 
     String translateFromLocalSystemPath(String path) throws Exception;
 

@@ -6,12 +6,24 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalTerminalType;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.*;
+import io.xpipe.core.process.ProcessControl;
+import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.TerminalInitScriptConfig;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class TerminalLauncher {
+
+    public static void openDirect(String title, ShellControl shellControl, String command) throws Exception {
+        var type = AppPrefs.get().terminalType().getValue();
+        if (type == null) {
+            throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
+        }
+        var script = ScriptHelper.createLocalExecScript(command);
+        var config = new ExternalTerminalType.LaunchConfiguration(null, title, title, script, shellControl.getShellDialect());
+        type.launch(config);
+    }
+
     public static void open(String title, ProcessControl cc) throws Exception {
         open(null, title, null, cc);
     }
