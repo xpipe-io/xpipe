@@ -146,7 +146,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellSecurityPolicy getEffectiveSecurityPolicy();
 
-    String buildElevatedCommand(CommandConfiguration input, String prefix, CountDown countDown) throws Exception;
+    String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown) throws Exception;
 
     void restart() throws Exception;
 

@@ -5,6 +5,7 @@ import io.xpipe.core.process.CountDown;
 import io.xpipe.core.util.SecretReference;
 import io.xpipe.core.util.SecretValue;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class SecretQueryProgress {
     private final CountDown countDown;
     private boolean requestCancelled;
 
-    public SecretQueryProgress(UUID requestId, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
+    public SecretQueryProgress(@NonNull UUID requestId, @NonNull UUID storeId, @NonNull List<SecretQuery> suppliers, @NonNull SecretQuery fallback, @NonNull CountDown countDown) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);
