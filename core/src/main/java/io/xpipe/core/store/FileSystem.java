@@ -100,7 +100,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     Optional<ShellControl> getShell();
 
-    FileSystem open() throws Exception;
+    FileSystem open();
 
     InputStream openInput(String file) throws Exception;
 

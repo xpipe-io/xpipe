@@ -45,7 +45,7 @@ public class BrowserClipboard {
                 .addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<>() {
                     @Override
                     @SuppressWarnings("unchecked")
-                    public void run() throws Throwable {
+                    public void run() {
                         Clipboard clipboard = (Clipboard) e.getSource();
                         try {
                             if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {

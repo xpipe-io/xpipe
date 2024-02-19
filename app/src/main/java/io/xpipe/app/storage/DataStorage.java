@@ -417,7 +417,7 @@ public abstract class DataStorage {
                 .toList();
 
         toDelete.forEach(entry -> entry.finalizeEntry());
-        this.storeEntriesSet.removeAll(toDelete);
+        toDelete.forEach(this.storeEntriesSet::remove);
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
         refreshValidities(false);
         saveAsync();
@@ -571,7 +571,7 @@ public abstract class DataStorage {
 
     public boolean isRootEntry(DataStoreEntry entry) {
         var noParent = DataStorage.get().getDefaultDisplayParent(entry).isEmpty();
-        var diffParentCategory = DataStorage.get()
+        boolean diffParentCategory = DataStorage.get()
                 .getDefaultDisplayParent(entry)
                 .map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid()))
                 .orElse(false);
@@ -695,7 +695,7 @@ public abstract class DataStorage {
                 break;
             }
 
-            es.add(0, current);
+            es.addFirst(current);
         }
 
         return es;
@@ -709,7 +709,7 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
-        var current = getStoreEntryIfPresent(id.getNames().get(0));
+        var current = getStoreEntryIfPresent(id.getNames().getFirst());
         if (current.isPresent()) {
             for (int i = 1; i < id.getNames().size(); i++) {
                 var children = getStoreChildren(current.get());

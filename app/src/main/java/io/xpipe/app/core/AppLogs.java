@@ -317,7 +317,7 @@ public class AppLogs {
                     normalizedName = name;
                 }
 
-                return loggers.computeIfAbsent(normalizedName, Slf4jLogger::new);
+                return loggers.computeIfAbsent(normalizedName, s -> new Slf4jLogger());
             }
         };
 
@@ -346,12 +346,6 @@ public class AppLogs {
     }
 
     public static final class Slf4jLogger extends AbstractLogger {
-
-        private final String name;
-
-        public Slf4jLogger(String name) {
-            this.name = name;
-        }
 
         @Override
         protected String getFullyQualifiedCallerName() {

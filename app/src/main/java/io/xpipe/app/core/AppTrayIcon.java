@@ -14,7 +14,6 @@ public class AppTrayIcon {
 
     private final SystemTray tray;
     private final TrayIcon trayIcon;
-    private final PopupMenu popupMenu = new PopupMenu();
 
     public AppTrayIcon() {
         ensureSystemTraySupported();
@@ -28,6 +27,7 @@ public class AppTrayIcon {
         };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
+        PopupMenu popupMenu = new PopupMenu();
         this.trayIcon = new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
         this.trayIcon.setToolTip("XPipe");
         this.trayIcon.setImageAutoSize(true);

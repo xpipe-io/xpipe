@@ -57,7 +57,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
         }
     }
 
-    private static void passInitScripts(ShellControl pc, List<SimpleScriptStore> scriptStores) throws Exception {
+    private static void passInitScripts(ShellControl pc, List<SimpleScriptStore> scriptStores) {
         scriptStores.forEach(simpleScriptStore -> {
             if (pc.getInitCommands().contains(simpleScriptStore)) {
                 return;

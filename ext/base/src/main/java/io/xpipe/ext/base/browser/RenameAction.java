@@ -16,7 +16,7 @@ public class RenameAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        model.getFileList().getEditing().setValue(entries.get(0));
+        model.getFileList().getEditing().setValue(entries.getFirst());
     }
 
     @Override
@@ -36,7 +36,7 @@ public class RenameAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() != FileKind.LINK;
+        return entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() != FileKind.LINK;
     }
 
     @Override

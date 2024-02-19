@@ -160,12 +160,12 @@ public interface ShellControl extends ProcessControl {
         var o = new ShellOpenFunction() {
 
             @Override
-            public CommandBuilder prepareWithoutInitCommand() throws Exception {
+            public CommandBuilder prepareWithoutInitCommand() {
                 return CommandBuilder.of().add(sc -> type.getLoginOpenCommand(sc));
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull String command) throws Exception {
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
                 return CommandBuilder.ofString(command);
             }
         };
@@ -178,12 +178,12 @@ public interface ShellControl extends ProcessControl {
         var o = new ShellOpenFunction() {
 
             @Override
-            public CommandBuilder prepareWithoutInitCommand() throws Exception {
+            public CommandBuilder prepareWithoutInitCommand() {
                 return CommandBuilder.of().add(sc -> sc.getShellDialect().getLoginOpenCommand(sc));
             }
 
             @Override
-            public CommandBuilder prepareWithInitCommand(@NonNull String command) throws Exception {
+            public CommandBuilder prepareWithInitCommand(@NonNull String command) {
                 return CommandBuilder.ofString(command);
             }
         };

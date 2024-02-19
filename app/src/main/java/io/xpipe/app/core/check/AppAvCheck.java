@@ -18,7 +18,7 @@ import java.util.Optional;
 public class AppAvCheck {
 
     @Getter
-    public static enum AvType {
+    public enum AvType {
 
         BITDEFENDER("Bitdefender") {
             @Override

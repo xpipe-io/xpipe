@@ -6,12 +6,10 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.ModuleLayerLoader;
-import io.xpipe.core.util.ProxyFunction;
 
 public class XPipeServiceProviders {
 
     public static void load(ModuleLayer layer) {
-        // TODO
         var hasDaemon = true;
         ModuleLayerLoader.loadAll(layer, hasDaemon, true, t -> {
             ErrorEvent.fromThrowable(t).handle();
@@ -32,10 +30,6 @@ public class XPipeServiceProviders {
         ModuleLayerLoader.loadAll(layer, hasDaemon, false, t -> {
             ErrorEvent.fromThrowable(t).handle();
         });
-
-        if (hasDaemon) {
-            ProxyFunction.init(layer);
-        }
 
         TrackEvent.info("Finished loading extension providers");
     }

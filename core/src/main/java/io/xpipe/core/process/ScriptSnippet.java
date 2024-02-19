@@ -6,7 +6,7 @@ import lombok.Getter;
 public interface ScriptSnippet {
 
     @Getter
-    public static enum ExecutionType {
+    enum ExecutionType {
         @JsonProperty("dumbOnly")
         DUMB_ONLY("dumbOnly"),
         @JsonProperty("terminalOnly")

@@ -10,7 +10,7 @@ public class TerminalLaunchExchangeImpl extends TerminalLaunchExchange
         implements MessageExchangeImpl<TerminalLaunchExchange.Request, TerminalLaunchExchange.Response> {
 
     @Override
-    public Response handleRequest(BeaconHandler handler, Request msg) throws ServerException, ClientException {
+    public Response handleRequest(BeaconHandler handler, Request msg) throws ClientException {
         var r = TerminalLauncherManager.performLaunch(msg.getRequest());
         return Response.builder().targetFile(r).build();
     }

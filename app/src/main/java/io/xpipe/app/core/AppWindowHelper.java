@@ -262,7 +262,6 @@ public class AppWindowHelper {
                 if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
                     stage.close();
                     event.consume();
-                    return;
                 }
             }
         });

@@ -40,10 +40,6 @@ public class StandardStorage extends DataStorage {
         return vaultKey;
     }
 
-    @Override
-    protected void onReset() {
-    }
-
     private void deleteLeftovers() {
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
@@ -190,7 +186,7 @@ public class StandardStorage extends DataStorage {
                         c.ifPresent(storeCategories::add);
                     } catch (IOException ex) {
                         // IO exceptions are not expected
-                        exception.set(new IOException("Unable to load data from " + path.toString() + ". Is it corrupted?", ex));
+                        exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
                         directoriesToKeep.add(path);
                     }  catch (Exception ex) {
                         // Data corruption and schema changes are expected
@@ -229,7 +225,7 @@ public class StandardStorage extends DataStorage {
                         storeEntries.put(entry.get(), entry.get());
                     } catch (IOException ex) {
                         // IO exceptions are not expected
-                        exception.set(new IOException("Unable to load data from " + path.toString() + ". Is it corrupted?", ex));
+                        exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
                         directoriesToKeep.add(path);
                     }  catch (Exception ex) {
                         // Data corruption and schema changes are expected

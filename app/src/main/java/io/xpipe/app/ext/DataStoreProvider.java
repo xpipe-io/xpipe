@@ -119,14 +119,14 @@ public interface DataStoreProvider {
         return null;
     }
 
-    default boolean init() throws Exception {
+    default boolean init() {
         return true;
     }
 
     default void postInit(){
     }
 
-    default void storageInit() throws Exception {}
+    default void storageInit() {}
 
     default boolean isShareableFromLocalMachine() {
         return false;
@@ -186,7 +186,7 @@ public interface DataStoreProvider {
     List<String> getPossibleNames();
 
     default String getId() {
-        return getPossibleNames().get(0);
+        return getPossibleNames().getFirst();
     }
 
     List<Class<?>> getStoreClasses();

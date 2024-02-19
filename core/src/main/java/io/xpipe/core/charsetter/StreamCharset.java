@@ -169,7 +169,7 @@ public class StreamCharset {
     }
 
     public String toString() {
-        return getNames().get(0);
+        return getNames().getFirst();
     }
 
     public boolean hasByteOrderMark() {

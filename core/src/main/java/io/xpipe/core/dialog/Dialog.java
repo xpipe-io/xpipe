@@ -1,6 +1,5 @@
 package io.xpipe.core.dialog;
 
-import io.xpipe.core.charsetter.Charsetter;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.core.util.FailableSupplier;
 import io.xpipe.core.util.SecretValue;
@@ -24,7 +23,7 @@ import java.util.function.Supplier;
  * The evaluation function can be set with {@link #evaluateTo(Supplier)}.
  * Alternatively, a dialogue can also copy the evaluation function of another dialogue with {@link #evaluateTo(Dialog)}.
  * An evaluation result can also be mapped to another type with {@link #map(Function)}.
- * It is also possible to listen for the completion of this dialogue with {@link #onCompletion(Charsetter.FailableConsumer)} )}.
+ * It is also possible to listen for the completion of this dialogue with {@link #onCompletion(FailableConsumer)}.
  */
 public abstract class Dialog {
 
@@ -76,7 +75,6 @@ public abstract class Dialog {
      * @param description the shown question description
      * @param toString    a function that maps the objects to a string
      * @param required    signals whether choices required or can be left empty
-     * @param quiet
      * @param def         the element which is selected by default
      * @param vals        the range of possible elements
      */

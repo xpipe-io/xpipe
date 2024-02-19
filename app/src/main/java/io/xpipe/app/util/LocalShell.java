@@ -12,12 +12,12 @@ public class LocalShell {
     private static ShellControl local;
     private static ShellControl localPowershell;
 
-    public static void init() throws Exception {
+    public static void init() {
         local = ProcessControlProvider.get().createLocalProcessControl(false).start();
         localCache = new ShellControlCache(local);
     }
 
-    public static ShellControl getLocalPowershell() throws Exception {
+    public static ShellControl getLocalPowershell() {
         if (localPowershell == null) {
             localPowershell = ProcessControlProvider.get().createLocalProcessControl(true)
                     .subShell(ShellDialects.POWERSHELL)

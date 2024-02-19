@@ -22,7 +22,7 @@ public enum NewLine {
 
     public static NewLine platform() {
         return Arrays.stream(values())
-                .filter(n -> n.getNewLineString().equals(System.getProperty("line.separator")))
+                .filter(n -> n.getNewLineString().equals(System.lineSeparator()))
                 .findFirst()
                 .orElseThrow();
     }

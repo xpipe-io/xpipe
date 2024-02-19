@@ -103,8 +103,12 @@ public class BrowserTransferComp extends SimpleComp {
                             struc.get().setOnDragDropped(event -> {
                                 // Accept drops from inside the app window
                                 if (event.getGestureSource() != null) {
-                                    var files = BrowserClipboard.retrieveDrag(event.getDragboard())
-                                            .getEntries();
+                                    var drag = BrowserClipboard.retrieveDrag(event.getDragboard());
+                                    if (drag == null) {
+                                        return;
+                                    }
+
+                                    var files = drag.getEntries();
                                     model.drop(model.getBrowserModel().getSelected().getValue(), files);
                                     event.setDropCompleted(true);
                                     event.consume();

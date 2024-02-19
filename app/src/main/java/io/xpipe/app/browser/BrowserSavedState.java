@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface BrowserSavedState {
 
-    public void add(Entry entry);
+    void add(Entry entry);
 
     void save();
 
@@ -18,7 +18,7 @@ public interface BrowserSavedState {
     @Value
     @Jacksonized
     @Builder
-    public static class Entry {
+    class Entry {
 
         UUID uuid;
         String path;

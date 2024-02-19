@@ -22,7 +22,7 @@ public class RefreshStoreAction implements ActionProvider  {
         }
 
         @Override
-        public void execute() throws Exception {
+        public void execute() {
             DataStorage.get().refreshChildren(store);
         }
     }

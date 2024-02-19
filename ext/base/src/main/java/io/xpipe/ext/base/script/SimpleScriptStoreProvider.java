@@ -241,7 +241,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public void storageInit() throws Exception {
+    public void storageInit() {
         DataStorage.get()
                 .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
                         UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),

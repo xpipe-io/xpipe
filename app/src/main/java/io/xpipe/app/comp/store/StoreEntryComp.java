@@ -217,11 +217,11 @@ public abstract class StoreEntryComp extends SimpleComp {
         var settingsButton = createSettingsButton();
         list.add(settingsButton);
         if (list.size() > 1) {
-            list.get(0).styleClass(Styles.LEFT_PILL);
+            list.getFirst().styleClass(Styles.LEFT_PILL);
             for (int i = 1; i < list.size() - 1; i++) {
                 list.get(i).styleClass(Styles.CENTER_PILL);
             }
-            list.get(list.size() - 1).styleClass(Styles.RIGHT_PILL);
+            list.getLast().styleClass(Styles.RIGHT_PILL);
         }
         list.forEach(comp -> {
             comp.apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT));

@@ -86,7 +86,7 @@ public class TerminalLauncherManager {
         return ((ResultSuccess) e.getResult()).getTargetScript();
     }
 
-    public static interface Result {}
+    public interface Result {}
 
     @Value
     public static class Entry {

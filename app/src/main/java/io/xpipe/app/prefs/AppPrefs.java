@@ -402,13 +402,13 @@ public class AppPrefs {
 
     @SuppressWarnings("unchecked")
     private <T> T map(T o, String name, Class<?> clazz) {
-        mapping.add(new Mapping<T>(name, (Property<T>) o, (Class<T>) clazz));
+        mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz));
         return o;
     }
 
     @SuppressWarnings("unchecked")
     private <T> T mapVaultSpecific(T o, String name, Class<?> clazz) {
-        mapping.add(new Mapping<T>(name, (Property<T>) o, (Class<T>) clazz, true));
+        mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz, true));
         return o;
     }
 
@@ -485,7 +485,7 @@ public class AppPrefs {
 
         @Override
         public <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp) {
-            var m = new Mapping<T>(id, property, c);
+            var m = new Mapping<>(id, property, c);
             customEntries.put(m,comp);
             mapping.add(m);
         }

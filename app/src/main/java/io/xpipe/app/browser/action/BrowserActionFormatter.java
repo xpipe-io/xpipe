@@ -7,7 +7,7 @@ import java.util.List;
 public class BrowserActionFormatter {
 
     public static String filesArgument(List<BrowserEntry> entries) {
-        return entries.size() == 1 ? entries.get(0).getOptionallyQuotedFileName() : "(" + entries.size() + ")";
+        return entries.size() == 1 ? entries.getFirst().getOptionallyQuotedFileName() : "(" + entries.size() + ")";
     }
 
     public static String centerEllipsis(String input, int length) {

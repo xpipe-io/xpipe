@@ -154,7 +154,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder prepend(Element e) {
-        elements.add(0, e);
+        elements.addFirst(e);
         return this;
     }
 

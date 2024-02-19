@@ -161,10 +161,10 @@ public class OpenFileSystemSavedState {
 
         var o = new RecentEntry(with, Instant.now());
         if (recentDirectories.size() < STORED) {
-            recentDirectories.add(0, o);
+            recentDirectories.addFirst(o);
         } else {
-            recentDirectories.remove(recentDirectories.size() - 1);
-            recentDirectories.add(0, o);
+            recentDirectories.removeLast();
+            recentDirectories.addFirst(o);
         }
     }
 }

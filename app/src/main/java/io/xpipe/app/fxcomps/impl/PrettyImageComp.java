@@ -95,9 +95,9 @@ public class PrettyImageComp extends SimpleComp {
             image.set(fixed);
 
             if (val == null) {
-                stack.getChildren().get(0).setVisible(false);
+                stack.getChildren().getFirst().setVisible(false);
             } else {
-                stack.getChildren().get(0).setVisible(true);
+                stack.getChildren().getFirst().setVisible(true);
             }
         };
 

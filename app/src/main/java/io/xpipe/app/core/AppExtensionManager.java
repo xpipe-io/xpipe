@@ -116,16 +116,12 @@ public class AppExtensionManager {
             leafModuleLayers.add(extension.getModule().getLayer());
         }
 
-        if (leafModuleLayers.size() > 0) {
-            var scl = ClassLoader.getSystemClassLoader();
-            var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
-            var finder = ModuleFinder.ofSystem();
-            var cf = Configuration.resolve(finder, cfs, finder, List.of());
-            extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
-                    .layer();
-        } else {
-            extendedLayer = baseLayer;
-        }
+        var scl = ClassLoader.getSystemClassLoader();
+        var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
+        var finder = ModuleFinder.ofSystem();
+        var cf = Configuration.resolve(finder, cfs, finder, List.of());
+        extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
+                .layer();
     }
 
     private Optional<Extension> findAndParseExtension(String name, ModuleLayer parent) {

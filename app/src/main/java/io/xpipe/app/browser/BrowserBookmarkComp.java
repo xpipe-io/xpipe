@@ -109,7 +109,6 @@ final class BrowserBookmarkComp extends SimpleComp {
             @Override
             public void run() {
                 if (activeTask != this) {
-                    return;
                 }
 
                 // Platform.runLater(() -> model.openExistingFileSystemIfPresent(store.asNeeded()));

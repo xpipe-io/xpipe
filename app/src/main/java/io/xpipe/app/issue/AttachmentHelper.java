@@ -21,7 +21,12 @@ public class AttachmentHelper {
 
     private static void compressDirectoryToZipfile(Path rootDir, Path sourceDir, ZipOutputStream out)
             throws IOException {
-        for (File file : sourceDir.toFile().listFiles()) {
+        var files = sourceDir.toFile().listFiles();
+        if (files == null) {
+            return;
+        }
+
+        for (File file : files) {
             if (file.isDirectory()) {
                 compressDirectoryToZipfile(rootDir, sourceDir.resolve(file.getName()), out);
             } else {

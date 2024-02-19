@@ -69,7 +69,7 @@ public class AppLayoutModel {
     }
 
     public void selectBrowser() {
-        selected.setValue(entries.get(0));
+        selected.setValue(entries.getFirst());
     }
 
     public void selectSettings() {

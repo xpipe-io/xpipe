@@ -12,5 +12,5 @@ public interface LicensedFeature {
 
     boolean isPreviewSupported();
 
-    public void throwIfUnsupported() throws LicenseRequiredException;
+    void throwIfUnsupported() throws LicenseRequiredException;
 }

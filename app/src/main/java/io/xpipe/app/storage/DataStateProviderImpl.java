@@ -25,7 +25,6 @@ public class DataStateProviderImpl extends DataStateProvider {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends DataStoreState> T getState(DataStore store, Supplier<T> def) {
         if (DataStorage.get() == null) {
             return def.get();

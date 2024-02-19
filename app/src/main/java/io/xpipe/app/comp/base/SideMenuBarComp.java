@@ -152,7 +152,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         filler.setMaxHeight(3000);
         vbox.getChildren().add(filler);
         VBox.setVgrow(filler, Priority.ALWAYS);
-        filler.prefWidthProperty().bind(((Region) vbox.getChildren().get(0)).widthProperty());
+        filler.prefWidthProperty().bind(((Region) vbox.getChildren().getFirst()).widthProperty());
 
         vbox.getStyleClass().add("sidebar-comp");
         return new SimpleCompStructure<>(vbox);

@@ -76,8 +76,7 @@ public abstract class Charsetter {
     }
 
     public abstract Result read(
-            FailableSupplier<InputStream> in, FailableConsumer<InputStreamReader, Exception> con)
-            throws Exception;
+            FailableSupplier<InputStream> in, FailableConsumer<InputStreamReader, Exception> con);
 
     public Result detect(StreamDataStore store) throws Exception {
         Result result = new Result(null, null);

@@ -22,8 +22,8 @@ public class PasteAction implements LeafAction {
             return;
         }
 
-        var target = entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() == FileKind.DIRECTORY
-                ? entries.get(0).getRawFileEntry()
+        var target = entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() == FileKind.DIRECTORY
+                ? entries.getFirst().getRawFileEntry()
                 : model.getCurrentDirectory();
         var files = clipboard.getEntries();
         if (files.size() == 0) {

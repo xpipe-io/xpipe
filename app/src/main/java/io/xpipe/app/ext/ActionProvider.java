@@ -89,7 +89,7 @@ public interface ActionProvider {
 
         default Action createAction(URI uri) throws Exception {
             var args = new ArrayList<>(Arrays.asList(uri.getPath().substring(1).split("/")));
-            args.add(0, uri.getHost());
+            args.addFirst(uri.getHost());
             return createAction(args);
         }
 

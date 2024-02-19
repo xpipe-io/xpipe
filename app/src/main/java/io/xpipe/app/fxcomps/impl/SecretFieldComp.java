@@ -16,7 +16,7 @@ import java.util.Objects;
 public class SecretFieldComp extends Comp<CompStructure<TextField>> {
 
     public static SecretFieldComp ofString(Property<String> s) {
-        var prop = new SimpleObjectProperty<InPlaceSecretValue>(s.getValue() != null ? InPlaceSecretValue.of(s.getValue()) : null);
+        var prop = new SimpleObjectProperty<>(s.getValue() != null ? InPlaceSecretValue.of(s.getValue()) : null);
         prop.addListener((observable, oldValue, newValue) -> {
             s.setValue(newValue != null ? new String(newValue.getSecret()) : null);
         });

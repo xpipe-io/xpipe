@@ -23,12 +23,12 @@ public class ProxyManagerProviderImpl extends ProxyManagerProvider {
     }
 
     @Override
-    public Optional<String> checkCompatibility(ShellControl s) throws Exception {
+    public Optional<String> checkCompatibility(ShellControl s) {
         return Optional.empty();
     }
 
     @Override
-    public boolean setup(ShellControl s) throws Exception {
+    public boolean setup(ShellControl s) {
         return true;
     }
 }

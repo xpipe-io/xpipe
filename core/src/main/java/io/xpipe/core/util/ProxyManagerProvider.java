@@ -19,7 +19,7 @@ public abstract class ProxyManagerProvider {
         return INSTANCE;
     }
 
-    public abstract Optional<String> checkCompatibility(ShellControl pc) throws Exception;
+    public abstract Optional<String> checkCompatibility(ShellControl pc);
 
-    public abstract boolean setup(ShellControl pc) throws Exception;
+    public abstract boolean setup(ShellControl pc);
 }

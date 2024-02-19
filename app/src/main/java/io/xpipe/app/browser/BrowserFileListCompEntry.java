@@ -98,7 +98,7 @@ public class BrowserFileListCompEntry {
             return false;
         }
 
-        if (!Objects.equals(model.getFileSystemModel().getFileSystem(), cb.getEntries().get(0).getFileSystem())) {
+        if (!Objects.equals(model.getFileSystemModel().getFileSystem(), cb.getEntries().getFirst().getFileSystem())) {
             return true;
         }
 

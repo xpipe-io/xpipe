@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class BrowserAlerts {
 
-    public static enum FileConflictChoice {
+    public enum FileConflictChoice {
         CANCEL,
         SKIP,
         SKIP_ALL,

@@ -169,7 +169,7 @@ public class OptionsBuilder {
 
     public OptionsBuilder nonNull() {
         var e = lastNameReference;
-        var p = props.get(props.size() - 1);
+        var p = props.getLast();
         return check(Validator.nonNull(ownValidator, e, p));
     }
 
@@ -180,19 +180,19 @@ public class OptionsBuilder {
 
     public OptionsBuilder nonEmpty() {
         var e = lastNameReference;
-        var p = props.get(props.size() - 1);
+        var p = props.getLast();
         return check(Validator.nonEmpty(ownValidator, e, (ReadOnlyListProperty<?>) p));
     }
 
     public OptionsBuilder validate() {
         var e = lastNameReference;
-        var p = props.get(props.size() - 1);
+        var p = props.getLast();
         return check(Validator.nonNull(ownValidator, e, p));
     }
 
     public OptionsBuilder nonNull(Validator v) {
         var e = lastNameReference;
-        var p = props.get(props.size() - 1);
+        var p = props.getLast();
         return check(Validator.nonNull(v, e, p));
     }
 

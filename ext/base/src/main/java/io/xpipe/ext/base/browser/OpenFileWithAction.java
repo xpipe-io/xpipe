@@ -17,7 +17,7 @@ import java.util.List;
 public class OpenFileWithAction implements LeafAction {
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var e = entries.getFirst();
         FileOpener.openWithAnyApplication(e.getRawFileEntry());
     }

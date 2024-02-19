@@ -37,7 +37,7 @@ public class NewItemAction implements BrowserAction, BranchAction {
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return entries.size() == 1
-                && entries.get(0)
+                && entries.getFirst()
                         .getRawFileEntry()
                         .getPath()
                         .equals(model.getCurrentPath().get());

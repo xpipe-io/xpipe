@@ -71,7 +71,7 @@ public class ScanAlert {
         private final Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable;
         private final Stage window;
         private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
-        private final ListProperty<ScanProvider.ScanOperation> selected = new SimpleListProperty<ScanProvider.ScanOperation>(FXCollections.observableArrayList());
+        private final ListProperty<ScanProvider.ScanOperation> selected = new SimpleListProperty<>(FXCollections.observableArrayList());
         private final BooleanProperty busy = new SimpleBooleanProperty();
 
         private Dialog(Stage window, DataStoreEntryRef<ShellStore> entry, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
@@ -151,9 +151,7 @@ public class ScanAlert {
                             }
 
                             selected.setAll(a.stream().filter(scanOperation -> scanOperation.isDefaultSelected() && !scanOperation.isDisabled()).toList());
-                            var r = new ListSelectorComp<ScanProvider.ScanOperation>(a,
-                                    scanOperation -> AppI18n.get(scanOperation.getNameKey()),
-                                    selected,scanOperation -> scanOperation.isDisabled(),
+                            var r = new ListSelectorComp<>(a, scanOperation -> AppI18n.get(scanOperation.getNameKey()), selected, scanOperation -> scanOperation.isDisabled(),
                                     a.size() > 3).createRegion();
                             stackPane.getChildren().add(r);
                         });

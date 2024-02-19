@@ -106,7 +106,7 @@ public class ErrorHandlerComp extends SimpleComp {
         Platform.runLater(() -> {
             if (!showing.get()) {
                 showing.set(true);
-                Stage window = null;
+                Stage window;
                 try {
                     window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> {
                         return setUpComp(event, w, finishLatch);

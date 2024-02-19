@@ -27,7 +27,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            if (configuration.getScriptDialect().equals(CMD)) {
+            if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 return CommandBuilder.of()
                         .add("/c")
                         .add(configuration.getScriptFile());

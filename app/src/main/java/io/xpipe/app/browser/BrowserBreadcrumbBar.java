@@ -66,7 +66,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
             var elements = FileNames.splitHierarchy(val);
             var modifiedElements = new ArrayList<>(elements);
             if (val.startsWith("/")) {
-                modifiedElements.add(0, "/");
+                modifiedElements.addFirst("/");
             }
             Breadcrumbs.BreadCrumbItem<String> items =
                     Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));

@@ -52,12 +52,12 @@ public interface ShellDumbMode {
         }
 
         @Override
-        public void prepareDumbInit(ShellControl shellControl) throws Exception {
+        public void prepareDumbInit(ShellControl shellControl) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void prepareDumbExit(ShellControl shellControl) throws IOException {
+        public void prepareDumbExit(ShellControl shellControl) {
             throw new UnsupportedOperationException();
         }
 

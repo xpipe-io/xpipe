@@ -20,7 +20,7 @@ public class OpenTerminalAction implements LeafAction {
     }
 
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         if (entries.size() == 0) {
             model.openTerminalAsync(model.getCurrentDirectory() != null ? model.getCurrentDirectory().getPath() : null);
             return;

@@ -42,7 +42,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         if (entries.size() == 1) {
                             return " "
                                     + BrowserActionFormatter.centerEllipsis(
-                                            entries.get(0).getRawFileEntry().getPath(), 50);
+                                            entries.getFirst().getRawFileEntry().getPath(), 50);
                         }
 
                         return "Absolute Paths";
@@ -67,7 +67,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         if (entries.size() == 1) {
                             return " "
                                     + BrowserActionFormatter.centerEllipsis(
-                                            entries.get(0).getRawFileEntry().getPath(), 50);
+                                            entries.getFirst().getRawFileEntry().getPath(), 50);
                         }
 
                         return "Absolute Link Paths";
@@ -99,7 +99,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         if (entries.size() == 1) {
                             return "\""
                                     + BrowserActionFormatter.centerEllipsis(
-                                            entries.get(0).getRawFileEntry().getPath(), 50)
+                                            entries.getFirst().getRawFileEntry().getPath(), 50)
                                     + "\"";
                         }
 
@@ -127,7 +127,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         if (entries.size() == 1) {
                             return " "
                                     + BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.get(0)
+                                            FileNames.getFileName(entries.getFirst()
                                                     .getRawFileEntry()
                                                     .getPath()),
                                             50);
@@ -157,7 +157,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         if (entries.size() == 1) {
                             return " "
                                     + BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.get(0)
+                                            FileNames.getFileName(entries.getFirst()
                                                     .getRawFileEntry()
                                                     .getPath()),
                                             50);
@@ -199,7 +199,7 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         if (entries.size() == 1) {
                             return "\""
                                     + BrowserActionFormatter.centerEllipsis(
-                                            FileNames.getFileName(entries.get(0)
+                                            FileNames.getFileName(entries.getFirst()
                                                     .getRawFileEntry()
                                                     .getPath()),
                                             50)

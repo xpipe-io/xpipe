@@ -160,7 +160,7 @@ public class FileSystemHelper {
                     }
                 })
                 .toList();
-        dropFilesInto(entry, entries, false, p -> progress.accept(p));
+        dropFilesInto(entry, entries, false, progress);
     }
 
     public static void delete(List<FileSystem.FileEntry> files) {
