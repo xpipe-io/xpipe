@@ -5,6 +5,7 @@ import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.DeveloperTabComp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.LicenseProvider;
 import javafx.beans.property.Property;
@@ -18,7 +19,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 public class AppLayoutModel {
 
     @Data
@@ -48,13 +48,24 @@ public class AppLayoutModel {
 
     @Getter
     private final SavedState savedState;
+    @Getter
     private final List<Entry> entries;
     private final Property<Entry> selected;
+    private final ObservableValue<Entry> selectedWrapper;
 
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
         this.selected = new SimpleObjectProperty<>(entries.get(1));
+        this.selectedWrapper = PlatformThread.sync(selected);
+    }
+
+    public Property<Entry> getSelectedInternal() {
+        return selected;
+    }
+
+    public ObservableValue<Entry> getSelected() {
+        return selectedWrapper;
     }
 
     public void selectBrowser() {

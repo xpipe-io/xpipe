@@ -32,7 +32,7 @@ public class AppLayoutComp extends Comp<CompStructure<Pane>> {
                                 model.getSelected())))));
 
         var pane = new BorderPane();
-        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
+        var sidebar = new SideMenuBarComp(model.getSelectedInternal(), model.getEntries());
         pane.setCenter(multi.createRegion());
         pane.setRight(sidebar.createRegion());
         pane.getStyleClass().add("background");
