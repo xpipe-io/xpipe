@@ -10,7 +10,6 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ApplicationHelper;
-import io.xpipe.app.util.ElevationAccess;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
@@ -170,9 +169,9 @@ public class AppPrefs {
         return disableTerminalRemotePasswordPreparation;
     }
 
-    public final Property<ElevationAccess> elevationPolicy = map(new SimpleObjectProperty<>(ElevationAccess.ALLOW), "elevationPolicy", ElevationAccess.class);
-    public ObservableValue<ElevationAccess> elevationPolicy() {
-        return elevationPolicy;
+    public final Property<Boolean> alwaysConfirmElevation = map(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class);
+    public ObservableValue<Boolean> alwaysConfirmElevation() {
+        return alwaysConfirmElevation;
     }
 
     public final BooleanProperty dontCachePasswords = map(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);

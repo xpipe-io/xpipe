@@ -26,8 +26,8 @@ public class SecretManager {
                 .findFirst();
     }
 
-    public static SecretQueryProgress expectCacheablePrompt(UUID request, UUID storeId, CountDown countDown) {
-        var p = new SecretQueryProgress(request, storeId, List.of(SecretQuery.prompt(true)), SecretQuery.prompt(false), countDown);
+    public static SecretQueryProgress expectElevationPrompt(UUID request, UUID secretId, CountDown countDown, boolean askIfNeeded) {
+        var p = new SecretQueryProgress(request, secretId, List.of(askIfNeeded ? SecretQuery.elevation(secretId) : SecretQuery.prompt(true)), SecretQuery.prompt(false), countDown);
         progress.add(p);
         return p;
     }

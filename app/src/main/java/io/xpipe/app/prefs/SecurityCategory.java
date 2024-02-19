@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.fxcomps.Comp;
-import io.xpipe.app.util.ElevationAccessChoiceComp;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class SecurityCategory extends AppPrefsCategory {
@@ -16,8 +15,8 @@ public class SecurityCategory extends AppPrefsCategory {
         var builder = new OptionsBuilder();
         builder.addTitle("securityPolicy")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("elevationPolicy")
-                        .addComp(new ElevationAccessChoiceComp(prefs.elevationPolicy).minWidth(250), prefs.elevationPolicy)
+                        .nameAndDescription("alwaysConfirmElevation")
+                        .addToggle(prefs.alwaysConfirmElevation)
                         .nameAndDescription("dontCachePasswords")
                         .addToggle(prefs.dontCachePasswords)
                         .nameAndDescription("denyTempScriptCreation")

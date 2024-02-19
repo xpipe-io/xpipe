@@ -83,7 +83,7 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
-                    return AskpassAlert.queryRaw(prompt);
+                    return AskpassAlert.queryRaw(prompt, null);
                 }
 
                 @Override

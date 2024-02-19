@@ -95,6 +95,8 @@ public interface ShellDialect {
 
     String getDiscardOperator();
 
+    String nullStdin(String command);
+
     String getScriptPermissionsCommand(String file);
 
     ShellDialectAskpass getAskpass();

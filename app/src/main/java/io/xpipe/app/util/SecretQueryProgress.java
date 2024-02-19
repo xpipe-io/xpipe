@@ -78,9 +78,14 @@ public class SecretQueryProgress {
         }
 
         if (shouldCache) {
-            var cached = SecretManager.get(ref);
+            var cached = sup.retrieveCache(prompt, ref);
             if (cached.isPresent()) {
-                return cached.get();
+                if (cached.get().isCancelled()) {
+                    requestCancelled = true;
+                    return null;
+                }
+
+                return cached.get().getSecret();
             }
         }
 
