@@ -7,15 +7,12 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
-import io.xpipe.app.fxcomps.util.Shortcuts;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -62,7 +59,7 @@ public class ModalOverlayComp extends SimpleComp {
 
                 if (newValue.finishKey != null) {
                     var finishButton = new Button(AppI18n.get(newValue.finishKey));
-                    Shortcuts.addShortcut(finishButton, new KeyCodeCombination(KeyCode.ENTER));
+                    finishButton.setDefaultButton(true);
                     Styles.toggleStyleClass(finishButton, Styles.FLAT);
                     finishButton.setOnAction(event -> {
                         newValue.onFinish.run();

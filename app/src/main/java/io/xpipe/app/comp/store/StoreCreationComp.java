@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import atlantafx.base.controls.Spacer;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.ErrorOverlayComp;
 import io.xpipe.app.comp.base.PopupMenuButtonComp;
@@ -14,7 +15,6 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -26,9 +26,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -56,6 +54,7 @@ public class StoreCreationComp extends DialogComp {
     BooleanProperty finished = new SimpleBooleanProperty();
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty changedSinceError = new SimpleBooleanProperty();
+    BooleanProperty skippable = new SimpleBooleanProperty();
     StringProperty name;
     DataStoreEntry existingEntry;
     boolean staticDisplay;
@@ -187,6 +186,17 @@ public class StoreCreationComp extends DialogComp {
     }
 
     @Override
+    protected List<Comp<?>> customButtons() {
+        return List.of(new ButtonComp(AppI18n.observable("skip"), null, () -> {
+            if (showInvalidConfirmAlert()) {
+                commit();
+            } else {
+                finish();
+            }
+        }).visible(skippable));
+    }
+
+    @Override
     protected ObservableValue<Boolean> busy() {
         return busy;
     }
@@ -223,8 +233,12 @@ public class StoreCreationComp extends DialogComp {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
                     alert.setHeaderText(AppI18n.get("confirmInvalidStoreHeader"));
-                    alert.setContentText(AppI18n.get("confirmInvalidStoreContent"));
+                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(
+                            AppI18n.get("confirmInvalidStoreContent")));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                    alert.getButtonTypes().clear();
+                    alert.getButtonTypes().add(new ButtonType("Retry", ButtonBar.ButtonData.CANCEL_CLOSE));
+                    alert.getButtonTypes().add(new ButtonType("Skip", ButtonBar.ButtonData.OK_DONE));
                 })
                 .map(b -> b.getButtonData().isDefaultButton())
                 .orElse(false);
@@ -271,13 +285,6 @@ public class StoreCreationComp extends DialogComp {
             return;
         }
 
-        if (messageProp.getValue() != null && !changedSinceError.get()) {
-            if (AppPrefs.get().developerMode().getValue() && showInvalidConfirmAlert()) {
-                commit();
-                return;
-            }
-        }
-
         if (!validator.getValue().validate()) {
             var msg = validator
                     .getValue()
@@ -302,6 +309,13 @@ public class StoreCreationComp extends DialogComp {
                 entry.getValue().validateOrThrow();
                 commit();
             } catch (Throwable ex) {
+                if (ex instanceof ValidationException) {
+                    ErrorEvent.unreportable(ex);
+                    skippable.set(false);
+                } else {
+                    skippable.set(true);
+                }
+
                 var newMessage = ExceptionConverter.convertMessage(ex);
                 // Temporary fix for equal error message not showing up again
                 if (Objects.equals(newMessage, messageProp.getValue())) {
@@ -309,9 +323,7 @@ public class StoreCreationComp extends DialogComp {
                 }
                 messageProp.setValue(newMessage);
                 changedSinceError.setValue(false);
-                if (ex instanceof ValidationException) {
-                    ErrorEvent.unreportable(ex);
-                }
+
                 ErrorEvent.fromThrowable(ex).omit().handle();
             } finally {
                 DataStorage.get().removeStoreEntryInProgress(entry.getValue());
@@ -320,10 +332,14 @@ public class StoreCreationComp extends DialogComp {
     }
 
     @Override
+    protected Comp<?> scrollPane(Comp<?> content) {
+        var back = super.scrollPane(content);
+        return new ErrorOverlayComp(back, messageProp);
+    }
+
+    @Override
     public Comp<?> content() {
-        var back = Comp.of(this::createLayout);
-        var message = new ErrorOverlayComp(back, messageProp);
-        return message;
+        return Comp.of(this::createLayout);
     }
 
     private Region createLayout() {

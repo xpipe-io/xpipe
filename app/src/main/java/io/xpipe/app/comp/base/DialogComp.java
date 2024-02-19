@@ -18,6 +18,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
 import java.util.function.Function;
 
 public abstract class DialogComp extends Comp<CompStructure<Region>> {
@@ -50,6 +51,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         buttons.setSpacing(5);
         buttons.setAlignment(Pos.CENTER_RIGHT);
 
+        buttons.getChildren().addAll(customButtons().stream().map(buttonComp -> buttonComp.createRegion()).toList());
         var nextButton = new ButtonComp(AppI18n.observable("finishStep"), null, this::finish)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .styleClass(Styles.ACCENT)
@@ -58,15 +60,13 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         return buttons;
     }
 
+    protected List<Comp<?>> customButtons() {
+        return List.of();
+    }
+
     @Override
     public CompStructure<Region> createBase() {
-        var entryR = content().createRegion();
-        entryR.getStyleClass().add("dialog-content");
-
-        var sp = new ScrollPane(entryR);
-        sp.setFitToWidth(true);
-        entryR.minHeightProperty().bind(sp.heightProperty());
-
+        var sp = scrollPane(content()).createRegion();
         VBox vbox = new VBox();
         vbox.getChildren().addAll(sp, createStepNavigation());
         vbox.getStyleClass().add("dialog-comp");
@@ -82,6 +82,17 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     protected abstract void finish();
 
     public abstract Comp<?> content();
+
+    protected Comp<?> scrollPane(Comp<?> content) {
+        var entry = content().styleClass("dialog-content");
+        return Comp.of(() -> {
+            var entryR = entry.createRegion();
+            var sp = new ScrollPane(entryR);
+            sp.setFitToWidth(true);
+            entryR.minHeightProperty().bind(sp.heightProperty());
+            return sp;
+        });
+    }
 
     public Comp<?> bottom() {
         return null;

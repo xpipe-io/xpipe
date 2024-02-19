@@ -91,6 +91,10 @@ project.ext {
             "-Dapple.awt.application.appearance=system"
     ]
     useBundledJavaFx = fullVersion && !(platformName == 'linux' && arch == 'arm64')
+    announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
+    changelogFile = file("$projectDir/changelogs/${rootProject.versionString}.md").exists() ?
+            file("$projectDir/changelogs/${rootProject.versionString}.md") :
+            file("$projectDir/changelogs/${rootProject.canonicalVersionString}.md")
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {

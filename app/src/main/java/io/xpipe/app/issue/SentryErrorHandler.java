@@ -18,6 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {
@@ -114,6 +115,12 @@ public class SentryErrorHandler implements ErrorHandler {
                 var otherField = FileSystemException.class.getDeclaredField("other");
                 otherField.setAccessible(true);
                 otherField.set(copy, null);
+            }
+
+            if (copy instanceof InvalidPathException) {
+                var inputField = InvalidPathException.class.getDeclaredField("input");
+                inputField.setAccessible(true);
+                inputField.set(copy, "");
             }
 
             var causeField = Throwable.class.getDeclaredField("cause");
