@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.PopupMenuButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.augment.GrowAugment;
 import io.xpipe.app.fxcomps.util.PlatformThread;
@@ -151,12 +152,16 @@ public class StoreCreationComp extends DialogComp {
                 e);
     }
 
-    public static void showCreation(DataStoreProvider selected, Predicate<DataStoreProvider> filter) {
+    public static void showCreation(DataStoreProvider selected, DataStoreProvider.CreationCategory category) {
+        showCreation(selected != null ? selected.defaultStore() : null, category);
+    }
+
+    public static void showCreation(DataStore base, DataStoreProvider.CreationCategory category) {
         show(
                 null,
-                selected,
-                selected != null ? selected.defaultStore() : null,
-                filter,
+                base != null ? DataStoreProviders.byStore(base) : null,
+                base,
+                dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()),
                 e -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);

@@ -39,9 +39,6 @@ public class StoreCreationMenu {
         menu.getItems().add(category("addTunnel", "mdi2v-vector-polyline-plus",
                 DataStoreProvider.CreationCategory.TUNNEL, null));
 
-        menu.getItems().add(category("addCluster", "mdi2d-domain-plus",
-                DataStoreProvider.CreationCategory.CLUSTER, null));
-
         menu.getItems().add(category("addDatabase", "mdi2d-database-plus",
                 DataStoreProvider.CreationCategory.DATABASE, null));
     }
@@ -53,8 +50,7 @@ public class StoreCreationMenu {
             item.setGraphic(new FontIcon(graphic));
             item.textProperty().bind(AppI18n.observable(name));
             item.setOnAction(event -> {
-                StoreCreationComp.showCreation(defaultProvider != null ? DataStoreProviders.byName(defaultProvider).orElseThrow() : null,
-                        v -> category.equals(v.getCreationCategory()));
+                StoreCreationComp.showCreation(defaultProvider != null ? DataStoreProviders.byName(defaultProvider).orElseThrow() : null, category);
                 event.consume();
             });
             return item;
@@ -69,7 +65,7 @@ public class StoreCreationMenu {
             }
 
             StoreCreationComp.showCreation(defaultProvider != null ? DataStoreProviders.byName(defaultProvider).orElseThrow() : null,
-                    v -> category.equals(v.getCreationCategory()));
+                    category);
             event.consume();
         });
         sub.forEach(dataStoreProvider -> {
@@ -77,7 +73,7 @@ public class StoreCreationMenu {
             item.setGraphic(PrettyImageHelper.ofFixedSmallSquare(dataStoreProvider.getDisplayIconFileName(null)).createRegion());
             item.setOnAction(event -> {
                 StoreCreationComp.showCreation(dataStoreProvider,
-                        v -> category.equals(v.getCreationCategory()));
+                        category);
                 event.consume();
             });
             menu.getItems().add(item);

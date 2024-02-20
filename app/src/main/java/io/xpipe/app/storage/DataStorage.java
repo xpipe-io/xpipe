@@ -219,6 +219,7 @@ public abstract class DataStorage {
     public abstract void save(boolean dispose);
 
     public abstract boolean supportsSharing();
+
     public boolean shouldShare(DataStoreCategory entry) {
         if (!entry.canShare()) {
             return false;
