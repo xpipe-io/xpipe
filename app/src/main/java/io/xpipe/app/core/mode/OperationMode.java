@@ -1,5 +1,6 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.Main;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
@@ -18,6 +19,7 @@ import io.xpipe.core.util.XPipeInstallation;
 import javafx.application.Platform;
 import lombok.Getter;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.desktop.AppReopenedEvent;
 import java.awt.desktop.AppReopenedListener;
@@ -144,6 +146,20 @@ public abstract class OperationMode {
                         OperationMode.switchToAsync(OperationMode.GUI);
                     }
                 });
+
+                // Set dock icon explicitly on mac
+                // This is necessary in case XPipe was started through a script as it will have no icon otherwise
+                if (AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout()) {
+                    try {
+                        var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_macos_128x128.png");
+                        if (iconUrl != null) {
+                            var awtIcon = ImageIO.read(iconUrl);
+                            Taskbar.getTaskbar().setIconImage(awtIcon);
+                        }
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                    }
+                }
             }
 
             DataStoreProviders.postInit(AppExtensionManager.getInstance().getExtendedLayer());

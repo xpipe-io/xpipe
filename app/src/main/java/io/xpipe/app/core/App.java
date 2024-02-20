@@ -1,6 +1,5 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.Main;
 import io.xpipe.app.comp.AppLayoutComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
@@ -14,7 +13,6 @@ import javafx.stage.Stage;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 
 @Getter
@@ -34,20 +32,6 @@ public class App extends Application {
         APP = this;
         stage = primaryStage;
         stage.opacityProperty().bind(AppPrefs.get().windowOpacity());
-
-        // Set dock icon explicitly on mac
-        // This is necessary in case XPipe was started through a script as it will have no icon otherwise
-        if (OsType.getLocal().equals(OsType.MACOS) && AppProperties.get().isDeveloperMode() && AppLogs.get().isWriteToSysout()) {
-            try {
-                var iconUrl = Main.class.getResourceAsStream("resources/img/logo/logo_macos_128x128.png");
-                if (iconUrl != null) {
-                    var awtIcon = ImageIO.read(iconUrl);
-                    Taskbar.getTaskbar().setIconImage(awtIcon);
-                }
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-            }
-        }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {
             Desktop.getDesktop().setPreferencesHandler(e -> {
