@@ -119,11 +119,6 @@ public class AppPrefs {
         return uiScale;
     }
 
-    final Property<Integer> connectionTimeOut = map(new SimpleObjectProperty<>(10), "connectionTimeout", Integer.class);
-    public ReadOnlyProperty<Integer> connectionTimeOut() {
-        return connectionTimeOut;
-    }
-
     final BooleanProperty saveWindowLocation = map(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class);
 
     // External terminal
@@ -363,7 +358,7 @@ public class AppPrefs {
 
     private AppPrefs() {
         this.categories = List.of(new AboutCategory(), new SystemCategory(), new AppearanceCategory(),
-                new SyncCategory(), new VaultCategory(), new TerminalCategory(), new EditorCategory(), new ConnectionsCategory(), new SecurityCategory(),
+                new SyncCategory(), new VaultCategory(), new TerminalCategory(), new EditorCategory(), new LocalShellCategory(), new SecurityCategory(),
                 new PasswordManagerCategory(), new TroubleshootCategory(), new DeveloperCategory());
         var selected = AppCache.get("selectedPrefsCategory", Integer.class, () -> 0);
         if (selected == null) {

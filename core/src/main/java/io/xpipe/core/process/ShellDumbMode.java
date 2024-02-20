@@ -12,10 +12,6 @@ public interface ShellDumbMode {
         return null;
     }
 
-    default String getUnsupportedMessage() {
-        return null;
-    }
-
     default CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function) throws Exception {
         return function.prepareWithoutInitCommand();
     }
@@ -42,10 +38,6 @@ public interface ShellDumbMode {
 
     class Unsupported implements ShellDumbMode {
 
-        private final String message;
-
-        public Unsupported(String message) {this.message = message;}
-
         @Override
         public boolean supportsAnyPossibleInteraction() {
             return false;
@@ -58,17 +50,12 @@ public interface ShellDumbMode {
 
         @Override
         public void prepareDumbExit(ShellControl shellControl) {
-            throw new UnsupportedOperationException();
+            shellControl.kill();
         }
 
         @Override
         public CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function) {
             throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getUnsupportedMessage() {
-            return message;
         }
     }
 }

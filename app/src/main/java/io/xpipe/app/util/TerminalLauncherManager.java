@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ServerException;
 import io.xpipe.core.process.ProcessControl;
-import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 import lombok.Setter;
 import lombok.Value;
@@ -66,7 +65,7 @@ public class TerminalLauncherManager {
             if (r instanceof ResultFailure failure) {
                 entries.remove(request);
                 var t = failure.getThrowable();
-                throw new ServerException(t instanceof ProcessOutputException pex ? pex.getOutput() : t.getMessage());
+                throw new ServerException(t);
             }
 
             return ((ResultSuccess) r).getTargetScript();

@@ -33,6 +33,7 @@ public class ErrorEvent {
 
     private String email;
     private String userReport;
+    private boolean unhandled;
 
     @Singular
     private final List<ErrorAction> customActions;

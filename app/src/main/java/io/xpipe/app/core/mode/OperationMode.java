@@ -93,7 +93,7 @@ public abstract class OperationMode {
 
             // Handle uncaught exceptions
             Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
-                ErrorEvent.fromThrowable(ex).build().handle();
+                ErrorEvent.fromThrowable(ex).unhandled(true).build().handle();
             });
 
             //            if (true) {
