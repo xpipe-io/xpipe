@@ -220,12 +220,12 @@ public abstract class DataStorage {
 
     public abstract boolean supportsSharing();
 
-    public boolean shouldShare(DataStoreCategory entry) {
-        if (!entry.canShare()) {
+    public boolean shouldShare(DataStoreCategory category) {
+        if (!category.canShare()) {
             return false;
         }
 
-        DataStoreCategory c = entry;
+        DataStoreCategory c = category;
         do {
             if (!c.shouldShareChildren()) {
                 return false;
@@ -246,6 +246,11 @@ public abstract class DataStorage {
 
         DataStoreEntry c = entry;
         do {
+            // We can't check for sharing of invalid entries
+            if (!c.getValidity().isUsable()) {
+                return false;
+            }
+
             if (c.getStore() instanceof LocalStore && entry.getProvider().isShareableFromLocalMachine()) {
                 return true;
             }

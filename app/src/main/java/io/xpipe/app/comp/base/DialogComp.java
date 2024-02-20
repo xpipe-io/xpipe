@@ -84,7 +84,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
     public abstract Comp<?> content();
 
     protected Comp<?> scrollPane(Comp<?> content) {
-        var entry = content().styleClass("dialog-content");
+        var entry = content.styleClass("dialog-content");
         return Comp.of(() -> {
             var entryR = entry.createRegion();
             var sp = new ScrollPane(entryR);

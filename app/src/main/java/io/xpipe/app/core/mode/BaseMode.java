@@ -40,8 +40,6 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Initializing base mode components ...");
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
-        // Load translations before storage initialization to localize store error messages
-        // Also loaded before antivirus alert to localize that
         AppI18n.init();
         LicenseProvider.get().init();
         AppPrefs.init();
@@ -61,9 +59,6 @@ public class BaseMode extends OperationMode {
         ActionProvider.initProviders();
         TrackEvent.info("Finished base components initialization");
         initialized = true;
-
-        var sec = new VaultKeySecretValue(new char[] {1, 2, 3});
-        sec.getSecret();
     }
 
     @Override

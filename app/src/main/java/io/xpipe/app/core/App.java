@@ -120,8 +120,6 @@ public class App extends Application {
 
     public void focus() {
         PlatformThread.runLaterIfNeeded(() -> {
-            stage.setAlwaysOnTop(true);
-            stage.setAlwaysOnTop(false);
             stage.requestFocus();
         });
     }
