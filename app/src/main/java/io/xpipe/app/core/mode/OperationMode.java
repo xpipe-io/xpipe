@@ -6,16 +6,22 @@ import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.launcher.LauncherCommand;
+import io.xpipe.app.launcher.LauncherInput;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.XPipeSession;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeDaemonMode;
 import io.xpipe.core.util.XPipeInstallation;
 import javafx.application.Platform;
 import lombok.Getter;
 
+import java.awt.*;
+import java.awt.desktop.AppReopenedEvent;
+import java.awt.desktop.AppReopenedListener;
+import java.awt.desktop.SystemEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -119,7 +125,31 @@ public abstract class OperationMode {
     }
 
     public static void postInit(String[] args) {
-        DataStoreProviders.postInit(AppExtensionManager.getInstance().getExtendedLayer());
+        try {
+            // This will initialize the toolkit on macos and create the dock icon
+            // macOS it does not like applications that run fully in the background, so do it always
+            if (OsType.getLocal().equals(OsType.MACOS)) {
+                // URL open operations have to be handled in a special way on macOS!
+                Desktop.getDesktop().setOpenURIHandler(e -> {
+                    LauncherInput.handle(List.of(e.getURI().toString()));
+                });
+
+                // Do it this way to prevent IDE inspections from complaining
+                var c = Class.forName(ModuleLayer.boot().findModule("java.desktop").orElseThrow(),
+                        "com.apple.eawt.Application");
+                var m = c.getDeclaredMethod("addAppEventListener", SystemEventListener.class);
+                m.invoke(c.getMethod("getApplication").invoke(null), new AppReopenedListener() {
+                    @Override
+                    public void appReopened(AppReopenedEvent e) {
+                        OperationMode.switchToAsync(OperationMode.GUI);
+                    }
+                });
+            }
+
+            DataStoreProviders.postInit(AppExtensionManager.getInstance().getExtendedLayer());
+        } catch (Throwable ex) {
+            ErrorEvent.fromThrowable(ex).term().handle();
+        }
     }
 
     public static void switchToAsync(OperationMode newMode) {

@@ -139,14 +139,6 @@ public class LauncherCommand implements Callable<Integer> {
         }
 
         LauncherInput.handle(inputs);
-
-        // URL open operations have to be handled in a special way on macOS!
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            Desktop.getDesktop().setOpenURIHandler(e -> {
-                LauncherInput.handle(List.of(e.getURI().toString()));
-            });
-        }
-
         return 0;
     }
 }
