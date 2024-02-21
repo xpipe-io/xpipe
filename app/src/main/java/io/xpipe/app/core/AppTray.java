@@ -14,6 +14,7 @@ public class AppTray {
 
     private static AppTray INSTANCE;
     private final AppTrayIcon icon;
+
     @Getter
     private final ErrorHandler errorHandler;
 

@@ -33,6 +33,7 @@ public class BrowserModel {
     private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
     private final ObservableList<BrowserEntry> selection = FXCollections.observableArrayList();
     private final BrowserSavedState savedState;
+
     @Setter
     private Consumer<List<FileReference>> onFinish;
 
@@ -101,8 +102,10 @@ public class BrowserModel {
             return;
         }
 
-        var stores = chosen.stream().map(
-                entry -> new FileReference(selected.getValue().getEntry(), entry.getRawFileEntry().getPath())).toList();
+        var stores = chosen.stream()
+                .map(entry -> new FileReference(
+                        selected.getValue().getEntry(), entry.getRawFileEntry().getPath()))
+                .toList();
         onFinish.accept(stores);
     }
 
@@ -113,8 +116,11 @@ public class BrowserModel {
     }
 
     private void closeFileSystemSync(OpenFileSystemModel open) {
-        if (DataStorage.get().getStoreEntries().contains(open.getEntry().get()) && savedState != null && open.getCurrentPath().get() != null) {
-            savedState.add(new BrowserSavedState.Entry(open.getEntry().get().getUuid(), open.getCurrentPath().get()));
+        if (DataStorage.get().getStoreEntries().contains(open.getEntry().get())
+                && savedState != null
+                && open.getCurrentPath().get() != null) {
+            savedState.add(new BrowserSavedState.Entry(
+                    open.getEntry().get().getUuid(), open.getCurrentPath().get()));
         }
         open.closeSync();
         synchronized (BrowserModel.this) {
@@ -122,7 +128,10 @@ public class BrowserModel {
         }
     }
 
-    public void openFileSystemAsync(DataStoreEntryRef<? extends FileSystemStore> store, FailableFunction<OpenFileSystemModel, String, Exception> path, BooleanProperty externalBusy) {
+    public void openFileSystemAsync(
+            DataStoreEntryRef<? extends FileSystemStore> store,
+            FailableFunction<OpenFileSystemModel, String, Exception> path,
+            BooleanProperty externalBusy) {
         if (store == null) {
             return;
         }

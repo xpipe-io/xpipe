@@ -9,6 +9,5 @@ public class Test extends LocalExtensionTest {
     public void test() {
         System.out.println("a");
         System.out.println(DataStorage.get().getStoreEntries());
-
     }
 }

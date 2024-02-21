@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class StartupTest {
 
     @Test
-    public void test( ) throws Exception {
+    public void test() throws Exception {
         BeaconDaemonController.start(XPipeDaemonMode.TRAY);
         BeaconDaemonController.stop();
     }

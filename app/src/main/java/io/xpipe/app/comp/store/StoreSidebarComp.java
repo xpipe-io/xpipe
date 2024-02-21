@@ -14,9 +14,18 @@ public class StoreSidebarComp extends SimpleComp {
     protected Region createSimple() {
         var sideBar = new VerticalComp(List.of(
                 new StoreEntryListStatusComp().styleClass("color-box").styleClass("gray"),
-                new StoreCategoryListComp(StoreViewState.get().getAllConnectionsCategory()).styleClass("color-box").styleClass("gray"),
-                new StoreCategoryListComp(StoreViewState.get().getAllScriptsCategory()).styleClass("color-box").styleClass("gray"),
-                Comp.of(() -> new Region()).styleClass("bar").styleClass("color-box").styleClass("gray").styleClass("filler-bar").vgrow()));
+                new StoreCategoryListComp(StoreViewState.get().getAllConnectionsCategory())
+                        .styleClass("color-box")
+                        .styleClass("gray"),
+                new StoreCategoryListComp(StoreViewState.get().getAllScriptsCategory())
+                        .styleClass("color-box")
+                        .styleClass("gray"),
+                Comp.of(() -> new Region())
+                        .styleClass("bar")
+                        .styleClass("color-box")
+                        .styleClass("gray")
+                        .styleClass("filler-bar")
+                        .vgrow()));
         sideBar.apply(struc -> struc.get().setFillWidth(true));
         sideBar.styleClass("sidebar");
         sideBar.prefWidth(240);

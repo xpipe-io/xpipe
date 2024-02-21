@@ -2,7 +2,6 @@ package io.xpipe.core.process;
 
 public interface ParentSystemAccess {
 
-
     static ParentSystemAccess none() {
         return new ParentSystemAccess() {
             @Override
@@ -36,17 +35,17 @@ public interface ParentSystemAccess {
         return new ParentSystemAccess() {
 
             @Override
-            public boolean supportsExecutableEnvironment() {
-                return true;
-            }
-
-            @Override
             public boolean supportsFileSystemAccess() {
                 return true;
             }
 
             @Override
             public boolean supportsExecutables() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsExecutableEnvironment() {
                 return true;
             }
 
@@ -63,33 +62,33 @@ public interface ParentSystemAccess {
     }
 
     static ParentSystemAccess combine(ParentSystemAccess a1, ParentSystemAccess a2) {
-            return new ParentSystemAccess() {
+        return new ParentSystemAccess() {
 
-                @Override
-                public boolean supportsFileSystemAccess() {
-                    return a1.supportsFileSystemAccess() && a2.supportsFileSystemAccess();
-                }
+            @Override
+            public boolean supportsFileSystemAccess() {
+                return a1.supportsFileSystemAccess() && a2.supportsFileSystemAccess();
+            }
 
-                @Override
-                public boolean supportsExecutables() {
-                    return a1.supportsExecutables() && a2.supportsExecutables();
-                }
+            @Override
+            public boolean supportsExecutables() {
+                return a1.supportsExecutables() && a2.supportsExecutables();
+            }
 
-                @Override
-                public boolean supportsExecutableEnvironment() {
-                    return a1.supportsExecutableEnvironment() && a2.supportsExecutableEnvironment();
-                }
+            @Override
+            public boolean supportsExecutableEnvironment() {
+                return a1.supportsExecutableEnvironment() && a2.supportsExecutableEnvironment();
+            }
 
-                @Override
-                public String translateFromLocalSystemPath(String path) throws Exception {
-                    return a2.translateFromLocalSystemPath(a1.translateFromLocalSystemPath(path));
-                }
+            @Override
+            public String translateFromLocalSystemPath(String path) throws Exception {
+                return a2.translateFromLocalSystemPath(a1.translateFromLocalSystemPath(path));
+            }
 
-                @Override
-                public String translateToLocalSystemPath(String path) throws Exception {
-                    return a1.translateToLocalSystemPath(a2.translateToLocalSystemPath(path));
-                }
-            };
+            @Override
+            public String translateToLocalSystemPath(String path) throws Exception {
+                return a1.translateToLocalSystemPath(a2.translateToLocalSystemPath(path));
+            }
+        };
     }
 
     default boolean supportsAnyAccess() {

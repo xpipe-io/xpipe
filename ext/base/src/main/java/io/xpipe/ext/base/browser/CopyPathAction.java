@@ -19,11 +19,6 @@ import java.util.stream.Collectors;
 public class CopyPathAction implements BrowserAction, BranchAction {
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Copy location";
-    }
-
-    @Override
     public Category getCategory() {
         return Category.COPY_PASTE;
     }
@@ -34,9 +29,19 @@ public class CopyPathAction implements BrowserAction, BranchAction {
     }
 
     @Override
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return "Copy location";
+    }
+
+    @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return List.of(
                 new LeafAction() {
+                    @Override
+                    public KeyCombination getShortcut() {
+                        return new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN, KeyCombination.SHORTCUT_DOWN);
+                    }
+
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
@@ -46,11 +51,6 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         }
 
                         return "Absolute Paths";
-                    }
-
-                    @Override
-                    public KeyCombination getShortcut() {
-                        return new KeyCodeCombination(KeyCode.C, KeyCombination.ALT_DOWN, KeyCombination.SHORTCUT_DOWN);
                     }
 
                     @Override
@@ -123,6 +123,12 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                 },
                 new LeafAction() {
                     @Override
+                    public KeyCombination getShortcut() {
+                        return new KeyCodeCombination(
+                                KeyCode.C, KeyCombination.SHIFT_DOWN, KeyCombination.SHORTCUT_DOWN);
+                    }
+
+                    @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
                             return " "
@@ -134,12 +140,6 @@ public class CopyPathAction implements BrowserAction, BranchAction {
                         }
 
                         return "File Names";
-                    }
-
-                    @Override
-                    public KeyCombination getShortcut() {
-                        return new KeyCodeCombination(
-                                KeyCode.C, KeyCombination.SHIFT_DOWN, KeyCombination.SHORTCUT_DOWN);
                     }
 
                     @Override

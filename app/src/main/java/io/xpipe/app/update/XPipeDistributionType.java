@@ -23,6 +23,12 @@ public enum XPipeDistributionType {
     CHOCO("choco", true, () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
+    @Getter
+    private final String id;
+    @Getter
+    private final boolean supportsUrls;
+    private final Supplier<UpdateHandler> updateHandlerSupplier;
+    private UpdateHandler updateHandler;
 
     XPipeDistributionType(String id, boolean supportsUrls, Supplier<UpdateHandler> updateHandlerSupplier) {
         this.id = id;
@@ -62,7 +68,9 @@ public enum XPipeDistributionType {
 
         type = det;
         AppCache.update("dist", type.getId());
-        TrackEvent.withInfo("Determined distribution type").tag("type",type.getId()).handle();
+        TrackEvent.withInfo("Determined distribution type")
+                .tag("type", type.getId())
+                .handle();
     }
 
     public static XPipeDistributionType get() {
@@ -84,7 +92,8 @@ public enum XPipeDistributionType {
         }
 
         try (var sc = LocalShell.getShell()) {
-            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the production behavior
+            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
+            // production behavior
             if (OsType.getLocal().equals(OsType.WINDOWS)) {
                 try (var chocoOut =
                         sc.command("choco search --local-only -r xpipe").start()) {
@@ -101,7 +110,8 @@ public enum XPipeDistributionType {
                 }
             }
 
-            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the production behavior
+            // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
+            // production behavior
             if (OsType.getLocal().equals(OsType.MACOS)) {
                 try (var brewOut = sc.command("brew list --casks --versions").start()) {
                     var out = brewOut.readStdoutDiscardErr();
@@ -123,14 +133,6 @@ public enum XPipeDistributionType {
 
         return XPipeDistributionType.NATIVE_INSTALLATION;
     }
-
-    @Getter
-    private final String id;
-    @Getter
-    private final boolean supportsUrls;
-
-    private UpdateHandler updateHandler;
-    private final Supplier<UpdateHandler> updateHandlerSupplier;
 
     public UpdateHandler getUpdateHandler() {
         if (updateHandler == null) {

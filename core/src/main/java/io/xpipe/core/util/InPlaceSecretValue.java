@@ -15,6 +15,10 @@ import java.util.Random;
 @EqualsAndHashCode(callSuper = true)
 public class InPlaceSecretValue extends AesSecretValue {
 
+    public InPlaceSecretValue(char[] secret) {
+        super(secret);
+    }
+
     public static InPlaceSecretValue of(String s) {
         return new InPlaceSecretValue(s.toCharArray());
     }
@@ -23,23 +27,9 @@ public class InPlaceSecretValue extends AesSecretValue {
         return new InPlaceSecretValue(c);
     }
 
-    public InPlaceSecretValue(char[] secret) {
-        super(secret);
-    }
-
     @Override
     protected int getIterationCount() {
         return 2048;
-    }
-
-    @Override
-    public InPlaceSecretValue inPlace() {
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "<in place secret>";
     }
 
     protected byte[] getNonce(int numBytes) {
@@ -50,5 +40,15 @@ public class InPlaceSecretValue extends AesSecretValue {
 
     protected SecretKey getAESKey() throws InvalidKeySpecException {
         return getSecretKey(new char[] {'X', 'P', 'E' << 1});
+    }
+
+    @Override
+    public InPlaceSecretValue inPlace() {
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "<in place secret>";
     }
 }

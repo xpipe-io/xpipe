@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 public class StandardStorage extends DataStorage {
 
     private final List<Path> directoriesToKeep = new ArrayList<>();
+
     @Getter
     private final GitStorageHandler gitStorageHandler;
 
@@ -38,106 +39,6 @@ public class StandardStorage extends DataStorage {
     @Override
     public String getVaultKey() {
         return vaultKey;
-    }
-
-    private void deleteLeftovers() {
-        var storesDir = getStoresDir();
-        var categoriesDir = getCategoriesDir();
-
-        // Delete leftover directories in entries dir
-        try (var s = Files.list(storesDir)) {
-            s.forEach(file -> {
-                if (directoriesToKeep.contains(file)) {
-                    return;
-                }
-
-                var name = file.getFileName().toString();
-                try {
-                    UUID uuid;
-                    try {
-                        uuid = UUID.fromString(name);
-                    } catch (Exception ex) {
-                        FileUtils.forceDelete(file.toFile());
-                        return;
-                    }
-
-                    var entry = getStoreEntryIfPresent(uuid);
-                    if (entry.isEmpty()) {
-                        TrackEvent.withTrace("Deleting leftover store directory")
-                                .tag("uuid", uuid)
-                                .handle();
-                        FileUtils.forceDelete(file.toFile());
-                        gitStorageHandler.handleDeletion(file,uuid.toString());
-                    }
-                } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                }
-            });
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
-        }
-
-        // Delete leftover directories in categories dir
-        try (var s = Files.list(categoriesDir)) {
-            s.forEach(file -> {
-                if (directoriesToKeep.contains(file)) {
-                    return;
-                }
-
-                var name = file.getFileName().toString();
-                try {
-                    UUID uuid;
-                    try {
-                        uuid = UUID.fromString(name);
-                    } catch (Exception ex) {
-                        FileUtils.forceDelete(file.toFile());
-                        return;
-                    }
-
-                    var entry = getStoreCategoryIfPresent(uuid);
-                    if (entry.isEmpty()) {
-                        TrackEvent.withTrace("Deleting leftover category directory")
-                                .tag("uuid", uuid)
-                                .handle();
-                        FileUtils.forceDelete(file.toFile());
-                        gitStorageHandler.handleDeletion(file,uuid.toString());
-                    }
-                } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
-                }
-            });
-        } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
-        }
-    }
-
-    private void initVaultKey() throws IOException {
-        var file = dir.resolve("vaultkey");
-        if (Files.exists(file)) {
-            var s = Files.readString(file);
-            vaultKey = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
-        } else {
-            Files.createDirectories(dir);
-            vaultKey = UUID.randomUUID().toString();
-            Files.writeString(file,Base64.getEncoder().encodeToString(vaultKey.getBytes(StandardCharsets.UTF_8)));
-        }
-    }
-
-    private void initSystemInfo() throws IOException {
-        var file = dir.resolve("systeminfo");
-        if (Files.exists(file)) {
-            var s = Files.readString(file);
-            if (!LocalShell.getShell().getOsName().equals(s)) {
-                ErrorEvent.fromMessage("This vault was originally created on a different system running " + s +
-                        ". Sharing connection information between systems directly might cause some problems." +
-                        " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings."
-                ).expected().handle();
-            }
-        } else {
-            Files.createDirectories(dir);
-            var s = LocalShell.getShell().getOsName();
-            Files.writeString(file, s);
-        }
     }
 
     public void load() {
@@ -188,7 +89,7 @@ public class StandardStorage extends DataStorage {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
                         directoriesToKeep.add(path);
-                    }  catch (Exception ex) {
+                    } catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
                     }
@@ -227,7 +128,7 @@ public class StandardStorage extends DataStorage {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
                         directoriesToKeep.add(path);
-                    }  catch (Exception ex) {
+                    } catch (Exception ex) {
                         // Data corruption and schema changes are expected
 
                         // We only keep invalid entries in developer mode as there's no point in keeping them in
@@ -248,7 +149,7 @@ public class StandardStorage extends DataStorage {
                 storeEntriesSet.forEach(dataStoreCategory -> {
                     if (dataStoreCategory.getCategoryUuid() == null
                             || getStoreCategoryIfPresent(dataStoreCategory.getCategoryUuid())
-                            .isEmpty()) {
+                                    .isEmpty()) {
                         dataStoreCategory.setCategoryUuid(DEFAULT_CATEGORY_UUID);
                     }
                 });
@@ -257,7 +158,8 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
         }
 
-        var hasFixedLocal = storeEntriesSet.stream().anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
+        var hasFixedLocal = storeEntriesSet.stream()
+                .anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
 
         if (hasFixedLocal) {
             var local = getStoreEntry(LOCAL_ID);
@@ -298,11 +200,14 @@ public class StandardStorage extends DataStorage {
 
         // Save to apply changes
         if (!hasFixedLocal) {
-            storeEntriesSet.removeIf(dataStoreEntry -> !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
-            storeEntriesSet.stream().filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).forEach(entry -> {
-                entry.dirty = true;
-                entry.setStoreNode(DataStorageWriter.storeToNode(entry.getStore()));
-            });
+            storeEntriesSet.removeIf(dataStoreEntry ->
+                    !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
+            storeEntriesSet.stream()
+                    .filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
+                    .forEach(entry -> {
+                        entry.dirty = true;
+                        entry.setStoreNode(DataStorageWriter.storeToNode(entry.getStore()));
+                    });
             save(false);
         }
 
@@ -347,7 +252,7 @@ public class StandardStorage extends DataStorage {
             } catch (IOException ex) {
                 // IO exceptions are not expected
                 exception.set(ex);
-            }  catch (Exception ex) {
+            } catch (Exception ex) {
                 // Data corruption and schema changes are expected
                 ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
             }
@@ -384,5 +289,107 @@ public class StandardStorage extends DataStorage {
     @Override
     public boolean supportsSharing() {
         return gitStorageHandler.supportsShare();
+    }
+
+    private void deleteLeftovers() {
+        var storesDir = getStoresDir();
+        var categoriesDir = getCategoriesDir();
+
+        // Delete leftover directories in entries dir
+        try (var s = Files.list(storesDir)) {
+            s.forEach(file -> {
+                if (directoriesToKeep.contains(file)) {
+                    return;
+                }
+
+                var name = file.getFileName().toString();
+                try {
+                    UUID uuid;
+                    try {
+                        uuid = UUID.fromString(name);
+                    } catch (Exception ex) {
+                        FileUtils.forceDelete(file.toFile());
+                        return;
+                    }
+
+                    var entry = getStoreEntryIfPresent(uuid);
+                    if (entry.isEmpty()) {
+                        TrackEvent.withTrace("Deleting leftover store directory")
+                                .tag("uuid", uuid)
+                                .handle();
+                        FileUtils.forceDelete(file.toFile());
+                        gitStorageHandler.handleDeletion(file, uuid.toString());
+                    }
+                } catch (Exception ex) {
+                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                }
+            });
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+        }
+
+        // Delete leftover directories in categories dir
+        try (var s = Files.list(categoriesDir)) {
+            s.forEach(file -> {
+                if (directoriesToKeep.contains(file)) {
+                    return;
+                }
+
+                var name = file.getFileName().toString();
+                try {
+                    UUID uuid;
+                    try {
+                        uuid = UUID.fromString(name);
+                    } catch (Exception ex) {
+                        FileUtils.forceDelete(file.toFile());
+                        return;
+                    }
+
+                    var entry = getStoreCategoryIfPresent(uuid);
+                    if (entry.isEmpty()) {
+                        TrackEvent.withTrace("Deleting leftover category directory")
+                                .tag("uuid", uuid)
+                                .handle();
+                        FileUtils.forceDelete(file.toFile());
+                        gitStorageHandler.handleDeletion(file, uuid.toString());
+                    }
+                } catch (Exception ex) {
+                    ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                }
+            });
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+        }
+    }
+
+    private void initVaultKey() throws IOException {
+        var file = dir.resolve("vaultkey");
+        if (Files.exists(file)) {
+            var s = Files.readString(file);
+            vaultKey = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
+        } else {
+            Files.createDirectories(dir);
+            vaultKey = UUID.randomUUID().toString();
+            Files.writeString(file, Base64.getEncoder().encodeToString(vaultKey.getBytes(StandardCharsets.UTF_8)));
+        }
+    }
+
+    private void initSystemInfo() throws IOException {
+        var file = dir.resolve("systeminfo");
+        if (Files.exists(file)) {
+            var s = Files.readString(file);
+            if (!LocalShell.getShell().getOsName().equals(s)) {
+                ErrorEvent.fromMessage(
+                                "This vault was originally created on a different system running " + s
+                                        + ". Sharing connection information between systems directly might cause some problems."
+                                        + " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings.")
+                        .expected()
+                        .handle();
+            }
+        } else {
+            Files.createDirectories(dir);
+            var s = LocalShell.getShell().getOsName();
+            Files.writeString(file, s);
+        }
     }
 }

@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
 public class AppCertutilCheck {
 
     private static boolean getResult() {
-        var fc = new ProcessBuilder(System.getenv("WINDIR") + "\\Windows32\\certutil").redirectError(ProcessBuilder.Redirect.DISCARD);
+        var fc = new ProcessBuilder(System.getenv("WINDIR") + "\\Windows32\\certutil")
+                .redirectError(ProcessBuilder.Redirect.DISCARD);
         try {
             var proc = fc.start();
             var out = new String(proc.getInputStream().readAllBytes());

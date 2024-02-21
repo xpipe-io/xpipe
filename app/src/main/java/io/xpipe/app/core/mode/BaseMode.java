@@ -11,7 +11,10 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.XPipeDistributionType;
-import io.xpipe.app.util.*;
+import io.xpipe.app.util.FileBridge;
+import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.UnlockAlert;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {

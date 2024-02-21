@@ -34,8 +34,8 @@ public interface MessageExchangeImpl<RQ extends RequestMessage, RS extends Respo
                     String.format("Store %s is disabled", store.get().getName()));
         }
         if (!store.get().getValidity().isUsable() && !acceptUnusable) {
-            throw new ClientException(
-                    String.format("Store %s is not completely configured", store.get().getName()));
+            throw new ClientException(String.format(
+                    "Store %s is not completely configured", store.get().getName()));
         }
         return store.get();
     }

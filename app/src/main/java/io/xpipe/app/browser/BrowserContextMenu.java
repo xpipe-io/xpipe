@@ -24,6 +24,17 @@ final class BrowserContextMenu extends ContextMenu {
         createMenu();
     }
 
+    private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
+        return action.automaticallyResolveLinks()
+                ? selected.stream()
+                        .map(browserEntry -> new BrowserEntry(
+                                browserEntry.getRawFileEntry().resolved(),
+                                browserEntry.getModel(),
+                                browserEntry.isSynthetic()))
+                        .toList()
+                : selected;
+    }
+
     private void createMenu() {
         AppFont.normal(this.getStyleableNode());
 
@@ -81,7 +92,10 @@ final class BrowserContextMenu extends ContextMenu {
                     }
                     m.setDisable(!a.isActive(model, used));
 
-                    if (la.getProFeatureId() != null && !LicenseProvider.get().getFeature(la.getProFeatureId()).isSupported()) {
+                    if (la.getProFeatureId() != null
+                            && !LicenseProvider.get()
+                                    .getFeature(la.getProFeatureId())
+                                    .isSupported()) {
                         m.setDisable(true);
                         m.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
                     }
@@ -90,16 +104,5 @@ final class BrowserContextMenu extends ContextMenu {
                 }
             }
         }
-    }
-
-    private static List<BrowserEntry> resolveIfNeeded(BrowserAction action, List<BrowserEntry> selected) {
-        return action.automaticallyResolveLinks()
-                ? selected.stream()
-                .map(browserEntry -> new BrowserEntry(
-                        browserEntry.getRawFileEntry().resolved(),
-                        browserEntry.getModel(),
-                        browserEntry.isSynthetic()))
-                .toList()
-                : selected;
     }
 }

@@ -8,20 +8,16 @@ import java.util.UUID;
 @Value
 public class XPipeSession {
 
+    private static XPipeSession INSTANCE;
     boolean isNewBuildSession;
-
     /**
      * Unique identifier that resets on every XPipe restart.
      */
     UUID sessionId;
-
     /**
      * Unique identifier that resets on every XPipe update.
      */
     UUID buildSessionId;
-
-
-    private static XPipeSession INSTANCE;
 
     public static void init(UUID buildSessionId) {
         if (INSTANCE != null) {

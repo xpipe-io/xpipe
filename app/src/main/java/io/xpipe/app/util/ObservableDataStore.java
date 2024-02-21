@@ -33,12 +33,12 @@ public interface ObservableDataStore extends DataStore, InternalCacheDataStore {
         }
     }
 
-    default void setObserverState(boolean state) {
-        setCache("observerState", state);
-    }
-
     default boolean getObserverState() {
         return getCache("observerState", Boolean.class, false);
+    }
+
+    default void setObserverState(boolean state) {
+        setCache("observerState", state);
     }
 
     private void refresh() {

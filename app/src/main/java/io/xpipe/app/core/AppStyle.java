@@ -55,10 +55,12 @@ public class AppStyle {
                         try {
                             var bytes = Files.readAllBytes(file);
                             if (file.getFileName().toString().endsWith(".bss")) {
-                                var s = "data:application/octet-stream;base64," + Base64.getEncoder().encodeToString(bytes);
+                                var s = "data:application/octet-stream;base64,"
+                                        + Base64.getEncoder().encodeToString(bytes);
                                 STYLESHEET_CONTENTS.put(file, s);
                             } else if (file.getFileName().toString().endsWith(".css")) {
-                                var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
+                                var s = "data:text/css;base64,"
+                                        + Base64.getEncoder().encodeToString(bytes);
                                 STYLESHEET_CONTENTS.put(file, s);
                             }
                         } catch (IOException ex) {

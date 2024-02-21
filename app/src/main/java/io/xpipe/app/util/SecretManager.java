@@ -15,24 +15,33 @@ public class SecretManager {
 
     public static Optional<SecretQueryProgress> getProgress(UUID requestId, UUID storeId) {
         return progress.stream()
-                .filter(secretQueryProgress -> secretQueryProgress.getRequestId().equals(requestId) &&
-                        secretQueryProgress.getStoreId().equals(storeId))
+                .filter(secretQueryProgress ->
+                        secretQueryProgress.getRequestId().equals(requestId)
+                                && secretQueryProgress.getStoreId().equals(storeId))
                 .findFirst();
     }
 
     public static Optional<SecretQueryProgress> getProgress(UUID requestId) {
         return progress.stream()
-                .filter(secretQueryProgress -> secretQueryProgress.getRequestId().equals(requestId))
+                .filter(secretQueryProgress ->
+                        secretQueryProgress.getRequestId().equals(requestId))
                 .findFirst();
     }
 
-    public static SecretQueryProgress expectElevationPrompt(UUID request, UUID secretId, CountDown countDown, boolean askIfNeeded) {
-        var p = new SecretQueryProgress(request, secretId, List.of(askIfNeeded ? SecretQuery.elevation(secretId) : SecretQuery.prompt(true)), SecretQuery.prompt(false), countDown);
+    public static SecretQueryProgress expectElevationPrompt(
+            UUID request, UUID secretId, CountDown countDown, boolean askIfNeeded) {
+        var p = new SecretQueryProgress(
+                request,
+                secretId,
+                List.of(askIfNeeded ? SecretQuery.elevation(secretId) : SecretQuery.prompt(true)),
+                SecretQuery.prompt(false),
+                countDown);
         progress.add(p);
         return p;
     }
 
-    public static SecretQueryProgress expectAskpass(UUID request, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
+    public static SecretQueryProgress expectAskpass(
+            UUID request, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
         var p = new SecretQueryProgress(request, storeId, suppliers, fallback, countDown);
         progress.add(p);
         return p;
@@ -61,14 +70,19 @@ public class SecretManager {
     }
 
     public static void completeRequest(UUID request) {
-        if (progress.removeIf(secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))) {
-            TrackEvent.withTrace("Completed secret request").tag("uuid", request).handle();
+        if (progress.removeIf(
+                secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))) {
+            TrackEvent.withTrace("Completed secret request")
+                    .tag("uuid", request)
+                    .handle();
         }
     }
 
     public static void clearAll(Object store) {
         var id = UuidHelper.generateFromObject(store);
-        secrets.entrySet().removeIf(secretReferenceSecretValueEntry -> secretReferenceSecretValueEntry.getKey().getSecretId().equals(id));
+        secrets.entrySet()
+                .removeIf(secretReferenceSecretValueEntry ->
+                        secretReferenceSecretValueEntry.getKey().getSecretId().equals(id));
     }
 
     public static void clear(SecretReference ref) {

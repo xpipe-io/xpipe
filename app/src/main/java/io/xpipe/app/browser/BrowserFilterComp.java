@@ -16,6 +16,14 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
 
+    private final OpenFileSystemModel model;
+    private final Property<String> filterString;
+
+    public BrowserFilterComp(OpenFileSystemModel model, Property<String> filterString) {
+        this.model = model;
+        this.filterString = filterString;
+    }
+
     @Override
     public Structure createBase() {
         var expanded = new SimpleBooleanProperty();
@@ -97,13 +105,5 @@ public class BrowserFilterComp extends Comp<BrowserFilterComp.Structure> {
         public HBox get() {
             return box;
         }
-    }
-
-    private final OpenFileSystemModel model;
-    private final Property<String> filterString;
-
-    public BrowserFilterComp(OpenFileSystemModel model, Property<String> filterString) {
-        this.model = model;
-        this.filterString = filterString;
     }
 }

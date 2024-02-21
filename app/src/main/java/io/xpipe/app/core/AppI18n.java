@@ -37,10 +37,10 @@ import java.util.regex.Pattern;
 public class AppI18n {
 
     private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\w+?\\$");
+    private static final AppI18n INSTANCE = new AppI18n();
     private Map<String, String> translations;
     private Map<String, String> markdownDocumentations;
     private PrettyTime prettyTime;
-    private static final AppI18n INSTANCE = new AppI18n();
 
     public static void init() {
         var i = INSTANCE;
@@ -98,8 +98,11 @@ public class AppI18n {
                         return "null";
                     }
 
-                    return getInstance().prettyTime.formatDuration(
-                            getInstance().prettyTime.approximateDuration(Instant.now().plus(duration.getValue())));
+                    return getInstance()
+                            .prettyTime
+                            .formatDuration(getInstance()
+                                    .prettyTime
+                                    .approximateDuration(Instant.now().plus(duration.getValue())));
                 },
                 duration);
     }
@@ -136,20 +139,6 @@ public class AppI18n {
         return s;
     }
 
-    private void clear() {
-        translations.clear();
-        prettyTime = null;
-    }
-
-    @SuppressWarnings("removal")
-    public static class CallingClass extends SecurityManager {
-        public static final CallingClass INSTANCE = new CallingClass();
-
-        public Class<?>[] getCallingClasses() {
-            return getClassContext();
-        }
-    }
-
     @SneakyThrows
     private static String getCallerModuleName() {
         var callers = CallingClass.INSTANCE.getCallingClasses();
@@ -169,6 +158,11 @@ public class AppI18n {
             return split[split.length - 1];
         }
         return "";
+    }
+
+    private void clear() {
+        translations.clear();
+        prettyTime = null;
     }
 
     public String getKey(String s) {
@@ -220,7 +214,8 @@ public class AppI18n {
 
     public String getMarkdownDocumentation(String name) {
         if (!markdownDocumentations.containsKey(name)) {
-            TrackEvent.withWarn("Markdown documentation for key " + name + " not found").handle();
+            TrackEvent.withWarn("Markdown documentation for key " + name + " not found")
+                    .handle();
         }
 
         return markdownDocumentations.getOrDefault(name, "");
@@ -314,5 +309,14 @@ public class AppI18n {
                 AppPrefs.get() != null
                         ? AppPrefs.get().language().getValue().getLocale()
                         : SupportedLocale.ENGLISH.getLocale());
+    }
+
+    @SuppressWarnings("removal")
+    public static class CallingClass extends SecurityManager {
+        public static final CallingClass INSTANCE = new CallingClass();
+
+        public Class<?>[] getCallingClasses() {
+            return getClassContext();
+        }
     }
 }

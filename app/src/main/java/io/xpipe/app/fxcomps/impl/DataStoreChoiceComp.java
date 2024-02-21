@@ -34,33 +34,31 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
-    public static <T extends DataStore> DataStoreChoiceComp<T> other(
-            Property<DataStoreEntryRef<T>> selected, Class<T> clazz, Predicate<DataStoreEntryRef<T>> filter, StoreCategoryWrapper initialCategory) {
-        return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
-    }
-
-    public static DataStoreChoiceComp<ShellStore> proxy(Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
-        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, null, initialCategory);
-    }
-
-    public static DataStoreChoiceComp<ShellStore> host(Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
-        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);
-    }
-
-    public enum Mode {
-        HOST,
-        OTHER,
-        PROXY
-    }
-
     private final Mode mode;
     private final DataStoreEntry self;
     private final Property<DataStoreEntryRef<T>> selected;
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
-
     private Popover popover;
+
+    public static <T extends DataStore> DataStoreChoiceComp<T> other(
+            Property<DataStoreEntryRef<T>> selected,
+            Class<T> clazz,
+            Predicate<DataStoreEntryRef<T>> filter,
+            StoreCategoryWrapper initialCategory) {
+        return new DataStoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
+    }
+
+    public static DataStoreChoiceComp<ShellStore> proxy(
+            Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
+        return new DataStoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, null, initialCategory);
+    }
+
+    public static DataStoreChoiceComp<ShellStore> host(
+            Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
+        return new DataStoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);
+    }
 
     private Popover getPopover() {
         // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
@@ -68,7 +66,9 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         if (popover == null || applicableCheck != null) {
             var cur = StoreViewState.get().getActiveCategory().getValue();
             var selectedCategory = new SimpleObjectProperty<>(
-                    initialCategory != null ? (initialCategory.getRoot().equals(cur.getRoot()) ? cur : initialCategory) : cur);
+                    initialCategory != null
+                            ? (initialCategory.getRoot().equals(cur.getRoot()) ? cur : initialCategory)
+                            : cur);
             var filterText = new SimpleStringProperty();
             popover = new Popover();
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
@@ -85,8 +85,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
 
                 return storeClass.isAssignableFrom(e.getStore().getClass())
                         && e.getValidity().isUsable()
-                        && (applicableCheck == null
-                                || applicableCheck.test(e.ref()));
+                        && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
             var section = StoreSectionMiniComp.createList(
                     StoreSection.createTopLevel(
@@ -102,11 +101,13 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
                     });
-            var category = new DataStoreCategoryChoiceComp(initialCategory != null ? initialCategory.getRoot() : null, StoreViewState.get().getActiveCategory(),
-                                                           selectedCategory).styleClass(Styles.LEFT_PILL);
-            var filter = new FilterComp(filterText)
-                    .styleClass(Styles.CENTER_PILL)
-                    .hgrow();
+            var category = new DataStoreCategoryChoiceComp(
+                            initialCategory != null ? initialCategory.getRoot() : null,
+                            StoreViewState.get().getActiveCategory(),
+                            selectedCategory)
+                    .styleClass(Styles.LEFT_PILL);
+            var filter =
+                    new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
 
             var addButton = Comp.of(() -> {
                         MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
@@ -124,13 +125,21 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                     .apply(struc -> {
                         // Ugly solution to focus the text field
                         // Somehow this does not work through the normal on shown listeners
-                        struc.get().getChildren().get(0).focusedProperty().addListener((observable, oldValue, newValue) -> {
-                            if (newValue) {
-                                ((StackPane) struc.get().getChildren().get(1)).getChildren().get(1).requestFocus();
-                            }
-                        });
+                        struc.get()
+                                .getChildren()
+                                .get(0)
+                                .focusedProperty()
+                                .addListener((observable, oldValue, newValue) -> {
+                                    if (newValue) {
+                                        ((StackPane) struc.get().getChildren().get(1))
+                                                .getChildren()
+                                                .get(1)
+                                                .requestFocus();
+                                    }
+                                });
                     })
-                    .createStructure().get();
+                    .createStructure()
+                    .get();
             var r = section.vgrow().createRegion();
             var content = new VBox(top, r);
             content.setFillWidth(true);
@@ -167,7 +176,9 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         var button = new ButtonComp(
                 Bindings.createStringBinding(
                         () -> {
-                            return selected.getValue() != null ? toName(selected.getValue().getEntry()) : null;
+                            return selected.getValue() != null
+                                    ? toName(selected.getValue().getEntry())
+                                    : null;
                         },
                         selected),
                 () -> {});
@@ -212,5 +223,11 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         r.prefWidthProperty().bind(pane.widthProperty());
         r.maxWidthProperty().bind(pane.widthProperty());
         return pane;
+    }
+
+    public enum Mode {
+        HOST,
+        OTHER,
+        PROXY
     }
 }

@@ -23,18 +23,13 @@ public class OpenFileDefaultAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.OPEN;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2b-book-open-variant");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
+    public Category getCategory() {
+        return Category.OPEN;
     }
 
     @Override
@@ -45,5 +40,10 @@ public class OpenFileDefaultAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Open with default application";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 }

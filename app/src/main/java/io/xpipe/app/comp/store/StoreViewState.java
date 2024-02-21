@@ -24,6 +24,22 @@ import java.util.stream.Collectors;
 public class StoreViewState {
 
     private static StoreViewState INSTANCE;
+    private final StringProperty filter = new SimpleStringProperty();
+    @Getter
+    private final ObservableList<StoreEntryWrapper> allEntries =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
+    @Getter
+    private final ObservableList<StoreCategoryWrapper> categories =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
+    @Getter
+    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
+    @Getter
+    private StoreSection currentTopLevelSection;
+
+    private StoreViewState() {
+        initContent();
+        addListeners();
+    }
 
     public static void init() {
         if (INSTANCE != null) {
@@ -51,27 +67,6 @@ public class StoreViewState {
 
     public static StoreViewState get() {
         return INSTANCE;
-    }
-
-    private final StringProperty filter = new SimpleStringProperty();
-
-    @Getter
-    private final ObservableList<StoreEntryWrapper> allEntries =
-            FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    @Getter
-    private final ObservableList<StoreCategoryWrapper> categories =
-            FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    @Getter
-    private StoreSection currentTopLevelSection;
-
-    @Getter
-    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
-
-    private StoreViewState() {
-        initContent();
-        addListeners();
     }
 
     private void updateContent() {
@@ -126,12 +121,14 @@ public class StoreViewState {
             });
         }
 
-
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
-                var l = Arrays.stream(entry).map(StoreEntryWrapper::new).peek(storeEntryWrapper -> storeEntryWrapper.update()).toList();
+                var l = Arrays.stream(entry)
+                        .map(StoreEntryWrapper::new)
+                        .peek(storeEntryWrapper -> storeEntryWrapper.update())
+                        .toList();
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {

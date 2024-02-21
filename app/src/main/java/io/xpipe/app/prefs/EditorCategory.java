@@ -27,20 +27,30 @@ public class EditorCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var terminalTest = new StackComp(
-                                                List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                                                    prefs.save();
-                                                    ThreadHelper.runFailableAsync(() -> {
-                                                        var editor =
-                                                                AppPrefs.get().externalEditor().getValue();
-                                                        if (editor != null) {
-                                                            FileOpener.openReadOnlyString("Test");
-                                                        }
-                                                    });
-                                                }) )).padding(new Insets(15, 0, 0, 0)).apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
-        return new OptionsBuilder().addTitle("editorConfiguration").sub(new OptionsBuilder().nameAndDescription("editorProgram").addComp(
-                ChoiceComp.ofTranslatable(prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false)).nameAndDescription(
-                "customEditorCommand").addComp(new TextFieldComp(prefs.customEditorCommand, true).apply(
-                struc -> struc.get().setPromptText("myeditor $FILE")).hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM))).addComp(
-                terminalTest).nameAndDescription("preferEditorTabs").addToggle(prefs.preferEditorTabs)).buildComp();
+                        List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+                            prefs.save();
+                            ThreadHelper.runFailableAsync(() -> {
+                                var editor = AppPrefs.get().externalEditor().getValue();
+                                if (editor != null) {
+                                    FileOpener.openReadOnlyString("Test");
+                                }
+                            });
+                        })))
+                .padding(new Insets(15, 0, 0, 0))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+        return new OptionsBuilder()
+                .addTitle("editorConfiguration")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("editorProgram")
+                        .addComp(ChoiceComp.ofTranslatable(
+                                prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false))
+                        .nameAndDescription("customEditorCommand")
+                        .addComp(new TextFieldComp(prefs.customEditorCommand, true)
+                                .apply(struc -> struc.get().setPromptText("myeditor $FILE"))
+                                .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM)))
+                        .addComp(terminalTest)
+                        .nameAndDescription("preferEditorTabs")
+                        .addToggle(prefs.preferEditorTabs))
+                .buildComp();
     }
 }

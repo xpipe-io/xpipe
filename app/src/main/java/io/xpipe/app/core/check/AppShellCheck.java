@@ -12,19 +12,25 @@ public class AppShellCheck {
     public static void check() {
         var err = selfTestErrorCheck();
         if (err.isPresent()) {
-            var msg = """
+            var msg =
+                    """
                     Shell self-test failed for %s:
                     %s
-                    
+
                     This indicates that something is seriously wrong and certain shell functionality will not work as expected.
-                    
+
                     The most likely causes are:
                     - On Windows, an AntiVirus program might block required programs and commands
                     - The system shell is restricted or blocked
                     - The operating system is not supported
-                    
+
                     You can reach out to us if you want to properly diagnose the cause individually and hopefully fix it.
-                    """.formatted(ProcessControlProvider.get().getEffectiveLocalDialect().getDisplayName(), err.get());
+                    """
+                            .formatted(
+                                    ProcessControlProvider.get()
+                                            .getEffectiveLocalDialect()
+                                            .getDisplayName(),
+                                    err.get());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
         }
     }

@@ -20,22 +20,13 @@ import lombok.Value;
 
 public class ModalOverlayComp extends SimpleComp {
 
+    private final Comp<?> background;
+    private final Property<OverlayContent> overlayContent;
+
     public ModalOverlayComp(Comp<?> background, Property<OverlayContent> overlayContent) {
         this.background = background;
         this.overlayContent = overlayContent;
     }
-
-    @Value
-    public static class OverlayContent {
-
-        String titleKey;
-        Comp<?> content;
-        String finishKey;
-        Runnable onFinish;
-    }
-
-    private final Comp<?> background;
-    private final Property<OverlayContent> overlayContent;
 
     @Override
     protected Region createSimple() {
@@ -92,5 +83,14 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
         return pane;
+    }
+
+    @Value
+    public static class OverlayContent {
+
+        String titleKey;
+        Comp<?> content;
+        String finishKey;
+        Runnable onFinish;
     }
 }

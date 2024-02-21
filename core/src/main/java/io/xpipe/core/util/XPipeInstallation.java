@@ -57,8 +57,7 @@ public class XPipeInstallation {
         var suffix = (arguments != null ? " " + arguments : "");
         var modeOption = mode != null ? " --mode " + mode.getDisplayName() : "";
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix
-                    + " & disown";
+            return "nohup \"" + installationBase + "/app/bin/xpiped\"" + modeOption + suffix + " & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
             return "open \"" + installationBase + "\" --args" + modeOption + suffix;
         }
@@ -77,7 +76,8 @@ public class XPipeInstallation {
     public static Path getCurrentInstallationBasePath() {
         // We should always have a command associated with the current process, otherwise something went seriously wrong
         // Resolve any possible links to a real path
-        Path path = toRealPathIfPossible(Path.of(ProcessHandle.current().info().command().orElseThrow()));
+        Path path = toRealPathIfPossible(
+                Path.of(ProcessHandle.current().info().command().orElseThrow()));
         // Check if the process was started using a relative path, and adapt it if necessary
         if (!path.isAbsolute()) {
             path = toRealPathIfPossible(Path.of(System.getProperty("user.dir")).resolve(path));
@@ -86,7 +86,8 @@ public class XPipeInstallation {
         var name = path.getFileName().toString();
         // Check if we launched the JVM via a start script instead of the native executable
         if (name.endsWith("java") || name.endsWith("java.exe")) {
-            // If we are not an image, we are probably running in a development environment where we want to use the working directory
+            // If we are not an image, we are probably running in a development environment where we want to use the
+            // working directory
             var isImage = ModuleHelper.isImage();
             if (!isImage) {
                 return Path.of(System.getProperty("user.dir"));
@@ -211,7 +212,8 @@ public class XPipeInstallation {
     }
 
     public static String queryInstallationVersion(ShellControl p, String exec) throws Exception {
-        try (CommandControl c = p.command(CommandBuilder.of().addFile(exec).add("version")).start()) {
+        try (CommandControl c =
+                p.command(CommandBuilder.of().addFile(exec).add("version")).start()) {
             return c.readStdoutOrThrow();
         } catch (ProcessOutputException ex) {
             return "?";

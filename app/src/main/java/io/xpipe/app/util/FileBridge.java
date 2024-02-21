@@ -56,7 +56,7 @@ public class FileBridge {
             }
 
             AppFileWatcher.getInstance().startWatchersInDirectories(List.of(TEMP), (changed, kind) -> {
-                INSTANCE.handleWatchEvent(changed,kind);
+                INSTANCE.handleWatchEvent(changed, kind);
             });
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).handle();
@@ -79,8 +79,7 @@ public class FileBridge {
         // Wait for edit to finish in case external editor has write lock
         if (!Files.exists(changed)) {
             event("File " + TEMP.relativize(e.file) + " is probably still writing ...");
-            ThreadHelper.sleep(
-                    AppPrefs.get().editorReloadTimeout().getValue());
+            ThreadHelper.sleep(AppPrefs.get().editorReloadTimeout().getValue());
 
             // If still no read lock after 500ms, just don't parse it
             if (!Files.exists(changed)) {
@@ -91,7 +90,8 @@ public class FileBridge {
 
         try {
             event("Registering modification for file " + TEMP.relativize(e.file));
-            event("Last modification for file: " + e.lastModified.toString() + " vs current one: " + e.getLastModified());
+            event("Last modification for file: " + e.lastModified.toString() + " vs current one: "
+                    + e.getLastModified());
             if (e.hasChanged()) {
                 event("Registering change for file " + TEMP.relativize(e.file) + " for editor entry " + e.getName());
                 e.registerChange();
@@ -173,7 +173,8 @@ public class FileBridge {
         if (ext.isPresent()) {
             var existingFile = ext.get().file;
             try {
-                try (var out = Files.newOutputStream(existingFile); var in = input.get()) {
+                try (var out = Files.newOutputStream(existingFile);
+                        var in = input.get()) {
                     in.transferTo(out);
                 }
             } catch (Exception ex) {
@@ -185,7 +186,8 @@ public class FileBridge {
             return;
         }
 
-        Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6)).resolve(getFileSystemCompatibleName(keyName));
+        Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6))
+                .resolve(getFileSystemCompatibleName(keyName));
         try {
             FileUtils.forceMkdirParent(file.toFile());
             try (var out = Files.newOutputStream(file);

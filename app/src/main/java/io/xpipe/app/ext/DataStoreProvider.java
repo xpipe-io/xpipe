@@ -123,8 +123,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default void postInit(){
-    }
+    default void postInit() {}
 
     default void storageInit() {}
 

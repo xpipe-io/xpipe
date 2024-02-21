@@ -30,8 +30,9 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     }
 
     private void handleGui(ErrorEvent event) {
-        var lex = event.getThrowableChain().stream().flatMap(throwable -> throwable instanceof LicenseRequiredException le ?
-                Stream.of(le) : Stream.of()).findFirst();
+        var lex = event.getThrowableChain().stream()
+                .flatMap(throwable -> throwable instanceof LicenseRequiredException le ? Stream.of(le) : Stream.of())
+                .findFirst();
         if (lex.isPresent()) {
             LicenseProvider.get().showLicenseAlert(lex.get());
             event.setShouldSendDiagnostics(true);

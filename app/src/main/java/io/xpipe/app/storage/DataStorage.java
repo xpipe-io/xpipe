@@ -6,7 +6,10 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.DataStoreId;
+import io.xpipe.core.store.FixedChildStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.UuidHelper;
 import javafx.util.Pair;
 import lombok.Getter;
@@ -37,28 +40,20 @@ public abstract class DataStorage {
 
     private static DataStorage INSTANCE;
     protected final Path dir;
-
-    @Getter
-    protected boolean loaded;
-
     @Getter
     protected final List<DataStoreCategory> storeCategories;
-
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
-
     @Getter
     protected final Set<DataStoreEntry> storeEntriesSet;
-
+    protected final ReentrantLock busyIo = new ReentrantLock();
+    @Getter
+    private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
+    private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
+    @Getter
+    protected boolean loaded;
     @Getter
     @Setter
     protected DataStoreCategory selectedCategory;
-
-    @Getter
-    private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
-
-    private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
-
-    protected final ReentrantLock busyIo = new ReentrantLock();
 
     public DataStorage() {
         var prefsDir = AppPrefs.get().storageDirectory().getValue();
@@ -66,20 +61,6 @@ public abstract class DataStorage {
         this.storeEntries = new ConcurrentHashMap<>();
         this.storeEntriesSet = storeEntries.keySet();
         this.storeCategories = new CopyOnWriteArrayList<>();
-    }
-
-    public abstract String getVaultKey();
-
-    public DataStoreCategory getDefaultConnectionsCategory() {
-        return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
-    }
-
-    public DataStoreCategory getAllConnectionsCategory() {
-        return getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).orElseThrow();
-    }
-
-    public DataStoreCategory getAllScriptsCategory() {
-        return getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).orElseThrow();
     }
 
     private static boolean shouldPersist() {
@@ -107,12 +88,6 @@ public abstract class DataStorage {
         });
     }
 
-    public void forceRewrite() {
-        getStoreEntries().forEach(dataStoreEntry -> {
-            dataStoreEntry.reassignStore();
-        });
-    }
-
     public static void reset() {
         if (INSTANCE == null) {
             return;
@@ -120,6 +95,30 @@ public abstract class DataStorage {
 
         INSTANCE.dispose();
         INSTANCE = null;
+    }
+
+    public static DataStorage get() {
+        return INSTANCE;
+    }
+
+    public abstract String getVaultKey();
+
+    public DataStoreCategory getDefaultConnectionsCategory() {
+        return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
+    }
+
+    public DataStoreCategory getAllConnectionsCategory() {
+        return getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).orElseThrow();
+    }
+
+    public DataStoreCategory getAllScriptsCategory() {
+        return getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).orElseThrow();
+    }
+
+    public void forceRewrite() {
+        getStoreEntries().forEach(dataStoreEntry -> {
+            dataStoreEntry.reassignStore();
+        });
     }
 
     private synchronized void dispose() {
@@ -148,7 +147,8 @@ public abstract class DataStorage {
         }
 
         if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
-            var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
+            var cat = DataStoreCategory.createNew(
+                    ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
             cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
             storeCategories.add(cat);
         }
@@ -160,26 +160,32 @@ public abstract class DataStorage {
         }
 
         if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
-            storeCategories.add(
-                    new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID, "Default", Instant.now(),
-                            Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, StoreSortMode.ALPHABETICAL_ASC, false));
+            storeCategories.add(new DataStoreCategory(
+                    categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
+                    DEFAULT_CATEGORY_UUID,
+                    "Default",
+                    Instant.now(),
+                    Instant.now(),
+                    true,
+                    ALL_CONNECTIONS_CATEGORY_UUID,
+                    StoreSortMode.ALPHABETICAL_ASC,
+                    false));
         }
 
         storeCategories.forEach(dataStoreCategory -> {
-            if (dataStoreCategory.getParentCategory() != null && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory()).isEmpty()) {
+            if (dataStoreCategory.getParentCategory() != null
+                    && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory())
+                            .isEmpty()) {
                 dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
-            } else if (dataStoreCategory.getParentCategory() == null && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID) &&
-                    !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)) {
+            } else if (dataStoreCategory.getParentCategory() == null
+                    && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)
+                    && !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)) {
                 dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
             }
         });
     }
 
     protected void onReset() {}
-
-    public static DataStorage get() {
-        return INSTANCE;
-    }
 
     protected Path getStoresDir() {
         return dir.resolve("stores");
@@ -206,7 +212,8 @@ public abstract class DataStorage {
     public void saveAsync() {
         // If we are already loading or saving, don't queue up another operation.
         // This could otherwise lead to thread starvation with virtual threads
-        // Technically the load and save operations also return instantly if locked, but let's not even create new threads here
+        // Technically the load and save operations also return instantly if locked, but let's not even create new
+        // threads here
         if (busyIo.isLocked()) {
             return;
         }
@@ -231,8 +238,8 @@ public abstract class DataStorage {
                 return false;
             }
         } while ((c = DataStorage.get()
-                .getStoreCategoryIfPresent(c.getParentCategory())
-                .orElse(null))
+                        .getStoreCategoryIfPresent(c.getParentCategory())
+                        .orElse(null))
                 != null);
         return true;
     }
@@ -307,7 +314,9 @@ public abstract class DataStorage {
     }
 
     public void updateCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
-        if (getStoreCategoryIfPresent(entry.getUuid()).map(category -> category.equals(newCategory)).orElse(false)) {
+        if (getStoreCategoryIfPresent(entry.getUuid())
+                .map(category -> category.equals(newCategory))
+                .orElse(false)) {
             return;
         }
 
@@ -349,9 +358,11 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    return newChildren.stream().filter(nc -> nc.getStore().getFixedId().isPresent()).noneMatch(nc -> {
-                        return nc.getStore().getFixedId().getAsInt() == oid.getAsInt();
-                    });
+                    return newChildren.stream()
+                            .filter(nc -> nc.getStore().getFixedId().isPresent())
+                            .noneMatch(nc -> {
+                                return nc.getStore().getFixedId().getAsInt() == oid.getAsInt();
+                            });
                 })
                 .toList();
         var toAdd = newChildren.stream()
@@ -362,9 +373,16 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    return oldChildren.stream().filter(oc -> ((FixedChildStore) oc.getStore()).getFixedId().isPresent()).noneMatch(oc -> {
-                        return ((FixedChildStore) oc.getStore()).getFixedId().getAsInt() == nid.getAsInt();
-                    });
+                    return oldChildren.stream()
+                            .filter(oc -> ((FixedChildStore) oc.getStore())
+                                    .getFixedId()
+                                    .isPresent())
+                            .noneMatch(oc -> {
+                                return ((FixedChildStore) oc.getStore())
+                                                .getFixedId()
+                                                .getAsInt()
+                                        == nid.getAsInt();
+                            });
                 })
                 .toList();
         var toUpdate = oldChildren.stream()
@@ -394,7 +412,8 @@ public abstract class DataStorage {
             pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
 
             // Update state by merging
-            if (pair.getKey().getStorePersistentState() != null && pair.getValue().get().getStorePersistentState() != null) {
+            if (pair.getKey().getStorePersistentState() != null
+                    && pair.getValue().get().getStorePersistentState() != null) {
                 var mergedState = pair.getKey().getStorePersistentState().deepCopy();
                 mergedState.merge(pair.getValue().get().getStorePersistentState());
                 pair.getKey().setStorePersistentState(mergedState);
@@ -500,7 +519,8 @@ public abstract class DataStorage {
 
     public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
         for (DataStoreEntry e : es) {
-            if (storeEntriesSet.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
+            if (storeEntriesSet.contains(e)
+                    || getStoreEntryIfPresent(e.getStore()).isPresent()) {
                 return;
             }
 
@@ -539,7 +559,11 @@ public abstract class DataStorage {
             return f.get();
         }
 
-        var e = DataStoreEntry.createNew(UUID.randomUUID(), related != null ? related.getCategoryUuid() : selectedCategory.getUuid(), name, store);
+        var e = DataStoreEntry.createNew(
+                UUID.randomUUID(),
+                related != null ? related.getCategoryUuid() : selectedCategory.getUuid(),
+                name,
+                store);
         addStoreEntryIfNotPresent(e);
         return e;
     }

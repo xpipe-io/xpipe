@@ -17,14 +17,9 @@ public class JacksonMapper {
 
     private static final ObjectMapper BASE = new ObjectMapper();
     private static final ObjectMapper INSTANCE;
+
     @Getter
     private static boolean init = false;
-
-    public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
-        var mapper = getDefault();
-        var tree = mapper.readTree(s);
-        return mapper.treeToValue(tree, c);
-    }
 
     static {
         ObjectMapper objectMapper = BASE;
@@ -42,6 +37,12 @@ public class JacksonMapper {
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
 
         INSTANCE = BASE.copy();
+    }
+
+    public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
+        var mapper = getDefault();
+        var tree = mapper.readTree(s);
+        return mapper.treeToValue(tree, c);
     }
 
     public static synchronized void configure(Consumer<ObjectMapper> mapper) {
@@ -86,5 +87,4 @@ public class JacksonMapper {
 
         return INSTANCE;
     }
-
 }

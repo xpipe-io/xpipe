@@ -32,7 +32,9 @@ public class WindowsRegistry {
         // This can fail even with errors in case the jna native library extraction fails
         try {
             if (!Advapi32Util.registryValueExists(
-                    hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER, key, valueName)) {
+                    hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER,
+                    key,
+                    valueName)) {
                 return Optional.empty();
             }
 
@@ -44,8 +46,13 @@ public class WindowsRegistry {
         }
     }
 
-    public static Optional<String> readRemoteString(ShellControl shellControl, int hkey, String key, String valueName) throws Exception {
-        var command = CommandBuilder.of().add("reg", "query").addQuoted((hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER") + "\\" + key).add("/v").addQuoted(valueName);
+    public static Optional<String> readRemoteString(ShellControl shellControl, int hkey, String key, String valueName)
+            throws Exception {
+        var command = CommandBuilder.of()
+                .add("reg", "query")
+                .addQuoted((hkey == HKEY_LOCAL_MACHINE ? "HKEY_LOCAL_MACHINE" : "HKEY_CURRENT_USER") + "\\" + key)
+                .add("/v")
+                .addQuoted(valueName);
 
         String output;
         try (var c = shellControl.command(command).start()) {

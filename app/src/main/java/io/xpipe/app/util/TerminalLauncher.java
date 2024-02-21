@@ -20,7 +20,8 @@ public class TerminalLauncher {
             throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
         var script = ScriptHelper.createLocalExecScript(command);
-        var config = new ExternalTerminalType.LaunchConfiguration(null, title, title, script, shellControl.getShellDialect());
+        var config = new ExternalTerminalType.LaunchConfiguration(
+                null, title, title, script, shellControl.getShellDialect());
         type.launch(config);
     }
 
@@ -35,9 +36,7 @@ public class TerminalLauncher {
         }
 
         var color = entry != null ? DataStorage.get().getRootForEntry(entry).getColor() : null;
-        var prefix = entry != null && color != null && type.supportsColoredTitle()
-                ? color.getEmoji() + " "
-                : "";
+        var prefix = entry != null && color != null && type.supportsColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
         var adjustedTitle = prefix + cleanTitle;
         var terminalConfig = new TerminalInitScriptConfig(
@@ -49,9 +48,9 @@ public class TerminalLauncher {
         var d = LocalShell.getShell().getShellDialect();
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
-        var config = new ExternalTerminalType.LaunchConfiguration(entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript,
-                d);
-        var latch = TerminalLauncherManager.submitAsync(request,cc,terminalConfig,directory);
+        var config = new ExternalTerminalType.LaunchConfiguration(
+                entry != null ? color : null, adjustedTitle, cleanTitle, preparationScript, d);
+        var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         try {
             type.launch(config);
             latch.await();

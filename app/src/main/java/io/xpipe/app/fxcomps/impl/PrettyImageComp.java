@@ -79,7 +79,9 @@ public class PrettyImageComp extends SimpleComp {
                             } else if (AppImages.hasNormalImage(image.getValue().replace("-dark", ""))) {
                                 return AppImages.image(image.getValue().replace("-dark", ""));
                             } else {
-                                TrackEvent.withWarn("Image file not found").tag("file",image.getValue()).handle();
+                                TrackEvent.withWarn("Image file not found")
+                                        .tag("file", image.getValue())
+                                        .handle();
                                 return null;
                             }
                         },
@@ -89,9 +91,11 @@ public class PrettyImageComp extends SimpleComp {
         storeIcon.setSmooth(true);
         stack.getChildren().add(storeIcon);
 
-
         Consumer<String> update = val -> {
-            var fixed = val != null ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().isDark() ? "-dark" : "") + "." + FileNames.getExtension(val) : null;
+            var fixed = val != null
+                    ? FileNames.getBaseName(val) + (AppPrefs.get().theme.get().isDark() ? "-dark" : "") + "."
+                            + FileNames.getExtension(val)
+                    : null;
             image.set(fixed);
 
             if (val == null) {

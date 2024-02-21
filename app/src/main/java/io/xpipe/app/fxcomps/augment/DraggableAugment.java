@@ -31,7 +31,6 @@ public class DraggableAugment<S extends CompStructure<?>> implements Augment<S> 
             circle.setTranslateY(initialTranslateY + deltaY);
             lastMouseX = mouseEvent.getSceneX();
             lastMouseY = mouseEvent.getSceneY();
-
         });
         circle.setOnMouseEntered(mouseEvent -> {
             if (!mouseEvent.isPrimaryButtonDown()) {

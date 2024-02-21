@@ -24,18 +24,6 @@ import java.util.stream.Collectors;
 
 public class BrowserClipboard {
 
-    @Value
-    public static class Instance {
-        UUID uuid;
-        FileSystem.FileEntry baseDirectory;
-        List<FileSystem.FileEntry> entries;
-
-        public String toClipboardString() {
-            return entries.stream().map(fileEntry -> "\"" + fileEntry.getPath() + "\"").collect(
-                    Collectors.joining(ProcessControlProvider.get().getEffectiveLocalDialect().getNewLine().getNewLineString()));
-        }
-    }
-
     public static final Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
     public static Instance currentDragClipboard;
 
@@ -53,7 +41,8 @@ public class BrowserClipboard {
                             }
 
                             List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-                            var files = data.stream().map(string -> string.toPath()).toList();
+                            var files =
+                                    data.stream().map(string -> string.toPath()).toList();
                             if (files.size() == 0) {
                                 return;
                             }
@@ -120,5 +109,21 @@ public class BrowserClipboard {
         }
 
         return null;
+    }
+
+    @Value
+    public static class Instance {
+        UUID uuid;
+        FileSystem.FileEntry baseDirectory;
+        List<FileSystem.FileEntry> entries;
+
+        public String toClipboardString() {
+            return entries.stream()
+                    .map(fileEntry -> "\"" + fileEntry.getPath() + "\"")
+                    .collect(Collectors.joining(ProcessControlProvider.get()
+                            .getEffectiveLocalDialect()
+                            .getNewLine()
+                            .getNewLineString()));
+        }
     }
 }

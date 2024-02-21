@@ -12,13 +12,18 @@ public class OutputStreamStore implements StreamDataStore {
     }
 
     @Override
-    public boolean isContentExclusivelyAccessible() {
-        return true;
+    public DataFlow getFlow() {
+        return DataFlow.OUTPUT;
     }
 
     @Override
-    public DataFlow getFlow() {
-        return DataFlow.OUTPUT;
+    public boolean canOpen() {
+        return false;
+    }
+
+    @Override
+    public boolean isContentExclusivelyAccessible() {
+        return true;
     }
 
     @Override
@@ -29,10 +34,5 @@ public class OutputStreamStore implements StreamDataStore {
     @Override
     public OutputStream openOutput() {
         return out;
-    }
-
-    @Override
-    public boolean canOpen() {
-        return false;
     }
 }

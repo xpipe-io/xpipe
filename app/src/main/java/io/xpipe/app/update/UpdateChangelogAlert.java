@@ -17,13 +17,15 @@ public class UpdateChangelogAlert {
     public static void showIfNeeded() {
         var update = XPipeDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !XPipeDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
-            ErrorEvent.fromMessage("""
+            ErrorEvent.fromMessage(
+                            """
             Update installation did not succeed.
-            
+
             Note that you can also install the latest version manually from %s
             if there are any problems with the automatic update installation.
-            """.formatted(Hyperlinks.GITHUB + "/releases/latest")
-            ).handle();
+            """
+                                    .formatted(Hyperlinks.GITHUB + "/releases/latest"))
+                    .handle();
             return;
         }
 
@@ -42,11 +44,11 @@ public class UpdateChangelogAlert {
                     alert.setAlertType(Alert.AlertType.NONE);
                     alert.initModality(Modality.NONE);
 
-                    var markdown = new MarkdownComp(update.getRawDescription(), s -> "&nbsp;" + s)
-                            .createRegion();
+                    var markdown = new MarkdownComp(update.getRawDescription(), s -> "&nbsp;" + s).createRegion();
                     alert.getDialogPane().setContent(markdown);
 
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
-                }, r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
+                },
+                r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
     }
 }

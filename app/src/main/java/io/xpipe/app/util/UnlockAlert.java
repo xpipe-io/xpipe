@@ -1,6 +1,9 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppStyle;
+import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -58,7 +61,11 @@ public class UnlockAlert {
                     .ifPresentOrElse(t -> {}, () -> canceled.set(true));
 
             if (canceled.get()) {
-                ErrorEvent.fromMessage("Unlock cancelled").expected().term().omit().handle();
+                ErrorEvent.fromMessage("Unlock cancelled")
+                        .expected()
+                        .term()
+                        .omit()
+                        .handle();
                 return;
             }
 

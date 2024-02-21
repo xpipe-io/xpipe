@@ -14,14 +14,6 @@ import java.util.stream.Collectors;
 
 public class BrowserAlerts {
 
-    public enum FileConflictChoice {
-        CANCEL,
-        SKIP,
-        SKIP_ALL,
-        REPLACE,
-        REPLACE_ALL
-    }
-
     public static FileConflictChoice showFileConflictAlert(String file, boolean multiple) {
         var map = new LinkedHashMap<ButtonType, FileConflictChoice>();
         map.put(new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE), FileConflictChoice.CANCEL);
@@ -36,10 +28,14 @@ public class BrowserAlerts {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("fileConflictAlertTitle"));
                     alert.setHeaderText(AppI18n.get("fileConflictAlertHeader"));
-                    AppWindowHelper.setContent(alert, AppI18n.get(multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent", file));
+                    AppWindowHelper.setContent(
+                            alert,
+                            AppI18n.get(
+                                    multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent", file));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().clear();
-                    map.sequencedKeySet().forEach(buttonType -> alert.getButtonTypes().add(buttonType));
+                    map.sequencedKeySet()
+                            .forEach(buttonType -> alert.getButtonTypes().add(buttonType));
                 })
                 .map(map::get)
                 .orElse(FileConflictChoice.CANCEL);
@@ -85,5 +81,13 @@ public class BrowserAlerts {
             names += "\n+ " + (source.size() - 10) + " ...";
         }
         return names;
+    }
+
+    public enum FileConflictChoice {
+        CANCEL,
+        SKIP,
+        SKIP_ALL,
+        REPLACE,
+        REPLACE_ALL
     }
 }

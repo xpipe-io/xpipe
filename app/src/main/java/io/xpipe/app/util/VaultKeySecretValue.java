@@ -26,6 +26,11 @@ public class VaultKeySecretValue extends AesSecretValue {
         return 8192;
     }
 
+    protected SecretKey getAESKey() throws InvalidKeySpecException {
+        var chars = DataStorage.get() != null ? DataStorage.get().getVaultKey().toCharArray() : new char[0];
+        return getSecretKey(chars);
+    }
+
     @Override
     public InPlaceSecretValue inPlace() {
         return new InPlaceSecretValue(getSecret());
@@ -34,12 +39,5 @@ public class VaultKeySecretValue extends AesSecretValue {
     @Override
     public String toString() {
         return "<vault secret>";
-    }
-
-    protected SecretKey getAESKey() throws InvalidKeySpecException {
-        var chars = DataStorage.get() != null
-                ? DataStorage.get().getVaultKey().toCharArray()
-                : new char[0];
-        return getSecretKey(chars);
     }
 }

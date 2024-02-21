@@ -120,17 +120,6 @@ public class StreamCharset {
     byte[] byteOrderMark;
     List<String> names;
 
-    public Reader reader(InputStream stream) throws Exception {
-        if (hasByteOrderMark()) {
-            var bom = stream.readNBytes(getByteOrderMark().length);
-            if (bom.length != 0 && !Arrays.equals(bom, getByteOrderMark())) {
-                throw new IllegalStateException("Charset does not match: " + charset.toString());
-            }
-        }
-
-        return new InputStreamReader(stream, charset);
-    }
-
     public static StreamCharset get(Charset charset, boolean byteOrderMark) {
         return ALL.stream()
                 .filter(streamCharset ->
@@ -150,6 +139,24 @@ public class StreamCharset {
         return found.get();
     }
 
+    public Reader reader(InputStream stream) throws Exception {
+        if (hasByteOrderMark()) {
+            var bom = stream.readNBytes(getByteOrderMark().length);
+            if (bom.length != 0 && !Arrays.equals(bom, getByteOrderMark())) {
+                throw new IllegalStateException("Charset does not match: " + charset.toString());
+            }
+        }
+
+        return new InputStreamReader(stream, charset);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(charset);
+        result = 31 * result + Arrays.hashCode(byteOrderMark);
+        return result;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -159,13 +166,6 @@ public class StreamCharset {
             return false;
         }
         return charset.equals(that.charset) && Arrays.equals(byteOrderMark, that.byteOrderMark);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(charset);
-        result = 31 * result + Arrays.hashCode(byteOrderMark);
-        return result;
     }
 
     public String toString() {

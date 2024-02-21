@@ -59,28 +59,32 @@ public class BrowserComp extends SimpleComp {
         });
 
         var bookmarksList = new BrowserBookmarkComp(model).vgrow();
-        var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage()).hide(
-                PlatformThread.sync(Bindings.createBooleanBinding(() -> {
-                    if (model.getOpenFileSystems().size() == 0) {
-                        return true;
-                    }
+        var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
+                .hide(PlatformThread.sync(Bindings.createBooleanBinding(
+                        () -> {
+                            if (model.getOpenFileSystems().size() == 0) {
+                                return true;
+                            }
 
-                    if (model.getMode().isChooser()) {
-                        return true;
-                    }
+                            if (model.getMode().isChooser()) {
+                                return true;
+                            }
 
-                    return false;
-                }, model.getOpenFileSystems(), model.getSelected())));
+                            return false;
+                        },
+                        model.getOpenFileSystems(),
+                        model.getSelected())));
         localDownloadStage.prefHeight(200);
         localDownloadStage.maxHeight(200);
         var vertical = new VerticalComp(List.of(bookmarksList, localDownloadStage));
 
-        var splitPane = new SideSplitPaneComp(vertical, createTabs()).withInitialWidth(
-                AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth()).withOnDividerChange(
-                AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth).apply(struc -> {
-            struc.getLeft().setMinWidth(200);
-            struc.getLeft().setMaxWidth(500);
-        });
+        var splitPane = new SideSplitPaneComp(vertical, createTabs())
+                .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
+                .withOnDividerChange(AppLayoutModel.get().getSavedState()::setBrowserConnectionsWidth)
+                .apply(struc -> {
+                    struc.getLeft().setMinWidth(200);
+                    struc.getLeft().setMaxWidth(500);
+                });
         var r = addBottomBar(splitPane.createRegion());
         r.getStyleClass().add("browser");
         // AppFont.small(r);
@@ -99,12 +103,16 @@ public class BrowserComp extends SimpleComp {
         selected.setSpacing(10);
         model.getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             PlatformThread.runLaterIfNeeded(() -> {
-                selected.getChildren().setAll(c.getList().stream().map(s -> {
-                    var field = new TextField(s.getRawFileEntry().getPath());
-                    field.setEditable(false);
-                    field.setPrefWidth(500);
-                    return field;
-                }).toList());
+                selected.getChildren()
+                        .setAll(c.getList().stream()
+                                .map(s -> {
+                                    var field =
+                                            new TextField(s.getRawFileEntry().getPath());
+                                    field.setEditable(false);
+                                    field.setPrefWidth(500);
+                                    return field;
+                                })
+                                .toList());
             });
         });
         var spacer = new Spacer(Orientation.HORIZONTAL);
@@ -123,12 +131,16 @@ public class BrowserComp extends SimpleComp {
     }
 
     private Comp<?> createTabs() {
-        var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(Comp.of(() -> createTabPane()),
+        var multi = new MultiContentComp(Map.<Comp<?>, ObservableValue<Boolean>>of(
+                Comp.of(() -> createTabPane()),
                 BindingsHelper.persist(Bindings.isNotEmpty(model.getOpenFileSystems())),
                 new BrowserWelcomeComp(model).apply(struc -> StackPane.setAlignment(struc.get(), Pos.CENTER_LEFT)),
-                Bindings.createBooleanBinding(() -> {
-                    return model.getOpenFileSystems().size() == 0 && !model.getMode().isChooser();
-                }, model.getOpenFileSystems())));
+                Bindings.createBooleanBinding(
+                        () -> {
+                            return model.getOpenFileSystems().size() == 0
+                                    && !model.getMode().isChooser();
+                        },
+                        model.getOpenFileSystems())));
         return multi;
     }
 
@@ -149,7 +161,8 @@ public class BrowserComp extends SimpleComp {
             map.put(v, t);
             tabs.getTabs().add(t);
         });
-        tabs.getSelectionModel().select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
+        tabs.getSelectionModel()
+                .select(model.getOpenFileSystems().indexOf(model.getSelected().getValue()));
 
         // Used for ignoring changes by the tabpane when new tabs are added. We want to perform the selections manually!
         var modifying = new SimpleBooleanProperty();
@@ -165,9 +178,9 @@ public class BrowserComp extends SimpleComp {
                 return;
             }
 
-            var source = map.entrySet()
-                    .stream()
-                    .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getValue().equals(newValue))
+            var source = map.entrySet().stream()
+                    .filter(openFileSystemModelTabEntry ->
+                            openFileSystemModelTabEntry.getValue().equals(newValue))
                     .findAny()
                     .map(Map.Entry::getKey)
                     .orElse(null);
@@ -182,9 +195,9 @@ public class BrowserComp extends SimpleComp {
                     return;
                 }
 
-                var toSelect = map.entrySet()
-                        .stream()
-                        .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getKey().equals(newValue))
+                var toSelect = map.entrySet().stream()
+                        .filter(openFileSystemModelTabEntry ->
+                                openFileSystemModelTabEntry.getKey().equals(newValue))
                         .findAny()
                         .map(Map.Entry::getValue)
                         .orElse(null);
@@ -223,9 +236,9 @@ public class BrowserComp extends SimpleComp {
         tabs.getTabs().addListener((ListChangeListener<? super Tab>) c -> {
             while (c.next()) {
                 for (var r : c.getRemoved()) {
-                    var source = map.entrySet()
-                            .stream()
-                            .filter(openFileSystemModelTabEntry -> openFileSystemModelTabEntry.getValue().equals(r))
+                    var source = map.entrySet().stream()
+                            .filter(openFileSystemModelTabEntry ->
+                                    openFileSystemModelTabEntry.getValue().equals(r))
                             .findAny()
                             .orElse(null);
 
@@ -248,14 +261,22 @@ public class BrowserComp extends SimpleComp {
         ring.setMinSize(16, 16);
         ring.setPrefSize(16, 16);
         ring.setMaxSize(16, 16);
-        ring.progressProperty().bind(Bindings.createDoubleBinding(() -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
+        ring.progressProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> model.getBusy().get() ? -1d : 0, PlatformThread.sync(model.getBusy())));
 
-        var image = model.getEntry().get().getProvider().getDisplayIconFileName(model.getEntry().getStore());
+        var image = model.getEntry()
+                .get()
+                .getProvider()
+                .getDisplayIconFileName(model.getEntry().getStore());
         var logo = PrettyImageHelper.ofFixedSquare(image, 16).createRegion();
 
-        tab.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-            return model.getBusy().get() ? ring : logo;
-        }, PlatformThread.sync(model.getBusy())));
+        tab.graphicProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            return model.getBusy().get() ? ring : logo;
+                        },
+                        PlatformThread.sync(model.getBusy())));
         tab.setText(model.getName());
 
         tab.setContent(new OpenFileSystemComp(model).createSimple());
@@ -276,12 +297,17 @@ public class BrowserComp extends SimpleComp {
 
                     StackPane c = (StackPane) tabs.lookup("#" + id + " .tab-container");
                     c.getStyleClass().add("color-box");
-                    var color = DataStorage.get().getRootForEntry(model.getEntry().get()).getColor();
+                    var color = DataStorage.get()
+                            .getRootForEntry(model.getEntry().get())
+                            .getColor();
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
                     new FancyTooltipAugment<>(new SimpleStringProperty(model.getTooltip())).augment(c);
-                    c.addEventHandler(DragEvent.DRAG_ENTERED, mouseEvent -> Platform.runLater(() -> tabs.getSelectionModel().select(tab)));
+                    c.addEventHandler(
+                            DragEvent.DRAG_ENTERED,
+                            mouseEvent -> Platform.runLater(
+                                    () -> tabs.getSelectionModel().select(tab)));
                 });
             }
         });

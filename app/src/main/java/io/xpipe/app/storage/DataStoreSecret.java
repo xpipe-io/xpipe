@@ -16,11 +16,11 @@ import java.util.Objects;
 @Value
 public class DataStoreSecret {
 
+    InPlaceSecretValue internalSecret;
+    String usedPasswordLockCrypt;
     @Setter
     @NonFinal
     TreeNode originalNode;
-    InPlaceSecretValue internalSecret;
-    String usedPasswordLockCrypt;
 
     public DataStoreSecret(InPlaceSecretValue internalSecret) {
         this(null, internalSecret);
@@ -29,16 +29,23 @@ public class DataStoreSecret {
     public DataStoreSecret(TreeNode originalNode, InPlaceSecretValue internalSecret) {
         this.originalNode = originalNode;
         this.internalSecret = internalSecret;
-        this.usedPasswordLockCrypt = AppPrefs.get() != null ? AppPrefs.get().getLockCrypt().get() : null;
+        this.usedPasswordLockCrypt =
+                AppPrefs.get() != null ? AppPrefs.get().getLockCrypt().get() : null;
     }
 
     public boolean requiresRewrite() {
-        return AppPrefs.get() != null && AppPrefs.get().getLockCrypt().get() != null && !Objects.equals(AppPrefs.get().getLockCrypt().get(),
-                usedPasswordLockCrypt);
+        return AppPrefs.get() != null
+                && AppPrefs.get().getLockCrypt().get() != null
+                && !Objects.equals(AppPrefs.get().getLockCrypt().get(), usedPasswordLockCrypt);
     }
 
     public char[] getSecret() {
         return internalSecret != null ? internalSecret.getSecret() : new char[0];
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(getSecret());
     }
 
     @Override
@@ -50,11 +57,6 @@ public class DataStoreSecret {
             return false;
         }
         return Arrays.equals(getSecret(), that.getSecret());
-    }
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(getSecret());
     }
 
     public SecretValue getOutputSecret() {

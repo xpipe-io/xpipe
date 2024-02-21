@@ -18,7 +18,8 @@ public class TerminalLauncherManager {
 
     private static final Map<UUID, Entry> entries = new ConcurrentHashMap<>();
 
-    private static void prepare(ProcessControl processControl, TerminalInitScriptConfig config, String directory, Entry entry) {
+    private static void prepare(
+            ProcessControl processControl, TerminalInitScriptConfig config, String directory, Entry entry) {
         try {
             var file = ScriptHelper.createLocalExecScript(
                     processControl.prepareTerminalOpen(config, directory != null ? var1 -> directory : null));
@@ -28,17 +29,15 @@ public class TerminalLauncherManager {
         }
     }
 
-    public static void submitSync(UUID request,
-                              ProcessControl processControl, TerminalInitScriptConfig config, String directory
-    ) {
+    public static void submitSync(
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
         var entry = new Entry(request, processControl, config, directory, null);
         entries.put(request, entry);
         prepare(processControl, config, directory, entry);
     }
 
-    public static CountDownLatch submitAsync(UUID request,
-                                             ProcessControl processControl, TerminalInitScriptConfig config, String directory
-    ) {
+    public static CountDownLatch submitAsync(
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, String directory) {
         var entry = new Entry(request, processControl, config, directory, null);
         entries.put(request, entry);
         var latch = new CountDownLatch(1);

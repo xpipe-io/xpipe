@@ -49,20 +49,32 @@ final class BrowserBookmarkComp extends SimpleComp {
         var filterText = new SimpleStringProperty();
         var open = PlatformThread.sync(model.getSelected());
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
-            return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore ||
-                    storeEntryWrapper.getEntry().getStore() instanceof FixedHierarchyStore) && storeEntryWrapper.getEntry().getValidity().isUsable();
+            return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore
+                            || storeEntryWrapper.getEntry().getStore() instanceof FixedHierarchyStore)
+                    && storeEntryWrapper.getEntry().getValidity().isUsable();
         };
-        var selectedCategory = new SimpleObjectProperty<>(StoreViewState.get().getActiveCategory().getValue());
+        var selectedCategory = new SimpleObjectProperty<>(
+                StoreViewState.get().getActiveCategory().getValue());
         var section = StoreSectionMiniComp.createList(
-                StoreSection.createTopLevel(StoreViewState.get().getAllEntries(), storeEntryWrapper -> true, filterText, selectedCategory), (s, comp) -> {
+                StoreSection.createTopLevel(
+                        StoreViewState.get().getAllEntries(), storeEntryWrapper -> true, filterText, selectedCategory),
+                (s, comp) -> {
                     BooleanProperty busy = new SimpleBooleanProperty(false);
-                    comp.disable(Bindings.createBooleanBinding(() -> {
-                        return busy.get() || !applicable.test(s.getWrapper());
-                    }, busy));
+                    comp.disable(Bindings.createBooleanBinding(
+                            () -> {
+                                return busy.get() || !applicable.test(s.getWrapper());
+                            },
+                            busy));
                     comp.apply(struc -> {
                         open.addListener((observable, oldValue, newValue) -> {
-                            struc.get().pseudoClassStateChanged(SELECTED,
-                                    newValue != null && newValue.getEntry().get().equals(s.getWrapper().getEntry()));
+                            struc.get()
+                                    .pseudoClassStateChanged(
+                                            SELECTED,
+                                            newValue != null
+                                                    && newValue.getEntry()
+                                                            .get()
+                                                            .equals(s.getWrapper()
+                                                                    .getEntry()));
                         });
                         struc.get().setOnAction(event -> {
                             ThreadHelper.runFailableAsync(() -> {
@@ -83,14 +95,21 @@ final class BrowserBookmarkComp extends SimpleComp {
                         });
                     });
                 });
-        var category = new DataStoreCategoryChoiceComp(StoreViewState.get().getAllConnectionsCategory(), StoreViewState.get().getActiveCategory(),
-                selectedCategory).styleClass(Styles.LEFT_PILL);
-        var filter = new FilterComp(filterText).styleClass(Styles.RIGHT_PILL).hgrow().apply(struc -> {});
+        var category = new DataStoreCategoryChoiceComp(
+                        StoreViewState.get().getAllConnectionsCategory(),
+                        StoreViewState.get().getActiveCategory(),
+                        selectedCategory)
+                .styleClass(Styles.LEFT_PILL);
+        var filter =
+                new FilterComp(filterText).styleClass(Styles.RIGHT_PILL).hgrow().apply(struc -> {});
 
-        var top = new HorizontalComp(List.of(category.minWidth(Region.USE_PREF_SIZE), filter.hgrow())).styleClass("categories").apply(struc -> {
-            AppFont.medium(struc.get());
-            struc.get().setFillHeight(true);
-        }).createRegion();
+        var top = new HorizontalComp(List.of(category.minWidth(Region.USE_PREF_SIZE), filter.hgrow()))
+                .styleClass("categories")
+                .apply(struc -> {
+                    AppFont.medium(struc.get());
+                    struc.get().setFillHeight(true);
+                })
+                .createRegion();
         var r = section.vgrow().createRegion();
         var content = new VBox(top, r);
         content.setFillWidth(true);
@@ -108,8 +127,7 @@ final class BrowserBookmarkComp extends SimpleComp {
         activeTask = new TimerTask() {
             @Override
             public void run() {
-                if (activeTask != this) {
-                }
+                if (activeTask != this) {}
 
                 // Platform.runLater(() -> model.openExistingFileSystemIfPresent(store.asNeeded()));
             }

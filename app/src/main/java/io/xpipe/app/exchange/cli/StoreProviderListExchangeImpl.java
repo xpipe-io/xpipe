@@ -19,8 +19,7 @@ public class StoreProviderListExchangeImpl extends StoreProviderListExchange
         var all = DataStoreProviders.getAll();
         var map = Arrays.stream(categories)
                 .collect(Collectors.toMap(category -> getName(category), category -> all.stream()
-                        .filter(dataStoreProvider ->
-                                category.equals(dataStoreProvider.getCreationCategory()))
+                        .filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()))
                         .map(p -> ProviderEntry.builder()
                                 .id(p.getId())
                                 .description(p.getDisplayDescription())

@@ -60,13 +60,12 @@ public class AskpassAlert {
                     alert.setOnHiding(event -> {
                         anim.stop();
                     });
-
                 })
                 .filter(b -> b.getButtonData().isDefaultButton())
                 .map(t -> {
                     return prop.getValue() != null ? prop.getValue() : InPlaceSecretValue.of("");
                 })
                 .orElse(null);
-        return new SecretQueryResult(r,r == null);
+        return new SecretQueryResult(r, r == null);
     }
 }

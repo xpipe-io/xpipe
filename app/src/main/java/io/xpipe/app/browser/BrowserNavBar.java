@@ -106,7 +106,6 @@ public class BrowserNavBar extends SimpleComp {
                 })
                 .augment(new SimpleCompStructure<>(homeButton));
 
-
         var historyButton = new Button(null, new FontIcon("mdi2h-history"));
         historyButton.setAccessibleText("History");
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
@@ -145,7 +144,6 @@ public class BrowserNavBar extends SimpleComp {
                     ((Region) struc.get().getChildren().get(0))
                             .maxHeightProperty()
                             .bind(((Region) struc.get().getChildren().get(1)).heightProperty());
-
 
                     ((Region) struc.get().getChildren().get(2))
                             .minHeightProperty()
@@ -197,7 +195,8 @@ public class BrowserNavBar extends SimpleComp {
             cm.getItems().add(current);
         }
 
-        var b = model.getHistory().getBackwardHistory(Integer.MAX_VALUE).stream().toList();
+        var b = model.getHistory().getBackwardHistory(Integer.MAX_VALUE).stream()
+                .toList();
         if (!b.isEmpty()) {
             cm.getItems().add(new SeparatorMenuItem());
         }

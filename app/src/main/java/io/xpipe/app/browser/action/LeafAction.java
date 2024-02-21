@@ -52,7 +52,8 @@ public interface LeafAction extends BrowserAction {
             b.setDisable(!isActive(model, selected));
         });
 
-        if (getProFeatureId() != null && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
+        if (getProFeatureId() != null
+                && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
             b.setDisable(true);
             b.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
         }
@@ -83,7 +84,8 @@ public interface LeafAction extends BrowserAction {
         mi.setMnemonicParsing(false);
         mi.setDisable(!isActive(model, selected));
 
-        if (getProFeatureId() != null && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
+        if (getProFeatureId() != null
+                && !LicenseProvider.get().getFeature(getProFeatureId()).isSupported()) {
             mi.setDisable(true);
             mi.setText(mi.getText() + " (Pro)");
         }

@@ -19,10 +19,12 @@ public class StoreLayoutComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var struc = new SideSplitPaneComp(new StoreSidebarComp(), new StoreEntryListComp()).withInitialWidth(
-                AppLayoutModel.get().getSavedState().getSidebarWidth()).withOnDividerChange(aDouble -> {
-            AppLayoutModel.get().getSavedState().setSidebarWidth(aDouble);
-        }).createStructure();
+        var struc = new SideSplitPaneComp(new StoreSidebarComp(), new StoreEntryListComp())
+                .withInitialWidth(AppLayoutModel.get().getSavedState().getSidebarWidth())
+                .withOnDividerChange(aDouble -> {
+                    AppLayoutModel.get().getSavedState().setSidebarWidth(aDouble);
+                })
+                .createStructure();
         struc.getLeft().setMinWidth(260);
         struc.getLeft().setMaxWidth(500);
         struc.get().getStyleClass().add("store-layout");

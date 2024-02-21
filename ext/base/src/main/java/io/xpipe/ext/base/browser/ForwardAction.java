@@ -13,28 +13,18 @@ import java.util.List;
 
 public class ForwardAction implements LeafAction {
 
-    public String getId() {
-        return "forward";
-    }
-
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         model.forthSync(1);
     }
 
+    public String getId() {
+        return "forward";
+    }
+
     @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("fth-arrow-right");
-    }
-
-    @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return false;
-    }
-
-    @Override
-    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getHistory().canGoForthProperty().get();
     }
 
     @Override
@@ -45,5 +35,15 @@ public class ForwardAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Forward";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return false;
+    }
+
+    @Override
+    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return model.getHistory().canGoForthProperty().get();
     }
 }

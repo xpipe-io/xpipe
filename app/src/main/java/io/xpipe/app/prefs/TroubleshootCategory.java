@@ -26,32 +26,30 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .spacer(30)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
-                            var event = ErrorEvent.fromMessage("User Report");
-                            if (AppLogs.get().isWriteToFile()) {
-                                event.attachment(AppLogs.get().getSessionLogsDirectory());
-                            }
-                            UserReportComp.show(event.build());
-                            e.consume();
-                        })
+                                    var event = ErrorEvent.fromMessage("User Report");
+                                    if (AppLogs.get().isWriteToFile()) {
+                                        event.attachment(AppLogs.get().getSessionLogsDirectory());
+                                    }
+                                    UserReportComp.show(event.build());
+                                    e.consume();
+                                })
                                 .grow(true, false),
                         null)
                 .separator()
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
-                            OperationMode.executeAfterShutdown(() -> {
-                                try (var sc = new LocalStore()
-                                        .control()
-                                        .start()) {
-                                    var script = FileNames.join(
-                                            XPipeInstallation.getCurrentInstallationBasePath()
-                                                    .toString(),
-                                            XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
-                                    var runScript = sc.getShellDialect().runScriptCommand(sc, script);
-                                    TerminalLauncher.openDirect("XPipe Debug", sc, runScript);
-                                }
-                            });
-                            e.consume();
-                        })
+                                    OperationMode.executeAfterShutdown(() -> {
+                                        try (var sc = new LocalStore().control().start()) {
+                                            var script = FileNames.join(
+                                                    XPipeInstallation.getCurrentInstallationBasePath()
+                                                            .toString(),
+                                                    XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
+                                            var runScript = sc.getShellDialect().runScriptCommand(sc, script);
+                                            TerminalLauncher.openDirect("XPipe Debug", sc, runScript);
+                                        }
+                                    });
+                                    e.consume();
+                                })
                                 .grow(true, false),
                         null)
                 .separator();
@@ -59,16 +57,16 @@ public class TroubleshootCategory extends AppPrefsCategory {
         if (AppLogs.get().isWriteToFile()) {
             b.addComp(
                             new TileButtonComp(
-                                    "openCurrentLogFile",
-                                    "openCurrentLogFileDescription",
-                                    "mdmz-text_snippet",
-                                    e -> {
-                                        FileOpener.openInTextEditor(AppLogs.get()
-                                                .getSessionLogsDirectory()
-                                                .resolve("xpipe.log")
-                                                .toString());
-                                        e.consume();
-                                    })
+                                            "openCurrentLogFile",
+                                            "openCurrentLogFileDescription",
+                                            "mdmz-text_snippet",
+                                            e -> {
+                                                FileOpener.openInTextEditor(AppLogs.get()
+                                                        .getSessionLogsDirectory()
+                                                        .resolve("xpipe.log")
+                                                        .toString());
+                                                e.consume();
+                                            })
                                     .grow(true, false),
                             null)
                     .separator();
@@ -76,22 +74,22 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
         b.addComp(
                         new TileButtonComp(
-                                "openInstallationDirectory",
-                                "openInstallationDirectoryDescription",
-                                "mdomz-snippet_folder",
-                                e -> {
-                                    DesktopHelper.browsePath(
-                                            XPipeInstallation.getCurrentInstallationBasePath());
-                                    e.consume();
-                                })
+                                        "openInstallationDirectory",
+                                        "openInstallationDirectoryDescription",
+                                        "mdomz-snippet_folder",
+                                        e -> {
+                                            DesktopHelper.browsePath(
+                                                    XPipeInstallation.getCurrentInstallationBasePath());
+                                            e.consume();
+                                        })
                                 .grow(true, false),
                         null)
                 .separator()
                 .addComp(
                         new TileButtonComp("clearCaches", "clearCachesDescription", "mdi2t-trash-can-outline", e -> {
-                            ClearCacheAlert.show();
-                            e.consume();
-                        })
+                                    ClearCacheAlert.show();
+                                    e.consume();
+                                })
                                 .grow(true, false),
                         null);
         return b.buildComp();

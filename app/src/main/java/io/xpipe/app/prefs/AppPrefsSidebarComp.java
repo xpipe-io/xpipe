@@ -19,17 +19,21 @@ public class AppPrefsSidebarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var buttons = AppPrefs.get().getCategories().stream().<Comp<?>>map(appPrefsCategory -> {
-            return new ButtonComp(AppI18n.observable(appPrefsCategory.getId()), () -> {
-                AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
-            }).apply(struc -> {
-                struc.get().setTextAlignment(TextAlignment.LEFT);
-                struc.get().setAlignment(Pos.CENTER_LEFT);
-                SimpleChangeListener.apply(AppPrefs.get().getSelectedCategory(), val -> {
-                   struc.get().pseudoClassStateChanged(SELECTED,appPrefsCategory.equals(val));
-                });
-            }).grow(true, false);
-        }).toList();
+        var buttons = AppPrefs.get().getCategories().stream()
+                .<Comp<?>>map(appPrefsCategory -> {
+                    return new ButtonComp(AppI18n.observable(appPrefsCategory.getId()), () -> {
+                                AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
+                            })
+                            .apply(struc -> {
+                                struc.get().setTextAlignment(TextAlignment.LEFT);
+                                struc.get().setAlignment(Pos.CENTER_LEFT);
+                                SimpleChangeListener.apply(AppPrefs.get().getSelectedCategory(), val -> {
+                                    struc.get().pseudoClassStateChanged(SELECTED, appPrefsCategory.equals(val));
+                                });
+                            })
+                            .grow(true, false);
+                })
+                .toList();
         var vbox = new VerticalComp(buttons).styleClass("sidebar");
         vbox.apply(struc -> {
             SimpleChangeListener.apply(PlatformThread.sync(AppPrefs.get().getSelectedCategory()), val -> {

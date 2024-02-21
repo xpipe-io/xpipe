@@ -25,15 +25,9 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
-    public static <T extends Translatable> ChoiceComp<T> ofTranslatable(Property<T> value, List<T> range, boolean includeNone) {
-        var map = range.stream().collect(Collectors.toMap(o -> o, Translatable::toTranslatedString, (v1, v2) -> v2, LinkedHashMap::new));
-        return new ChoiceComp<>(value, map,includeNone);
-    }
-
     Property<T> value;
     ObservableValue<Map<T, ObservableValue<String>>> range;
     boolean includeNone;
-
     public ChoiceComp(Property<T> value, Map<T, ObservableValue<String>> range, boolean includeNone) {
         this.value = value;
         this.range = new SimpleObjectProperty<>(range);
@@ -44,6 +38,14 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         this.value = value;
         this.range = PlatformThread.sync(range);
         this.includeNone = includeNone;
+    }
+
+    public static <T extends Translatable> ChoiceComp<T> ofTranslatable(
+            Property<T> value, List<T> range, boolean includeNone) {
+        var map = range.stream()
+                .collect(
+                        Collectors.toMap(o -> o, Translatable::toTranslatedString, (v1, v2) -> v2, LinkedHashMap::new));
+        return new ChoiceComp<>(value, map, includeNone);
     }
 
     @Override

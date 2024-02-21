@@ -49,20 +49,24 @@ public class PasswordManagerCategory extends AppPrefsCategory {
         };
 
         var testPasswordManager = new HorizontalComp(List.of(
-                                new TextFieldComp(testPasswordManagerValue)
-                                        .apply(struc -> struc.get().setPromptText("Enter password key"))
-                                        .styleClass(Styles.LEFT_PILL)
-                                        .grow(false, true),
-                                new ButtonComp(null, new FontIcon("mdi2p-play"), test)
-                                        .styleClass(Styles.RIGHT_PILL)
-                                        .grow(false, true)))
-                        .padding(new Insets(15, 0, 0, 0))
-                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                        .apply(struc -> struc.get().setFillHeight(true));
-        return new OptionsBuilder().addTitle("passwordManager").sub(new OptionsBuilder()
-                .nameAndDescription("passwordManagerCommand")
-                .addComp(new TextFieldComp(prefs.passwordManagerCommand, true).apply(struc -> struc.get().setPromptText("mypassmgr get $KEY")))
-                .nameAndDescription("passwordManagerCommandTest")
-                .addComp(testPasswordManager)).buildComp();
+                        new TextFieldComp(testPasswordManagerValue)
+                                .apply(struc -> struc.get().setPromptText("Enter password key"))
+                                .styleClass(Styles.LEFT_PILL)
+                                .grow(false, true),
+                        new ButtonComp(null, new FontIcon("mdi2p-play"), test)
+                                .styleClass(Styles.RIGHT_PILL)
+                                .grow(false, true)))
+                .padding(new Insets(15, 0, 0, 0))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> struc.get().setFillHeight(true));
+        return new OptionsBuilder()
+                .addTitle("passwordManager")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("passwordManagerCommand")
+                        .addComp(new TextFieldComp(prefs.passwordManagerCommand, true)
+                                .apply(struc -> struc.get().setPromptText("mypassmgr get $KEY")))
+                        .nameAndDescription("passwordManagerCommandTest")
+                        .addComp(testPasswordManager))
+                .buildComp();
     }
 }

@@ -79,11 +79,13 @@ public class AppTheme {
 
             Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
                 Platform.runLater(() -> {
-                    if (t1 == ColorScheme.DARK && !AppPrefs.get().theme.getValue().isDark()) {
+                    if (t1 == ColorScheme.DARK
+                            && !AppPrefs.get().theme.getValue().isDark()) {
                         AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
                     }
 
-                    if (t1 != ColorScheme.DARK && AppPrefs.get().theme.getValue().isDark()) {
+                    if (t1 != ColorScheme.DARK
+                            && AppPrefs.get().theme.getValue().isDark()) {
                         AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
                     }
                 });
@@ -204,6 +206,10 @@ public class AppTheme {
         // Also include your custom theme here
         public static final List<Theme> ALL =
                 List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
+        protected final String id;
+        @Getter
+        protected final String cssId;
+        protected final atlantafx.base.theme.Theme theme;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -220,13 +226,6 @@ public class AppTheme {
                 case OsType.MacOs macOs -> CUPERTINO_DARK;
             };
         }
-
-        protected final String id;
-
-        @Getter
-        protected final String cssId;
-
-        protected final atlantafx.base.theme.Theme theme;
 
         public boolean isDark() {
             return theme.isDarkMode();

@@ -22,11 +22,6 @@ public class CopyAction implements LeafAction {
     }
 
     @Override
-    public boolean acceptsEmptySelection() {
-        return true;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2c-content-copy");
     }
@@ -39,6 +34,11 @@ public class CopyAction implements LeafAction {
     @Override
     public KeyCombination getShortcut() {
         return new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN);
+    }
+
+    @Override
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 
     @Override

@@ -36,30 +36,6 @@ public class BrowserTransferModel {
         t.setName("file downloader");
         return t;
     });
-
-    @Value
-    public static class Item {
-        OpenFileSystemModel openFileSystemModel;
-        String name;
-        FileSystem.FileEntry fileEntry;
-        Path localFile;
-        Property<BrowserTransferProgress> progress;
-
-        public Item(OpenFileSystemModel openFileSystemModel, String name, FileSystem.FileEntry fileEntry, Path localFile) {
-            this.openFileSystemModel = openFileSystemModel;
-            this.name = name;
-            this.fileEntry = fileEntry;
-            this.localFile = localFile;
-            this.progress = new SimpleObjectProperty<>(BrowserTransferProgress.empty(fileEntry.getName(), fileEntry.getSize()));
-        }
-
-        public ObservableBooleanValue downloadFinished() {
-            return Bindings.createBooleanBinding(() -> {
-                return progress.getValue().done();
-            }, progress);
-        }
-    }
-
     BrowserModel browserModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
     BooleanProperty downloading = new SimpleBooleanProperty();
@@ -132,17 +108,15 @@ public class BrowserTransferModel {
                     continue;
                 }
 
-                if (item.getOpenFileSystemModel() != null && item.getOpenFileSystemModel().isClosed()) {
+                if (item.getOpenFileSystemModel() != null
+                        && item.getOpenFileSystemModel().isClosed()) {
                     continue;
                 }
 
                 try {
                     try (var b = new BooleanScope(downloading).start()) {
                         FileSystemHelper.dropFilesInto(
-                                FileSystemHelper.getLocal(TEMP),
-                                List.of(item.getFileEntry()),
-                                true,
-                                progress -> {
+                                FileSystemHelper.getLocal(TEMP), List.of(item.getFileEntry()), true, progress -> {
                                     item.getProgress().setValue(progress);
                                     item.getOpenFileSystemModel().getProgress().setValue(progress);
                                 });
@@ -154,5 +128,32 @@ public class BrowserTransferModel {
             }
             allDownloaded.set(true);
         });
+    }
+
+    @Value
+    public static class Item {
+        OpenFileSystemModel openFileSystemModel;
+        String name;
+        FileSystem.FileEntry fileEntry;
+        Path localFile;
+        Property<BrowserTransferProgress> progress;
+
+        public Item(
+                OpenFileSystemModel openFileSystemModel, String name, FileSystem.FileEntry fileEntry, Path localFile) {
+            this.openFileSystemModel = openFileSystemModel;
+            this.name = name;
+            this.fileEntry = fileEntry;
+            this.localFile = localFile;
+            this.progress =
+                    new SimpleObjectProperty<>(BrowserTransferProgress.empty(fileEntry.getName(), fileEntry.getSize()));
+        }
+
+        public ObservableBooleanValue downloadFinished() {
+            return Bindings.createBooleanBinding(
+                    () -> {
+                        return progress.getValue().done();
+                    },
+                    progress);
+        }
     }
 }

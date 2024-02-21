@@ -28,5 +28,4 @@ public abstract class DialogElement {
     public boolean apply(String value) {
         throw new UnsupportedOperationException();
     }
-
 }

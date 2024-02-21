@@ -26,6 +26,13 @@ public class PasswordLockSecretValue extends AesSecretValue {
         return 8192;
     }
 
+    protected SecretKey getAESKey() throws InvalidKeySpecException {
+        var chars = AppPrefs.get().getLockPassword().getValue() != null
+                ? AppPrefs.get().getLockPassword().getValue().getSecret()
+                : new char[0];
+        return getSecretKey(chars);
+    }
+
     @Override
     public InPlaceSecretValue inPlace() {
         return new InPlaceSecretValue(getSecret());
@@ -34,12 +41,5 @@ public class PasswordLockSecretValue extends AesSecretValue {
     @Override
     public String toString() {
         return "<password lock secret>";
-    }
-
-    protected SecretKey getAESKey() throws InvalidKeySpecException {
-        var chars = AppPrefs.get().getLockPassword().getValue() != null
-                ? AppPrefs.get().getLockPassword().getValue().getSecret()
-                : new char[0];
-        return getSecretKey(chars);
     }
 }

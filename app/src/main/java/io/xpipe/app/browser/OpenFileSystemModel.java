@@ -8,7 +8,10 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.*;
+import io.xpipe.core.process.ProcessControlProvider;
+import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
 import javafx.beans.binding.Bindings;
@@ -27,21 +30,22 @@ import java.util.stream.Stream;
 public final class OpenFileSystemModel {
 
     private final DataStoreEntryRef<? extends FileSystemStore> entry;
-    private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final OpenFileSystemHistory history = new OpenFileSystemHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final BrowserModel browserModel;
-    private OpenFileSystemSavedState savedState;
-    private OpenFileSystemCache cache;
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final String name;
     private final String tooltip;
+    private final Property<BrowserTransferProgress> progress =
+            new SimpleObjectProperty<>(BrowserTransferProgress.empty());
+    private FileSystem fileSystem;
+    private OpenFileSystemSavedState savedState;
+    private OpenFileSystemCache cache;
     private int customScriptsStartIndex;
-    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>(BrowserTransferProgress.empty());
 
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
         this.browserModel = browserModel;
@@ -57,7 +61,10 @@ public final class OpenFileSystemModel {
     }
 
     public boolean isBusy() {
-        return !progress.getValue().done() || (fileSystem != null && fileSystem.getShell().isPresent() && fileSystem.getShell().get().getLock().isLocked());
+        return !progress.getValue().done()
+                || (fileSystem != null
+                        && fileSystem.getShell().isPresent()
+                        && fileSystem.getShell().get().getLock().isLocked());
     }
 
     private void startIfNeeded() {
@@ -171,15 +178,13 @@ public final class OpenFileSystemModel {
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand(null)))) {
+                if (ShellDialects.getStartableDialects().stream()
+                        .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand(null)))) {
                     TerminalLauncher.open(
                             entry.getEntry(),
                             name,
                             directory,
-                            fileSystem
-                                    .getShell()
-                                    .get()
-                                    .singularSubShell(ShellOpenFunction.of(adjustedPath)));
+                            fileSystem.getShell().get().singularSubShell(ShellOpenFunction.of(adjustedPath)));
                 } else {
                     TerminalLauncher.open(
                             entry.getEntry(),
@@ -303,7 +308,8 @@ public final class OpenFileSystemModel {
                 startIfNeeded();
                 var abs = FileNames.join(getCurrentDirectory().getPath(), name);
                 if (fileSystem.directoryExists(abs)) {
-                    throw ErrorEvent.unreportable(new IllegalStateException(String.format("Directory %s already exists", abs)));
+                    throw ErrorEvent.unreportable(
+                            new IllegalStateException(String.format("Directory %s already exists", abs)));
                 }
 
                 fileSystem.mkdirs(abs);
@@ -378,7 +384,8 @@ public final class OpenFileSystemModel {
         BooleanScope.execute(busy, () -> {
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
-                this.customScriptsStartIndex = fs.getShell().get().getInitCommands().size();
+                this.customScriptsStartIndex =
+                        fs.getShell().get().getInitCommands().size();
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
             }
             fs.open();
@@ -413,7 +420,8 @@ public final class OpenFileSystemModel {
             BooleanScope.execute(busy, () -> {
                 if (fileSystem.getShell().isPresent()) {
                     var connection = fileSystem.getShell().get();
-                    var name = (directory != null ? directory + " - " : "") + entry.get().getName();
+                    var name = (directory != null ? directory + " - " : "")
+                            + entry.get().getName();
                     TerminalLauncher.open(entry.getEntry(), name, directory, connection);
 
                     // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively

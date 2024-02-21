@@ -71,6 +71,12 @@ public interface DirectoryType {
         });
     }
 
+    String getId();
+
+    boolean matches(FileSystem.FileEntry entry);
+
+    String getIcon(FileSystem.FileEntry entry, boolean open);
+
     class Simple implements DirectoryType {
 
         @Getter
@@ -101,10 +107,4 @@ public interface DirectoryType {
             return open ? this.open.getIcon() : this.closed.getIcon();
         }
     }
-
-    String getId();
-
-    boolean matches(FileSystem.FileEntry entry);
-
-    String getIcon(FileSystem.FileEntry entry, boolean open);
 }

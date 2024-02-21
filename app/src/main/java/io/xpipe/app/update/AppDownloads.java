@@ -80,8 +80,10 @@ public class AppDownloads {
         }
 
         try {
-            var url = URI.create("https://api.xpipe.io/changelog?from=" + AppProperties.get().getVersion() +
-                    "&to=" + version + "&stage=" + AppProperties.get().isStaging()).toURL();
+            var url = URI.create("https://api.xpipe.io/changelog?from="
+                            + AppProperties.get().getVersion() + "&to=" + version + "&stage="
+                            + AppProperties.get().isStaging())
+                    .toURL();
             var bytes = HttpHelper.executeGet(url, aFloat -> {});
             var string = new String(bytes, StandardCharsets.UTF_8);
             var json = JacksonMapper.getDefault().readTree(string);
@@ -123,7 +125,8 @@ public class AppDownloads {
         var preIncluding = getLatestIncludingPreRelease();
 
         // If we are currently running a prerelease, always return this as the suitable release!
-        if (preIncluding.isPresent() && preIncluding.get().isPrerelease()
+        if (preIncluding.isPresent()
+                && preIncluding.get().isPrerelease()
                 && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
             return preIncluding;
         }

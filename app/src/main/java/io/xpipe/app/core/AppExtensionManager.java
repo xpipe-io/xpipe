@@ -28,6 +28,7 @@ public class AppExtensionManager {
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
     private final List<Path> extensionBaseDirectories = new ArrayList<>();
     private ModuleLayer baseLayer = ModuleLayer.boot();
+
     @Getter
     private ModuleLayer extendedLayer;
 
@@ -51,9 +52,18 @@ public class AppExtensionManager {
                 XPipeServiceProviders.load(INSTANCE.extendedLayer);
                 MessageExchangeImpls.loadAll();
             } catch (Throwable t) {
-                throw new ExtensionException("Service provider initialization failed. Is the installation data corrupt?", t);
+                throw new ExtensionException(
+                        "Service provider initialization failed. Is the installation data corrupt?", t);
             }
         }
+    }
+
+    public static void reset() {
+        INSTANCE = null;
+    }
+
+    public static AppExtensionManager getInstance() {
+        return INSTANCE;
     }
 
     private void loadBaseExtension() {
@@ -94,14 +104,6 @@ public class AppExtensionManager {
         extensionBaseDirectories.add(productionRoot);
     }
 
-    public static void reset() {
-        INSTANCE = null;
-    }
-
-    public static AppExtensionManager getInstance() {
-        return INSTANCE;
-    }
-
     public Set<Module> getContentModules() {
         return Stream.concat(
                         Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()),
@@ -111,7 +113,8 @@ public class AppExtensionManager {
 
     private void loadAllExtensions() {
         for (var ext : List.of("jdbc", "proc", "uacc")) {
-            var extension = findAndParseExtension(ext,baseLayer).orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
+            var extension = findAndParseExtension(ext, baseLayer)
+                    .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
             loadedExtensions.add(extension);
             leafModuleLayers.add(extension.getModule().getLayer());
         }

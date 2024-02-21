@@ -39,28 +39,19 @@ import java.util.stream.Collectors;
 
 public class SimpleScriptStoreProvider implements DataStoreProvider {
 
-    public String createInsightsMarkdown(DataStore store) {
-        var s = (SimpleScriptStore) store;
-
-        var builder = MarkdownBuilder.of().addParagraph("XPipe will run the script in ")
-                .addCode(s.getMinimumDialect() != null ? s.getMinimumDialect().getDisplayName() : "default").add(" shells");
-
-        if (s.getEffectiveScripts() != null && !s.getEffectiveScripts().isEmpty()) {
-            builder.add(" with the following scripts prior").addCodeBlock(s.getEffectiveScripts().stream()
-                    .map(scriptStoreDataStoreEntryRef -> scriptStoreDataStoreEntryRef.get().getName()).collect(
-                    Collectors.joining("\n")));
-        }
-
-        if (s.getCommands() != null) {
-            builder.add(" with command contents").addCodeBlock(s.getCommands());
-        }
-
-        return builder.build();
+    @Override
+    public boolean editByDefault() {
+        return true;
     }
 
     @Override
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
+    public boolean canMoveCategories() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldEdit() {
+        return true;
     }
 
     @Override
@@ -106,14 +97,31 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public boolean shouldEdit() {
-        return true;
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
-    @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        SimpleScriptStore st = store.getStore().asNeeded();
-        return st.getGroup().get();
+    public String createInsightsMarkdown(DataStore store) {
+        var s = (SimpleScriptStore) store;
+
+        var builder = MarkdownBuilder.of()
+                .addParagraph("XPipe will run the script in ")
+                .addCode(s.getMinimumDialect() != null ? s.getMinimumDialect().getDisplayName() : "default")
+                .add(" shells");
+
+        if (s.getEffectiveScripts() != null && !s.getEffectiveScripts().isEmpty()) {
+            builder.add(" with the following scripts prior")
+                    .addCodeBlock(s.getEffectiveScripts().stream()
+                            .map(scriptStoreDataStoreEntryRef ->
+                                    scriptStoreDataStoreEntryRef.get().getName())
+                            .collect(Collectors.joining("\n")));
+        }
+
+        if (s.getCommands() != null) {
+            builder.add(" with command contents").addCodeBlock(s.getCommands());
+        }
+
+        return builder.build();
     }
 
     @Override
@@ -122,26 +130,9 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public String getId() {
-        return "script";
-    }
-
-    @SneakyThrows
-    @Override
-    public String getDisplayIconFileName(DataStore store) {
-        if (store == null) {
-            return "proc:shellEnvironment_icon.svg";
-        }
-
-        SimpleScriptStore st = store.asNeeded();
-        return (String) Class.forName(
-                        AppExtensionManager.getInstance()
-                                .getExtendedLayer()
-                                .findModule("io.xpipe.ext.proc")
-                                .orElseThrow(),
-                        "io.xpipe.ext.proc.ShellDialectChoiceComp")
-                .getDeclaredMethod("getImageName", ShellDialect.class)
-                .invoke(null, st.getMinimumDialect());
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        SimpleScriptStore st = store.getStore().asNeeded();
+        return st.getGroup().get();
     }
 
     @SneakyThrows
@@ -172,8 +163,8 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         new DataStoreListChoiceComp<>(
                                 others,
                                 ScriptStore.class,
-                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore), StoreViewState.get().getAllScriptsCategory()
-                        ),
+                                scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
+                                StoreViewState.get().getAllScriptsCategory()),
                         others)
                 .name("minimumShellDialect")
                 .description("minimumShellDialectDescription")
@@ -198,7 +189,12 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                 .description("scriptGroupDescription")
                 .addComp(
                         new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER, null, group, ScriptGroupStore.class, null, StoreViewState.get().getAllScriptsCategory()),
+                                DataStoreChoiceComp.Mode.OTHER,
+                                null,
+                                group,
+                                ScriptGroupStore.class,
+                                null,
+                                StoreViewState.get().getAllScriptsCategory()),
                         group)
                 .nonNull()
                 .bind(
@@ -214,30 +210,6 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
                         },
                         store)
                 .buildDialog();
-    }
-
-    @Override
-    public boolean editByDefault() {
-        return true;
-    }
-
-    @Override
-    public boolean canMoveCategories() {
-        return false;
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
-        return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
-                ? scriptStore.getMinimumDialect().getDisplayName() + " "
-                : "")
-                + (scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.TERMINAL_ONLY
-                ? "Terminal"
-                : scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.DUMB_ONLY
-                ? "Background"
-                : "")
-                + " Snippet");
     }
 
     @Override
@@ -280,8 +252,35 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public List<Class<?>> getStoreClasses() {
-        return List.of(SimpleScriptStore.class);
+    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
+        SimpleScriptStore scriptStore = wrapper.getEntry().getStore().asNeeded();
+        return new SimpleStringProperty((scriptStore.getMinimumDialect() != null
+                        ? scriptStore.getMinimumDialect().getDisplayName() + " "
+                        : "")
+                + (scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.TERMINAL_ONLY
+                        ? "Terminal"
+                        : scriptStore.getExecutionType() == SimpleScriptStore.ExecutionType.DUMB_ONLY
+                                ? "Background"
+                                : "")
+                + " Snippet");
+    }
+
+    @SneakyThrows
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        if (store == null) {
+            return "proc:shellEnvironment_icon.svg";
+        }
+
+        SimpleScriptStore st = store.asNeeded();
+        return (String) Class.forName(
+                        AppExtensionManager.getInstance()
+                                .getExtendedLayer()
+                                .findModule("io.xpipe.ext.proc")
+                                .orElseThrow(),
+                        "io.xpipe.ext.proc.ShellDialectChoiceComp")
+                .getDeclaredMethod("getImageName", ShellDialect.class)
+                .invoke(null, st.getMinimumDialect());
     }
 
     @Override
@@ -295,5 +294,15 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     @Override
     public List<String> getPossibleNames() {
         return Identifiers.get("script");
+    }
+
+    @Override
+    public String getId() {
+        return "script";
+    }
+
+    @Override
+    public List<Class<?>> getStoreClasses() {
+        return List.of(SimpleScriptStore.class);
     }
 }

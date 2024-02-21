@@ -8,25 +8,19 @@ import lombok.Value;
 
 public class StoreStopAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntryRef<StoppableStore> entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        @Override
-        public void execute() throws Exception {
-            entry.getStore().stop();
-        }
-    }
-    
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<StoppableStore>() {
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<StoppableStore> store) {
+                return new Action(store);
+            }
+
+            @Override
+            public Class<StoppableStore> getApplicableClass() {
+                return StoppableStore.class;
+            }
 
             @Override
             public boolean isMajor(DataStoreEntryRef<StoppableStore> o) {
@@ -42,16 +36,22 @@ public class StoreStopAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<StoppableStore> store) {
                 return "mdi2s-stop";
             }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<StoppableStore> store) {
-                return new Action(store);
-            }
-
-            @Override
-            public Class<StoppableStore> getApplicableClass() {
-                return StoppableStore.class;
-            }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntryRef<StoppableStore> entry;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return false;
+        }
+
+        @Override
+        public void execute() throws Exception {
+            entry.getStore().stop();
+        }
     }
 }

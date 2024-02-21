@@ -37,8 +37,7 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
     private final Property<String> filePath;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<String> filePath
-    ) {
+            ObservableValue<DataStoreEntryRef<T>> fileSystem, Property<String> filePath) {
         this.fileSystem = new SimpleObjectProperty<>();
         SimpleChangeListener.apply(fileSystem, val -> {
             this.fileSystem.setValue(val);
@@ -48,33 +47,39 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var fileNameComp = new TextFieldComp(filePath).apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS)).styleClass(Styles.LEFT_PILL).grow(
-                false, true);
+        var fileNameComp = new TextFieldComp(filePath)
+                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
+                .styleClass(Styles.LEFT_PILL)
+                .grow(false, true);
 
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-            StandaloneFileBrowser.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
-                if (fileStore == null) {
-                    filePath.setValue(null);
-                    fileSystem.setValue(null);
-                } else {
-                    filePath.setValue(fileStore.getPath());
-                    fileSystem.setValue(fileStore.getFileSystem());
-                }
-            });
-        }).styleClass(Styles.CENTER_PILL).grow(false, true);
+                    StandaloneFileBrowser.openSingleFile(() -> fileSystem.getValue(), fileStore -> {
+                        if (fileStore == null) {
+                            filePath.setValue(null);
+                            fileSystem.setValue(null);
+                        } else {
+                            filePath.setValue(fileStore.getPath());
+                            fileSystem.setValue(fileStore.getFileSystem());
+                        }
+                    });
+                })
+                .styleClass(Styles.CENTER_PILL)
+                .grow(false, true);
 
+        var canGitShare = BindingsHelper.persist(Bindings.createBooleanBinding(
+                () -> {
+                    if (!AppPrefs.get().enableGitStorage().get()
+                            || filePath.getValue() == null
+                            || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
+                        return false;
+                    }
 
-        var canGitShare = BindingsHelper.persist(Bindings.createBooleanBinding(() -> {
-            if (!AppPrefs.get().enableGitStorage().get() || filePath.getValue() == null || ContextualFileReference.of(filePath.getValue())
-                    .isInDataDirectory()) {
-                return false;
-            }
-
-            return true;
-        }, filePath, AppPrefs.get().enableGitStorage()));
+                    return true;
+                },
+                filePath,
+                AppPrefs.get().enableGitStorage()));
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
-            if (filePath.getValue() == null || filePath.getValue().isBlank() ||
-                    !canGitShare.get()) {
+            if (filePath.getValue() == null || filePath.getValue().isBlank() || !canGitShare.get()) {
                 return;
             }
 
@@ -84,10 +89,12 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                 var source = Path.of(filePath.getValue());
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showBlockingAlert(alert -> {
-                        alert.setTitle(AppI18n.get("confirmGitShareTitle"));
-                        alert.setHeaderText(AppI18n.get("confirmGitShareHeader"));
-                        alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    }).map(buttonType -> buttonType.getButtonData().isDefaultButton()).orElse(false);
+                                alert.setTitle(AppI18n.get("confirmGitShareTitle"));
+                                alert.setHeaderText(AppI18n.get("confirmGitShareHeader"));
+                                alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                            })
+                            .map(buttonType -> buttonType.getButtonData().isDefaultButton())
+                            .orElse(false);
                     if (!shouldCopy) {
                         return;
                     }

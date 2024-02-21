@@ -65,20 +65,36 @@ public class ScanAlert {
         });
     }
 
+    private static void show(
+            DataStoreEntry initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
+        DialogComp.showWindow(
+                "scanAlertTitle",
+                stage -> new Dialog(stage, initialStore != null ? initialStore.ref() : null, applicable));
+    }
+
     private static class Dialog extends DialogComp {
 
         private final DataStoreEntryRef<ShellStore> initialStore;
         private final Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable;
         private final Stage window;
         private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
-        private final ListProperty<ScanProvider.ScanOperation> selected = new SimpleListProperty<>(FXCollections.observableArrayList());
+        private final ListProperty<ScanProvider.ScanOperation> selected =
+                new SimpleListProperty<>(FXCollections.observableArrayList());
         private final BooleanProperty busy = new SimpleBooleanProperty();
 
-        private Dialog(Stage window, DataStoreEntryRef<ShellStore> entry, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
+        private Dialog(
+                Stage window,
+                DataStoreEntryRef<ShellStore> entry,
+                Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
             this.window = window;
             this.initialStore = entry;
             this.entry = new SimpleObjectProperty<>(entry);
             this.applicable = applicable;
+        }
+
+        @Override
+        protected ObservableValue<Boolean> busy() {
+            return busy;
         }
 
         @Override
@@ -99,7 +115,9 @@ public class ScanAlert {
                     for (var a : copy) {
                         // If the user decided to remove the selected entry
                         // while the scan is running, just return instantly
-                        if (!DataStorage.get().getStoreEntriesSet().contains(entry.get().get())) {
+                        if (!DataStorage.get()
+                                .getStoreEntriesSet()
+                                .contains(entry.get().get())) {
                             return;
                         }
 
@@ -114,23 +132,31 @@ public class ScanAlert {
         }
 
         @Override
-        protected ObservableValue<Boolean> busy() {
-            return busy;
-        }
-
-        @Override
         public Comp<?> content() {
             StackPane stackPane = new StackPane();
             stackPane.getStyleClass().add("scan-list");
 
-            var b = new OptionsBuilder().name("scanAlertChoiceHeader").description("scanAlertChoiceHeaderDescription").addComp(
-                    new DataStoreChoiceComp<>(DataStoreChoiceComp.Mode.OTHER, null, entry, ShellStore.class, store1 -> true,
-                            StoreViewState.get().getAllConnectionsCategory()).disable(
-                            new SimpleBooleanProperty(initialStore != null))).name("scanAlertHeader").description(
-                    "scanAlertHeaderDescription").addComp(Comp.of(() -> stackPane).vgrow()).buildComp().prefWidth(500).prefHeight(
-                    650).apply(struc -> {
-                VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
-            }).padding(new Insets(20));
+            var b = new OptionsBuilder()
+                    .name("scanAlertChoiceHeader")
+                    .description("scanAlertChoiceHeaderDescription")
+                    .addComp(new DataStoreChoiceComp<>(
+                                    DataStoreChoiceComp.Mode.OTHER,
+                                    null,
+                                    entry,
+                                    ShellStore.class,
+                                    store1 -> true,
+                                    StoreViewState.get().getAllConnectionsCategory())
+                            .disable(new SimpleBooleanProperty(initialStore != null)))
+                    .name("scanAlertHeader")
+                    .description("scanAlertHeaderDescription")
+                    .addComp(Comp.of(() -> stackPane).vgrow())
+                    .buildComp()
+                    .prefWidth(500)
+                    .prefHeight(650)
+                    .apply(struc -> {
+                        VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
+                    })
+                    .padding(new Insets(20));
 
             SimpleChangeListener.apply(entry, newValue -> {
                 selected.clear();
@@ -150,9 +176,17 @@ public class ScanAlert {
                                 return;
                             }
 
-                            selected.setAll(a.stream().filter(scanOperation -> scanOperation.isDefaultSelected() && !scanOperation.isDisabled()).toList());
-                            var r = new ListSelectorComp<>(a, scanOperation -> AppI18n.get(scanOperation.getNameKey()), selected, scanOperation -> scanOperation.isDisabled(),
-                                    a.size() > 3).createRegion();
+                            selected.setAll(a.stream()
+                                    .filter(scanOperation ->
+                                            scanOperation.isDefaultSelected() && !scanOperation.isDisabled())
+                                    .toList());
+                            var r = new ListSelectorComp<>(
+                                            a,
+                                            scanOperation -> AppI18n.get(scanOperation.getNameKey()),
+                                            selected,
+                                            scanOperation -> scanOperation.isDisabled(),
+                                            a.size() > 3)
+                                    .createRegion();
                             stackPane.getChildren().add(r);
                         });
                     });
@@ -161,13 +195,5 @@ public class ScanAlert {
 
             return b;
         }
-    }
-
-    private static void show(
-            DataStoreEntry initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable
-    ) {
-        DialogComp.showWindow("scanAlertTitle", stage ->
-                new Dialog(stage, initialStore != null ? initialStore.ref() : null,
-                        applicable));
     }
 }

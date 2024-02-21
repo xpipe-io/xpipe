@@ -24,7 +24,12 @@ public class BrowserStatusBarComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var bar = new ToolBar();
-        bar.getItems().setAll(createClipboardStatus().createRegion(), createProgressStatus().createRegion(), new Spacer(), createSelectionStatus().createRegion());
+        bar.getItems()
+                .setAll(
+                        createClipboardStatus().createRegion(),
+                        createProgressStatus().createRegion(),
+                        new Spacer(),
+                        createSelectionStatus().createRegion());
         bar.getStyleClass().add("status-bar");
         bar.setOnDragDetected(event -> {
             event.consume();
@@ -40,20 +45,26 @@ public class BrowserStatusBarComp extends SimpleComp {
     private Comp<?> createProgressStatus() {
         var transferredCount = PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
-                    return HumanReadableFormat.byteCount(model.getProgress().getValue().getTransferred());
+                    return HumanReadableFormat.byteCount(
+                            model.getProgress().getValue().getTransferred());
                 },
                 model.getProgress()));
         var allCount = PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
-                    return HumanReadableFormat.byteCount(model.getProgress().getValue().getTotal());
+                    return HumanReadableFormat.byteCount(
+                            model.getProgress().getValue().getTotal());
                 },
                 model.getProgress()));
         var progressComp = new LabelComp(Bindings.createStringBinding(
                 () -> {
-                    if (model.getProgress().getValue() == null || model.getProgress().getValue().done()) {
+                    if (model.getProgress().getValue() == null
+                            || model.getProgress().getValue().done()) {
                         return null;
                     } else {
-                        return (model.getProgress().getValue().getName() != null ? model.getProgress().getValue().getName() + " " : "") + transferredCount.getValue() + " / " + allCount.getValue();
+                        return (model.getProgress().getValue().getName() != null
+                                        ? model.getProgress().getValue().getName() + " "
+                                        : "")
+                                + transferredCount.getValue() + " / " + allCount.getValue();
                     }
                 },
                 transferredCount,

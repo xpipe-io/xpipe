@@ -211,7 +211,8 @@ public abstract class UpdateHandler {
             return;
         }
 
-        if (available != null && !available.getVersion().equals(preparedUpdate.getValue().getVersion())) {
+        if (available != null
+                && !available.getVersion().equals(preparedUpdate.getValue().getVersion())) {
             preparedUpdate.setValue(null);
             return;
         }

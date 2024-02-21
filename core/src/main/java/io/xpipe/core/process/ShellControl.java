@@ -18,8 +18,6 @@ public interface ShellControl extends ProcessControl {
 
     UUID getElevationSecretId();
 
-    void setParentSystemAccess(ParentSystemAccess access);
-
     List<UUID> getExitUuids();
 
     Optional<ShellStore> getSourceStore();
@@ -29,6 +27,8 @@ public interface ShellControl extends ProcessControl {
     List<ScriptSnippet> getInitCommands();
 
     ParentSystemAccess getParentSystemAccess();
+
+    void setParentSystemAccess(ParentSystemAccess access);
 
     ParentSystemAccess getLocalSystemAccess();
 
@@ -44,9 +44,9 @@ public interface ShellControl extends ProcessControl {
 
     ReentrantLock getLock();
 
-    void setOriginalShellDialect(ShellDialect dialect);
-
     ShellDialect getOriginalShellDialect();
+
+    void setOriginalShellDialect(ShellDialect dialect);
 
     ShellControl onInit(FailableConsumer<ShellControl, Exception> pc);
 
@@ -75,9 +75,16 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withExceptionConverter(ExceptionConverter converter);
 
+    @Override
+    ShellControl start();
+
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
-    String prepareIntermediateTerminalOpen(String content, TerminalInitScriptConfig config, FailableFunction<ShellControl, String, Exception> workingDirectory) throws Exception;
+    String prepareIntermediateTerminalOpen(
+            String content,
+            TerminalInitScriptConfig config,
+            FailableFunction<ShellControl, String, Exception> workingDirectory)
+            throws Exception;
 
     String getSystemTemporaryDirectory();
 
@@ -146,7 +153,8 @@ public interface ShellControl extends ProcessControl {
 
     ShellSecurityPolicy getEffectiveSecurityPolicy();
 
-    String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown) throws Exception;
+    String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown)
+            throws Exception;
 
     void restart() throws Exception;
 
@@ -190,7 +198,8 @@ public interface ShellControl extends ProcessControl {
         return singularSubShell(o);
     }
 
-    default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc) throws Exception {
+    default <T> T enforceDialect(@NonNull ShellDialect type, FailableFunction<ShellControl, T, Exception> sc)
+            throws Exception {
         if (isRunning() && getShellDialect().equals(type)) {
             return sc.apply(this);
         } else {
@@ -200,8 +209,7 @@ public interface ShellControl extends ProcessControl {
         }
     }
 
-    ShellControl subShell(
-            ShellOpenFunction command, ShellOpenFunction terminalCommand);
+    ShellControl subShell(ShellOpenFunction command, ShellOpenFunction terminalCommand);
 
     ShellControl singularSubShell(ShellOpenFunction command);
 
@@ -210,9 +218,6 @@ public interface ShellControl extends ProcessControl {
     void writeLineAndReadEcho(String command, boolean log) throws Exception;
 
     void cd(String directory) throws Exception;
-
-    @Override
-    ShellControl start();
 
     default CommandControl command(String command) {
         return command(CommandBuilder.ofFunction(shellProcessControl -> command));

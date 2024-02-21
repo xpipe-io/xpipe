@@ -24,9 +24,7 @@ public abstract class LauncherInput {
             return;
         }
 
-        TrackEvent.withDebug("Handling arguments")
-                .elements(arguments)
-                .handle();
+        TrackEvent.withDebug("Handling arguments").elements(arguments).handle();
 
         var all = new ArrayList<ActionProvider.Action>();
         arguments.forEach(s -> {
@@ -105,6 +103,11 @@ public abstract class LauncherInput {
         Path file;
 
         @Override
+        public boolean requiresJavaFXPlatform() {
+            return true;
+        }
+
+        @Override
         public void execute() {
             if (!Files.exists(file)) {
                 return;
@@ -116,12 +119,7 @@ public abstract class LauncherInput {
 
             var dir = Files.isDirectory(file) ? file : file.getParent();
             AppLayoutModel.get().selectBrowser();
-            BrowserModel.DEFAULT.openFileSystemAsync( DataStorage.get().local().ref(), model -> dir.toString(), null);
-        }
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
+            BrowserModel.DEFAULT.openFileSystemAsync(DataStorage.get().local().ref(), model -> dir.toString(), null);
         }
     }
 

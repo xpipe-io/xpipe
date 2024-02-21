@@ -44,13 +44,13 @@ public class RunAction extends MultiExecuteAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.CUSTOM;
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new FontIcon("mdi2p-play");
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2p-play");
+    public Category getCategory() {
+        return Category.CUSTOM;
     }
 
     @Override

@@ -11,6 +11,10 @@ public class ProgressScope implements AutoCloseable {
     private BooleanProperty active = new SimpleBooleanProperty();
     private boolean forcePlatform;
 
+    public ProgressScope(DoubleProperty prop) {
+        this.prop = prop;
+    }
+
     public ProgressScope withActive(BooleanProperty active) {
         this.active = active;
         return this;
@@ -19,10 +23,6 @@ public class ProgressScope implements AutoCloseable {
     public ProgressScope forcePlatform() {
         this.forcePlatform = true;
         return this;
-    }
-
-    public ProgressScope(DoubleProperty prop) {
-        this.prop = prop;
     }
 
     public ProgressScope start() {

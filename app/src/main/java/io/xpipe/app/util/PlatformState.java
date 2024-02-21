@@ -58,7 +58,6 @@ public enum PlatformState {
         return current == RUNNING;
     }
 
-
     private static Optional<Throwable> initPlatform() {
         if (current == EXITED) {
             return Optional.of(new IllegalStateException("Platform has already exited"));
@@ -89,10 +88,10 @@ public enum PlatformState {
                 var value = i + "%";
                 switch (OsType.getLocal()) {
                     case OsType.Linux linux -> {
-                        System.setProperty("glass.gtk.uiScale",value);
+                        System.setProperty("glass.gtk.uiScale", value);
                     }
                     case OsType.Windows windows -> {
-                        System.setProperty("glass.win.uiScale",value);
+                        System.setProperty("glass.win.uiScale", value);
                     }
                     default -> {}
                 }

@@ -32,8 +32,7 @@ public class DataStoreFormatter {
             return null;
         }
 
-        return name.substring(0, 1).toUpperCase()
-                + name.substring(1).toLowerCase();
+        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
     public static String formatSubHost(IntFunction<String> func, DataStore at, int length) {
@@ -61,9 +60,8 @@ public class DataStoreFormatter {
     }
 
     public static String formatViaProxy(IntFunction<String> func, DataStoreEntry at, int length) {
-        var atString = at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? at.getName()
-                : null;
+        var atString =
+                at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore) ? at.getName() : null;
         if (atString == null) {
             return func.apply(length);
         }
@@ -85,7 +83,7 @@ public class DataStoreFormatter {
             return "?";
         }
 
-            return cut(input.getName(), length);
+        return cut(input.getName(), length);
     }
 
     public static String split(String left, String separator, String right, int length) {

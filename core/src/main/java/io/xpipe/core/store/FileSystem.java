@@ -17,85 +17,6 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
-    @Value
-    @NonFinal
-    class FileEntry {
-        FileSystem fileSystem;
-
-        @NonNull
-        @NonFinal
-        String path;
-
-        @NonFinal
-        String extension;
-
-        @NonFinal
-        String name;
-
-        Instant date;
-        boolean hidden;
-        Boolean executable;
-        long size;
-        String mode;
-
-        @NonNull
-        FileKind kind;
-
-        public FileEntry(
-                FileSystem fileSystem,
-                @NonNull String path,
-                Instant date,
-                boolean hidden,
-                Boolean executable,
-                long size,
-                String mode,
-                @NonNull FileKind kind) {
-            this.fileSystem = fileSystem;
-            this.mode = mode;
-            this.kind = kind;
-            this.path = kind == FileKind.DIRECTORY ? FileNames.toDirectory(path) : path;
-            this.extension = FileNames.getExtension(path);
-            this.name = FileNames.getFileName(path);
-            this.date = date;
-            this.hidden = hidden;
-            this.executable = executable;
-            this.size = size;
-        }
-
-        public void setPath(String path) {
-            this.path = path;
-            this.extension = FileNames.getExtension(path);
-            this.name = FileNames.getFileName(path);
-        }
-
-        public FileEntry resolved() {
-            return this;
-        }
-
-        public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
-            return new FileEntry(fileSystem, path, Instant.now(), true, false, 0, null, FileKind.DIRECTORY);
-        }
-    }
-
-    @Value
-    @EqualsAndHashCode(callSuper = true)
-    class LinkFileEntry extends FileEntry {
-
-        @NonNull
-        FileEntry target;
-
-        public LinkFileEntry(
-                @NonNull FileSystem fileSystem, @NonNull String path, Instant date, boolean hidden, Boolean executable, long size, String mode, @NonNull FileEntry target
-        ) {
-            super(fileSystem, path, date, hidden, executable, size, mode, FileKind.LINK);
-            this.target = target;
-        }
-
-        public FileEntry resolved() {
-            return target;
-        }
-    }
-
     FileSystemStore getStore();
 
     Optional<ShellControl> getShell();
@@ -150,4 +71,84 @@ public interface FileSystem extends Closeable, AutoCloseable {
     }
 
     List<String> listRoots() throws Exception;
+
+    @Value
+    @NonFinal
+    class FileEntry {
+        FileSystem fileSystem;
+        Instant date;
+        boolean hidden;
+        Boolean executable;
+        long size;
+        String mode;
+        @NonNull
+        FileKind kind;
+        @NonNull
+        @NonFinal
+        String path;
+        @NonFinal
+        String extension;
+        @NonFinal
+        String name;
+
+        public FileEntry(
+                FileSystem fileSystem,
+                @NonNull String path,
+                Instant date,
+                boolean hidden,
+                Boolean executable,
+                long size,
+                String mode,
+                @NonNull FileKind kind) {
+            this.fileSystem = fileSystem;
+            this.mode = mode;
+            this.kind = kind;
+            this.path = kind == FileKind.DIRECTORY ? FileNames.toDirectory(path) : path;
+            this.extension = FileNames.getExtension(path);
+            this.name = FileNames.getFileName(path);
+            this.date = date;
+            this.hidden = hidden;
+            this.executable = executable;
+            this.size = size;
+        }
+
+        public static FileEntry ofDirectory(FileSystem fileSystem, String path) {
+            return new FileEntry(fileSystem, path, Instant.now(), true, false, 0, null, FileKind.DIRECTORY);
+        }
+
+        public void setPath(String path) {
+            this.path = path;
+            this.extension = FileNames.getExtension(path);
+            this.name = FileNames.getFileName(path);
+        }
+
+        public FileEntry resolved() {
+            return this;
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    class LinkFileEntry extends FileEntry {
+
+        @NonNull
+        FileEntry target;
+
+        public LinkFileEntry(
+                @NonNull FileSystem fileSystem,
+                @NonNull String path,
+                Instant date,
+                boolean hidden,
+                Boolean executable,
+                long size,
+                String mode,
+                @NonNull FileEntry target) {
+            super(fileSystem, path, date, hidden, executable, size, mode, FileKind.LINK);
+            this.target = target;
+        }
+
+        public FileEntry resolved() {
+            return target;
+        }
+    }
 }

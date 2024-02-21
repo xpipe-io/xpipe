@@ -18,8 +18,8 @@ public class AppTempCheck {
         }
 
         if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
-            ErrorEvent.fromThrowable(
-                            new IOException("Specified temporary directory " + tmpdir + ", set via the environment variable %TEMP% is invalid."))
+            ErrorEvent.fromThrowable(new IOException("Specified temporary directory " + tmpdir
+                            + ", set via the environment variable %TEMP% is invalid."))
                     .term()
                     .handle();
         }

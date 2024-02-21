@@ -6,7 +6,6 @@ public interface StorageListener {
 
     void onStoreRemove(DataStoreEntry... entry);
 
-
     void onCategoryAdd(DataStoreCategory category);
 
     void onCategoryRemove(DataStoreCategory category);

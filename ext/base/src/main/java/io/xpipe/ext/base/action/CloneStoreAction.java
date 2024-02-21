@@ -11,23 +11,6 @@ import lombok.Value;
 
 public class CloneStoreAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        @Override
-        public void execute() {
-            DataStorage.get().addStoreEntryIfNotPresent(
-                    DataStoreEntry.createNew(store.getName() + " (Copy)",store.getStore()));
-        }
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<>() {
@@ -62,5 +45,22 @@ public class CloneStoreAction implements ActionProvider {
                 return "mdi2c-content-copy";
             }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry store;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return false;
+        }
+
+        @Override
+        public void execute() {
+            DataStorage.get()
+                    .addStoreEntryIfNotPresent(DataStoreEntry.createNew(store.getName() + " (Copy)", store.getStore()));
+        }
     }
 }

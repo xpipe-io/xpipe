@@ -109,8 +109,7 @@ public class AppWindowHelper {
         childStage.setY(stage.getY() + stage.getHeight() / 2 - childStage.getHeight() / 2);
     }
 
-    public static void showAlert(
-            Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
+    public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
         ThreadHelper.runAsync(() -> {
             var r = showBlockingAlert(c);
             if (bt != null) {
@@ -137,7 +136,8 @@ public class AppWindowHelper {
                 .orElse(false);
     }
 
-    public static boolean showConfirmationAlert(ObservableValue<String> title, ObservableValue<String> header, ObservableValue<String> content) {
+    public static boolean showConfirmationAlert(
+            ObservableValue<String> title, ObservableValue<String> header, ObservableValue<String> content) {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.titleProperty().bind(title);
                     alert.headerTextProperty().bind(header);
@@ -273,7 +273,11 @@ public class AppWindowHelper {
         }
 
         var allScreenBounds = computeWindowScreenBounds(stage);
-        if (!areNumbersValid(allScreenBounds.getMinX(), allScreenBounds.getMinY(), allScreenBounds.getMaxX(), allScreenBounds.getMaxY())) {
+        if (!areNumbersValid(
+                allScreenBounds.getMinX(),
+                allScreenBounds.getMinY(),
+                allScreenBounds.getMaxX(),
+                allScreenBounds.getMaxY())) {
             return Optional.empty();
         }
 
@@ -324,43 +328,46 @@ public class AppWindowHelper {
 
     private static List<Screen> getWindowScreens(Stage stage) {
         if (!areNumbersValid(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight())) {
-            return stage.getOwner() != null && stage.getOwner() instanceof Stage ownerStage ? getWindowScreens(ownerStage) : List.of(Screen.getPrimary());
+            return stage.getOwner() != null && stage.getOwner() instanceof Stage ownerStage
+                    ? getWindowScreens(ownerStage)
+                    : List.of(Screen.getPrimary());
         }
 
-        return Screen.getScreensForRectangle(new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()));
+        return Screen.getScreensForRectangle(
+                new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()));
     }
 
     private static Rectangle2D computeWindowScreenBounds(Stage stage) {
-        double minX = Double.POSITIVE_INFINITY ;
-        double minY = Double.POSITIVE_INFINITY ;
-        double maxX = Double.NEGATIVE_INFINITY ;
-        double maxY = Double.NEGATIVE_INFINITY ;
+        double minX = Double.POSITIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
         for (Screen screen : getWindowScreens(stage)) {
             Rectangle2D screenBounds = screen.getBounds();
             if (screenBounds.getMinX() < minX) {
                 minX = screenBounds.getMinX();
             }
             if (screenBounds.getMinY() < minY) {
-                minY = screenBounds.getMinY() ;
+                minY = screenBounds.getMinY();
             }
             if (screenBounds.getMaxX() > maxX) {
                 maxX = screenBounds.getMaxX();
             }
             if (screenBounds.getMaxY() > maxY) {
-                maxY = screenBounds.getMaxY() ;
+                maxY = screenBounds.getMaxY();
             }
         }
         // Taskbar adjustment
         maxY -= 50;
 
-        var w = maxX-minX;
-        var h = maxY-minY;
+        var w = maxX - minX;
+        var h = maxY - minY;
 
         // This should not happen but on weird Linux systems nothing is impossible
         if (w < 0 || h < 0) {
-            return new Rectangle2D(0,0,800, 600);
+            return new Rectangle2D(0, 0, 800, 600);
         }
-        
+
         return new Rectangle2D(minX, minY, w, h);
     }
 

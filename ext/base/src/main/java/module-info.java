@@ -50,7 +50,10 @@ open module io.xpipe.ext.base {
             UnzipAction,
             JavapAction,
             JarAction;
-    provides ActionProvider with StoreStopAction, StoreStartAction, StorePauseAction,
+    provides ActionProvider with
+            StoreStopAction,
+            StoreStartAction,
+            StorePauseAction,
             CloneStoreAction,
             RefreshStoreAction,
             ScanAction,

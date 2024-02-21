@@ -11,7 +11,9 @@ public class AskpassExchangeImpl extends AskpassExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) {
-        var found = msg.getSecretId() != null ? SecretManager.getProgress(msg.getRequest(), msg.getSecretId()) : SecretManager.getProgress(msg.getRequest());
+        var found = msg.getSecretId() != null
+                ? SecretManager.getProgress(msg.getRequest(), msg.getSecretId())
+                : SecretManager.getProgress(msg.getRequest());
         if (found.isEmpty()) {
             return Response.builder().build();
         }
@@ -21,6 +23,8 @@ public class AskpassExchangeImpl extends AskpassExchange
 
         var p = found.get();
         var secret = p.process(msg.getPrompt());
-        return Response.builder().value(secret != null ? secret.inPlace() : null).build();
+        return Response.builder()
+                .value(secret != null ? secret.inPlace() : null)
+                .build();
     }
 }

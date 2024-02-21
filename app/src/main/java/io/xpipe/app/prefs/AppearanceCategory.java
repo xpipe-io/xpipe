@@ -22,30 +22,32 @@ public class AppearanceCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("uiOptions")
                 .sub(new OptionsBuilder()
-                    .nameAndDescription("theme")
-                    .addComp(ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false), prefs.theme)
-                    .nameAndDescription("performanceMode")
-                    .addToggle(prefs.performanceMode)
+                        .nameAndDescription("theme")
+                        .addComp(ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false), prefs.theme)
+                        .nameAndDescription("performanceMode")
+                        .addToggle(prefs.performanceMode)
                         .nameAndDescription("uiScale")
                         .addComp(new IntFieldComp(prefs.uiScale).maxWidth(100), prefs.uiScale)
-                    .nameAndDescription("useSystemFont")
-                    .addToggle(prefs.useSystemFont)
+                        .nameAndDescription("useSystemFont")
+                        .addToggle(prefs.useSystemFont)
                         .nameAndDescription("condenseConnectionDisplay")
-                        .addToggle(prefs.condenseConnectionDisplay)
-                ).addTitle("windowOptions").sub(new OptionsBuilder()
+                        .addToggle(prefs.condenseConnectionDisplay))
+                .addTitle("windowOptions")
+                .sub(new OptionsBuilder()
                         .nameAndDescription("windowOpacity")
-                        .addComp(Comp.of(() -> {
-                            var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
-                            s.getStyleClass().add(Styles.SMALL);
-                            prefs.windowOpacity.bind(s.valueProperty());
-                            s.setSkin(new ProgressSliderSkin(s));
-                            return s;
-                        }), prefs.windowOpacity)
-                    .nameAndDescription("saveWindowLocation")
-                  .addToggle(prefs.saveWindowLocation)
-                    .nameAndDescription("enforceWindowModality")
-                    .addToggle(prefs.enforceWindowModality)
-                )
+                        .addComp(
+                                Comp.of(() -> {
+                                    var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
+                                    s.getStyleClass().add(Styles.SMALL);
+                                    prefs.windowOpacity.bind(s.valueProperty());
+                                    s.setSkin(new ProgressSliderSkin(s));
+                                    return s;
+                                }),
+                                prefs.windowOpacity)
+                        .nameAndDescription("saveWindowLocation")
+                        .addToggle(prefs.saveWindowLocation)
+                        .nameAndDescription("enforceWindowModality")
+                        .addToggle(prefs.enforceWindowModality))
                 .buildComp();
     }
 }

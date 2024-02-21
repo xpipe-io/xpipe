@@ -44,10 +44,13 @@ public class AppLogs {
             DateTimeFormatter.ofPattern("HH:mm:ss:SSS").withZone(ZoneId.systemDefault());
 
     private static AppLogs INSTANCE;
+
     @Getter
     private final PrintStream originalSysOut;
+
     @Getter
     private final PrintStream originalSysErr;
+
     private final Path logDir;
 
     @Getter
@@ -61,7 +64,8 @@ public class AppLogs {
 
     private final PrintStream outFileStream;
 
-    public AppLogs(Path logDir, boolean writeToSysout, boolean writeToFile, String logLevel, PrintStream outFileStream) {
+    public AppLogs(
+            Path logDir, boolean writeToSysout, boolean writeToFile, String logLevel, PrintStream outFileStream) {
         this.logDir = logDir;
         this.writeToSysout = writeToSysout;
         this.writeToFile = writeToFile;
@@ -171,6 +175,15 @@ public class AppLogs {
         return INSTANCE;
     }
 
+    private static String determineLogLevel() {
+        if (System.getProperty(LOG_LEVEL_PROP) != null) {
+            String p = System.getProperty(LOG_LEVEL_PROP);
+            return LOG_LEVELS.contains(p) ? p : "trace";
+        }
+
+        return DEFAULT_LOG_LEVEL;
+    }
+
     private void close() {
         if (outFileStream != null) {
             outFileStream.close();
@@ -197,11 +210,7 @@ public class AppLogs {
                         return;
                     }
 
-                    TrackEvent.builder()
-                            .type("info")
-                            .message(line)
-                            .build()
-                            .handle();
+                    TrackEvent.builder().type("info").message(line).build().handle();
                     baos.reset();
                 } else {
                     baos.write(b);
@@ -229,15 +238,6 @@ public class AppLogs {
                 }
             }
         }));
-    }
-
-    private static String determineLogLevel() {
-        if (System.getProperty(LOG_LEVEL_PROP) != null) {
-            String p = System.getProperty(LOG_LEVEL_PROP);
-            return LOG_LEVELS.contains(p) ? p : "trace";
-        }
-
-        return DEFAULT_LOG_LEVEL;
     }
 
     public void logException(String description, Throwable e) {

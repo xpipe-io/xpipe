@@ -2,8 +2,8 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -99,8 +99,9 @@ public final class BrowserFileListModel {
                 path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
         var comp = comparatorProperty.getValue();
 
-        Comparator<? super BrowserEntry> us =
-                comp != null ? syntheticFirst.thenComparing(dirsFirst).thenComparing(comp) : syntheticFirst.thenComparing(dirsFirst);
+        Comparator<? super BrowserEntry> us = comp != null
+                ? syntheticFirst.thenComparing(dirsFirst).thenComparing(comp)
+                : syntheticFirst.thenComparing(dirsFirst);
         l.sort(us);
     }
 
@@ -110,14 +111,17 @@ public final class BrowserFileListModel {
 
         boolean exists;
         try {
-            exists = fileSystemModel.getFileSystem().fileExists(newFullPath) || fileSystemModel.getFileSystem().directoryExists(newFullPath);
+            exists = fileSystemModel.getFileSystem().fileExists(newFullPath)
+                    || fileSystemModel.getFileSystem().directoryExists(newFullPath);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return false;
         }
 
         if (exists) {
-            ErrorEvent.fromMessage("Target " + newFullPath + " does already exist").expected().handle();
+            ErrorEvent.fromMessage("Target " + newFullPath + " does already exist")
+                    .expected()
+                    .handle();
             fileSystemModel.refresh();
             return false;
         }

@@ -16,6 +16,8 @@ import java.util.regex.Matcher;
 public class ContextualFileReference {
 
     private static String lastDataDir;
+    @NonNull
+    private final String path;
 
     private static String getDataDir() {
         if (DataStorage.get() == null) {
@@ -73,11 +75,9 @@ public class ContextualFileReference {
         return new ContextualFileReference(normalized(replaced));
     }
 
-    @NonNull
-    private final String path;
-
     public String toAbsoluteFilePath(ShellControl sc) {
-        return path.replaceAll("/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/"));
+        return path.replaceAll(
+                "/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/"));
     }
 
     public boolean isInDataDirectory() {

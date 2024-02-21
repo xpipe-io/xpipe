@@ -29,5 +29,4 @@ public enum DataFlow {
     public boolean hasOutput() {
         return this == OUTPUT || this == INPUT_OUTPUT;
     }
-
 }

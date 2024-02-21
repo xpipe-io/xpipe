@@ -28,5 +28,4 @@ public class HeaderElement extends DialogElement {
     public boolean apply(String value) {
         return true;
     }
-
 }

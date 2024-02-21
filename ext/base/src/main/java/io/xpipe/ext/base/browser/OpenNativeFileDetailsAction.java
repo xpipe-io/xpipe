@@ -4,9 +4,9 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.LeafAction;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FileNames;
 
 import java.util.List;
 
@@ -28,12 +28,15 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                                     FileNames.getParent(localFile), FileNames.getFileName(localFile))
                             : String.format(
                                     "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
-                            localFile);
+                                    localFile);
 
                     // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as
                     // long as the parent process is running.
                     // So let's keep one process running
-                    LocalShell.getLocalPowershell().command(content).notComplex().execute();
+                    LocalShell.getLocalPowershell()
+                            .command(content)
+                            .notComplex()
+                            .execute();
                 }
                 case OsType.Linux linux -> {
                     var dbus = String.format(
@@ -48,16 +51,12 @@ public class OpenNativeFileDetailsAction implements LeafAction {
                                     """
                              set fileEntry to (POSIX file "%s") as text
                              tell application "Finder" to open information window of alias fileEntry
-                             """, localFile))
+                             """,
+                                    localFile))
                             .execute();
                 }
             }
         }
-    }
-
-    @Override
-    public boolean acceptsEmptySelection() {
-        return true;
     }
 
     @Override
@@ -66,13 +65,18 @@ public class OpenNativeFileDetailsAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        var sc = model.getFileSystem().getShell().orElseThrow();
-        return sc.getLocalSystemAccess().supportsFileSystemAccess();
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Show details";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        var sc = model.getFileSystem().getShell().orElseThrow();
+        return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }
 }

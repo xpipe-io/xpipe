@@ -44,20 +44,33 @@ public class BrowserTransferComp extends SimpleComp {
                 new StackComp(List.of(background)).grow(true, true).styleClass("download-background");
 
         var binding = BindingsHelper.mappedContentBinding(model.getItems(), item -> item.getFileEntry());
-        var list = new BrowserSelectionListComp(binding, entry -> Bindings.createStringBinding(() -> {
-            var sourceItem = model.getItems().stream().filter(item -> item.getFileEntry() == entry).findAny();
-            if (sourceItem.isEmpty()) {
-                return "?";
-            }
-            var name = sourceItem.get().downloadFinished().get() ? "Local" : DataStorage.get().getStoreDisplayName(entry.getFileSystem().getStore()).orElse("?");
-            return FileNames.getFileName(entry.getPath()) + " (" + name + ")";
-        }, model.getAllDownloaded()))
+        var list = new BrowserSelectionListComp(
+                        binding,
+                        entry -> Bindings.createStringBinding(
+                                () -> {
+                                    var sourceItem = model.getItems().stream()
+                                            .filter(item -> item.getFileEntry() == entry)
+                                            .findAny();
+                                    if (sourceItem.isEmpty()) {
+                                        return "?";
+                                    }
+                                    var name =
+                                            sourceItem.get().downloadFinished().get()
+                                                    ? "Local"
+                                                    : DataStorage.get()
+                                                            .getStoreDisplayName(entry.getFileSystem()
+                                                                    .getStore())
+                                                            .orElse("?");
+                                    return FileNames.getFileName(entry.getPath()) + " (" + name + ")";
+                                },
+                                model.getAllDownloaded()))
                 .apply(struc -> struc.get().setMinHeight(150))
                 .grow(false, true);
-        var dragNotice = new LabelComp(model.getAllDownloaded().flatMap(aBoolean -> aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
+        var dragNotice = new LabelComp(model.getAllDownloaded()
+                        .flatMap(aBoolean ->
+                                aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2e-export")))
-                .hide(PlatformThread.sync(
-                        BindingsHelper.persist(Bindings.isEmpty(model.getItems()))))
+                .hide(PlatformThread.sync(BindingsHelper.persist(Bindings.isEmpty(model.getItems()))))
                 .grow(true, false)
                 .apply(struc -> struc.get().setPadding(new Insets(8)));
 
@@ -95,7 +108,8 @@ public class BrowserTransferComp extends SimpleComp {
                                 }
 
                                 // Accept drops from outside the app window
-                                if (event.getGestureSource() == null && !event.getDragboard().getFiles().isEmpty()) {
+                                if (event.getGestureSource() == null
+                                        && !event.getDragboard().getFiles().isEmpty()) {
                                     event.acceptTransferModes(TransferMode.ANY);
                                     event.consume();
                                 }
@@ -109,7 +123,11 @@ public class BrowserTransferComp extends SimpleComp {
                                     }
 
                                     var files = drag.getEntries();
-                                    model.drop(model.getBrowserModel().getSelected().getValue(), files);
+                                    model.drop(
+                                            model.getBrowserModel()
+                                                    .getSelected()
+                                                    .getValue(),
+                                            files);
                                     event.setDropCompleted(true);
                                     event.consume();
                                 }
@@ -126,7 +144,9 @@ public class BrowserTransferComp extends SimpleComp {
                                     return;
                                 }
 
-                                var selected = model.getItems().stream().map(BrowserTransferModel.Item::getFileEntry).toList();
+                                var selected = model.getItems().stream()
+                                        .map(BrowserTransferModel.Item::getFileEntry)
+                                        .toList();
                                 Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
 
                                 var cc = BrowserClipboard.startDrag(null, selected);
@@ -143,9 +163,8 @@ public class BrowserTransferComp extends SimpleComp {
                                                     return Optional.<File>empty();
                                                 }
 
-                                                return Optional.of(file
-                                                        .toRealPath()
-                                                        .toFile());
+                                                return Optional.of(
+                                                        file.toRealPath().toFile());
                                             } catch (IOException e) {
                                                 throw new RuntimeException(e);
                                             }

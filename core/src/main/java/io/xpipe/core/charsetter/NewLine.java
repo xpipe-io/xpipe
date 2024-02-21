@@ -12,6 +12,7 @@ public enum NewLine {
     CRLF("\r\n", "crlf");
 
     private final String newLine;
+
     @Getter
     private final String id;
 
@@ -37,5 +38,4 @@ public enum NewLine {
     public String getNewLineString() {
         return newLine;
     }
-
 }

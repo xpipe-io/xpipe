@@ -26,8 +26,12 @@ public abstract class MultiExecuteAction implements BranchAction {
                                     for (BrowserEntry entry : entries) {
                                         TerminalLauncher.open(
                                                 model.getEntry().getEntry(),
-                                                FilenameUtils.getBaseName(entry.getRawFileEntry().getPath()),
-                                                model.getCurrentDirectory() != null ? model.getCurrentDirectory().getPath() : null,
+                                                FilenameUtils.getBaseName(
+                                                        entry.getRawFileEntry().getPath()),
+                                                model.getCurrentDirectory() != null
+                                                        ? model.getCurrentDirectory()
+                                                                .getPath()
+                                                        : null,
                                                 pc.command(createCommand(pc, model, entry)));
                                     }
                                 },
@@ -35,14 +39,14 @@ public abstract class MultiExecuteAction implements BranchAction {
                     }
 
                     @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return AppPrefs.get().terminalType().getValue() != null;
-                    }
-
-                    @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
                         return "in " + (t != null ? t.toTranslatedString() : "?");
+                    }
+
+                    @Override
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppPrefs.get().terminalType().getValue() != null;
                     }
                 },
                 new LeafAction() {
@@ -52,7 +56,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = ApplicationHelper.createDetachCommand(pc, createCommand(pc, model, entry));
+                                        var cmd = ApplicationHelper.createDetachCommand(
+                                                pc, createCommand(pc, model, entry));
                                         pc.command(cmd)
                                                 .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())

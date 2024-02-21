@@ -33,8 +33,16 @@ public class ImpersistentStorage extends DataStorage {
             storeCategories.add(cat);
         }
         {
-            var cat = new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID, "Default", Instant.now(),
-                    Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, StoreSortMode.ALPHABETICAL_ASC, true);
+            var cat = new DataStoreCategory(
+                    categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
+                    DEFAULT_CATEGORY_UUID,
+                    "Default",
+                    Instant.now(),
+                    Instant.now(),
+                    true,
+                    ALL_CONNECTIONS_CATEGORY_UUID,
+                    StoreSortMode.ALPHABETICAL_ASC,
+                    true);
             storeCategories.add(cat);
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
         }
@@ -46,11 +54,6 @@ public class ImpersistentStorage extends DataStorage {
                 StorageElement.Configuration.builder().deletable(false).build());
         storeEntries.put(e, e);
         e.validate();
-    }
-
-    @Override
-    public boolean supportsSharing() {
-        return false;
     }
 
     @Override
@@ -67,4 +70,8 @@ public class ImpersistentStorage extends DataStorage {
         }
     }
 
+    @Override
+    public boolean supportsSharing() {
+        return false;
+    }
 }

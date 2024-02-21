@@ -17,9 +17,12 @@ public abstract class StorageElement {
 
     @Getter
     protected final UUID uuid;
+
     protected final List<Listener> listeners = new ArrayList<>();
+
     @Getter
     protected boolean dirty;
+
     @Getter
     protected Path directory;
 
@@ -28,6 +31,7 @@ public abstract class StorageElement {
 
     @Getter
     protected Instant lastUsed;
+
     @Getter
     protected Instant lastModified;
 

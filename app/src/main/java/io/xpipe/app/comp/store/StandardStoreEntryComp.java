@@ -12,7 +12,6 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         super(entry, content);
     }
 
-
     protected Region createContent() {
         var name = createName().createRegion();
 

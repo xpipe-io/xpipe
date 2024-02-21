@@ -37,7 +37,8 @@ public class StorageJacksonModule extends SimpleModule {
     public static class LocalFileReferenceSerializer extends JsonSerializer<ContextualFileReference> {
 
         @Override
-        public void serialize(ContextualFileReference value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(ContextualFileReference value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
             jgen.writeString(value.serialize());
         }
     }
@@ -53,7 +54,8 @@ public class StorageJacksonModule extends SimpleModule {
     public static class DataStoreSecretSerializer extends JsonSerializer<DataStoreSecret> {
 
         @Override
-        public void serialize(DataStoreSecret value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(DataStoreSecret value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
             // Preserve same output if not changed
             if (value.getOriginalNode() != null && !value.requiresRewrite()) {
                 var tree = JsonNodeFactory.instance.objectNode();
@@ -106,7 +108,8 @@ public class StorageJacksonModule extends SimpleModule {
     public static class DataStoreEntryRefSerializer extends JsonSerializer<DataStoreEntryRef> {
 
         @Override
-        public void serialize(DataStoreEntryRef value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(DataStoreEntryRef value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
             if (value == null) {
                 jgen.writeNull();
                 return;
@@ -134,7 +137,10 @@ public class StorageJacksonModule extends SimpleModule {
             }
 
             var id = UUID.fromString(text);
-            var e = DataStorage.get().getStoreEntryIfPresent(id).filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED).orElse(null);
+            var e = DataStorage.get()
+                    .getStoreEntryIfPresent(id)
+                    .filter(dataStoreEntry -> dataStoreEntry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
+                    .orElse(null);
             if (e == null) {
                 return null;
             }

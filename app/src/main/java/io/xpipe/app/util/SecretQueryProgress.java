@@ -7,7 +7,9 @@ import io.xpipe.core.util.SecretValue;
 import lombok.Getter;
 import lombok.NonNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 public class SecretQueryProgress {
@@ -20,7 +22,12 @@ public class SecretQueryProgress {
     private final CountDown countDown;
     private boolean requestCancelled;
 
-    public SecretQueryProgress(@NonNull UUID requestId, @NonNull UUID storeId, @NonNull List<SecretQuery> suppliers, @NonNull SecretQuery fallback, @NonNull CountDown countDown) {
+    public SecretQueryProgress(
+            @NonNull UUID requestId,
+            @NonNull UUID storeId,
+            @NonNull List<SecretQuery> suppliers,
+            @NonNull SecretQuery fallback,
+            @NonNull CountDown countDown) {
         this.requestId = requestId;
         this.storeId = storeId;
         this.suppliers = new ArrayList<>(suppliers);
@@ -61,7 +68,9 @@ public class SecretQueryProgress {
 
         var ref = new SecretReference(storeId, firstSeenIndex);
         var sup = suppliers.get(firstSeenIndex);
-        var shouldCache = sup.cache() && SecretManager.shouldCacheForPrompt(prompt) && !AppPrefs.get().dontCachePasswords().get();
+        var shouldCache = sup.cache()
+                && SecretManager.shouldCacheForPrompt(prompt)
+                && !AppPrefs.get().dontCachePasswords().get();
         var wasLastPrompt = firstSeenIndex == seenPrompts.size() - 1;
 
         // Clear cache if secret was wrong/queried again

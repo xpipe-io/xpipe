@@ -34,14 +34,22 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var info = wrapper.getEntry().getProvider().informationString(wrapper);
         var summary = wrapper.getSummary();
         if (wrapper.getEntry().getProvider() != null) {
-            information.textProperty().bind(PlatformThread.sync(Bindings.createStringBinding(() -> {
-                var val = summary.getValue();
-                if (val != null && grid.isHover() && wrapper.getEntry().getProvider().alwaysShowSummary()) {
-                    return val;
-                } else {
-                    return info.getValue();
-                }
-            }, grid.hoverProperty(), info, summary)));
+            information
+                    .textProperty()
+                    .bind(PlatformThread.sync(Bindings.createStringBinding(
+                            () -> {
+                                var val = summary.getValue();
+                                if (val != null
+                                        && grid.isHover()
+                                        && wrapper.getEntry().getProvider().alwaysShowSummary()) {
+                                    return val;
+                                } else {
+                                    return info.getValue();
+                                }
+                            },
+                            grid.hoverProperty(),
+                            info,
+                            summary)));
         }
 
         return information;
@@ -52,9 +60,12 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.setHgap(8);
 
         var name = createName().createRegion();
-        name.maxWidthProperty().bind(Bindings.createDoubleBinding(() -> {
-            return grid.getWidth() / 2.5;
-        }, grid.widthProperty()));
+        name.maxWidthProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            return grid.getWidth() / 2.5;
+                        },
+                        grid.widthProperty()));
 
         if (showIcon) {
             var storeIcon = createIcon(30, 24);

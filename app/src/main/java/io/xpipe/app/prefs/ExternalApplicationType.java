@@ -23,14 +23,14 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         this.id = id;
     }
 
+    public abstract boolean isAvailable();
+
+    public abstract boolean isSelectable();
+
     @Override
     public String getId() {
         return id;
     }
-
-    public abstract boolean isSelectable();
-
-    public abstract boolean isAvailable();
 
     @Override
     public String toString() {
@@ -60,16 +60,21 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
                     // Check if returned paths are actually valid
                     // Also sort them by length to prevent finding a deeply buried app
-                    var valid = path.lines().filter(s -> {
-                        try {
-                            return Files.exists(Path.of(s));
-                        } catch (Exception ex) {
-                            return false;
-                        }
-                    }).sorted(Comparator.comparingInt(value -> value.length())).toList();
+                    var valid = path.lines()
+                            .filter(s -> {
+                                try {
+                                    return Files.exists(Path.of(s));
+                                } catch (Exception ex) {
+                                    return false;
+                                }
+                            })
+                            .sorted(Comparator.comparingInt(value -> value.length()))
+                            .toList();
 
                     // Require app in proper applications directory
-                    var app = valid.stream().filter(s -> s.contains("Applications")).findFirst();
+                    var app = valid.stream()
+                            .filter(s -> s.contains("Applications"))
+                            .findFirst();
                     return app.map(Path::of);
                 }
             } catch (Exception e) {
@@ -117,7 +122,10 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                 }
 
                 if (ShellDialects.isPowershell(pc)) {
-                    var cmd = CommandBuilder.of().add("Start-Process", "-FilePath").addFile(executable).add("-ArgumentList")
+                    var cmd = CommandBuilder.of()
+                            .add("Start-Process", "-FilePath")
+                            .addFile(executable)
+                            .add("-ArgumentList")
                             .add(pc.getShellDialect().literalArgument(args));
                     pc.executeSimpleCommand(cmd);
                     return;
@@ -148,7 +156,8 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var cc = LocalShell.getShell()
-                    .command(CommandBuilder.ofFunction(var1 -> var1.getShellDialect().getWhichCommand(executable)))
+                    .command(CommandBuilder.ofFunction(
+                            var1 -> var1.getShellDialect().getWhichCommand(executable)))
                     .start()) {
                 var out = cc.readStdoutDiscardErr();
                 var exit = cc.getExitCode();

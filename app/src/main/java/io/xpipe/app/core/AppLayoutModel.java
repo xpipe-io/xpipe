@@ -21,16 +21,20 @@ import java.util.List;
 
 public class AppLayoutModel {
 
-    @Data
-    @Builder
-    @Jacksonized
-    public static class SavedState {
-
-        double sidebarWidth;
-        double browserConnectionsWidth;
-    }
-
     private static AppLayoutModel INSTANCE;
+    @Getter
+    private final SavedState savedState;
+    @Getter
+    private final List<Entry> entries;
+    private final Property<Entry> selected;
+    private final ObservableValue<Entry> selectedWrapper;
+
+    public AppLayoutModel(SavedState savedState) {
+        this.savedState = savedState;
+        this.entries = createEntryList();
+        this.selected = new SimpleObjectProperty<>(entries.get(1));
+        this.selectedWrapper = PlatformThread.sync(selected);
+    }
 
     public static AppLayoutModel get() {
         return INSTANCE;
@@ -44,20 +48,6 @@ public class AppLayoutModel {
     public static void reset() {
         AppCache.update("layoutState", INSTANCE.savedState);
         INSTANCE = null;
-    }
-
-    @Getter
-    private final SavedState savedState;
-    @Getter
-    private final List<Entry> entries;
-    private final Property<Entry> selected;
-    private final ObservableValue<Entry> selectedWrapper;
-
-    public AppLayoutModel(SavedState savedState) {
-        this.savedState = savedState;
-        this.entries = createEntryList();
-        this.selected = new SimpleObjectProperty<>(entries.get(1));
-        this.selectedWrapper = PlatformThread.sync(selected);
     }
 
     public Property<Entry> getSelectedInternal() {
@@ -86,17 +76,14 @@ public class AppLayoutModel {
 
     private List<Entry> createEntryList() {
         var l = new ArrayList<>(List.of(
-                new Entry(
-                        AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
+                new Entry(AppI18n.observable("browser"), "mdi2f-file-cabinet", new BrowserComp(BrowserModel.DEFAULT)),
                 new Entry(AppI18n.observable("connections"), "mdi2c-connection", new StoreLayoutComp()),
-                new Entry(
-                        AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp())));
+                new Entry(AppI18n.observable("settings"), "mdsmz-miscellaneous_services", new AppPrefsComp())));
         // new SideMenuBarComp.Entry(AppI18n.observable("help"), "mdi2b-book-open-variant", new
         // StorageLayoutComp()),
         // new SideMenuBarComp.Entry(AppI18n.observable("account"), "mdi2a-account", new StorageLayoutComp())
         if (AppProperties.get().isDeveloperMode() && !AppProperties.get().isImage()) {
-            l.add(new Entry(
-                    AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
+            l.add(new Entry(AppI18n.observable("developer"), "mdi2b-book-open-variant", new DeveloperTabComp()));
         }
 
         l.add(new Entry(
@@ -105,6 +92,15 @@ public class AppLayoutModel {
                 LicenseProvider.get().overviewPage()));
 
         return l;
+    }
+
+    @Data
+    @Builder
+    @Jacksonized
+    public static class SavedState {
+
+        double sidebarWidth;
+        double browserConnectionsWidth;
     }
 
     public record Entry(ObservableValue<String> name, String icon, Comp<?> comp) {}

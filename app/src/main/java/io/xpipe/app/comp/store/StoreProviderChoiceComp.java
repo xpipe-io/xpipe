@@ -28,7 +28,9 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
     boolean staticDisplay;
 
     private List<DataStoreProvider> getProviders() {
-        return DataStoreProviders.getAll().stream().filter(val -> filter == null || filter.test(val)).toList();
+        return DataStoreProviders.getAll().stream()
+                .filter(val -> filter == null || filter.test(val))
+                .toList();
     }
 
     private Region createGraphic(DataStoreProvider provider) {

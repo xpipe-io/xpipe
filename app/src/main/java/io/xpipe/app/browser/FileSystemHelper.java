@@ -20,6 +20,9 @@ import java.util.function.Consumer;
 
 public class FileSystemHelper {
 
+    private static final int DEFAULT_BUFFER_SIZE = 16384;
+    private static FileSystem localFileSystem;
+
     public static String adjustPath(OpenFileSystemModel model, String path) {
         if (path == null) {
             return null;
@@ -120,7 +123,8 @@ public class FileSystemHelper {
         }
 
         if (!model.getFileSystem().directoryExists(path)) {
-            throw ErrorEvent.unreportable(new IllegalArgumentException(String.format("Directory %s does not exist", path)));
+            throw ErrorEvent.unreportable(
+                    new IllegalArgumentException(String.format("Directory %s does not exist", path)));
         }
 
         try {
@@ -130,8 +134,6 @@ public class FileSystemHelper {
             throw ex;
         }
     }
-
-    private static FileSystem localFileSystem;
 
     public static FileSystem.FileEntry getLocal(Path file) throws Exception {
         if (localFileSystem == null) {
@@ -150,7 +152,8 @@ public class FileSystemHelper {
                 Files.isDirectory(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }
 
-    public static void dropLocalFilesInto(FileSystem.FileEntry entry, List<Path> files, Consumer<BrowserTransferProgress> progress) throws Exception {
+    public static void dropLocalFilesInto(
+            FileSystem.FileEntry entry, List<Path> files, Consumer<BrowserTransferProgress> progress) throws Exception {
         var entries = files.stream()
                 .map(path -> {
                     try {
@@ -178,8 +181,11 @@ public class FileSystemHelper {
     }
 
     public static void dropFilesInto(
-            FileSystem.FileEntry target, List<FileSystem.FileEntry> files, boolean explicitCopy, Consumer<BrowserTransferProgress> progress
-    ) throws Exception {
+            FileSystem.FileEntry target,
+            List<FileSystem.FileEntry> files,
+            boolean explicitCopy,
+            Consumer<BrowserTransferProgress> progress)
+            throws Exception {
         if (files.isEmpty()) {
             progress.accept(BrowserTransferProgress.empty());
             return;
@@ -204,7 +210,12 @@ public class FileSystemHelper {
     }
 
     private static void dropFileAcrossSameFileSystem(
-            FileSystem.FileEntry target, FileSystem.FileEntry source, boolean explicitCopy, AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice, boolean multiple) throws Exception {
+            FileSystem.FileEntry target,
+            FileSystem.FileEntry source,
+            boolean explicitCopy,
+            AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice,
+            boolean multiple)
+            throws Exception {
         // Prevent dropping directory into itself
         if (source.getPath().equals(target.getPath())) {
             return;
@@ -218,7 +229,8 @@ public class FileSystemHelper {
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
-            throw ErrorEvent.unreportable(new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
+            throw ErrorEvent.unreportable(
+                    new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
         }
 
         if (!handleChoice(lastConflictChoice, target.getFileSystem(), targetFile, multiple)) {
@@ -232,7 +244,12 @@ public class FileSystemHelper {
         }
     }
 
-    private static void dropFileAcrossFileSystems(FileSystem.FileEntry target, FileSystem.FileEntry source, Consumer<BrowserTransferProgress> progress, AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice, boolean multiple)
+    private static void dropFileAcrossFileSystems(
+            FileSystem.FileEntry target,
+            FileSystem.FileEntry source,
+            Consumer<BrowserTransferProgress> progress,
+            AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice,
+            boolean multiple)
             throws Exception {
         if (target.getKind() != FileKind.DIRECTORY) {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
@@ -273,7 +290,8 @@ public class FileSystemHelper {
             if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
             } else if (sourceFile.getKind() == FileKind.FILE) {
-                if (!handleChoice(lastConflictChoice, target.getFileSystem(), targetFile, multiple || flatFiles.size() > 1)) {
+                if (!handleChoice(
+                        lastConflictChoice, target.getFileSystem(), targetFile, multiple || flatFiles.size() > 1)) {
                     continue;
                 }
 
@@ -282,7 +300,7 @@ public class FileSystemHelper {
                 try {
                     inputStream = sourceFile.getFileSystem().openInput(sourceFile.getPath());
                     outputStream = target.getFileSystem().openOutput(targetFile, source.getSize());
-                    transfer(source,inputStream, outputStream,transferred, totalSize, progress);
+                    transfer(source, inputStream, outputStream, transferred, totalSize, progress);
                     inputStream.transferTo(OutputStream.nullOutputStream());
                 } catch (Exception ex) {
                     if (inputStream != null) {
@@ -325,7 +343,12 @@ public class FileSystemHelper {
         progress.accept(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
     }
 
-    private static boolean handleChoice(AtomicReference<BrowserAlerts.FileConflictChoice> previous, FileSystem fileSystem, String target, boolean multiple) throws Exception {
+    private static boolean handleChoice(
+            AtomicReference<BrowserAlerts.FileConflictChoice> previous,
+            FileSystem fileSystem,
+            String target,
+            boolean multiple)
+            throws Exception {
         if (previous.get() == BrowserAlerts.FileConflictChoice.CANCEL) {
             return false;
         }
@@ -338,7 +361,6 @@ public class FileSystemHelper {
             if (previous.get() == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
                 return false;
             }
-
 
             var choice = BrowserAlerts.showFileConflictAlert(target, multiple);
             if (choice == BrowserAlerts.FileConflictChoice.CANCEL) {
@@ -363,9 +385,14 @@ public class FileSystemHelper {
         return true;
     }
 
-    private static final int DEFAULT_BUFFER_SIZE = 16384;
-
-    private static void transfer(FileSystem.FileEntry source, InputStream inputStream, OutputStream outputStream, AtomicLong transferred, AtomicLong total, Consumer<BrowserTransferProgress> progress) throws IOException {
+    private static void transfer(
+            FileSystem.FileEntry source,
+            InputStream inputStream,
+            OutputStream outputStream,
+            AtomicLong transferred,
+            AtomicLong total,
+            Consumer<BrowserTransferProgress> progress)
+            throws IOException {
         var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, source.getSize());
         byte[] buffer = new byte[bs];
         int read;

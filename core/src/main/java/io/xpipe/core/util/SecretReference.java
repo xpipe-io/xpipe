@@ -9,13 +9,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class SecretReference {
 
-    public static SecretReference ofUuid(UUID secretId) {
-        return new SecretReference(secretId, 0);
-    }
-
     UUID secretId;
     int subId;
-
     public SecretReference(Object store) {
         this.secretId = UuidHelper.generateFromObject(store);
         this.subId = 0;
@@ -24,5 +19,9 @@ public class SecretReference {
     public SecretReference(Object store, int sub) {
         this.secretId = UuidHelper.generateFromObject(store);
         this.subId = sub;
+    }
+
+    public static SecretReference ofUuid(UUID secretId) {
+        return new SecretReference(secretId, 0);
     }
 }

@@ -21,14 +21,12 @@ public interface CommandControl extends ProcessControl {
     int INTERNAL_ERROR_EXIT_CODE = 163;
     int ELEVATION_FAILED_EXIT_CODE = 164;
 
-    enum TerminalExitMode {
-        KEEP_OPEN,
-        CLOSE
-    }
-
     void setSensitive();
 
     CommandControl withExceptionConverter(ExceptionConverter converter);
+
+    @Override
+    CommandControl start() throws Exception;
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
 
@@ -72,9 +70,6 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl elevated(String message, FailableFunction<ShellControl, Boolean, Exception> elevationFunction);
 
-    @Override
-    CommandControl start() throws Exception;
-
     void withStdoutOrThrow(FailableConsumer<InputStreamReader, Exception> c);
 
     String readStdoutDiscardErr() throws Exception;
@@ -113,4 +108,9 @@ public interface CommandControl extends ProcessControl {
     void discardOut();
 
     void discardErr();
+
+    enum TerminalExitMode {
+        KEEP_OPEN,
+        CLOSE
+    }
 }

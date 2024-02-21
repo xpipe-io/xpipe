@@ -45,26 +45,25 @@ public class DeveloperCategory extends AppPrefsCategory {
         };
 
         var runLocalCommand = new HorizontalComp(List.of(
-                                new TextFieldComp(localCommand)
-                                        .apply(struc -> struc.get().setPromptText("Local command"))
-                                        .styleClass(Styles.LEFT_PILL)
-                                        .grow(false, true),
-                                new ButtonComp(null, new FontIcon("mdi2p-play"), test)
-                                        .styleClass(Styles.RIGHT_PILL)
-                                        .grow(false, true)))
-                        .padding(new Insets(15, 0, 0, 0))
-                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                        .apply(struc -> struc.get().setFillHeight(true));
+                        new TextFieldComp(localCommand)
+                                .apply(struc -> struc.get().setPromptText("Local command"))
+                                .styleClass(Styles.LEFT_PILL)
+                                .grow(false, true),
+                        new ButtonComp(null, new FontIcon("mdi2p-play"), test)
+                                .styleClass(Styles.RIGHT_PILL)
+                                .grow(false, true)))
+                .padding(new Insets(15, 0, 0, 0))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> struc.get().setFillHeight(true));
         return new OptionsBuilder()
                 .addTitle("developer")
                 .sub(new OptionsBuilder()
-                    .nameAndDescription("developerDisableUpdateVersionCheck")
-                    .addToggle(prefs.developerDisableUpdateVersionCheck)
-                    .nameAndDescription("developerDisableGuiRestrictions")
-                    .addToggle(prefs.developerDisableGuiRestrictions)
-                    .nameAndDescription("shellCommandTest")
-                    .addComp(runLocalCommand)
-                )
+                        .nameAndDescription("developerDisableUpdateVersionCheck")
+                        .addToggle(prefs.developerDisableUpdateVersionCheck)
+                        .nameAndDescription("developerDisableGuiRestrictions")
+                        .addToggle(prefs.developerDisableGuiRestrictions)
+                        .nameAndDescription("shellCommandTest")
+                        .addComp(runLocalCommand))
                 .buildComp();
     }
 }

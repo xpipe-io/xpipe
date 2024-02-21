@@ -16,14 +16,14 @@ public abstract class DataStoreState {
     public abstract void merge(DataStoreState newer);
 
     @SneakyThrows
-    public String toString() {
-        var tree = JacksonMapper.getDefault().valueToTree(this);
-        return tree.toPrettyString();
-    }
-
-    @SneakyThrows
     public DataStoreState deepCopy() {
         return JacksonMapper.getDefault().treeToValue(JacksonMapper.getDefault().valueToTree(this), getClass());
+    }
+
+    @Override
+    public final int hashCode() {
+        var tree = JacksonMapper.getDefault().valueToTree(this);
+        return tree.hashCode();
     }
 
     @Override
@@ -40,9 +40,9 @@ public abstract class DataStoreState {
         return tree.equals(otherTree);
     }
 
-    @Override
-    public final int hashCode() {
+    @SneakyThrows
+    public String toString() {
         var tree = JacksonMapper.getDefault().valueToTree(this);
-        return tree.hashCode();
+        return tree.toPrettyString();
     }
 }

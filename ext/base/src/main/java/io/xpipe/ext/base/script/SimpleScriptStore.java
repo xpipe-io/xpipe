@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 @JsonTypeName("script")
 public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
 
+    private final ShellDialect minimumDialect;
+    private final String commands;
+    private final ExecutionType executionType;
+
     private String assemble(ShellControl shellControl, ExecutionType type) {
         var targetType = type == ExecutionType.TERMINAL_ONLY
                 ? shellControl.getOriginalShellDialect()
@@ -42,10 +46,21 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
     }
 
     @Override
-    public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
-        return scripts != null
-                ? scripts.stream().filter(Objects::nonNull).toList()
-                : List.of();
+    public String content(ShellControl shellControl) {
+        return assemble(shellControl, executionType);
+    }
+
+    @Override
+    public ScriptSnippet.ExecutionType executionType() {
+        return executionType;
+    }
+
+    @Override
+    public void checkComplete() throws Throwable {
+        Validators.nonNull(group);
+        super.checkComplete();
+        Validators.nonNull(executionType);
+        Validators.nonNull(minimumDialect);
     }
 
     public void queryFlattenedScripts(LinkedHashSet<SimpleScriptStore> all) {
@@ -61,24 +76,7 @@ public class SimpleScriptStore extends ScriptStore implements ScriptSnippet {
     }
 
     @Override
-    public String content(ShellControl shellControl) {
-        return assemble(shellControl, executionType);
-    }
-
-    @Override
-    public ScriptSnippet.ExecutionType executionType() {
-        return executionType;
-    }
-
-    private final ShellDialect minimumDialect;
-    private final String commands;
-    private final ExecutionType executionType;
-
-    @Override
-    public void checkComplete() throws Throwable {
-        Validators.nonNull(group);
-        super.checkComplete();
-        Validators.nonNull(executionType);
-        Validators.nonNull(minimumDialect);
+    public List<DataStoreEntryRef<ScriptStore>> getEffectiveScripts() {
+        return scripts != null ? scripts.stream().filter(Objects::nonNull).toList() : List.of();
     }
 }

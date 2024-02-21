@@ -61,7 +61,8 @@ public class StoreCreationComp extends DialogComp {
     boolean staticDisplay;
 
     public StoreCreationComp(
-            Stage window, Consumer<DataStoreEntry> consumer,
+            Stage window,
+            Consumer<DataStoreEntry> consumer,
             Property<DataStoreProvider> provider,
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
@@ -101,36 +102,42 @@ public class StoreCreationComp extends DialogComp {
                 newValue.validate();
             });
         });
-        this.entry = Bindings.createObjectBinding(() -> {
-            if (name.getValue() == null || store.getValue() == null) {
-                return null;
-            }
+        this.entry = Bindings.createObjectBinding(
+                () -> {
+                    if (name.getValue() == null || store.getValue() == null) {
+                        return null;
+                    }
 
-            var testE = DataStoreEntry.createNew(
-                    UUID.randomUUID(),
-                    DataStorage.get().getSelectedCategory().getUuid(),
-                    name.getValue(),
-                    store.getValue());
-            var p = provider.getValue().getDisplayParent(testE);
+                    var testE = DataStoreEntry.createNew(
+                            UUID.randomUUID(),
+                            DataStorage.get().getSelectedCategory().getUuid(),
+                            name.getValue(),
+                            store.getValue());
+                    var p = provider.getValue().getDisplayParent(testE);
 
-            var targetCategory = p != null
-                    ? p.getCategoryUuid()
-                    : DataStorage.get()
-                    .getSelectedCategory()
-                    .getUuid();
-            var rootCategory = DataStorage.get().getRootCategory(DataStorage.get().getStoreCategoryIfPresent(targetCategory).orElseThrow());
-            // Don't put connections in the scripts category ever
-            if ((provider.getValue().getCreationCategory() == null || !provider.getValue().getCreationCategory().equals(DataStoreProvider.CreationCategory.SCRIPT)) &&
-                    rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
-                targetCategory = DataStorage.get().getDefaultConnectionsCategory().getUuid();
-            }
+                    var targetCategory = p != null
+                            ? p.getCategoryUuid()
+                            : DataStorage.get().getSelectedCategory().getUuid();
+                    var rootCategory = DataStorage.get()
+                            .getRootCategory(DataStorage.get()
+                                    .getStoreCategoryIfPresent(targetCategory)
+                                    .orElseThrow());
+                    // Don't put connections in the scripts category ever
+                    if ((provider.getValue().getCreationCategory() == null
+                                    || !provider.getValue()
+                                            .getCreationCategory()
+                                            .equals(DataStoreProvider.CreationCategory.SCRIPT))
+                            && rootCategory.equals(DataStorage.get().getAllScriptsCategory())) {
+                        targetCategory = DataStorage.get()
+                                .getDefaultConnectionsCategory()
+                                .getUuid();
+                    }
 
-            return DataStoreEntry.createNew(
-                    UUID.randomUUID(),
-                    targetCategory,
-                    name.getValue(),
-                    store.getValue());
-        }, name, store);
+                    return DataStoreEntry.createNew(
+                            UUID.randomUUID(), targetCategory, name.getValue(), store.getValue());
+                },
+                name,
+                store);
     }
 
     public static void showEdit(DataStoreEntry e) {
@@ -186,60 +193,18 @@ public class StoreCreationComp extends DialogComp {
             DataStoreEntry existingEntry) {
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
-        DialogComp.showWindow("addConnection", stage -> new StoreCreationComp(
-                stage, con, prop, store, filter, initialName, existingEntry, staticDisplay));
-    }
-
-    @Override
-    protected List<Comp<?>> customButtons() {
-        return List.of(new ButtonComp(AppI18n.observable("skip"), null, () -> {
-            if (showInvalidConfirmAlert()) {
-                commit();
-            } else {
-                finish();
-            }
-        }).visible(skippable));
-    }
-
-    @Override
-    protected ObservableValue<Boolean> busy() {
-        return busy;
-    }
-
-    @Override
-    public Comp<?> bottom() {
-        var disable = Bindings.createBooleanBinding(
-                () -> {
-                    return provider.getValue() == null
-                            || store.getValue() == null
-                            || !store.getValue().isComplete()
-                            // When switching providers, both observables change one after another.
-                            // So temporarily there might be a store class mismatch
-                            || provider.getValue().getStoreClasses().stream().noneMatch(aClass -> aClass.isAssignableFrom(store.getValue().getClass()))
-                            || provider.getValue().createInsightsMarkdown(store.getValue()) == null;
-                },
-                provider,
-                store);
-        return new PopupMenuButtonComp(
-                        new SimpleStringProperty("Insights >"),
-                        Comp.of(() -> {
-                            return provider.getValue() != null
-                                    ? provider.getValue()
-                                            .createInsightsComp(store)
-                                            .createRegion()
-                                    : null;
-                        }),
-                true)
-                .hide(disable)
-                .styleClass("button-comp");
+        DialogComp.showWindow(
+                "addConnection",
+                stage -> new StoreCreationComp(
+                        stage, con, prop, store, filter, initialName, existingEntry, staticDisplay));
     }
 
     private static boolean showInvalidConfirmAlert() {
         return AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("confirmInvalidStoreTitle"));
                     alert.setHeaderText(AppI18n.get("confirmInvalidStoreHeader"));
-                    alert.getDialogPane().setContent(AppWindowHelper.alertContentText(
-                            AppI18n.get("confirmInvalidStoreContent")));
+                    alert.getDialogPane()
+                            .setContent(AppWindowHelper.alertContentText(AppI18n.get("confirmInvalidStoreContent")));
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
                     alert.getButtonTypes().clear();
                     alert.getButtonTypes().add(new ButtonType("Retry", ButtonBar.ButtonData.CANCEL_CLOSE));
@@ -249,29 +214,21 @@ public class StoreCreationComp extends DialogComp {
                 .orElse(false);
     }
 
-    private Region createStoreProperties(Comp<?> comp, Validator propVal) {
-        return new OptionsBuilder()
-                .addComp(comp, store)
-                .name("connectionName")
-                .description("connectionNameDescription")
-                .addString(name, false)
-                .nonNull(propVal)
-                .build();
+    @Override
+    protected List<Comp<?>> customButtons() {
+        return List.of(new ButtonComp(AppI18n.observable("skip"), null, () -> {
+                    if (showInvalidConfirmAlert()) {
+                        commit();
+                    } else {
+                        finish();
+                    }
+                })
+                .visible(skippable));
     }
 
-    private void commit() {
-        if (finished.get()) {
-            return;
-        }
-        finished.setValue(true);
-
-        if (entry.getValue() != null) {
-            consumer.accept(entry.getValue());
-        }
-
-        PlatformThread.runLaterIfNeeded(() -> {
-            window.close();
-        });
+    @Override
+    protected ObservableValue<Boolean> busy() {
+        return busy;
     }
 
     @Override
@@ -337,14 +294,69 @@ public class StoreCreationComp extends DialogComp {
     }
 
     @Override
+    public Comp<?> content() {
+        return Comp.of(this::createLayout);
+    }
+
+    @Override
     protected Comp<?> scrollPane(Comp<?> content) {
         var back = super.scrollPane(content);
         return new ErrorOverlayComp(back, messageProp);
     }
 
     @Override
-    public Comp<?> content() {
-        return Comp.of(this::createLayout);
+    public Comp<?> bottom() {
+        var disable = Bindings.createBooleanBinding(
+                () -> {
+                    return provider.getValue() == null
+                            || store.getValue() == null
+                            || !store.getValue().isComplete()
+                            // When switching providers, both observables change one after another.
+                            // So temporarily there might be a store class mismatch
+                            || provider.getValue().getStoreClasses().stream()
+                                    .noneMatch(aClass -> aClass.isAssignableFrom(
+                                            store.getValue().getClass()))
+                            || provider.getValue().createInsightsMarkdown(store.getValue()) == null;
+                },
+                provider,
+                store);
+        return new PopupMenuButtonComp(
+                        new SimpleStringProperty("Insights >"),
+                        Comp.of(() -> {
+                            return provider.getValue() != null
+                                    ? provider.getValue()
+                                            .createInsightsComp(store)
+                                            .createRegion()
+                                    : null;
+                        }),
+                        true)
+                .hide(disable)
+                .styleClass("button-comp");
+    }
+
+    private Region createStoreProperties(Comp<?> comp, Validator propVal) {
+        return new OptionsBuilder()
+                .addComp(comp, store)
+                .name("connectionName")
+                .description("connectionNameDescription")
+                .addString(name, false)
+                .nonNull(propVal)
+                .build();
+    }
+
+    private void commit() {
+        if (finished.get()) {
+            return;
+        }
+        finished.setValue(true);
+
+        if (entry.getValue() != null) {
+            consumer.accept(entry.getValue());
+        }
+
+        PlatformThread.runLaterIfNeeded(() -> {
+            window.close();
+        });
     }
 
     private Region createLayout() {

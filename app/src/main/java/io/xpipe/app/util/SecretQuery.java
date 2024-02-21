@@ -12,11 +12,6 @@ public interface SecretQuery {
         return new SecretQuery() {
 
             @Override
-            public SecretQueryResult query(String prompt) {
-                return AskpassAlert.queryRaw(prompt, null);
-            }
-
-            @Override
             public Optional<SecretQueryResult> retrieveCache(String prompt, SecretReference reference) {
                 var found = SecretQuery.super.retrieveCache(prompt, reference);
                 if (found.isEmpty()) {
@@ -31,6 +26,11 @@ public interface SecretQuery {
                 var inPlace = found.get().getSecret().inPlace();
                 var r = AskpassAlert.queryRaw(prompt, inPlace);
                 return r.isCancelled() ? Optional.empty() : found;
+            }
+
+            @Override
+            public SecretQueryResult query(String prompt) {
+                return AskpassAlert.queryRaw(prompt, null);
             }
 
             @Override

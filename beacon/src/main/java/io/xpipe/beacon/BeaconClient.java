@@ -82,6 +82,17 @@ public class BeaconClient implements AutoCloseable {
             //            }
 
             @Override
+            public void close() throws ConnectorException {
+                try {
+                    getRawInputStream().readAllBytes();
+                } catch (IOException ex) {
+                    throw new ConnectorException(ex);
+                }
+
+                super.close();
+            }
+
+            @Override
             public <T extends ResponseMessage> T receiveResponse()
                     throws ConnectorException, ClientException, ServerException {
                 try {
@@ -92,17 +103,6 @@ public class BeaconClient implements AutoCloseable {
                 }
 
                 return super.receiveResponse();
-            }
-
-            @Override
-            public void close() throws ConnectorException {
-                try {
-                    getRawInputStream().readAllBytes();
-                } catch (IOException ex) {
-                    throw new ConnectorException(ex);
-                }
-
-                super.close();
             }
         };
     }
@@ -313,7 +313,6 @@ public class BeaconClient implements AutoCloseable {
             return "XPipe CLI";
         }
     }
-
 
     @JsonTypeName("daemon")
     @Value

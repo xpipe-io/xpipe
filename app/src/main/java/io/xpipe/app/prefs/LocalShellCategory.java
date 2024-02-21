@@ -18,12 +18,11 @@ public class LocalShellCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("localShell")
                 .sub(new OptionsBuilder()
-                    .nameAndDescription("useBundledTools")
-                    .addToggle(prefs.useBundledTools)
-                    .hide(new SimpleBooleanProperty(!OsType.getLocal().equals(OsType.WINDOWS)))
-                    .nameAndDescription("useLocalFallbackShell")
-                    .addToggle(prefs.useLocalFallbackShell)
-                )
+                        .nameAndDescription("useBundledTools")
+                        .addToggle(prefs.useBundledTools)
+                        .hide(new SimpleBooleanProperty(!OsType.getLocal().equals(OsType.WINDOWS)))
+                        .nameAndDescription("useLocalFallbackShell")
+                        .addToggle(prefs.useLocalFallbackShell))
                 .buildComp();
     }
 }

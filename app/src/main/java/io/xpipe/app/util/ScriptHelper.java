@@ -27,7 +27,13 @@ public class ScriptHelper {
         }
     }
 
-    public static String constructTerminalInitFile(ShellDialect t, ShellControl processControl, FailableFunction<ShellControl, String, Exception> workingDirectory, List<String> init, String toExecuteInShell, TerminalInitScriptConfig config)
+    public static String constructTerminalInitFile(
+            ShellDialect t,
+            ShellControl processControl,
+            FailableFunction<ShellControl, String, Exception> workingDirectory,
+            List<String> init,
+            String toExecuteInShell,
+            TerminalInitScriptConfig config)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
@@ -50,7 +56,7 @@ public class ScriptHelper {
         }
 
         if (config.getDisplayName() != null) {
-            content += nl + t.changeTitleCommand(config.getDisplayName())  + nl;
+            content += nl + t.changeTitleCommand(config.getDisplayName()) + nl;
         }
 
         if (workingDirectory != null) {
@@ -127,22 +133,24 @@ public class ScriptHelper {
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
-                var content = sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix);
+                var content =
+                        sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix);
                 return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
-            var content = parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix);
+            var content =
+                    parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix);
             return createExecScript(parent.getShellDialect(), parent, file, content);
         }
     }
 
-    public static String createTerminalPreparedAskpassScript(SecretValue pass, ShellControl parent, boolean forceExecutable)
-            throws Exception {
+    public static String createTerminalPreparedAskpassScript(
+            SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
         return createTerminalPreparedAskpassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable);
     }
 
-    public static String createTerminalPreparedAskpassScript(List<SecretValue> pass, ShellControl parent, boolean forceExecutable)
-            throws Exception {
+    public static String createTerminalPreparedAskpassScript(
+            List<SecretValue> pass, ShellControl parent, boolean forceExecutable) throws Exception {
         var scriptType = parent.getShellDialect();
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
@@ -153,14 +161,15 @@ public class ScriptHelper {
         return createTerminalPreparedAskpassScript(pass, parent, scriptType);
     }
 
-    private static String createTerminalPreparedAskpassScript(List<SecretValue> pass, ShellControl parent, ShellDialect type)
-            throws Exception {
+    private static String createTerminalPreparedAskpassScript(
+            List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
         var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
         var temp = parent.getSystemTemporaryDirectory();
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
-                var content = sub.getShellDialect().getAskpass()
+                var content = sub.getShellDialect()
+                        .getAskpass()
                         .prepareFixedContent(
                                 sub,
                                 file,
@@ -170,7 +179,8 @@ public class ScriptHelper {
                 return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
-            var content = parent.getShellDialect().getAskpass()
+            var content = parent.getShellDialect()
+                    .getAskpass()
                     .prepareFixedContent(
                             parent,
                             file,

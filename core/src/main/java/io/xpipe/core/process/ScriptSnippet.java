@@ -5,6 +5,10 @@ import lombok.Getter;
 
 public interface ScriptSnippet {
 
+    String content(ShellControl shellControl);
+
+    ExecutionType executionType();
+
     @Getter
     enum ExecutionType {
         @JsonProperty("dumbOnly")
@@ -28,8 +32,4 @@ public interface ScriptSnippet {
             return this == TERMINAL_ONLY || this == BOTH;
         }
     }
-
-    String content(ShellControl shellControl);
-
-    ExecutionType executionType();
 }

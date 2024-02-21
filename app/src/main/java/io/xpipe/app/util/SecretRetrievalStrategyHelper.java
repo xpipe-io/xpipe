@@ -20,7 +20,10 @@ public class SecretRetrievalStrategyHelper {
 
     private static OptionsBuilder inPlace(Property<SecretRetrievalStrategy.InPlace> p) {
         var original = p.getValue() != null ? p.getValue().getValue() : null;
-        var secretProperty = new SimpleObjectProperty<>(p.getValue() != null && p.getValue().getValue() != null ? p.getValue().getValue().getInternalSecret() : null);
+        var secretProperty = new SimpleObjectProperty<>(
+                p.getValue() != null && p.getValue().getValue() != null
+                        ? p.getValue().getValue().getInternalSecret()
+                        : null);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty), secretProperty)
                 .bind(
@@ -29,7 +32,8 @@ public class SecretRetrievalStrategyHelper {
                             var changed = !Arrays.equals(
                                     newSecret != null ? newSecret.getSecret() : new char[0],
                                     original != null ? original.getSecret() : new char[0]);
-                            return new SecretRetrievalStrategy.InPlace(changed ? new DataStoreSecret(secretProperty.getValue()) : original);
+                            return new SecretRetrievalStrategy.InPlace(
+                                    changed ? new DataStoreSecret(secretProperty.getValue()) : original);
                         },
                         p);
     }
@@ -38,7 +42,9 @@ public class SecretRetrievalStrategyHelper {
         var keyProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
         var content = new HorizontalComp(List.of(
-                        new TextFieldComp(keyProperty).apply(struc -> struc.get().setPromptText("Password key")).hgrow(),
+                        new TextFieldComp(keyProperty)
+                                .apply(struc -> struc.get().setPromptText("Password key"))
+                                .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory(9);
                                     App.getApp().getStage().requestFocus();
@@ -102,7 +108,8 @@ public class SecretRetrievalStrategyHelper {
                 .bindChoice(
                         () -> {
                             return switch (selected.get() - offset) {
-                                case 0 -> new SimpleObjectProperty<>(allowNone ? new SecretRetrievalStrategy.None() : null);
+                                case 0 -> new SimpleObjectProperty<>(
+                                        allowNone ? new SecretRetrievalStrategy.None() : null);
                                 case 1 -> inPlace;
                                 case 2 -> passwordManager;
                                 case 3 -> customCommand;

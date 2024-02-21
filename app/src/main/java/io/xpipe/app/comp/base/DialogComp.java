@@ -51,7 +51,10 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         buttons.setSpacing(5);
         buttons.setAlignment(Pos.CENTER_RIGHT);
 
-        buttons.getChildren().addAll(customButtons().stream().map(buttonComp -> buttonComp.createRegion()).toList());
+        buttons.getChildren()
+                .addAll(customButtons().stream()
+                        .map(buttonComp -> buttonComp.createRegion())
+                        .toList());
         var nextButton = new ButtonComp(AppI18n.observable("finishStep"), null, this::finish)
                 .apply(struc -> struc.get().setDefaultButton(true))
                 .styleClass(Styles.ACCENT)

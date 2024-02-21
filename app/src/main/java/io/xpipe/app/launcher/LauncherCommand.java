@@ -28,10 +28,11 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         header = "Launches the XPipe daemon.",
         sortOptions = false,
-        showEndOfOptionsDelimiterInUsageHelp = true
-)
+        showEndOfOptionsDelimiterInUsageHelp = true)
 public class LauncherCommand implements Callable<Integer> {
 
+    @CommandLine.Parameters(paramLabel = "<input>")
+    final List<String> inputs = List.of();
     @CommandLine.Option(
             names = {"--mode"},
             description = "The mode to launch the daemon in or switch too",
@@ -39,11 +40,11 @@ public class LauncherCommand implements Callable<Integer> {
             converter = LauncherModeConverter.class)
     XPipeDaemonMode mode;
 
-    @CommandLine.Parameters(paramLabel = "<input>")
-    final List<String> inputs = List.of();
-
     public static void runLauncher(String[] args) {
-        TrackEvent.builder().type("debug").message("Launcher received commands: " + Arrays.asList(args)).handle();
+        TrackEvent.builder()
+                .type("debug")
+                .message("Launcher received commands: " + Arrays.asList(args))
+                .handle();
 
         var cmd = new CommandLine(new LauncherCommand());
         cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
@@ -81,14 +82,19 @@ public class LauncherCommand implements Callable<Integer> {
             if (BeaconServer.isReachable()) {
                 try (var con = new LauncherConnection()) {
                     con.constructSocket();
-                    con.performSimpleExchange(FocusExchange.Request.builder().mode(getEffectiveMode()).build());
+                    con.performSimpleExchange(FocusExchange.Request.builder()
+                            .mode(getEffectiveMode())
+                            .build());
                     if (!inputs.isEmpty()) {
-                        con.performSimpleExchange(OpenExchange.Request.builder().arguments(inputs).build());
+                        con.performSimpleExchange(
+                                OpenExchange.Request.builder().arguments(inputs).build());
                     }
 
                     if (OsType.getLocal().equals(OsType.MACOS)) {
                         Desktop.getDesktop().setOpenURIHandler(e -> {
-                            con.performSimpleExchange(OpenExchange.Request.builder().arguments(List.of(e.getURI().toString())).build());
+                            con.performSimpleExchange(OpenExchange.Request.builder()
+                                    .arguments(List.of(e.getURI().toString()))
+                                    .build());
                         });
                         ThreadHelper.sleep(1000);
                     }
@@ -101,12 +107,17 @@ public class LauncherCommand implements Callable<Integer> {
             // there might be another instance running, for example
             // starting up or listening on another port
             if (!AppDataLock.lock()) {
-                throw new IOException("Data directory " + AppProperties.get().getDataDir().toString() + " is already locked");
+                throw new IOException(
+                        "Data directory " + AppProperties.get().getDataDir().toString() + " is already locked");
             }
         } catch (Exception ex) {
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
-            ErrorEvent.fromThrowable(ex).term().description("Unable to connect to existing running daemon instance as it did not respond." +
-                    " Either try to kill the process xpiped manually or use the command \"" + cli + "\" daemon stop --force.").handle();
+            ErrorEvent.fromThrowable(ex)
+                    .term()
+                    .description("Unable to connect to existing running daemon instance as it did not respond."
+                            + " Either try to kill the process xpiped manually or use the command \"" + cli
+                            + "\" daemon stop --force.")
+                    .handle();
         }
     }
 
@@ -122,7 +133,9 @@ public class LauncherCommand implements Callable<Integer> {
             return XPipeDaemonMode.get(opModeName);
         }
 
-        return AppPrefs.get() != null ? AppPrefs.get().startupBehaviour().getValue().getMode() : XPipeDaemonMode.GUI;
+        return AppPrefs.get() != null
+                ? AppPrefs.get().startupBehaviour().getValue().getMode()
+                : XPipeDaemonMode.GUI;
     }
 
     @Override

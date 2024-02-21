@@ -15,6 +15,7 @@ public class SideSplitPaneComp extends Comp<SideSplitPaneComp.Structure> {
     private final Comp<?> center;
     private Double initialWidth;
     private Consumer<Double> onDividerChange;
+
     public SideSplitPaneComp(Comp<?> left, Comp<?> center) {
         this.left = left;
         this.center = center;

@@ -27,7 +27,8 @@ public class BrowserFileListCompEntry {
     private Point2D lastOver = new Point2D(-1, -1);
     private TimerTask activeTask;
 
-    public BrowserFileListCompEntry(TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
+    public BrowserFileListCompEntry(
+            TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
         this.tv = tv;
         this.row = row;
         this.item = item;
@@ -59,14 +60,18 @@ public class BrowserFileListCompEntry {
 
         var all = tv.getItems();
         var index = item != null ? all.indexOf(item) : all.size() - 1;
-        var min = Math.min(index, tv.getSelectionModel().getSelectedIndices().stream()
-                .mapToInt(value -> value)
-                .min()
-                .orElse(1));
-        var max = Math.max(index, tv.getSelectionModel().getSelectedIndices().stream()
-                .mapToInt(value -> value)
-                .max()
-                .orElse(all.indexOf(item)));
+        var min = Math.min(
+                index,
+                tv.getSelectionModel().getSelectedIndices().stream()
+                        .mapToInt(value -> value)
+                        .min()
+                        .orElse(1));
+        var max = Math.max(
+                index,
+                tv.getSelectionModel().getSelectedIndices().stream()
+                        .mapToInt(value -> value)
+                        .max()
+                        .orElse(all.indexOf(item)));
 
         var toSelect = new ArrayList<BrowserEntry>();
         for (int i = min; i <= max; i++) {
@@ -98,13 +103,15 @@ public class BrowserFileListCompEntry {
             return false;
         }
 
-        if (!Objects.equals(model.getFileSystemModel().getFileSystem(), cb.getEntries().getFirst().getFileSystem())) {
+        if (!Objects.equals(
+                model.getFileSystemModel().getFileSystem(),
+                cb.getEntries().getFirst().getFileSystem())) {
             return true;
         }
 
         // Prevent drag and drops of files into the current directory
-        if (cb.getBaseDirectory() != null && cb
-                        .getBaseDirectory()
+        if (cb.getBaseDirectory() != null
+                && cb.getBaseDirectory()
                         .getPath()
                         .equals(model.getFileSystemModel().getCurrentDirectory().getPath())
                 && (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {

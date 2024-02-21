@@ -14,6 +14,20 @@ import java.util.stream.Collectors;
 
 public abstract class ScanProvider {
 
+    private static List<ScanProvider> ALL;
+
+    public static List<ScanProvider> getAll() {
+        return ALL;
+    }
+
+    public ScanOperation create(DataStore store) {
+        return null;
+    }
+
+    public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
+        return null;
+    }
+
     @Value
     public static class ScanOperation {
         String nameKey;
@@ -21,8 +35,6 @@ public abstract class ScanProvider {
         boolean defaultSelected;
         FailableRunnable<Exception> scanner;
     }
-
-    private static List<ScanProvider> ALL;
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -44,17 +56,5 @@ public abstract class ScanProvider {
         public boolean prioritizeLoading() {
             return false;
         }
-    }
-
-    public static List<ScanProvider> getAll() {
-        return ALL;
-    }
-
-    public ScanOperation create(DataStore store) {
-        return null;
-    }
-
-    public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
-        return null;
     }
 }

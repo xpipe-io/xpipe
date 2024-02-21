@@ -20,7 +20,12 @@ public class AppPrefsComp extends SimpleComp {
     protected Region createSimple() {
         var map = AppPrefs.get().getCategories().stream()
                 .collect(Collectors.toMap(appPrefsCategory -> appPrefsCategory, appPrefsCategory -> {
-                    return appPrefsCategory.create().maxWidth(700).padding(new Insets(40, 40, 20, 40)).styleClass("prefs-container").createRegion();
+                    return appPrefsCategory
+                            .create()
+                            .maxWidth(700)
+                            .padding(new Insets(40, 40, 20, 40))
+                            .styleClass("prefs-container")
+                            .createRegion();
                 }));
         var pfxSp = new ScrollPane();
         SimpleChangeListener.apply(AppPrefs.get().getSelectedCategory(), val -> {

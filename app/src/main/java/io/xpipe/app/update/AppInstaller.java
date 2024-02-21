@@ -62,14 +62,10 @@ public class AppInstaller {
         public static final class Msi extends InstallerAssetType {
 
             @Override
-            public String getExtension() {
-                return ".msi";
-            }
-
-            @Override
             public void installLocal(String file) throws Exception {
                 var shellProcessControl = new LocalStore().control().start();
-                var exec = XPipeInstallation.getCurrentInstallationBasePath().resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+                var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                        .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
                 var script = ScriptHelper.createExecScript(
@@ -83,15 +79,15 @@ public class AppInstaller {
                                 file, logFile, exec));
                 shellProcessControl.executeSimpleCommand("start \"\" /min \"" + script + "\"");
             }
+
+            @Override
+            public String getExtension() {
+                return ".msi";
+            }
         }
 
         @JsonTypeName("debian")
         public static final class Debian extends InstallerAssetType {
-
-            @Override
-            public String getExtension() {
-                return ".deb";
-            }
 
             @Override
             public void installLocal(String file) throws Exception {
@@ -113,15 +109,15 @@ public class AppInstaller {
                                 file, file, name));
                 TerminalLauncher.open("XPipe Updater", command);
             }
+
+            @Override
+            public String getExtension() {
+                return ".deb";
+            }
         }
 
         @JsonTypeName("rpm")
         public static final class Rpm extends InstallerAssetType {
-            @Override
-            public String getExtension() {
-                return ".rpm";
-            }
-
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
@@ -142,15 +138,15 @@ public class AppInstaller {
                                 file, file, name));
                 TerminalLauncher.open("XPipe Updater", command);
             }
+
+            @Override
+            public String getExtension() {
+                return ".rpm";
+            }
         }
 
         @JsonTypeName("pkg")
         public static final class Pkg extends InstallerAssetType {
-            @Override
-            public String getExtension() {
-                return ".pkg";
-            }
-
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
@@ -169,6 +165,11 @@ public class AppInstaller {
                                         """,
                                 file, file, name));
                 TerminalLauncher.open("XPipe Updater", command);
+            }
+
+            @Override
+            public String getExtension() {
+                return ".pkg";
             }
         }
     }

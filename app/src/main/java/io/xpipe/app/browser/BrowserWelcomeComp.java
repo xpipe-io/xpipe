@@ -42,7 +42,9 @@ public class BrowserWelcomeComp extends SimpleComp {
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
 
-        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Hips.svg"), 50, 75).padding(new Insets(5, 0, 0, 0)).createRegion();
+        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Hips.svg"), 50, 75)
+                .padding(new Insets(5, 0, 0, 0))
+                .createRegion();
         var hbox = new HBox(img, vbox);
         hbox.setAlignment(Pos.CENTER_LEFT);
         hbox.setSpacing(15);
@@ -68,10 +70,14 @@ public class BrowserWelcomeComp extends SimpleComp {
         });
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
 
-        var header = new LabelComp(Bindings.createStringBinding(() -> {
-            return !empty.get() ? "You were recently connected to the following systems:" :
-                    "Here you will be able to see where you left off last time.";
-        }, empty)).createRegion();
+        var header = new LabelComp(Bindings.createStringBinding(
+                        () -> {
+                            return !empty.get()
+                                    ? "You were recently connected to the following systems:"
+                                    : "Here you will be able to see where you left off last time.";
+                        },
+                        empty))
+                .createRegion();
         AppFont.setSize(header, 1);
         vbox.getChildren().add(header);
 
@@ -79,22 +85,32 @@ public class BrowserWelcomeComp extends SimpleComp {
         storeList.setSpacing(8);
 
         var listBox = new ListBoxViewComp<>(list, list, e -> {
-            var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
-            var graphic = entry.get().getProvider().getDisplayIconFileName(entry.get().getStore());
-            var view = PrettyImageHelper.ofFixedSize(graphic, 50, 40);
-            view.padding(new Insets(2, 8, 2, 8));
-            var content =
-                    JfxHelper.createNamedEntry(DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
-            var disable = new SimpleBooleanProperty();
-            return new ButtonComp(null, content, () -> {
-                ThreadHelper.runAsync(() -> {
-                    model.restoreStateAsync(e, disable);
-                });
-            }).accessibleText(DataStorage.get().getStoreDisplayName(entry.get())).disable(disable).styleClass("color-listBox").apply(struc -> struc.get().setMaxWidth(2000)).grow(true, false);
-        }).apply(struc -> {
-            VBox vBox = (VBox) struc.get().getContent();
-            vBox.setSpacing(10);
-        }).hide(empty).createRegion();
+                    var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
+                    var graphic = entry.get()
+                            .getProvider()
+                            .getDisplayIconFileName(entry.get().getStore());
+                    var view = PrettyImageHelper.ofFixedSize(graphic, 50, 40);
+                    view.padding(new Insets(2, 8, 2, 8));
+                    var content = JfxHelper.createNamedEntry(
+                            DataStorage.get().getStoreDisplayName(entry.get()), e.getPath(), graphic);
+                    var disable = new SimpleBooleanProperty();
+                    return new ButtonComp(null, content, () -> {
+                                ThreadHelper.runAsync(() -> {
+                                    model.restoreStateAsync(e, disable);
+                                });
+                            })
+                            .accessibleText(DataStorage.get().getStoreDisplayName(entry.get()))
+                            .disable(disable)
+                            .styleClass("color-listBox")
+                            .apply(struc -> struc.get().setMaxWidth(2000))
+                            .grow(true, false);
+                })
+                .apply(struc -> {
+                    VBox vBox = (VBox) struc.get().getContent();
+                    vBox.setSpacing(10);
+                })
+                .hide(empty)
+                .createRegion();
 
         var layout = new VBox();
         layout.getStyleClass().add("welcome");
@@ -107,9 +123,12 @@ public class BrowserWelcomeComp extends SimpleComp {
         layout.getChildren().add(Comp.separator().hide(empty).createRegion());
 
         var tile = new TileButtonComp("restore", "restoreAllSessions", "mdmz-restore", actionEvent -> {
-            model.restoreState(state);
-            actionEvent.consume();
-        }).grow(true, false).hide(empty).accessibleTextKey("restoreAllSessions");
+                    model.restoreState(state);
+                    actionEvent.consume();
+                })
+                .grow(true, false)
+                .hide(empty)
+                .accessibleTextKey("restoreAllSessions");
         layout.getChildren().add(tile.createRegion());
 
         return layout;

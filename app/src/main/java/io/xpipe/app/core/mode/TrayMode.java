@@ -11,12 +11,10 @@ public class TrayMode extends PlatformMode {
 
     @Override
     public boolean isSupported() {
-        return !OsType.getLocal().equals(OsType.MACOS) && super.isSupported() && Desktop.isDesktopSupported() && SystemTray.isSupported();
-    }
-
-    @Override
-    public String getId() {
-        return "tray";
+        return !OsType.getLocal().equals(OsType.MACOS)
+                && super.isSupported()
+                && Desktop.isDesktopSupported()
+                && SystemTray.isSupported();
     }
 
     @Override
@@ -31,6 +29,11 @@ public class TrayMode extends PlatformMode {
             AppTray.get().show();
             TrackEvent.info("Finished tray initialization");
         });
+    }
+
+    @Override
+    public String getId() {
+        return "tray";
     }
 
     @Override

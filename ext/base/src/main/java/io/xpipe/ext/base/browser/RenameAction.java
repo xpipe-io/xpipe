@@ -20,23 +20,13 @@ public class RenameAction implements LeafAction {
     }
 
     @Override
-    public boolean automaticallyResolveLinks() {
-        return false;
-    }
-
-    @Override
-    public Category getCategory() {
-        return Category.MUTATION;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2r-rename-box");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() != FileKind.LINK;
+    public Category getCategory() {
+        return Category.MUTATION;
     }
 
     @Override
@@ -47,5 +37,15 @@ public class RenameAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Rename";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() != FileKind.LINK;
+    }
+
+    @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
     }
 }

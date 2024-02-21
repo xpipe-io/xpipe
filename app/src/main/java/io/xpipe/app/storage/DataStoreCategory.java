@@ -32,14 +32,84 @@ public class DataStoreCategory extends StorageElement {
     boolean share;
 
     public DataStoreCategory(
-            Path directory, UUID uuid, String name, Instant lastUsed, Instant lastModified, boolean dirty,
-            UUID parentCategory, StoreSortMode sortMode,
-            boolean share
-    ) {
+            Path directory,
+            UUID uuid,
+            String name,
+            Instant lastUsed,
+            Instant lastModified,
+            boolean dirty,
+            UUID parentCategory,
+            StoreSortMode sortMode,
+            boolean share) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.parentCategory = parentCategory;
         this.sortMode = sortMode;
         this.share = share;
+    }
+
+    public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {
+        return new DataStoreCategory(
+                null,
+                UUID.randomUUID(),
+                name,
+                Instant.now(),
+                Instant.now(),
+                true,
+                parentCategory,
+                StoreSortMode.ALPHABETICAL_ASC,
+                false);
+    }
+
+    public static DataStoreCategory createNew(UUID parentCategory, @NonNull UUID uuid, @NonNull String name) {
+        return new DataStoreCategory(
+                null,
+                uuid,
+                name,
+                Instant.now(),
+                Instant.now(),
+                true,
+                parentCategory,
+                StoreSortMode.ALPHABETICAL_ASC,
+                false);
+    }
+
+    public static Optional<DataStoreCategory> fromDirectory(Path dir) throws Exception {
+        ObjectMapper mapper = JacksonMapper.getDefault();
+
+        var entryFile = dir.resolve("category.json");
+        var stateFile = dir.resolve("state.json");
+        if (!Files.exists(entryFile)) {
+            return Optional.empty();
+        }
+
+        var stateJson =
+                Files.exists(stateFile) ? mapper.readTree(stateFile.toFile()) : JsonNodeFactory.instance.objectNode();
+        var json = mapper.readTree(entryFile.toFile());
+
+        var uuid = UUID.fromString(json.required("uuid").textValue());
+        var parentUuid = Optional.ofNullable(json.get("parentUuid"))
+                .filter(jsonNode -> !jsonNode.isNull())
+                .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
+                .orElse(null);
+
+        var name = json.required("name").textValue();
+        var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
+                .map(JsonNode::asText)
+                .flatMap(string -> StoreSortMode.fromId(string))
+                .orElse(StoreSortMode.ALPHABETICAL_ASC);
+        var share =
+                Optional.ofNullable(json.get("share")).map(JsonNode::asBoolean).orElse(false);
+        var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
+                .map(jsonNode -> jsonNode.textValue())
+                .map(Instant::parse)
+                .orElse(Instant.now());
+        var lastModified = Optional.ofNullable(stateJson.get("lastModified"))
+                .map(jsonNode -> jsonNode.textValue())
+                .map(Instant::parse)
+                .orElse(Instant.now());
+
+        return Optional.of(
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, share));
     }
 
     public void setSortMode(StoreSortMode sortMode) {
@@ -64,45 +134,6 @@ public class DataStoreCategory extends StorageElement {
         this.parentCategory = parentCategory;
         this.dirty = true;
         notifyUpdate();
-    }
-
-    public static DataStoreCategory createNew(UUID parentCategory, @NonNull String name) {
-        return new DataStoreCategory(null, UUID.randomUUID(), name, Instant.now(), Instant.now(), true, parentCategory, StoreSortMode.ALPHABETICAL_ASC,
-                                     false
-        );
-    }
-
-    public static DataStoreCategory createNew(UUID parentCategory, @NonNull UUID uuid, @NonNull String name) {
-        return new DataStoreCategory(null, uuid, name, Instant.now(), Instant.now(), true, parentCategory, StoreSortMode.ALPHABETICAL_ASC, false);
-    }
-
-    public static Optional<DataStoreCategory> fromDirectory(Path dir) throws Exception {
-        ObjectMapper mapper = JacksonMapper.getDefault();
-
-        var entryFile = dir.resolve("category.json");
-        var stateFile = dir.resolve("state.json");
-        if (!Files.exists(entryFile)) {
-            return Optional.empty();
-        }
-
-        var stateJson = Files.exists(stateFile) ? mapper.readTree(stateFile.toFile()) : JsonNodeFactory.instance.objectNode();
-        var json = mapper.readTree(entryFile.toFile());
-
-        var uuid = UUID.fromString(json.required("uuid").textValue());
-        var parentUuid = Optional.ofNullable(json.get("parentUuid")).filter(jsonNode -> !jsonNode.isNull()).map(jsonNode -> UUID.fromString(jsonNode.textValue())).orElse(null);
-
-        var name = json.required("name").textValue();
-        var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
-                .map(JsonNode::asText)
-                .flatMap(string -> StoreSortMode.fromId(string))
-                .orElse(StoreSortMode.ALPHABETICAL_ASC);
-        var share = Optional.ofNullable(json.get("share"))
-                .map(JsonNode::asBoolean)
-                .orElse(false);
-        var lastUsed = Optional.ofNullable(stateJson.get("lastUsed")).map(jsonNode -> jsonNode.textValue()).map(Instant::parse).orElse(Instant.now());
-        var lastModified = Optional.ofNullable(stateJson.get("lastModified")).map(jsonNode -> jsonNode.textValue()).map(Instant::parse).orElse(Instant.now());
-
-        return Optional.of(new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, share));
     }
 
     public boolean canShare() {

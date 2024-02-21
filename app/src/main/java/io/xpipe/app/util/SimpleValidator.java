@@ -98,19 +98,6 @@ public class SimpleValidator implements Validator {
         return !containsErrors();
     }
 
-    private void refreshProperties() {
-        ValidationResult nextResult = new ValidationResult();
-        for (Check check : checks.keySet()) {
-            nextResult.addAll(check.getValidationResult().getMessages());
-        }
-        validationResultProperty.set(nextResult);
-        boolean hasErrors = false;
-        for (ValidationMessage msg : nextResult.getMessages()) {
-            hasErrors = hasErrors || msg.getSeverity() == Severity.ERROR;
-        }
-        containsErrorsProperty.set(hasErrors);
-    }
-
     /**
      * Create a string property that depends on the validation result.
      * Each error message will be displayed on a separate line prefixed with a bullet.
@@ -133,5 +120,18 @@ public class SimpleValidator implements Validator {
                     return str.toString();
                 },
                 validationResultProperty);
+    }
+
+    private void refreshProperties() {
+        ValidationResult nextResult = new ValidationResult();
+        for (Check check : checks.keySet()) {
+            nextResult.addAll(check.getValidationResult().getMessages());
+        }
+        validationResultProperty.set(nextResult);
+        boolean hasErrors = false;
+        for (ValidationMessage msg : nextResult.getMessages()) {
+            hasErrors = hasErrors || msg.getSeverity() == Severity.ERROR;
+        }
+        containsErrorsProperty.set(hasErrors);
     }
 }

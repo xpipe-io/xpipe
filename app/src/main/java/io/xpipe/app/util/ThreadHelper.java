@@ -24,7 +24,9 @@ public class ThreadHelper {
     }
 
     public static Thread unstarted(Runnable r) {
-        return AppProperties.get().isUseVirtualThreads() ? Thread.ofVirtual().unstarted(wrap(r)) : Thread.ofPlatform().unstarted(wrap(r));
+        return AppProperties.get().isUseVirtualThreads()
+                ? Thread.ofVirtual().unstarted(wrap(r))
+                : Thread.ofPlatform().unstarted(wrap(r));
     }
 
     public static Thread runAsync(Runnable r) {

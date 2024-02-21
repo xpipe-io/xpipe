@@ -20,15 +20,17 @@ public class AppTrayIcon {
 
         tray = SystemTray.getSystemTray();
 
-        var image = switch (OsType.getLocal()) {
-            case OsType.Windows windows -> "img/logo/logo_16x16.png";
-            case OsType.Linux linux -> "img/logo/logo_24x24.png";
-            case OsType.MacOs macOs -> "img/logo/logo_macos_tray_24x24.png";
-        };
+        var image =
+                switch (OsType.getLocal()) {
+                    case OsType.Windows windows -> "img/logo/logo_16x16.png";
+                    case OsType.Linux linux -> "img/logo/logo_24x24.png";
+                    case OsType.MacOs macOs -> "img/logo/logo_macos_tray_24x24.png";
+                };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
         PopupMenu popupMenu = new PopupMenu();
-        this.trayIcon = new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
+        this.trayIcon =
+                new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
         this.trayIcon.setToolTip("XPipe");
         this.trayIcon.setImageAutoSize(true);
 
@@ -58,6 +60,19 @@ public class AppTrayIcon {
         });
     }
 
+    private static Image loadImageFromURL(URL iconImagePath) {
+        try {
+            return ImageIO.read(iconImagePath);
+        } catch (IOException e) {
+            ErrorEvent.fromThrowable(e).handle();
+            return AppImages.toAwtImage(AppImages.DEFAULT_IMAGE);
+        }
+    }
+
+    public static boolean isSupported() {
+        return Desktop.isDesktopSupported() && SystemTray.isSupported();
+    }
+
     public final TrayIcon getAwtTrayIcon() {
         return trayIcon;
     }
@@ -65,17 +80,7 @@ public class AppTrayIcon {
     private void ensureSystemTraySupported() {
         if (!SystemTray.isSupported()) {
             throw new UnsupportedOperationException(
-                    "SystemTray icons are not "
-                            + "supported by the current desktop environment.");
-        }
-    }
-
-    private static Image loadImageFromURL(URL iconImagePath) {
-        try {
-            return ImageIO.read(iconImagePath);
-        } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
-            return AppImages.toAwtImage(AppImages.DEFAULT_IMAGE);
+                    "SystemTray icons are not " + "supported by the current desktop environment.");
         }
     }
 
@@ -129,11 +134,9 @@ public class AppTrayIcon {
 
     public void showInfoMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Information");
+            showMacAlert(title, message, "Information");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.INFO));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO));
         }
     }
 
@@ -143,11 +146,9 @@ public class AppTrayIcon {
 
     public void showWarningMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Warning");
+            showMacAlert(title, message, "Warning");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.WARNING));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.WARNING));
         }
     }
 
@@ -157,11 +158,9 @@ public class AppTrayIcon {
 
     public void showErrorMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Error");
+            showMacAlert(title, message, "Error");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.ERROR));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));
         }
     }
 
@@ -171,11 +170,9 @@ public class AppTrayIcon {
 
     public void showMessage(String title, String message) {
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            showMacAlert(title, message,"Message");
+            showMacAlert(title, message, "Message");
         } else {
-            EventQueue.invokeLater(() ->
-                                           this.trayIcon.displayMessage(
-                                                   title, message, TrayIcon.MessageType.NONE));
+            EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.NONE));
         }
     }
 
@@ -183,26 +180,14 @@ public class AppTrayIcon {
         this.showMessage(null, message);
     }
 
-    public static boolean isSupported() {
-        return Desktop.isDesktopSupported() && SystemTray.isSupported();
-    }
-
     private void showMacAlert(String subTitle, String message, String title) {
         String execute = String.format(
-                "display notification \"%s\""
-                        + " with title \"%s\""
-                        + " subtitle \"%s\"",
-                message != null ? message : "",
-                title != null ? title : "",
-                subTitle != null ? subTitle : ""
-        );
+                "display notification \"%s\"" + " with title \"%s\"" + " subtitle \"%s\"",
+                message != null ? message : "", title != null ? title : "", subTitle != null ? subTitle : "");
         try {
-            Runtime.getRuntime()
-                    .exec(new String[] { "osascript", "-e", execute });
+            Runtime.getRuntime().exec(new String[] {"osascript", "-e", execute});
         } catch (IOException e) {
-            throw new UnsupportedOperationException(
-                    "Cannot run osascript with given parameters.");
+            throw new UnsupportedOperationException("Cannot run osascript with given parameters.");
         }
     }
 }
-

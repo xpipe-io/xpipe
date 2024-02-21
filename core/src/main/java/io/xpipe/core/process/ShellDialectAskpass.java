@@ -9,7 +9,14 @@ public interface ShellDialectAskpass {
 
     String prepareFixedContent(ShellControl sc, String fileName, List<String> s) throws Exception;
 
-    String elevateDumbCommand(ShellControl shellControl, CommandConfiguration command, UUID requestId, CountDown countDown, String message) throws Exception;
+    String elevateDumbCommand(
+            ShellControl shellControl,
+            CommandConfiguration command,
+            UUID requestId,
+            CountDown countDown,
+            String message)
+            throws Exception;
 
-    String elevateTerminalCommandWithPreparedAskpass(ShellControl shellControl, String command, String prefix) throws Exception;
+    String elevateTerminalCommandWithPreparedAskpass(ShellControl shellControl, String command, String prefix)
+            throws Exception;
 }

@@ -5,6 +5,10 @@ import lombok.Value;
 @Value
 public class BrowserTransferProgress {
 
+    String name;
+    long transferred;
+    long total;
+
     static BrowserTransferProgress empty() {
         return new BrowserTransferProgress(null, 0, 0);
     }
@@ -16,10 +20,6 @@ public class BrowserTransferProgress {
     static BrowserTransferProgress finished(String name, long size) {
         return new BrowserTransferProgress(name, size, size);
     }
-
-    String name;
-    long transferred;
-    long total;
 
     public boolean done() {
         return transferred >= total;

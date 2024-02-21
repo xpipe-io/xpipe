@@ -27,7 +27,28 @@ public class ShellDialects {
     public static ShellDialect RBASH;
 
     public static List<ShellDialect> getStartableDialects() {
-        return ALL.stream().filter(dialect -> dialect.getOpenCommand(null) != null).toList();
+        return ALL.stream()
+                .filter(dialect -> dialect.getOpenCommand(null) != null)
+                .toList();
+    }
+
+    private static ShellDialect byId(String name) {
+        return ALL.stream()
+                .filter(shellType -> shellType.getId().equals(name))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public static boolean isPowershell(ShellControl sc) {
+        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
+    }
+
+    public static ShellDialect byName(String name) {
+        return byNameIfPresent(name).orElseThrow();
+    }
+
+    public static Optional<ShellDialect> byNameIfPresent(String name) {
+        return ALL.stream().filter(shellType -> shellType.getId().equals(name)).findFirst();
     }
 
     public static class Loader implements ModuleLayerLoader {
@@ -63,26 +84,5 @@ public class ShellDialects {
         public boolean prioritizeLoading() {
             return true;
         }
-    }
-
-    private static ShellDialect byId(String name) {
-        return ALL.stream()
-                .filter(shellType -> shellType.getId().equals(name))
-                .findFirst()
-                .orElseThrow();
-	}
-	
-    public static boolean isPowershell(ShellControl sc) {
-        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
-    }
-
-    public static ShellDialect byName(String name) {
-        return byNameIfPresent(name).orElseThrow();
-    }
-
-    public static Optional<ShellDialect> byNameIfPresent(String name) {
-        return ALL.stream()
-                .filter(shellType -> shellType.getId().equals(name))
-                .findFirst();
     }
 }

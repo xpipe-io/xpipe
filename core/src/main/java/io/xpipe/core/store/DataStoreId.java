@@ -48,8 +48,7 @@ public class DataStoreId {
         }
 
         if (Arrays.stream(names).anyMatch(s -> s.contains("" + SEPARATOR))) {
-            throw new IllegalArgumentException(
-                    "Separator character " + SEPARATOR + " is not allowed in the names");
+            throw new IllegalArgumentException("Separator character " + SEPARATOR + " is not allowed in the names");
         }
 
         if (Arrays.stream(names).anyMatch(s -> s.trim().length() == 0)) {
@@ -73,7 +72,8 @@ public class DataStoreId {
 
         var split = s.split(String.valueOf(SEPARATOR), -1);
 
-        var names = Arrays.stream(split).map(String::trim).map(String::toLowerCase).toList();
+        var names =
+                Arrays.stream(split).map(String::trim).map(String::toLowerCase).toList();
         if (names.stream().anyMatch(s1 -> s1.isEmpty())) {
             throw new IllegalArgumentException("Name must not be empty");
         }

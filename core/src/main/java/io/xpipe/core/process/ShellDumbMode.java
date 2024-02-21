@@ -12,7 +12,8 @@ public interface ShellDumbMode {
         return null;
     }
 
-    default CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function) throws Exception {
+    default CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function)
+            throws Exception {
         return function.prepareWithoutInitCommand();
     }
 
@@ -31,7 +32,8 @@ public interface ShellDumbMode {
         }
 
         @Override
-        public CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function) throws Exception {
+        public CommandBuilder prepareInlineDumbCommand(
+                ShellControl self, ShellControl parent, ShellOpenFunction function) throws Exception {
             return function.prepareWithInitCommand(replacementDialect.getLoginOpenCommand(null));
         }
     }
@@ -44,6 +46,12 @@ public interface ShellDumbMode {
         }
 
         @Override
+        public CommandBuilder prepareInlineDumbCommand(
+                ShellControl self, ShellControl parent, ShellOpenFunction function) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public void prepareDumbInit(ShellControl shellControl) {
             throw new UnsupportedOperationException();
         }
@@ -51,11 +59,6 @@ public interface ShellDumbMode {
         @Override
         public void prepareDumbExit(ShellControl shellControl) {
             shellControl.kill();
-        }
-
-        @Override
-        public CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function) {
-            throw new UnsupportedOperationException();
         }
     }
 }

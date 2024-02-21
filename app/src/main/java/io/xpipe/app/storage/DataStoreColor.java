@@ -35,7 +35,6 @@ public enum DataStoreColor {
 
     public String toHexString() {
         var value = terminalColor;
-        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue()))
-                .toUpperCase();
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
     }
 }

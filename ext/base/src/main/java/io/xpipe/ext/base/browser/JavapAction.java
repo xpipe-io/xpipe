@@ -16,13 +16,13 @@ public class JavapAction extends ToFileCommandAction implements FileTypeAction, 
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return super.isApplicable(model, entries) && FileTypeAction.super.isApplicable(model, entries);
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return "javap -c -p " + BrowserActionFormatter.filesArgument(entries);
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "javap -c -p " + BrowserActionFormatter.filesArgument(entries);
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return super.isApplicable(model, entries) && FileTypeAction.super.isApplicable(model, entries);
     }
 
     @Override

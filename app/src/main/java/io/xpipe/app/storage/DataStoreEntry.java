@@ -25,36 +25,27 @@ import java.util.stream.Collectors;
 @Value
 public class DataStoreEntry extends StorageElement {
 
+    Map<String, Object> storeCache = new LinkedHashMap<>();
     @NonFinal
     Validity validity;
-
     @NonFinal
     @Setter
     JsonNode storeNode;
-
     @Getter
     @NonFinal
     DataStore store;
-
     @NonFinal
     Configuration configuration;
-
     @NonFinal
     boolean expanded;
-
     @NonFinal
     boolean inRefresh;
-
     @NonFinal
     @Setter
     boolean observing;
-
     @Getter
     @NonFinal
     DataStoreProvider provider;
-
-    Map<String, Object> storeCache = new LinkedHashMap<>();
-
     @NonFinal
     UUID categoryUuid;
 
@@ -83,8 +74,8 @@ public class DataStoreEntry extends StorageElement {
             Validity validity,
             Configuration configuration,
             JsonNode storePersistentState,
-            boolean expanded, DataStoreColor color
-    ) {
+            boolean expanded,
+            DataStoreColor color) {
         super(directory, uuid, name, lastUsed, lastModified, dirty);
         this.categoryUuid = categoryUuid;
         this.store = DataStorageParser.storeFromNode(storeNode);
@@ -106,8 +97,7 @@ public class DataStoreEntry extends StorageElement {
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataStore store
-    ) {
+            DataStore store) {
         super(directory, uuid, name, lastUsed, lastModified, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -120,21 +110,6 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentStateNode = null;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
-    }
-
-    @Override
-    public int hashCode() {
-        return getUuid().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return getName();
-    }
-
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
         return new DataStoreEntry(
                 null,
@@ -143,19 +118,21 @@ public class DataStoreEntry extends StorageElement {
                 UUID.randomUUID().toString(),
                 Instant.now(),
                 Instant.now(),
-                store
-        );
+                store);
     }
 
     public static DataStoreEntry createNew(@NonNull String name, @NonNull DataStore store) {
-        return createNew(UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name, store);
+        return createNew(
+                UUID.randomUUID(), DataStorage.get().getSelectedCategory().getUuid(), name, store);
     }
 
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
         var node = DataStorageWriter.storeToNode(store);
-        var validity = DataStorageParser.storeFromNode(node) == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
+        var validity = DataStorageParser.storeFromNode(node) == null
+                ? Validity.LOAD_FAILED
+                : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         var entry = new DataStoreEntry(
                 null,
                 uuid,
@@ -168,8 +145,8 @@ public class DataStoreEntry extends StorageElement {
                 validity,
                 Configuration.defaultConfiguration(),
                 null,
-                false, null
-        );
+                false,
+                null);
         return entry;
     }
 
@@ -198,8 +175,8 @@ public class DataStoreEntry extends StorageElement {
                 Validity.INCOMPLETE,
                 configuration,
                 storePersistentState,
-                expanded, color
-        );
+                expanded,
+                color);
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
@@ -262,8 +239,33 @@ public class DataStoreEntry extends StorageElement {
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
         }
-        return Optional.of(
-                createExisting(dir, uuid, categoryUuid, name, lastUsed, lastModified, storeNode, configuration, persistentState, expanded, color));
+        return Optional.of(createExisting(
+                dir,
+                uuid,
+                categoryUuid,
+                name,
+                lastUsed,
+                lastModified,
+                storeNode,
+                configuration,
+                persistentState,
+                expanded,
+                color));
+    }
+
+    @Override
+    public int hashCode() {
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == this || (o instanceof DataStoreEntry e && e.getUuid().equals(getUuid()));
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
     public void setInRefresh(boolean newRefresh) {
@@ -280,16 +282,6 @@ public class DataStoreEntry extends StorageElement {
 
     public void setStoreCache(String key, Object value) {
         if (!Objects.equals(storeCache.put(key, value), value)) {
-            notifyUpdate();
-        }
-    }
-
-    public void setStorePersistentState(DataStoreState value) {
-        var changed = !Objects.equals(storePersistentState, value);
-        this.storePersistentState = value;
-        this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
-        if (changed) {
-            this.dirty = true;
             notifyUpdate();
         }
     }
@@ -315,6 +307,16 @@ public class DataStoreEntry extends StorageElement {
         return (T) sds.getStateClass().cast(storePersistentState);
     }
 
+    public void setStorePersistentState(DataStoreState value) {
+        var changed = !Objects.equals(storePersistentState, value);
+        this.storePersistentState = value;
+        this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
+        if (changed) {
+            this.dirty = true;
+            notifyUpdate();
+        }
+    }
+
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         this.dirty = true;
@@ -330,6 +332,35 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public Path[] getShareableFiles() {
         return new Path[] {directory.resolve("store.json"), directory.resolve("entry.json")};
+    }
+
+    public void writeDataToDisk() throws Exception {
+        if (!dirty) {
+            return;
+        }
+
+        ObjectMapper mapper = JacksonMapper.getDefault();
+        ObjectNode obj = JsonNodeFactory.instance.objectNode();
+        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
+        obj.put("uuid", uuid.toString());
+        obj.put("name", name);
+        obj.put("categoryUuid", categoryUuid.toString());
+        stateObj.put("lastUsed", lastUsed.toString());
+        stateObj.put("lastModified", lastModified.toString());
+        stateObj.set("color", mapper.valueToTree(color));
+        stateObj.set("persistentState", storePersistentStateNode);
+        obj.set("configuration", mapper.valueToTree(configuration));
+        stateObj.put("expanded", expanded);
+
+        var entryString = mapper.writeValueAsString(obj);
+        var stateString = mapper.writeValueAsString(stateObj);
+        var storeString = mapper.writeValueAsString(DataStorageEncryption.encryptNodeIfNeeded(storeNode));
+
+        FileUtils.forceMkdir(directory.toFile());
+        Files.writeString(directory.resolve("state.json"), stateString);
+        Files.writeString(directory.resolve("entry.json"), entryString);
+        Files.writeString(directory.resolve("store.json"), storeString);
+        dirty = false;
     }
 
     public void setExpanded(boolean expanded) {
@@ -404,7 +435,9 @@ public class DataStoreEntry extends StorageElement {
             if (store instanceof ValidatableStore l) {
                 l.validate();
             } else if (store instanceof FixedHierarchyStore h) {
-                childrenCache = h.listChildren(this).stream().map(DataStoreEntryRef::get).collect(Collectors.toSet());
+                childrenCache = h.listChildren(this).stream()
+                        .map(DataStoreEntryRef::get)
+                        .collect(Collectors.toSet());
             }
         } finally {
             setInRefresh(false);
@@ -496,35 +529,6 @@ public class DataStoreEntry extends StorageElement {
 
     public boolean shouldSave() {
         return getStore() != null;
-    }
-
-    public void writeDataToDisk() throws Exception {
-        if (!dirty) {
-            return;
-        }
-
-        ObjectMapper mapper = JacksonMapper.getDefault();
-        ObjectNode obj = JsonNodeFactory.instance.objectNode();
-        ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
-        obj.put("uuid", uuid.toString());
-        obj.put("name", name);
-        obj.put("categoryUuid", categoryUuid.toString());
-        stateObj.put("lastUsed", lastUsed.toString());
-        stateObj.put("lastModified", lastModified.toString());
-        stateObj.set("color", mapper.valueToTree(color));
-        stateObj.set("persistentState", storePersistentStateNode);
-        obj.set("configuration", mapper.valueToTree(configuration));
-        stateObj.put("expanded", expanded);
-
-        var entryString = mapper.writeValueAsString(obj);
-        var stateString = mapper.writeValueAsString(stateObj);
-        var storeString = mapper.writeValueAsString(DataStorageEncryption.encryptNodeIfNeeded(storeNode));
-
-        FileUtils.forceMkdir(directory.toFile());
-        Files.writeString(directory.resolve("state.json"), stateString);
-        Files.writeString(directory.resolve("entry.json"), entryString);
-        Files.writeString(directory.resolve("store.json"), storeString);
-        dirty = false;
     }
 
     @Getter

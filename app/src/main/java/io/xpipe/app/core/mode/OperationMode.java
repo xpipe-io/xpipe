@@ -36,12 +36,16 @@ public abstract class OperationMode {
     public static final OperationMode GUI = new GuiMode();
     private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
     private static final List<OperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
+
     @Getter
     private static boolean inStartup;
+
     @Getter
     private static boolean inShutdown;
+
     @Getter
     private static boolean inShutdownHook;
+
     private static OperationMode CURRENT = null;
 
     public static OperationMode map(XPipeDaemonMode mode) {
@@ -137,8 +141,8 @@ public abstract class OperationMode {
                 });
 
                 // Do it this way to prevent IDE inspections from complaining
-                var c = Class.forName(ModuleLayer.boot().findModule("java.desktop").orElseThrow(),
-                        "com.apple.eawt.Application");
+                var c = Class.forName(
+                        ModuleLayer.boot().findModule("java.desktop").orElseThrow(), "com.apple.eawt.Application");
                 var m = c.getDeclaredMethod("addAppEventListener", SystemEventListener.class);
                 m.invoke(c.getMethod("getApplication").invoke(null), new AppReopenedListener() {
                     @Override
@@ -170,19 +174,23 @@ public abstract class OperationMode {
 
     public static void switchToAsync(OperationMode newMode) {
         ThreadHelper.createPlatformThread("mode switcher", false, () -> {
-                switchToSyncIfPossible(newMode);
-        }).start();
+                    switchToSyncIfPossible(newMode);
+                })
+                .start();
     }
 
     public static void switchToSyncOrThrow(OperationMode newMode) throws Throwable {
         TrackEvent.info("Attempting to switch mode to " + newMode.getId());
 
         if (!newMode.isSupported()) {
-            throw PlatformState.getLastError() != null ? PlatformState.getLastError() : new IllegalStateException("Unsupported operation mode: " + newMode.getId());
+            throw PlatformState.getLastError() != null
+                    ? PlatformState.getLastError()
+                    : new IllegalStateException("Unsupported operation mode: " + newMode.getId());
         }
 
         set(newMode);
     }
+
     public static boolean switchToSyncIfPossible(OperationMode newMode) {
         TrackEvent.info("Attempting to switch mode to " + newMode.getId());
 
@@ -201,7 +209,6 @@ public abstract class OperationMode {
         set(newMode);
         return true;
     }
-
 
     public static void switchUp(OperationMode newMode) {
         if (newMode == BACKGROUND) {
@@ -231,7 +238,8 @@ public abstract class OperationMode {
 
     public static void restart() {
         OperationMode.executeAfterShutdown(() -> {
-            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(XPipeInstallation.getLocalDefaultInstallationBasePath(), XPipeDaemonMode.GUI, "");
+            var exec = XPipeInstallation.createExternalAsyncLaunchCommand(
+                    XPipeInstallation.getLocalDefaultInstallationBasePath(), XPipeDaemonMode.GUI, "");
             LocalShell.getShell().executeSimpleCommand(exec);
         });
     }
@@ -312,20 +320,20 @@ public abstract class OperationMode {
         OperationMode.halt(hasError ? 1 : 0);
     }
 
-//    public static synchronized void reload() {
-//        ThreadHelper.create("reloader", false, () -> {
-//                    try {
-//                        switchTo(BACKGROUND);
-//                        CURRENT.finalTeardown();
-//                        CURRENT.onSwitchTo();
-//                        switchTo(GUI);
-//                    } catch (Throwable t) {
-//                        ErrorEvent.fromThrowable(t).build().handle();
-//                        OperationMode.halt(1);
-//                    }
-//                })
-//                .start();
-//    }
+    //    public static synchronized void reload() {
+    //        ThreadHelper.create("reloader", false, () -> {
+    //                    try {
+    //                        switchTo(BACKGROUND);
+    //                        CURRENT.finalTeardown();
+    //                        CURRENT.onSwitchTo();
+    //                        switchTo(GUI);
+    //                    } catch (Throwable t) {
+    //                        ErrorEvent.fromThrowable(t).build().handle();
+    //                        OperationMode.halt(1);
+    //                    }
+    //                })
+    //                .start();
+    //    }
 
     private static synchronized void set(OperationMode newMode) {
         if (CURRENT == null && newMode == null) {

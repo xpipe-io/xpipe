@@ -63,9 +63,9 @@ public class AboutCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
-                            Hyperlinks.open(Hyperlinks.EULA);
-                            e.consume();
-                        })
+                                    Hyperlinks.open(Hyperlinks.EULA);
+                                    e.consume();
+                                })
                                 .grow(true, false),
                         null)
                 .buildComp();
@@ -86,31 +86,6 @@ public class AboutCategory extends AppPrefsCategory {
         return "about";
     }
 
-    private Comp<?> createProperties() {
-        var title = Comp.of(() -> {
-            return JfxHelper.createNamedEntry(AppI18n.get("xPipeClient"), "Version " + AppProperties.get().getVersion() + " ("
-                    + AppProperties.get().getArch() + ")", "logo/logo_48x48.png");
-        }).styleClass(Styles.TEXT_BOLD);
-
-        var section = new OptionsBuilder()
-                .addComp(title, null)
-                .addComp(Comp.vspacer(10))
-                .name("build")
-                .addComp(
-                        new LabelComp(AppProperties.get().getBuild()),
-                        null)
-                .name("runtimeVersion")
-                .addComp(
-                        new LabelComp(System.getProperty("java.vm.version")),
-                        null)
-                .name("virtualMachine")
-                .addComp(
-                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")),
-                        null)
-                .buildComp();
-        return section.styleClass("properties-comp");
-    }
-
     @Override
     protected Comp<?> create() {
         var props = createProperties().padding(new Insets(0, 0, 0, 15));
@@ -121,5 +96,30 @@ public class AboutCategory extends AppPrefsCategory {
                 .styleClass("information")
                 .styleClass("about-tab")
                 .apply(struc -> struc.get().setPrefWidth(600));
+    }
+
+    private Comp<?> createProperties() {
+        var title = Comp.of(() -> {
+                    return JfxHelper.createNamedEntry(
+                            AppI18n.get("xPipeClient"),
+                            "Version " + AppProperties.get().getVersion() + " ("
+                                    + AppProperties.get().getArch() + ")",
+                            "logo/logo_48x48.png");
+                })
+                .styleClass(Styles.TEXT_BOLD);
+
+        var section = new OptionsBuilder()
+                .addComp(title, null)
+                .addComp(Comp.vspacer(10))
+                .name("build")
+                .addComp(new LabelComp(AppProperties.get().getBuild()), null)
+                .name("runtimeVersion")
+                .addComp(new LabelComp(System.getProperty("java.vm.version")), null)
+                .name("virtualMachine")
+                .addComp(
+                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")),
+                        null)
+                .buildComp();
+        return section.styleClass("properties-comp");
     }
 }

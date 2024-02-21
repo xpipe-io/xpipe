@@ -58,16 +58,20 @@ public class BrowseInNativeManagerAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getFileSystem().getShell().orElseThrow().getLocalSystemAccess().supportsFileSystemAccess();
-    }
-
-    @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return switch (OsType.getLocal()) {
             case OsType.Windows windows -> "Browse in Windows Explorer";
             case OsType.Linux linux -> "Browse in default file manager";
             case OsType.MacOs macOs -> "Browse in Finder";
         };
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return model.getFileSystem()
+                .getShell()
+                .orElseThrow()
+                .getLocalSystemAccess()
+                .supportsFileSystemAccess();
     }
 }

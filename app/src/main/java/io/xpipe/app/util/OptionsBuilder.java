@@ -37,10 +37,6 @@ public class OptionsBuilder {
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
 
-    public Validator buildEffectiveValidator() {
-        return new ChainedValidator(allValidators);
-    }
-
     public OptionsBuilder() {
         this.ownValidator = new SimpleValidator();
         this.allValidators.add(ownValidator);
@@ -51,14 +47,21 @@ public class OptionsBuilder {
         this.allValidators.add(ownValidator);
     }
 
+    public Validator buildEffectiveValidator() {
+        return new ChainedValidator(allValidators);
+    }
+
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<String, OptionsBuilder> options) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        AppI18n.observable(e.getKey()), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
+                        AppI18n.observable(e.getKey()),
+                        e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
                 .toList();
-        var validatorList =
-                options.values().stream().map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator()).toList();
-        var selected = new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
+        var validatorList = options.values().stream()
+                .map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator())
+                .toList();
+        var selected =
+                new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
         selected.addListener((observable, oldValue, newValue) -> {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
         });
@@ -123,7 +126,6 @@ public class OptionsBuilder {
         return this;
     }
 
-
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
@@ -160,8 +162,8 @@ public class OptionsBuilder {
     public OptionsBuilder hide(ObservableValue<Boolean> b) {
         lastCompHeadReference.hide(b);
         return this;
-	}
-	
+    }
+
     public OptionsBuilder disable(boolean b) {
         lastCompHeadReference.disable(new SimpleBooleanProperty(b));
         return this;
@@ -238,7 +240,8 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addPath(Property<Path> prop) {
-        var string = new SimpleStringProperty(prop.getValue() != null ? prop.getValue().toString() : null);
+        var string = new SimpleStringProperty(
+                prop.getValue() != null ? prop.getValue().toString() : null);
         var comp = new TextFieldComp(string, true);
         string.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {

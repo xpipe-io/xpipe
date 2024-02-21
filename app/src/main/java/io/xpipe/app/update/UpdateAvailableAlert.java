@@ -22,8 +22,8 @@ public class UpdateAvailableAlert {
         var update = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("updateReadyAlertTitle"));
                     alert.setAlertType(Alert.AlertType.NONE);
-                    var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> "&nbsp;" + s)
-                            .createRegion();
+                    var markdown =
+                            new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> "&nbsp;" + s).createRegion();
                     alert.getButtonTypes().clear();
                     var updaterContent = uh.createInterface();
                     if (updaterContent != null) {

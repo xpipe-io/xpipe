@@ -39,7 +39,8 @@ public class StandaloneFileBrowser {
         });
     }
 
-    public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
+    public static void openSingleFile(
+            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER, null);
             var comp = new BrowserComp(model)

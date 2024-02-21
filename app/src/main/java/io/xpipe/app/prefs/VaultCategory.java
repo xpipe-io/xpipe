@@ -24,25 +24,33 @@ public class VaultCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
         if (!STORAGE_DIR_FIXED) {
-            var sub = new OptionsBuilder()
-                    .nameAndDescription("storageDirectory")
-                    .addPath(prefs.storageDirectory);
-            sub.withValidator(val-> {
+            var sub =
+                    new OptionsBuilder().nameAndDescription("storageDirectory").addPath(prefs.storageDirectory);
+            sub.withValidator(val -> {
                 sub.check(Validator.absolutePath(val, prefs.storageDirectory));
                 sub.check(Validator.directory(val, prefs.storageDirectory));
             });
-            builder.addTitle("storage")
-                    .sub(sub);
+            builder.addTitle("storage").sub(sub);
         }
-        builder.addTitle("vaultSecurity").sub(new OptionsBuilder()
-                .nameAndDescription("encryptAllVaultData")
-                .addToggle(prefs.encryptAllVaultData)
-                .nameAndDescription("workspaceLock").addComp(new ButtonComp(
-                Bindings.createStringBinding(() -> {
-                    return prefs.getLockCrypt().getValue() != null && !prefs.getLockCrypt().getValue().isEmpty()
-                            ? AppI18n.get("changeLock")
-                            : AppI18n.get("createLock");
-                }, prefs.getLockCrypt()), LockChangeAlert::show), prefs.getLockCrypt()));
+        builder.addTitle("vaultSecurity")
+                .sub(new OptionsBuilder()
+                        .nameAndDescription("encryptAllVaultData")
+                        .addToggle(prefs.encryptAllVaultData)
+                        .nameAndDescription("workspaceLock")
+                        .addComp(
+                                new ButtonComp(
+                                        Bindings.createStringBinding(
+                                                () -> {
+                                                    return prefs.getLockCrypt().getValue() != null
+                                                                    && !prefs.getLockCrypt()
+                                                                            .getValue()
+                                                                            .isEmpty()
+                                                            ? AppI18n.get("changeLock")
+                                                            : AppI18n.get("createLock");
+                                                },
+                                                prefs.getLockCrypt()),
+                                        LockChangeAlert::show),
+                                prefs.getLockCrypt()));
         return builder.buildComp();
     }
 }

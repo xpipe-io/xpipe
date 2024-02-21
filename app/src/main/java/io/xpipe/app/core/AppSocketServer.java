@@ -57,7 +57,10 @@ public class AppSocketServer {
                     .handle();
         } catch (Exception ex) {
             // Not terminal!
-            ErrorEvent.fromThrowable(ex).description("Unable to start local socket server on port " + port).build().handle();
+            ErrorEvent.fromThrowable(ex)
+                    .description("Unable to start local socket server on port " + port)
+                    .build()
+                    .handle();
         }
     }
 
@@ -246,9 +249,7 @@ public class AppSocketServer {
             }
         }
 
-        TrackEvent.builder()
-                .type("trace")
-                .message("Socket connection #" + id + " finished unsuccessfully");
+        TrackEvent.builder().type("trace").message("Socket connection #" + id + " finished unsuccessfully");
     }
 
     private void performExchangesAsync(Socket clientSocket) {

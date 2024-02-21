@@ -13,14 +13,6 @@ import java.util.ServiceLoader;
 
 public interface BrowserAction {
 
-    enum Category {
-        CUSTOM,
-        OPEN,
-        NATIVE,
-        COPY_PASTE,
-        MUTATION
-    }
-
     List<BrowserAction> ALL = new ArrayList<>();
 
     static List<LeafAction> getFlattened(OpenFileSystemModel model, List<BrowserEntry> entries) {
@@ -73,6 +65,14 @@ public interface BrowserAction {
 
     default boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return true;
+    }
+
+    enum Category {
+        CUSTOM,
+        OPEN,
+        NATIVE,
+        COPY_PASTE,
+        MUTATION
     }
 
     class Loader implements ModuleLayerLoader {

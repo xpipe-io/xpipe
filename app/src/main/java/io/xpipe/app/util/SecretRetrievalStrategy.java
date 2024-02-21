@@ -28,7 +28,6 @@ public interface SecretRetrievalStrategy {
         return true;
     }
 
-
     @JsonTypeName("none")
     class None implements SecretRetrievalStrategy {
 
@@ -59,7 +58,8 @@ public interface SecretRetrievalStrategy {
             return new SecretQuery() {
                 @Override
                 public SecretQueryResult query(String prompt) {
-                    return new SecretQueryResult(value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""), false);
+                    return new SecretQueryResult(
+                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""), false);
                 }
 
                 @Override
@@ -120,7 +120,8 @@ public interface SecretRetrievalStrategy {
                     try (var cc = new LocalStore().control().command(cmd).start()) {
                         return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), false);
                     } catch (Exception ex) {
-                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex).handle();
+                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
+                                .handle();
                         return new SecretQueryResult(null, true);
                     }
                 }
@@ -154,7 +155,8 @@ public interface SecretRetrievalStrategy {
                     try (var cc = new LocalStore().control().command(command).start()) {
                         return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), false);
                     } catch (Exception ex) {
-                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + command, ex).handle();
+                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + command, ex)
+                                .handle();
                         return new SecretQueryResult(null, true);
                     }
                 }

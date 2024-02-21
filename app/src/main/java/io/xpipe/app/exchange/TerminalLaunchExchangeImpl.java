@@ -3,7 +3,6 @@ package io.xpipe.app.exchange;
 import io.xpipe.app.util.TerminalLauncherManager;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ClientException;
-import io.xpipe.beacon.ServerException;
 import io.xpipe.beacon.exchange.TerminalLaunchExchange;
 
 public class TerminalLaunchExchangeImpl extends TerminalLaunchExchange

@@ -9,9 +9,12 @@ public class Hyperlinks {
     public static final String EULA = "https://docs.xpipe.io/end-user-license-agreement";
     public static final String SECURITY = "https://docs.xpipe.io/security";
     public static final String DISCORD = "https://discord.gg/8y89vS8cRb";
-    public static final String SLACK = "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
+    public static final String SLACK =
+            "https://join.slack.com/t/XPipe/shared_invite/zt-1awjq0t5j-5i4UjNJfNe1VN4b_auu6Cg";
 
-    static final String[] browsers = {"xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"};
+    static final String[] browsers = {
+        "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
+    };
 
     @SuppressWarnings("deprecation")
     public static void open(String uri) {

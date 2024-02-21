@@ -9,6 +9,7 @@ public class LocalShell {
 
     @Getter
     private static ShellControlCache localCache;
+
     private static ShellControl local;
     private static ShellControl localPowershell;
 
@@ -19,7 +20,8 @@ public class LocalShell {
 
     public static ShellControl getLocalPowershell() {
         if (localPowershell == null) {
-            localPowershell = ProcessControlProvider.get().createLocalProcessControl(true)
+            localPowershell = ProcessControlProvider.get()
+                    .createLocalProcessControl(true)
                     .subShell(ShellDialects.POWERSHELL)
                     .start();
         }

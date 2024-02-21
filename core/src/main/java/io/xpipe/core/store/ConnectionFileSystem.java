@@ -26,29 +26,6 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public List<String> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).toList();
-    }
-
-    @Override
-    public boolean directoryExists(String file) throws Exception {
-        return shellControl
-                .getShellDialect()
-                .directoryExists(shellControl, file)
-                .executeAndCheck();
-    }
-
-    @Override
-    public void directoryAccessible(String file) throws Exception {
-        shellControl.executeSimpleCommand(shellControl.getShellDialect().getCdCommand(file));
-    }
-
-    @Override
-    public Stream<FileEntry> listFiles(String file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file);
-    }
-
-    @Override
     public FileSystemStore getStore() {
         return store;
     }
@@ -123,7 +100,8 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void mkdirs(String file) throws Exception {
         try (var pc = shellControl
-                .command(CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file)))
+                .command(
+                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file)))
                 .start()) {
             pc.discardOrThrow();
         }
@@ -147,6 +125,29 @@ public class ConnectionFileSystem implements FileSystem {
                 .start()) {
             pc.discardOrThrow();
         }
+    }
+
+    @Override
+    public boolean directoryExists(String file) throws Exception {
+        return shellControl
+                .getShellDialect()
+                .directoryExists(shellControl, file)
+                .executeAndCheck();
+    }
+
+    @Override
+    public void directoryAccessible(String file) throws Exception {
+        shellControl.executeSimpleCommand(shellControl.getShellDialect().getCdCommand(file));
+    }
+
+    @Override
+    public Stream<FileEntry> listFiles(String file) throws Exception {
+        return shellControl.getShellDialect().listFiles(this, shellControl, file);
+    }
+
+    @Override
+    public List<String> listRoots() throws Exception {
+        return shellControl.getShellDialect().listRoots(shellControl).toList();
     }
 
     @Override

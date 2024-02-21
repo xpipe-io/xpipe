@@ -20,19 +20,13 @@ public class OpenDirectoryAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.OPEN;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2f-folder-open");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1
-                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+    public Category getCategory() {
+        return Category.OPEN;
     }
 
     @Override
@@ -43,5 +37,11 @@ public class OpenDirectoryAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Open";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 }

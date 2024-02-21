@@ -3,7 +3,10 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.cli.*;
-import io.xpipe.app.ext.*;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
@@ -108,7 +111,8 @@ open module io.xpipe.app {
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
 
-    provides Module with StorageJacksonModule;
+    provides Module with
+            StorageJacksonModule;
     provides ModuleLayerLoader with
             ActionProvider.Loader,
             PrefsProvider.Loader,
@@ -140,7 +144,8 @@ open module io.xpipe.app {
             RenameStoreExchangeImpl,
             ListStoresExchangeImpl,
             StoreAddExchangeImpl,
-            AskpassExchangeImpl, TerminalWaitExchangeImpl,
+            AskpassExchangeImpl,
+            TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
             QueryStoreExchangeImpl,
             WriteStreamExchangeImpl,

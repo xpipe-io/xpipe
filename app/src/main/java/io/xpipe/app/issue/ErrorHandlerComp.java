@@ -114,9 +114,13 @@ public class ErrorHandlerComp extends SimpleComp {
                 showing.set(true);
                 Stage window;
                 try {
-                    window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> {
-                        return setUpComp(event, w, finishLatch);
-                    }, true, null);
+                    window = AppWindowHelper.sideWindow(
+                            AppI18n.get("errorHandler"),
+                            w -> {
+                                return setUpComp(event, w, finishLatch);
+                            },
+                            true,
+                            null);
                 } catch (Throwable t) {
                     showLatch.countDown();
                     finishLatch.countDown();
@@ -240,8 +244,7 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        for (var action :
-                List.of(ErrorAction.ignore())) {
+        for (var action : List.of(ErrorAction.ignore())) {
             var ac = createActionComp(action);
             actionBox.getChildren().add(ac);
         }

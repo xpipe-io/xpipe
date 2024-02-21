@@ -20,12 +20,6 @@ import java.util.List;
 @JsonDeserialize(using = BrowserSavedStateImpl.Deserializer.class)
 public class BrowserSavedStateImpl implements BrowserSavedState {
 
-    static BrowserSavedStateImpl load() {
-        return AppCache.get("browser-state", BrowserSavedStateImpl.class, () -> {
-            return new BrowserSavedStateImpl(FXCollections.observableArrayList());
-        });
-    }
-
     @JsonSerialize(as = List.class)
     ObservableList<Entry> lastSystems;
 
@@ -33,25 +27,10 @@ public class BrowserSavedStateImpl implements BrowserSavedState {
         this.lastSystems = FXCollections.observableArrayList(lastSystems);
     }
 
-    public static class Deserializer extends StdDeserializer<BrowserSavedStateImpl> {
-
-        protected Deserializer() {
-            super(BrowserSavedStateImpl.class);
-        }
-
-        @Override
-        @SneakyThrows
-        public BrowserSavedStateImpl deserialize(JsonParser p, DeserializationContext ctxt) {
-            var tree = (ObjectNode) JacksonMapper.getDefault().readTree(p);
-            JavaType javaType = JacksonMapper.getDefault()
-                    .getTypeFactory()
-                    .constructCollectionLikeType(List.class, Entry.class);
-            List<Entry> ls = JacksonMapper.getDefault().treeToValue(tree.remove("lastSystems"), javaType);
-            if (ls == null) {
-                ls = List.of();
-            }
-            return new BrowserSavedStateImpl(ls);
-        }
+    static BrowserSavedStateImpl load() {
+        return AppCache.get("browser-state", BrowserSavedStateImpl.class, () -> {
+            return new BrowserSavedStateImpl(FXCollections.observableArrayList());
+        });
     }
 
     @Override
@@ -71,5 +50,25 @@ public class BrowserSavedStateImpl implements BrowserSavedState {
     @Override
     public ObservableList<Entry> getEntries() {
         return lastSystems;
+    }
+
+    public static class Deserializer extends StdDeserializer<BrowserSavedStateImpl> {
+
+        protected Deserializer() {
+            super(BrowserSavedStateImpl.class);
+        }
+
+        @Override
+        @SneakyThrows
+        public BrowserSavedStateImpl deserialize(JsonParser p, DeserializationContext ctxt) {
+            var tree = (ObjectNode) JacksonMapper.getDefault().readTree(p);
+            JavaType javaType =
+                    JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, Entry.class);
+            List<Entry> ls = JacksonMapper.getDefault().treeToValue(tree.remove("lastSystems"), javaType);
+            if (ls == null) {
+                ls = List.of();
+            }
+            return new BrowserSavedStateImpl(ls);
+        }
     }
 }

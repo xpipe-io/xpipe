@@ -29,6 +29,7 @@ public class TerminalLaunchExchange implements MessageExchange {
     @Builder
     @Value
     public static class Response implements ResponseMessage {
-        @NonNull Path targetFile;
+        @NonNull
+        Path targetFile;
     }
 }

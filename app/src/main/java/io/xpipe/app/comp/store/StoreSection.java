@@ -19,21 +19,11 @@ import java.util.function.Predicate;
 @Value
 public class StoreSection {
 
-    public static Comp<?> customSection(StoreSection e, boolean topLevel) {
-        var prov = e.getWrapper().getEntry().getProvider();
-        if (prov != null) {
-            return prov.customSectionComp(e, topLevel);
-        } else {
-            return new StoreSectionComp(e, topLevel);
-        }
-    }
-
     StoreEntryWrapper wrapper;
     ObservableList<StoreSection> allChildren;
     ObservableList<StoreSection> shownChildren;
     int depth;
     ObservableBooleanValue showDetails;
-
     public StoreSection(
             StoreEntryWrapper wrapper,
             ObservableList<StoreSection> allChildren,
@@ -55,6 +45,15 @@ public class StoreSection {
         }
     }
 
+    public static Comp<?> customSection(StoreSection e, boolean topLevel) {
+        var prov = e.getWrapper().getEntry().getProvider();
+        if (prov != null) {
+            return prov.customSectionComp(e, topLevel);
+        } else {
+            return new StoreSectionComp(e, topLevel);
+        }
+    }
+
     private static ObservableList<StoreSection> sorted(
             ObservableList<StoreSection> list, ObservableValue<StoreCategoryWrapper> category) {
         if (category == null) {
@@ -63,7 +62,9 @@ public class StoreSection {
 
         var c = Comparator.<StoreSection>comparingInt(
                 value -> value.getWrapper().getEntry().getValidity().isUsable() ? -1 : 1);
-        var mappedSortMode = BindingsHelper.mappedBinding(category, storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
+        var mappedSortMode = BindingsHelper.mappedBinding(
+                category,
+                storeCategoryWrapper -> storeCategoryWrapper != null ? storeCategoryWrapper.getSortMode() : null);
         return BindingsHelper.orderedContentBinding(
                 list,
                 (o1, o2) -> {
@@ -97,7 +98,9 @@ public class StoreSection {
                 section -> {
                     var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
-                    var sameCategory = category == null || category.getValue() == null || category.getValue().contains(section.getWrapper().getEntry());
+                    var sameCategory = category == null
+                            || category.getValue() == null
+                            || category.getValue().contains(section.getWrapper().getEntry());
                     return showFilter && matchesSelector && sameCategory;
                 },
                 category,
@@ -118,10 +121,10 @@ public class StoreSection {
 
         var allChildren = BindingsHelper.filteredContentBinding(all, other -> {
             // Legacy implementation that does not use children caches. Use for testing
-//            if (true) return DataStorage.get()
-//                    .getDisplayParent(other.getEntry())
-//                    .map(found -> found.equals(e.getEntry()))
-//                    .orElse(false);
+            //            if (true) return DataStorage.get()
+            //                    .getDisplayParent(other.getEntry())
+            //                    .map(found -> found.equals(e.getEntry()))
+            //                    .orElse(false);
 
             // This check is fast as the children are cached in the storage
             return DataStorage.get().getStoreChildren(e.getEntry()).contains(other.getEntry());
@@ -134,9 +137,13 @@ public class StoreSection {
                 section -> {
                     var showFilter = filterString == null || section.shouldShow(filterString.get());
                     var matchesSelector = section.anyMatches(entryFilter);
-                    var sameCategory = category == null || category.getValue() == null || category.getValue().contains(section.getWrapper().getEntry());
-                    // If this entry is already shown as root due to a different category than parent, don't show it again here
-                    var notRoot = !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
+                    var sameCategory = category == null
+                            || category.getValue() == null
+                            || category.getValue().contains(section.getWrapper().getEntry());
+                    // If this entry is already shown as root due to a different category than parent, don't show it
+                    // again here
+                    var notRoot =
+                            !DataStorage.get().isRootEntry(section.getWrapper().getEntry());
                     return showFilter && matchesSelector && sameCategory && notRoot;
                 },
                 category,

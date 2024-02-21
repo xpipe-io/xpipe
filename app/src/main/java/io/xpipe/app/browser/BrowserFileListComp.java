@@ -81,18 +81,18 @@ final class BrowserFileListComp extends SimpleComp {
         filenameCol.setCellFactory(col -> new FilenameCell(fileList.getEditing()));
 
         var sizeCol = new TableColumn<BrowserEntry, Number>("Size");
-        sizeCol.setCellValueFactory(param ->
-                new SimpleLongProperty(param.getValue().getRawFileEntry().resolved().getSize()));
+        sizeCol.setCellValueFactory(param -> new SimpleLongProperty(
+                param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
 
         var mtimeCol = new TableColumn<BrowserEntry, Instant>("Modified");
-        mtimeCol.setCellValueFactory(param ->
-                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getDate()));
+        mtimeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
+                param.getValue().getRawFileEntry().resolved().getDate()));
         mtimeCol.setCellFactory(col -> new FileTimeCell());
 
         var modeCol = new TableColumn<BrowserEntry, String>("Attributes");
-        modeCol.setCellValueFactory(param ->
-                new SimpleObjectProperty<>(param.getValue().getRawFileEntry().resolved().getMode()));
+        modeCol.setCellValueFactory(param -> new SimpleObjectProperty<>(
+                param.getValue().getRawFileEntry().resolved().getMode()));
         modeCol.setCellFactory(col -> new FileModeCell());
         modeCol.setSortable(false);
 
@@ -247,12 +247,20 @@ final class BrowserFileListComp extends SimpleComp {
                                 }
 
                                 if (row.getItem() != null
-                                        && row.getItem().getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
+                                        && row.getItem()
+                                                        .getRawFileEntry()
+                                                        .resolved()
+                                                        .getKind()
+                                                == FileKind.DIRECTORY) {
                                     return event.getButton() == MouseButton.SECONDARY;
                                 }
 
                                 if (row.getItem() != null
-                                        && row.getItem().getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY) {
+                                        && row.getItem()
+                                                        .getRawFileEntry()
+                                                        .resolved()
+                                                        .getKind()
+                                                != FileKind.DIRECTORY) {
                                     return event.getButton() == MouseButton.SECONDARY
                                             || event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2;
                                 }
@@ -424,6 +432,54 @@ final class BrowserFileListComp extends SimpleComp {
         }
     }
 
+    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
+
+        @Override
+        protected void updateItem(Number fileSize, boolean empty) {
+            super.updateItem(fileSize, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+            } else {
+                var path = getTableRow().getItem();
+                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
+                    setText("");
+                } else {
+                    setText(byteCount(fileSize.longValue()));
+                }
+            }
+        }
+    }
+
+    private static class FileModeCell extends TableCell<BrowserEntry, String> {
+
+        @Override
+        protected void updateItem(String mode, boolean empty) {
+            super.updateItem(mode, empty);
+            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                setText(null);
+            } else {
+                setText(mode);
+            }
+        }
+    }
+
+    private static class FileTimeCell extends TableCell<BrowserEntry, Instant> {
+
+        @Override
+        protected void updateItem(Instant fileTime, boolean empty) {
+            super.updateItem(fileTime, empty);
+            if (empty) {
+                setText(null);
+            } else {
+                setText(
+                        fileTime != null
+                                ? HumanReadableFormat.date(
+                                        fileTime.atZone(ZoneId.systemDefault()).toLocalDateTime())
+                                : "");
+            }
+        }
+    }
+
     private class FilenameCell extends TableCell<BrowserEntry, String> {
 
         private final StringProperty img = new SimpleStringProperty();
@@ -515,54 +571,6 @@ final class BrowserFileListComp extends SimpleComp {
                     // Use opacity instead of visibility as visibility is kinda bugged with web views
                     setOpacity(1.0);
                 }
-            }
-        }
-    }
-
-    private static class FileSizeCell extends TableCell<BrowserEntry, Number> {
-
-        @Override
-        protected void updateItem(Number fileSize, boolean empty) {
-            super.updateItem(fileSize, empty);
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                setText(null);
-            } else {
-                var path = getTableRow().getItem();
-                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                    setText("");
-                } else {
-                    setText(byteCount(fileSize.longValue()));
-                }
-            }
-        }
-    }
-
-    private static class FileModeCell extends TableCell<BrowserEntry, String> {
-
-        @Override
-        protected void updateItem(String mode, boolean empty) {
-            super.updateItem(mode, empty);
-            if (empty || getTableRow() == null || getTableRow().getItem() == null) {
-                setText(null);
-            } else {
-                setText(mode);
-            }
-        }
-    }
-
-    private static class FileTimeCell extends TableCell<BrowserEntry, Instant> {
-
-        @Override
-        protected void updateItem(Instant fileTime, boolean empty) {
-            super.updateItem(fileTime, empty);
-            if (empty) {
-                setText(null);
-            } else {
-                setText(
-                        fileTime != null
-                                ? HumanReadableFormat.date(
-                                        fileTime.atZone(ZoneId.systemDefault()).toLocalDateTime())
-                                : "");
             }
         }
     }

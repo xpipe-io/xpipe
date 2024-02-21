@@ -9,17 +9,6 @@ import java.util.stream.Collectors;
 
 public interface OsType {
 
-    sealed interface Local extends OsType permits OsType.Windows, OsType.Linux, OsType.MacOs {
-
-        default Any toAny() {
-            return (Any) this;
-        }
-    }
-
-    sealed interface Any extends OsType permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd  {
-
-    }
-
     Windows WINDOWS = new Windows();
     Linux LINUX = new Linux();
     MacOs MACOS = new MacOs();
@@ -52,6 +41,16 @@ public interface OsType {
     Map<String, String> getProperties(ShellControl pc) throws Exception;
 
     String determineOperatingSystemName(ShellControl pc) throws Exception;
+
+    sealed interface Local extends OsType permits OsType.Windows, OsType.Linux, OsType.MacOs {
+
+        default Any toAny() {
+            return (Any) this;
+        }
+    }
+
+    sealed interface Any extends OsType
+            permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd {}
 
     final class Windows implements OsType, Local, Any {
 
@@ -135,13 +134,13 @@ public interface OsType {
         }
 
         @Override
-        public String getTempDirectory(ShellControl pc) {
-            return "/tmp/";
+        public String getName() {
+            return "Linux";
         }
 
         @Override
-        public String getName() {
-            return "Linux";
+        public String getTempDirectory(ShellControl pc) {
+            return "/tmp/";
         }
 
         @Override
@@ -171,8 +170,7 @@ public interface OsType {
         }
     }
 
-
-    final class Linux extends Unix implements OsType, Local, Any  {
+    final class Linux extends Unix implements OsType, Local, Any {
 
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
@@ -194,15 +192,11 @@ public interface OsType {
         }
     }
 
-    final class Solaris extends Unix implements Any {
+    final class Solaris extends Unix implements Any {}
 
-    }
+    final class Bsd extends Unix implements Any {}
 
-    final class Bsd extends Unix implements Any {
-
-    }
-
-    final class MacOs implements OsType, Local, Any  {
+    final class MacOs implements OsType, Local, Any {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -224,6 +218,16 @@ public interface OsType {
         }
 
         @Override
+        public String getFileSystemSeparator() {
+            return "/";
+        }
+
+        @Override
+        public String getName() {
+            return "Mac";
+        }
+
+        @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
             var found = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
 
@@ -236,19 +240,8 @@ public interface OsType {
         }
 
         @Override
-        public String getFileSystemSeparator() {
-            return "/";
-        }
-
-        @Override
-        public String getName() {
-            return "Mac";
-        }
-
-        @Override
         public Map<String, String> getProperties(ShellControl pc) throws Exception {
-            try (CommandControl c =
-                    pc.command("sw_vers").start()) {
+            try (CommandControl c = pc.command("sw_vers").start()) {
                 var text = c.readStdoutOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }

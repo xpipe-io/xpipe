@@ -71,9 +71,7 @@ public class FileOpener {
         try {
             editor.launch(Path.of(localFile).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
-                    .expected()
-                    .handle();
+            ErrorEvent.fromThrowable(e).expected().handle();
         }
     }
 
@@ -85,8 +83,9 @@ public class FileOpener {
                     LocalShell.getShell().executeSimpleCommand(cmd);
                 }
                 case OsType.Linux linux -> {
-                    LocalShell.getShell().executeSimpleCommand("mimeopen -a "
-                            + LocalShell.getShell().getShellDialect().fileArgument(localFile));
+                    LocalShell.getShell()
+                            .executeSimpleCommand("mimeopen -a "
+                                    + LocalShell.getShell().getShellDialect().fileArgument(localFile));
                 }
                 case OsType.MacOs macOs -> {
                     throw new UnsupportedOperationException();

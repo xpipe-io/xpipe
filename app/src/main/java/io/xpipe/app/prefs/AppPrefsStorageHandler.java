@@ -21,7 +21,9 @@ public class AppPrefsStorageHandler {
     private final Path file;
     private ObjectNode content;
 
-    public AppPrefsStorageHandler(Path file) {this.file = file;}
+    public AppPrefsStorageHandler(Path file) {
+        this.file = file;
+    }
 
     private JsonNode getContent(String key) {
         if (content == null) {
@@ -46,7 +48,7 @@ public class AppPrefsStorageHandler {
     }
 
     @SuppressWarnings("unchecked")
-    public  <T> T loadObject(String id, Class<T> type, T defaultObject) {
+    public <T> T loadObject(String id, Class<T> type, T defaultObject) {
         var tree = getContent(id);
         if (tree == null) {
             TrackEvent.debug("Preferences value not found for key: " + id);
@@ -58,15 +60,23 @@ public class AppPrefsStorageHandler {
             if (all != null) {
                 Class<PrefsChoiceValue> cast = (Class<PrefsChoiceValue>) type;
                 var in = tree.asText();
-                var found = all.stream().filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in)).findAny();
+                var found = all.stream()
+                        .filter(t -> ((PrefsChoiceValue) t).getId().equalsIgnoreCase(in))
+                        .findAny();
                 if (found.isEmpty()) {
-                    TrackEvent.withWarn("Invalid prefs value found").tag("key", id).tag("value", in).handle();
+                    TrackEvent.withWarn("Invalid prefs value found")
+                            .tag("key", id)
+                            .tag("value", in)
+                            .handle();
                     return defaultObject;
                 }
 
                 var supported = getSupported(cast);
                 if (!supported.contains(found.get())) {
-                    TrackEvent.withWarn("Unsupported prefs value found").tag("key", id).tag("value", in).handle();
+                    TrackEvent.withWarn("Unsupported prefs value found")
+                            .tag("key", id)
+                            .tag("value", in)
+                            .handle();
                     return defaultObject;
                 }
 

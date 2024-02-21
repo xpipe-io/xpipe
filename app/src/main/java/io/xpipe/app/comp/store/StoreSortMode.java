@@ -11,8 +11,6 @@ import java.util.stream.Stream;
 
 public interface StoreSortMode {
 
-    StoreSection representative(StoreSection s);
-
     StoreSortMode ALPHABETICAL_DESC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
@@ -30,7 +28,6 @@ public interface StoreSortMode {
                     e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
         }
     };
-
     StoreSortMode ALPHABETICAL_ASC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
@@ -49,14 +46,19 @@ public interface StoreSortMode {
                     .reversed();
         }
     };
-
     StoreSortMode DATE_DESC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
             var c = comparator();
-            return Stream.of(s.getShownChildren().stream().max((o1, o2) -> {
-                return c.compare(representative(o1), representative(o2));
-            }).orElse(s), s).max(c).orElseThrow();
+            return Stream.of(
+                            s.getShownChildren().stream()
+                                    .max((o1, o2) -> {
+                                        return c.compare(representative(o1), representative(o2));
+                                    })
+                                    .orElse(s),
+                            s)
+                    .max(c)
+                    .orElseThrow();
         }
 
         @Override
@@ -74,14 +76,19 @@ public interface StoreSortMode {
             });
         }
     };
-
     StoreSortMode DATE_ASC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
             var c = comparator();
-            return Stream.of(s.getShownChildren().stream().min((o1, o2) -> {
-                return c.compare(representative(o1), representative(o2));
-            }).orElse(s), s).min(c).orElseThrow();
+            return Stream.of(
+                            s.getShownChildren().stream()
+                                    .min((o1, o2) -> {
+                                        return c.compare(representative(o1), representative(o2));
+                                    })
+                                    .orElse(s),
+                            s)
+                    .min(c)
+                    .orElseThrow();
         }
 
         @Override
@@ -92,13 +99,15 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.<StoreSection, Instant>comparing(e -> {
-                return flatten(e)
-                        .map(entry -> entry.getLastAccess())
-                        .max(Comparator.naturalOrder())
-                        .orElseThrow();
-            }).reversed();
+                        return flatten(e)
+                                .map(entry -> entry.getLastAccess())
+                                .max(Comparator.naturalOrder())
+                                .orElseThrow();
+                    })
+                    .reversed();
         }
     };
+    List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
 
     static Stream<DataStoreEntry> flatten(StoreSection section) {
         return Stream.concat(
@@ -106,13 +115,13 @@ public interface StoreSortMode {
                 section.getAllChildren().stream().flatMap(section1 -> flatten(section1)));
     }
 
-    List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
-
     static Optional<StoreSortMode> fromId(String id) {
         return ALL.stream()
                 .filter(storeSortMode -> storeSortMode.getId().equals(id))
                 .findFirst();
     }
+
+    StoreSection representative(StoreSection s);
 
     String getId();
 

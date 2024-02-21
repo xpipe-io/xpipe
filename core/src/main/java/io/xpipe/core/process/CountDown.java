@@ -5,10 +5,6 @@ import lombok.Setter;
 
 public class CountDown {
 
-    public static CountDown of() {
-        return new CountDown();
-    }
-
     private long lastMillis = -1;
     private long millisecondsLeft;
     @Setter
@@ -16,7 +12,10 @@ public class CountDown {
     @Getter
     private long maxMillis;
 
-    private CountDown() {
+    private CountDown() {}
+
+    public static CountDown of() {
+        return new CountDown();
     }
 
     public synchronized void start(long millisecondsLeft) {
@@ -24,7 +23,6 @@ public class CountDown {
         this.maxMillis = millisecondsLeft;
         lastMillis = System.currentTimeMillis();
         active = true;
-
     }
 
     public void pause() {

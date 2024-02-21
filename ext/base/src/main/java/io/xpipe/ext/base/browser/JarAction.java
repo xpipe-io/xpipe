@@ -17,6 +17,11 @@ public class JarAction extends MultiExecuteAction implements JavaAction, FileTyp
     }
 
     @Override
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return "java -jar " + BrowserActionFormatter.filesArgument(entries);
+    }
+
+    @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return super.isApplicable(model, entries) && FileTypeAction.super.isApplicable(model, entries);
     }
@@ -24,11 +29,6 @@ public class JarAction extends MultiExecuteAction implements JavaAction, FileTyp
     @Override
     protected String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
         return "java -jar " + entry.getOptionallyQuotedFileName();
-    }
-
-    @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "java -jar " + BrowserActionFormatter.filesArgument(entries);
     }
 
     @Override

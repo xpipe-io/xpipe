@@ -18,17 +18,23 @@ public class SystemCategory extends AppPrefsCategory {
         builder.addTitle("appBehaviour")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("startupBehaviour")
-                        .addComp(ChoiceComp.ofTranslatable(prefs.startupBehaviour, PrefsChoiceValue.getSupported(StartupBehaviour.class), false).minWidth(300))
+                        .addComp(ChoiceComp.ofTranslatable(
+                                        prefs.startupBehaviour,
+                                        PrefsChoiceValue.getSupported(StartupBehaviour.class),
+                                        false)
+                                .minWidth(300))
                         .nameAndDescription("closeBehaviour")
-                        .addComp(ChoiceComp.ofTranslatable(prefs.closeBehaviour, PrefsChoiceValue.getSupported(CloseBehaviour.class), false).minWidth(300))
-                )
+                        .addComp(ChoiceComp.ofTranslatable(
+                                        prefs.closeBehaviour,
+                                        PrefsChoiceValue.getSupported(CloseBehaviour.class),
+                                        false)
+                                .minWidth(300)))
                 .addTitle("advanced")
-                .sub(new OptionsBuilder()
-                        .nameAndDescription("developerMode")
-                        .addToggle(prefs.developerMode))
+                .sub(new OptionsBuilder().nameAndDescription("developerMode").addToggle(prefs.developerMode))
                 .addTitle("updates")
                 .sub(new OptionsBuilder()
-                        .nameAndDescription("automaticallyUpdate").addToggle(prefs.automaticallyCheckForUpdates));
+                        .nameAndDescription("automaticallyUpdate")
+                        .addToggle(prefs.automaticallyCheckForUpdates));
         return builder.buildComp();
     }
 }

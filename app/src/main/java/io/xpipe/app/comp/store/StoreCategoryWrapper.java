@@ -59,8 +59,9 @@ public class StoreCategoryWrapper {
     public StoreCategoryWrapper getParent() {
         return StoreViewState.get().getCategories().stream()
                 .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
-                .findAny().orElse(null);
+                        storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
+                .findAny()
+                .orElse(null);
     }
 
     public boolean contains(DataStoreEntry entry) {
@@ -97,8 +98,8 @@ public class StoreCategoryWrapper {
             DataStoreCategory p = category;
             if (newValue) {
                 while ((p = DataStorage.get()
-                        .getStoreCategoryIfPresent(p.getParentCategory())
-                        .orElse(null))
+                                .getStoreCategoryIfPresent(p.getParentCategory())
+                                .orElse(null))
                         != null) {
                     p.setShare(true);
                 }
@@ -124,10 +125,9 @@ public class StoreCategoryWrapper {
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
-        Optional.ofNullable(getParent())
-                .ifPresent(storeCategoryWrapper -> {
-                    storeCategoryWrapper.update();
-                });
+        Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
+            storeCategoryWrapper.update();
+        });
     }
 
     public String getName() {

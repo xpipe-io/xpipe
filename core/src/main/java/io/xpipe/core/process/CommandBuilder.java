@@ -10,6 +10,17 @@ import java.util.function.Function;
 
 public class CommandBuilder {
 
+    private final List<Element> elements = new ArrayList<>();
+    @Getter
+    private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
+    private final List<FailableConsumer<ShellControl, Exception>> setup = new ArrayList<>();
+    @Getter
+    private CountDown countDown;
+    @Getter
+    private UUID uuid;
+
+    private CommandBuilder() {}
+
     public static CommandBuilder of() {
         return new CommandBuilder();
     }
@@ -21,18 +32,6 @@ public class CommandBuilder {
     public static CommandBuilder ofFunction(FailableFunction<ShellControl, String, Exception> command) {
         return CommandBuilder.of().add(sc -> command.apply(sc));
     }
-
-    private CommandBuilder() {}
-
-    @Getter
-    private CountDown countDown;
-    @Getter
-    private UUID uuid;
-
-    private final List<Element> elements = new ArrayList<>();
-    @Getter
-    private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
-    private final List<FailableConsumer<ShellControl, Exception>> setup = new ArrayList<>();
 
     public CommandBuilder setup(FailableConsumer<ShellControl, Exception> consumer) {
         setup.add(consumer);
@@ -57,25 +56,6 @@ public class CommandBuilder {
     public CommandBuilder envrironment(Map<String, Element> map) {
         environmentVariables.putAll(map);
         return this;
-    }
-
-    public interface Element {
-
-        String evaluate(ShellControl sc) throws Exception;
-    }
-
-    static class Fixed implements Element {
-
-        private final String string;
-
-        Fixed(String string) {
-            this.string = string;
-        }
-
-        @Override
-        public String evaluate(ShellControl sc) {
-            return string;
-        }
     }
 
     public CommandBuilder discardOutput() {
@@ -103,7 +83,6 @@ public class CommandBuilder {
         }
         return this;
     }
-
 
     public CommandBuilder add(int index, String... s) {
         for (String s1 : s) {
@@ -270,5 +249,24 @@ public class CommandBuilder {
             list.add(evaluate);
         }
         return String.join(" ", list);
+    }
+
+    public interface Element {
+
+        String evaluate(ShellControl sc) throws Exception;
+    }
+
+    static class Fixed implements Element {
+
+        private final String string;
+
+        Fixed(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String evaluate(ShellControl sc) {
+            return string;
+        }
     }
 }
