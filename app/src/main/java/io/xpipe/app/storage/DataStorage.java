@@ -409,7 +409,8 @@ public abstract class DataStorage {
         deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
-            pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
+            // TODO do we need this, it erases any custom information?
+            // pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
 
             // Update state by merging
             if (pair.getKey().getStorePersistentState() != null
