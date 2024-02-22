@@ -87,7 +87,9 @@ public class SecretQueryProgress {
         }
 
         if (shouldCache) {
+            countDown.pause();
             var cached = sup.retrieveCache(prompt, ref);
+            countDown.resume();
             if (cached.isPresent()) {
                 if (cached.get().isCancelled()) {
                     requestCancelled = true;

@@ -25,7 +25,7 @@ public interface SecretQuery {
 
                 var inPlace = found.get().getSecret().inPlace();
                 var r = AskpassAlert.queryRaw(prompt, inPlace);
-                return r.isCancelled() ? Optional.empty() : found;
+                return r.isCancelled() ? Optional.of(r) : found;
             }
 
             @Override
