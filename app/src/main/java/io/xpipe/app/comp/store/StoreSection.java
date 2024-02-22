@@ -100,7 +100,7 @@ public class StoreSection {
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
-                            || category.getValue().contains(section.getWrapper().getEntry());
+                            || category.getValue().contains(section.getWrapper());
                     return showFilter && matchesSelector && sameCategory;
                 },
                 category,
@@ -139,7 +139,7 @@ public class StoreSection {
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
-                            || category.getValue().contains(section.getWrapper().getEntry());
+                            || category.getValue().contains(section.getWrapper());
                     // If this entry is already shown as root due to a different category than parent, don't show it
                     // again here
                     var notRoot =

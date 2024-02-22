@@ -36,7 +36,7 @@ public class StoreEntryListComp extends SimpleComp {
                 () -> {
                     var all = StoreViewState.get().getAllConnectionsCategory();
                     var connections = StoreViewState.get().getAllEntries().stream()
-                            .filter(wrapper -> all.contains(wrapper.getEntry()))
+                            .filter(wrapper -> all.contains(wrapper))
                             .toList();
                     return initialCount == connections.size()
                             && StoreViewState.get()

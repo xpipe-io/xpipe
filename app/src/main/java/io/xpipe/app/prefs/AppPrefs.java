@@ -39,23 +39,15 @@ public class AppPrefs {
     final BooleanProperty performanceMode = map(new SimpleBooleanProperty(false), "performanceMode", Boolean.class);
     final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
 
-    // Languages
-    // =========
     public final ObjectProperty<AppTheme.Theme> theme =
             map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
     final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);
     final Property<Integer> uiScale = map(new SimpleObjectProperty<>(null), "uiScale", Integer.class);
     final BooleanProperty saveWindowLocation =
             map(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class);
-    // External terminal
-    // =================
     final ObjectProperty<ExternalTerminalType> terminalType =
             map(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class);
-    // Window opacity
-    // ==============
     final DoubleProperty windowOpacity = map(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class);
-    // Custom terminal
-    // ===============
     final StringProperty customTerminalCommand =
             map(new SimpleStringProperty(""), "customTerminalCommand", String.class);
     final BooleanProperty preferTerminalTabs =
@@ -74,34 +66,19 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
     public final BooleanProperty denyTempScriptCreation =
             map(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
-    // Password manager
-    // ================
     final StringProperty passwordManagerCommand =
             map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
-    // Start behaviour
-    // ===============
     final ObjectProperty<StartupBehaviour> startupBehaviour =
             map(new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class);
-
-    // Lock
-    // ====
-    // Git storage
-    // ===========
     public final BooleanProperty enableGitStorage =
             map(new SimpleBooleanProperty(false), "enableGitStorage", Boolean.class);
     final StringProperty storageGitRemote = map(new SimpleStringProperty(""), "storageGitRemote", String.class);
-    // Close behaviour
-    // ===============
     final ObjectProperty<CloseBehaviour> closeBehaviour =
             map(new SimpleObjectProperty<>(CloseBehaviour.QUIT), "closeBehaviour", CloseBehaviour.class);
-    // External editor
-    // ===============
     final ObjectProperty<ExternalEditorType> externalEditor =
             map(new SimpleObjectProperty<>(), "externalEditor", ExternalEditorType.class);
     final StringProperty customEditorCommand = map(new SimpleStringProperty(""), "customEditorCommand", String.class);
     final BooleanProperty preferEditorTabs = map(new SimpleBooleanProperty(true), "preferEditorTabs", Boolean.class);
-    // Automatically update
-    // ====================
     final BooleanProperty automaticallyCheckForUpdates =
             map(new SimpleBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class);
     final BooleanProperty encryptAllVaultData =
@@ -110,8 +87,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class);
     final BooleanProperty condenseConnectionDisplay =
             map(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class);
-    // Storage
-    // =======
+    final BooleanProperty showChildCategoriesInParentCategory =
+            map(new SimpleBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
             map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
     private final AppPrefsStorageHandler vaultStorageHandler =
@@ -291,6 +268,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue condenseConnectionDisplay() {
         return condenseConnectionDisplay;
+    }
+
+    public ObservableBooleanValue showChildCategoriesInParentCategory() {
+        return showChildCategoriesInParentCategory;
     }
 
     public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {

@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -64,9 +64,9 @@ public class StoreCategoryWrapper {
                 .orElse(null);
     }
 
-    public boolean contains(DataStoreEntry entry) {
-        return entry.getCategoryUuid().equals(category.getUuid())
-                || children.stream().anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry));
+    public boolean contains(StoreEntryWrapper entry) {
+        return entry.getEntry().getCategoryUuid().equals(category.getUuid())
+                || containedEntries.contains(entry);
     }
 
     public void select() {
@@ -87,6 +87,10 @@ public class StoreCategoryWrapper {
         category.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
             update();
         }));
+
+        AppPrefs.get().showChildCategoriesInParentCategory().addListener((observable, oldValue, newValue) -> {
+            update();
+        });
 
         sortMode.addListener((observable, oldValue, newValue) -> {
             category.setSortMode(newValue);
@@ -118,7 +122,10 @@ public class StoreCategoryWrapper {
         share.setValue(category.isShare());
 
         containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
-                .filter(entry -> contains(entry.getEntry()))
+                .filter(entry -> {
+                    return entry.getEntry().getCategoryUuid().equals(category.getUuid())
+                            || (AppPrefs.get().showChildCategoriesInParentCategory().get() && children.stream().anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
+                })
                 .toList());
         children.setAll(StoreViewState.get().getCategories().stream()
                 .filter(storeCategoryWrapper -> getCategory()
