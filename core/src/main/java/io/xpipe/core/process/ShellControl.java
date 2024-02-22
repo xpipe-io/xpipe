@@ -76,7 +76,7 @@ public interface ShellControl extends ProcessControl {
     ShellControl withExceptionConverter(ExceptionConverter converter);
 
     @Override
-    ShellControl start();
+    ShellControl start() throws Exception;
 
     ShellControl withErrorFormatter(Function<String, String> formatter);
 

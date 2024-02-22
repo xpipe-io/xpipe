@@ -36,7 +36,7 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public FileSystem open() {
+    public FileSystem open() throws Exception {
         shellControl.start();
         return this;
     }

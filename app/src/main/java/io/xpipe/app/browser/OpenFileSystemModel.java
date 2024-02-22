@@ -67,13 +67,15 @@ public final class OpenFileSystemModel {
                         && fileSystem.getShell().get().getLock().isLocked());
     }
 
-    private void startIfNeeded() {
+    private void startIfNeeded() throws Exception {
         if (fileSystem == null) {
             return;
         }
 
         var s = fileSystem.getShell();
-        s.ifPresent(ShellControl::start);
+        if (s.isPresent()) {
+            s.get().start();
+        }
     }
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
@@ -151,8 +153,13 @@ public final class OpenFileSystemModel {
             return Optional.empty();
         }
 
-        // Start shell in case we exited
-        startIfNeeded();
+        try {
+            // Start shell in case we exited
+            startIfNeeded();
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return Optional.ofNullable(currentPath.get());
+        }
 
         // Fix common issues with paths
         var adjustedPath = FileSystemHelper.adjustPath(this, path);

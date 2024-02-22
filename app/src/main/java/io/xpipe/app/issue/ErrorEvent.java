@@ -85,6 +85,10 @@ public class ErrorEvent {
         return t;
     }
 
+    public static void preconfigure(ErrorEventBuilder event) {
+        EVENT_BASES.put(event.throwable, event);
+    }
+
     public void attachUserReport(String email, String text) {
         this.email = email;
         userReport = text;
