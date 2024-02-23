@@ -16,6 +16,7 @@ import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ExceptionConverter;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -172,7 +173,7 @@ public class StoreCreationComp extends DialogComp {
                 e -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
-                        if (e.getProvider().shouldHaveChildren()) {
+                        if (e.getProvider().shouldHaveChildren() && AppPrefs.get().openConnectionSearchWindowOnConnectionCreation().get()) {
                             ScanAlert.showAsync(e);
                         }
                     } catch (Exception ex) {

@@ -89,6 +89,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class);
     final BooleanProperty showChildCategoriesInParentCategory =
             map(new SimpleBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class);
+    final BooleanProperty openConnectionSearchWindowOnConnectionCreation =
+            map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
             map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
     private final AppPrefsStorageHandler vaultStorageHandler =
@@ -272,6 +274,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue showChildCategoriesInParentCategory() {
         return showChildCategoriesInParentCategory;
+    }
+
+    public ObservableBooleanValue openConnectionSearchWindowOnConnectionCreation() {
+        return openConnectionSearchWindowOnConnectionCreation;
     }
 
     public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {

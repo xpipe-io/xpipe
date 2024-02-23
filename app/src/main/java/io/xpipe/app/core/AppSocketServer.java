@@ -224,7 +224,8 @@ public class AppSocketServer {
                 TrackEvent.trace("Sending server error to #" + id + ": " + se.getMessage());
                 Deobfuscator.deobfuscate(se);
                 sendServerErrorResponse(clientSocket, se);
-                ErrorEvent.fromThrowable(se).build().handle();
+                var toReport = se.getCause() != null ? se.getCause() : se;
+                ErrorEvent.fromThrowable(toReport).build().handle();
             } catch (SocketException ex) {
                 // Do not send error and omit it, as this might happen often
                 // We do not send the error as the socket connection might be broken

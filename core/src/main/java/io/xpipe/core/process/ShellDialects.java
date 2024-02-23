@@ -24,6 +24,7 @@ public class ShellDialects {
     public static ShellDialect FISH;
 
     public static ShellDialect CISCO;
+    public static ShellDialect MIKROTIK;
     public static ShellDialect RBASH;
 
     public static List<ShellDialect> getStartableDialects() {
@@ -72,6 +73,7 @@ public class ShellDialects {
             ASH = byId("ash");
             SH = byId("sh");
             CISCO = byId("cisco");
+            MIKROTIK = byId("mikrotik");
             RBASH = byId("rbash");
         }
 
