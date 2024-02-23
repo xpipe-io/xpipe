@@ -24,6 +24,7 @@ public class StoreSection {
     ObservableList<StoreSection> shownChildren;
     int depth;
     ObservableBooleanValue showDetails;
+
     public StoreSection(
             StoreEntryWrapper wrapper,
             ObservableList<StoreSection> allChildren,

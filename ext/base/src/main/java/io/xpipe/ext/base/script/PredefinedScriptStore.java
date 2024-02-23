@@ -64,6 +64,7 @@ public enum PredefinedScriptStore {
     private final String name;
     private final Supplier<ScriptStore> scriptStore;
     private final UUID uuid;
+
     @Setter
     private DataStoreEntryRef<ScriptStore> entry;
 

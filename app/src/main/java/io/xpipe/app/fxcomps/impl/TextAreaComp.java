@@ -19,6 +19,7 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
     private final Property<String> currentValue;
     private final Property<String> lastAppliedValue;
     private final boolean lazy;
+
     public TextAreaComp(Property<String> value) {
         this(value, false);
     }

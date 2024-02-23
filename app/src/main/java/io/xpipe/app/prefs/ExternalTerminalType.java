@@ -847,12 +847,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
+        public boolean isAvailable() {
             return true;
         }
 
         @Override
-        public boolean isAvailable() {
+        public boolean isSelectable() {
             return true;
         }
     }

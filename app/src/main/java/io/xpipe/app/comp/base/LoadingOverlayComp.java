@@ -21,6 +21,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
     private final Comp<?> comp;
     private final ObservableValue<Boolean> showLoading;
     private final ObservableValue<Number> progress;
+
     public LoadingOverlayComp(Comp<?> comp, ObservableValue<Boolean> loading, ObservableValue<Number> progress) {
         this.comp = comp;
         this.showLoading = PlatformThread.sync(loading);

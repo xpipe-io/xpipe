@@ -7,8 +7,10 @@ public class CountDown {
 
     private long lastMillis = -1;
     private long millisecondsLeft;
+
     @Setter
     private boolean active;
+
     @Getter
     private long maxMillis;
 

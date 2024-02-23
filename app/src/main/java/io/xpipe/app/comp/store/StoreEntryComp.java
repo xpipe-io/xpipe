@@ -48,6 +48,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             App.getApp().getStage().widthProperty().divide(2.2).add(-200);
     protected final StoreEntryWrapper wrapper;
     protected final Comp<?> content;
+
     public StoreEntryComp(StoreEntryWrapper wrapper, Comp<?> content) {
         this.wrapper = wrapper;
         this.content = content;

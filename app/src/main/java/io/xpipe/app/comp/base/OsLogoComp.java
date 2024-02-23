@@ -29,6 +29,7 @@ public class OsLogoComp extends SimpleComp {
     public OsLogoComp(StoreEntryWrapper wrapper) {
         this(wrapper, new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
+
     public OsLogoComp(StoreEntryWrapper wrapper, ObservableValue<SystemStateComp.State> state) {
         this.wrapper = wrapper;
         this.state = state;

@@ -32,6 +32,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     private final ObservableValue<String> description;
     private final ObservableValue<String> icon;
     private final Consumer<ActionEvent> action;
+
     public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);
         this.description = AppI18n.observable(descriptionKey);

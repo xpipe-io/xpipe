@@ -18,6 +18,7 @@ public class DataStoreSecret {
 
     InPlaceSecretValue internalSecret;
     String usedPasswordLockCrypt;
+
     @Setter
     @NonFinal
     TreeNode originalNode;

@@ -35,9 +35,12 @@ public class OpenFileSystemSavedState {
 
     private static final Timer TIMEOUT_TIMER = new Timer(true);
     private static final int STORED = 10;
+
     @Setter
     private OpenFileSystemModel model;
+
     private String lastDirectory;
+
     @NonNull
     private ObservableList<RecentEntry> recentDirectories;
 

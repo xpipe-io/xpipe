@@ -28,6 +28,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
     Property<T> value;
     ObservableValue<Map<T, ObservableValue<String>>> range;
     boolean includeNone;
+
     public ChoiceComp(Property<T> value, Map<T, ObservableValue<String>> range, boolean includeNone) {
         this.value = value;
         this.range = new SimpleObjectProperty<>(range);

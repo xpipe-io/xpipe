@@ -207,8 +207,10 @@ public class AppTheme {
         public static final List<Theme> ALL =
                 List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
         protected final String id;
+
         @Getter
         protected final String cssId;
+
         protected final atlantafx.base.theme.Theme theme;
 
         static Theme getDefaultLightTheme() {

@@ -10,6 +10,7 @@ public class BooleanScope implements AutoCloseable {
     private boolean invert;
     private boolean forcePlatform;
     private boolean wait;
+
     public BooleanScope(BooleanProperty prop) {
         this.prop = prop;
     }

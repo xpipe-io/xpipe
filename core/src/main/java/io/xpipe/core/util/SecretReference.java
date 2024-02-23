@@ -11,6 +11,7 @@ public class SecretReference {
 
     UUID secretId;
     int subId;
+
     public SecretReference(Object store) {
         this.secretId = UuidHelper.generateFromObject(store);
         this.subId = 0;

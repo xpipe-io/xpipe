@@ -33,6 +33,7 @@ public class LauncherCommand implements Callable<Integer> {
 
     @CommandLine.Parameters(paramLabel = "<input>")
     final List<String> inputs = List.of();
+
     @CommandLine.Option(
             names = {"--mode"},
             description = "The mode to launch the daemon in or switch too",

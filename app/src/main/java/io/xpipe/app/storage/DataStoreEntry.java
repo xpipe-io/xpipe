@@ -26,26 +26,35 @@ import java.util.stream.Collectors;
 public class DataStoreEntry extends StorageElement {
 
     Map<String, Object> storeCache = new LinkedHashMap<>();
+
     @NonFinal
     Validity validity;
+
     @NonFinal
     @Setter
     JsonNode storeNode;
+
     @Getter
     @NonFinal
     DataStore store;
+
     @NonFinal
     Configuration configuration;
+
     @NonFinal
     boolean expanded;
+
     @NonFinal
     boolean inRefresh;
+
     @NonFinal
     @Setter
     boolean observing;
+
     @Getter
     @NonFinal
     DataStoreProvider provider;
+
     @NonFinal
     UUID categoryUuid;
 

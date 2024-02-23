@@ -11,11 +11,15 @@ import java.util.function.Function;
 public class CommandBuilder {
 
     private final List<Element> elements = new ArrayList<>();
+
     @Getter
     private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
+
     private final List<FailableConsumer<ShellControl, Exception>> setup = new ArrayList<>();
+
     @Getter
     private CountDown countDown;
+
     @Getter
     private UUID uuid;
 

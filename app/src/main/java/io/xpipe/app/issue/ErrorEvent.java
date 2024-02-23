@@ -16,6 +16,7 @@ public class ErrorEvent {
 
     private static final Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
     private static final Set<Throwable> HANDLED = new CopyOnWriteArraySet<>();
+
     @Builder.Default
     private final boolean omitted = false;
 
@@ -23,14 +24,19 @@ public class ErrorEvent {
     private final boolean reportable = true;
 
     private final Throwable throwable;
+
     @Singular
     private final List<ErrorAction> customActions;
+
     private String description;
     private boolean terminal;
+
     @Setter
     private boolean shouldSendDiagnostics;
+
     @Singular
     private List<Path> attachments;
+
     private String email;
     private String userReport;
     private boolean unhandled;

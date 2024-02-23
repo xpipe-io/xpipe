@@ -65,8 +65,7 @@ public class StoreCategoryWrapper {
     }
 
     public boolean contains(StoreEntryWrapper entry) {
-        return entry.getEntry().getCategoryUuid().equals(category.getUuid())
-                || containedEntries.contains(entry);
+        return entry.getEntry().getCategoryUuid().equals(category.getUuid()) || containedEntries.contains(entry);
     }
 
     public void select() {
@@ -124,7 +123,11 @@ public class StoreCategoryWrapper {
         containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
                 .filter(entry -> {
                     return entry.getEntry().getCategoryUuid().equals(category.getUuid())
-                            || (AppPrefs.get().showChildCategoriesInParentCategory().get() && children.stream().anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
+                            || (AppPrefs.get()
+                                            .showChildCategoriesInParentCategory()
+                                            .get()
+                                    && children.stream()
+                                            .anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
                 })
                 .toList());
         children.setAll(StoreViewState.get().getCategories().stream()

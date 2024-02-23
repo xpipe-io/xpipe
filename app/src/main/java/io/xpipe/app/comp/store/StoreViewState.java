@@ -25,14 +25,18 @@ public class StoreViewState {
 
     private static StoreViewState INSTANCE;
     private final StringProperty filter = new SimpleStringProperty();
+
     @Getter
     private final ObservableList<StoreEntryWrapper> allEntries =
             FXCollections.observableList(new CopyOnWriteArrayList<>());
+
     @Getter
     private final ObservableList<StoreCategoryWrapper> categories =
             FXCollections.observableList(new CopyOnWriteArrayList<>());
+
     @Getter
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
+
     @Getter
     private StoreSection currentTopLevelSection;
 

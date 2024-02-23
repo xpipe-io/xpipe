@@ -23,10 +23,13 @@ public enum XPipeDistributionType {
     CHOCO("choco", true, () -> new ChocoUpdater());
 
     private static XPipeDistributionType type;
+
     @Getter
     private final String id;
+
     @Getter
     private final boolean supportsUrls;
+
     private final Supplier<UpdateHandler> updateHandlerSupplier;
     private UpdateHandler updateHandler;
 

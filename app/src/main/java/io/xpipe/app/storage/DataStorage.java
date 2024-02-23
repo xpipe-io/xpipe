@@ -40,17 +40,25 @@ public abstract class DataStorage {
 
     private static DataStorage INSTANCE;
     protected final Path dir;
+
     @Getter
     protected final List<DataStoreCategory> storeCategories;
+
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
+
     @Getter
     protected final Set<DataStoreEntry> storeEntriesSet;
+
     protected final ReentrantLock busyIo = new ReentrantLock();
+
     @Getter
     private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
+
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
+
     @Getter
     protected boolean loaded;
+
     @Getter
     @Setter
     protected DataStoreCategory selectedCategory;

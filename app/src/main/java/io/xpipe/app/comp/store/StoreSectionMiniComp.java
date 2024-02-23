@@ -32,6 +32,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even-depth");
     private final StoreSection section;
+
     @Builder.Default
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (section1, buttonComp) -> {};
 

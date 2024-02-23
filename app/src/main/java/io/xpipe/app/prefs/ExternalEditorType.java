@@ -127,6 +127,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             List.of(VSCODIUM_LINUX, VSCODE_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
     List<ExternalEditorType> MACOS_EDITORS = List.of(BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
+
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();

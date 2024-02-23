@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 public class ContextualFileReference {
 
     private static String lastDataDir;
+
     @NonNull
     private final String path;
 

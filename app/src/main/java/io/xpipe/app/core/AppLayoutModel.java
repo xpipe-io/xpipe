@@ -22,10 +22,13 @@ import java.util.List;
 public class AppLayoutModel {
 
     private static AppLayoutModel INSTANCE;
+
     @Getter
     private final SavedState savedState;
+
     @Getter
     private final List<Entry> entries;
+
     private final Property<Entry> selected;
     private final ObservableValue<Entry> selectedWrapper;
 

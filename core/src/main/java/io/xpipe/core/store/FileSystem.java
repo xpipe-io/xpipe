@@ -81,13 +81,17 @@ public interface FileSystem extends Closeable, AutoCloseable {
         Boolean executable;
         long size;
         String mode;
+
         @NonNull
         FileKind kind;
+
         @NonNull
         @NonFinal
         String path;
+
         @NonFinal
         String extension;
+
         @NonFinal
         String name;
 

@@ -33,6 +33,7 @@ public class BrowserSelectionListComp extends SimpleComp {
 
     ObservableList<FileSystem.FileEntry> list;
     Function<FileSystem.FileEntry, ObservableValue<String>> nameTransformation;
+
     public BrowserSelectionListComp(ObservableList<FileSystem.FileEntry> list) {
         this(list, entry -> new SimpleStringProperty(FileNames.getFileName(entry.getPath())));
     }

@@ -27,8 +27,10 @@ import java.util.*;
 public abstract class ScriptStore extends JacksonizedValue implements DataStore, StatefulDataStore<ScriptStore.State> {
 
     protected final DataStoreEntryRef<ScriptGroupStore> group;
+
     @Singular
     protected final List<DataStoreEntryRef<ScriptStore>> scripts;
+
     protected final String description;
 
     public static ShellControl controlWithDefaultScripts(ShellControl pc) {
