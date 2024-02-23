@@ -74,11 +74,11 @@ public class AppInstaller {
                         String.format(
                                 """
                                 cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                                start "" /wait msiexec /i "%s" /l* "%s" /qb
+                                start "" /wait msiexec /i "%s" /lv "%s" /qb
                                 start "" "%s"
                                 """,
                                 file, logFile, exec));
-                shellProcessControl.executeSimpleCommand("start \"\" /min \"" + script + "\"");
+                shellProcessControl.executeSimpleCommand("start \"\" /min cmd /c \"" + script + "\"");
             }
 
             @Override

@@ -195,9 +195,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected void execute(Path file, LaunchConfiguration configuration) throws Exception {
-            ApplicationHelper.executeLocalApplication(
-                    CommandBuilder.of().addFile(file.toString()).add("run").addFile(configuration.getScriptFile()),
-                    true);
+            // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
+            LocalShell.getShell().executeSimpleCommand(
+                    CommandBuilder.of().addFile(file.toString()).add("run").addFile(configuration.getScriptFile()).discardOutput());
         }
 
         @Override
