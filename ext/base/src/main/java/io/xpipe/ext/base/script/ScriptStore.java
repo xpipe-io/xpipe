@@ -13,7 +13,6 @@ import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.core.util.JacksonizedValue;
-import io.xpipe.core.util.XPipeInstallation;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -42,6 +41,11 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
             List<DataStoreEntryRef<ScriptStore>> initScripts,
             List<DataStoreEntryRef<ScriptStore>> bringScripts) {
         try {
+            // Don't copy scripts if we don't want to modify the file system
+            if (!pc.getEffectiveSecurityPolicy().permitTempScriptCreation()) {
+                return pc;
+            }
+
             var initFlattened = flatten(initScripts);
             var bringFlattened = flatten(bringScripts);
 
@@ -109,9 +113,8 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var xpipeHome = XPipeInstallation.getDataDir(proc);
         var targetDir =
-                FileNames.join(xpipeHome, "scripts", proc.getShellDialect().getId());
+                FileNames.join(proc.getSystemTemporaryDirectory(), "xpipe", "scripts", proc.getShellDialect().getId());
         var hashFile = FileNames.join(targetDir, "hash");
         var d = proc.getShellDialect();
         if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {

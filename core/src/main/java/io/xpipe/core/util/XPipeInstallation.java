@@ -42,12 +42,6 @@ public class XPipeInstallation {
         return Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
     }
 
-    public static String getDataDir(ShellControl p) throws Exception {
-        var name = isStaging() ? ".xpipe-ptb" : ".xpipe";
-        var dir = p.getOsType().getHomeDirectory(p);
-        return FileNames.join(dir, name);
-    }
-
     private static String getPkgId() {
         return isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe";
     }

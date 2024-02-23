@@ -49,7 +49,7 @@ public interface ShellDialect {
 
     String prepareTerminalEnvironmentCommands();
 
-    String addToPathVariableCommand(List<String> entry, boolean append);
+    String addToPathVariableCommand(List<String> entries, boolean append);
 
     default String applyRcFileCommand() {
         return null;
