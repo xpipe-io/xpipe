@@ -15,6 +15,10 @@ import java.util.stream.Stream;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
+    default String getLicenseFeatureId() {
+        return null;
+    }
+
     String terminalLauncherScript(UUID request, String name);
 
     String getExecutableName();
