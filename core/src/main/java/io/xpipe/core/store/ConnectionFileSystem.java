@@ -38,6 +38,10 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public FileSystem open() throws Exception {
         shellControl.start();
+        if (!shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+            shellControl.close();
+            throw new UnsupportedOperationException("System shell does not support file system interaction");
+        }
         return this;
     }
 

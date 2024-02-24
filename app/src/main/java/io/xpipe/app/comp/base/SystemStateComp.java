@@ -78,9 +78,13 @@ public class SystemStateComp extends SimpleComp {
 
         public static ObservableValue<State> shellState(StoreEntryWrapper w) {
             return BindingsHelper.map(w.getPersistentState(), o -> {
-                if (o instanceof ShellStoreState shellStoreState) {
-                    return shellStoreState.getRunning() != null
-                            ? shellStoreState.getRunning() ? SUCCESS : FAILURE
+                if (o instanceof ShellStoreState s) {
+                    if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                        return SUCCESS;
+                    }
+
+                    return s.getRunning() != null
+                            ? s.getRunning() ? SUCCESS : FAILURE
                             : OTHER;
                 }
 

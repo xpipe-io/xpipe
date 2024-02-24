@@ -23,21 +23,6 @@ public interface ShellDumbMode {
         shellControl.writeLine("exit");
     }
 
-    class Adjusted implements ShellDumbMode {
-
-        private final ShellDialect replacementDialect;
-
-        public Adjusted(ShellDialect replacementDialect) {
-            this.replacementDialect = replacementDialect;
-        }
-
-        @Override
-        public CommandBuilder prepareInlineDumbCommand(
-                ShellControl self, ShellControl parent, ShellOpenFunction function) throws Exception {
-            return function.prepareWithInitCommand(replacementDialect.getLoginOpenCommand(null));
-        }
-    }
-
     class Unsupported implements ShellDumbMode {
 
         @Override

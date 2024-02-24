@@ -15,12 +15,16 @@ public class DataStoreFormatter {
 
     public static ObservableValue<String> shellInformation(StoreEntryWrapper w) {
         return BindingsHelper.map(w.getPersistentState(), o -> {
-            if (o instanceof ShellStoreState shellStoreState) {
-                if (!shellStoreState.isInitialized()) {
+            if (o instanceof ShellStoreState s) {
+                if (!s.isInitialized()) {
                     return null;
                 }
 
-                return shellStoreState.isRunning() ? shellStoreState.getOsName() : "Connection failed";
+                if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                    return s.getOsName() != null ? s.getOsName() : s.getShellDialect().getDisplayName();
+                }
+
+                return s.isRunning() ? s.getOsName() : "Connection failed";
             }
 
             return "?";
