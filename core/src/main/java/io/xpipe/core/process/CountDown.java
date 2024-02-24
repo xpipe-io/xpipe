@@ -5,14 +5,14 @@ import lombok.Setter;
 
 public class CountDown {
 
-    private long lastMillis = -1;
-    private long millisecondsLeft;
+    private volatile long lastMillis = -1;
+    private volatile long millisecondsLeft;
 
     @Setter
-    private boolean active;
+    private volatile boolean active;
 
     @Getter
-    private long maxMillis;
+    private volatile long maxMillis;
 
     private CountDown() {}
 

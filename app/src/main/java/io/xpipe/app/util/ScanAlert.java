@@ -180,9 +180,18 @@ public class ScanAlert {
                                     .filter(scanOperation ->
                                             scanOperation.isDefaultSelected() && !scanOperation.isDisabled())
                                     .toList());
+                            Function<ScanProvider.ScanOperation, String> nameFunc = (ScanProvider.ScanOperation s) -> {
+                                var n = AppI18n.get(s.getNameKey());
+                                if (s.getLicensedFeatureId() == null) {
+                                    return n;
+                                }
+
+                                var suffix = LicenseProvider.get().getFeature(s.getLicensedFeatureId());
+                                return n + suffix.getDescriptionSuffix().map(d -> " (" + d + ")").orElse("");
+                            };
                             var r = new ListSelectorComp<>(
                                             a,
-                                            scanOperation -> AppI18n.get(scanOperation.getNameKey()),
+                                            nameFunc,
                                             selected,
                                             scanOperation -> scanOperation.isDisabled(),
                                             a.size() > 3)

@@ -421,11 +421,16 @@ public abstract class DataStorage {
             // pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
 
             // Update state by merging
-            if (pair.getKey().getStorePersistentState() != null
-                    && pair.getValue().get().getStorePersistentState() != null) {
-                var mergedState = pair.getKey().getStorePersistentState().deepCopy();
-                mergedState.merge(pair.getValue().get().getStorePersistentState());
-                pair.getKey().setStorePersistentState(mergedState);
+            if (pair.getKey().getStorePersistentState() != null && pair.getValue().get().getStorePersistentState() != null) {
+                var classMatch = pair.getKey().getStorePersistentState().getClass()
+                        .equals(pair.getValue().get().getStorePersistentState().getClass());
+                // Children classes might not be the same, the same goes for state classes
+                // This can happen when there are multiple child classes and the ids got switched around
+                if (classMatch) {
+                    var mergedState = pair.getKey().getStorePersistentState().deepCopy();
+                    mergedState.merge(pair.getValue().get().getStorePersistentState());
+                    pair.getKey().setStorePersistentState(mergedState);
+                }
             }
         });
         saveAsync();

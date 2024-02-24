@@ -5,6 +5,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.ModuleLayerLoader;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.Comparator;
@@ -29,11 +30,25 @@ public abstract class ScanProvider {
     }
 
     @Value
+    @AllArgsConstructor
     public static class ScanOperation {
         String nameKey;
         boolean disabled;
         boolean defaultSelected;
         FailableRunnable<Exception> scanner;
+        String licenseFeatureId;
+
+        public ScanOperation(String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Exception> scanner) {
+            this.nameKey = nameKey;
+            this.disabled = disabled;
+            this.defaultSelected = defaultSelected;
+            this.scanner = scanner;
+            this.licenseFeatureId = null;
+        }
+
+        public String getLicensedFeatureId() {
+            return licenseFeatureId;
+        }
     }
 
     public static class Loader implements ModuleLayerLoader {
