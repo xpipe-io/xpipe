@@ -61,10 +61,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                             || model.getProgress().getValue().done()) {
                         return null;
                     } else {
-                        return (model.getProgress().getValue().getName() != null
-                                        ? model.getProgress().getValue().getName() + " "
-                                        : "")
-                                + transferredCount.getValue() + " / " + allCount.getValue();
+                        var name = (model.getProgress().getValue().getName() != null
+                                ? " @ " + model.getProgress().getValue().getName() + " "
+                                : "");
+                        return transferredCount.getValue() + " / " + allCount.getValue() + name;
                     }
                 },
                 transferredCount,
