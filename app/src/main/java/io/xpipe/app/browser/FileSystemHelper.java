@@ -273,15 +273,15 @@ public class FileSystemHelper {
 
             var baseRelative = FileNames.toDirectory(FileNames.getParent(source.getPath()));
             List<FileSystem.FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
-            list.forEach(fileEntry -> {
+            for (FileSystem.FileEntry fileEntry : list) {
                 flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
                 if (fileEntry.getKind() == FileKind.FILE) {
-                    totalSize.addAndGet(fileEntry.getSize());
+                    totalSize.addAndGet(fileEntry.getFileSystem().getFileSize(fileEntry.getPath()));
                 }
-            });
+            }
         } else {
             flatFiles.put(source, FileNames.getFileName(source.getPath()));
-            totalSize.addAndGet(source.getSize());
+            totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
         }
 
         AtomicLong transferred = new AtomicLong();
@@ -303,8 +303,9 @@ public class FileSystemHelper {
                 InputStream inputStream = null;
                 OutputStream outputStream = null;
                 try {
+                    var fileSize = sourceFile.getFileSystem().getFileSize(sourceFile.getPath());
                     inputStream = sourceFile.getFileSystem().openInput(sourceFile.getPath());
-                    outputStream = target.getFileSystem().openOutput(targetFile, sourceFile.getSize());
+                    outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
                     transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, progress);
                     inputStream.transferTo(OutputStream.nullOutputStream());
                 } catch (Exception ex) {

@@ -35,6 +35,8 @@ public interface ShellDialect {
 
     String queryVersion(ShellControl shellControl) throws Exception;
 
+    CommandControl queryFileSize(ShellControl shellControl, String file);
+
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
     String initFileName(ShellControl sc) throws Exception;

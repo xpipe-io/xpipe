@@ -26,6 +26,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public long getFileSize(String file) throws Exception {
+        return Long.parseLong(shellControl.getShellDialect().queryFileSize(shellControl, file).readStdoutOrThrow());
+    }
+
+    @Override
     public FileSystemStore getStore() {
         return store;
     }
