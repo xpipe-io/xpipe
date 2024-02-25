@@ -111,19 +111,18 @@ public class AppDownloads {
         }
     }
 
-    public static Optional<GHRelease> getLatestIncludingPreRelease() throws IOException {
+    public static Optional<GHRelease> getTopReleaseIncludingPreRelease() throws IOException {
         var repo = getRepository();
         return Optional.ofNullable(repo.listReleases().iterator().next());
     }
 
-    public static Optional<GHRelease> getLatestRelease() throws IOException {
+    public static Optional<GHRelease> getMarkedLatestRelease() throws IOException {
         var repo = getRepository();
         return Optional.ofNullable(repo.getLatestRelease());
     }
 
     public static Optional<GHRelease> getLatestSuitableRelease() throws IOException {
-        var preIncluding = getLatestIncludingPreRelease();
-
+        var preIncluding = getTopReleaseIncludingPreRelease();
         // If we are currently running a prerelease, always return this as the suitable release!
         if (preIncluding.isPresent()
                 && preIncluding.get().isPrerelease()
@@ -131,12 +130,7 @@ public class AppDownloads {
             return preIncluding;
         }
 
-        // If this release is not a prerelease, just return it to prevent querying another release
-        if (preIncluding.isPresent() && !preIncluding.get().isPrerelease()) {
-            return preIncluding;
-        }
-
-        return getLatestRelease();
+        return getMarkedLatestRelease();
     }
 
     public static Optional<GHRelease> getRelease(String version, boolean omitErrors) {

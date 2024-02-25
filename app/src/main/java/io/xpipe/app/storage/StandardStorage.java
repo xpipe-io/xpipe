@@ -143,7 +143,7 @@ public class StandardStorage extends DataStorage {
 
                 // Show one exception
                 if (exception.get() != null) {
-                    ErrorEvent.fromThrowable(exception.get()).handle();
+                    ErrorEvent.fromThrowable(exception.get()).expected().handle();
                 }
 
                 storeEntriesSet.forEach(dataStoreCategory -> {
@@ -169,7 +169,7 @@ public class StandardStorage extends DataStorage {
                     local.deleteFromDisk();
                     hasFixedLocal = false;
                 } catch (IOException ex) {
-                    ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+                    ErrorEvent.fromThrowable(ex).terminal(true).expected().build().handle();
                 }
             }
         }
@@ -275,7 +275,7 @@ public class StandardStorage extends DataStorage {
 
         // Show one exception
         if (exception.get() != null) {
-            ErrorEvent.fromThrowable(exception.get()).handle();
+            ErrorEvent.fromThrowable(exception.get()).expected().handle();
         }
 
         deleteLeftovers();

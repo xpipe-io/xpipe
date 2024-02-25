@@ -32,13 +32,13 @@ public class AppPrefs {
     private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
     private final List<Mapping<?>> mapping = new ArrayList<>();
+
     final BooleanProperty dontAutomaticallyStartVmSshServer =
-            map(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
     final BooleanProperty dontAcceptNewHostKeys =
-            map(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
     final BooleanProperty performanceMode = map(new SimpleBooleanProperty(false), "performanceMode", Boolean.class);
     final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
-
     public final ObjectProperty<AppTheme.Theme> theme =
             map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
     final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);
@@ -55,17 +55,17 @@ public class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             map(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class);
     public final BooleanProperty disableCertutilUse =
-            map(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
+            mapVaultSpecific(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
     public final BooleanProperty useLocalFallbackShell =
             map(new SimpleBooleanProperty(false), "useLocalFallbackShell", Boolean.class);
     public final BooleanProperty disableTerminalRemotePasswordPreparation =
-            map(new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class);
+            mapVaultSpecific(new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class);
     public final Property<Boolean> alwaysConfirmElevation =
-            map(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class);
+            mapVaultSpecific(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class);
     public final BooleanProperty dontCachePasswords =
-            map(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
     public final BooleanProperty denyTempScriptCreation =
-            map(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
+            mapVaultSpecific(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
     final StringProperty passwordManagerCommand =
             map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
     final ObjectProperty<StartupBehaviour> startupBehaviour =

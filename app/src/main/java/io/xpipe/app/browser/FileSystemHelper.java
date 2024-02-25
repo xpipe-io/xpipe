@@ -276,11 +276,13 @@ public class FileSystemHelper {
             for (FileSystem.FileEntry fileEntry : list) {
                 flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
                 if (fileEntry.getKind() == FileKind.FILE) {
-                    totalSize.addAndGet(fileEntry.getFileSystem().getFileSize(fileEntry.getPath()));
+                    // This one is up-to-date and does not need to be recalculated
+                    totalSize.addAndGet(fileEntry.getSize());
                 }
             }
         } else {
             flatFiles.put(source, FileNames.getFileName(source.getPath()));
+            // Recalculate as it could have been changed meanwhile
             totalSize.addAndGet(source.getFileSystem().getFileSize(source.getPath()));
         }
 

@@ -42,6 +42,10 @@ public class BrowserTransferModel {
     BooleanProperty allDownloaded = new SimpleBooleanProperty();
 
     private void cleanDirectory() {
+        if (!Files.isDirectory(TEMP)) {
+            return;
+        }
+
         try (var ls = Files.list(TEMP)) {
             var list = ls.toList();
             for (Path path : list) {

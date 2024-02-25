@@ -86,6 +86,7 @@ run {
     systemProperty 'io.xpipe.app.logLevel', "trace"
     systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
     systemProperty 'io.xpipe.app.showcase', 'true'
+    systemProperty 'io.xpipe.app.staging', isStage
     // systemProperty "io.xpipe.beacon.port", "21724"
     // systemProperty "io.xpipe.beacon.printMessages", "true"
     // systemProperty 'io.xpipe.app.debugPlatform', "true"
