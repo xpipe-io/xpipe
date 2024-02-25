@@ -186,7 +186,8 @@ public class BrowserTransferComp extends SimpleComp {
                                     return;
                                 }
 
-                                model.clear();
+                                // Don't clear, it might be more convenient to keep the contents
+                                // model.clear();
                                 event.consume();
                             });
                         }),

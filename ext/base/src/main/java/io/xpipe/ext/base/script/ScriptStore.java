@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ScriptSnippet;
 import io.xpipe.core.process.ShellControl;
@@ -113,8 +114,7 @@ public abstract class ScriptStore extends JacksonizedValue implements DataStore,
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir =
-                FileNames.join(proc.getSystemTemporaryDirectory(), "xpipe", "scripts", proc.getShellDialect().getId());
+        var targetDir = FileNames.join(ShellTemp.getUserSpecificTempDataDirectory(proc,"scripts"), proc.getShellDialect().getId());
         var hashFile = FileNames.join(targetDir, "hash");
         var d = proc.getShellDialect();
         if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {

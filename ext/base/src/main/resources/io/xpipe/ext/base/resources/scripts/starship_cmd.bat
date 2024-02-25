@@ -4,6 +4,6 @@ IF NOT %ERRORLEVEL%==0 (
     SET "PATH=%PATH%;C:\\Program Files\\starship\\bin"
 )
 
-MKDIR "%USERPROFILE%\\.xpipe\\scriptdata\\starship" >NUL 2>NUL
-echo load(io.popen('starship init cmd'):read("*a"))() > "%USERPROFILE%\\.xpipe\\scriptdata\\starship\\starship.lua"
-clink inject --quiet --profile "%USERPROFILE%\\.xpipe\\scriptdata\\starship"
+MKDIR "%TEMP%\\xpipe\\scriptdata\\starship" >NUL 2>NUL
+echo load(io.popen('starship init cmd'):read("*a"))() > "%TEMP%\\xpipe\\scriptdata\\starship\\starship.lua"
+clink inject --quiet --profile "%TEMP%\\xpipe\\scriptdata\\starship"

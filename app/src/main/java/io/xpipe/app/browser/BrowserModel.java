@@ -83,6 +83,9 @@ public class BrowserModel {
                 savedState.save();
             }
         }
+
+        // Delete all files
+        localTransfersStage.clear();
     }
 
     public void finishChooser() {

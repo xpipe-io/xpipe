@@ -153,7 +153,7 @@ public class FileSystemHelper {
     }
 
     public static void dropLocalFilesInto(
-            FileSystem.FileEntry entry, List<Path> files, Consumer<BrowserTransferProgress> progress) throws Exception {
+            FileSystem.FileEntry entry, List<Path> files, Consumer<BrowserTransferProgress> progress, boolean checkConflicts) throws Exception {
         var entries = files.stream()
                 .map(path -> {
                     try {
@@ -163,7 +163,7 @@ public class FileSystemHelper {
                     }
                 })
                 .toList();
-        dropFilesInto(entry, entries, false, progress);
+        dropFilesInto(entry, entries, false, checkConflicts, progress);
     }
 
     public static void delete(List<FileSystem.FileEntry> files) {
@@ -184,6 +184,7 @@ public class FileSystemHelper {
             FileSystem.FileEntry target,
             List<FileSystem.FileEntry> files,
             boolean explicitCopy,
+            boolean checkConflicts,
             Consumer<BrowserTransferProgress> progress)
             throws Exception {
         if (files.isEmpty()) {
@@ -201,10 +202,10 @@ public class FileSystemHelper {
         AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice = new AtomicReference<>();
         for (var file : files) {
             if (file.getFileSystem().equals(target.getFileSystem())) {
-                dropFileAcrossSameFileSystem(target, file, explicitCopy, lastConflictChoice, files.size() > 1);
+                dropFileAcrossSameFileSystem(target, file, explicitCopy, lastConflictChoice, files.size() > 1, checkConflicts);
                 progress.accept(BrowserTransferProgress.finished(file.getName(), file.getSize()));
             } else {
-                dropFileAcrossFileSystems(target, file, progress, lastConflictChoice, files.size() > 1);
+                dropFileAcrossFileSystems(target, file, progress, lastConflictChoice, files.size() > 1, checkConflicts);
             }
         }
     }
@@ -214,7 +215,8 @@ public class FileSystemHelper {
             FileSystem.FileEntry source,
             boolean explicitCopy,
             AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice,
-            boolean multiple)
+            boolean multiple,
+            boolean checkConflicts)
             throws Exception {
         // Prevent dropping directory into itself
         if (source.getPath().equals(target.getPath())) {
@@ -233,7 +235,7 @@ public class FileSystemHelper {
                     new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
         }
 
-        if (!handleChoice(lastConflictChoice, target.getFileSystem(), targetFile, multiple)) {
+        if (checkConflicts && !handleChoice(lastConflictChoice, target.getFileSystem(), targetFile, multiple)) {
             return;
         }
 
@@ -249,7 +251,8 @@ public class FileSystemHelper {
             FileSystem.FileEntry source,
             Consumer<BrowserTransferProgress> progress,
             AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice,
-            boolean multiple)
+            boolean multiple,
+            boolean checkConflicts)
             throws Exception {
         if (target.getKind() != FileKind.DIRECTORY) {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
@@ -272,7 +275,9 @@ public class FileSystemHelper {
             List<FileSystem.FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
             list.forEach(fileEntry -> {
                 flatFiles.put(fileEntry, FileNames.toUnix(FileNames.relativize(baseRelative, fileEntry.getPath())));
-                totalSize.addAndGet(fileEntry.getSize());
+                if (fileEntry.getKind() == FileKind.FILE) {
+                    totalSize.addAndGet(fileEntry.getSize());
+                }
             });
         } else {
             flatFiles.put(source, FileNames.getFileName(source.getPath()));
@@ -290,7 +295,7 @@ public class FileSystemHelper {
             if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
             } else if (sourceFile.getKind() == FileKind.FILE) {
-                if (!handleChoice(
+                if (checkConflicts && !handleChoice(
                         lastConflictChoice, target.getFileSystem(), targetFile, multiple || flatFiles.size() > 1)) {
                     continue;
                 }
@@ -299,22 +304,29 @@ public class FileSystemHelper {
                 OutputStream outputStream = null;
                 try {
                     inputStream = sourceFile.getFileSystem().openInput(sourceFile.getPath());
-                    outputStream = target.getFileSystem().openOutput(targetFile, source.getSize());
-                    transfer(source, inputStream, outputStream, transferred, totalSize, progress);
+                    outputStream = target.getFileSystem().openOutput(targetFile, sourceFile.getSize());
+                    transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, progress);
                     inputStream.transferTo(OutputStream.nullOutputStream());
                 } catch (Exception ex) {
+                    // Mark progress as finished to reset any progress display
+                    progress.accept(BrowserTransferProgress.finished(sourceFile.getName(), transferred.get()));
+
                     if (inputStream != null) {
                         try {
                             inputStream.close();
                         } catch (Exception om) {
-                            ErrorEvent.fromThrowable(om).handle();
+                            // This is expected as the process control has to be killed
+                            // When calling close, it will throw an exception when it has to kill
+                            // ErrorEvent.fromThrowable(om).handle();
                         }
                     }
                     if (outputStream != null) {
                         try {
                             outputStream.close();
                         } catch (Exception om) {
-                            ErrorEvent.fromThrowable(om).handle();
+                            // This is expected as the process control has to be killed
+                            // When calling close, it will throw an exception when it has to kill
+                            // ErrorEvent.fromThrowable(om).handle();
                         }
                     }
                     throw ex;
@@ -385,21 +397,24 @@ public class FileSystemHelper {
         return true;
     }
 
-    private static void transfer(
-            FileSystem.FileEntry source,
+    private static void transferFile(
+            FileSystem.FileEntry sourceFile,
             InputStream inputStream,
             OutputStream outputStream,
             AtomicLong transferred,
             AtomicLong total,
             Consumer<BrowserTransferProgress> progress)
             throws IOException {
-        var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, source.getSize());
+        // Initialize progress immediately prior to reading anything
+        progress.accept(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get()));
+
+        var bs = (int) Math.min(DEFAULT_BUFFER_SIZE, sourceFile.getSize());
         byte[] buffer = new byte[bs];
         int read;
-        while ((read = inputStream.read(buffer, 0, bs)) >= 0) {
+        while ((read = inputStream.read(buffer, 0, bs)) > 0) {
             outputStream.write(buffer, 0, read);
             transferred.addAndGet(read);
-            progress.accept(new BrowserTransferProgress(source.getName(), transferred.get(), total.get()));
+            progress.accept(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get()));
         }
     }
 }

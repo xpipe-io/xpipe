@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
 import javafx.beans.binding.Bindings;
@@ -27,8 +28,7 @@ import java.util.concurrent.Executors;
 @Value
 public class BrowserTransferModel {
 
-    private static final Path TEMP =
-            FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("download");
+    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("download");
 
     ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
         Thread t = Executors.defaultThreadFactory().newThread(r);
@@ -41,15 +41,19 @@ public class BrowserTransferModel {
     BooleanProperty downloading = new SimpleBooleanProperty();
     BooleanProperty allDownloaded = new SimpleBooleanProperty();
 
-    public void clear() {
+    private void cleanDirectory() {
         try (var ls = Files.list(TEMP)) {
             var list = ls.toList();
             for (Path path : list) {
-                Files.delete(path);
+                FileUtils.forceDelete(path.toFile());
             }
         } catch (IOException e) {
             ErrorEvent.fromThrowable(e).handle();
         }
+    }
+
+    public void clear() {
+        cleanDirectory();
         items.clear();
     }
 
@@ -116,7 +120,7 @@ public class BrowserTransferModel {
                 try {
                     try (var b = new BooleanScope(downloading).start()) {
                         FileSystemHelper.dropFilesInto(
-                                FileSystemHelper.getLocal(TEMP), List.of(item.getFileEntry()), true, progress -> {
+                                FileSystemHelper.getLocal(TEMP), List.of(item.getFileEntry()), true, false, progress -> {
                                     item.getProgress().setValue(progress);
                                     item.getOpenFileSystemModel().getProgress().setValue(progress);
                                 });

@@ -23,8 +23,7 @@ import java.util.function.Consumer;
 
 public class FileBridge {
 
-    private static final Path TEMP =
-            FileUtils.getTempDirectory().toPath().resolve("xpipe").resolve("bridge");
+    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("bridge");
     private static FileBridge INSTANCE;
     private final Set<Entry> openEntries = new HashSet<>();
 

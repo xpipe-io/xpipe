@@ -269,7 +269,7 @@ public final class OpenFileSystemModel {
                 }
 
                 startIfNeeded();
-                FileSystemHelper.dropLocalFilesInto(entry, files, progress::setValue);
+                FileSystemHelper.dropLocalFilesInto(entry, files, progress::setValue, true);
                 refreshSync();
             });
         });
@@ -289,7 +289,7 @@ public final class OpenFileSystemModel {
                 }
 
                 startIfNeeded();
-                FileSystemHelper.dropFilesInto(target, files, explicitCopy, browserTransferProgress -> {
+                FileSystemHelper.dropFilesInto(target, files, explicitCopy, true, browserTransferProgress -> {
                     progress.setValue(browserTransferProgress);
                 });
                 refreshSync();
