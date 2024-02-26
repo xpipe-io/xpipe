@@ -417,7 +417,7 @@ final class BrowserFileListComp extends SimpleComp {
         }
 
         double proximity = 100;
-        Bounds tableBounds = tableView.localToScene(tableView.getBoundsInParent());
+        Bounds tableBounds = tableView.localToScene(tableView.getBoundsInLocal());
         double dragY = event.getSceneY();
         double topYProximity = tableBounds.getMinY() + proximity;
         double bottomYProximity = tableBounds.getMaxY() - proximity;
