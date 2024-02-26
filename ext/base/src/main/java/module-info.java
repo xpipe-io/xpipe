@@ -47,6 +47,7 @@ open module io.xpipe.ext.base {
             NewItemAction,
             RenameAction,
             DeleteAction,
+            DeleteLinkAction,
             UnzipAction,
             JavapAction,
             JarAction;
