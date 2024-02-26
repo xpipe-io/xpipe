@@ -3,7 +3,7 @@ package io.xpipe.app.storage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
@@ -382,18 +382,20 @@ public class StandardStorage extends DataStorage {
     private void initSystemInfo() throws IOException {
         var file = dir.resolve("systeminfo");
         if (Files.exists(file)) {
-            var s = Files.readString(file);
-            if (!LocalShell.getShell().getOsName().equals(s)) {
+            var read = Files.readString(file);
+            if (!OsType.getLocal().getName().equals(read)) {
                 ErrorEvent.fromMessage(
-                                "This vault was originally created on a different system running " + s
+                                "This vault was originally created on a different system running " + read
                                         + ". Sharing connection information between systems directly might cause some problems."
                                         + " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings.")
                         .expected()
                         .handle();
+                var s = OsType.getLocal().getName();
+                Files.writeString(file, s);
             }
         } else {
             Files.createDirectories(dir);
-            var s = LocalShell.getShell().getOsName();
+            var s = OsType.getLocal().getName();
             Files.writeString(file, s);
         }
     }

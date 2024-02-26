@@ -419,7 +419,8 @@ final class BrowserFileListComp extends SimpleComp {
         double proximity = 100;
         Bounds tableBounds = tableView.localToScene(tableView.getBoundsInLocal());
         double dragY = event.getSceneY();
-        double topYProximity = tableBounds.getMinY() + proximity;
+        // Include table header as well in calculations
+        double topYProximity = tableBounds.getMinY() + proximity + 20;
         double bottomYProximity = tableBounds.getMaxY() - proximity;
 
         // clamp new values between 0 and 1 to prevent scrollbar flicking around at the edges
