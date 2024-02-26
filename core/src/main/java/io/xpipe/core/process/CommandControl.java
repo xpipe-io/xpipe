@@ -74,6 +74,8 @@ public interface CommandControl extends ProcessControl {
 
     String readStdoutDiscardErr() throws Exception;
 
+    String readJoinedOutputOrThrow() throws Exception;
+
     String readStderrDiscardStdout() throws Exception;
 
     void discardOrThrow() throws Exception;
