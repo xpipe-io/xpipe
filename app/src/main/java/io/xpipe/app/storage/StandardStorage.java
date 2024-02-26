@@ -33,7 +33,6 @@ public class StandardStorage extends DataStorage {
 
     StandardStorage() {
         this.gitStorageHandler = GitStorageHandler.getInstance();
-        this.gitStorageHandler.init(dir);
     }
 
     @Override
@@ -44,6 +43,12 @@ public class StandardStorage extends DataStorage {
     public void load() {
         if (!busyIo.tryLock()) {
             return;
+        }
+
+        try {
+            FileUtils.forceMkdir(dir.toFile());
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
         }
 
         try {
@@ -58,6 +63,7 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(e).terminal(true).build().handle();
         }
 
+        this.gitStorageHandler.init(dir);
         this.gitStorageHandler.beforeStorageLoad();
 
         var storesDir = getStoresDir();

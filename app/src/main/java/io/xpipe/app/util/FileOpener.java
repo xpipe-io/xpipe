@@ -83,9 +83,7 @@ public class FileOpener {
                     LocalShell.getShell().executeSimpleCommand(cmd);
                 }
                 case OsType.Linux linux -> {
-                    LocalShell.getShell()
-                            .executeSimpleCommand("mimeopen -a "
-                                    + LocalShell.getShell().getShellDialect().fileArgument(localFile));
+                    throw new UnsupportedOperationException();
                 }
                 case OsType.MacOs macOs -> {
                     throw new UnsupportedOperationException();

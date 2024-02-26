@@ -44,7 +44,7 @@ public class OpenFileWithAction implements LeafAction {
 
     @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return !OsType.getLocal().equals(OsType.MACOS)
+        return OsType.getLocal().equals(OsType.WINDOWS)
                 && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }

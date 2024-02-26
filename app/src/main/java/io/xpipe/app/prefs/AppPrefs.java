@@ -55,7 +55,7 @@ public class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             map(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class);
     public final BooleanProperty disableCertutilUse =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
+            map(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
     public final BooleanProperty useLocalFallbackShell =
             map(new SimpleBooleanProperty(false), "useLocalFallbackShell", Boolean.class);
     public final BooleanProperty disableTerminalRemotePasswordPreparation =
