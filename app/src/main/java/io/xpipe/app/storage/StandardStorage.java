@@ -51,6 +51,9 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(e).terminal(true).build().handle();
         }
 
+        this.gitStorageHandler.init(dir);
+        this.gitStorageHandler.beforeStorageLoad();
+
         try {
             initSystemInfo();
         } catch (Exception e) {
@@ -63,13 +66,9 @@ public class StandardStorage extends DataStorage {
             ErrorEvent.fromThrowable(e).terminal(true).build().handle();
         }
 
-        this.gitStorageHandler.init(dir);
-        this.gitStorageHandler.beforeStorageLoad();
-
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
         var dataDir = getDataDir();
-
         try {
             FileUtils.forceMkdir(storesDir.toFile());
             FileUtils.forceMkdir(categoriesDir.toFile());
