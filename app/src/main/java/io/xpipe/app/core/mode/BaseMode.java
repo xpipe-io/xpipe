@@ -14,7 +14,6 @@ import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.UnlockAlert;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -55,7 +54,6 @@ public class BaseMode extends OperationMode {
         // Initialize socket server before storage
         // as we should be prepared for git askpass commands
         AppSocketServer.init();
-        UnlockAlert.showIfNeeded();
         DataStorage.init();
         AppFileWatcher.init();
         FileBridge.init();

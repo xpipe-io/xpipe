@@ -3,6 +3,7 @@ package io.xpipe.app.storage;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.UnlockAlert;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.LocalStore;
 import lombok.Getter;
@@ -53,6 +54,13 @@ public class StandardStorage extends DataStorage {
 
         this.gitStorageHandler.init(dir);
         this.gitStorageHandler.beforeStorageLoad();
+
+        try {
+            // This can fail if the necessary platform initialization fails
+            UnlockAlert.showIfNeeded();
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
+        }
 
         try {
             initSystemInfo();
