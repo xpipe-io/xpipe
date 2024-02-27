@@ -74,4 +74,8 @@ public interface SecretQuery {
     boolean cache();
 
     boolean retryOnFail();
+
+    default boolean respectDontCacheSetting() {
+        return true;
+    }
 }

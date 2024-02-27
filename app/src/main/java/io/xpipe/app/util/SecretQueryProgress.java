@@ -55,6 +55,8 @@ public class SecretQueryProgress {
         }
 
         var firstSeenIndex = seenPrompts.indexOf(prompt);
+        var ref = new SecretReference(storeId, firstSeenIndex);
+
         if (firstSeenIndex >= suppliers.size()) {
             countDown.pause();
             var r = fallback.query(prompt);
@@ -63,14 +65,14 @@ public class SecretQueryProgress {
                 requestCancelled = true;
                 return null;
             }
+            if (shouldCache(fallback, prompt)) {
+                SecretManager.set(ref, r.getSecret());
+            }
             return r.getSecret();
         }
 
-        var ref = new SecretReference(storeId, firstSeenIndex);
         var sup = suppliers.get(firstSeenIndex);
-        var shouldCache = sup.cache()
-                && SecretManager.shouldCacheForPrompt(prompt)
-                && !AppPrefs.get().dontCachePasswords().get();
+        var shouldCache = shouldCache(sup, prompt);
         var wasLastPrompt = firstSeenIndex == seenPrompts.size() - 1;
 
         // Clear cache if secret was wrong/queried again
@@ -113,5 +115,12 @@ public class SecretQueryProgress {
             SecretManager.set(ref, r.getSecret());
         }
         return r.getSecret();
+    }
+
+    private boolean shouldCache(SecretQuery query, String prompt) {
+        var shouldCache = query.cache()
+                && SecretManager.shouldCacheForPrompt(prompt)
+                && (!query.respectDontCacheSetting() || !AppPrefs.get().dontCachePasswords().get());
+        return shouldCache;
     }
 }
