@@ -55,8 +55,6 @@ public class SecretQueryProgress {
         }
 
         var firstSeenIndex = seenPrompts.indexOf(prompt);
-        var ref = new SecretReference(storeId, firstSeenIndex);
-
         if (firstSeenIndex >= suppliers.size()) {
             countDown.pause();
             var r = fallback.query(prompt);
@@ -65,12 +63,10 @@ public class SecretQueryProgress {
                 requestCancelled = true;
                 return null;
             }
-            if (shouldCache(fallback, prompt)) {
-                SecretManager.set(ref, r.getSecret());
-            }
             return r.getSecret();
         }
 
+        var ref = new SecretReference(storeId, firstSeenIndex);
         var sup = suppliers.get(firstSeenIndex);
         var shouldCache = shouldCache(sup, prompt);
         var wasLastPrompt = firstSeenIndex == seenPrompts.size() - 1;
