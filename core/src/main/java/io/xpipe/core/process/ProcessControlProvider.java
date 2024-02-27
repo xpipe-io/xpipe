@@ -28,7 +28,7 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellControl createLocalProcessControl(boolean stoppable);
 
-    public abstract Object createStorageHandler();
+    public abstract Object getGitStorageHandler();
 
     public abstract ShellDialect getEffectiveLocalDialect();
 

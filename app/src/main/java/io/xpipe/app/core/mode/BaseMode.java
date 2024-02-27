@@ -10,10 +10,12 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.GitStorageHandler;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.UnlockAlert;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -44,16 +46,19 @@ public class BaseMode extends OperationMode {
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
         AppI18n.init();
         LicenseProvider.get().init();
-        AppPrefs.init();
+        AppPrefs.initLocal();
         AppCertutilCheck.check();
         AppAvCheck.check();
         LocalShell.init();
         XPipeDistributionType.init();
         AppShellCheck.check();
         AppPrefs.setDefaults();
-        // Initialize socket server before storage
-        // as we should be prepared for git askpass commands
+        // Initialize socket server as we should be prepared for git askpass commands
         AppSocketServer.init();
+        GitStorageHandler.getInstance().init();
+        GitStorageHandler.getInstance().setupRepositoryAndPull();
+        AppPrefs.initSharedRemote();
+        UnlockAlert.showIfNeeded();
         DataStorage.init();
         AppFileWatcher.init();
         FileBridge.init();

@@ -153,11 +153,14 @@ public class AppPrefs {
                 categories.get(selected >= 0 && selected < categories.size() ? selected : 0));
     }
 
-    public static void init() {
+    public static void initLocal() {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
-        INSTANCE.load();
+        INSTANCE.loadLocal();
+    }
 
+    public static void initSharedRemote() {
+        INSTANCE.loadSharedRemote();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
                 DataStorage.get().forceRewrite();
@@ -417,16 +420,28 @@ public class AppPrefs {
                 .orElseThrow();
     }
 
-    public void load() {
+    private void loadLocal() {
         for (Mapping<?> value : mapping) {
+            if (value.isVaultSpecific()) {
+                continue;
+            }
+
+            loadValue(globalStorageHandler, value);
+        }
+    }
+
+    private void loadSharedRemote() {
+        for (Mapping<?> value : mapping) {
+            if (!value.isVaultSpecific()) {
+                continue;
+            }
+
             var def = value.getProperty().getValue();
-            AppPrefsStorageHandler handler = value.isVaultSpecific() ? vaultStorageHandler : globalStorageHandler;
-            var r = loadValue(handler, value);
+            var r = loadValue(vaultStorageHandler, value);
 
             // This can be used to facilitate backwards compatibility
-            // Overdose is not really needed as many moved properties have changed anyways
             var isDefault = Objects.equals(r, def);
-            if (isDefault && value.isVaultSpecific()) {
+            if (isDefault) {
                 loadValue(globalStorageHandler, value);
             }
         }
