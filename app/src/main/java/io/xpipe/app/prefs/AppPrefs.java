@@ -93,8 +93,7 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
             map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
-    private final AppPrefsStorageHandler vaultStorageHandler =
-            new AppPrefsStorageHandler(storageDirectory().getValue().resolve("preferences.json"));
+    private AppPrefsStorageHandler vaultStorageHandler;
     final BooleanProperty developerMode = map(new SimpleBooleanProperty(false), "developerMode", Boolean.class);
     final BooleanProperty developerDisableUpdateVersionCheck =
             map(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class);
@@ -428,6 +427,8 @@ public class AppPrefs {
 
             loadValue(globalStorageHandler, value);
         }
+
+        vaultStorageHandler = new AppPrefsStorageHandler(storageDirectory().getValue().resolve("preferences.json"));
     }
 
     private void loadSharedRemote() {
