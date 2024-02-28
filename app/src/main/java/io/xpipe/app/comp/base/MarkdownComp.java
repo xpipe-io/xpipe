@@ -46,6 +46,8 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     @SneakyThrows
     private WebView createWebView() {
         var wv = new WebView();
+        wv.getEngine().setJavaScriptEnabled(false);
+        wv.setContextMenuEnabled(false);
         wv.getEngine()
                 .setUserDataDirectory(
                         AppProperties.get().getDataDir().resolve("webview").toFile());
