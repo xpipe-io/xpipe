@@ -53,6 +53,12 @@ public class ErrorHandlerComp extends SimpleComp {
             return;
         }
 
+        // Unhandled platform exceptions usually means that we will have trouble displaying another window
+        if (event.isUnhandled() && Platform.isFxApplicationThread()) {
+            ErrorAction.ignore().handle(event);
+            return;
+        }
+
         if (Platform.isFxApplicationThread()) {
             showAndWaitWithPlatformThread(event, forceWait);
         } else {
@@ -106,11 +112,15 @@ public class ErrorHandlerComp extends SimpleComp {
         Platform.runLater(() -> {
             if (!showing.get()) {
                 showing.set(true);
-                Stage window = null;
+                Stage window;
                 try {
-                    window = AppWindowHelper.sideWindow(AppI18n.get("errorHandler"), w -> {
-                        return setUpComp(event, w, finishLatch);
-                    }, true, null);
+                    window = AppWindowHelper.sideWindow(
+                            AppI18n.get("errorHandler"),
+                            w -> {
+                                return setUpComp(event, w, finishLatch);
+                            },
+                            true,
+                            null);
                 } catch (Throwable t) {
                     showLatch.countDown();
                     finishLatch.countDown();
@@ -234,8 +244,7 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        for (var action :
-                List.of(ErrorAction.ignore())) {
+        for (var action : List.of(ErrorAction.ignore())) {
             var ac = createActionComp(action);
             actionBox.getChildren().add(ac);
         }

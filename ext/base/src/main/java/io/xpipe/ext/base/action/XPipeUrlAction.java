@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.action;
 
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.TerminalHelper;
-import io.xpipe.core.store.LaunchableStore;
-import io.xpipe.core.util.DefaultSecretValue;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.LaunchableStore;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import lombok.Value;
 
@@ -16,6 +16,59 @@ import java.util.List;
 import java.util.UUID;
 
 public class XPipeUrlAction implements ActionProvider {
+
+    @Override
+    public LauncherCallSite getLauncherCallSite() {
+        return new XPipeLauncherCallSite() {
+
+            @Override
+            public String getId() {
+                return "xpipe";
+            }
+
+            @Override
+            public Action createAction(List<String> args) throws Exception {
+                switch (args.get(0)) {
+                    case "addStore" -> {
+                        var storeString = InPlaceSecretValue.builder()
+                                .encryptedValue(args.get(1))
+                                .build();
+                        var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
+                        return new AddStoreAction(store);
+                    }
+                    case "launch" -> {
+                        var entry = DataStorage.get()
+                                .getStoreEntryIfPresent(UUID.fromString(args.get(1)))
+                                .orElseThrow();
+                        if (!entry.getValidity().isUsable()) {
+                            return null;
+                        }
+                        return new LaunchAction(entry);
+                    }
+                    case "action" -> {
+                        var id = args.get(1);
+                        ActionProvider provider = ActionProvider.ALL.stream()
+                                .filter(actionProvider -> {
+                                    return actionProvider.getDataStoreCallSite() != null
+                                            && id.equals(actionProvider.getId());
+                                })
+                                .findFirst()
+                                .orElseThrow();
+                        var entry = DataStorage.get()
+                                .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
+                                .orElseThrow();
+                        if (!entry.getValidity().isUsable()) {
+                            return null;
+                        }
+                        return new CallAction(provider, entry);
+                    }
+                    default -> {
+                        return null;
+                    }
+                }
+            }
+        };
+    }
 
     @Value
     static class CallAction implements ActionProvider.Action {
@@ -53,7 +106,7 @@ public class XPipeUrlAction implements ActionProvider {
                     return;
                 }
 
-                TerminalHelper.open(storeName, command);
+                TerminalLauncher.open(storeName, command);
             }
         }
     }
@@ -74,57 +127,16 @@ public class XPipeUrlAction implements ActionProvider {
                 return;
             }
 
-            var entry = DataStoreEntry.createNew(UUID.randomUUID(), StoreViewState.get().getActiveCategory().getValue().getCategory().getUuid(), "", store);
+            var entry = DataStoreEntry.createNew(
+                    UUID.randomUUID(),
+                    StoreViewState.get()
+                            .getActiveCategory()
+                            .getValue()
+                            .getCategory()
+                            .getUuid(),
+                    "",
+                    store);
             StoreCreationComp.showEdit(entry);
         }
-    }
-
-    @Override
-    public LauncherCallSite getLauncherCallSite() {
-        return new XPipeLauncherCallSite() {
-
-            @Override
-            public String getId() {
-                return "xpipe";
-            }
-
-            @Override
-            public Action createAction(List<String> args) throws Exception {
-                switch (args.get(0)) {
-                    case "addStore" -> {
-                        var storeString = DefaultSecretValue.builder()
-                                .encryptedValue(args.get(1))
-                                .build();
-                        var store = JacksonMapper.parse(storeString.getSecretValue(), DataStore.class);
-                        return new AddStoreAction(store);
-                    }
-                    case "launch" -> {
-                        var entry = DataStorage.get()
-                                .getStoreEntryIfPresent(UUID.fromString(args.get(1)))
-                                .orElseThrow();
-                        if (!entry.getValidity().isUsable()) {
-                            return null;
-                        }
-                        return new LaunchAction(entry);
-                    }
-                    case "action" -> {
-                        var id = args.get(1);
-                        ActionProvider provider = ActionProvider.ALL.stream().filter(actionProvider -> {
-                            return actionProvider.getDataStoreCallSite() != null && id.equals(actionProvider.getId());
-                        }).findFirst().orElseThrow();
-                        var entry = DataStorage.get()
-                                .getStoreEntryIfPresent(UUID.fromString(args.get(2)))
-                                .orElseThrow();
-                        if (!entry.getValidity().isUsable()) {
-                            return null;
-                        }
-                        return new CallAction(provider, entry);
-                    }
-                    default -> {
-                        return null;
-                    }
-                }
-            }
-        };
     }
 }

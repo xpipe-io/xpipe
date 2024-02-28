@@ -16,10 +16,13 @@ public class ChoiceElement extends DialogElement {
 
     @Getter
     private final String description;
+
     @Getter
     private final List<Choice> elements;
+
     @Getter
     private final boolean required;
+
     private final boolean quiet;
 
     @Getter
@@ -39,13 +42,13 @@ public class ChoiceElement extends DialogElement {
     }
 
     @Override
-    public boolean requiresExplicitUserInput() {
-        return required && selected == -1;
+    public String toDisplayString() {
+        return description;
     }
 
     @Override
-    public String toDisplayString() {
-        return description;
+    public boolean requiresExplicitUserInput() {
+        return required && selected == -1;
     }
 
     @Override
@@ -79,5 +82,4 @@ public class ChoiceElement extends DialogElement {
 
         return false;
     }
-
 }

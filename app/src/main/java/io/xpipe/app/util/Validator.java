@@ -11,7 +11,26 @@ import javafx.collections.ObservableList;
 import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public interface Validator {
+
+    static Check absolutePath(Validator v, ObservableValue<Path> s) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") == null || !((Path) c.get("val")).isAbsolute()) {
+                c.error(AppI18n.get("app.notAnAbsolutePath"));
+            }
+        });
+    }
+
+    static Check directory(Validator v, ObservableValue<Path> s) {
+        return v.createCheck().dependsOn("val", s).withMethod(c -> {
+            if (c.get("val") instanceof Path p && (!Files.exists(p) || !Files.isDirectory(p))) {
+                c.error(AppI18n.get("app.notADirectory"));
+            }
+        });
+    }
 
     static Check nonNull(Validator v, ObservableValue<String> name, ObservableValue<?> s) {
         return v.createCheck().dependsOn("val", s).withMethod(c -> {
@@ -88,8 +107,6 @@ public interface Validator {
     /**
      * Create a string property that depends on the validation result.
      * Each error message will be displayed on a separate line prefixed with a bullet.
-     *
-     * @return
      */
     StringBinding createStringBinding();
 
@@ -98,7 +115,6 @@ public interface Validator {
      *
      * @param prefix    The string to prefix each validation message with
      * @param separator The string to separate consecutive validation messages with
-     * @return
      */
     StringBinding createStringBinding(String prefix, String separator);
 }

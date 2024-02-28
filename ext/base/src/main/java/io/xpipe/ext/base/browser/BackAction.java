@@ -13,28 +13,18 @@ import java.util.List;
 
 public class BackAction implements LeafAction {
 
-    public String getId() {
-        return "back";
-    }
-
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
         model.backSync(1);
     }
 
+    public String getId() {
+        return "back";
+    }
+
     @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("fth-arrow-left");
-    }
-
-    @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return false;
-    }
-
-    @Override
-    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return model.getHistory().canGoBackProperty().get();
     }
 
     @Override
@@ -45,5 +35,15 @@ public class BackAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Back";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return false;
+    }
+
+    @Override
+    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return model.getHistory().canGoBackProperty().get();
     }
 }

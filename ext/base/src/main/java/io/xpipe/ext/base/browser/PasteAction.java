@@ -22,8 +22,8 @@ public class PasteAction implements LeafAction {
             return;
         }
 
-        var target = entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() == FileKind.DIRECTORY
-                ? entries.get(0).getRawFileEntry()
+        var target = entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() == FileKind.DIRECTORY
+                ? entries.getFirst().getRawFileEntry()
                 : model.getCurrentDirectory();
         var files = clipboard.getEntries();
         if (files.size() == 0) {
@@ -34,23 +34,13 @@ public class PasteAction implements LeafAction {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.COPY_PASTE;
-    }
-
-    @Override
     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return new FontIcon("mdi2c-content-paste");
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return (entries.size() == 1 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY)) || entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
-    }
-
-    @Override
-    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return BrowserClipboard.retrieveCopy() != null;
+    public Category getCategory() {
+        return Category.COPY_PASTE;
     }
 
     @Override
@@ -66,5 +56,18 @@ public class PasteAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Paste";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return (entries.size() == 1
+                        && entries.stream()
+                                .allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY))
+                || entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
+    }
+
+    @Override
+    public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return BrowserClipboard.retrieveCopy() != null;
     }
 }

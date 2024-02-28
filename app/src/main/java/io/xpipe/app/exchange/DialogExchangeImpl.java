@@ -31,7 +31,7 @@ public class DialogExchangeImpl extends DialogExchange
     @Override
     public DialogExchange.Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         if (msg.isCancel()) {
-            TrackEvent.withTrace("beacon", "Received cancel dialog request")
+            TrackEvent.withTrace("Received cancel dialog request")
                     .tag("key", msg.getDialogKey())
                     .handle();
             openDialogs.remove(msg.getDialogKey());
@@ -42,7 +42,7 @@ public class DialogExchangeImpl extends DialogExchange
         var dialog = openDialogs.get(msg.getDialogKey());
         var e = dialog.receive(msg.getValue());
 
-        TrackEvent.withTrace("beacon", "Received normal dialog request")
+        TrackEvent.withTrace("Received normal dialog request")
                 .tag("key", msg.getDialogKey())
                 .tag("value", msg.getValue())
                 .tag("newElement", e)

@@ -45,7 +45,7 @@ public class IntegratedTextAreaComp extends SimpleComp {
                     c.getChildren().addAll(textArea, pane);
                     return c;
                 }),
-                paths -> value.setValue(Files.readString(paths.get(0))));
+                paths -> value.setValue(Files.readString(paths.getFirst())));
         return fileDrop.createRegion();
     }
 

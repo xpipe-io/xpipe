@@ -15,26 +15,6 @@ public abstract class LicenseProvider {
         return INSTANCE;
     }
 
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            INSTANCE = ServiceLoader.load(layer, LicenseProvider.class).stream()
-                               .map(ServiceLoader.Provider::get)
-                               .findFirst().orElseThrow(() -> ExtensionException.corrupt("Missing license provider."));
-        }
-
-        @Override
-        public boolean requiresFullDaemon() {
-            return true;
-        }
-
-        @Override
-        public boolean prioritizeLoading() {
-            return true;
-        }
-    }
-
     public abstract boolean hasLicense();
 
     public abstract LicensedFeature getFeature(String id);
@@ -48,4 +28,25 @@ public abstract class LicenseProvider {
     public abstract Comp<?> overviewPage();
 
     public abstract boolean hasPaidLicense();
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            INSTANCE = ServiceLoader.load(layer, LicenseProvider.class).stream()
+                    .map(ServiceLoader.Provider::get)
+                    .findFirst()
+                    .orElseThrow(() -> ExtensionException.corrupt("Missing license provider"));
+        }
+
+        @Override
+        public boolean requiresFullDaemon() {
+            return true;
+        }
+
+        @Override
+        public boolean prioritizeLoading() {
+            return true;
+        }
+    }
 }

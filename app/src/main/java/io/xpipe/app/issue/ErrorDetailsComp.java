@@ -1,18 +1,13 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppFont;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.TabPaneComp;
 import io.xpipe.core.util.Deobfuscator;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import lombok.AllArgsConstructor;
-
-import java.util.ArrayList;
 
 @AllArgsConstructor
 public class ErrorDetailsComp extends SimpleComp {
@@ -31,18 +26,12 @@ public class ErrorDetailsComp extends SimpleComp {
             return tf;
         }
 
-        return null;
+        return new Region();
     }
 
     @Override
     protected Region createSimple() {
-        var items = new ArrayList<TabPaneComp.Entry>();
-        if (event.getThrowable() != null) {
-            items.add(new TabPaneComp.Entry(
-                    AppI18n.observable("stackTrace"), "mdoal-code", Comp.of(this::createStrackTraceContent)));
-        }
-
-        var tb = new TabPaneComp(new SimpleObjectProperty<>(items.size() > 0 ? items.get(0) : null), items);
+        var tb = Comp.of(this::createStrackTraceContent);
         tb.apply(r -> AppFont.small(r.get()));
         return tb.createRegion();
     }

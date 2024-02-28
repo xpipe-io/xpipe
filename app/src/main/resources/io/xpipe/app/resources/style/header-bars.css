@@ -3,7 +3,10 @@
 -fx-padding: 0.8em 1.0em 0.8em 1.0em;
 -fx-background-color: -color-bg-subtle;
 -fx-border-color: -color-border-default;
--fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
+}
+
+.root:pretty .bar {
+ -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
 }
 
 .store-header-bar {
@@ -102,9 +105,7 @@
 -fx-padding: 0.8em 0.5em 0.8em 0.5em;
 -fx-background-color: -color-bg-subtle;
 -fx-border-color: -color-border-default;
--fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
 }
-
 
 .store-sort-bar {
 -fx-background-radius: 0 4px 4px 0;

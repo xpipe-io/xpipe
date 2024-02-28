@@ -19,7 +19,8 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
     private final Property<StoreCategoryWrapper> external;
     private final Property<StoreCategoryWrapper> value;
 
-    public DataStoreCategoryChoiceComp(StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value) {
+    public DataStoreCategoryChoiceComp(
+            StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value) {
         this.root = root;
         this.external = external;
         this.value = value;
@@ -52,7 +53,6 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
         box.setButtonCell(new Cell(false));
         return box;
     }
-
 
     @EqualsAndHashCode(callSuper = true)
     @Value

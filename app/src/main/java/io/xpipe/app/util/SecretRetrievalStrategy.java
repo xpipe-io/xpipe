@@ -1,26 +1,20 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStoreSecret;
 import io.xpipe.core.store.LocalStore;
-import io.xpipe.core.process.ProcessOutputException;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.UUID;
-import java.util.function.Supplier;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = SecretRetrievalStrategy.None.class),
-    @JsonSubTypes.Type(value = SecretRetrievalStrategy.Reference.class),
     @JsonSubTypes.Type(value = SecretRetrievalStrategy.InPlace.class),
     @JsonSubTypes.Type(value = SecretRetrievalStrategy.Prompt.class),
     @JsonSubTypes.Type(value = SecretRetrievalStrategy.CustomCommand.class),
@@ -28,82 +22,56 @@ import java.util.function.Supplier;
 })
 public interface SecretRetrievalStrategy {
 
-    SecretValue retrieve(String displayName, UUID id, int sub) throws Exception;
+    SecretQuery query();
 
-    boolean isLocalAskpassCompatible();
-
-    boolean shouldCache();
+    default boolean expectsQuery() {
+        return true;
+    }
 
     @JsonTypeName("none")
     class None implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) {
+        public SecretQuery query() {
             return null;
         }
 
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return true;
-        }
-
-        @Override
-        public boolean shouldCache() {
-            return false;
-        }
-    }
-
-    @JsonTypeName("reference")
-    class Reference implements SecretRetrievalStrategy {
-
-        @JsonIgnore
-        private final Supplier<SecretValue> supplier;
-
-        public Reference(Supplier<SecretValue> supplier) {
-            this.supplier = supplier;
-        }
-
-        @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) {
-            return supplier.get();
-        }
-
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return false;
-        }
-
-        @Override
-        public boolean shouldCache() {
+        public boolean expectsQuery() {
             return false;
         }
     }
 
     @JsonTypeName("inPlace")
-    @Getter
     @Builder
     @Value
     @Jacksonized
     class InPlace implements SecretRetrievalStrategy {
 
-        SecretValue value;
+        DataStoreSecret value;
 
-        public InPlace(SecretValue value) {
+        public InPlace(DataStoreSecret value) {
             this.value = value;
         }
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) {
-            return value;
-        }
+        public SecretQuery query() {
+            return new SecretQuery() {
+                @Override
+                public SecretQueryResult query(String prompt) {
+                    return new SecretQueryResult(
+                            value != null ? value.getInternalSecret() : InPlaceSecretValue.of(""), false);
+                }
 
-        @Override
-        public boolean shouldCache() {
-            return false;
-        }
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return false;
+                @Override
+                public boolean cache() {
+                    return false;
+                }
+
+                @Override
+                public boolean retryOnFail() {
+                    return false;
+                }
+            };
         }
     }
 
@@ -111,17 +79,23 @@ public interface SecretRetrievalStrategy {
     class Prompt implements SecretRetrievalStrategy {
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) {
-            return AskpassAlert.query(displayName, UUID.randomUUID(), id, sub);
-        }
+        public SecretQuery query() {
+            return new SecretQuery() {
+                @Override
+                public SecretQueryResult query(String prompt) {
+                    return AskpassAlert.queryRaw(prompt, null);
+                }
 
-        @Override
-        public boolean shouldCache() {
-            return true;
-        }
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return true;
+                @Override
+                public boolean cache() {
+                    return true;
+                }
+
+                @Override
+                public boolean retryOnFail() {
+                    return true;
+                }
+            };
         }
     }
 
@@ -134,27 +108,34 @@ public interface SecretRetrievalStrategy {
         String key;
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) throws Exception {
-            var cmd = AppPrefs.get().passwordManagerString(key);
-            if (cmd == null) {
-                return null;
-            }
+        public SecretQuery query() {
+            return new SecretQuery() {
+                @Override
+                public SecretQueryResult query(String prompt) {
+                    var cmd = AppPrefs.get().passwordManagerString(key);
+                    if (cmd == null) {
+                        return null;
+                    }
 
-            try (var cc = new LocalStore().control().command(cmd).start()) {
-                return SecretHelper.encrypt(cc.readStdoutOrThrow());
-            } catch (ProcessOutputException ex) {
-                throw ErrorEvent.unreportable(ProcessOutputException.withPrefix("Unable to retrieve password with command " + cmd, ex));
-            }
-        }
+                    try (var cc = new LocalStore().control().command(cmd).start()) {
+                        return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), false);
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
+                                .handle();
+                        return new SecretQueryResult(null, true);
+                    }
+                }
 
-        @Override
-        public boolean shouldCache() {
-            return false;
-        }
+                @Override
+                public boolean cache() {
+                    return false;
+                }
 
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return false;
+                @Override
+                public boolean retryOnFail() {
+                    return false;
+                }
+            };
         }
     }
 
@@ -167,20 +148,29 @@ public interface SecretRetrievalStrategy {
         String command;
 
         @Override
-        public SecretValue retrieve(String displayName, UUID id, int sub) throws Exception {
-            try (var cc = new LocalStore().control().command(command).start()) {
-                return SecretHelper.encrypt(cc.readStdoutOrThrow());
-            }
-        }
+        public SecretQuery query() {
+            return new SecretQuery() {
+                @Override
+                public SecretQueryResult query(String prompt) {
+                    try (var cc = new LocalStore().control().command(command).start()) {
+                        return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), false);
+                    } catch (Exception ex) {
+                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + command, ex)
+                                .handle();
+                        return new SecretQueryResult(null, true);
+                    }
+                }
 
-        @Override
-        public boolean shouldCache() {
-            return false;
-        }
+                @Override
+                public boolean cache() {
+                    return false;
+                }
 
-        @Override
-        public boolean isLocalAskpassCompatible() {
-            return false;
+                @Override
+                public boolean retryOnFail() {
+                    return false;
+                }
+            };
         }
     }
 }

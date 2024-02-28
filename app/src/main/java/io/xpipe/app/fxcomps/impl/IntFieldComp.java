@@ -67,7 +67,10 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
         });
 
         text.textProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue == null || newValue.isEmpty() || (minValue < 0 && "-".equals(newValue)) || !newValue.matches("-?\\d+")) {
+            if (newValue == null
+                    || newValue.isEmpty()
+                    || (minValue < 0 && "-".equals(newValue))
+                    || !newValue.matches("-?\\d+")) {
                 value.setValue(null);
                 return;
             }

@@ -21,13 +21,19 @@ public class EditFileAction implements LeafAction {
     }
 
     @Override
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new FontIcon("mdi2p-pencil");
+    }
+
+    @Override
     public Category getCategory() {
         return Category.OPEN;
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2p-pencil");
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        var e = AppPrefs.get().externalEditor().getValue();
+        return "Edit with " + (e != null ? e.toTranslatedString().getValue() : "?");
     }
 
     @Override
@@ -39,11 +45,5 @@ public class EditFileAction implements LeafAction {
     public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var e = AppPrefs.get().externalEditor().getValue();
         return e != null;
-    }
-
-    @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        var e = AppPrefs.get().externalEditor().getValue();
-        return "Edit with " + (e != null ? e.toTranslatedString() : "?");
     }
 }

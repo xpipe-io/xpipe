@@ -6,13 +6,13 @@ import net.steppschuh.markdowngenerator.text.code.CodeBlock;
 
 public class MarkdownBuilder {
 
-    public static MarkdownBuilder of() {
-        return new MarkdownBuilder();
-    }
-
     private final StringBuilder builder = new StringBuilder();
 
     private MarkdownBuilder() {}
+
+    public static MarkdownBuilder of() {
+        return new MarkdownBuilder();
+    }
 
     public MarkdownBuilder add(String t) {
         builder.append(t);

@@ -17,6 +17,7 @@ public class LocalStore extends JacksonizedValue implements ShellStore, Stateful
     @Override
     public ShellControl control() {
         var pc = ProcessControlProvider.get().createLocalProcessControl(true);
+        pc.withSourceStore(this);
         pc.withShellStateInit(this);
         pc.withShellStateFail(this);
         return pc;

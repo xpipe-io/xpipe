@@ -19,15 +19,20 @@ public class AppProperties {
     private static final String EXTENSION_PATHS_PROP = "io.xpipe.app.extensions";
     private static AppProperties INSTANCE;
     boolean fullVersion;
+
     @Getter
     String version;
+
     @Getter
     String build;
+
     UUID buildUuid;
     String sentryUrl;
     String arch;
+
     @Getter
     boolean image;
+
     boolean staging;
     boolean useVirtualThreads;
     boolean debugThreads;
@@ -101,6 +106,10 @@ public class AppProperties {
         return INSTANCE;
     }
 
+    public boolean isDevelopmentEnvironment() {
+        return !AppProperties.get().isImage() && AppProperties.get().isDeveloperMode();
+    }
+
     public boolean isDeveloperMode() {
         if (AppPrefs.get() == null) {
             return false;
@@ -108,5 +117,4 @@ public class AppProperties {
 
         return AppPrefs.get().developerMode().getValue();
     }
-
 }

@@ -55,7 +55,9 @@ public class SvgView {
 
     private WebView createWebView() {
         var wv = new WebView();
-        wv.getEngine().setUserDataDirectory(AppProperties.get().getDataDir().resolve("webview").toFile());
+        wv.getEngine()
+                .setUserDataDirectory(
+                        AppProperties.get().getDataDir().resolve("webview").toFile());
         // Sometimes a web view might not render when the background is set to transparent, at least according to stack
         // overflow
         wv.setPageFill(Color.valueOf("#00000001"));
@@ -67,7 +69,7 @@ public class SvgView {
         wv.setDisable(true);
 
         wv.getEngine().loadContent(svgContent.getValue() != null ? getHtml(svgContent.getValue()) : null);
-        SimpleChangeListener.apply(svgContent, n ->  {
+        SimpleChangeListener.apply(svgContent, n -> {
             if (n == null) {
                 wv.setOpacity(0.0);
                 return;

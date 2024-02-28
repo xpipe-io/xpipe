@@ -15,12 +15,16 @@ public class DataStoreFormatter {
 
     public static ObservableValue<String> shellInformation(StoreEntryWrapper w) {
         return BindingsHelper.map(w.getPersistentState(), o -> {
-            if (o instanceof ShellStoreState shellStoreState) {
-                if (!shellStoreState.isInitialized()) {
+            if (o instanceof ShellStoreState s) {
+                if (!s.isInitialized()) {
                     return null;
                 }
 
-                return shellStoreState.isRunning() ? shellStoreState.getOsName() : "Connection failed";
+                if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                    return s.getOsName() != null ? s.getOsName() : s.getShellDialect().getDisplayName();
+                }
+
+                return s.isRunning() ? s.getOsName() : "Connection failed";
             }
 
             return "?";
@@ -32,8 +36,7 @@ public class DataStoreFormatter {
             return null;
         }
 
-        return name.substring(0, 1).toUpperCase()
-                + name.substring(1).toLowerCase();
+        return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
     public static String formatSubHost(IntFunction<String> func, DataStore at, int length) {
@@ -61,9 +64,8 @@ public class DataStoreFormatter {
     }
 
     public static String formatViaProxy(IntFunction<String> func, DataStoreEntry at, int length) {
-        var atString = at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore)
-                ? at.getName()
-                : null;
+        var atString =
+                at.getStore() instanceof ShellStore shellStore && !ShellStore.isLocal(shellStore) ? at.getName() : null;
         if (atString == null) {
             return func.apply(length);
         }
@@ -85,7 +87,7 @@ public class DataStoreFormatter {
             return "?";
         }
 
-            return cut(input.getName(), length);
+        return cut(input.getName(), length);
     }
 
     public static String split(String left, String separator, String right, int length) {

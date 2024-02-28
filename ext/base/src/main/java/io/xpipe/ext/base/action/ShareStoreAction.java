@@ -6,35 +6,12 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ClipboardHelper;
-import io.xpipe.app.util.SecretHelper;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.InPlaceSecretValue;
 import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 public class ShareStoreAction implements ActionProvider {
-
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry store;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return false;
-        }
-
-        public static String create(DataStore store) {
-            return "xpipe://addStore/"
-                    + SecretHelper.encryptInPlace(store.toString()).getEncryptedValue();
-        }
-
-        @Override
-        public void execute() {
-            var url = create(store.getStore());
-            AppActionLinkDetector.setLastDetectedAction(url);
-            ClipboardHelper.copyUrl(url);
-        }
-    }
 
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
@@ -65,5 +42,27 @@ public class ShareStoreAction implements ActionProvider {
                 return "mdi2c-clipboard-list-outline";
             }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry store;
+
+        public static String create(DataStore store) {
+            return "xpipe://addStore/" + InPlaceSecretValue.of(store.toString()).getEncryptedValue();
+        }
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return false;
+        }
+
+        @Override
+        public void execute() {
+            var url = create(store.getStore());
+            AppActionLinkDetector.setLastDetectedAction(url);
+            ClipboardHelper.copyUrl(url);
+        }
     }
 }

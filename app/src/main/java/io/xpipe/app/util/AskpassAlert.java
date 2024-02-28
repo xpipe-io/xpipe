@@ -3,65 +3,69 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.StackPane;
-
-import java.util.*;
+import javafx.stage.Stage;
 
 public class AskpassAlert {
 
-    private static final Set<UUID> cancelledRequests = new HashSet<>();
-    private static final Map<UUID, SecretManager.SecretReference> requests = new HashMap<>();
-
-    public static SecretValue query(String prompt, UUID requestId, UUID secretId, int sub) {
-        if (cancelledRequests.contains(requestId)) {
-            return null;
-        }
-
-        var ref = new SecretManager.SecretReference(secretId, sub);
-        if (SecretManager.get(ref).isPresent() && ref.equals(requests.get(requestId))) {
-            SecretManager.clear(ref);
-        }
-
-        var found = SecretManager.get(ref);
-        if (found.isPresent()) {
-            requests.put(requestId, ref);
-            return found.get();
-        }
-
-        var prop = new SimpleObjectProperty<SecretValue>();
+    public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
+        var prop = new SimpleObjectProperty<>(secretValue);
         var r = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
-                    var text = new SecretFieldComp(prop).createRegion();
+                    var text = new SecretFieldComp(prop).createStructure().get();
                     alert.getDialogPane().setContent(new StackPane(text));
+                    var stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                    stage.setAlwaysOnTop(true);
+
+                    var anim = new AnimationTimer() {
+
+                        private long lastRun = 0;
+
+                        @Override
+                        public void handle(long now) {
+                            if (lastRun == 0) {
+                                lastRun = now;
+                                return;
+                            }
+
+                            long elapsed = (now - lastRun) / 1_000_000;
+                            if (elapsed < 1000) {
+                                return;
+                            }
+
+                            stage.requestFocus();
+                            lastRun = now;
+                        }
+                    };
 
                     alert.setOnShown(event -> {
+                        stage.requestFocus();
+                        anim.start();
                         // Wait 1 pulse before focus so that the scene can be assigned to text
-                        Platform.runLater(text::requestFocus);
+                        Platform.runLater(() -> {
+                            text.requestFocus();
+                            text.end();
+                        });
                         event.consume();
                     });
 
+                    alert.setOnHiding(event -> {
+                        anim.stop();
+                    });
                 })
-                .filter(b -> b.getButtonData().isDefaultButton() && prop.getValue() != null)
+                .filter(b -> b.getButtonData().isDefaultButton())
                 .map(t -> {
-                    return prop.getValue() != null ? prop.getValue() : SecretHelper.encryptInPlace("");
+                    return prop.getValue() != null ? prop.getValue() : InPlaceSecretValue.of("");
                 })
                 .orElse(null);
-
-        // If the result is null, assume that the operation was aborted by the user
-        if (r != null && SecretManager.shouldCacheForPrompt(prompt)) {
-            requests.put(requestId,ref);
-            SecretManager.set(ref, r);
-        } else {
-            cancelledRequests.add(requestId);
-        }
-
-        return r;
+        return new SecretQueryResult(r, r == null);
     }
 }

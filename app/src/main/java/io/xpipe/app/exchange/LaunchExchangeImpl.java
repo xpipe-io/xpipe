@@ -16,7 +16,8 @@ public class LaunchExchangeImpl extends LaunchExchange
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
         var store = getStoreEntryById(msg.getId(), false);
         if (store.getStore() instanceof LaunchableStore s) {
-            var command = s.prepareLaunchCommand().prepareTerminalOpen(TerminalInitScriptConfig.ofName(store.getName()));
+            var command = s.prepareLaunchCommand()
+                    .prepareTerminalOpen(TerminalInitScriptConfig.ofName(store.getName()), null);
             return Response.builder().command(split(command)).build();
         }
 
@@ -26,9 +27,8 @@ public class LaunchExchangeImpl extends LaunchExchange
     private List<String> split(String command) {
         var split = Arrays.stream(command.split(" ", 3)).collect(Collectors.toList());
         var s = split.get(2);
-        if ((s.startsWith("\"") && s.endsWith("\""))
-                || (s.startsWith("'") && s.endsWith("'"))) {
-            split.set(2,s.substring(1, s.length() - 1));
+        if ((s.startsWith("\"") && s.endsWith("\"")) || (s.startsWith("'") && s.endsWith("'"))) {
+            split.set(2, s.substring(1, s.length() - 1));
         }
         return split;
     }

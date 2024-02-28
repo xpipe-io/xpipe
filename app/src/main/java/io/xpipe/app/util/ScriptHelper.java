@@ -3,11 +3,13 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.util.FailableFunction;
 import io.xpipe.core.util.SecretValue;
 import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class ScriptHelper {
 
@@ -25,12 +27,13 @@ public class ScriptHelper {
         }
     }
 
-    public static String constructInitFile(ShellControl processControl, List<String> init, String toExecuteInShell, TerminalInitScriptConfig config)
-            throws Exception {
-        return constructInitFile(processControl.getShellDialect(), processControl, init, toExecuteInShell, config);
-    }
-
-    public static String constructInitFile(ShellDialect t, ShellControl processControl, List<String> init, String toExecuteInShell, TerminalInitScriptConfig config)
+    public static String constructTerminalInitFile(
+            ShellDialect t,
+            ShellControl processControl,
+            FailableFunction<ShellControl, String, Exception> workingDirectory,
+            List<String> init,
+            String toExecuteInShell,
+            TerminalInitScriptConfig config)
             throws Exception {
         String nl = t.getNewLine().getNewLineString();
         var content = "";
@@ -53,7 +56,14 @@ public class ScriptHelper {
         }
 
         if (config.getDisplayName() != null) {
-            content += nl + t.changeTitleCommand(config.getDisplayName())  + nl;
+            content += nl + t.changeTitleCommand(config.getDisplayName()) + nl;
+        }
+
+        if (workingDirectory != null) {
+            var wd = workingDirectory.apply(processControl);
+            if (wd != null) {
+                content += t.getCdCommand(wd) + nl;
+            }
         }
 
         content += nl + String.join(nl, init.stream().filter(s -> s != null).toList()) + nl;
@@ -76,7 +86,7 @@ public class ScriptHelper {
     @SneakyThrows
     public static String getExecScriptFile(ShellControl processControl, String fileEnding) {
         var fileName = "exec-" + getScriptId();
-        var temp = processControl.getSubTemporaryDirectory();
+        var temp = processControl.getSystemTemporaryDirectory();
         return FileNames.join(temp, fileName + "." + fileEnding);
     }
 
@@ -88,7 +98,7 @@ public class ScriptHelper {
     @SneakyThrows
     public static String createExecScript(ShellDialect type, ShellControl processControl, String content) {
         var fileName = "exec-" + getScriptId();
-        var temp = processControl.getSubTemporaryDirectory();
+        var temp = processControl.getSystemTemporaryDirectory();
         var file = FileNames.join(temp, fileName + "." + type.getScriptFileEnding());
         return createExecScript(type, processControl, file, content);
     }
@@ -97,7 +107,7 @@ public class ScriptHelper {
     public static String createExecScript(ShellDialect type, ShellControl processControl, String file, String content) {
         content = type.prepareScriptContent(content);
 
-        TrackEvent.withTrace("proc", "Writing exec script")
+        TrackEvent.withTrace("Writing exec script")
                 .tag("file", file)
                 .tag("content", content)
                 .handle();
@@ -109,13 +119,38 @@ public class ScriptHelper {
         return file;
     }
 
-    public static String createAskpassScript(SecretValue pass, ShellControl parent, boolean forceExecutable, String errorMessage)
+    public static String createRemoteAskpassScript(ShellControl parent, UUID requestId, String prefix)
             throws Exception {
-        return createAskpassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable, errorMessage);
+        var type = parent.getShellDialect();
+
+        // Fix for powershell as there are permission issues when executing a powershell askpass script
+        if (parent.getShellDialect().equals(ShellDialects.POWERSHELL)) {
+            type = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
+        }
+
+        var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
+        var temp = parent.getSystemTemporaryDirectory();
+        var file = FileNames.join(temp, fileName);
+        if (type != parent.getShellDialect()) {
+            try (var sub = parent.subShell(type).start()) {
+                var content =
+                        sub.getShellDialect().getAskpass().prepareStderrPassthroughContent(sub, requestId, prefix);
+                return createExecScript(sub.getShellDialect(), sub, file, content);
+            }
+        } else {
+            var content =
+                    parent.getShellDialect().getAskpass().prepareStderrPassthroughContent(parent, requestId, prefix);
+            return createExecScript(parent.getShellDialect(), parent, file, content);
+        }
     }
 
-    public static String createAskpassScript(List<SecretValue> pass, ShellControl parent, boolean forceExecutable, String errorMessage)
-            throws Exception {
+    public static String createTerminalPreparedAskpassScript(
+            SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
+        return createTerminalPreparedAskpassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable);
+    }
+
+    public static String createTerminalPreparedAskpassScript(
+            List<SecretValue> pass, ShellControl parent, boolean forceExecutable) throws Exception {
         var scriptType = parent.getShellDialect();
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
@@ -123,33 +158,35 @@ public class ScriptHelper {
             scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
         }
 
-        return createAskpassScript(pass, parent, scriptType, errorMessage);
+        return createTerminalPreparedAskpassScript(pass, parent, scriptType);
     }
 
-    private static String createAskpassScript(List<SecretValue> pass, ShellControl parent, ShellDialect type, String errorMessage)
-            throws Exception {
+    private static String createTerminalPreparedAskpassScript(
+            List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
         var fileName = "exec-" + getScriptId() + "." + type.getScriptFileEnding();
-        var temp = parent.getSubTemporaryDirectory();
+        var temp = parent.getSystemTemporaryDirectory();
         var file = FileNames.join(temp, fileName);
         if (type != parent.getShellDialect()) {
             try (var sub = parent.subShell(type).start()) {
                 var content = sub.getShellDialect()
-                        .prepareAskpassContent(
+                        .getAskpass()
+                        .prepareFixedContent(
                                 sub,
                                 file,
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
-                                        .toList(), errorMessage);
+                                        .toList());
                 return createExecScript(sub.getShellDialect(), sub, file, content);
             }
         } else {
             var content = parent.getShellDialect()
-                    .prepareAskpassContent(
+                    .getAskpass()
+                    .prepareFixedContent(
                             parent,
                             file,
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
-                                    .toList(), errorMessage);
+                                    .toList());
             return createExecScript(parent.getShellDialect(), parent, file, content);
         }
     }

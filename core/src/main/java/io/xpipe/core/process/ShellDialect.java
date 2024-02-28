@@ -6,31 +6,22 @@ import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.SecretValue;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ShellDialect {
 
-    static String flatten(List<String> command) {
-        return command.stream()
-                .map(s -> s.contains(" ")
-                                && !(s.startsWith("\"") && s.endsWith("\""))
-                                && !(s.startsWith("'") && s.endsWith("'"))
-                        ? "\"" + s + "\""
-                        : s)
-                .collect(Collectors.joining(" "));
+    default String getLicenseFeatureId() {
+        return null;
     }
+
+    String terminalLauncherScript(UUID request, String name);
 
     String getExecutableName();
-
-    default boolean isSupportedShell() {
-        return true;
-    }
 
     default boolean isSelectable() {
         return true;
@@ -40,13 +31,11 @@ public interface ShellDialect {
         return other.equals(this);
     }
 
-    default ShellDialect getDumbReplacementDialect(ShellControl parent) {
-        return this;
-    }
-
     String getCatchAllVariable();
 
     String queryVersion(ShellControl shellControl) throws Exception;
+
+    CommandControl queryFileSize(ShellControl shellControl, String file);
 
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
@@ -58,17 +47,15 @@ public interface ShellDialect {
 
     CommandControl resolveDirectory(ShellControl shellControl, String directory);
 
+    String literalArgument(String s);
+
     String fileArgument(String s);
 
     String quoteArgument(String s);
 
-    String executeWithNoInitFiles(ShellDialect parentDialect, String file);
-
-    void prepareDumbTerminalCommands(ShellControl sc) throws Exception;
-
     String prepareTerminalEnvironmentCommands();
 
-    String appendToPathVariableCommand(String entry);
+    String addToPathVariableCommand(List<String> entries, boolean append);
 
     default String applyRcFileCommand() {
         return null;
@@ -80,7 +67,7 @@ public interface ShellDialect {
         return null;
     }
 
-    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file);
+    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file, long totalBytes);
 
     default String getCdCommand(String directory) {
         return "cd \"" + directory + "\"";
@@ -98,10 +85,6 @@ public interface ShellDialect {
 
     String prepareScriptContent(String content);
 
-    default void exit(ShellControl sc) throws IOException {
-        sc.writeLine("exit");
-    }
-
     default String getPassthroughExitCommand() {
         return "exit";
     }
@@ -109,13 +92,6 @@ public interface ShellDialect {
     default String getNormalExitCommand() {
         return "exit 0";
     }
-
-    ElevationConfig determineElevationConfig(ShellControl shellControl) throws Exception;
-
-
-    ElevationResult elevateDumbCommand(ShellControl shellControl, CommandConfiguration command, String message) throws Exception;
-
-    String elevateTerminalCommand(ShellControl shellControl, String command, String message) throws Exception;
 
     String environmentVariable(String name);
 
@@ -125,13 +101,11 @@ public interface ShellDialect {
 
     String getDiscardOperator();
 
-    default String getOrConcatenationOperator() {
-        return "||";
-    }
+    String nullStdin(String command);
 
     String getScriptPermissionsCommand(String file);
 
-    String prepareAskpassContent(ShellControl sc, String fileName, List<String> s, String errorMessage) throws Exception;
+    ShellDialectAskpass getAskpass();
 
     String getSetEnvironmentVariableCommand(String variable, String value);
 
@@ -151,10 +125,12 @@ public interface ShellDialect {
         return getPrintVariableCommand(name);
     }
 
-    String getOpenCommand();
+    String getOpenCommand(ShellControl shellControl);
 
-    default String getLoginOpenCommand() {
-        return getOpenCommand();
+    CommandBuilder getOpenScriptCommand(String file);
+
+    default String getLoginOpenCommand(ShellControl shellControl) {
+        return getOpenCommand(shellControl);
     }
 
     default void prepareCommandForShell(CommandBuilder b) {}
@@ -162,8 +138,6 @@ public interface ShellDialect {
     String prepareTerminalInitFileOpenCommand(ShellDialect parentDialect, ShellControl sc, String file);
 
     String runScriptCommand(ShellControl parent, String file);
-
-    String runScriptSilentlyCommand(ShellControl parent, String file);
 
     String sourceScriptCommand(ShellControl parent, String file);
 
@@ -192,6 +166,10 @@ public interface ShellDialect {
     CommandControl deleteFileOrDirectory(ShellControl sc, String file);
 
     String clearDisplayCommand();
+
+    String[] getLocalLaunchCommand();
+
+    ShellDumbMode getDumbMode();
 
     CommandControl createFileExistsCommand(ShellControl sc, String file);
 

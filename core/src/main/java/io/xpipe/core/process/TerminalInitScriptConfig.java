@@ -5,11 +5,11 @@ import lombok.Value;
 @Value
 public class TerminalInitScriptConfig {
 
-    public static TerminalInitScriptConfig ofName(String name) {
-        return new TerminalInitScriptConfig(name, true, false);
-    }
-
     String displayName;
     boolean clearScreen;
     boolean hasColor;
+
+    public static TerminalInitScriptConfig ofName(String name) {
+        return new TerminalInitScriptConfig(name, true, false);
+    }
 }

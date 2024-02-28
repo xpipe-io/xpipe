@@ -58,6 +58,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/licenses"
             }
             copy {
+                from "$projectDir/bundled_bin/$platformName"
+                into "$distDir/base/app/bundled"
+            }
+            copy {
                 from "$distDir/docs/html5"
                 into "$distDir/base/cli/docs"
             }
@@ -133,6 +137,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$distDir/docs/manpage"
                 into "$distDir/base/cli/man"
             }
+            copy {
+                from "$projectDir/bundled_bin/$platformName"
+                into "$distDir/base/app/bundled"
+            }
         }
     }
 } else {
@@ -171,6 +179,10 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$projectDir/fonts"
                 into "$distDir/$app/Contents/Resources/fonts"
             }
+            copy {
+                from "$projectDir/bundled_bin/$platformName"
+                into "$distDir/$app/Contents/Resources/bundled"
+            }
 
             copy {
                 from "$projectDir/PkgInstaller/darwin/Resources/uninstall.sh"
@@ -178,8 +190,8 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             }
             file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text = file("$distDir/$app/Contents/Resources/scripts/uninstall.sh").text
                     .replaceAll("__PRODUCT__", productName)
-                    .replaceAll("__PACKAGE_ID__", "io.xpipe.$kebapProductName")
-                    .replaceAll("__VERSION__", version.toString())
+                    .replaceAll("__PRODUCT_KEBAP__", kebapProductName)
+                    .replaceAll("__VERSION__", versionString)
 
             def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(
                     ' '))

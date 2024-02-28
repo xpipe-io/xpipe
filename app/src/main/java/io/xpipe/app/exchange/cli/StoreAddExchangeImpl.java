@@ -90,9 +90,7 @@ public class StoreAddExchangeImpl extends StoreAddExchange
             try {
             } catch (Exception ignored) {
             }
-            if (d != null) {
-                d = d.indent(2);
-            }
+            d = d.indent(2);
             return "Successfully created data store " + name.get() + ":\n" + d;
         });
 

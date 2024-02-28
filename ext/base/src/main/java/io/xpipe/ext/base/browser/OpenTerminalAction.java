@@ -15,14 +15,13 @@ import java.util.List;
 
 public class OpenTerminalAction implements LeafAction {
 
-    public String getId() {
-        return "openTerminal";
-    }
-
     @Override
-    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
         if (entries.size() == 0) {
-            model.openTerminalAsync(model.getCurrentDirectory() != null ? model.getCurrentDirectory().getPath() : null);
+            model.openTerminalAsync(
+                    model.getCurrentDirectory() != null
+                            ? model.getCurrentDirectory().getPath()
+                            : null);
             return;
         }
 
@@ -31,14 +30,28 @@ public class OpenTerminalAction implements LeafAction {
         }
     }
 
+    public String getId() {
+        return "openTerminal";
+    }
+
+    @Override
+    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return new FontIcon("mdi2c-console");
+    }
+
     @Override
     public Category getCategory() {
         return Category.OPEN;
     }
 
     @Override
-    public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2c-console");
+    public KeyCombination getShortcut() {
+        return new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
+    }
+
+    @Override
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return "Open in terminal";
     }
 
     @Override
@@ -50,15 +63,5 @@ public class OpenTerminalAction implements LeafAction {
     public boolean isActive(OpenFileSystemModel model, List<BrowserEntry> entries) {
         var t = AppPrefs.get().terminalType().getValue();
         return t != null;
-    }
-
-    @Override
-    public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.T, KeyCombination.SHORTCUT_DOWN);
-    }
-
-    @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "Open in terminal";
     }
 }

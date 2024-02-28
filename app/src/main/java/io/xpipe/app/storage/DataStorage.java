@@ -1,18 +1,24 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.*;
+import io.xpipe.core.store.DataStore;
+import io.xpipe.core.store.DataStoreId;
+import io.xpipe.core.store.FixedChildStore;
+import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.UuidHelper;
 import javafx.util.Pair;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,9 +42,6 @@ public abstract class DataStorage {
     protected final Path dir;
 
     @Getter
-    protected boolean loaded;
-
-    @Getter
     protected final List<DataStoreCategory> storeCategories;
 
     protected final Map<DataStoreEntry, DataStoreEntry> storeEntries;
@@ -46,34 +49,26 @@ public abstract class DataStorage {
     @Getter
     protected final Set<DataStoreEntry> storeEntriesSet;
 
-    @Getter
-    @Setter
-    protected DataStoreCategory selectedCategory;
+    protected final ReentrantLock busyIo = new ReentrantLock();
 
     @Getter
     private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
 
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
 
-    protected final ReentrantLock busyIo = new ReentrantLock();
+    @Getter
+    protected boolean loaded;
+
+    @Getter
+    @Setter
+    protected DataStoreCategory selectedCategory;
 
     public DataStorage() {
-        this.dir = AppPrefs.get().storageDirectory().getValue();
+        var prefsDir = AppPrefs.get().storageDirectory().getValue();
+        this.dir = !Files.exists(prefsDir) || !Files.isDirectory(prefsDir) ? AppPrefs.DEFAULT_STORAGE_DIR : prefsDir;
         this.storeEntries = new ConcurrentHashMap<>();
         this.storeEntriesSet = storeEntries.keySet();
         this.storeCategories = new CopyOnWriteArrayList<>();
-    }
-
-    public DataStoreCategory getDefaultCategory() {
-        return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
-    }
-
-    public DataStoreCategory getAllConnectionsCategory() {
-        return getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).orElseThrow();
-    }
-
-    public DataStoreCategory getAllScriptsCategory() {
-        return getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).orElseThrow();
     }
 
     private static boolean shouldPersist() {
@@ -110,16 +105,95 @@ public abstract class DataStorage {
         INSTANCE = null;
     }
 
+    public static DataStorage get() {
+        return INSTANCE;
+    }
+
+    public abstract String getVaultKey();
+
+    public DataStoreCategory getDefaultConnectionsCategory() {
+        return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
+    }
+
+    public DataStoreCategory getAllConnectionsCategory() {
+        return getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID).orElseThrow();
+    }
+
+    public DataStoreCategory getAllScriptsCategory() {
+        return getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID).orElseThrow();
+    }
+
+    public void forceRewrite() {
+        getStoreEntries().forEach(dataStoreEntry -> {
+            dataStoreEntry.reassignStore();
+        });
+    }
+
     private synchronized void dispose() {
         onReset();
         save(true);
     }
 
-    protected void onReset() {}
+    protected void setupBuiltinCategories() {
+        var categoriesDir = getCategoriesDir();
+        var allConnections = getStoreCategoryIfPresent(ALL_CONNECTIONS_CATEGORY_UUID);
+        if (allConnections.isEmpty()) {
+            var cat = DataStoreCategory.createNew(null, ALL_CONNECTIONS_CATEGORY_UUID, "All connections");
+            cat.setDirectory(categoriesDir.resolve(ALL_CONNECTIONS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            allConnections.get().setParentCategory(null);
+        }
 
-    public static DataStorage get() {
-        return INSTANCE;
+        var allScripts = getStoreCategoryIfPresent(ALL_SCRIPTS_CATEGORY_UUID);
+        if (allScripts.isEmpty()) {
+            var cat = DataStoreCategory.createNew(null, ALL_SCRIPTS_CATEGORY_UUID, "All scripts");
+            cat.setDirectory(categoriesDir.resolve(ALL_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            allScripts.get().setParentCategory(null);
+        }
+
+        if (getStoreCategoryIfPresent(PREDEFINED_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+            var cat = DataStoreCategory.createNew(
+                    ALL_SCRIPTS_CATEGORY_UUID, PREDEFINED_SCRIPTS_CATEGORY_UUID, "Predefined");
+            cat.setDirectory(categoriesDir.resolve(PREDEFINED_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        }
+
+        if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
+            var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
+            cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        }
+
+        if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
+            storeCategories.add(new DataStoreCategory(
+                    categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
+                    DEFAULT_CATEGORY_UUID,
+                    "Default",
+                    Instant.now(),
+                    Instant.now(),
+                    true,
+                    ALL_CONNECTIONS_CATEGORY_UUID,
+                    StoreSortMode.ALPHABETICAL_ASC,
+                    false));
+        }
+
+        storeCategories.forEach(dataStoreCategory -> {
+            if (dataStoreCategory.getParentCategory() != null
+                    && getStoreCategoryIfPresent(dataStoreCategory.getParentCategory())
+                            .isEmpty()) {
+                dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
+            } else if (dataStoreCategory.getParentCategory() == null
+                    && !dataStoreCategory.getUuid().equals(ALL_CONNECTIONS_CATEGORY_UUID)
+                    && !dataStoreCategory.getUuid().equals(ALL_SCRIPTS_CATEGORY_UUID)) {
+                dataStoreCategory.setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
+            }
+        });
     }
+
+    protected void onReset() {}
 
     protected Path getStoresDir() {
         return dir.resolve("stores");
@@ -146,7 +220,8 @@ public abstract class DataStorage {
     public void saveAsync() {
         // If we are already loading or saving, don't queue up another operation.
         // This could otherwise lead to thread starvation with virtual threads
-        // Technically the load and save operations also return instantly if locked, but let's not even create new threads here
+        // Technically the load and save operations also return instantly if locked, but let's not even create new
+        // threads here
         if (busyIo.isLocked()) {
             return;
         }
@@ -159,19 +234,20 @@ public abstract class DataStorage {
     public abstract void save(boolean dispose);
 
     public abstract boolean supportsSharing();
-    public boolean shouldShare(DataStoreCategory entry) {
-        if (!entry.canShare()) {
+
+    public boolean shouldShare(DataStoreCategory category) {
+        if (!category.canShare()) {
             return false;
         }
 
-        DataStoreCategory c = entry;
+        DataStoreCategory c = category;
         do {
             if (!c.shouldShareChildren()) {
                 return false;
             }
         } while ((c = DataStorage.get()
-                .getStoreCategoryIfPresent(c.getParentCategory())
-                .orElse(null))
+                        .getStoreCategoryIfPresent(c.getParentCategory())
+                        .orElse(null))
                 != null);
         return true;
     }
@@ -185,6 +261,11 @@ public abstract class DataStorage {
 
         DataStoreEntry c = entry;
         do {
+            // We can't check for sharing of invalid entries
+            if (!c.getValidity().isUsable()) {
+                return false;
+            }
+
             if (c.getStore() instanceof LocalStore && entry.getProvider().isShareableFromLocalMachine()) {
                 return true;
             }
@@ -225,6 +306,13 @@ public abstract class DataStorage {
         entry.initializeEntry();
 
         if (!sameParent) {
+            if (oldParent.isPresent()) {
+                oldParent.get().setChildrenCache(null);
+            }
+            if (newParent.isPresent()) {
+                newParent.get().setChildrenCache(null);
+                newParent.get().setExpanded(true);
+            }
             var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
         }
@@ -234,7 +322,9 @@ public abstract class DataStorage {
     }
 
     public void updateCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
-        if (getStoreCategoryIfPresent(entry.getUuid()).map(category -> category.equals(newCategory)).orElse(false)) {
+        if (getStoreCategoryIfPresent(entry.getUuid())
+                .map(category -> category.equals(newCategory))
+                .orElse(false)) {
             return;
         }
 
@@ -276,9 +366,11 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    return newChildren.stream().filter(nc -> nc.getStore().getFixedId().isPresent()).noneMatch(nc -> {
-                        return nc.getStore().getFixedId().getAsInt() == oid.getAsInt();
-                    });
+                    return newChildren.stream()
+                            .filter(nc -> nc.getStore().getFixedId().isPresent())
+                            .noneMatch(nc -> {
+                                return nc.getStore().getFixedId().getAsInt() == oid.getAsInt();
+                            });
                 })
                 .toList();
         var toAdd = newChildren.stream()
@@ -289,9 +381,16 @@ public abstract class DataStorage {
                         return false;
                     }
 
-                    return oldChildren.stream().filter(oc -> ((FixedChildStore) oc.getStore()).getFixedId().isPresent()).noneMatch(oc -> {
-                        return ((FixedChildStore) oc.getStore()).getFixedId().getAsInt() == nid.getAsInt();
-                    });
+                    return oldChildren.stream()
+                            .filter(oc -> ((FixedChildStore) oc.getStore())
+                                    .getFixedId()
+                                    .isPresent())
+                            .noneMatch(oc -> {
+                                return ((FixedChildStore) oc.getStore())
+                                                .getFixedId()
+                                                .getAsInt()
+                                        == nid.getAsInt();
+                            });
                 })
                 .toList();
         var toUpdate = oldChildren.stream()
@@ -318,13 +417,20 @@ public abstract class DataStorage {
         deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
-            pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
+            // TODO do we need this, it erases any custom information?
+            // pair.getKey().setStoreInternal(pair.getValue().getStore(), false);
 
             // Update state by merging
             if (pair.getKey().getStorePersistentState() != null && pair.getValue().get().getStorePersistentState() != null) {
-                var mergedState = pair.getKey().getStorePersistentState().deepCopy();
-                mergedState.merge(pair.getValue().get().getStorePersistentState());
-                pair.getKey().setStorePersistentState(mergedState);
+                var classMatch = pair.getKey().getStorePersistentState().getClass()
+                        .equals(pair.getValue().get().getStorePersistentState().getClass());
+                // Children classes might not be the same, the same goes for state classes
+                // This can happen when there are multiple child classes and the ids got switched around
+                if (classMatch) {
+                    var mergedState = pair.getKey().getStorePersistentState().deepCopy();
+                    mergedState.merge(pair.getValue().get().getStorePersistentState());
+                    pair.getKey().setStorePersistentState(mergedState);
+                }
             }
         });
         saveAsync();
@@ -350,7 +456,7 @@ public abstract class DataStorage {
                 .toList();
 
         toDelete.forEach(entry -> entry.finalizeEntry());
-        this.storeEntriesSet.removeAll(toDelete);
+        toDelete.forEach(this.storeEntriesSet::remove);
         this.listeners.forEach(l -> l.onStoreRemove(toDelete.toArray(DataStoreEntry[]::new)));
         refreshValidities(false);
         saveAsync();
@@ -427,7 +533,8 @@ public abstract class DataStorage {
 
     public void addStoreEntriesIfNotPresent(@NonNull DataStoreEntry... es) {
         for (DataStoreEntry e : es) {
-            if (storeEntriesSet.contains(e) || getStoreEntryIfPresent(e.getStore()).isPresent()) {
+            if (storeEntriesSet.contains(e)
+                    || getStoreEntryIfPresent(e.getStore()).isPresent()) {
                 return;
             }
 
@@ -466,7 +573,11 @@ public abstract class DataStorage {
             return f.get();
         }
 
-        var e = DataStoreEntry.createNew(UUID.randomUUID(), related != null ? related.getCategoryUuid() : selectedCategory.getUuid(), name, store);
+        var e = DataStoreEntry.createNew(
+                UUID.randomUUID(),
+                related != null ? related.getCategoryUuid() : selectedCategory.getUuid(),
+                name,
+                store);
         addStoreEntryIfNotPresent(e);
         return e;
     }
@@ -504,7 +615,7 @@ public abstract class DataStorage {
 
     public boolean isRootEntry(DataStoreEntry entry) {
         var noParent = DataStorage.get().getDefaultDisplayParent(entry).isEmpty();
-        var diffParentCategory = DataStorage.get()
+        boolean diffParentCategory = DataStorage.get()
                 .getDefaultDisplayParent(entry)
                 .map(p -> !p.getCategoryUuid().equals(entry.getCategoryUuid()))
                 .orElse(false);
@@ -628,7 +739,7 @@ public abstract class DataStorage {
                 break;
             }
 
-            es.add(0, current);
+            es.addFirst(current);
         }
 
         return es;
@@ -642,7 +753,7 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStoreId id) {
-        var current = getStoreEntryIfPresent(id.getNames().get(0));
+        var current = getStoreEntryIfPresent(id.getNames().getFirst());
         if (current.isPresent()) {
             for (int i = 1; i < id.getNames().size(); i++) {
                 var children = getStoreChildren(current.get());

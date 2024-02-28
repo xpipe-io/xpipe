@@ -3,6 +3,7 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -23,6 +24,26 @@ import java.util.stream.Collectors;
 public class StoreViewState {
 
     private static StoreViewState INSTANCE;
+    private final StringProperty filter = new SimpleStringProperty();
+
+    @Getter
+    private final ObservableList<StoreEntryWrapper> allEntries =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
+
+    @Getter
+    private final ObservableList<StoreCategoryWrapper> categories =
+            FXCollections.observableList(new CopyOnWriteArrayList<>());
+
+    @Getter
+    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
+
+    @Getter
+    private StoreSection currentTopLevelSection;
+
+    private StoreViewState() {
+        initContent();
+        addListeners();
+    }
 
     public static void init() {
         if (INSTANCE != null) {
@@ -50,27 +71,6 @@ public class StoreViewState {
 
     public static StoreViewState get() {
         return INSTANCE;
-    }
-
-    private final StringProperty filter = new SimpleStringProperty();
-
-    @Getter
-    private final ObservableList<StoreEntryWrapper> allEntries =
-            FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    @Getter
-    private final ObservableList<StoreCategoryWrapper> categories =
-            FXCollections.observableList(new CopyOnWriteArrayList<>());
-
-    @Getter
-    private StoreSection currentTopLevelSection;
-
-    @Getter
-    private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
-
-    private StoreViewState() {
-        initContent();
-        addStorageListeners();
     }
 
     private void updateContent() {
@@ -112,12 +112,27 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
-    private void addStorageListeners() {
+    private void addListeners() {
+        if (AppPrefs.get() != null) {
+            AppPrefs.get().condenseConnectionDisplay().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    synchronized (this) {
+                        var l = new ArrayList<>(allEntries);
+                        allEntries.clear();
+                        allEntries.setAll(l);
+                    }
+                });
+            });
+        }
+
         // Watch out for synchronizing all calls to the entries and categories list!
         DataStorage.get().addListener(new StorageListener() {
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
-                var l = Arrays.stream(entry).map(StoreEntryWrapper::new).peek(storeEntryWrapper -> storeEntryWrapper.update()).toList();
+                var l = Arrays.stream(entry)
+                        .map(StoreEntryWrapper::new)
+                        .peek(storeEntryWrapper -> storeEntryWrapper.update())
+                        .toList();
                 Platform.runLater(() -> {
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {

@@ -22,12 +22,11 @@ import java.util.List;
 
 public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
+    public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
     private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
     private static final PseudoClass SUB = PseudoClass.getPseudoClass("sub");
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even-depth");
-    public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
-
     private final StoreSection section;
     private final boolean topLevel;
 
@@ -38,7 +37,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = StandardStoreEntryComp.customSection(section, topLevel)
+        var root = StoreEntryComp.customSection(section, topLevel)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
         var button = new IconButtonComp(
                         Bindings.createStringBinding(
@@ -54,9 +53,11 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))
                 .focusTraversable()
-                .accessibleText(Bindings.createStringBinding(() -> {
-                    return "Expand " + section.getWrapper().getName().getValue();
-                }, section.getWrapper().getName()))
+                .accessibleText(Bindings.createStringBinding(
+                        () -> {
+                            return "Expand " + section.getWrapper().getName().getValue();
+                        },
+                        section.getWrapper().getName()))
                 .disable(BindingsHelper.persist(
                         Bindings.size(section.getShownChildren()).isEqualTo(0)))
                 .grow(false, true)

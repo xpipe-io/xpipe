@@ -107,6 +107,7 @@ public class AppFileWatcher {
 
     private class WatchedDirectory {
         private final BiConsumer<Path, WatchEvent.Kind<Path>> listener;
+
         @Getter
         private final Path baseDir;
 
@@ -114,9 +115,7 @@ public class AppFileWatcher {
             this.baseDir = dir;
             this.listener = listener;
             createRecursiveWatchers(dir);
-            TrackEvent.withTrace("watcher", "Added watched directory")
-                    .tag("location", dir)
-                    .handle();
+            TrackEvent.withTrace("Added watched directory").tag("location", dir).handle();
         }
 
         private void createRecursiveWatchers(Path dir) {
@@ -177,13 +176,12 @@ public class AppFileWatcher {
             }
 
             // Handle event
-            TrackEvent.withTrace("watcher", "Watch event")
+            TrackEvent.withTrace("Watch event")
                     .tag("baseDir", baseDir)
                     .tag("file", baseDir.relativize(file))
                     .tag("kind", event.kind().name())
                     .handle();
             listener.accept(file, ev.kind());
         }
-
     }
 }

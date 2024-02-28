@@ -16,10 +16,8 @@ import javafx.scene.layout.StackPane;
 
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
-    public static LoadingOverlayComp noProgress(Comp<?> comp, ObservableValue<Boolean> loading) {
-        return new LoadingOverlayComp(comp, loading, new SimpleDoubleProperty(-1));
-    }
-
+    private static final double FPS = 30.0;
+    private static final double cycleDurationSeconds = 4.0;
     private final Comp<?> comp;
     private final ObservableValue<Boolean> showLoading;
     private final ObservableValue<Number> progress;
@@ -30,6 +28,10 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         this.progress = PlatformThread.sync(progress);
     }
 
+    public static LoadingOverlayComp noProgress(Comp<?> comp, ObservableValue<Boolean> loading) {
+        return new LoadingOverlayComp(comp, loading, new SimpleDoubleProperty(-1));
+    }
+
     @Override
     public CompStructure<StackPane> createBase() {
         var compStruc = comp.createStructure();
@@ -38,6 +40,11 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         var loading = new RingProgressIndicator(0, false);
         loading.progressProperty().bind(progress);
         loading.visibleProperty().bind(Bindings.not(AppPrefs.get().performanceMode()));
+
+        //        var pane = new StackPane();
+        //        Parent node = new Indicator((int) (FPS * cycleDurationSeconds), 2.0).getNode();
+        //        pane.getChildren().add(node);
+        //        pane.setAlignment(Pos.CENTER);
 
         var loadingOverlay = new StackPane(loading);
         loadingOverlay.getStyleClass().add("loading-comp");

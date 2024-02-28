@@ -2,7 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.exchange.MessageExchangeImpls;
 import io.xpipe.app.ext.ExtensionException;
-import io.xpipe.app.ext.ModuleInstall;
 import io.xpipe.app.ext.XPipeServiceProviders;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -29,6 +28,7 @@ public class AppExtensionManager {
     private final List<ModuleLayer> leafModuleLayers = new ArrayList<>();
     private final List<Path> extensionBaseDirectories = new ArrayList<>();
     private ModuleLayer baseLayer = ModuleLayer.boot();
+
     @Getter
     private ModuleLayer extendedLayer;
 
@@ -52,9 +52,18 @@ public class AppExtensionManager {
                 XPipeServiceProviders.load(INSTANCE.extendedLayer);
                 MessageExchangeImpls.loadAll();
             } catch (Throwable t) {
-                throw new ExtensionException("Service provider initialization failed. Is the installation data corrupt?", t);
+                throw new ExtensionException(
+                        "Service provider initialization failed. Is the installation data corrupt?", t);
             }
         }
+    }
+
+    public static void reset() {
+        INSTANCE = null;
+    }
+
+    public static AppExtensionManager getInstance() {
+        return INSTANCE;
     }
 
     private void loadBaseExtension() {
@@ -95,14 +104,6 @@ public class AppExtensionManager {
         extensionBaseDirectories.add(productionRoot);
     }
 
-    public static void reset() {
-        INSTANCE = null;
-    }
-
-    public static AppExtensionManager getInstance() {
-        return INSTANCE;
-    }
-
     public Set<Module> getContentModules() {
         return Stream.concat(
                         Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()),
@@ -110,87 +111,28 @@ public class AppExtensionManager {
                 .collect(Collectors.toSet());
     }
 
-    public boolean isInstalled(ModuleInstall install) {
-        var target =
-                AppExtensionManager.getInstance().getGeneratedModulesDirectory(install.getModule(), install.getId());
-        return Files.exists(target) && Files.isRegularFile(target.resolve("finished"));
-    }
-
-    public void installIfNeeded(ModuleInstall install) throws Exception {
-        var target =
-                AppExtensionManager.getInstance().getGeneratedModulesDirectory(install.getModule(), install.getId());
-        if (Files.exists(target) && Files.isRegularFile(target.resolve("finished"))) {
-            return;
-        }
-
-        Files.createDirectories(target);
-        install.installInternal(target);
-        Files.createFile(target.resolve("finished"));
-    }
-
-    public Path getGeneratedModulesDirectory(String module, String ext) {
-        var base = AppProperties.get()
-                .getDataDir()
-                .resolve("generated_extensions")
-                .resolve(AppProperties.get().getVersion())
-                .resolve(module);
-        return ext != null ? base.resolve(ext) : base;
-    }
-
     private void loadAllExtensions() {
-        for (Path extensionBaseDirectory : extensionBaseDirectories) {
-            loadExtensionRootDirectory(extensionBaseDirectory);
+        for (var ext : List.of("jdbc", "proc", "uacc")) {
+            var extension = findAndParseExtension(ext, baseLayer)
+                    .orElseThrow(() -> ExtensionException.corrupt("Missing module " + ext));
+            loadedExtensions.add(extension);
+            leafModuleLayers.add(extension.getModule().getLayer());
         }
 
-        if (leafModuleLayers.size() > 0) {
-            var scl = ClassLoader.getSystemClassLoader();
-            var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
-            var finder = ModuleFinder.ofSystem();
-            var cf = Configuration.resolve(finder, cfs, finder, List.of());
-            extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
-                    .layer();
-        } else {
-            extendedLayer = baseLayer;
-        }
-    }
-
-    private void loadExtensionRootDirectory(Path dir) {
-        if (!Files.exists(dir)) {
-            return;
-        }
-
-        // Order results as on unix systems the file list order is not deterministic
-        try (var s = Files.list(dir).sorted(Comparator.comparing(path -> path.toString()))) {
-            s.forEach(sub -> {
-                if (Files.isDirectory(sub)) {
-                    // TODO: Better detection for x modules
-                    if (sub.toString().endsWith("x")) {
-                        return;
-                    }
-
-                    var extension = parseExtensionDirectory(sub, baseLayer);
-                    if (extension.isEmpty()) {
-                        return;
-                    }
-
-                    loadedExtensions.add(extension.get());
-                    var xModule = findAndParseExtension(
-                            extension.get().getId() + "x",
-                            extension.get().getModule().getLayer());
-                    if (xModule.isPresent()) {
-                        loadedExtensions.add(xModule.get());
-                        leafModuleLayers.add(xModule.get().getModule().getLayer());
-                    } else {
-                        leafModuleLayers.add(extension.get().getModule().getLayer());
-                    }
-                }
-            });
-        } catch (IOException ex) {
-            ErrorEvent.fromThrowable(ex).handle();
-        }
+        var scl = ClassLoader.getSystemClassLoader();
+        var cfs = leafModuleLayers.stream().map(ModuleLayer::configuration).toList();
+        var finder = ModuleFinder.ofSystem();
+        var cf = Configuration.resolve(finder, cfs, finder, List.of());
+        extendedLayer = ModuleLayer.defineModulesWithOneLoader(cf, leafModuleLayers, scl)
+                .layer();
     }
 
     private Optional<Extension> findAndParseExtension(String name, ModuleLayer parent) {
+        var inModulePath = ModuleLayer.boot().findModule("io.xpipe.ext." + name);
+        if (inModulePath.isPresent()) {
+            return Optional.of(new Extension(null, inModulePath.get().getName(), name, inModulePath.get(), 0));
+        }
+
         for (Path extensionBaseDirectory : extensionBaseDirectories) {
             var found = parseExtensionDirectory(extensionBaseDirectory.resolve(name), parent);
             if (found.isPresent()) {
@@ -206,7 +148,7 @@ public class AppExtensionManager {
             return Optional.empty();
         }
 
-        if (loadedExtensions.stream().anyMatch(extension -> extension.dir.equals(dir))
+        if (loadedExtensions.stream().anyMatch(extension -> dir.equals(extension.dir))
                 || loadedExtensions.stream()
                         .anyMatch(extension ->
                                 extension.id.equals(dir.getFileName().toString()))) {

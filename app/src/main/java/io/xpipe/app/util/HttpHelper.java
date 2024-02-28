@@ -3,22 +3,11 @@ package io.xpipe.app.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public class HttpHelper {
-
-    public static Path downloadFile(String urlS) throws Exception {
-        var url = URI.create(urlS).toURL();
-        var bytes = HttpHelper.executeGet(url, aFloat -> {});
-        var downloadFile = Files.createTempFile(null, null);
-        Files.write(downloadFile, bytes);
-        return downloadFile;
-    }
 
     public static byte[] executeGet(URL targetURL, Consumer<Float> progress) throws Exception {
         HttpURLConnection connection = null;
@@ -36,7 +25,12 @@ public class HttpHelper {
             }
 
             InputStream is = connection.getInputStream();
-            int size = Integer.parseInt(connection.getHeaderField("Content-Length"));
+            var lengthField = connection.getHeaderField("Content-Length");
+            if (lengthField == null) {
+                return is.readAllBytes();
+            }
+
+            int size = Integer.parseInt(lengthField);
 
             byte[] line;
             int bytes = 0;

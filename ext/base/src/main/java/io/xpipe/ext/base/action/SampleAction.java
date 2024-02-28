@@ -17,6 +17,44 @@ import java.io.InputStreamReader;
 
 public class SampleAction implements ActionProvider {
 
+    @Override
+    public DataStoreCallSite<?> getDataStoreCallSite() {
+        // Call sites represent different ways of invoking the action.
+        // In this case, this represents a button that is shown for all stored shell connections.
+        return new DataStoreCallSite<ShellStore>() {
+
+            @Override
+            public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<ShellStore> getApplicableClass() {
+                // For which general type of connection store to make this action available.
+                return ShellStore.class;
+            }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+                // Allows you to individually check whether this action should be available for the specific store.
+                // In this case it should only be available for remote shell connections, not local ones.
+                return !ShellStore.isLocal(o.getStore());
+            }
+
+            @Override
+            public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                // The displayed name of the action, allows you to use translation keys.
+                return AppI18n.observable("installConnector");
+            }
+
+            @Override
+            public String getIcon(DataStoreEntryRef<ShellStore> store) {
+                // The ikonli icon of the button.
+                return "mdi2c-code-greater-than";
+            }
+        };
+    }
+
     @Value
     static class Action implements ActionProvider.Action {
 
@@ -104,43 +142,5 @@ public class SampleAction implements ActionProvider {
                 }
             }
         }
-    }
-
-    @Override
-    public DataStoreCallSite<?> getDataStoreCallSite() {
-        // Call sites represent different ways of invoking the action.
-        // In this case, this represents a button that is shown for all stored shell connections.
-        return new DataStoreCallSite<ShellStore>() {
-
-            @Override
-            public Action createAction(DataStoreEntryRef<ShellStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<ShellStore> getApplicableClass() {
-                // For which general type of connection store to make this action available.
-                return ShellStore.class;
-            }
-
-            @Override
-            public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-                // Allows you to individually check whether this action should be available for the specific store.
-                // In this case it should only be available for remote shell connections, not local ones.
-                return !ShellStore.isLocal(o.getStore());
-            }
-
-            @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-                // The displayed name of the action, allows you to use translation keys.
-                return AppI18n.observable("installConnector");
-            }
-
-            @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                // The ikonli icon of the button.
-                return "mdi2c-code-greater-than";
-            }
-        };
     }
 }

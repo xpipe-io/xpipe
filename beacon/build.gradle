@@ -2,7 +2,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id "org.moditect.gradleplugin" version "1.0.0-rc3"
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
@@ -20,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    compileOnly 'org.hamcrest:hamcrest:2.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.10.2'
     api project(':core')
 }
 

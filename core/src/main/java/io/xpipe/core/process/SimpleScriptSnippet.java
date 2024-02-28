@@ -6,6 +6,7 @@ public class SimpleScriptSnippet implements ScriptSnippet {
 
     @NonNull
     private final String content;
+
     @NonNull
     private final ExecutionType executionType;
 

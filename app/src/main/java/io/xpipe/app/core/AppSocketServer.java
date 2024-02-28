@@ -57,7 +57,10 @@ public class AppSocketServer {
                     .handle();
         } catch (Exception ex) {
             // Not terminal!
-            ErrorEvent.fromThrowable(ex).description("Unable to start local socket server on port " + port).build().handle();
+            ErrorEvent.fromThrowable(ex)
+                    .description("Unable to start local socket server on port " + port)
+                    .build()
+                    .handle();
         }
     }
 
@@ -112,7 +115,7 @@ public class AppSocketServer {
 
     private boolean performExchange(Socket clientSocket, int id) throws Exception {
         if (clientSocket.isClosed()) {
-            TrackEvent.trace("beacon", "Socket closed");
+            TrackEvent.trace("Socket closed");
             return false;
         }
 
@@ -121,14 +124,14 @@ public class AppSocketServer {
             node = JacksonMapper.getDefault().readTree(blockIn);
         }
         if (node.isMissingNode()) {
-            TrackEvent.trace("beacon", "Received EOF");
+            TrackEvent.trace("Received EOF");
             return false;
         }
 
-        TrackEvent.trace("beacon", "Received raw request: \n" + node.toPrettyString());
+        TrackEvent.trace("Received raw request: \n" + node.toPrettyString());
 
         var req = parseRequest(node);
-        TrackEvent.trace("beacon", "Parsed request: \n" + req.toString());
+        TrackEvent.trace("Parsed request: \n" + req.toString());
 
         var prov = MessageExchangeImpls.byRequest(req);
         if (prov.isEmpty()) {
@@ -145,19 +148,19 @@ public class AppSocketServer {
 
                             @Override
                             public OutputStream sendBody() throws IOException {
-                                TrackEvent.trace("beacon", "Starting writing body for #" + id);
+                                TrackEvent.trace("Starting writing body for #" + id);
                                 return AppSocketServer.this.sendBody(clientSocket);
                             }
 
                             @Override
                             public InputStream receiveBody() throws IOException {
-                                TrackEvent.trace("beacon", "Starting to read body for #" + id);
+                                TrackEvent.trace("Starting to read body for #" + id);
                                 return AppSocketServer.this.receiveBody(clientSocket);
                             }
                         },
                         req);
 
-        TrackEvent.trace("beacon", "Sending response to #" + id + ": \n" + res.toString());
+        TrackEvent.trace("Sending response to #" + id + ": \n" + res.toString());
         AppSocketServer.this.sendResponse(clientSocket, res);
 
         try {
@@ -170,7 +173,6 @@ public class AppSocketServer {
         }
 
         TrackEvent.builder()
-                .category("beacon")
                 .type("trace")
                 .message("Socket connection #" + id + " performed exchange "
                         + req.getClass().getSimpleName())
@@ -187,7 +189,7 @@ public class AppSocketServer {
                 informationNode = JacksonMapper.getDefault().readTree(blockIn);
             }
             if (informationNode.isMissingNode()) {
-                TrackEvent.trace("beacon", "Received EOF");
+                TrackEvent.trace("Received EOF");
                 return;
             }
             var information =
@@ -197,7 +199,6 @@ public class AppSocketServer {
             }
 
             TrackEvent.builder()
-                    .category("beacon")
                     .type("trace")
                     .message("Created new socket connection #" + id)
                     .tag("client", information != null ? information.toDisplayString() : "Unknown")
@@ -211,29 +212,29 @@ public class AppSocketServer {
                     }
                 }
                 TrackEvent.builder()
-                        .category("beacon")
                         .type("trace")
                         .message("Socket connection #" + id + " finished successfully")
                         .build()
                         .handle();
 
             } catch (ClientException ce) {
-                TrackEvent.trace("beacon", "Sending client error to #" + id + ": " + ce.getMessage());
+                TrackEvent.trace("Sending client error to #" + id + ": " + ce.getMessage());
                 sendClientErrorResponse(clientSocket, ce.getMessage());
             } catch (ServerException se) {
-                TrackEvent.trace("beacon", "Sending server error to #" + id + ": " + se.getMessage());
-                ErrorEvent.fromThrowable(se).build().handle();
+                TrackEvent.trace("Sending server error to #" + id + ": " + se.getMessage());
                 Deobfuscator.deobfuscate(se);
                 sendServerErrorResponse(clientSocket, se);
+                var toReport = se.getCause() != null ? se.getCause() : se;
+                ErrorEvent.fromThrowable(toReport).build().handle();
             } catch (SocketException ex) {
                 // Do not send error and omit it, as this might happen often
                 // We do not send the error as the socket connection might be broken
                 ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
             } catch (Throwable ex) {
-                TrackEvent.trace("beacon", "Sending internal server error to #" + id + ": " + ex.getMessage());
-                ErrorEvent.fromThrowable(ex).build().handle();
+                TrackEvent.trace("Sending internal server error to #" + id + ": " + ex.getMessage());
                 Deobfuscator.deobfuscate(ex);
                 sendServerErrorResponse(clientSocket, ex);
+                ErrorEvent.fromThrowable(ex).build().handle();
             }
         } catch (SocketException ex) {
             // Omit it, as this might happen often
@@ -243,16 +244,13 @@ public class AppSocketServer {
         } finally {
             try {
                 clientSocket.close();
-                TrackEvent.trace("beacon", "Closed socket #" + id);
+                TrackEvent.trace("Closed socket #" + id);
             } catch (IOException e) {
                 ErrorEvent.fromThrowable(e).build().handle();
             }
         }
 
-        TrackEvent.builder()
-                .category("beacon")
-                .type("trace")
-                .message("Socket connection #" + id + " finished unsuccessfully");
+        TrackEvent.builder().type("trace").message("Socket connection #" + id + " finished unsuccessfully");
     }
 
     private void performExchangesAsync(Socket clientSocket) {
@@ -296,7 +294,7 @@ public class AppSocketServer {
         }
 
         var content = writer.toString();
-        TrackEvent.trace("beacon", "Sending raw response:\n" + content);
+        TrackEvent.trace("Sending raw response:\n" + content);
         try (OutputStream blockOut = BeaconFormat.writeBlocks(outSocket.getOutputStream())) {
             blockOut.write(content.getBytes(StandardCharsets.UTF_8));
         }
@@ -336,7 +334,7 @@ public class AppSocketServer {
 
     private <T extends RequestMessage> T parseRequest(JsonNode header) throws Exception {
         ObjectNode content = (ObjectNode) header.required("xPipeMessage");
-        TrackEvent.trace("beacon", "Parsed raw request:\n" + content.toPrettyString());
+        TrackEvent.trace("Parsed raw request:\n" + content.toPrettyString());
 
         var type = content.required("messageType").textValue();
         var phase = content.required("messagePhase").textValue();

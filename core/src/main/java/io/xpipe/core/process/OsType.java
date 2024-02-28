@@ -7,13 +7,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacOs {
+public interface OsType {
 
     Windows WINDOWS = new Windows();
     Linux LINUX = new Linux();
     MacOs MACOS = new MacOs();
+    Bsd BSD = new Bsd();
+    Solaris SOLARIS = new Solaris();
 
-    static OsType getLocal() {
+    static Local getLocal() {
         String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((osName.contains("mac")) || (osName.contains("darwin"))) {
             return MACOS;
@@ -40,7 +42,17 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
 
     String determineOperatingSystemName(ShellControl pc) throws Exception;
 
-    final class Windows implements OsType {
+    sealed interface Local extends OsType permits OsType.Windows, OsType.Linux, OsType.MacOs {
+
+        default Any toAny() {
+            return (Any) this;
+        }
+    }
+
+    sealed interface Any extends OsType
+            permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd {}
+
+    final class Windows implements OsType, Local, Any {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -102,7 +114,7 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
     }
 
-    final class Linux implements OsType {
+    class Unix implements OsType {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -122,13 +134,13 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public String getTempDirectory(ShellControl pc) {
-            return "/tmp/";
+        public String getName() {
+            return "Linux";
         }
 
         @Override
-        public String getName() {
-            return "Linux";
+        public String getTempDirectory(ShellControl pc) {
+            return "/tmp/";
         }
 
         @Override
@@ -138,20 +150,6 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
 
         @Override
         public String determineOperatingSystemName(ShellControl pc) throws Exception {
-            try (CommandControl c = pc.command("lsb_release -a").start()) {
-                var text = c.readStdoutDiscardErr();
-                if (c.getExitCode() == 0) {
-                    return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", "Unknown");
-                }
-            }
-
-            try (CommandControl c = pc.command("cat /etc/*release").start()) {
-                var text = c.readStdoutDiscardErr();
-                if (c.getExitCode() == 0) {
-                    return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", "Unknown");
-                }
-            }
-
             String type = "Unknown";
             try (CommandControl c = pc.command("uname -o").start()) {
                 var text = c.readStdoutDiscardErr();
@@ -172,7 +170,33 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
     }
 
-    final class MacOs implements OsType {
+    final class Linux extends Unix implements OsType, Local, Any {
+
+        @Override
+        public String determineOperatingSystemName(ShellControl pc) throws Exception {
+            try (CommandControl c = pc.command("lsb_release -a").start()) {
+                var text = c.readStdoutDiscardErr();
+                if (c.getExitCode() == 0) {
+                    return PropertiesFormatsParser.parse(text, ":").getOrDefault("Description", "Unknown");
+                }
+            }
+
+            try (CommandControl c = pc.command("cat /etc/*release").start()) {
+                var text = c.readStdoutDiscardErr();
+                if (c.getExitCode() == 0) {
+                    return PropertiesFormatsParser.parse(text, "=").getOrDefault("PRETTY_NAME", "Unknown");
+                }
+            }
+
+            return super.determineOperatingSystemName(pc);
+        }
+    }
+
+    final class Solaris extends Unix implements Any {}
+
+    final class Bsd extends Unix implements Any {}
+
+    final class MacOs implements OsType, Local, Any {
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -194,6 +218,16 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
+        public String getFileSystemSeparator() {
+            return "/";
+        }
+
+        @Override
+        public String getName() {
+            return "Mac";
+        }
+
+        @Override
         public String getTempDirectory(ShellControl pc) throws Exception {
             var found = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintVariableCommand("TMPDIR"));
 
@@ -206,19 +240,8 @@ public sealed interface OsType permits OsType.Windows, OsType.Linux, OsType.MacO
         }
 
         @Override
-        public String getFileSystemSeparator() {
-            return "/";
-        }
-
-        @Override
-        public String getName() {
-            return "Mac";
-        }
-
-        @Override
         public Map<String, String> getProperties(ShellControl pc) throws Exception {
-            try (CommandControl c =
-                    pc.command("sw_vers").start()) {
+            try (CommandControl c = pc.command("sw_vers").start()) {
                 var text = c.readStdoutOrThrow();
                 return PropertiesFormatsParser.parse(text, ":");
             }

@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -7,11 +8,9 @@ import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanAlert;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -23,23 +22,23 @@ public class StoreIntroComp extends SimpleComp {
     @Override
     public Region createSimple() {
         var title = new Label(AppI18n.get("storeIntroTitle"));
+        title.getStyleClass().add(Styles.TEXT_BOLD);
         AppFont.setSize(title, 7);
 
         var introDesc = new Label(AppI18n.get("storeIntroDescription"));
-
-        var mfi = new FontIcon("mdi2p-playlist-plus");
-        var machine = new Label(AppI18n.get("storeMachineDescription"));
-        machine.heightProperty().addListener((c, o, n) -> {
-            mfi.iconSizeProperty().set(n.intValue());
-        });
+        introDesc.setWrapText(true);
+        introDesc.setMaxWidth(470);
 
         var scanButton = new Button(AppI18n.get("detectConnections"), new FontIcon("mdi2m-magnify"));
         scanButton.setOnAction(event -> ScanAlert.showAsync(DataStorage.get().local()));
+        scanButton.setDefaultButton(true);
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
-        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 150).createRegion();
-        var text = new VBox(title, introDesc, new Separator(Orientation.HORIZONTAL), machine);
+        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 150)
+                .createRegion();
+        var text = new VBox(title, introDesc);
+        text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);
         var hbox = new HBox(img, text);
         hbox.setSpacing(35);

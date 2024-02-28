@@ -1,44 +1,188 @@
 package io.xpipe.app.prefs;
 
-import com.dlsc.formsfx.model.structure.*;
-import com.dlsc.preferencesfx.formsfx.view.controls.DoubleSliderControl;
-import com.dlsc.preferencesfx.formsfx.view.controls.SimpleTextControl;
-import com.dlsc.preferencesfx.model.Category;
-import com.dlsc.preferencesfx.model.Group;
-import com.dlsc.preferencesfx.model.Setting;
-import com.dlsc.preferencesfx.util.VisibilityProperty;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppTheme;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
-import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.fxcomps.util.SimpleChangeListener;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.*;
-import io.xpipe.core.store.LocalStore;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.PasswordLockSecretValue;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.ModuleHelper;
-import io.xpipe.core.util.SecretValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import lombok.Getter;
-import lombok.SneakyThrows;
-import org.kordamp.ikonli.javafx.FontIcon;
+import lombok.Value;
 
 import java.nio.file.Path;
 import java.util.*;
 
 public class AppPrefs {
+
+    public static final Path DEFAULT_STORAGE_DIR =
+            AppProperties.get().getDataDir().resolve("storage");
+    private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
+    private static AppPrefs INSTANCE;
+    private final List<Mapping<?>> mapping = new ArrayList<>();
+
+    final BooleanProperty dontAutomaticallyStartVmSshServer =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class);
+    final BooleanProperty dontAcceptNewHostKeys =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class);
+    final BooleanProperty performanceMode = map(new SimpleBooleanProperty(false), "performanceMode", Boolean.class);
+    final BooleanProperty useBundledTools = map(new SimpleBooleanProperty(false), "useBundledTools", Boolean.class);
+    public final ObjectProperty<AppTheme.Theme> theme =
+            map(new SimpleObjectProperty<>(), "theme", AppTheme.Theme.class);
+    final BooleanProperty useSystemFont = map(new SimpleBooleanProperty(true), "useSystemFont", Boolean.class);
+    final Property<Integer> uiScale = map(new SimpleObjectProperty<>(null), "uiScale", Integer.class);
+    final BooleanProperty saveWindowLocation =
+            map(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class);
+    final ObjectProperty<ExternalTerminalType> terminalType =
+            map(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class);
+    final DoubleProperty windowOpacity = map(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class);
+    final StringProperty customTerminalCommand =
+            map(new SimpleStringProperty(""), "customTerminalCommand", String.class);
+    final BooleanProperty preferTerminalTabs =
+            map(new SimpleBooleanProperty(true), "preferTerminalTabs", Boolean.class);
+    final BooleanProperty clearTerminalOnInit =
+            map(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class);
+    public final BooleanProperty disableCertutilUse =
+            map(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
+    public final BooleanProperty useLocalFallbackShell =
+            map(new SimpleBooleanProperty(false), "useLocalFallbackShell", Boolean.class);
+    public final BooleanProperty disableTerminalRemotePasswordPreparation =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class);
+    public final Property<Boolean> alwaysConfirmElevation =
+            mapVaultSpecific(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class);
+    public final BooleanProperty dontCachePasswords =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class);
+    public final BooleanProperty denyTempScriptCreation =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "denyTempScriptCreation", Boolean.class);
+    final StringProperty passwordManagerCommand =
+            map(new SimpleStringProperty(""), "passwordManagerCommand", String.class);
+    final ObjectProperty<StartupBehaviour> startupBehaviour =
+            map(new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class);
+    public final BooleanProperty enableGitStorage =
+            map(new SimpleBooleanProperty(false), "enableGitStorage", Boolean.class);
+    final StringProperty storageGitRemote = map(new SimpleStringProperty(""), "storageGitRemote", String.class);
+    final ObjectProperty<CloseBehaviour> closeBehaviour =
+            map(new SimpleObjectProperty<>(CloseBehaviour.QUIT), "closeBehaviour", CloseBehaviour.class);
+    final ObjectProperty<ExternalEditorType> externalEditor =
+            map(new SimpleObjectProperty<>(), "externalEditor", ExternalEditorType.class);
+    final StringProperty customEditorCommand = map(new SimpleStringProperty(""), "customEditorCommand", String.class);
+    final BooleanProperty preferEditorTabs = map(new SimpleBooleanProperty(true), "preferEditorTabs", Boolean.class);
+    final BooleanProperty automaticallyCheckForUpdates =
+            map(new SimpleBooleanProperty(true), "automaticallyCheckForUpdates", Boolean.class);
+    final BooleanProperty encryptAllVaultData =
+            mapVaultSpecific(new SimpleBooleanProperty(false), "encryptAllVaultData", Boolean.class);
+    final BooleanProperty enforceWindowModality =
+            map(new SimpleBooleanProperty(false), "enforceWindowModality", Boolean.class);
+    final BooleanProperty condenseConnectionDisplay =
+            map(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class);
+    final BooleanProperty showChildCategoriesInParentCategory =
+            map(new SimpleBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class);
+    final BooleanProperty openConnectionSearchWindowOnConnectionCreation =
+            map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
+    final ObjectProperty<Path> storageDirectory =
+            map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
+    private final AppPrefsStorageHandler vaultStorageHandler =
+            new AppPrefsStorageHandler(storageDirectory().getValue().resolve("preferences.json"));
+    final BooleanProperty developerMode = map(new SimpleBooleanProperty(false), "developerMode", Boolean.class);
+    final BooleanProperty developerDisableUpdateVersionCheck =
+            map(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class);
+    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
+            bindDeveloperTrue(developerDisableUpdateVersionCheck);
+    final BooleanProperty developerDisableGuiRestrictions =
+            map(new SimpleBooleanProperty(false), "developerDisableGuiRestrictions", Boolean.class);
+    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
+            bindDeveloperTrue(developerDisableGuiRestrictions);
+    private final ObjectProperty<SupportedLocale> language =
+            map(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class);
+
+    @Getter
+    private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();
+
+    @Getter
+    private final StringProperty lockCrypt =
+            mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
+
+    private final IntegerProperty editorReloadTimeout =
+            map(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class);
+    private final BooleanProperty confirmDeletions =
+            map(new SimpleBooleanProperty(true), "confirmDeletions", Boolean.class);
+
+    @Getter
+    private final List<AppPrefsCategory> categories;
+
+    private final AppPrefsStorageHandler globalStorageHandler = new AppPrefsStorageHandler(
+            AppProperties.get().getDataDir().resolve("settings").resolve("preferences.json"));
+    private final Map<Mapping<?>, Comp<?>> customEntries = new LinkedHashMap<>();
+
+    @Getter
+    private final Property<AppPrefsCategory> selectedCategory;
+
+    private final PrefsHandler extensionHandler = new PrefsHandlerImpl();
+
+    private AppPrefs() {
+        this.categories = List.of(
+                new AboutCategory(),
+                new SystemCategory(),
+                new AppearanceCategory(),
+                new SyncCategory(),
+                new VaultCategory(),
+                new TerminalCategory(),
+                new EditorCategory(),
+                new LocalShellCategory(),
+                new SecurityCategory(),
+                new PasswordManagerCategory(),
+                new TroubleshootCategory(),
+                new DeveloperCategory());
+        var selected = AppCache.get("selectedPrefsCategory", Integer.class, () -> 0);
+        if (selected == null) {
+            selected = 0;
+        }
+        this.selectedCategory = new SimpleObjectProperty<>(
+                categories.get(selected >= 0 && selected < categories.size() ? selected : 0));
+    }
+
+    public static void initLocal() {
+        INSTANCE = new AppPrefs();
+        PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
+        INSTANCE.loadLocal();
+    }
+
+    public static void initSharedRemote() {
+        INSTANCE.loadSharedRemote();
+        INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
+            if (DataStorage.get() != null) {
+                DataStorage.get().forceRewrite();
+            }
+        });
+    }
+
+    public static void setDefaults() {
+        INSTANCE.initDefaultValues();
+        PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
+    }
+
+    public static void reset() {
+        INSTANCE.save();
+
+        // Keep instance as we might need some values on shutdown, e.g. on update with terminals
+        // INSTANCE = null;
+    }
+
+    public static AppPrefs get() {
+        return INSTANCE;
+    }
 
     public boolean isDevelopmentEnvironment() {
         return developerMode().getValue() && !ModuleHelper.isImage();
@@ -62,218 +206,89 @@ public class AppPrefs {
                 developerMode());
     }
 
-    private static final int tooltipDelayMin = 0;
-    private static final int tooltipDelayMax = 1500;
-    private static final int editorReloadTimeoutMin = 0;
-    private static final int editorReloadTimeoutMax = 1500;
-    public static final Path DEFAULT_STORAGE_DIR =
-            AppProperties.get().getDataDir().resolve("storage");
-    private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
-    private static AppPrefs INSTANCE;
-    private final SimpleListProperty<SupportedLocale> languageList =
-            new SimpleListProperty<>(FXCollections.observableArrayList(Arrays.asList(SupportedLocale.values())));
-    private final SimpleListProperty<AppTheme.Theme> themeList =
-            new SimpleListProperty<>(FXCollections.observableArrayList(AppTheme.Theme.ALL));
-    private final SimpleListProperty<CloseBehaviour> closeBehaviourList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(CloseBehaviour.class)));
-    private final SimpleListProperty<ExternalEditorType> externalEditorList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalEditorType.class)));
-    private final SimpleListProperty<String> logLevelList =
-            new SimpleListProperty<>(FXCollections.observableArrayList("trace", "debug", "info", "warn", "error"));
-    private final Map<Object, Class<?>> classMap = new HashMap<>();
+    public ObservableValue<SupportedLocale> language() {
+        return language;
+    }
 
-    // Languages
-    // =========
+    public ObservableBooleanValue dontAutomaticallyStartVmSshServer() {
+        return dontAutomaticallyStartVmSshServer;
+    }
 
-    private final ObjectProperty<SupportedLocale> languageInternal =
-            typed(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), SupportedLocale.class);
-    public final Property<SupportedLocale> language = new SimpleObjectProperty<>(SupportedLocale.ENGLISH);
-    private final SingleSelectionField<SupportedLocale> languageControl = Field.ofSingleSelectionType(
-                    languageList, languageInternal)
-            .render(() -> new TranslatableComboBoxControl<>());
-
-
-
-    final BooleanProperty performanceMode = typed(new SimpleBooleanProperty(false), Boolean.class);
+    public ObservableBooleanValue dontAcceptNewHostKeys() {
+        return dontAcceptNewHostKeys;
+    }
 
     public ObservableBooleanValue performanceMode() {
         return performanceMode;
     }
 
-    public final ObjectProperty<AppTheme.Theme> theme = typed(new SimpleObjectProperty<>(), AppTheme.Theme.class);
-    private final SingleSelectionField<AppTheme.Theme> themeControl =
-            Field.ofSingleSelectionType(themeList, theme).render(() -> new TranslatableComboBoxControl<>());
-    private final BooleanProperty useSystemFontInternal = typed(new SimpleBooleanProperty(true), Boolean.class);
-    public final ReadOnlyBooleanProperty useSystemFont = useSystemFontInternal;
-    private final IntegerProperty tooltipDelayInternal = typed(new SimpleIntegerProperty(1000), Integer.class);
-    private final IntegerProperty connectionTimeOut = typed(new SimpleIntegerProperty(10), Integer.class);
-
-    public ReadOnlyIntegerProperty connectionTimeout() {
-        return connectionTimeOut;
+    public ObservableBooleanValue useBundledTools() {
+        return useBundledTools;
     }
 
-    private final BooleanProperty saveWindowLocation = typed(new SimpleBooleanProperty(true), Boolean.class);
-
-    // External terminal
-    // =================
-    private final ObjectProperty<ExternalTerminalType> terminalType =
-            typed(new SimpleObjectProperty<>(), ExternalTerminalType.class);
-    private final SimpleListProperty<ExternalTerminalType> terminalTypeList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(ExternalTerminalType.class)));
-    private final SingleSelectionField<ExternalTerminalType> terminalTypeControl = Field.ofSingleSelectionType(
-                    terminalTypeList, terminalType)
-            .render(() -> new TranslatableComboBoxControl<>());
-
-    // Lock
-    // ====
-
-    @Getter
-    private final Property<SecretValue> lockPassword = new SimpleObjectProperty<>();
-    @Getter
-    private final StringProperty lockCrypt = typed(new SimpleStringProperty(""), String.class);
-
-    // Window opacity
-    // ==============
-    private final DoubleProperty windowOpacity = typed(new SimpleDoubleProperty(1.0), Double.class);
-    private final DoubleField windowOpacityField =
-            Field.ofDoubleType(windowOpacity).render(() -> {
-                var r = new DoubleSliderControl(0.3, 1.0, 2);
-                r.setMinWidth(200);
-                return r;
-            });
-
-
-    // Custom terminal
-    // ===============
-    private final StringProperty customTerminalCommand = typed(new SimpleStringProperty(""), String.class);
-    private final StringField customTerminalCommandControl = editable(
-            StringField.ofStringType(customTerminalCommand).placeholder("customTerminalPlaceholder").render(() -> new SimpleTextControl()),
-            terminalType.isEqualTo(ExternalTerminalType.CUSTOM));
-
-    private final BooleanProperty preferTerminalTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
-    private final BooleanField preferTerminalTabsField =
-            BooleanField.ofBooleanType(preferTerminalTabs).render(() -> new CustomToggleControl());
-
-
-    // Fast terminal
-    // ===========
-    public final BooleanProperty enableFastTerminalStartup = typed(new SimpleBooleanProperty(false), Boolean.class);
-    public ObservableBooleanValue enableFastTerminalStartup() {
-        return enableFastTerminalStartup;
+    public ObservableValue<Boolean> useSystemFont() {
+        return useSystemFont;
     }
-    private final BooleanField enableFastTerminalStartupField =
-            BooleanField.ofBooleanType(enableFastTerminalStartup).render(() -> new CustomToggleControl());
 
-    // Password manager
-    // ================
-    final StringProperty passwordManagerCommand = typed(new SimpleStringProperty(""), String.class);
+    public ReadOnlyProperty<Integer> uiScale() {
+        return uiScale;
+    }
 
-    // Start behaviour
-    // ===============
-    private final SimpleListProperty<StartupBehaviour> startupBehaviourList = new SimpleListProperty<>(
-            FXCollections.observableArrayList(PrefsChoiceValue.getSupported(StartupBehaviour.class)));
-    private final ObjectProperty<StartupBehaviour> startupBehaviour =
-            typed(new SimpleObjectProperty<>(StartupBehaviour.GUI), StartupBehaviour.class);
+    public ReadOnlyBooleanProperty clearTerminalOnInit() {
+        return clearTerminalOnInit;
+    }
 
-    private final SingleSelectionField<StartupBehaviour> startupBehaviourControl = Field.ofSingleSelectionType(
-                    startupBehaviourList, startupBehaviour)
-            .render(() -> new TranslatableComboBoxControl<>());
+    public ObservableBooleanValue disableCertutilUse() {
+        return disableCertutilUse;
+    }
 
-    // Git storage
-    // ===========
-    public final BooleanProperty enableGitStorage = typed(new SimpleBooleanProperty(false), Boolean.class);
+    public ObservableBooleanValue useLocalFallbackShell() {
+        return useLocalFallbackShell;
+    }
+
+    public ObservableBooleanValue disableTerminalRemotePasswordPreparation() {
+        return disableTerminalRemotePasswordPreparation;
+    }
+
+    public ObservableValue<Boolean> alwaysConfirmElevation() {
+        return alwaysConfirmElevation;
+    }
+
+    public ObservableBooleanValue dontCachePasswords() {
+        return dontCachePasswords;
+    }
+
+    public ObservableBooleanValue denyTempScriptCreation() {
+        return denyTempScriptCreation;
+    }
+
     public ObservableBooleanValue enableGitStorage() {
         return enableGitStorage;
     }
-    final StringProperty storageGitRemote = typed(new SimpleStringProperty(""), String.class);
+
     public ObservableStringValue storageGitRemote() {
         return storageGitRemote;
     }
 
-    // Close behaviour
-    // ===============
-    private final ObjectProperty<CloseBehaviour> closeBehaviour =
-            typed(new SimpleObjectProperty<>(CloseBehaviour.QUIT), CloseBehaviour.class);
-    private final SingleSelectionField<CloseBehaviour> closeBehaviourControl = Field.ofSingleSelectionType(
-                    closeBehaviourList, closeBehaviour)
-            .render(() -> new TranslatableComboBoxControl<>());
+    public ObservableBooleanValue encryptAllVaultData() {
+        return encryptAllVaultData;
+    }
 
-    // External editor
-    // ===============
-    final ObjectProperty<ExternalEditorType> externalEditor =
-            typed(new SimpleObjectProperty<>(), ExternalEditorType.class);
-    private final SingleSelectionField<ExternalEditorType> externalEditorControl = Field.ofSingleSelectionType(
-                    externalEditorList, externalEditor)
-            .render(() -> new TranslatableComboBoxControl<>());
+    public ObservableBooleanValue enforceWindowModality() {
+        return enforceWindowModality;
+    }
 
-    final StringProperty customEditorCommand = typed(new SimpleStringProperty(""), String.class);
-    private final StringField customEditorCommandControl = editable(
-            StringField.ofStringType(customEditorCommand).placeholder("customEditorPlaceholder").render(() -> new SimpleTextControl()),
-            externalEditor.isEqualTo(ExternalEditorType.CUSTOM));
-    private final IntegerProperty editorReloadTimeout = typed(new SimpleIntegerProperty(1000), Integer.class);
+    public ObservableBooleanValue condenseConnectionDisplay() {
+        return condenseConnectionDisplay;
+    }
 
-    private final BooleanProperty preferEditorTabs = typed(new SimpleBooleanProperty(true), Boolean.class);
-    private final BooleanField preferEditorTabsField =
-            BooleanField.ofBooleanType(preferEditorTabs).render(() -> new CustomToggleControl());
+    public ObservableBooleanValue showChildCategoriesInParentCategory() {
+        return showChildCategoriesInParentCategory;
+    }
 
-    // Automatically update
-    // ====================
-    private final BooleanProperty automaticallyCheckForUpdates = typed(new SimpleBooleanProperty(true), Boolean.class);
-    private final BooleanField automaticallyCheckForUpdatesField =
-            BooleanField.ofBooleanType(automaticallyCheckForUpdates).render(() -> new CustomToggleControl());
-
-    private final BooleanProperty confirmDeletions = typed(new SimpleBooleanProperty(true), Boolean.class);
-
-    // Storage
-    // =======
-    final ObjectProperty<Path> storageDirectory =
-            typed(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), Path.class);
-    final StringField storageDirectoryControl =
-            PrefFields.ofPath(storageDirectory).validate(CustomValidators.absolutePath(), CustomValidators.directory());
-
-    // Developer mode
-    // ==============
-    private final BooleanProperty internalDeveloperMode = typed(new SimpleBooleanProperty(false), Boolean.class);
-    private final BooleanProperty effectiveDeveloperMode = System.getProperty(DEVELOPER_MODE_PROP) != null
-            ? new SimpleBooleanProperty(Boolean.parseBoolean(System.getProperty(DEVELOPER_MODE_PROP)))
-            : internalDeveloperMode;
-    private final BooleanField developerModeField = Field.ofBooleanType(effectiveDeveloperMode)
-            .editable(System.getProperty(DEVELOPER_MODE_PROP) == null)
-            .render(() -> new CustomToggleControl());
-
-    final BooleanProperty developerDisableUpdateVersionCheck =
-            typed(new SimpleBooleanProperty(false), Boolean.class);
-    final BooleanField developerDisableUpdateVersionCheckField =
-            BooleanField.ofBooleanType(developerDisableUpdateVersionCheck).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerDisableUpdateVersionCheckEffective =
-            bindDeveloperTrue(developerDisableUpdateVersionCheck);
-
-    final BooleanProperty developerDisableGuiRestrictions =
-            typed(new SimpleBooleanProperty(false), Boolean.class);
-    final BooleanField developerDisableGuiRestrictionsField =
-            BooleanField.ofBooleanType(developerDisableGuiRestrictions).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerDisableGuiRestrictionsEffective =
-            bindDeveloperTrue(developerDisableGuiRestrictions);
-
-    final BooleanProperty developerShowHiddenProviders = typed(new SimpleBooleanProperty(false), Boolean.class);
-    final BooleanField developerShowHiddenProvidersField =
-            BooleanField.ofBooleanType(developerShowHiddenProviders).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerShowHiddenProvidersEffective =
-            bindDeveloperTrue(developerShowHiddenProviders);
-
-    final BooleanProperty developerShowHiddenEntries = typed(new SimpleBooleanProperty(false), Boolean.class);
-    final BooleanField developerShowHiddenEntriesField =
-            BooleanField.ofBooleanType(developerShowHiddenEntries).render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerShowHiddenEntriesEffective =
-            bindDeveloperTrue(developerShowHiddenEntries);
-
-    final BooleanProperty developerDisableConnectorInstallationVersionCheck =
-            typed(new SimpleBooleanProperty(false), Boolean.class);
-    final BooleanField developerDisableConnectorInstallationVersionCheckField = BooleanField.ofBooleanType(
-                    developerDisableConnectorInstallationVersionCheck)
-            .render(() -> new CustomToggleControl());
-    private final ObservableBooleanValue developerDisableConnectorInstallationVersionCheckEffective =
-            bindDeveloperTrue(developerDisableConnectorInstallationVersionCheck);
+    public ObservableBooleanValue openConnectionSearchWindowOnConnectionCreation() {
+        return openConnectionSearchWindowOnConnectionCreation;
+    }
 
     public ReadOnlyProperty<CloseBehaviour> closeBehaviour() {
         return closeBehaviour;
@@ -287,21 +302,30 @@ public class AppPrefs {
         return customEditorCommand;
     }
 
-    public void changeLock(SecretValue newLockPw) {
+    public void changeLock(InPlaceSecretValue newLockPw) {
         if (newLockPw == null) {
-            lockCrypt.setValue("");
             lockPassword.setValue(null);
+            lockCrypt.setValue(null);
+            if (DataStorage.get() != null) {
+                DataStorage.get().forceRewrite();
+            }
             return;
         }
 
         lockPassword.setValue(newLockPw);
-        lockCrypt.setValue(new LockedSecretValue("xpipe".toCharArray()).getEncryptedValue());
+        lockCrypt.setValue(new PasswordLockSecretValue("xpipe".toCharArray()).getEncryptedValue());
+        if (DataStorage.get() != null) {
+            DataStorage.get().forceRewrite();
+        }
     }
 
-    public boolean unlock(SecretValue lockPw) {
+    public boolean unlock(InPlaceSecretValue lockPw) {
         lockPassword.setValue(lockPw);
-        var check = new LockedSecretValue("xpipe".toCharArray()).getEncryptedValue();
-        if (!check.equals(lockCrypt.get())) {
+        var check = PasswordLockSecretValue.builder()
+                .encryptedValue(lockCrypt.get())
+                .build()
+                .getSecret();
+        if (!Arrays.equals(check, new char[] {'x', 'p', 'i', 'p', 'e'})) {
             lockPassword.setValue(null);
             return false;
         } else {
@@ -338,7 +362,9 @@ public class AppPrefs {
     }
 
     public ObservableValue<Boolean> developerMode() {
-        return effectiveDeveloperMode;
+        return System.getProperty(DEVELOPER_MODE_PROP) != null
+                ? new SimpleBooleanProperty(Boolean.parseBoolean(System.getProperty(DEVELOPER_MODE_PROP)))
+                : developerMode;
     }
 
     public ObservableDoubleValue windowOpacity() {
@@ -357,169 +383,90 @@ public class AppPrefs {
         return developerDisableGuiRestrictionsEffective;
     }
 
-    public ObservableBooleanValue developerDisableConnectorInstallationVersionCheck() {
-        return developerDisableConnectorInstallationVersionCheckEffective;
+    @SuppressWarnings("unchecked")
+    private <T> T map(T o, String name, Class<?> clazz) {
+        mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz));
+        return o;
     }
 
-    public ObservableBooleanValue developerShowHiddenProviders() {
-        return developerShowHiddenProvidersEffective;
+    @SuppressWarnings("unchecked")
+    private <T> T mapVaultSpecific(T o, String name, Class<?> clazz) {
+        mapping.add(new Mapping<>(name, (Property<T>) o, (Class<T>) clazz, true));
+        return o;
     }
 
-    public ObservableBooleanValue developerShowHiddenEntries() {
-        return developerShowHiddenEntriesEffective;
-    }
-
-    private AppPreferencesFx preferencesFx;
-    private boolean controlsSetup;
-
-    @Getter
-    private final Set<Field<?>> proRequiredSettings = new HashSet<>();
-
-    private AppPrefs() {
-        try {
-            preferencesFx = createPreferences();
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).terminal(true).build().handle();
-        }
-
-        SimpleChangeListener.apply(languageInternal, val -> {
-            language.setValue(val);
+    public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
+        var writable = (Property<T>) prop;
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            writable.setValue(newValue);
+            save();
         });
     }
 
-    public static void init() {
-        INSTANCE = new AppPrefs();
-        INSTANCE.preferencesFx.loadSettings();
-        INSTANCE.initValues();
-        PrefsProvider.getAll().forEach(prov -> prov.init());
-    }
-
-    public static void reset() {
-        INSTANCE.save();
-
-        // Keep instance as we might need some values on shutdown, e.g. on update with terminals
-        // INSTANCE = null;
-    }
-
-    public static AppPrefs get() {
-        return INSTANCE;
-    }
-
-    // Storage directory
-    // =================
-
-    private <T> T typed(T o, Class<?> clazz) {
-        classMap.put(o, clazz);
-        return o;
-    }
-
-    private <T extends Field<?>> T editable(T o, ObservableBooleanValue v) {
-        o.editableProperty().bind(v);
-        return o;
-    }
-
-    public AppPreferencesFx createControls() {
-        if (!controlsSetup) {
-            preferencesFx.setupControls();
-            SimpleChangeListener.apply(languageInternal, val -> {
-                preferencesFx.translationServiceProperty().set(new QuietResourceBundleService());
-            });
-            controlsSetup = true;
-        }
-
-        return preferencesFx;
-    }
-
-    public <T> void setFromExternal(ReadOnlyProperty<T> prop, T newValue) {
-        var writable = (Property<T>) prop;
-        writable.setValue(newValue);
-        save();
-    }
-
-    public <T> void setFromText(ReadOnlyProperty<T> prop, String newValue) {
-        var field = getFieldForEntry(prop);
-        if (field == null || !field.isEditable()) {
-            return;
-        }
-
-        field.userInputProperty().set(newValue);
-        if (!field.validate()) {
-            return;
-        }
-
-        field.persist();
-        save();
-    }
-
-    public void initValues() {
+    public void initDefaultValues() {
         if (externalEditor.get() == null) {
             ExternalEditorType.detectDefault();
         }
         if (terminalType.get() == null) {
-            terminalType.set(ExternalTerminalType.getDefault());
+            terminalType.set(ExternalTerminalType.determineDefault());
         }
+    }
+
+    public Comp<?> getCustomComp(String id) {
+        return customEntries.entrySet().stream()
+                .filter(e -> e.getKey().getKey().equals(id))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElseThrow();
+    }
+
+    private void loadLocal() {
+        for (Mapping<?> value : mapping) {
+            if (value.isVaultSpecific()) {
+                continue;
+            }
+
+            loadValue(globalStorageHandler, value);
+        }
+    }
+
+    private void loadSharedRemote() {
+        for (Mapping<?> value : mapping) {
+            if (!value.isVaultSpecific()) {
+                continue;
+            }
+
+            var def = value.getProperty().getValue();
+            var r = loadValue(vaultStorageHandler, value);
+
+            // This can be used to facilitate backwards compatibility
+            var isDefault = Objects.equals(r, def);
+            if (isDefault) {
+                loadValue(globalStorageHandler, value);
+            }
+        }
+    }
+
+    private <T> T loadValue(AppPrefsStorageHandler handler, Mapping<T> value) {
+        var val = handler.loadObject(
+                value.getKey(), value.getValueClass(), value.getProperty().getValue());
+        value.getProperty().setValue(val);
+        return val;
     }
 
     public void save() {
-        preferencesFx.saveSettings();
-    }
-
-    public void cancel() {
-        preferencesFx.discardChanges();
-    }
-
-    public Class<?> getSettingType(String breadcrumb) {
-        var s = getSetting(breadcrumb);
-        if (s == null) {
-            throw new IllegalStateException("Unknown breadcrumb " + breadcrumb);
+        for (Mapping<?> m : mapping) {
+            AppPrefsStorageHandler handler = m.isVaultSpecific() ? vaultStorageHandler : globalStorageHandler;
+            handler.updateObject(m.getKey(), m.getProperty().getValue());
         }
-
-        var found = classMap.get(s.valueProperty());
-        if (found == null) {
-            throw new IllegalStateException("Unassigned type for " + breadcrumb);
-        }
-        return found;
+        vaultStorageHandler.save();
+        globalStorageHandler.save();
     }
 
-    private Setting<?, ?> getSetting(String breadcrumb) {
-        for (var c : preferencesFx.getCategories()) {
-            if (c.getGroups() == null) {
-                continue;
-            }
-
-            for (var g : c.getGroups()) {
-                for (var s : g.getSettings()) {
-                    if (s.getBreadcrumb().equals(breadcrumb)) {
-                        return s;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private DataField<?, ?, ?> getFieldForEntry(ReadOnlyProperty<?> property) {
-        for (var c : preferencesFx.getCategories()) {
-            if (c.getGroups() == null) {
-                continue;
-            }
-
-            for (var g : c.getGroups()) {
-                for (var s : g.getSettings()) {
-                    if (s.valueProperty().equals(property)) {
-                        return (DataField<?, ?, ?>) s.getElement();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    public void selectCategory(int index) {
+    public void selectCategory(int selected) {
         AppLayoutModel.get().selectSettings();
-        preferencesFx
-                .getNavigationPresenter()
-                .setSelectedCategory(preferencesFx.getCategories().get(index));
+        var index = selected >= 0 && selected < categories.size() ? selected : 0;
+        selectedCategory.setValue(categories.get(index));
     }
 
     public String passwordManagerString(String key) {
@@ -533,175 +480,37 @@ public class AppPrefs {
         return ApplicationHelper.replaceFileArgument(passwordManagerCommand.get(), "KEY", key);
     }
 
-    @SneakyThrows
-    private AppPreferencesFx createPreferences() {
-        var ctr = Setting.class.getDeclaredConstructor(String.class, Element.class, Property.class);
-        ctr.setAccessible(true);
-        var terminalTest = ctr.newInstance(
-                null,
-                new LazyNodeElement<>(() -> new StackComp(
-                                List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                                    save();
-                                    ThreadHelper.runFailableAsync(() -> {
-                                        var term = AppPrefs.get().terminalType().getValue();
-                                        if (term != null) {
-                                            TerminalHelper.open(
-                                                    "Test",
-                                                    new LocalStore().control().command("echo Test"));
-                                        }
-                                    });
-                                })))
-                        .padding(new Insets(15, 0, 0, 0))
-                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                        .createRegion()),
-                null);
-        var editorTest = ctr.newInstance(
-                null,
-                new LazyNodeElement<>(() -> new StackComp(
-                                List.of(new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                                    save();
-                                    ThreadHelper.runFailableAsync(() -> {
-                                        var editor =
-                                                AppPrefs.get().externalEditor().getValue();
-                                        if (editor != null) {
-                                            FileOpener.openReadOnlyString("Test");
-                                        }
-                                    });
-                                })))
-                        .padding(new Insets(15, 0, 0, 0))
-                        .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                        .createRegion()),
-                null);
-        var about = ctr.newInstance(null, new LazyNodeElement<>(() -> new AboutComp().createRegion()), null);
-        var troubleshoot =
-                ctr.newInstance(null, new LazyNodeElement<>(() -> new TroubleshootComp().createRegion()), null);
+    @Value
+    public static class Mapping<T> {
 
-        var categories = new ArrayList<>(List.of(
-                Category.of("about", Group.of(about)),
-                Category.of(
-                        "system",
-                        Group.of(
-                                "appBehaviour",
-                                Setting.of("startupBehaviour", startupBehaviourControl, startupBehaviour),
-                                Setting.of("closeBehaviour", closeBehaviourControl, closeBehaviour)),
-                        Group.of(
-                                "advanced",
-                                Setting.of("developerMode", developerModeField, internalDeveloperMode)),
-                        Group.of(
-                                "updates",
-                                Setting.of(
-                                        "automaticallyUpdate",
-                                        automaticallyCheckForUpdatesField,
-                                        automaticallyCheckForUpdates))),
-                new VaultCategory(this).create(),
-                Category.of(
-                        "appearance",
-                        Group.of(
-                                "uiOptions",
-                                Setting.of("theme", themeControl, theme),
-                                Setting.of("performanceMode", BooleanField.ofBooleanType(performanceMode).render(() -> new CustomToggleControl()), performanceMode),
-                                Setting.of("windowOpacity", windowOpacityField, windowOpacity),
-                                Setting.of("useSystemFont", BooleanField.ofBooleanType(useSystemFontInternal).render(() -> new CustomToggleControl()), useSystemFontInternal),
-                                Setting.of("tooltipDelay", tooltipDelayInternal, tooltipDelayMin, tooltipDelayMax),
-                                Setting.of("language", languageControl, languageInternal)),
-                        Group.of("windowOptions", Setting.of("saveWindowLocation", BooleanField.ofBooleanType(saveWindowLocation).render(() -> new CustomToggleControl()), saveWindowLocation))),
-                Category.of(
-                        "connections",
-                        Group.of(
-                                Setting.of(
-                                        "connectionTimeout",
-                                        connectionTimeOut,
-                                        5,
-                                        50))),
-                new PasswordCategory(this).create(),
-                Category.of(
-                        "editor",
-                        Group.of(
-                                Setting.of("editorProgram", externalEditorControl, externalEditor),
-                                editorTest,
-                                Setting.of("customEditorCommand", customEditorCommandControl, customEditorCommand)
-                                        .applyVisibility(VisibilityProperty.of(
-                                                externalEditor.isEqualTo(ExternalEditorType.CUSTOM))),
-                                Setting.of(
-                                        "editorReloadTimeout",
-                                        editorReloadTimeout,
-                                        editorReloadTimeoutMin,
-                                        editorReloadTimeoutMax),
-                                Setting.of("preferEditorTabs", preferEditorTabsField, preferEditorTabs))),
-                Category.of(
-                        "terminal",
-                        Group.of(
-                                Setting.of("terminalProgram", terminalTypeControl, terminalType),
-                                terminalTest,
-                                Setting.of("customTerminalCommand", customTerminalCommandControl, customTerminalCommand)
-                                        .applyVisibility(VisibilityProperty.of(
-                                                terminalType.isEqualTo(ExternalTerminalType.CUSTOM))),
-                                Setting.of("preferTerminalTabs", preferTerminalTabsField, preferTerminalTabs)
-                                //Setting.of("enableFastTerminalStartup", enableFastTerminalStartupField, enableFastTerminalStartup)
-                                )),
-                new DeveloperCategory(this).create(),
-                Category.of("troubleshoot", Group.of(troubleshoot))));
+        String key;
+        Property<T> property;
+        Class<T> valueClass;
+        boolean vaultSpecific;
 
-        categories.get(categories.size() - 2).setVisibilityProperty(VisibilityProperty.of(developerMode()));
+        public Mapping(String key, Property<T> property, Class<T> valueClass) {
+            this.key = key;
+            this.property = property;
+            this.valueClass = valueClass;
+            this.vaultSpecific = false;
+        }
 
-        var handler = new PrefsHandlerImpl(categories);
-        PrefsProvider.getAll().forEach(prov -> prov.addPrefs(handler));
-
-        var cats = handler.getCategories().toArray(Category[]::new);
-        return AppPreferencesFx.of(cats);
-    }
-
-    static Group group(String name, Setting<?, ?>... settings) {
-        return Group.of(
-                name, Arrays.stream(settings).filter(setting -> setting != null).toArray(Setting[]::new));
+        public Mapping(String key, Property<T> property, Class<T> valueClass, boolean vaultSpecific) {
+            this.key = key;
+            this.property = property;
+            this.valueClass = valueClass;
+            this.vaultSpecific = vaultSpecific;
+        }
     }
 
     @Getter
     private class PrefsHandlerImpl implements PrefsHandler {
 
-        private final List<Category> categories;
-
-        private PrefsHandlerImpl(List<Category> categories) {
-            this.categories = categories;
-        }
-
         @Override
-        public void addSetting(List<String> category, String group, Setting<?, ?> setting, Class<?> cl) {
-            classMap.put(setting.valueProperty(), cl);
-            var foundCat = categories.stream()
-                    .filter(c -> c.getDescription().equals(category.get(0)))
-                    .findAny();
-            var usedCat = foundCat.orElse(null);
-            var index = categories.indexOf(usedCat);
-            if (foundCat.isEmpty()) {
-                usedCat = Category.of(category.get(0), Group.of());
-                categories.add(usedCat);
-            }
-
-            var foundGroup = usedCat.getGroups().stream()
-                    .filter(g ->
-                            g.getDescription() != null && g.getDescription().equals(group))
-                    .findAny();
-            var usedGroup = foundGroup.orElse(null);
-            if (foundGroup.isEmpty()) {
-                categories.remove(usedCat);
-                usedGroup = Group.of(group);
-                var modCatGroups = new ArrayList<>(usedCat.getGroups());
-                modCatGroups.add(usedGroup);
-                usedCat = Category.of(usedCat.getDescription(), modCatGroups.toArray(Group[]::new));
-            }
-
-            var modGroupSettings = new ArrayList<>(usedGroup.getSettings());
-            modGroupSettings.add(setting);
-            var newGroup = Group.of(usedGroup.getDescription(), modGroupSettings.toArray(Setting[]::new));
-            var modCatGroups = new ArrayList<>(usedCat.getGroups());
-            modCatGroups.removeIf(
-                    g -> g.getDescription() != null && g.getDescription().equals(group));
-            modCatGroups.add(newGroup);
-            var newCategory = Category.of(usedCat.getDescription(), modCatGroups.toArray(Group[]::new));
-            categories.remove(usedCat);
-            categories.add(index, newCategory);
+        public <T> void addSetting(String id, Class<T> c, Property<T> property, Comp<?> comp) {
+            var m = new Mapping<>(id, property, c);
+            customEntries.put(m, comp);
+            mapping.add(m);
         }
-
     }
 }

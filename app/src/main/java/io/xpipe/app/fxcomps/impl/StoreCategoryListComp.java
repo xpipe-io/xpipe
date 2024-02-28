@@ -16,8 +16,7 @@ public class StoreCategoryListComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        return new VerticalComp(List.of(
-                        new StoreCategoryComp(root)))
+        return new VerticalComp(List.of(new StoreCategoryComp(root)))
                 .apply(struc -> struc.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(3))
                 .styleClass("store-category-bar")

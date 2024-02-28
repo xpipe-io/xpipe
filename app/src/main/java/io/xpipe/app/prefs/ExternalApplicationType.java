@@ -2,11 +2,14 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -20,14 +23,14 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         this.id = id;
     }
 
+    public abstract boolean isAvailable();
+
+    public abstract boolean isSelectable();
+
     @Override
     public String getId() {
         return id;
     }
-
-    public abstract boolean isSelectable();
-
-    public abstract boolean isAvailable();
 
     @Override
     public String toString() {
@@ -57,16 +60,21 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
                     // Check if returned paths are actually valid
                     // Also sort them by length to prevent finding a deeply buried app
-                    var valid = path.lines().filter(s -> {
-                        try {
-                            return Files.exists(Path.of(s));
-                        } catch (Exception ex) {
-                            return false;
-                        }
-                    }).sorted(Comparator.comparingInt(value -> value.length())).toList();
+                    var valid = path.lines()
+                            .filter(s -> {
+                                try {
+                                    return Files.exists(Path.of(s));
+                                } catch (Exception ex) {
+                                    return false;
+                                }
+                            })
+                            .sorted(Comparator.comparingInt(value -> value.length()))
+                            .toList();
 
                     // Require app in proper applications directory
-                    var app = valid.stream().filter(s -> s.contains("Applications")).findFirst();
+                    var app = valid.stream()
+                            .filter(s -> s.contains("Applications"))
+                            .findFirst();
                     return app.map(Path::of);
                 }
             } catch (Exception e) {
@@ -76,13 +84,13 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MACOS);
+        public boolean isAvailable() {
+            return getApplicationPath().isPresent();
         }
 
         @Override
-        public boolean isAvailable() {
-            return getApplicationPath().isPresent();
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.MACOS);
         }
     }
 
@@ -103,6 +111,35 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                 return false;
             }
         }
+
+        protected void launch(String title, String args) throws Exception {
+            try (ShellControl pc = LocalShell.getShell()) {
+                if (!ApplicationHelper.isInPath(pc, executable)) {
+                    throw ErrorEvent.unreportable(
+                            new IOException(
+                                    "Executable " + executable
+                                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
+                }
+
+                if (ShellDialects.isPowershell(pc)) {
+                    var cmd = CommandBuilder.of()
+                            .add("Start-Process", "-FilePath")
+                            .addFile(executable)
+                            .add("-ArgumentList")
+                            .add(pc.getShellDialect().literalArgument(args));
+                    pc.executeSimpleCommand(cmd);
+                    return;
+                }
+
+                var toExecute = executable + " " + args;
+                if (pc.getOsType().equals(OsType.WINDOWS)) {
+                    toExecute = "start \"" + title + "\" " + toExecute;
+                } else {
+                    toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                }
+                pc.executeSimpleCommand(toExecute);
+            }
+        }
     }
 
     public abstract static class WindowsType extends ExternalApplicationType {
@@ -119,7 +156,8 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         protected Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var cc = LocalShell.getShell()
-                    .command(ShellDialects.getPlatformDefault().getWhichCommand(executable))
+                    .command(CommandBuilder.ofFunction(
+                            var1 -> var1.getShellDialect().getWhichCommand(executable)))
                     .start()) {
                 var out = cc.readStdoutDiscardErr();
                 var exit = cc.getExitCode();
@@ -136,11 +174,6 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.WINDOWS);
-        }
-
-        @Override
         public boolean isAvailable() {
             var path = determineFromPath();
             if (path.isPresent() && Files.exists(path.get())) {
@@ -149,6 +182,11 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
             var installation = determineInstallation();
             return installation.isPresent() && Files.exists(installation.get());
+        }
+
+        @Override
+        public boolean isSelectable() {
+            return OsType.getLocal().equals(OsType.WINDOWS);
         }
     }
 }

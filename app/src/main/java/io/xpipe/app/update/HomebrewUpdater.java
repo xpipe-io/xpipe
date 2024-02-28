@@ -44,7 +44,6 @@ public class HomebrewUpdater extends GitHubUpdater {
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
                 null,
-                null,
                 changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
         preparedUpdate.setValue(rel);

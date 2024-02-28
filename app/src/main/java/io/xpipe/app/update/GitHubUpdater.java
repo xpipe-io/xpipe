@@ -35,14 +35,13 @@ public class GitHubUpdater extends UpdateHandler {
                 XPipeDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
-                lastUpdateCheckResult.getValue().getReleaseDate(),
                 downloadFile.get(),
                 changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
         preparedUpdate.setValue(rel);
     }
 
-    public void executeUpdateAndCloseImpl() throws Exception {
+    public void executeUpdateOnCloseImpl() throws Exception {
         var downloadFile = preparedUpdate.getValue().getFile();
         if (!Files.exists(downloadFile)) {
             return;
@@ -79,7 +78,6 @@ public class GitHubUpdater extends UpdateHandler {
                 ghAsset.get().getBrowserDownloadUrl(),
                 assetType,
                 Instant.now(),
-                rel.get().getCreatedAt() != null ? rel.get().getCreatedAt().toInstant() : null,
                 isUpdate));
         return lastUpdateCheckResult.getValue();
     }

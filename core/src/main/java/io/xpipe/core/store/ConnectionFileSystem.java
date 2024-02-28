@@ -1,6 +1,7 @@
 package io.xpipe.core.store;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import lombok.Getter;
 
@@ -25,26 +26,8 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public List<String> listRoots() throws Exception {
-        return shellControl.getShellDialect().listRoots(shellControl).toList();
-    }
-
-    @Override
-    public boolean directoryExists(String file) throws Exception {
-        return shellControl
-                .getShellDialect()
-                .directoryExists(shellControl, file)
-                .executeAndCheck();
-    }
-
-    @Override
-    public void directoryAccessible(String file) throws Exception {
-        shellControl.executeSimpleCommand(shellControl.getShellDialect().getCdCommand(file));
-    }
-
-    @Override
-    public Stream<FileEntry> listFiles(String file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file);
+    public long getFileSize(String file) throws Exception {
+        return Long.parseLong(shellControl.getShellDialect().queryFileSize(shellControl, file).readStdoutOrThrow());
     }
 
     @Override
@@ -60,6 +43,10 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public FileSystem open() throws Exception {
         shellControl.start();
+        if (!shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+            shellControl.close();
+            throw new UnsupportedOperationException("System shell does not support file system interaction");
+        }
         return this;
     }
 
@@ -72,10 +59,10 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public OutputStream openOutput(String file) throws Exception {
+    public OutputStream openOutput(String file, long totalBytes) throws Exception {
         return shellControl
                 .getShellDialect()
-                .createStreamFileWriteCommand(shellControl, file)
+                .createStreamFileWriteCommand(shellControl, file, totalBytes)
                 .startExternalStdin();
     }
 
@@ -122,7 +109,8 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public void mkdirs(String file) throws Exception {
         try (var pc = shellControl
-                .command(proc -> proc.getShellDialect().getMkdirsCommand(file))
+                .command(
+                        CommandBuilder.ofFunction(proc -> proc.getShellDialect().getMkdirsCommand(file)))
                 .start()) {
             pc.discardOrThrow();
         }
@@ -146,6 +134,29 @@ public class ConnectionFileSystem implements FileSystem {
                 .start()) {
             pc.discardOrThrow();
         }
+    }
+
+    @Override
+    public boolean directoryExists(String file) throws Exception {
+        return shellControl
+                .getShellDialect()
+                .directoryExists(shellControl, file)
+                .executeAndCheck();
+    }
+
+    @Override
+    public void directoryAccessible(String file) throws Exception {
+        shellControl.executeSimpleCommand(shellControl.getShellDialect().getCdCommand(file));
+    }
+
+    @Override
+    public Stream<FileEntry> listFiles(String file) throws Exception {
+        return shellControl.getShellDialect().listFiles(this, shellControl, file);
+    }
+
+    @Override
+    public List<String> listRoots() throws Exception {
+        return shellControl.getShellDialect().listRoots(shellControl).toList();
     }
 
     @Override

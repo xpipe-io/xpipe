@@ -15,7 +15,7 @@ import lombok.extern.jackson.Jacksonized;
 @SuperBuilder
 public class ShellStoreState extends DataStoreState implements OsNameState {
 
-    OsType osType;
+    OsType.Any osType;
     String osName;
     ShellDialect shellDialect;
     Boolean running;

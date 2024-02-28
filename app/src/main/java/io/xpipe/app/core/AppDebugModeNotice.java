@@ -11,8 +11,9 @@ public class AppDebugModeNotice {
         }
 
         var out = AppLogs.get().getOriginalSysOut();
-        var msg = """
-                
+        var msg =
+                """
+
                 ****************************************
                 * You are running XPipe in debug mode! *
                 * The debug console output can contain *

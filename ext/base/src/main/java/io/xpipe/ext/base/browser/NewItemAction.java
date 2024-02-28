@@ -25,8 +25,8 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
-    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return "New";
+    public Category getCategory() {
+        return Category.MUTATION;
     }
 
     @Override
@@ -35,28 +35,23 @@ public class NewItemAction implements BrowserAction, BranchAction {
     }
 
     @Override
+    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return "New";
+    }
+
+    @Override
     public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return entries.size() == 1
-                && entries.get(0)
+                && entries.getFirst()
                         .getRawFileEntry()
                         .getPath()
                         .equals(model.getCurrentPath().get());
     }
 
     @Override
-    public Category getCategory() {
-        return Category.MUTATION;
-    }
-
-    @Override
     public List<LeafAction> getBranchingActions(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return List.of(
                 new LeafAction() {
-                    @Override
-                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "File";
-                    }
-
                     @Override
                     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
@@ -78,13 +73,13 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultFileIcon().createRegion();
                     }
-                },
-                new LeafAction() {
+
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "Directory";
+                        return "File";
                     }
-
+                },
+                new LeafAction() {
                     @Override
                     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var name = new SimpleStringProperty();
@@ -106,18 +101,13 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultDirectoryIcon().createRegion();
                     }
-                },
-                new LeafAction() {
+
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return "Symbolic link";
+                        return "Directory";
                     }
-
-                    @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
-                    }
-
+                },
+                new LeafAction() {
                     @Override
                     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var linkName = new SimpleStringProperty();
@@ -144,6 +134,16 @@ public class NewItemAction implements BrowserAction, BranchAction {
                     @Override
                     public Node getIcon(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         return BrowserIcons.createDefaultFileIcon().createRegion();
+                    }
+
+                    @Override
+                    public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return "Symbolic link";
+                    }
+
+                    @Override
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
                     }
                 });
     }

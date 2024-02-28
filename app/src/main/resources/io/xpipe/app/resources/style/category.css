@@ -6,6 +6,10 @@
     -fx-background-insets: 0;
 }
 
+.category-button .text-field {
+    -fx-background-color: transparent;
+}
+
 .category-button .settings {
 -fx-opacity: 1.0;
 }

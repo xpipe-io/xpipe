@@ -28,6 +28,18 @@ import java.util.function.Consumer;
 @Getter
 public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
+    private final ObservableValue<String> name;
+    private final ObservableValue<String> description;
+    private final ObservableValue<String> icon;
+    private final Consumer<ActionEvent> action;
+
+    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
+        this.name = AppI18n.observable(nameKey);
+        this.description = AppI18n.observable(descriptionKey);
+        this.icon = new SimpleStringProperty(icon);
+        this.action = action;
+    }
+
     @Override
     public Structure createBase() {
         var bt = new Button();
@@ -68,7 +80,13 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
             fi.setIconSize((int) (size * 0.55));
         });
         bt.setGraphic(hbox);
-        return Structure.builder().graphic(fi).button(bt).content(hbox).name(header).description(desc).build();
+        return Structure.builder()
+                .graphic(fi)
+                .button(bt)
+                .content(hbox)
+                .name(header)
+                .description(desc)
+                .build();
     }
 
     @Value
@@ -84,17 +102,5 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         public Button get() {
             return button;
         }
-    }
-
-    private final ObservableValue<String> name;
-    private final ObservableValue<String> description;
-    private final ObservableValue<String> icon;
-    private final Consumer<ActionEvent> action;
-
-    public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
-        this.name = AppI18n.observable(nameKey);
-        this.description = AppI18n.observable(descriptionKey);
-        this.icon = new SimpleStringProperty(icon);
-        this.action = action;
     }
 }

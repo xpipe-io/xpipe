@@ -3,14 +3,17 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.exchange.*;
 import io.xpipe.app.exchange.cli.*;
-import io.xpipe.app.ext.*;
+import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.ext.DataStoreProvider;
+import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
 import io.xpipe.app.storage.StorageJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.ProxyManagerProviderImpl;
-import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.util.DataStateProvider;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.ProxyFunction;
@@ -44,20 +47,11 @@ open module io.xpipe.app {
     requires org.slf4j;
     requires atlantafx.base;
     requires org.ocpsoft.prettytime;
-    requires com.dlsc.preferencesfx;
     requires com.vladsch.flexmark;
-    requires com.vladsch.flexmark_util_data;
-    requires com.vladsch.flexmark_util_ast;
-    requires com.vladsch.flexmark_util_sequence;
     requires com.fasterxml.jackson.core;
     requires com.fasterxml.jackson.databind;
-    requires org.fxmisc.richtext;
-    requires org.fxmisc.flowless;
     requires net.synedra.validatorfx;
-    requires org.fxmisc.undofx;
-    requires org.fxmisc.wellbehavedfx;
     requires org.kordamp.ikonli.feather;
-    requires org.reactfx;
     requires io.xpipe.modulefs;
     requires io.xpipe.core;
     requires static lombok;
@@ -70,10 +64,8 @@ open module io.xpipe.app {
     requires javafx.media;
     requires javafx.web;
     requires javafx.graphics;
-    requires com.jfoenix;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.material;
-    requires org.controlsfx.controls;
     requires io.sentry;
     requires io.xpipe.beacon;
     requires org.kohsuke.github;
@@ -82,8 +74,6 @@ open module io.xpipe.app {
     requires java.management;
     requires jdk.management;
     requires jdk.management.agent;
-    requires com.jthemedetector;
-    requires versioncompare;
     requires net.steppschuh.markdowngenerator;
 
     // Required by extensions
@@ -107,10 +97,9 @@ open module io.xpipe.app {
     // For debugging
     requires jdk.jdwp.agent;
     requires org.kordamp.ikonli.core;
-    requires static io.xpipe.api;
 
     uses MessageExchangeImpl;
-    uses TerminalHelper;
+    uses TerminalLauncher;
     uses io.xpipe.app.ext.ActionProvider;
     uses EventHandler;
     uses PrefsProvider;
@@ -122,7 +111,8 @@ open module io.xpipe.app {
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
 
-    provides Module with StorageJacksonModule;
+    provides Module with
+            StorageJacksonModule;
     provides ModuleLayerLoader with
             ActionProvider.Loader,
             PrefsProvider.Loader,
@@ -155,6 +145,8 @@ open module io.xpipe.app {
             ListStoresExchangeImpl,
             StoreAddExchangeImpl,
             AskpassExchangeImpl,
+            TerminalWaitExchangeImpl,
+            TerminalLaunchExchangeImpl,
             QueryStoreExchangeImpl,
             WriteStreamExchangeImpl,
             ReadStreamExchangeImpl,

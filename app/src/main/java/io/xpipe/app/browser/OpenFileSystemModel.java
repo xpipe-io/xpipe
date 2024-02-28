@@ -6,9 +6,12 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.*;
+import io.xpipe.core.process.ProcessControlProvider;
+import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ShellOpenFunction;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
 import javafx.beans.binding.Bindings;
@@ -27,20 +30,21 @@ import java.util.stream.Stream;
 public final class OpenFileSystemModel {
 
     private final DataStoreEntryRef<? extends FileSystemStore> entry;
-    private FileSystem fileSystem;
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<String> currentPath = new ReadOnlyObjectWrapper<>();
     private final OpenFileSystemHistory history = new OpenFileSystemHistory();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final BrowserModel browserModel;
-    private OpenFileSystemSavedState savedState;
-    private OpenFileSystemCache cache;
     private final Property<ModalOverlayComp.OverlayContent> overlay = new SimpleObjectProperty<>();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final String name;
     private final String tooltip;
-    private boolean local;
+    private final Property<BrowserTransferProgress> progress =
+            new SimpleObjectProperty<>(BrowserTransferProgress.empty());
+    private FileSystem fileSystem;
+    private OpenFileSystemSavedState savedState;
+    private OpenFileSystemCache cache;
     private int customScriptsStartIndex;
 
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
@@ -54,6 +58,24 @@ public final class OpenFileSystemModel {
                 },
                 currentPath));
         fileList = new BrowserFileListModel(this);
+    }
+
+    public boolean isBusy() {
+        return !progress.getValue().done()
+                || (fileSystem != null
+                        && fileSystem.getShell().isPresent()
+                        && fileSystem.getShell().get().getLock().isLocked());
+    }
+
+    private void startIfNeeded() throws Exception {
+        if (fileSystem == null) {
+            return;
+        }
+
+        var s = fileSystem.getShell();
+        if (s.isPresent()) {
+            s.get().start();
+        }
     }
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
@@ -131,8 +153,13 @@ public final class OpenFileSystemModel {
             return Optional.empty();
         }
 
-        // Start shell in case we exited
-        getFileSystem().getShell().orElseThrow().start();
+        try {
+            // Start shell in case we exited
+            startIfNeeded();
+        } catch (Exception ex) {
+            ErrorEvent.fromThrowable(ex).handle();
+            return Optional.ofNullable(currentPath.get());
+        }
 
         // Fix common issues with paths
         var adjustedPath = FileSystemHelper.adjustPath(this, path);
@@ -158,26 +185,19 @@ public final class OpenFileSystemModel {
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
             ThreadHelper.runFailableAsync(() -> {
-                if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand()))) {
-                    TerminalHelper.open(
+                if (ShellDialects.getStartableDialects().stream()
+                        .anyMatch(dialect -> adjustedPath.startsWith(dialect.getOpenCommand(null)))) {
+                    TerminalLauncher.open(
                             entry.getEntry(),
                             name,
-                            fileSystem
-                                    .getShell()
-                                    .get()
-                                    .subShell(processControl -> adjustedPath, (sc) -> adjustedPath)
-                                    .withInitSnippet(new SimpleScriptSnippet(
-                                            fileSystem
-                                                    .getShell()
-                                                    .get()
-                                                    .getShellDialect()
-                                                    .getCdCommand(currentPath.get()),
-                                            ScriptSnippet.ExecutionType.BOTH)));
+                            directory,
+                            fileSystem.getShell().get().singularSubShell(ShellOpenFunction.of(adjustedPath)));
                 } else {
-                    TerminalHelper.open(
+                    TerminalLauncher.open(
                             entry.getEntry(),
                             name,
-                            fileSystem.getShell().get().command(adjustedPath).withWorkingDirectory(directory));
+                            directory,
+                            fileSystem.getShell().get().command(adjustedPath));
                 }
             });
             return Optional.ofNullable(currentPath.get());
@@ -227,6 +247,7 @@ public final class OpenFileSystemModel {
     private boolean loadFilesSync(String dir) {
         try {
             if (dir != null) {
+                startIfNeeded();
                 var stream = getFileSystem().listFiles(dir);
                 fileList.setAll(stream);
             } else {
@@ -247,7 +268,8 @@ public final class OpenFileSystemModel {
                     return;
                 }
 
-                FileSystemHelper.dropLocalFilesInto(entry, files);
+                startIfNeeded();
+                FileSystemHelper.dropLocalFilesInto(entry, files, progress::setValue, true);
                 refreshSync();
             });
         });
@@ -266,14 +288,10 @@ public final class OpenFileSystemModel {
                     return;
                 }
 
-                var same = files.get(0).getFileSystem().equals(target.getFileSystem());
-                if (same && !explicitCopy) {
-                    if (!BrowserAlerts.showMoveAlert(files, target)) {
-                        return;
-                    }
-                }
-
-                FileSystemHelper.dropFilesInto(target, files, explicitCopy);
+                startIfNeeded();
+                FileSystemHelper.dropFilesInto(target, files, explicitCopy, true, browserTransferProgress -> {
+                    progress.setValue(browserTransferProgress);
+                });
                 refreshSync();
             });
         });
@@ -294,9 +312,11 @@ public final class OpenFileSystemModel {
                     return;
                 }
 
+                startIfNeeded();
                 var abs = FileNames.join(getCurrentDirectory().getPath(), name);
                 if (fileSystem.directoryExists(abs)) {
-                    throw ErrorEvent.unreportable(new IllegalStateException(String.format("Directory %s already exists", abs)));
+                    throw ErrorEvent.unreportable(
+                            new IllegalStateException(String.format("Directory %s already exists", abs)));
                 }
 
                 fileSystem.mkdirs(abs);
@@ -320,6 +340,7 @@ public final class OpenFileSystemModel {
                     return;
                 }
 
+                startIfNeeded();
                 var abs = FileNames.join(getCurrentDirectory().getPath(), linkName);
                 fileSystem.symbolicLink(abs, targetFile);
                 refreshSync();
@@ -370,14 +391,12 @@ public final class OpenFileSystemModel {
         BooleanScope.execute(busy, () -> {
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
-                this.customScriptsStartIndex = fs.getShell().get().getInitCommands().size();
+                this.customScriptsStartIndex =
+                        fs.getShell().get().getInitCommands().size();
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
             }
             fs.open();
             this.fileSystem = fs;
-            this.local = fs.getShell()
-                    .map(shellControl -> shellControl.hasLocalSystemAccess())
-                    .orElse(false);
 
             this.cache = new OpenFileSystemCache(this);
             for (BrowserAction b : BrowserAction.ALL) {
@@ -408,21 +427,12 @@ public final class OpenFileSystemModel {
             BooleanScope.execute(busy, () -> {
                 if (fileSystem.getShell().isPresent()) {
                     var connection = fileSystem.getShell().get();
-                    var snippet = directory != null ? new SimpleScriptSnippet(connection.getShellDialect().getCdCommand(directory),
-                            ScriptSnippet.ExecutionType.BOTH) : null;
-                    if (snippet != null) {
-                        connection.getInitCommands().add(customScriptsStartIndex,snippet);
-                    }
+                    var name = (directory != null ? directory + " - " : "")
+                            + entry.get().getName();
+                    TerminalLauncher.open(entry.getEntry(), name, directory, connection);
 
-                    try {
-                        var name = (directory != null ? directory + " - " : "") + entry.get().getName();
-                        TerminalHelper.open(entry.getEntry(), name, connection);
-
-                        // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
-                        connection.start();
-                    } finally {
-                        connection.getInitCommands().remove(snippet);
-                    }
+                    // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
+                    startIfNeeded();
                 }
             });
         });

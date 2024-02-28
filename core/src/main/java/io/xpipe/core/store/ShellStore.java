@@ -15,7 +15,7 @@ public interface ShellStore extends DataStore, LaunchableStore, FileSystemStore,
     }
 
     @Override
-    default ProcessControl prepareLaunchCommand() throws Exception {
+    default ProcessControl prepareLaunchCommand() {
         return control();
     }
 

@@ -54,7 +54,8 @@ public class AppFont {
                         try (var in = Files.newInputStream(file)) {
                             Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 12);
                         } catch (Throwable t) {
-                            // Font loading can fail in rare cases. This is however not important, so we can just ignore it
+                            // Font loading can fail in rare cases. This is however not important, so we can just ignore
+                            // it
                         }
                         return FileVisitResult.CONTINUE;
                     }

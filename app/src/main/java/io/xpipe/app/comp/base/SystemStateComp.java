@@ -18,28 +18,11 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
 @Getter
 public class SystemStateComp extends SimpleComp {
 
+    private final ObservableValue<State> state;
 
     public SystemStateComp(ObservableValue<State> state) {
         this.state = state;
     }
-
-    public enum State {
-        FAILURE,
-        SUCCESS,
-        OTHER;
-
-        public static ObservableValue<State> shellState(StoreEntryWrapper w) {
-            return BindingsHelper.map(w.getPersistentState(),o -> {
-                if (o instanceof ShellStoreState shellStoreState) {
-                    return shellStoreState.getRunning() != null ? shellStoreState.getRunning() ? SUCCESS : FAILURE : OTHER;
-                }
-
-                return OTHER;
-            });
-        }
-    }
-
-    private final ObservableValue<State> state;
 
     @Override
     protected Region createSimple() {
@@ -58,15 +41,19 @@ public class SystemStateComp extends SimpleComp {
         border.getStyleClass().add("outer-icon");
         border.setOpacity(0.5);
 
-        var success = Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }");
-        var failure = Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }");
-        var other = Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }");
+        var success = Styles.toDataURI(
+                ".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }");
+        var failure =
+                Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }");
+        var other =
+                Styles.toDataURI(".stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }");
 
         var pane = new StackedFontIcon();
         pane.getChildren().addAll(fi, border);
         pane.setAlignment(Pos.CENTER);
 
-        var dataClass1 = """
+        var dataClass1 =
+                """
             .stacked-ikonli-font-icon > .outer-icon {
                 -fx-icon-size: 22px;
             }
@@ -78,9 +65,31 @@ public class SystemStateComp extends SimpleComp {
 
         SimpleChangeListener.apply(PlatformThread.sync(state), val -> {
             pane.getStylesheets().removeAll(success, failure, other);
-            pane.getStylesheets().add(val == State.SUCCESS ? success : val == State.FAILURE ? failure: other);
+            pane.getStylesheets().add(val == State.SUCCESS ? success : val == State.FAILURE ? failure : other);
         });
 
         return pane;
+    }
+
+    public enum State {
+        FAILURE,
+        SUCCESS,
+        OTHER;
+
+        public static ObservableValue<State> shellState(StoreEntryWrapper w) {
+            return BindingsHelper.map(w.getPersistentState(), o -> {
+                if (o instanceof ShellStoreState s) {
+                    if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                        return SUCCESS;
+                    }
+
+                    return s.getRunning() != null
+                            ? s.getRunning() ? SUCCESS : FAILURE
+                            : OTHER;
+                }
+
+                return OTHER;
+            });
+        }
     }
 }

@@ -14,10 +14,10 @@ public class Main {
 
         // Since this is not marked as a console application, it will not print anything when you run it in a console
         // So sadly there can't be a help command
-//        if (args.length == 1 && args[0].equals("--help")) {
-//            System.out.println("HELP");
-//            return;
-//        }
+        //        if (args.length == 1 && args[0].equals("--help")) {
+        //            System.out.println("HELP");
+        //            return;
+        //        }
 
         OperationMode.init(args);
     }

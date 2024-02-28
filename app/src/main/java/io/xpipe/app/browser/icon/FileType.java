@@ -53,6 +53,12 @@ public interface FileType {
         });
     }
 
+    String getId();
+
+    boolean matches(FileSystem.FileEntry entry);
+
+    String getIcon();
+
     @Getter
     class Simple implements FileType {
 
@@ -72,7 +78,9 @@ public interface FileType {
                 return false;
             }
 
-            return (entry.getExtension() != null && endings.contains("." + entry.getExtension().toLowerCase(Locale.ROOT))) || endings.contains(entry.getName());
+            return (entry.getExtension() != null
+                            && endings.contains("." + entry.getExtension().toLowerCase(Locale.ROOT)))
+                    || endings.contains(entry.getName());
         }
 
         @Override
@@ -80,10 +88,4 @@ public interface FileType {
             return icon.getIcon();
         }
     }
-
-    String getId();
-
-    boolean matches(FileSystem.FileEntry entry);
-
-    String getIcon();
 }

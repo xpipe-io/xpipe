@@ -15,6 +15,7 @@ public class SideSplitPaneComp extends Comp<SideSplitPaneComp.Structure> {
     private final Comp<?> center;
     private Double initialWidth;
     private Consumer<Double> onDividerChange;
+
     public SideSplitPaneComp(Comp<?> left, Comp<?> center) {
         this.left = left;
         this.center = center;
@@ -36,13 +37,13 @@ public class SideSplitPaneComp extends Comp<SideSplitPaneComp.Structure> {
             }
 
             if (!setInitial.get() && initialWidth != null) {
-                r.getDividers().get(0).setPosition(initialWidth / newValue.doubleValue());
+                r.getDividers().getFirst().setPosition(initialWidth / newValue.doubleValue());
                 setInitial.set(true);
             }
         });
 
         SplitPane.setResizableWithParent(sidebar, false);
-        r.getDividers().get(0).positionProperty().addListener((observable, oldValue, newValue) -> {
+        r.getDividers().getFirst().positionProperty().addListener((observable, oldValue, newValue) -> {
             if (r.getWidth() <= 0) {
                 return;
             }
@@ -52,7 +53,7 @@ public class SideSplitPaneComp extends Comp<SideSplitPaneComp.Structure> {
             }
         });
         r.getStyleClass().add("side-split-pane-comp");
-        return new Structure(sidebar, c, r, r.getDividers().get(0));
+        return new Structure(sidebar, c, r, r.getDividers().getFirst());
     }
 
     public SideSplitPaneComp withInitialWidth(double val) {

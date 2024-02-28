@@ -7,16 +7,14 @@ import java.nio.file.Path;
 public interface GitStorageHandler {
 
     static GitStorageHandler getInstance() {
-        return (GitStorageHandler) ProcessControlProvider.get().createStorageHandler();
+        return (GitStorageHandler) ProcessControlProvider.get().getGitStorageHandler();
     }
-
-    void onReset();
 
     boolean supportsShare();
 
-    void init(Path dir);
+    void init();
 
-    void beforeStorageLoad();
+    void setupRepositoryAndPull();
 
     void afterStorageLoad();
 

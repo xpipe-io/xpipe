@@ -16,7 +16,8 @@ public class AppBundledFonts {
             return;
         }
 
-        System.setProperty("prism.fontdir", XPipeInstallation.getBundledFontsPath().toString());
+        System.setProperty(
+                "prism.fontdir", XPipeInstallation.getBundledFontsPath().toString());
         System.setProperty("prism.embeddedfonts", "true");
     }
 

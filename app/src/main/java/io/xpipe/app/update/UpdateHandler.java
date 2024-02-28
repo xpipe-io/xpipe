@@ -107,7 +107,7 @@ public abstract class UpdateHandler {
     }
 
     protected void event(String msg) {
-        TrackEvent.builder().category("updater").type("info").message(msg).handle();
+        TrackEvent.builder().type("info").message(msg).handle();
     }
 
     protected final boolean isUpdate(String releaseVersion) {
@@ -184,7 +184,6 @@ public abstract class UpdateHandler {
                 XPipeDistributionType.get().getId(),
                 lastUpdateCheckResult.getValue().getVersion(),
                 lastUpdateCheckResult.getValue().getReleaseUrl(),
-                lastUpdateCheckResult.getValue().getReleaseDate(),
                 null,
                 changelog,
                 lastUpdateCheckResult.getValue().getAssetType());
@@ -212,7 +211,8 @@ public abstract class UpdateHandler {
             return;
         }
 
-        if (available != null && !available.getVersion().equals(preparedUpdate.getValue().getVersion())) {
+        if (available != null
+                && !available.getVersion().equals(preparedUpdate.getValue().getVersion())) {
             preparedUpdate.setValue(null);
             return;
         }
@@ -220,21 +220,25 @@ public abstract class UpdateHandler {
         event("Executing update ...");
         OperationMode.executeAfterShutdown(() -> {
             try {
-                executeUpdateAndCloseImpl();
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            } finally {
                 var performedUpdate = new PerformedUpdate(
                         preparedUpdate.getValue().getVersion(),
                         preparedUpdate.getValue().getBody(),
-                        preparedUpdate.getValue().getVersion(),
-                        preparedUpdate.getValue().getReleaseDate());
+                        preparedUpdate.getValue().getVersion());
                 AppCache.update("performedUpdate", performedUpdate);
+
+                executeUpdateOnCloseImpl();
+
+                // In case we perform any operations such as opening a terminal
+                // give it some time to open while this process is still alive
+                // Otherwise it might quit because the parent process is dead already
+                ThreadHelper.sleep(100);
+            } catch (Throwable ex) {
+                ex.printStackTrace();
             }
         });
     }
 
-    public void executeUpdateAndCloseImpl() throws Exception {
+    public void executeUpdateOnCloseImpl() throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -257,7 +261,6 @@ public abstract class UpdateHandler {
         String name;
         String rawDescription;
         String newVersion;
-        Instant releaseDate;
     }
 
     @Value
@@ -272,7 +275,6 @@ public abstract class UpdateHandler {
         String downloadUrl;
         AppInstaller.InstallerAssetType assetType;
         Instant checkTime;
-        Instant releaseDate;
         boolean isUpdate;
     }
 
@@ -284,7 +286,6 @@ public abstract class UpdateHandler {
         String sourceDist;
         String version;
         String releaseUrl;
-        Instant releaseDate;
         Path file;
         String body;
         AppInstaller.InstallerAssetType assetType;

@@ -16,13 +16,8 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
         model.getBrowserModel()
                 .openFileSystemAsync(
                         model.getEntry(),
-                        m -> entries.get(0).getRawFileEntry().getPath(),
+                        m -> entries.getFirst().getRawFileEntry().getPath(),
                         null);
-    }
-
-    @Override
-    public Category getCategory() {
-        return Category.OPEN;
     }
 
     @Override
@@ -31,9 +26,8 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1
-                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+    public Category getCategory() {
+        return Category.OPEN;
     }
 
     @Override
@@ -44,5 +38,11 @@ public class OpenDirectoryInNewTabAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Open in new tab";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 }

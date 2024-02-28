@@ -18,60 +18,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {
 
     private static final ErrorHandler INSTANCE = new SyncErrorHandler(new SentryErrorHandler());
+    private boolean init;
 
     public static ErrorHandler getInstance() {
         return INSTANCE;
-    }
-
-    private boolean init;
-
-    public void handle(ErrorEvent ee) {
-        // Assume that this object is wrapped by a synchronous error handler
-        if (!init) {
-            AppProperties.init();
-            AppState.init();
-            if (AppProperties.get().getSentryUrl() != null) {
-                Sentry.init(options -> {
-                    options.setDsn(AppProperties.get().getSentryUrl());
-                    options.setEnableUncaughtExceptionHandler(false);
-                    options.setAttachServerName(false);
-                    options.setRelease(AppProperties.get().getVersion());
-                    options.setEnableShutdownHook(false);
-                    options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
-                    options.setTag("os", System.getProperty("os.name"));
-                    options.setTag("osVersion", System.getProperty("os.version"));
-                    options.setTag("arch", System.getProperty("os.arch"));
-                    options.setDist(XPipeDistributionType.get().getId());
-                    options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
-                    options.setCacheDirPath(AppProperties.get().getDataDir().resolve("cache").toString());
-                    options.setAttachThreads(false);
-                });
-            }
-            init = true;
-        }
-
-        var id = captureEvent(ee);
-        if (id == null) {
-            return;
-        }
-
-        var email = ee.getEmail();
-        var hasEmail = email != null && !email.isBlank();
-        var text = ee.getUserReport();
-        if (hasUserReport(ee)) {
-            var fb = new UserFeedback(id);
-            if (hasEmail) {
-                fb.setEmail(email);
-            }
-            fb.setComments(text);
-            Sentry.captureUserFeedback(fb);
-        }
-        Sentry.flush(3000);
     }
 
     private static boolean hasUserReport(ErrorEvent ee) {
@@ -114,6 +70,12 @@ public class SentryErrorHandler implements ErrorHandler {
                 otherField.set(copy, null);
             }
 
+            if (copy instanceof InvalidPathException) {
+                var inputField = InvalidPathException.class.getDeclaredField("input");
+                inputField.setAccessible(true);
+                inputField.set(copy, "");
+            }
+
             var causeField = Throwable.class.getDeclaredField("cause");
             causeField.setAccessible(true);
             causeField.set(copy, adjustCopy(throwable.getCause(), true));
@@ -147,7 +109,7 @@ public class SentryErrorHandler implements ErrorHandler {
         return Sentry.captureEvent(event, sc -> fillScope(ee, sc));
     }
 
-    private static void fillScope(ErrorEvent ee, Scope s) {
+    private static void fillScope(ErrorEvent ee, IScope s) {
         if (ee.isShouldSendDiagnostics()) {
             var atts = ee.getAttachments().stream()
                     .map(d -> {
@@ -172,7 +134,11 @@ public class SentryErrorHandler implements ErrorHandler {
         }
 
         s.setTag("hasLicense", String.valueOf(LicenseProvider.get().hasPaidLicense()));
-        s.setTag("updatesEnabled", AppPrefs.get() != null ? AppPrefs.get().automaticallyUpdate().getValue().toString() : "unknown");
+        s.setTag(
+                "updatesEnabled",
+                AppPrefs.get() != null
+                        ? AppPrefs.get().automaticallyUpdate().getValue().toString()
+                        : "unknown");
         s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
         s.setTag(
                 "developerMode",
@@ -182,12 +148,16 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("terminal", Boolean.toString(ee.isTerminal()));
         s.setTag("omitted", Boolean.toString(ee.isOmitted()));
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
-        s.setTag("logs", Boolean.toString(ee.isShouldSendDiagnostics() && !ee.getAttachments().isEmpty()));
+        s.setTag(
+                "logs",
+                Boolean.toString(
+                        ee.isShouldSendDiagnostics() && !ee.getAttachments().isEmpty()));
         s.setTag("inShutdown", Boolean.toString(OperationMode.isInShutdown()));
+        s.setTag("unhandled", Boolean.toString(ee.isUnhandled()));
 
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null && !ee.getDescription().equals(exMessage) && ee.isShouldSendDiagnostics()) {
-                s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
+            s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
         }
 
         var user = new User();
@@ -197,5 +167,52 @@ public class SentryErrorHandler implements ErrorHandler {
             user.setUsername(AppState.get().getUserName());
         }
         s.setUser(user);
+    }
+
+    public void handle(ErrorEvent ee) {
+        // Assume that this object is wrapped by a synchronous error handler
+        if (!init) {
+            AppProperties.init();
+            AppState.init();
+            if (AppProperties.get().getSentryUrl() != null) {
+                Sentry.init(options -> {
+                    options.setDsn(AppProperties.get().getSentryUrl());
+                    options.setEnableUncaughtExceptionHandler(false);
+                    options.setAttachServerName(false);
+                    options.setRelease(AppProperties.get().getVersion());
+                    options.setEnableShutdownHook(false);
+                    options.setProguardUuid(AppProperties.get().getBuildUuid().toString());
+                    options.setTag("os", System.getProperty("os.name"));
+                    options.setTag("osVersion", System.getProperty("os.version"));
+                    options.setTag("arch", System.getProperty("os.arch"));
+                    options.setDist(XPipeDistributionType.get().getId());
+                    options.setTag("staging", String.valueOf(AppProperties.get().isStaging()));
+                    options.setSendModules(false);
+                    options.setAttachThreads(false);
+                    options.setEnableDeduplication(false);
+                    options.setCacheDirPath(
+                            AppProperties.get().getDataDir().resolve("cache").toString());
+                });
+            }
+            init = true;
+        }
+
+        var id = captureEvent(ee);
+        if (id == null) {
+            return;
+        }
+
+        var email = ee.getEmail();
+        var hasEmail = email != null && !email.isBlank();
+        var text = ee.getUserReport();
+        if (hasUserReport(ee)) {
+            var fb = new UserFeedback(id);
+            if (hasEmail) {
+                fb.setEmail(email);
+            }
+            fb.setComments(text);
+            Sentry.captureUserFeedback(fb);
+        }
+        Sentry.flush(3000);
     }
 }

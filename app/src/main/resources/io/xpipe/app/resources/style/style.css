@@ -1,18 +1,3 @@
-.prefs * {
--fx-text-fill: -color-fg-default;
--fx-highlight-text-fill: -color-fg-default;
--fx-highlight-fill: -color-neutral-muted;
--fx-prompt-text-fill: -color-fg-subtle;
--fx-text-box-border:-color-neutral-muted;
--fx-control-inner-background: -color-neutral-muted;
--fx-body-color: -color-neutral-muted;
--fx-inner-border: -color-accent-fg;
-}
-
-.root .window-content {
--fx-padding: 1.2em;
-}
-
 .store-layout .split-pane-divider {
     -fx-background-color: transparent;
 }
@@ -69,11 +54,6 @@
 
 .scroll-pane {
 -fx-background-color:transparent;
-}
-
-.jfx-list-view {
- -fx-background-insets: 0;
- -fx-padding: 0;
 }
 
 .root:light .loading-comp {

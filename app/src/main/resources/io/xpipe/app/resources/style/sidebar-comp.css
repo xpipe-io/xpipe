@@ -5,11 +5,6 @@
     -fx-background-insets: 0;
 }
 
-.sidebar-comp .icon-button-comp {
--fx-border-width: 0 3px 0 0;
--fx-border-color: -color-border-default;
-}
-
 .sidebar-comp .icon-button-comp, .sidebar-comp .button {
 -fx-background-radius: 0;
 -fx-background-insets: 0;
@@ -21,12 +16,10 @@
 }
 
 .sidebar-comp .icon-button-comp:hover, .sidebar-comp .icon-button-comp:focused {
--fx-border-color: -color-accent-muted;
 -fx-background-color: -color-neutral-muted;
 }
 
 .sidebar-comp .icon-button-comp:selected {
--fx-border-color: -color-accent-emphasis;
 -fx-background-color: -color-neutral-muted;
 }
 

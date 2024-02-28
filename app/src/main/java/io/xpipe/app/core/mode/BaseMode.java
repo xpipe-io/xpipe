@@ -4,16 +4,18 @@ import io.xpipe.app.browser.BrowserModel;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppAvCheck;
+import io.xpipe.app.core.check.AppCertutilCheck;
 import io.xpipe.app.core.check.AppShellCheck;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.GitStorageHandler;
 import io.xpipe.app.update.XPipeDistributionType;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.LockedSecretValue;
+import io.xpipe.app.util.UnlockAlert;
 import io.xpipe.core.util.JacksonMapper;
 
 public class BaseMode extends OperationMode {
@@ -39,29 +41,29 @@ public class BaseMode extends OperationMode {
         // For debugging
         // if (true) throw new IllegalStateException();
 
-        TrackEvent.info("mode", "Initializing base mode components ...");
+        TrackEvent.info("Initializing base mode components ...");
         AppExtensionManager.init(true);
         JacksonMapper.initModularized(AppExtensionManager.getInstance().getExtendedLayer());
-        JacksonMapper.configure(objectMapper -> {
-            objectMapper.registerSubtypes(LockedSecretValue.class);
-        });
-        // Load translations before storage initialization to localize store error messages
-        // Also loaded before antivirus alert to localize that
         AppI18n.init();
         LicenseProvider.get().init();
+        AppPrefs.initLocal();
+        AppCertutilCheck.check();
         AppAvCheck.check();
         LocalShell.init();
-        AppShellCheck.check();
         XPipeDistributionType.init();
-        AppPrefs.init();
-        AppCharsets.init();
-        AppCharsetter.init();
+        AppShellCheck.check();
+        AppPrefs.setDefaults();
+        // Initialize socket server as we should be prepared for git askpass commands
         AppSocketServer.init();
+        GitStorageHandler.getInstance().init();
+        GitStorageHandler.getInstance().setupRepositoryAndPull();
+        AppPrefs.initSharedRemote();
+        UnlockAlert.showIfNeeded();
         DataStorage.init();
         AppFileWatcher.init();
         FileBridge.init();
         ActionProvider.initProviders();
-        TrackEvent.info("mode", "Finished base components initialization");
+        TrackEvent.info("Finished base components initialization");
         initialized = true;
     }
 
@@ -70,7 +72,7 @@ public class BaseMode extends OperationMode {
 
     @Override
     public void finalTeardown() {
-        TrackEvent.info("mode", "Background mode shutdown started");
+        TrackEvent.info("Background mode shutdown started");
         BrowserModel.DEFAULT.reset();
         StoreViewState.reset();
         DataStorage.reset();
@@ -80,6 +82,6 @@ public class BaseMode extends OperationMode {
         AppDataLock.unlock();
         // Shut down socket server last to keep a non-daemon thread running
         AppSocketServer.reset();
-        TrackEvent.info("mode", "Background mode shutdown finished");
+        TrackEvent.info("Background mode shutdown finished");
     }
 }

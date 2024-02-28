@@ -18,7 +18,7 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 All XPipe components target [Java 21](https://openjdk.java.net/projects/jdk/20/) and make full use of the Java Module System (JPMS).
 All components are modularized, including all their dependencies.
-In case a dependency is (sadly) not modularized yet, module information is manually added using [moditect](https://github.com/moditect/moditect-gradle-plugin).
+In case a dependency is (sadly) not modularized yet, module information is manually added using [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
 Further, note that as this is a pretty complicated Java project that fully utilizes modularity,
 many IDEs still have problems building this project properly.
 

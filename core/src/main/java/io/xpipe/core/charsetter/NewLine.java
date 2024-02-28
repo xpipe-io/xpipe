@@ -12,6 +12,7 @@ public enum NewLine {
     CRLF("\r\n", "crlf");
 
     private final String newLine;
+
     @Getter
     private final String id;
 
@@ -22,7 +23,7 @@ public enum NewLine {
 
     public static NewLine platform() {
         return Arrays.stream(values())
-                .filter(n -> n.getNewLineString().equals(System.getProperty("line.separator")))
+                .filter(n -> n.getNewLineString().equals(System.lineSeparator()))
                 .findFirst()
                 .orElseThrow();
     }
@@ -37,5 +38,4 @@ public enum NewLine {
     public String getNewLineString() {
         return newLine;
     }
-
 }

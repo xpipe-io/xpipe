@@ -27,7 +27,7 @@ public class PortableUpdater extends UpdateHandler {
                 .createRegion();
     }
 
-    public void executeUpdateAndCloseImpl() {
+    public void executeUpdateOnCloseImpl() {
         throw new UnsupportedOperationException();
     }
 
@@ -50,7 +50,6 @@ public class PortableUpdater extends UpdateHandler {
                 null,
                 null,
                 Instant.now(),
-                rel.get().getCreatedAt() != null ? rel.get().getCreatedAt().toInstant() : null,
                 isUpdate));
         return lastUpdateCheckResult.getValue();
     }

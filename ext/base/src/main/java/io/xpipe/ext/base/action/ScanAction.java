@@ -11,25 +11,19 @@ import lombok.Value;
 
 public class ScanAction implements ActionProvider {
 
-    @Value
-    static class Action implements ActionProvider.Action {
-
-        DataStoreEntry entry;
-
-        @Override
-        public boolean requiresJavaFXPlatform() {
-            return true;
-        }
-
-        @Override
-        public void execute() {
-            ScanAlert.showAsync(entry);
-        }
-    }
-
     @Override
     public DataStoreCallSite<?> getDataStoreCallSite() {
         return new DataStoreCallSite<ShellStore>() {
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                return new Action(store.get());
+            }
+
+            @Override
+            public Class<ShellStore> getApplicableClass() {
+                return ShellStore.class;
+            }
 
             @Override
             public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
@@ -50,16 +44,22 @@ public class ScanAction implements ActionProvider {
             public String getIcon(DataStoreEntryRef<ShellStore> store) {
                 return "mdi2m-magnify-scan";
             }
-
-            @Override
-            public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
-                return new Action(store.get());
-            }
-
-            @Override
-            public Class<ShellStore> getApplicableClass() {
-                return ShellStore.class;
-            }
         };
+    }
+
+    @Value
+    static class Action implements ActionProvider.Action {
+
+        DataStoreEntry entry;
+
+        @Override
+        public boolean requiresJavaFXPlatform() {
+            return true;
+        }
+
+        @Override
+        public void execute() {
+            ScanAlert.showAsync(entry);
+        }
     }
 }

@@ -13,8 +13,10 @@ import lombok.ToString;
 public class BaseQueryElement extends DialogElement {
 
     private final String description;
+
     @Getter
     private final boolean newLine;
+
     private final boolean required;
     private final boolean secret;
     private final boolean quiet;
@@ -32,12 +34,12 @@ public class BaseQueryElement extends DialogElement {
     }
 
     @Override
-    public boolean requiresExplicitUserInput() {
-        return required && value == null;
+    public String toDisplayString() {
+        return description;
     }
 
     @Override
-    public String toDisplayString() {
-        return description;
+    public boolean requiresExplicitUserInput() {
+        return required && value == null;
     }
 }

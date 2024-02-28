@@ -31,6 +31,13 @@ import java.util.function.Function;
 @AllArgsConstructor
 public class BrowserSelectionListComp extends SimpleComp {
 
+    ObservableList<FileSystem.FileEntry> list;
+    Function<FileSystem.FileEntry, ObservableValue<String>> nameTransformation;
+
+    public BrowserSelectionListComp(ObservableList<FileSystem.FileEntry> list) {
+        this(list, entry -> new SimpleStringProperty(FileNames.getFileName(entry.getPath())));
+    }
+
     public static Image snapshot(ObservableList<FileSystem.FileEntry> list) {
         var r = new BrowserSelectionListComp(list).styleClass("drag").createRegion();
         var scene = new Scene(r);
@@ -39,13 +46,6 @@ public class BrowserSelectionListComp extends SimpleComp {
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);
         return r.snapshot(parameters, null);
-    }
-
-    ObservableList<FileSystem.FileEntry> list;
-    Function<FileSystem.FileEntry, ObservableValue<String>> nameTransformation;
-
-    public BrowserSelectionListComp(ObservableList<FileSystem.FileEntry> list) {
-        this(list, entry -> new SimpleStringProperty(FileNames.getFileName(entry.getPath())));
     }
 
     @Override

@@ -10,19 +10,19 @@ if (currentOS.isWindows()) {
     platform = 'mac'
 }
 
-def arch = System.getProperty ("os.arch");
-if (arch == 'aarch64') {
+if (System.getProperty ("os.arch") == 'aarch64') {
     platform += '-aarch64'
 }
 
 configurations {
-    dep
+    javafx
 }
 
+// Always use maven version for now
 dependencies {
-    dep "org.openjfx:javafx-base:${javafxVersion}:${platform}"
-    dep "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
-    dep "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
-    dep "org.openjfx:javafx-media:${javafxVersion}:${platform}"
-    dep "org.openjfx:javafx-web:${javafxVersion}:${platform}"
+    javafx "org.openjfx:javafx-base:${javafxVersion}:${platform}"
+    javafx "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
+    javafx "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
+    javafx "org.openjfx:javafx-media:${javafxVersion}:${platform}"
+    javafx "org.openjfx:javafx-web:${javafxVersion}:${platform}"
 }

@@ -159,7 +159,7 @@ Alternatively, you can also use [Homebrew](https://github.com/xpipe-io/homebrew-
 
 XPipe utilizes an open core model, which essentially means that the main application is open source while certain other components are not. Select parts are not open source yet, but may be added to this repository in the future.
 
-This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some tests and especially test environments and that run on private servers are also not included in this repository.
+This mainly concerns the features only available in the professional tier and the shell handling library implementation. Furthermore, some CI pipelines and tests that run on private servers are also not included in this repository.
 
 ## More links
 

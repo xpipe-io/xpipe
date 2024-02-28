@@ -16,18 +16,6 @@ import java.util.Objects;
 
 public class TextAreaComp extends Comp<TextAreaComp.Structure> {
 
-    @Value
-    @Builder
-    public static class Structure implements CompStructure<AnchorPane> {
-        AnchorPane pane;
-        TextArea textArea;
-
-        @Override
-        public AnchorPane get() {
-            return pane;
-        }
-    }
-
     private final Property<String> currentValue;
     private final Property<String> lastAppliedValue;
     private final boolean lazy;
@@ -94,5 +82,17 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
         }
 
         return new Structure(anchorPane, text);
+    }
+
+    @Value
+    @Builder
+    public static class Structure implements CompStructure<AnchorPane> {
+        AnchorPane pane;
+        TextArea textArea;
+
+        @Override
+        public AnchorPane get() {
+            return pane;
+        }
     }
 }

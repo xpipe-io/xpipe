@@ -45,12 +45,15 @@ public class UpdateCheckComp extends SimpleComp {
         var name = Bindings.createStringBinding(
                 () -> {
                     if (updateReady.getValue()) {
-                        var prefix = XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ?  AppI18n.get("updateReadyPortable") : AppI18n.get("updateReady");
-                        var version = "Version " + XPipeDistributionType.get()
-                                .getUpdateHandler()
-                                .getPreparedUpdate()
-                                .getValue()
-                                .getVersion();
+                        var prefix = XPipeDistributionType.get() == XPipeDistributionType.PORTABLE
+                                ? AppI18n.get("updateReadyPortable")
+                                : AppI18n.get("updateReady");
+                        var version = "Version "
+                                + XPipeDistributionType.get()
+                                        .getUpdateHandler()
+                                        .getPreparedUpdate()
+                                        .getValue()
+                                        .getVersion();
                         return prefix + " (" + version + ")";
                     }
 
@@ -60,7 +63,9 @@ public class UpdateCheckComp extends SimpleComp {
         var description = Bindings.createStringBinding(
                 () -> {
                     if (updateReady.getValue()) {
-                        return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE ?  AppI18n.get("updateReadyDescriptionPortable") : AppI18n.get("updateReadyDescription");
+                        return XPipeDistributionType.get() == XPipeDistributionType.PORTABLE
+                                ? AppI18n.get("updateReadyDescriptionPortable")
+                                : AppI18n.get("updateReadyDescription");
                     }
 
                     return AppI18n.get("checkForUpdatesDescription");

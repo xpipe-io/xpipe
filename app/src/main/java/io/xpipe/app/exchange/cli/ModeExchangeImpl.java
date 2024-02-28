@@ -2,6 +2,7 @@ package io.xpipe.app.exchange.cli;
 
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.exchange.MessageExchangeImpl;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.exchange.cli.ModeExchange;
@@ -11,8 +12,9 @@ public class ModeExchangeImpl extends ModeExchange
 
     @Override
     public Response handleRequest(BeaconHandler handler, Request msg) throws Exception {
-        if (OperationMode.get() == null) {
-            throw new ClientException("Mode switch already in progress");
+        // Wait for startup
+        while (OperationMode.get() == null) {
+            ThreadHelper.sleep(100);
         }
 
         var mode = OperationMode.map(msg.getMode());

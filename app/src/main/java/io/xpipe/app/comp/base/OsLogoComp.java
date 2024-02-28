@@ -20,6 +20,9 @@ import java.util.Map;
 
 public class OsLogoComp extends SimpleComp {
 
+    private static final Map<String, String> ICONS = new HashMap<>();
+    private static final String LINUX_DEFAULT = "linux-24.png";
+    private static final String LINUX_DEFAULT_SVG = "linux.svg";
     private final StoreEntryWrapper wrapper;
     private final ObservableValue<SystemStateComp.State> state;
 
@@ -47,16 +50,14 @@ public class OsLogoComp extends SimpleComp {
 
                     return getImage(ons.getOsName());
                 },
-                wrapper.getPersistentState(), state));
+                wrapper.getPersistentState(),
+                state));
         var hide = BindingsHelper.map(img, s -> s != null);
         return new StackComp(List.of(
                         new SystemStateComp(state).hide(hide),
                         PrettyImageHelper.ofRasterized(img, 24, 24).visible(hide)))
                 .createRegion();
     }
-
-    private static final Map<String, String> ICONS = new HashMap<>();
-    private static final String LINUX_DEFAULT = "linux-24.png";
 
     private String getImage(String name) {
         if (name == null) {
@@ -66,15 +67,21 @@ public class OsLogoComp extends SimpleComp {
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.XPIPE_MODULE, "img/os", file -> {
                 try (var list = Files.list(file)) {
-                    list.filter(path -> path.toString().endsWith(".svg") && !path.toString().endsWith(LINUX_DEFAULT))
-                            .map(path -> FileNames.getFileName(path.toString())).forEach(path -> {
-                        var base = FileNames.getBaseName(path).replace("-dark", "") + "-24.png";
-                        ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
-                    });
+                    list.filter(path -> path.toString().endsWith(".svg")
+                                    && !path.toString().endsWith(LINUX_DEFAULT_SVG))
+                            .map(path -> FileNames.getFileName(path.toString()))
+                            .forEach(path -> {
+                                var base = FileNames.getBaseName(path).replace("-dark", "") + "-24.png";
+                                ICONS.put(FileNames.getBaseName(base).split("-")[0], "os/" + base);
+                            });
                 }
             });
         }
 
-        return ICONS.entrySet().stream().filter(e->name.toLowerCase().contains(e.getKey())).findAny().map(e->e.getValue()).orElse("os/" + LINUX_DEFAULT);
+        return ICONS.entrySet().stream()
+                .filter(e -> name.toLowerCase().contains(e.getKey()))
+                .findAny()
+                .map(e -> e.getValue())
+                .orElse("os/" + LINUX_DEFAULT);
     }
 }

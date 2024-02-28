@@ -62,7 +62,9 @@ public class DataStoreProviders {
                 String.join("_", split),
                 String.join("-", split),
                 split.stream()
-                        .map(s -> s.equals(split.get(0)) ? s : s.substring(0, 1).toUpperCase() + s.substring(1))
+                        .map(s -> s.equals(split.getFirst())
+                                ? s
+                                : s.substring(0, 1).toUpperCase() + s.substring(1))
                         .collect(Collectors.joining()));
     }
 

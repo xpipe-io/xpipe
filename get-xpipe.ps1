@@ -146,8 +146,7 @@ if (-not $env:TEMP) {
     $env:TEMP = Join-Path $env:SystemDrive -ChildPath 'temp'
 }
 
-$xpipeTempDir = Join-Path $env:TEMP -ChildPath "xpipe"
-$tempDir = Join-Path $xpipeTempDir -ChildPath "install"
+$tempDir = $env:TEMP
 
 if (-not (Test-Path $tempDir -PathType Container)) {
     $null = New-Item -Path $tempDir -ItemType Directory
@@ -178,7 +177,7 @@ $env:Path=(
 ) -match '.' -join ';'
 
 Write-Host
-Write-Host 'XPipe has been successfully installed. You should be able to find it in your applications.'
+Write-Host "$ProductName has been successfully installed. You should be able to find it in your applications."
 Write-Host
 
 # Use absolute path as we can't assume that the user has selected to put XPipe into the Path

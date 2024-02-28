@@ -51,7 +51,7 @@ public class NamedCharacter {
                         .findFirst()
                         .orElse(null);
                 if (byChar != null) {
-                    return byChar.getNames().get(0);
+                    return byChar.getNames().getFirst();
                 }
 
                 return value.toString();

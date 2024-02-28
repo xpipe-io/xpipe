@@ -104,18 +104,18 @@ install() {
     if [ -f "/etc/debian_version" ]; then
       info "Installing file $file with apt"
       sudo apt update
-      DEBIAN_FRONTEND=noninteractive sudo apt install -qy "$file"
+      DEBIAN_FRONTEND=noninteractive sudo apt install "$file"
     elif [ -x "$(command -v zypper)" ]; then
       info "Installing file $file with zypper"
       sudo zypper refresh
-      sudo zypper install --allow-unsigned-rpm -y "$file"
+      sudo zypper install --allow-unsigned-rpm "$file"
     elif [ -x "$(command -v dnf)" ]; then
       info "Installing file $file with dnf"
-      sudo dnf install -y --refresh "$file"
+      sudo dnf install --refresh "$file"
     elif [ -x "$(command -v yum)" ]; then
       info "Installing file $file with yum"
       sudo yum clean expire-cache
-      sudo yum install -y "$file"
+      sudo yum install "$file"
     else
       info "Installing file $file with rpm"
       sudo rpm -U -v --force "$file"

@@ -8,9 +8,18 @@ import java.util.stream.Collectors;
 @Getter
 public class ProcessOutputException extends Exception {
 
+    private final long exitCode;
+    private final String output;
+
+    private ProcessOutputException(String message, long exitCode, String output) {
+        super(message);
+        this.exitCode = exitCode;
+        this.output = output;
+    }
+
     public static ProcessOutputException withParagraph(String customPrefix, ProcessOutputException ex) {
         var messageSuffix = ex.getOutput() != null ? ex.getOutput() : "";
-        var message = customPrefix  + "\n\n" + messageSuffix;
+        var message = customPrefix + "\n\n" + messageSuffix;
         return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
     }
 
@@ -34,7 +43,9 @@ public class ProcessOutputException extends Exception {
                             .START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed"
                             + errorSuffix;
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
-                    case CommandControl.UNASSIGNED_EXIT_CODE -> "Process exited with unknown state. Did an external process interfere?" + errorSuffix;
+                    case CommandControl
+                            .UNASSIGNED_EXIT_CODE -> "Process exited with unknown state. Did an external process interfere?"
+                            + errorSuffix;
                     case CommandControl.INTERNAL_ERROR_EXIT_CODE -> "Process execution failed" + errorSuffix;
                     case CommandControl.ELEVATION_FAILED_EXIT_CODE -> "Process elevation failed" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
@@ -42,17 +53,12 @@ public class ProcessOutputException extends Exception {
         return new ProcessOutputException(message, exitCode, combinedError);
     }
 
-    private final long exitCode;
-    private final String output;
-
-    private ProcessOutputException(String message, long exitCode, String output) {
-        super(message);
-        this.exitCode = exitCode;
-        this.output = output;
-    }
-
     public boolean isIrregularExit() {
-        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE || exitCode == CommandControl.START_FAILED_EXIT_CODE || exitCode == CommandControl.UNASSIGNED_EXIT_CODE || exitCode == CommandControl.INTERNAL_ERROR_EXIT_CODE || exitCode == CommandControl.ELEVATION_FAILED_EXIT_CODE;
+        return exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE
+                || exitCode == CommandControl.START_FAILED_EXIT_CODE
+                || exitCode == CommandControl.UNASSIGNED_EXIT_CODE
+                || exitCode == CommandControl.INTERNAL_ERROR_EXIT_CODE
+                || exitCode == CommandControl.ELEVATION_FAILED_EXIT_CODE;
     }
 
     public boolean isKill() {

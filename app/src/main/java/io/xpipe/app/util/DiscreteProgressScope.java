@@ -4,8 +4,8 @@ import javafx.beans.property.DoubleProperty;
 
 public class DiscreteProgressScope extends ProgressScope {
 
-    private int counter = 0;
     private final int steps;
+    private int counter = 0;
 
     public DiscreteProgressScope(DoubleProperty prop, int steps) {
         super(prop);

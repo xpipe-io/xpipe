@@ -55,7 +55,7 @@ public class FileNames {
             return "";
         }
 
-        return components.get(components.size() - 1);
+        return components.getLast();
     }
 
     public static List<String> splitHierarchy(String file) {

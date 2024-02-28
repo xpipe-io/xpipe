@@ -2,6 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.Translatable;
+import javafx.beans.value.ObservableValue;
 import lombok.SneakyThrows;
 
 import java.util.Arrays;
@@ -54,8 +55,8 @@ public interface PrefsChoiceValue extends Translatable {
     }
 
     @Override
-    default String toTranslatedString() {
-        return AppI18n.get(getId());
+    default ObservableValue<String> toTranslatedString() {
+        return AppI18n.observable(getId());
     }
 
     String getId();

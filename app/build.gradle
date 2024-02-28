@@ -1,131 +1,70 @@
 plugins {
     id 'application'
-    id "org.moditect.gradleplugin" version "1.0.0-rc3"
+    id 'jvm-test-suite'
+    id 'java-library'
 }
 
 repositories {
     mavenCentral()
 }
 
-configurations {
-    dep
-}
-
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
-apply from: "$projectDir/gradle_scripts/richtextfx.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/commons.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/prettytime.gradle"
-apply from: "$projectDir/gradle_scripts/sentry.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
-apply from: "$projectDir/gradle_scripts/github-api.gradle"
-apply from: "$projectDir/gradle_scripts/flexmark.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/picocli.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/versioncompare.gradle"
-apply from: "$rootDir/gradle/gradle_scripts/markdowngenerator.gradle"
 
 configurations {
-    implementation.extendsFrom(dep)
+    implementation.extendsFrom(javafx)
 }
 
 dependencies {
-    compileOnly project(':api')
-    implementation project(':core')
-    implementation project(':beacon')
+    api project(':core')
+    api project(':beacon')
 
     compileOnly 'org.hamcrest:hamcrest:2.2'
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.9.3'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.9.3'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.10.2'
 
-    implementation 'net.java.dev.jna:jna-jpms:5.13.0'
-    implementation 'net.java.dev.jna:jna-platform-jpms:5.13.0'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.15.2"
-    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.15.2"
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.15.2"
-    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "2.15.2"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.2.0"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
-    implementation group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
-    implementation (name: 'preferencesfx-core-11.15.0')
-    implementation (group: 'com.dlsc.formsfx', name: 'formsfx-core', version: '11.6.0') {
-        exclude group: 'org.openjfx', module: 'javafx-controls'
-        exclude group: 'org.openjfx', module: 'javafx-fxml'
-    }
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
-    implementation 'io.xpipe:modulefs:0.1.4'
-    implementation 'com.jfoenix:jfoenix:9.0.10'
-    implementation 'org.controlsfx:controlsfx:11.1.2'
-    implementation 'net.synedra:validatorfx:0.4.2'
-    implementation ('io.github.mkpaz:atlantafx-base:2.0.1') {
+    api 'com.vladsch.flexmark:flexmark:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-data:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-ast:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-builder:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-sequence:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-misc:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-dependency:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-collection:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-format:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-html:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-visitor:0.64.0'
+
+    api files("$rootDir/gradle/gradle_scripts/markdowngenerator-1.3.1.1.jar")
+    api 'info.picocli:picocli:4.7.5'
+    api 'org.kohsuke:github-api:1.318'
+    api 'io.sentry:sentry:7.3.0'
+    api 'org.ocpsoft.prettytime:prettytime:5.0.2.Final'
+    api 'commons-io:commons-io:2.15.1'
+    api 'net.java.dev.jna:jna-jpms:5.14.0'
+    api 'net.java.dev.jna:jna-platform-jpms:5.14.0'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.16.1"
+    api group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: "2.16.1"
+    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.16.1"
+    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "2.16.1"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.2.0"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
+    api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.11'
+    api 'io.xpipe:modulefs:0.1.5'
+    api 'net.synedra:validatorfx:0.4.2'
+    api ('io.github.mkpaz:atlantafx-base:2.0.1') {
         exclude group: 'org.openjfx', module: 'javafx-base'
         exclude group: 'org.openjfx', module: 'javafx-controls'
     }
-    implementation name: 'jSystemThemeDetector-3.8'
-    implementation group: 'com.github.oshi', name: 'oshi-core-java11', version: '6.4.2'
-    implementation 'org.jetbrains:annotations:24.0.1'
-    implementation ('de.jangassen:jfa:1.2.0') {
-        exclude group: 'net.java.dev.jna', module: 'jna'
-    }
 }
 
-apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
-
-sourceSets {
-    main {
-        output.resourcesDir("${project.layout.buildDirectory.get()}/classes/java/main")
-    }
-}
-
-dependencies {
-    testImplementation project(':api')
-    testImplementation project(':core')
-}
-
-project.allExtensions.forEach((Project p) -> {
-    dependencies {
-        testCompileOnly p
-    }
-})
-
-project.ext {
-    jvmRunArgs = [
-            "--add-exports", "javafx.graphics/com.sun.javafx.scene=com.jfoenix",
-            "--add-exports", "javafx.graphics/com.sun.javafx.stage=com.jfoenix",
-            "--add-exports", "javafx.base/com.sun.javafx.binding=com.jfoenix",
-            "--add-exports", "javafx.base/com.sun.javafx.event=com.jfoenix",
-            "--add-exports", "javafx.controls/com.sun.javafx.scene.control=com.jfoenix",
-            "--add-exports", "javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix",
-            "--add-exports", "javafx.graphics/com.sun.javafx.scene.traversal=org.controlsfx.controls",
-            "--add-exports", "javafx.graphics/com.sun.javafx.scene=org.controlsfx.controls",
-            "--add-exports", "org.apache.commons.lang3/org.apache.commons.lang3.math=io.xpipe.app",
-            "--add-opens", "java.base/java.lang=io.xpipe.app",
-            "--add-opens", "java.base/java.nio.file=io.xpipe.app",
-            "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
-            "--add-opens", "java.base/java.lang.reflect=com.jfoenix",
-            "--add-opens", "java.base/java.lang=io.xpipe.core",
-            "--add-opens", "java.desktop/java.awt=io.xpipe.app",
-            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
-            "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.view=io.xpipe.app',
-            "--add-opens", 'com.dlsc.preferencesfx/com.dlsc.preferencesfx.model=io.xpipe.app',
-            "-Xmx8g",
-            "-Dio.xpipe.app.arch=$rootProject.arch",
-            "-Dfile.encoding=UTF-8",
-            // Disable this for now as it requires Windows 10+
-            // '-XX:+UseZGC',
-            "-Dvisualvm.display.name=XPipe"
-    ]
-}
-
-import org.gradle.internal.os.OperatingSystem
-
-if (OperatingSystem.current() == OperatingSystem.LINUX) {
-    jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=io.xpipe.app")
-}
+apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"
 
 def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList();
-
 jar {
     finalizedBy(extensionJarDepList)
 }
@@ -146,14 +85,19 @@ run {
     systemProperty 'io.xpipe.app.developerMode', "true"
     systemProperty 'io.xpipe.app.logLevel', "trace"
     systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
-    systemProperty 'io.xpipe.app.showcase', 'false'
+    systemProperty 'io.xpipe.app.showcase', 'true'
+    systemProperty 'io.xpipe.app.staging', isStage
     // systemProperty "io.xpipe.beacon.port", "21724"
     // systemProperty "io.xpipe.beacon.printMessages", "true"
     // systemProperty 'io.xpipe.app.debugPlatform', "true"
 
-    // systemProperty "io.xpipe.beacon.localProxy", "true"
+    // Apply passed xpipe properties
+    for (final def e in System.getProperties().entrySet()) {
+        if (e.getKey().toString().contains("xpipe")) {
+            systemProperty e.getKey().toString(), e.getValue()
+        }
+    }
 
-    systemProperty 'java.library.path', "./lib"
     workingDir = rootDir
 }
 
@@ -181,7 +125,7 @@ processResources {
 
             javaexec {
                 workingDir = project.projectDir
-                jvmArgs += "--module-path=$sourceSets.main.runtimeClasspath.asPath,"
+                jvmArgs += "--module-path=${configurations.javafx.asFileTree.asPath},"
                 jvmArgs += "--add-modules=javafx.graphics"
                 main = "com.sun.javafx.css.parser.Css2Bin"
                 args css

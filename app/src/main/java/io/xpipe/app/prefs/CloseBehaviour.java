@@ -11,7 +11,6 @@ public enum CloseBehaviour implements PrefsChoiceValue {
         public void run() {
             OperationMode.shutdown(false, false);
         }
-
     },
 
     MINIMIZE_TO_TRAY("app.minimizeToTray") {

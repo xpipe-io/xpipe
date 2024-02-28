@@ -1,73 +1,55 @@
-
-.undo-redo-box * {
-visibility: hidden;
+.prefs-container .options-comp .name {
+    -fx-padding: 3em 0 0 0;
+    -fx-font-weight: BOLD;
+    -fx-font-size: 1.1em;
 }
 
-.prefs .group-title {
--fx-font-size: 1.1em;
+.prefs-container .options-comp .description {
+    -fx-padding: 0.5em 0 0.5em 0;
 }
 
-.prefs .formsfx-form * {
--fx-font-size: 0.7em;
+.prefs-container > .title-header.first {
+    -fx-padding: 0 0 -1em 0;
 }
 
-.prefs .formsfx-group * {
--fx-font-size: 0.7em;
+.prefs-container > .title-header {
+    -fx-padding: 2em 0 -1em 0;
+    -fx-font-weight: BOLD;
+    -fx-font-size: 1.5em;
 }
 
-.prefs .simple-control {
--fx-pref-height: 2em;
+.prefs-container.options-comp > .options-comp {
+    -fx-padding: 0 0 0 1em;
 }
 
-.prefs .simple-select-control {
--fx-pref-height: 2em;
-}
-
-.root:light .prefs .tree-view {
-  -color-cell-bg: #9992;
-}
-
-.root:dark .prefs .tree-view {
-  -color-cell-bg: #1114;
-}
-
-.integer-slider-control {
--fx-alignment: CENTER;
-}
-
-.prefs .bread-crumb-bar {
-visibility: hidden;
--fx-font-size: 0.1em;
-}
-
-.prefs .custom-text-field {
--fx-border-width: 1em;
-}
-
-.prefs .tree-view {
--fx-border-width: 0 1px 0 0;
-}
-
-.prefs .grid {
--fx-padding: 1em 2.3em 2em 2.3em;
+.prefs-container.options-comp .name.first {
+    -fx-padding: 0;
 }
 
 .prefs {
--fx-border-width: 0;
--fx-padding: 0;
--fx-border-color: transparent;
- -fx-background-insets: 0;
+    -fx-background-color: transparent;
 }
 
-.prefs .custom-text-field {
--fx-border-width: 5px;
--fx-padding: 0;
--fx-border-color: transparent;
--fx-border-radius: 0;
--fx-background-radius: 0;
+.prefs .sidebar {
+    -fx-spacing: 0;
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-width: 0 1 0 0;
+    -fx-border-color: -color-border-default;
+    -fx-padding: 0.7em 0 0 0;
 }
 
-.prefs .split-pane-divider {
--fx-padding: 0 ;
+.prefs .sidebar .button {
+    -fx-background-color: transparent;
+    -fx-padding: 0.5em 1em 0.5em 1.2em;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 1;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
 }
 
+.prefs .sidebar .button:selected {
+    -fx-background-color: -color-accent-subtle;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-border-width: 1 0 1 0;
+}

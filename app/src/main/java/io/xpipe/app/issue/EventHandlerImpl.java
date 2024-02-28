@@ -14,7 +14,6 @@ public class EventHandlerImpl extends EventHandler {
         var suffix = ee.getThrowable() != null ? Deobfuscator.deobfuscateToString(ee.getThrowable()) : "";
         te.message(prefix + suffix);
         te.type("error");
-        te.category("exception");
         te.tag("omitted", ee.isOmitted());
         te.tag("terminal", ee.isTerminal());
         te.elements(ee.getAttachments().stream().map(Path::toString).toList());
@@ -28,15 +27,6 @@ public class EventHandlerImpl extends EventHandler {
         } else {
             System.out.println(te);
             System.out.flush();
-        }
-    }
-
-    private void handleBasic(ErrorEvent ee) {
-        if (ee.getDescription() != null) {
-            System.err.println(ee.getDescription());
-        }
-        if (ee.getThrowable() != null) {
-            Deobfuscator.printStackTrace(ee.getThrowable());
         }
     }
 

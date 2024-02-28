@@ -39,7 +39,8 @@ public class StandaloneFileBrowser {
         });
     }
 
-    public static void openSingleFile(Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
+    public static void openSingleFile(
+            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file) {
         PlatformThread.runLaterIfNeeded(() -> {
             var model = new BrowserModel(BrowserModel.Mode.SINGLE_FILE_CHOOSER, null);
             var comp = new BrowserComp(model)
@@ -47,7 +48,7 @@ public class StandaloneFileBrowser {
                     .apply(struc -> AppFont.normal(struc.get()));
             var window = AppWindowHelper.sideWindow(AppI18n.get("openFileTitle"), stage -> comp, false, null);
             model.setOnFinish(fileStores -> {
-                file.accept(fileStores.size() > 0 ? fileStores.get(0) : null);
+                file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
                 window.close();
             });
             window.show();
@@ -63,7 +64,7 @@ public class StandaloneFileBrowser {
                     .apply(struc -> AppFont.normal(struc.get()));
             var window = AppWindowHelper.sideWindow(AppI18n.get("saveFileTitle"), stage -> comp, true, null);
             model.setOnFinish(fileStores -> {
-                file.setValue(fileStores.size() > 0 ? fileStores.get(0) : null);
+                file.setValue(fileStores.size() > 0 ? fileStores.getFirst() : null);
                 window.close();
             });
             window.show();

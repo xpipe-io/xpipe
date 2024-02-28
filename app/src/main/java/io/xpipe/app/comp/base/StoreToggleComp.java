@@ -39,7 +39,7 @@ public class StoreToggleComp extends SimpleComp {
                 },
                 section.getWrapper().getValidity(),
                 section.getShowDetails()));
-        var t = new NamedToggleComp(value, AppI18n.observable(nameKey))
+        var t = new ToggleSwitchComp(value, AppI18n.observable(nameKey))
                 .visible(visible)
                 .disable(disable);
         value.addListener((observable, oldValue, newValue) -> {

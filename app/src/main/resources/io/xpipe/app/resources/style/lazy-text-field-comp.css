@@ -1,3 +1,7 @@
+.lazy-text-field-comp {
+    -fx-padding: 5px;
+}
+
 .lazy-text-field-comp:disabled {
 -fx-opacity: 1.0;
 }

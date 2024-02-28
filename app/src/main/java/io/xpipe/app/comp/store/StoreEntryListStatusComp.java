@@ -37,23 +37,43 @@ public class StoreEntryListStatusComp extends SimpleComp {
     public StoreEntryListStatusComp() {
         this.sortMode = new SimpleObjectProperty<>();
         SimpleChangeListener.apply(StoreViewState.get().getActiveCategory(), val -> {
-            sortMode.unbind();
-            sortMode.bindBidirectional(val.getSortMode());
+            sortMode.setValue(val.getSortMode().getValue());
+        });
+        sortMode.addListener((observable, oldValue, newValue) -> {
+            var cat = StoreViewState.get().getActiveCategory().getValue();
+            if (cat == null) {
+                return;
+            }
+
+            cat.getSortMode().setValue(newValue);
         });
     }
 
     private Region createGroupListHeader() {
         var label = new Label();
-        label.textProperty().bind(Bindings.createStringBinding(() -> {
-            return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(StoreViewState.get().getAllConnectionsCategory()) ? "Connections" : "Scripts";
-        }, StoreViewState.get().getActiveCategory()));
+        label.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return StoreViewState.get()
+                                            .getActiveCategory()
+                                            .getValue()
+                                            .getRoot()
+                                            .equals(StoreViewState.get().getAllConnectionsCategory())
+                                    ? "Connections"
+                                    : "Scripts";
+                        },
+                        StoreViewState.get().getActiveCategory()));
         label.getStyleClass().add("name");
 
         var all = BindingsHelper.filteredContentBinding(
                 StoreViewState.get().getAllEntries(),
                 storeEntryWrapper -> {
                     var storeRoot = storeEntryWrapper.getCategory().getValue().getRoot();
-                    return StoreViewState.get().getActiveCategory().getValue().getRoot().equals(storeRoot);
+                    return StoreViewState.get()
+                            .getActiveCategory()
+                            .getValue()
+                            .getRoot()
+                            .equals(storeRoot);
                 },
                 StoreViewState.get().getActiveCategory());
         var shownList = BindingsHelper.filteredContentBinding(
@@ -66,7 +86,13 @@ public class StoreEntryListStatusComp extends SimpleComp {
         var count = new CountComp<>(shownList, all);
 
         var c = count.createRegion();
-        var topBar = new HBox(label, c, Comp.hspacer().createRegion(), createDateSortButton().createRegion(), Comp.hspacer(2).createRegion(), createAlphabeticalSortButton().createRegion());
+        var topBar = new HBox(
+                label,
+                c,
+                Comp.hspacer().createRegion(),
+                createDateSortButton().createRegion(),
+                Comp.hspacer(2).createRegion(),
+                createAlphabeticalSortButton().createRegion());
         AppFont.setSize(label, 3);
         AppFont.setSize(c, 3);
         topBar.setAlignment(Pos.CENTER);
@@ -87,7 +113,7 @@ public class StoreEntryListStatusComp extends SimpleComp {
         });
         filter.apply(struc -> struc.get().sceneProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                            struc.getText().requestFocus();
+                struc.getText().requestFocus();
             }
         }));
 
@@ -103,7 +129,6 @@ public class StoreEntryListStatusComp extends SimpleComp {
         } else {
             f.setPadding(new Insets(-3, 0, -3, 0));
         }
-
 
         AppFont.medium(hbox);
         return hbox;

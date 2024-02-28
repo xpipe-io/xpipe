@@ -6,6 +6,15 @@ import javafx.beans.property.BooleanProperty;
 
 public class BooleanScope implements AutoCloseable {
 
+    private final BooleanProperty prop;
+    private boolean invert;
+    private boolean forcePlatform;
+    private boolean wait;
+
+    public BooleanScope(BooleanProperty prop) {
+        this.prop = prop;
+    }
+
     public static <E extends Throwable> void execute(BooleanProperty prop, FailableRunnable<E> r) throws E {
         try (var ignored = new BooleanScope(prop).start()) {
             r.run();
@@ -17,11 +26,6 @@ public class BooleanScope implements AutoCloseable {
             r.run();
         }
     }
-
-    private final BooleanProperty prop;
-    private boolean invert;
-    private boolean forcePlatform;
-    private boolean wait;
 
     public BooleanScope exclusive() {
         this.wait = true;
@@ -36,10 +40,6 @@ public class BooleanScope implements AutoCloseable {
     public BooleanScope forcePlatform() {
         this.forcePlatform = true;
         return this;
-    }
-
-    public BooleanScope(BooleanProperty prop) {
-        this.prop = prop;
     }
 
     public BooleanScope start() {

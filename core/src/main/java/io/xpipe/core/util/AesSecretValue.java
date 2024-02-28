@@ -6,11 +6,16 @@ import lombok.experimental.SuperBuilder;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.Random;
 
 @SuperBuilder
@@ -21,32 +26,51 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
     private static final int TAG_LENGTH_BIT = 128;
     private static final int IV_LENGTH_BYTE = 12;
     private static final int AES_KEY_BIT = 128;
-    private static final byte[] IV = getFixedNonce(IV_LENGTH_BYTE);
+    private static final int SALT_BIT = 16;
+    private static final SecretKeyFactory SECRET_FACTORY;
+
+    static {
+        try {
+            SECRET_FACTORY = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     public AesSecretValue(char[] secret) {
         super(secret);
     }
 
-    private static byte[] getFixedNonce(int numBytes) {
+    protected abstract int getIterationCount();
+
+    protected byte[] getNonce(int numBytes) {
         byte[] nonce = new byte[numBytes];
-        new Random(1 - 28 + 213213).nextBytes(nonce);
+        new SecureRandom().nextBytes(nonce);
         return nonce;
     }
 
-    protected SecretKey getAESKey(int keysize) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    protected SecretKey getSecretKey(char[] chars) throws InvalidKeySpecException {
+        var salt = new byte[SALT_BIT];
+        new Random(AES_KEY_BIT).nextBytes(salt);
+        KeySpec spec = new PBEKeySpec(chars, salt, getIterationCount(), AES_KEY_BIT);
+        return new SecretKeySpec(SECRET_FACTORY.generateSecret(spec).getEncoded(), "AES");
+    }
+
+    protected SecretKey getAESKey() throws InvalidKeySpecException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     @SneakyThrows
     public byte[] encrypt(byte[] c) {
-        SecretKey secretKey = getAESKey(AES_KEY_BIT);
+        SecretKey secretKey = getAESKey();
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, IV));
+        var iv = getNonce(IV_LENGTH_BYTE);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
         var bytes = cipher.doFinal(c);
-        bytes = ByteBuffer.allocate(IV.length + bytes.length)
+        bytes = ByteBuffer.allocate(iv.length + bytes.length)
                 .order(ByteOrder.LITTLE_ENDIAN)
-                .put(IV)
+                .put(iv)
                 .put(bytes)
                 .array();
         return bytes;
@@ -61,7 +85,7 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
         byte[] cipherText = new byte[bb.remaining()];
         bb.get(cipherText);
 
-        SecretKey secretKey = getAESKey(AES_KEY_BIT);
+        SecretKey secretKey = getAESKey();
         Cipher cipher = Cipher.getInstance(ENCRYPT_ALGO);
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(TAG_LENGTH_BIT, iv));
         return cipher.doFinal(cipherText);

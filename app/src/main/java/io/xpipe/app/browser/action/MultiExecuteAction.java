@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ApplicationHelper;
-import io.xpipe.app.util.TerminalHelper;
+import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.ShellControl;
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,24 +24,29 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        TerminalHelper.open(model.getEntry().getEntry(), FilenameUtils.getBaseName(
-                                                entry.getRawFileEntry().getPath()), pc.command(createCommand(pc, model, entry))
-                                                .withWorkingDirectory(model.getCurrentDirectory()
-                                                                              .getPath()));
+                                        TerminalLauncher.open(
+                                                model.getEntry().getEntry(),
+                                                FilenameUtils.getBaseName(
+                                                        entry.getRawFileEntry().getPath()),
+                                                model.getCurrentDirectory() != null
+                                                        ? model.getCurrentDirectory()
+                                                                .getPath()
+                                                        : null,
+                                                pc.command(createCommand(pc, model, entry)));
                                     }
                                 },
                                 false);
                     }
 
                     @Override
-                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-                        return AppPrefs.get().terminalType().getValue() != null;
-                    }
-
-                    @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
                         return "in " + (t != null ? t.toTranslatedString() : "?");
+                    }
+
+                    @Override
+                    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+                        return AppPrefs.get().terminalType().getValue() != null;
                     }
                 },
                 new LeafAction() {
@@ -51,7 +56,8 @@ public abstract class MultiExecuteAction implements BranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
-                                        var cmd = ApplicationHelper.createDetachCommand(pc, createCommand(pc, model, entry));
+                                        var cmd = ApplicationHelper.createDetachCommand(
+                                                pc, createCommand(pc, model, entry));
                                         pc.command(cmd)
                                                 .withWorkingDirectory(model.getCurrentDirectory()
                                                         .getPath())

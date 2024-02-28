@@ -1,4 +1,4 @@
-set dir ~/.xpipe/scriptdata/starship
+set dir "/tmp/xpipe/$USER/scriptdata/starship"
 export PATH="$PATH:$dir"
 which starship > /dev/null 2>&1
 if [ $status != 0 ]

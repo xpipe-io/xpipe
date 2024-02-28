@@ -2,11 +2,13 @@ package io.xpipe.app.browser;
 
 import atlantafx.base.controls.Spacer;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.util.HumanReadableFormat;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
@@ -21,6 +23,57 @@ public class BrowserStatusBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var bar = new ToolBar();
+        bar.getItems()
+                .setAll(
+                        createClipboardStatus().createRegion(),
+                        createProgressStatus().createRegion(),
+                        new Spacer(),
+                        createSelectionStatus().createRegion());
+        bar.getStyleClass().add("status-bar");
+        bar.setOnDragDetected(event -> {
+            event.consume();
+            bar.startFullDrag();
+        });
+        AppFont.small(bar);
+
+        simulateEmptyCell(bar);
+
+        return bar;
+    }
+
+    private Comp<?> createProgressStatus() {
+        var transferredCount = PlatformThread.sync(Bindings.createStringBinding(
+                () -> {
+                    return HumanReadableFormat.byteCount(
+                            model.getProgress().getValue().getTransferred());
+                },
+                model.getProgress()));
+        var allCount = PlatformThread.sync(Bindings.createStringBinding(
+                () -> {
+                    return HumanReadableFormat.byteCount(
+                            model.getProgress().getValue().getTotal());
+                },
+                model.getProgress()));
+        var progressComp = new LabelComp(Bindings.createStringBinding(
+                () -> {
+                    if (model.getProgress().getValue() == null
+                            || model.getProgress().getValue().done()) {
+                        return null;
+                    } else {
+                        var name = (model.getProgress().getValue().getName() != null
+                                ? " @ " + model.getProgress().getValue().getName() + " "
+                                : "");
+                        return transferredCount.getValue() + " / " + allCount.getValue() + name;
+                    }
+                },
+                transferredCount,
+                allCount,
+                model.getProgress()));
+        return progressComp;
+    }
+
+    private Comp<?> createClipboardStatus() {
         var cc = PlatformThread.sync(BrowserClipboard.currentCopyClipboard);
         var ccCount = Bindings.createStringBinding(
                 () -> {
@@ -32,7 +85,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                     }
                 },
                 cc);
+        return new LabelComp(ccCount);
+    }
 
+    private Comp<?> createSelectionStatus() {
         var selectedCount = PlatformThread.sync(Bindings.createIntegerBinding(
                 () -> {
                     return model.getFileList().getSelection().size();
@@ -46,7 +102,6 @@ public class BrowserStatusBarComp extends SimpleComp {
                             .count();
                 },
                 model.getFileList().getAll()));
-
         var selectedComp = new LabelComp(Bindings.createStringBinding(
                 () -> {
                     if (selectedCount.getValue().intValue() == 0) {
@@ -57,19 +112,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 },
                 selectedCount,
                 allCount));
-
-        var bar = new ToolBar();
-        bar.getItems().setAll(new LabelComp(ccCount).createRegion(), new Spacer(), selectedComp.createRegion());
-        bar.getStyleClass().add("status-bar");
-        bar.setOnDragDetected(event -> {
-            event.consume();
-            bar.startFullDrag();
-        });
-        AppFont.small(bar);
-
-        simulateEmptyCell(bar);
-
-        return bar;
+        return selectedComp;
     }
 
     private void simulateEmptyCell(Region r) {

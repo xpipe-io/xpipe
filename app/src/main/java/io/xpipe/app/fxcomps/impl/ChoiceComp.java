@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.util.Translatable;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -16,7 +17,10 @@ import javafx.util.StringConverter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
@@ -35,6 +39,14 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         this.value = value;
         this.range = PlatformThread.sync(range);
         this.includeNone = includeNone;
+    }
+
+    public static <T extends Translatable> ChoiceComp<T> ofTranslatable(
+            Property<T> value, List<T> range, boolean includeNone) {
+        var map = range.stream()
+                .collect(
+                        Collectors.toMap(o -> o, Translatable::toTranslatedString, (v1, v2) -> v2, LinkedHashMap::new));
+        return new ChoiceComp<>(value, map, includeNone);
     }
 
     @Override

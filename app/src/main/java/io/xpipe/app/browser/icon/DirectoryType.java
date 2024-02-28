@@ -9,7 +9,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface DirectoryType {
@@ -71,6 +74,12 @@ public interface DirectoryType {
         });
     }
 
+    String getId();
+
+    boolean matches(FileSystem.FileEntry entry);
+
+    String getIcon(FileSystem.FileEntry entry, boolean open);
+
     class Simple implements DirectoryType {
 
         @Getter
@@ -101,10 +110,4 @@ public interface DirectoryType {
             return open ? this.open.getIcon() : this.closed.getIcon();
         }
     }
-
-    String getId();
-
-    boolean matches(FileSystem.FileEntry entry);
-
-    String getIcon(FileSystem.FileEntry entry, boolean open);
 }

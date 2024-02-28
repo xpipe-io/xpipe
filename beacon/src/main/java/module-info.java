@@ -4,25 +4,19 @@ import io.xpipe.beacon.exchange.*;
 import io.xpipe.beacon.exchange.cli.*;
 import io.xpipe.core.util.ProxyFunction;
 
-module io.xpipe.beacon {
+open module io.xpipe.beacon {
     exports io.xpipe.beacon;
     exports io.xpipe.beacon.exchange;
     exports io.xpipe.beacon.exchange.data;
     exports io.xpipe.beacon.exchange.cli;
-
-    opens io.xpipe.beacon;
-    opens io.xpipe.beacon.exchange;
-    opens io.xpipe.beacon.exchange.data;
-    opens io.xpipe.beacon.exchange.cli;
-
     exports io.xpipe.beacon.util;
-
-    opens io.xpipe.beacon.util;
+    exports io.xpipe.beacon.test;
 
     requires static com.fasterxml.jackson.core;
     requires static com.fasterxml.jackson.databind;
     requires transitive io.xpipe.core;
     requires static lombok;
+    requires static org.junit.jupiter.api;
 
     uses MessageExchange;
     uses ProxyFunction;
@@ -49,6 +43,8 @@ module io.xpipe.beacon {
             StoreAddExchange,
             ReadDrainExchange,
             AskpassExchange,
+            TerminalWaitExchange,
+            TerminalLaunchExchange,
             ListStoresExchange,
             DialogExchange,
             VersionExchange;

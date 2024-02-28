@@ -1,22 +1,24 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.util.FailableFunction;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.UUID;
 
 public interface ProcessControl extends AutoCloseable {
 
-    @FunctionalInterface
-    interface ExceptionConverter {
-        <T extends Throwable> T convert(T t);
-    }
+    UUID getUuid();
 
     ProcessControl withExceptionConverter(ExceptionConverter converter);
 
     void resetData(boolean cache);
 
-    String prepareTerminalOpen(TerminalInitScriptConfig config) throws Exception;
+    String prepareTerminalOpen(
+            TerminalInitScriptConfig config, FailableFunction<ShellControl, String, Exception> workingDirectory)
+            throws Exception;
 
     void closeStdin() throws IOException;
 
@@ -46,4 +48,9 @@ public interface ProcessControl extends AutoCloseable {
     InputStream getStderr();
 
     Charset getCharset();
+
+    @FunctionalInterface
+    interface ExceptionConverter {
+        <T extends Throwable> T convert(T t);
+    }
 }

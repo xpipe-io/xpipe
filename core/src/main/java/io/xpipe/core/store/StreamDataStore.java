@@ -17,7 +17,7 @@ public interface StreamDataStore extends DataStore {
      * Checks whether this store can be opened.
      * This can be not the case for example if the underlying store does not exist.
      */
-    default boolean canOpen() throws Exception {
+    default boolean canOpen() {
         return true;
     }
 
@@ -35,7 +35,7 @@ public interface StreamDataStore extends DataStore {
     /**
      * Opens an input stream that can be used to read its data.
      */
-    default InputStream openInput() throws Exception {
+    default InputStream openInput() {
         throw new UnsupportedOperationException("Can't open store input");
     }
 
@@ -54,7 +54,7 @@ public interface StreamDataStore extends DataStore {
     /**
      * Opens an output stream that can be used to write data.
      */
-    default OutputStream openOutput() throws Exception {
+    default OutputStream openOutput() {
         throw new UnsupportedOperationException("Can't open store output");
     }
 }

@@ -18,17 +18,6 @@ public class BeaconFormat {
             private int index;
 
             @Override
-            public void close() throws IOException {
-                if (isClosed()) {
-                    return;
-                }
-
-                finishBlock();
-                out.flush();
-                index = -1;
-            }
-
-            @Override
             public void write(int b) throws IOException {
                 if (isClosed()) {
                     throw new IllegalStateException("Output is closed");
@@ -40,6 +29,17 @@ public class BeaconFormat {
 
                 currentBytes[index] = (byte) b;
                 index++;
+            }
+
+            @Override
+            public void close() throws IOException {
+                if (isClosed()) {
+                    return;
+                }
+
+                finishBlock();
+                out.flush();
+                index = -1;
             }
 
             private boolean isClosed() {

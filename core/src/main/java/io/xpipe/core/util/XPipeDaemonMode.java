@@ -19,6 +19,14 @@ public enum XPipeDaemonMode {
     @JsonProperty("gui")
     GUI("gui", List.of("gui", "desktop", "interface"));
 
+    private final String displayName;
+    private final List<String> nameAlternatives;
+
+    XPipeDaemonMode(String displayName, List<String> nameAlternatives) {
+        this.displayName = displayName;
+        this.nameAlternatives = nameAlternatives;
+    }
+
     public static XPipeDaemonMode get(String name) {
         return Arrays.stream(XPipeDaemonMode.values())
                 .filter(xPipeDaemonMode ->
@@ -28,14 +36,5 @@ public enum XPipeDaemonMode {
                         + Arrays.stream(values())
                                 .map(XPipeDaemonMode::getDisplayName)
                                 .collect(Collectors.joining(", "))));
-    }
-
-    private final String displayName;
-
-    private final List<String> nameAlternatives;
-
-    XPipeDaemonMode(String displayName, List<String> nameAlternatives) {
-        this.displayName = displayName;
-        this.nameAlternatives = nameAlternatives;
     }
 }

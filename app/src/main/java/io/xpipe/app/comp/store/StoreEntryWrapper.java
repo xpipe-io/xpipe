@@ -121,7 +121,10 @@ public class StoreEntryWrapper {
         deletable.setValue(entry.getConfiguration().isDeletable()
                 || AppPrefs.get().developerDisableGuiRestrictions().getValue());
 
-        category.setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow()));
+        category.setValue(StoreViewState.get()
+                .getCategoryWrapper(DataStorage.get()
+                        .getStoreCategoryIfPresent(entry.getCategoryUuid())
+                        .orElseThrow()));
 
         if (!entry.getValidity().isUsable()) {
             summary.setValue(null);
@@ -155,8 +158,7 @@ public class StoreEntryWrapper {
                             && e.getDefaultDataStoreCallSite()
                                     .getApplicableClass()
                                     .isAssignableFrom(entry.getStore().getClass())
-                            && e.getDefaultDataStoreCallSite()
-                                    .isApplicable(entry.ref()))
+                            && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
                     .findFirst()
                     .map(ActionProvider::getDefaultDataStoreCallSite)
                     .orElse(null);

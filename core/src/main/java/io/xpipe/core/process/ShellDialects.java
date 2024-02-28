@@ -4,6 +4,7 @@ import io.xpipe.core.util.ModuleLayerLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ServiceLoader;
 
 public class ShellDialects {
@@ -16,7 +17,6 @@ public class ShellDialects {
     public static ShellDialect CMD;
     public static ShellDialect ASH;
     public static ShellDialect SH;
-    public static ShellDialect SH_BSD;
     public static ShellDialect DASH;
     public static ShellDialect BASH;
     public static ShellDialect ZSH;
@@ -24,10 +24,32 @@ public class ShellDialects {
     public static ShellDialect FISH;
 
     public static ShellDialect CISCO;
+    public static ShellDialect MIKROTIK;
     public static ShellDialect RBASH;
 
     public static List<ShellDialect> getStartableDialects() {
-        return ALL.stream().filter(dialect -> dialect.getOpenCommand() != null).filter(dialect -> dialect != SH_BSD).toList();
+        return ALL.stream()
+                .filter(dialect -> dialect.getOpenCommand(null) != null)
+                .toList();
+    }
+
+    private static ShellDialect byId(String name) {
+        return ALL.stream()
+                .filter(shellType -> shellType.getId().equals(name))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public static boolean isPowershell(ShellControl sc) {
+        return sc.getShellDialect().equals(POWERSHELL) || sc.getShellDialect().equals(POWERSHELL_CORE);
+    }
+
+    public static ShellDialect byName(String name) {
+        return byNameIfPresent(name).orElseThrow();
+    }
+
+    public static Optional<ShellDialect> byNameIfPresent(String name) {
+        return ALL.stream().filter(shellType -> shellType.getId().equals(name)).findFirst();
     }
 
     public static class Loader implements ModuleLayerLoader {
@@ -50,8 +72,8 @@ public class ShellDialects {
             CSH = byId("csh");
             ASH = byId("ash");
             SH = byId("sh");
-            SH_BSD = byId("shBsd");
             CISCO = byId("cisco");
+            MIKROTIK = byId("mikrotik");
             RBASH = byId("rbash");
         }
 
@@ -63,23 +85,6 @@ public class ShellDialects {
         @Override
         public boolean prioritizeLoading() {
             return true;
-        }
-    }
-
-    private static ShellDialect byId(String name) {
-        return ALL.stream()
-                .filter(shellType -> shellType.getId().equals(name))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    public static ShellDialect getPlatformDefault() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
-            return CMD;
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
-            return BASH;
-        } else {
-            return ZSH;
         }
     }
 }

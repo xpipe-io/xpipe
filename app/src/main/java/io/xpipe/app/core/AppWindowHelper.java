@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
@@ -19,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -63,6 +65,9 @@ public class AppWindowHelper {
     public static Stage sideWindow(
             String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
         var stage = new Stage();
+        if (AppMainWindow.getInstance() != null) {
+            stage.initOwner(AppMainWindow.getInstance().getStage());
+        }
         stage.setTitle(title);
         if (AppMainWindow.getInstance() != null) {
             stage.initOwner(AppMainWindow.getInstance().getStage());
@@ -71,6 +76,10 @@ public class AppWindowHelper {
         addIcons(stage);
         setupContent(stage, contentFunc, bindSize, loading);
         setupStylesheets(stage.getScene());
+
+        if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
+            stage.initModality(Modality.WINDOW_MODAL);
+        }
 
         stage.setOnShown(e -> {
             // If we set the theme pseudo classes earlier when the window is not shown
@@ -100,14 +109,43 @@ public class AppWindowHelper {
         childStage.setY(stage.getY() + stage.getHeight() / 2 - childStage.getHeight() / 2);
     }
 
-    public static void showAlert(
-            Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
+    public static void showAlert(Consumer<Alert> c, Consumer<Optional<ButtonType>> bt) {
         ThreadHelper.runAsync(() -> {
             var r = showBlockingAlert(c);
             if (bt != null) {
                 bt.accept(r);
             }
         });
+    }
+
+    public static void setContent(Alert alert, String s) {
+        alert.getDialogPane().setMinWidth(505);
+        alert.getDialogPane().setPrefWidth(505);
+        alert.getDialogPane().setMaxWidth(505);
+        alert.getDialogPane().setContent(AppWindowHelper.alertContentText(s));
+    }
+
+    public static boolean showConfirmationAlert(String title, String header, String content) {
+        return AppWindowHelper.showBlockingAlert(alert -> {
+                    alert.titleProperty().bind(AppI18n.observable(title));
+                    alert.headerTextProperty().bind(AppI18n.observable(header));
+                    setContent(alert, AppI18n.get(content));
+                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                })
+                .map(b -> b.getButtonData().isDefaultButton())
+                .orElse(false);
+    }
+
+    public static boolean showConfirmationAlert(
+            ObservableValue<String> title, ObservableValue<String> header, ObservableValue<String> content) {
+        return AppWindowHelper.showBlockingAlert(alert -> {
+                    alert.titleProperty().bind(title);
+                    alert.headerTextProperty().bind(header);
+                    setContent(alert, content.getValue());
+                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                })
+                .map(b -> b.getButtonData().isDefaultButton())
+                .orElse(false);
     }
 
     public static Optional<ButtonType> showBlockingAlert(Consumer<Alert> c) {
@@ -224,7 +262,6 @@ public class AppWindowHelper {
                 if (event.getCode().equals(KeyCode.W) && event.isShortcutDown()) {
                     stage.close();
                     event.consume();
-                    return;
                 }
             }
         });
@@ -236,7 +273,11 @@ public class AppWindowHelper {
         }
 
         var allScreenBounds = computeWindowScreenBounds(stage);
-        if (!areNumbersValid(allScreenBounds.getMinX(), allScreenBounds.getMinY(), allScreenBounds.getMaxX(), allScreenBounds.getMaxY())) {
+        if (!areNumbersValid(
+                allScreenBounds.getMinX(),
+                allScreenBounds.getMinY(),
+                allScreenBounds.getMaxX(),
+                allScreenBounds.getMaxY())) {
             return Optional.empty();
         }
 
@@ -287,43 +328,46 @@ public class AppWindowHelper {
 
     private static List<Screen> getWindowScreens(Stage stage) {
         if (!areNumbersValid(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight())) {
-            return stage.getOwner() != null && stage.getOwner() instanceof Stage ownerStage ? getWindowScreens(ownerStage) : List.of(Screen.getPrimary());
+            return stage.getOwner() != null && stage.getOwner() instanceof Stage ownerStage
+                    ? getWindowScreens(ownerStage)
+                    : List.of(Screen.getPrimary());
         }
 
-        return Screen.getScreensForRectangle(new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()));
+        return Screen.getScreensForRectangle(
+                new Rectangle2D(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight()));
     }
 
     private static Rectangle2D computeWindowScreenBounds(Stage stage) {
-        double minX = Double.POSITIVE_INFINITY ;
-        double minY = Double.POSITIVE_INFINITY ;
-        double maxX = Double.NEGATIVE_INFINITY ;
-        double maxY = Double.NEGATIVE_INFINITY ;
+        double minX = Double.POSITIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
         for (Screen screen : getWindowScreens(stage)) {
             Rectangle2D screenBounds = screen.getBounds();
             if (screenBounds.getMinX() < minX) {
                 minX = screenBounds.getMinX();
             }
             if (screenBounds.getMinY() < minY) {
-                minY = screenBounds.getMinY() ;
+                minY = screenBounds.getMinY();
             }
             if (screenBounds.getMaxX() > maxX) {
                 maxX = screenBounds.getMaxX();
             }
             if (screenBounds.getMaxY() > maxY) {
-                maxY = screenBounds.getMaxY() ;
+                maxY = screenBounds.getMaxY();
             }
         }
         // Taskbar adjustment
         maxY -= 50;
 
-        var w = maxX-minX;
-        var h = maxY-minY;
+        var w = maxX - minX;
+        var h = maxY - minY;
 
         // This should not happen but on weird Linux systems nothing is impossible
         if (w < 0 || h < 0) {
-            return new Rectangle2D(0,0,800, 600);
+            return new Rectangle2D(0, 0, 800, 600);
         }
-        
+
         return new Rectangle2D(minX, minY, w, h);
     }
 

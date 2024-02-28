@@ -28,7 +28,7 @@ public class AppStyle {
         loadStylesheets();
 
         if (AppPrefs.get() != null) {
-            AppPrefs.get().useSystemFont.addListener((c, o, n) -> {
+            AppPrefs.get().useSystemFont().addListener((c, o, n) -> {
                 changeFontUsage(n);
             });
         }
@@ -48,17 +48,19 @@ public class AppStyle {
                     return;
                 }
 
-                TrackEvent.trace("core", "Loading styles for module " + module.getName());
+                TrackEvent.trace("Loading styles for module " + module.getName());
                 Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try {
                             var bytes = Files.readAllBytes(file);
                             if (file.getFileName().toString().endsWith(".bss")) {
-                                var s = "data:application/octet-stream;base64," + Base64.getEncoder().encodeToString(bytes);
+                                var s = "data:application/octet-stream;base64,"
+                                        + Base64.getEncoder().encodeToString(bytes);
                                 STYLESHEET_CONTENTS.put(file, s);
                             } else if (file.getFileName().toString().endsWith(".css")) {
-                                var s = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
+                                var s = "data:text/css;base64,"
+                                        + Base64.getEncoder().encodeToString(bytes);
                                 STYLESHEET_CONTENTS.put(file, s);
                             }
                         } catch (IOException ex) {
@@ -93,7 +95,7 @@ public class AppStyle {
     }
 
     public static void addStylesheets(Scene scene) {
-        if (AppPrefs.get() != null && !AppPrefs.get().useSystemFont.get()) {
+        if (AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue()) {
             scene.getStylesheets().add(FONT_CONTENTS);
         }
 

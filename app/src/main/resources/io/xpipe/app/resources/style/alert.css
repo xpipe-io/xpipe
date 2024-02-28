@@ -1,7 +1,3 @@
-.dialog-pane:no-header {
-    -fx-padding: 0;
-}
-
 .dialog-pane:header {
     -fx-pref-height: 2em;
 }
@@ -23,6 +19,7 @@
 
 .dialog-pane:header .header-panel {
 -fx-background-color: -color-bg-default;
+    -fx-padding: 1.5em;
 }
 
 .dialog-pane:header .header-panel .graphic-container {
@@ -33,8 +30,8 @@
 -fx-border-width: 2px 0 0 0;
 -fx-border-color:-color-accent-fg;
 -fx-background-color: -color-bg-default;
-    -fx-border-insets: 0 1.333em 1em 1em;
-    -fx-padding: 0.7em 0 0 0;
+    -fx-border-insets: 0 1.5em 1.5em 1.5em;
+    -fx-padding: 1.5em 0 0 0;
 }
 
 .content-text {

@@ -101,7 +101,7 @@ public record CodeSnippet(List<CodeSnippet.Line> lines) {
                 return this;
             }
 
-            var first = s.lines.get(0);
+            var first = s.lines.getFirst();
             var line = new ArrayList<>(currentLine);
             line.addAll(first.elements);
             lines.add(new Line(new ArrayList<>(line)));

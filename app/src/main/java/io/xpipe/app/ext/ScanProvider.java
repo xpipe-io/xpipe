@@ -5,6 +5,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.ModuleLayerLoader;
+import lombok.AllArgsConstructor;
 import lombok.Value;
 
 import java.util.Comparator;
@@ -14,15 +15,41 @@ import java.util.stream.Collectors;
 
 public abstract class ScanProvider {
 
+    private static List<ScanProvider> ALL;
+
+    public static List<ScanProvider> getAll() {
+        return ALL;
+    }
+
+    public ScanOperation create(DataStore store) {
+        return null;
+    }
+
+    public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
+        return null;
+    }
+
     @Value
+    @AllArgsConstructor
     public static class ScanOperation {
         String nameKey;
         boolean disabled;
         boolean defaultSelected;
         FailableRunnable<Exception> scanner;
-    }
+        String licenseFeatureId;
 
-    private static List<ScanProvider> ALL;
+        public ScanOperation(String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Exception> scanner) {
+            this.nameKey = nameKey;
+            this.disabled = disabled;
+            this.defaultSelected = defaultSelected;
+            this.scanner = scanner;
+            this.licenseFeatureId = null;
+        }
+
+        public String getLicensedFeatureId() {
+            return licenseFeatureId;
+        }
+    }
 
     public static class Loader implements ModuleLayerLoader {
 
@@ -44,17 +71,5 @@ public abstract class ScanProvider {
         public boolean prioritizeLoading() {
             return false;
         }
-    }
-
-    public static List<ScanProvider> getAll() {
-        return ALL;
-    }
-
-    public ScanOperation create(DataStore store) {
-        return null;
-    }
-
-    public ScanOperation create(DataStoreEntry entry, ShellControl sc) throws Exception {
-        return null;
     }
 }

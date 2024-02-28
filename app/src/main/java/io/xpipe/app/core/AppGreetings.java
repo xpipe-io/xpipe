@@ -1,6 +1,5 @@
 package io.xpipe.app.core;
 
-import com.jfoenix.controls.JFXCheckBox;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.fxcomps.Comp;
@@ -52,7 +51,7 @@ public class AppGreetings {
 
     public static void showIfNeeded() {
         boolean set = AppCache.get("legalAccepted", Boolean.class, () -> false);
-        if (set || !AppState.get().isInitialLaunch()) {
+        if (set || AppProperties.get().isDevelopmentEnvironment()) {
             return;
         }
         var read = new SimpleBooleanProperty();
@@ -72,20 +71,21 @@ public class AppGreetings {
                     });
 
                     var acceptanceBox = Comp.of(() -> {
-                                var cb = new JFXCheckBox();
+                                var cb = new CheckBox();
                                 cb.selectedProperty().bindBidirectional(accepted);
 
                                 var label = new Label(AppI18n.get("legalAccept"));
                                 label.setGraphic(cb);
                                 AppFont.medium(label);
-                                label.setPadding(new Insets(40, 0, 10, 0));
+                                label.setPadding(new Insets(20, 0, 10, 0));
                                 label.setOnMouseClicked(event -> accepted.set(!accepted.get()));
+                                label.setGraphicTextGap(10);
                                 return label;
                             })
                             .createRegion();
 
                     var layout = new BorderPane();
-                    layout.getStyleClass().add("window-content");
+                    layout.setPadding(new Insets(20));
                     layout.setCenter(accordion);
                     layout.setBottom(acceptanceBox);
                     layout.setPrefWidth(700);

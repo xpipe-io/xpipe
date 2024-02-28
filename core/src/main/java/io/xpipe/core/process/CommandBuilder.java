@@ -1,5 +1,7 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.util.FailableConsumer;
+import io.xpipe.core.util.FailableFunction;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -8,15 +10,37 @@ import java.util.function.Function;
 
 public class CommandBuilder {
 
+    private final List<Element> elements = new ArrayList<>();
+
+    @Getter
+    private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
+
+    private final List<FailableConsumer<ShellControl, Exception>> setup = new ArrayList<>();
+
+    @Getter
+    private CountDown countDown;
+
+    @Getter
+    private UUID uuid;
+
+    private CommandBuilder() {}
+
     public static CommandBuilder of() {
         return new CommandBuilder();
     }
 
-    private CommandBuilder() {}
+    public static CommandBuilder ofString(String s) {
+        return new CommandBuilder().add(s);
+    }
 
-    private final List<Element> elements = new ArrayList<>();
-    @Getter
-    private final Map<String, Element> environmentVariables = new LinkedHashMap<>();
+    public static CommandBuilder ofFunction(FailableFunction<ShellControl, String, Exception> command) {
+        return CommandBuilder.of().add(sc -> command.apply(sc));
+    }
+
+    public CommandBuilder setup(FailableConsumer<ShellControl, Exception> consumer) {
+        setup.add(consumer);
+        return this;
+    }
 
     public CommandBuilder fixedEnvrironment(String k, String v) {
         environmentVariables.put(k, new Fixed(v));
@@ -36,25 +60,6 @@ public class CommandBuilder {
     public CommandBuilder envrironment(Map<String, Element> map) {
         environmentVariables.putAll(map);
         return this;
-    }
-
-    public interface Element {
-
-        String evaluate(ShellControl sc) throws Exception;
-    }
-
-    static class Fixed implements Element {
-
-        private final String string;
-
-        Fixed(String string) {
-            this.string = string;
-        }
-
-        @Override
-        public String evaluate(ShellControl sc) {
-            return string;
-        }
     }
 
     public CommandBuilder discardOutput() {
@@ -82,7 +87,6 @@ public class CommandBuilder {
         }
         return this;
     }
-
 
     public CommandBuilder add(int index, String... s) {
         for (String s1 : s) {
@@ -126,19 +130,14 @@ public class CommandBuilder {
         return this;
     }
 
-    public CommandBuilder addSub(CommandBuilder sub) {
-        elements.add(sc -> {
-            if (sc == null) {
-                return sub.buildSimple();
-            }
-
-            return sub.buildString(sc);
-        });
+    public CommandBuilder add(CommandBuilder sub) {
+        elements.addAll(sub.elements);
+        environmentVariables.putAll(sub.environmentVariables);
         return this;
     }
 
     public CommandBuilder prepend(Element e) {
-        elements.add(0, e);
+        elements.addFirst(e);
         return this;
     }
 
@@ -156,21 +155,6 @@ public class CommandBuilder {
         return prepend("\"" + s + "\"");
     }
 
-    public CommandBuilder addFile(String s) {
-        elements.add(sc -> {
-            if (s == null) {
-                return null;
-            }
-
-            if (sc == null) {
-                return "\"" + s + "\"";
-            }
-
-            return sc.getShellDialect().fileArgument(s);
-        });
-        return this;
-    }
-
     public CommandBuilder addFile(Function<ShellControl, String> f) {
         elements.add(sc -> {
             if (f == null) {
@@ -186,13 +170,49 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder addFile(String s) {
+        elements.add(sc -> {
+            if (s == null) {
+                return null;
+            }
+
+            if (sc == null) {
+                return "\"" + s + "\"";
+            }
+
+            return sc.getShellDialect().fileArgument(s);
+        });
+        return this;
+    }
+
+    public CommandBuilder addLiteral(String s) {
+        elements.add(sc -> {
+            if (s == null) {
+                return null;
+            }
+
+            if (sc == null) {
+                return "\"" + s + "\"";
+            }
+
+            return sc.getShellDialect().literalArgument(s);
+        });
+        return this;
+    }
+
     public CommandBuilder addFiles(SequencedCollection<String> s) {
         s.forEach(this::addFile);
         return this;
     }
 
-    public String buildBase(ShellControl sc) throws Exception {
-        sc.getShellDialect().prepareCommandForShell(this);
+    public String buildCommandBase(ShellControl sc) throws Exception {
+        countDown = CountDown.of();
+        uuid = UUID.randomUUID();
+
+        for (FailableConsumer<ShellControl, Exception> s : setup) {
+            s.accept(sc);
+        }
+
         List<String> list = new ArrayList<>();
         for (Element element : elements) {
             String evaluate = element.evaluate(sc);
@@ -206,7 +226,7 @@ public class CommandBuilder {
     }
 
     public String buildString(ShellControl sc) throws Exception {
-        var s = buildBase(sc);
+        var s = buildCommandBase(sc);
         LinkedHashMap<String, String> map = new LinkedHashMap<>();
         for (var e : environmentVariables.entrySet()) {
             var v = e.getValue().evaluate(sc);
@@ -233,5 +253,24 @@ public class CommandBuilder {
             list.add(evaluate);
         }
         return String.join(" ", list);
+    }
+
+    public interface Element {
+
+        String evaluate(ShellControl sc) throws Exception;
+    }
+
+    static class Fixed implements Element {
+
+        private final String string;
+
+        Fixed(String string) {
+            this.string = string;
+        }
+
+        @Override
+        public String evaluate(ShellControl sc) {
+            return string;
+        }
     }
 }

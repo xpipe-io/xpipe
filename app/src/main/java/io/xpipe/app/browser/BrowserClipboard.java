@@ -2,7 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.store.FileSystem;
 import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.property.Property;
@@ -24,18 +24,6 @@ import java.util.stream.Collectors;
 
 public class BrowserClipboard {
 
-    @Value
-    public static class Instance {
-        UUID uuid;
-        FileSystem.FileEntry baseDirectory;
-        List<FileSystem.FileEntry> entries;
-
-        public String toClipboardString() {
-            return entries.stream().map(fileEntry -> "\"" + fileEntry.getPath() + "\"").collect(
-                    Collectors.joining(ShellDialects.getPlatformDefault().getNewLine().getNewLineString()));
-        }
-    }
-
     public static final Property<Instance> currentCopyClipboard = new SimpleObjectProperty<>();
     public static Instance currentDragClipboard;
 
@@ -45,7 +33,7 @@ public class BrowserClipboard {
                 .addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<>() {
                     @Override
                     @SuppressWarnings("unchecked")
-                    public void run() throws Throwable {
+                    public void run() {
                         Clipboard clipboard = (Clipboard) e.getSource();
                         try {
                             if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
@@ -53,7 +41,8 @@ public class BrowserClipboard {
                             }
 
                             List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-                            var files = data.stream().map(string -> string.toPath()).toList();
+                            var files =
+                                    data.stream().map(string -> string.toPath()).toList();
                             if (files.size() == 0) {
                                 return;
                             }
@@ -120,5 +109,21 @@ public class BrowserClipboard {
         }
 
         return null;
+    }
+
+    @Value
+    public static class Instance {
+        UUID uuid;
+        FileSystem.FileEntry baseDirectory;
+        List<FileSystem.FileEntry> entries;
+
+        public String toClipboardString() {
+            return entries.stream()
+                    .map(fileEntry -> "\"" + fileEntry.getPath() + "\"")
+                    .collect(Collectors.joining(ProcessControlProvider.get()
+                            .getEffectiveLocalDialect()
+                            .getNewLine()
+                            .getNewLineString()));
+        }
     }
 }

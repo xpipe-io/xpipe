@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import atlantafx.base.theme.*;
-import com.jthemedetecor.OsThemeDetector;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
@@ -14,7 +13,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.ColorScheme;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -71,30 +73,23 @@ public class AppTheme {
         }
 
         try {
-            OsThemeDetector detector = OsThemeDetector.getDetector();
             if (AppPrefs.get().theme.getValue() == null) {
-                try {
-                    setDefault(detector.isDark());
-                } catch (Throwable ex) {
-                    ErrorEvent.fromThrowable(ex).omit().handle();
-                    setDefault(false);
-                }
+                setDefault(Platform.getPreferences().getColorScheme());
             }
 
-            // The gnome detector sometimes runs into issues, also it's not that important
-            if (!OsType.getLocal().equals(OsType.LINUX)) {
-                detector.registerListener(dark -> {
-                    PlatformThread.runLaterIfNeeded(() -> {
-                        if (dark && !AppPrefs.get().theme.getValue().isDark()) {
-                            AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
-                        }
+            Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
+                Platform.runLater(() -> {
+                    if (t1 == ColorScheme.DARK
+                            && !AppPrefs.get().theme.getValue().isDark()) {
+                        AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
+                    }
 
-                        if (!dark && AppPrefs.get().theme.getValue().isDark()) {
-                            AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
-                        }
-                    });
+                    if (t1 != ColorScheme.DARK
+                            && AppPrefs.get().theme.getValue().isDark()) {
+                        AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
+                    }
                 });
-            }
+            });
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).omit().handle();
         }
@@ -110,8 +105,8 @@ public class AppTheme {
         init = true;
     }
 
-    private static void setDefault(boolean dark) {
-        if (dark) {
+    private static void setDefault(ColorScheme colorScheme) {
+        if (colorScheme == ColorScheme.DARK) {
             AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
         } else {
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
@@ -189,8 +184,8 @@ public class AppTheme {
         }
 
         @Override
-        public String toTranslatedString() {
-            return name;
+        public ObservableValue<String> toTranslatedString() {
+            return new SimpleStringProperty(name);
         }
     }
 
@@ -211,6 +206,12 @@ public class AppTheme {
         // Also include your custom theme here
         public static final List<Theme> ALL =
                 List.of(PRIMER_LIGHT, PRIMER_DARK, NORD_LIGHT, NORD_DARK, CUPERTINO_LIGHT, CUPERTINO_DARK, DRACULA);
+        protected final String id;
+
+        @Getter
+        protected final String cssId;
+
+        protected final atlantafx.base.theme.Theme theme;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
@@ -228,13 +229,6 @@ public class AppTheme {
             };
         }
 
-        protected final String id;
-
-        @Getter
-        protected final String cssId;
-
-        protected final atlantafx.base.theme.Theme theme;
-
         public boolean isDark() {
             return theme.isDarkMode();
         }
@@ -244,8 +238,8 @@ public class AppTheme {
         }
 
         @Override
-        public String toTranslatedString() {
-            return theme.getName();
+        public ObservableValue<String> toTranslatedString() {
+            return new SimpleStringProperty(theme.getName());
         }
 
         @Override

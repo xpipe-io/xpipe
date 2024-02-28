@@ -9,8 +9,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum StartupBehaviour implements PrefsChoiceValue {
-    GUI("app.startGui", XPipeDaemonMode.GUI) {
-    },
+    GUI("app.startGui", XPipeDaemonMode.GUI) {},
     TRAY("app.startInTray", XPipeDaemonMode.TRAY) {
 
         public boolean isSelectable() {

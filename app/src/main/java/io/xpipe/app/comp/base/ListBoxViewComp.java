@@ -66,7 +66,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         return new SimpleCompStructure<>(scroll);
     }
 
-    private void refresh(VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
+    private void refresh(
+            VBox listView, List<? extends T> shown, List<? extends T> all, Map<T, Region> cache, boolean asynchronous) {
         Runnable update = () -> {
             // Clear cache of unused values
             cache.keySet().removeIf(t -> !all.contains(t));

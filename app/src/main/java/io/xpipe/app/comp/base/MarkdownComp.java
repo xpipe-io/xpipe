@@ -46,11 +46,14 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     @SneakyThrows
     private WebView createWebView() {
         var wv = new WebView();
-        wv.getEngine().setUserDataDirectory(AppProperties.get().getDataDir().resolve("webview").toFile());
+        wv.getEngine()
+                .setUserDataDirectory(
+                        AppProperties.get().getDataDir().resolve("webview").toFile());
         wv.setPageFill(Color.TRANSPARENT);
-        var theme = AppPrefs.get() != null && AppPrefs.get().theme.getValue().isDark() ? "web/github-markdown-dark.css" : "web/github-markdown-light.css";
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme)
-                .orElseThrow();
+        var theme = AppPrefs.get() != null && AppPrefs.get().theme.getValue().isDark()
+                ? "web/github-markdown-dark.css"
+                : "web/github-markdown-light.css";
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme).orElseThrow();
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
         SimpleChangeListener.apply(PlatformThread.sync(markdown), val -> {

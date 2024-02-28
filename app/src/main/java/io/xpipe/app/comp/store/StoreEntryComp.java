@@ -40,24 +40,6 @@ import java.util.Arrays;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
-    public static StoreEntryComp create(
-            StoreEntryWrapper entry, Comp<?> content, boolean preferLarge) {
-        if (!preferLarge) {
-            return new DenseStoreEntryComp(entry, true, content);
-        } else {
-            return new StandardStoreEntryComp(entry, content);
-        }
-    }
-
-    public static Comp<?> customSection(StoreSection e, boolean topLevel) {
-        var prov = e.getWrapper().getEntry().getProvider();
-        if (prov != null) {
-            return prov.customEntryComp(e, topLevel);
-        } else {
-            return new StandardStoreEntryComp(e.getWrapper(), null);
-        }
-    }
-
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
     public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH =
@@ -72,6 +54,29 @@ public abstract class StoreEntryComp extends SimpleComp {
         this.content = content;
     }
 
+    public static StoreEntryComp create(StoreEntryWrapper entry, Comp<?> content, boolean preferLarge) {
+        var forceCondensed = AppPrefs.get() != null
+                && AppPrefs.get().condenseConnectionDisplay().get();
+        if (!preferLarge || forceCondensed) {
+            return new DenseStoreEntryComp(entry, true, content);
+        } else {
+            return new StandardStoreEntryComp(entry, content);
+        }
+    }
+
+    public static Comp<?> customSection(StoreSection e, boolean topLevel) {
+        var prov = e.getWrapper().getEntry().getProvider();
+        if (prov != null) {
+            return prov.customEntryComp(e, topLevel);
+        } else {
+            var forceCondensed = AppPrefs.get() != null
+                    && AppPrefs.get().condenseConnectionDisplay().get();
+            return forceCondensed
+                    ? new DenseStoreEntryComp(e.getWrapper(), true, null)
+                    : new StandardStoreEntryComp(e.getWrapper(), null);
+        }
+    }
+
     @Override
     protected final Region createSimple() {
         var r = createContent();
@@ -83,8 +88,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty()
-                .bind(wrapper.nameProperty());
+        button.accessibleTextProperty().bind(wrapper.nameProperty());
         button.setOnAction(event -> {
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
@@ -105,8 +109,13 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Label createInformation() {
         var information = new Label();
         information.setGraphicTextGap(7);
-        information.textProperty().bind(wrapper.getEntry().getProvider() != null ?
-                                                PlatformThread.sync(wrapper.getEntry().getProvider().informationString(wrapper)) : new SimpleStringProperty());
+        information
+                .textProperty()
+                .bind(
+                        wrapper.getEntry().getProvider() != null
+                                ? PlatformThread.sync(
+                                        wrapper.getEntry().getProvider().informationString(wrapper))
+                                : new SimpleStringProperty());
         information.getStyleClass().add("information");
         AppFont.header(information);
 
@@ -191,15 +200,16 @@ public abstract class StoreEntryComp extends SimpleComp {
                 continue;
             }
 
-            var button = new IconButtonComp(
-                    actionProvider.getIcon(wrapper.getEntry().ref()), () -> {
+            var button =
+                    new IconButtonComp(actionProvider.getIcon(wrapper.getEntry().ref()), () -> {
                         ThreadHelper.runFailableAsync(() -> {
                             var action = actionProvider.createAction(
                                     wrapper.getEntry().ref());
                             action.execute();
                         });
                     });
-            button.accessibleText(actionProvider.getName(wrapper.getEntry().ref()).getValue());
+            button.accessibleText(
+                    actionProvider.getName(wrapper.getEntry().ref()).getValue());
             button.apply(new FancyTooltipAugment<>(
                     actionProvider.getName(wrapper.getEntry().ref())));
             if (actionProvider.activeType() == ActionProvider.DataStoreCallSite.ActiveType.ONLY_SHOW_IF_ENABLED) {
@@ -213,11 +223,11 @@ public abstract class StoreEntryComp extends SimpleComp {
         var settingsButton = createSettingsButton();
         list.add(settingsButton);
         if (list.size() > 1) {
-            list.get(0).styleClass(Styles.LEFT_PILL);
+            list.getFirst().styleClass(Styles.LEFT_PILL);
             for (int i = 1; i < list.size() - 1; i++) {
                 list.get(i).styleClass(Styles.CENTER_PILL);
             }
-            list.get(list.size() - 1).styleClass(Styles.RIGHT_PILL);
+            list.getLast().styleClass(Styles.RIGHT_PILL);
         }
         list.forEach(comp -> {
             comp.apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT));
@@ -264,11 +274,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                     ? new Menu(null, new FontIcon(icon))
                     : new MenuItem(null, new FontIcon(icon));
 
-            var proRequired = p.getKey().getProFeatureId() != null &&
-                    !LicenseProvider.get().getFeature(p.getKey().getProFeatureId()).isSupported();
+            var proRequired = p.getKey().getProFeatureId() != null
+                    && !LicenseProvider.get()
+                            .getFeature(p.getKey().getProFeatureId())
+                            .isSupported();
             if (proRequired) {
                 item.setDisable(true);
-                item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)",name));
+                item.textProperty().bind(Bindings.createStringBinding(() -> name.getValue() + " (Pro)", name));
             } else {
                 item.textProperty().bind(name);
             }
@@ -285,8 +297,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
                 contextMenu.hide();
                 ThreadHelper.runFailableAsync(() -> {
-                    var action = actionProvider.createAction(
-                            wrapper.getEntry().ref());
+                    var action = actionProvider.createAction(wrapper.getEntry().ref());
                     action.execute();
                 });
             });
@@ -302,11 +313,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                 run.textProperty().bind(AppI18n.observable("base.execute"));
                 run.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        p.getKey().getDataStoreCallSite().createAction(wrapper.getEntry().ref()).execute();
+                        p.getKey()
+                                .getDataStoreCallSite()
+                                .createAction(wrapper.getEntry().ref())
+                                .execute();
                     });
                 });
                 menu.getItems().add(run);
-
 
                 var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
                 var url = "xpipe://action/" + p.getKey().getId() + "/"
@@ -314,8 +327,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                 sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
                 sc.setOnAction(event -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        DesktopShortcuts.create(url,
-                                wrapper.nameProperty().getValue() + " (" + p.getKey().getDataStoreCallSite().getName(wrapper.getEntry().ref()).getValue() + ")");
+                        DesktopShortcuts.create(
+                                url,
+                                wrapper.nameProperty().getValue() + " ("
+                                        + p.getKey()
+                                                .getDataStoreCallSite()
+                                                .getName(wrapper.getEntry().ref())
+                                                .getValue() + ")");
                     });
                 });
                 menu.getItems().add(sc);
@@ -345,20 +363,23 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(browse);
         }
 
-        if (wrapper.getEntry().getProvider() != null && wrapper.getEntry().getProvider().canMoveCategories()) {
+        if (wrapper.getEntry().getProvider() != null
+                && wrapper.getEntry().getProvider().canMoveCategories()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-            StoreViewState.get().getSortedCategories(wrapper.getCategory().getValue().getRoot()).forEach(storeCategoryWrapper -> {
-                MenuItem m = new MenuItem(storeCategoryWrapper.getName());
-                m.setOnAction(event -> {
-                    wrapper.moveTo(storeCategoryWrapper.getCategory());
-                    event.consume();
-                });
-                if (storeCategoryWrapper.getParent() == null) {
-                    m.setDisable(true);
-                }
+            StoreViewState.get()
+                    .getSortedCategories(wrapper.getCategory().getValue().getRoot())
+                    .forEach(storeCategoryWrapper -> {
+                        MenuItem m = new MenuItem(storeCategoryWrapper.getName());
+                        m.setOnAction(event -> {
+                            wrapper.moveTo(storeCategoryWrapper.getCategory());
+                            event.consume();
+                        });
+                        if (storeCategoryWrapper.getParent() == null) {
+                            m.setDisable(true);
+                        }
 
-                move.getItems().add(m);
-            });
+                        move.getItems().add(m);
+                    });
             contextMenu.getItems().add(move);
         }
 
@@ -382,9 +403,16 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
-        del.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-            return !wrapper.getDeletable().get() && !AppPrefs.get().developerDisableGuiRestrictions().get();
-        }, wrapper.getDeletable(), AppPrefs.get().developerDisableGuiRestrictions()));
+        del.disableProperty()
+                .bind(Bindings.createBooleanBinding(
+                        () -> {
+                            return !wrapper.getDeletable().get()
+                                    && !AppPrefs.get()
+                                            .developerDisableGuiRestrictions()
+                                            .get();
+                        },
+                        wrapper.getDeletable(),
+                        AppPrefs.get().developerDisableGuiRestrictions()));
         del.setOnAction(event -> wrapper.delete());
         contextMenu.getItems().add(del);
 

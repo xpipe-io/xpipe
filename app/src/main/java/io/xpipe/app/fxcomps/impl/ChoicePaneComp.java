@@ -30,7 +30,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var list    = FXCollections.observableArrayList(entries);
+        var list = FXCollections.observableArrayList(entries);
         var cb = new ComboBox<>(list);
         cb.setOnKeyPressed(event -> {
             if (!cb.isShowing() && event.getCode().equals(KeyCode.ENTER)) {

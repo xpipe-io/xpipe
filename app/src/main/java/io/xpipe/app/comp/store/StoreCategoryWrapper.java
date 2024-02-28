@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -59,13 +59,13 @@ public class StoreCategoryWrapper {
     public StoreCategoryWrapper getParent() {
         return StoreViewState.get().getCategories().stream()
                 .filter(storeCategoryWrapper ->
-                                storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
-                .findAny().orElse(null);
+                        storeCategoryWrapper.getCategory().getUuid().equals(category.getParentCategory()))
+                .findAny()
+                .orElse(null);
     }
 
-    public boolean contains(DataStoreEntry entry) {
-        return entry.getCategoryUuid().equals(category.getUuid())
-                || children.stream().anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry));
+    public boolean contains(StoreEntryWrapper entry) {
+        return entry.getEntry().getCategoryUuid().equals(category.getUuid()) || containedEntries.contains(entry);
     }
 
     public void select() {
@@ -87,6 +87,10 @@ public class StoreCategoryWrapper {
             update();
         }));
 
+        AppPrefs.get().showChildCategoriesInParentCategory().addListener((observable, oldValue, newValue) -> {
+            update();
+        });
+
         sortMode.addListener((observable, oldValue, newValue) -> {
             category.setSortMode(newValue);
         });
@@ -97,8 +101,8 @@ public class StoreCategoryWrapper {
             DataStoreCategory p = category;
             if (newValue) {
                 while ((p = DataStorage.get()
-                        .getStoreCategoryIfPresent(p.getParentCategory())
-                        .orElse(null))
+                                .getStoreCategoryIfPresent(p.getParentCategory())
+                                .orElse(null))
                         != null) {
                     p.setShare(true);
                 }
@@ -117,17 +121,23 @@ public class StoreCategoryWrapper {
         share.setValue(category.isShare());
 
         containedEntries.setAll(StoreViewState.get().getAllEntries().stream()
-                .filter(entry -> contains(entry.getEntry()))
+                .filter(entry -> {
+                    return entry.getEntry().getCategoryUuid().equals(category.getUuid())
+                            || (AppPrefs.get()
+                                            .showChildCategoriesInParentCategory()
+                                            .get()
+                                    && children.stream()
+                                            .anyMatch(storeCategoryWrapper -> storeCategoryWrapper.contains(entry)));
+                })
                 .toList());
         children.setAll(StoreViewState.get().getCategories().stream()
                 .filter(storeCategoryWrapper -> getCategory()
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
-        Optional.ofNullable(getParent())
-                .ifPresent(storeCategoryWrapper -> {
-                    storeCategoryWrapper.update();
-                });
+        Optional.ofNullable(getParent()).ifPresent(storeCategoryWrapper -> {
+            storeCategoryWrapper.update();
+        });
     }
 
     public String getName() {

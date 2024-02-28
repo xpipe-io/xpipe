@@ -47,6 +47,22 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
         return new DenseStoreEntryComp(sec.getWrapper(), true, dropdown);
     }
 
+    @Override
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
+    }
+
+    @Override
+    public CreationCategory getCreationCategory() {
+        return CreationCategory.SCRIPT;
+    }
+
+    @Override
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        ScriptGroupStore scriptStore = store.getStore().asNeeded();
+        return scriptStore.getParent() != null ? scriptStore.getParent().get() : null;
+    }
+
     @SneakyThrows
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
@@ -62,7 +78,12 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
                 .description("scriptGroupDescription")
                 .addComp(
                         new DataStoreChoiceComp<>(
-                                DataStoreChoiceComp.Mode.OTHER, entry, group, ScriptGroupStore.class, null, StoreViewState.get().getAllScriptsCategory()),
+                                DataStoreChoiceComp.Mode.OTHER,
+                                entry,
+                                group,
+                                ScriptGroupStore.class,
+                                null,
+                                StoreViewState.get().getAllScriptsCategory()),
                         group)
                 .bind(
                         () -> {
@@ -76,35 +97,19 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        ScriptGroupStore scriptStore = store.getStore().asNeeded();
-        return scriptStore.getParent() != null ? scriptStore.getParent().get() : null;
+    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
+        ScriptGroupStore scriptStore = wrapper.getEntry().getStore().asNeeded();
+        return new SimpleStringProperty(scriptStore.getDescription());
+    }
+
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        return "proc:shellEnvironment_icon.svg";
     }
 
     @Override
     public DataStore defaultStore() {
         return ScriptGroupStore.builder().build();
-    }
-
-    @Override
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
-
-    @Override
-    public CreationCategory getCreationCategory() {
-        return CreationCategory.SCRIPT;
-    }
-
-    @Override
-    public String getDisplayIconFileName(DataStore store) {
-            return "proc:shellEnvironment_icon.svg";
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreEntryWrapper wrapper) {
-        ScriptGroupStore scriptStore = wrapper.getEntry().getStore().asNeeded();
-        return new SimpleStringProperty(scriptStore.getDescription());
     }
 
     @Override
@@ -116,5 +121,4 @@ public class ScriptGroupStoreProvider implements DataStoreProvider {
     public List<Class<?>> getStoreClasses() {
         return List.of(ScriptGroupStore.class);
     }
-
 }

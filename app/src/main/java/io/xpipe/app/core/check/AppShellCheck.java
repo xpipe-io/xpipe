@@ -2,8 +2,8 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ProcessOutputException;
-import io.xpipe.core.process.ShellDialects;
 
 import java.util.Optional;
 
@@ -12,19 +12,25 @@ public class AppShellCheck {
     public static void check() {
         var err = selfTestErrorCheck();
         if (err.isPresent()) {
-            var msg = """
+            var msg =
+                    """
                     Shell self-test failed for %s:
                     %s
-                    
+
                     This indicates that something is seriously wrong and certain shell functionality will not work as expected.
-                    
+
                     The most likely causes are:
                     - On Windows, an AntiVirus program might block required programs and commands
                     - The system shell is restricted or blocked
                     - The operating system is not supported
-                    
+
                     You can reach out to us if you want to properly diagnose the cause individually and hopefully fix it.
-                    """.formatted(ShellDialects.getPlatformDefault().getDisplayName(), err.get());
+                    """
+                            .formatted(
+                                    ProcessControlProvider.get()
+                                            .getEffectiveLocalDialect()
+                                            .getDisplayName(),
+                                    err.get());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
         }
     }

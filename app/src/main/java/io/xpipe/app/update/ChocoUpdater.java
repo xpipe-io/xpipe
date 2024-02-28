@@ -49,7 +49,6 @@ public class ChocoUpdater extends UpdateHandler {
                     null,
                     null,
                     Instant.now(),
-                    null,
                     isUpdate);
             lastUpdateCheckResult.setValue(rel);
             return lastUpdateCheckResult.getValue();

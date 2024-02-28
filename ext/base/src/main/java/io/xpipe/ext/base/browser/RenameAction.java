@@ -16,17 +16,7 @@ public class RenameAction implements LeafAction {
 
     @Override
     public void execute(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        model.getFileList().getEditing().setValue(entries.get(0));
-    }
-
-    @Override
-    public boolean automaticallyResolveLinks() {
-        return false;
-    }
-
-    @Override
-    public Category getCategory() {
-        return Category.MUTATION;
+        model.getFileList().getEditing().setValue(entries.getFirst());
     }
 
     @Override
@@ -35,8 +25,8 @@ public class RenameAction implements LeafAction {
     }
 
     @Override
-    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.get(0).getRawFileEntry().getKind() != FileKind.LINK;
+    public Category getCategory() {
+        return Category.MUTATION;
     }
 
     @Override
@@ -47,5 +37,15 @@ public class RenameAction implements LeafAction {
     @Override
     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
         return "Rename";
+    }
+
+    @Override
+    public boolean isApplicable(OpenFileSystemModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() != FileKind.LINK;
+    }
+
+    @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
     }
 }
