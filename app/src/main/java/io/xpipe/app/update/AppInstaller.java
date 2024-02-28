@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
@@ -93,22 +93,17 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = new LocalStore()
-                        .control()
-                        .subShell(ShellDialects.BASH)
-                        .command(String.format(
-                                """
-                                        function exec {
-                                            echo "+ sudo apt install \\"%s\\""
-                                            DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
-                                            %s open || return 1
-                                        }
+                var command = String.format("""
+                                             function exec {
+                                                 echo "+ sudo apt install \\"%s\\""
+                                                 DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
+                                                 %s open || return 1
+                                             }
 
-                                        cd ~
-                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                        """,
-                                file, file, name));
-                TerminalLauncher.open("XPipe Updater", command);
+                                             cd ~
+                                             exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                             """, file, file, name);
+                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
             }
 
             @Override
@@ -122,22 +117,17 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = new LocalStore()
-                        .control()
-                        .subShell(ShellDialects.BASH)
-                        .command(String.format(
-                                """
-                                        function exec {
-                                            echo "+ sudo rpm -U -v --force \\"%s\\""
-                                            sudo rpm -U -v --force "%s" || return 1
-                                            %s open || return 1
-                                        }
+                var command = String.format("""
+                                             function exec {
+                                                 echo "+ sudo rpm -U -v --force \\"%s\\""
+                                                 sudo rpm -U -v --force "%s" || return 1
+                                                 %s open || return 1
+                                             }
 
-                                        cd ~
-                                        exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                        """,
-                                file, file, name));
-                TerminalLauncher.open("XPipe Updater", command);
+                                             cd ~
+                                             exec || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                             """, file, file, name);
+                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
             }
 
             @Override
@@ -151,21 +141,17 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = new LocalStore()
-                        .control()
-                        .command(String.format(
-                                """
-                                        function exec {
-                                            echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
-                                            sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
-                                            %s open || return 1
-                                        }
+                var command = String.format("""
+                                           function exec {
+                                               echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
+                                               sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
+                                               %s open || return 1
+                                           }
 
-                                        cd ~
-                                        exec || echo "Update failed ..." && read -rs -k 1 key
-                                        """,
-                                file, file, name));
-                TerminalLauncher.open("XPipe Updater", command);
+                                           cd ~
+                                           exec || echo "Update failed ..." && read -rs -k 1 key
+                                           """, file, file, name);
+                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
             }
 
             @Override
