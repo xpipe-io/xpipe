@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
@@ -59,14 +60,15 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
         SimpleChangeListener.apply(PlatformThread.sync(markdown), val -> {
-            // Work around for https://bugs.openjdk.org/browse/JDK-8199014
+            // Workaround for https://bugs.openjdk.org/browse/JDK-8199014
             try {
                 var file = Files.createTempFile(null, ".html");
                 Files.writeString(file, getHtml());
                 var contentUrl = file.toUri();
                 wv.getEngine().load(contentUrl.toString());
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // Any possible IO errors can occur here
+                ErrorEvent.fromThrowable(e).expected().handle();
             }
         });
 
