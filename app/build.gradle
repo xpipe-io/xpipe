@@ -27,7 +27,7 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark:0.64.0'
     api 'com.vladsch.flexmark:flexmark-util-data:0.64.0'
     api 'com.vladsch.flexmark:flexmark-util-ast:0.64.0'
-    api 'com.vladsch.flexmark:flexmark-util-builder:0.64.0'
+    api 'com.vladsch.flexmark:flexmark-util-builder:0.64.8'
     api 'com.vladsch.flexmark:flexmark-util-sequence:0.64.0'
     api 'com.vladsch.flexmark:flexmark-util-misc:0.64.0'
     api 'com.vladsch.flexmark:flexmark-util-dependency:0.64.0'
