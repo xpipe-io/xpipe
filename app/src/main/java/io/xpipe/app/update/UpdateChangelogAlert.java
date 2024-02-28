@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 public class UpdateChangelogAlert {
 
@@ -48,6 +49,7 @@ public class UpdateChangelogAlert {
                     alert.getDialogPane().setContent(markdown);
 
                     alert.getButtonTypes().add(new ButtonType(AppI18n.get("gotIt"), ButtonBar.ButtonData.OK_DONE));
+                    ((Stage) alert.getDialogPane().getScene().getWindow()).setAlwaysOnTop(true);
                 },
                 r -> r.filter(b -> b.getButtonData().isDefaultButton()).ifPresent(t -> {}));
     }

@@ -73,12 +73,16 @@ public class AppInstaller {
                         shellProcessControl,
                         String.format(
                                 """
+                                echo Installing %s ...
                                 cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
+                                echo + msiexec /i "%s" /lv "%s" /qr
                                 start "" /wait msiexec /i "%s" /lv "%s" /qr
+                                echo Starting XPipe ...
+                                echo + "%s"
                                 start "" "%s"
                                 """,
-                                file, logFile, exec));
-                shellProcessControl.executeSimpleCommand("start \"XPipe Updater\" /min cmd /c \"" + script + "\"");
+                               file, file, logFile, file, logFile, exec, exec));
+                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), script);
             }
 
             @Override
