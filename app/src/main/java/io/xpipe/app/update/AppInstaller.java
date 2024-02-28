@@ -8,6 +8,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.LocalStore;
 import io.xpipe.core.util.XPipeInstallation;
@@ -65,24 +66,44 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var shellProcessControl = new LocalStore().control().start();
-                var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                        .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+                var exec = (AppProperties.get().isDevelopmentEnvironment() ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath()) :
+                        XPipeInstallation.getCurrentInstallationBasePath())
+                        .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())).toString();
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
                 var script = ScriptHelper.createExecScript(
                         shellProcessControl,
-                        String.format(
-                                """
-                                echo Installing %s ...
-                                cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                                echo + msiexec /i "%s" /lv "%s" /qr
-                                start "" /wait msiexec /i "%s" /lv "%s" /qr
-                                echo Starting XPipe ...
-                                echo + "%s"
-                                start "" "%s"
-                                """,
-                               file, file, logFile, file, logFile, exec, exec));
+                        LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) ?
+                                getCmdCommand(file, logFile, exec) : getPowershellCommand(file, logFile, exec));
                 TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), script);
+            }
+
+            private String getCmdCommand(String file,  String logFile, String exec) {
+                return String.format(
+                        """
+                        echo Installing %s ...
+                        cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
+                        echo + msiexec /i "%s" /lv "%s" /qr
+                        start "" /wait msiexec /i "%s" /lv "%s" /qr
+                        echo Starting XPipe ...
+                        echo + "%s"
+                        start "" "%s"
+                        """,
+                        file, file, logFile, file, logFile, exec, exec);
+            }
+
+            private String getPowershellCommand(String file,  String logFile, String exec) {
+                return String.format(
+                        """
+                        echo Installing %s ...
+                        cd "$env:HOMEDRIVE\\$env:HOMEPATH"
+                        echo '+ msiexec /i "%s" /lv "%s" /qr'
+                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qr"
+                        echo 'Starting XPipe ...'
+                        echo '+ "%s"'
+                        Start-Process -FilePath "%s"
+                        """,
+                        file, file, logFile, file, logFile, exec, exec);
             }
 
             @Override
