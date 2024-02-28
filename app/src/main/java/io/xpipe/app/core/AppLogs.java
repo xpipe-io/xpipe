@@ -119,7 +119,9 @@ public class AppLogs {
                     FileUtils.forceDelete(path.toFile());
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                // It can happen that another instance is running that is locking a log file
+                // Since we initialized before checking for another instance, this might fail
+                ErrorEvent.fromThrowable(ex).expected().omit().handle();
             }
         }
 
