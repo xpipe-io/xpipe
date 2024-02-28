@@ -212,7 +212,15 @@ public class StoreEntryWrapper {
     }
 
     public boolean shouldShow(String filter) {
-        return filter == null || nameProperty().getValue().toLowerCase().contains(filter.toLowerCase());
+        if (filter == null || nameProperty().getValue().toLowerCase().contains(filter.toLowerCase())) {
+            return true;
+        }
+
+        if (entry.getValidity().isUsable() && entry.getProvider().getSearchableTerms(entry.getStore()).stream().anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
+            return true;
+        }
+
+        return false;
     }
 
     public Property<String> nameProperty() {

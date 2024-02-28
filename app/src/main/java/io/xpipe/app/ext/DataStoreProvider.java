@@ -49,6 +49,10 @@ public interface DataStoreProvider {
         return e.orElse("?");
     }
 
+    default List<String> getSearchableTerms(DataStore store) {
+        return List.of();
+    }
+
     default boolean shouldEdit() {
         return false;
     }
