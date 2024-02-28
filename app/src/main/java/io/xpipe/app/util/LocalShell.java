@@ -19,9 +19,13 @@ public class LocalShell {
     }
 
     public static ShellControl getLocalPowershell() throws Exception {
+        if (ShellDialects.isPowershell(getShell())) {
+            return local.start();
+        }
+
         if (localPowershell == null) {
             localPowershell = ProcessControlProvider.get()
-                    .createLocalProcessControl(true)
+                    .createLocalProcessControl(false)
                     .subShell(ShellDialects.POWERSHELL)
                     .start();
         }
