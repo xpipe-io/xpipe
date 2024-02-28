@@ -10,6 +10,7 @@ import io.xpipe.core.process.ProcessControl;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public class TerminalLauncher {
@@ -55,7 +56,10 @@ public class TerminalLauncher {
             type.launch(config);
             latch.await();
         } catch (Exception ex) {
-            throw ErrorEvent.unreportable(ex);
+            ErrorEvent.unreportable(new IOException(
+                    "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + ex.getMessage()
+                            + ".\nMaybe try to use a different terminal in the settings.",
+                    ex));
         }
     }
 }
