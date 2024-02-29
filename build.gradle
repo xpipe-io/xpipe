@@ -96,6 +96,7 @@ project.ext {
     changelogFile = file("$rootDir/dist/changelogs/${versionString}.md").exists() ?
             file("$rootDir/dist/changelogs/${versionString}.md") :
             file("$rootDir/dist/changelogs/${canonicalVersionString}.md")
+    incrementalChangelogFile = file("$rootDir/dist/changelogs/${canonicalVersionString}_incremental.md")
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {
