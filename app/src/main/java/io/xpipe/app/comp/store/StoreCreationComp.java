@@ -276,7 +276,7 @@ public class StoreCreationComp extends DialogComp {
                 commit();
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
-                    ErrorEvent.unreportable(ex);
+                    ErrorEvent.expected(ex);
                     skippable.set(false);
                 } else {
                     skippable.set(true);

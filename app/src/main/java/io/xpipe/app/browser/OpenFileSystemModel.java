@@ -315,7 +315,7 @@ public final class OpenFileSystemModel {
                 startIfNeeded();
                 var abs = FileNames.join(getCurrentDirectory().getPath(), name);
                 if (fileSystem.directoryExists(abs)) {
-                    throw ErrorEvent.unreportable(
+                    throw ErrorEvent.expected(
                             new IllegalStateException(String.format("Directory %s already exists", abs)));
                 }
 

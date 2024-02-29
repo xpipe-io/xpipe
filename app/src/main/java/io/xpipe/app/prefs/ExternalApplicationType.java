@@ -115,7 +115,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         protected void launch(String title, String args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
                 if (!ApplicationHelper.isInPath(pc, executable)) {
-                    throw ErrorEvent.unreportable(
+                    throw ErrorEvent.expected(
                             new IOException(
                                     "Executable " + executable
                                             + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));

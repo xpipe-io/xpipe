@@ -61,8 +61,8 @@ public class ErrorEvent {
         return builder().description(msg);
     }
 
-    public static <T extends Throwable> T unreportableIfEndsWith(T t, String... s) {
-        return unreportableIf(
+    public static <T extends Throwable> T expectedIfEndsWith(T t, String... s) {
+        return expectedIf(
                 t,
                 t.getMessage() != null
                         && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> t.getMessage()
@@ -70,8 +70,8 @@ public class ErrorEvent {
                                 .endsWith(string)));
     }
 
-    public static <T extends Throwable> T unreportableIfContains(T t, String... s) {
-        return unreportableIf(
+    public static <T extends Throwable> T expectedIfContains(T t, String... s) {
+        return expectedIf(
                 t,
                 t.getMessage() != null
                         && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> t.getMessage()
@@ -79,14 +79,14 @@ public class ErrorEvent {
                                 .contains(string)));
     }
 
-    public static <T extends Throwable> T unreportableIf(T t, boolean b) {
+    public static <T extends Throwable> T expectedIf(T t, boolean b) {
         if (b) {
             EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).expected());
         }
         return t;
     }
 
-    public static <T extends Throwable> T unreportable(T t) {
+    public static <T extends Throwable> T expected(T t) {
         EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).expected());
         return t;
     }

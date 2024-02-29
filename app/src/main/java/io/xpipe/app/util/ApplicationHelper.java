@@ -70,7 +70,7 @@ public class ApplicationHelper {
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!isInPath(processControl, executable)) {
-            throw ErrorEvent.unreportable(new IOException(displayName + " executable " + executable
+            throw ErrorEvent.expected(new IOException(displayName + " executable " + executable
                     + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
@@ -78,7 +78,7 @@ public class ApplicationHelper {
     public static void isSupported(FailableSupplier<Boolean> supplier, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!supplier.get()) {
-            throw ErrorEvent.unreportable(new IOException(displayName + " is not supported"
+            throw ErrorEvent.expected(new IOException(displayName + " is not supported"
                     + (connection != null ? " on system " + connection.getName() : "")));
         }
     }

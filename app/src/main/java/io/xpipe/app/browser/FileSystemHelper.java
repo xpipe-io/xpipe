@@ -72,7 +72,7 @@ public class FileSystemHelper {
                     .evaluateExpression(shell.get(), path)
                     .readStdoutOrThrow();
         } catch (Exception ex) {
-            ErrorEvent.unreportable(ex);
+            ErrorEvent.expected(ex);
             throw ex;
         }
     }
@@ -123,14 +123,14 @@ public class FileSystemHelper {
         }
 
         if (!model.getFileSystem().directoryExists(path)) {
-            throw ErrorEvent.unreportable(
+            throw ErrorEvent.expected(
                     new IllegalArgumentException(String.format("Directory %s does not exist", path)));
         }
 
         try {
             model.getFileSystem().directoryAccessible(path);
         } catch (Exception ex) {
-            ErrorEvent.unreportable(ex);
+            ErrorEvent.expected(ex);
             throw ex;
         }
     }
@@ -231,7 +231,7 @@ public class FileSystemHelper {
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
-            throw ErrorEvent.unreportable(
+            throw ErrorEvent.expected(
                     new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
         }
 

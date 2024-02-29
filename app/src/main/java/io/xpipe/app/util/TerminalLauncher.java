@@ -18,7 +18,7 @@ public class TerminalLauncher {
     public static void openDirect(String title, ShellControl shellControl, String command) throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
-            throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
+            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
         var script = ScriptHelper.createLocalExecScript(command);
         var config = new ExternalTerminalType.LaunchConfiguration(
@@ -33,7 +33,7 @@ public class TerminalLauncher {
     public static void open(DataStoreEntry entry, String title, String directory, ProcessControl cc) throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
-            throw ErrorEvent.unreportable(new IllegalStateException(AppI18n.get("noTerminalSet")));
+            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
         var color = entry != null ? DataStorage.get().getRootForEntry(entry).getColor() : null;
@@ -56,7 +56,7 @@ public class TerminalLauncher {
             type.launch(config);
             latch.await();
         } catch (Exception ex) {
-            ErrorEvent.unreportable(new IOException(
+            ErrorEvent.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + ex.getMessage()
                             + ".\nMaybe try to use a different terminal in the settings.",
                     ex));
