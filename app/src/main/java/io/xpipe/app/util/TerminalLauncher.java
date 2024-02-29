@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.ExternalTerminalType;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ProcessControl;
+import io.xpipe.core.process.ProcessControlProvider;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
 
@@ -46,7 +47,7 @@ public class TerminalLauncher {
                 color != null);
 
         var request = UUID.randomUUID();
-        var d = LocalShell.getShell().getShellDialect();
+        var d = ProcessControlProvider.get().getEffectiveLocalDialect();
         var launcherScript = d.terminalLauncherScript(request, adjustedTitle);
         var preparationScript = ScriptHelper.createLocalExecScript(launcherScript);
         var config = new ExternalTerminalType.LaunchConfiguration(
