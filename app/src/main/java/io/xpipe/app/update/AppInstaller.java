@@ -71,11 +71,12 @@ public class AppInstaller {
                         .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())).toString();
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
-                var script = ScriptHelper.createExecScript(
-                        shellProcessControl,
-                        LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) ?
-                                getCmdCommand(file, logFile, exec) : getPowershellCommand(file, logFile, exec));
-                TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), script);
+                var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) ?
+                                getCmdCommand(file, logFile, exec) : getPowershellCommand(file, logFile, exec);
+                var toRun = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) ?
+                        "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\"" :
+                        "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\"" + ScriptHelper.createLocalExecScript(command) + "`\"\"";
+                shellProcessControl.executeSimpleCommand(toRun);
             }
 
             private String getCmdCommand(String file,  String logFile, String exec) {
@@ -84,7 +85,7 @@ public class AppInstaller {
                         echo Installing %s ...
                         cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
                         echo + msiexec /i "%s" /lv "%s" /qr
-                        start "" /wait msiexec /i "%s" /lv "%s" /qr
+                        start "" /wait msiexec /i "%s" /lv "%s" /qb
                         echo Starting XPipe ...
                         echo + "%s"
                         start "" "%s"
@@ -98,7 +99,7 @@ public class AppInstaller {
                         echo Installing %s ...
                         cd "$env:HOMEDRIVE\\$env:HOMEPATH"
                         echo '+ msiexec /i "%s" /lv "%s" /qr'
-                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qr"
+                        Start-Process msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"
                         echo 'Starting XPipe ...'
                         echo '+ "%s"'
                         Start-Process -FilePath "%s"
