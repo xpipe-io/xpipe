@@ -164,7 +164,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
                 if (exit == 0) {
                     var first = out.lines().findFirst();
                     if (first.isPresent()) {
-                        return first.map(Path::of);
+                        return first.map(String::trim).map(Path::of);
                     }
                 }
             } catch (Exception ex) {
