@@ -69,7 +69,7 @@ public class BrowserTransferComp extends SimpleComp {
         var dragNotice = new LabelComp(model.getAllDownloaded()
                         .flatMap(aBoolean ->
                                 aBoolean ? AppI18n.observable("dragLocalFiles") : AppI18n.observable("dragFiles")))
-                .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2e-export")))
+                .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-left")))
                 .hide(PlatformThread.sync(BindingsHelper.persist(Bindings.isEmpty(model.getItems()))))
                 .grow(true, false)
                 .apply(struc -> struc.get().setPadding(new Insets(8)));
