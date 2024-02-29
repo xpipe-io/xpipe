@@ -228,8 +228,9 @@ public class AppSocketServer {
                 ErrorEvent.fromThrowable(toReport).build().handle();
             } catch (SocketException ex) {
                 // Do not send error and omit it, as this might happen often
-                // We do not send the error as the socket connection might be broken
-                ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                // This is expected if you kill a running xpipe CLI process
+                // We do not send the error to the client as the socket connection might be broken
+                ErrorEvent.fromThrowable(ex).omitted(true).expected().build().handle();
             } catch (Throwable ex) {
                 TrackEvent.trace("Sending internal server error to #" + id + ": " + ex.getMessage());
                 Deobfuscator.deobfuscate(ex);
