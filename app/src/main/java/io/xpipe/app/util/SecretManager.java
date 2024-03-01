@@ -13,7 +13,7 @@ public class SecretManager {
     private static final Map<SecretReference, SecretValue> secrets = new HashMap<>();
     private static final Set<SecretQueryProgress> progress = new HashSet<>();
 
-    public static Optional<SecretQueryProgress> getProgress(UUID requestId, UUID storeId) {
+    public static synchronized Optional<SecretQueryProgress> getProgress(UUID requestId, UUID storeId) {
         return progress.stream()
                 .filter(secretQueryProgress ->
                         secretQueryProgress.getRequestId().equals(requestId)
@@ -21,14 +21,14 @@ public class SecretManager {
                 .findFirst();
     }
 
-    public static Optional<SecretQueryProgress> getProgress(UUID requestId) {
+    public static synchronized Optional<SecretQueryProgress> getProgress(UUID requestId) {
         return progress.stream()
                 .filter(secretQueryProgress ->
                         secretQueryProgress.getRequestId().equals(requestId))
                 .findFirst();
     }
 
-    public static SecretQueryProgress expectElevationPrompt(
+    public static synchronized SecretQueryProgress expectElevationPrompt(
             UUID request, UUID secretId, CountDown countDown, boolean askIfNeeded) {
         var p = new SecretQueryProgress(
                 request,
@@ -40,7 +40,7 @@ public class SecretManager {
         return p;
     }
 
-    public static SecretQueryProgress expectAskpass(
+    public static synchronized SecretQueryProgress expectAskpass(
             UUID request, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
         var p = new SecretQueryProgress(request, storeId, suppliers, fallback, countDown);
         progress.add(p);
@@ -69,7 +69,7 @@ public class SecretManager {
         return r;
     }
 
-    public static void completeRequest(UUID request) {
+    public static synchronized void completeRequest(UUID request) {
         if (progress.removeIf(
                 secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))) {
             TrackEvent.withTrace("Completed secret request")
@@ -78,22 +78,22 @@ public class SecretManager {
         }
     }
 
-    public static void clearAll(Object store) {
+    public static synchronized void clearAll(Object store) {
         var id = UuidHelper.generateFromObject(store);
         secrets.entrySet()
                 .removeIf(secretReferenceSecretValueEntry ->
                         secretReferenceSecretValueEntry.getKey().getSecretId().equals(id));
     }
 
-    public static void clear(SecretReference ref) {
+    public static synchronized void clear(SecretReference ref) {
         secrets.remove(ref);
     }
 
-    public static void set(SecretReference ref, SecretValue value) {
+    public static synchronized void set(SecretReference ref, SecretValue value) {
         secrets.put(ref, value);
     }
 
-    public static Optional<SecretValue> get(SecretReference ref) {
+    public static synchronized Optional<SecretValue> get(SecretReference ref) {
         return Optional.ofNullable(secrets.get(ref));
     }
 }
