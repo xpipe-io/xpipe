@@ -12,6 +12,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.ShellStore;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -24,6 +25,7 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static javafx.scene.layout.Priority.ALWAYS;
@@ -39,34 +41,31 @@ public class ScanAlert {
     }
 
     private static void showForShellStore(DataStoreEntry initial) {
-        show(initial, (DataStoreEntry entry) -> {
-            try (var sc = ((ShellStore) entry.getStore()).control().start()) {
-                if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                    return null;
-                }
-
-                var providers = ScanProvider.getAll();
-                var applicable = new ArrayList<ScanProvider.ScanOperation>();
-                for (ScanProvider scanProvider : providers) {
-                    try {
-                        ScanProvider.ScanOperation operation = scanProvider.create(entry, sc);
-                        if (operation != null) {
-                            applicable.add(operation);
-                        }
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                    }
-                }
-                return applicable;
-            } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+        show(initial, (DataStoreEntry entry, ShellControl sc) -> {
+            if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 return null;
             }
+
+            var providers = ScanProvider.getAll();
+            var applicable = new ArrayList<ScanProvider.ScanOperation>();
+            for (ScanProvider scanProvider : providers) {
+                try {
+                    // Previous scan operation could have exited the shell
+                    sc.start();
+                    ScanProvider.ScanOperation operation = scanProvider.create(entry, sc);
+                    if (operation != null) {
+                        applicable.add(operation);
+                    }
+                } catch (Exception ex) {
+                    ErrorEvent.fromThrowable(ex).handle();
+                }
+            }
+            return applicable;
         });
     }
 
     private static void show(
-            DataStoreEntry initialStore, Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
+            DataStoreEntry initialStore, BiFunction<DataStoreEntry, ShellControl,List<ScanProvider.ScanOperation>> applicable) {
         DialogComp.showWindow(
                 "scanAlertTitle",
                 stage -> new Dialog(stage, initialStore != null ? initialStore.ref() : null, applicable));
@@ -75,17 +74,18 @@ public class ScanAlert {
     private static class Dialog extends DialogComp {
 
         private final DataStoreEntryRef<ShellStore> initialStore;
-        private final Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable;
+        private final BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable;
         private final Stage window;
         private final ObjectProperty<DataStoreEntryRef<ShellStore>> entry;
         private final ListProperty<ScanProvider.ScanOperation> selected =
                 new SimpleListProperty<>(FXCollections.observableArrayList());
         private final BooleanProperty busy = new SimpleBooleanProperty();
+        private ShellControl shellControl;
 
         private Dialog(
                 Stage window,
                 DataStoreEntryRef<ShellStore> entry,
-                Function<DataStoreEntry, List<ScanProvider.ScanOperation>> applicable) {
+                BiFunction<DataStoreEntry, ShellControl,List<ScanProvider.ScanOperation>> applicable) {
             this.window = window;
             this.initialStore = entry;
             this.entry = new SimpleObjectProperty<>(entry);
@@ -99,35 +99,41 @@ public class ScanAlert {
 
         @Override
         protected void finish() {
-            ThreadHelper.runAsync(() -> {
-                if (entry.get() == null) {
-                    return;
-                }
-
-                Platform.runLater(() -> {
-                    window.close();
-                });
-
-                BooleanScope.execute(busy, () -> {
-                    entry.get().get().setExpanded(true);
-
-                    var copy = new ArrayList<>(selected);
-                    for (var a : copy) {
-                        // If the user decided to remove the selected entry
-                        // while the scan is running, just return instantly
-                        if (!DataStorage.get()
-                                .getStoreEntriesSet()
-                                .contains(entry.get().get())) {
-                            return;
-                        }
-
-                        try {
-                            a.getScanner().run();
-                        } catch (Exception ex) {
-                            ErrorEvent.fromThrowable(ex).handle();
-                        }
+            ThreadHelper.runFailableAsync(() -> {
+                try {
+                    if (entry.get() == null) {
+                        return;
                     }
-                });
+
+                    Platform.runLater(() -> {
+                        window.close();
+                    });
+
+                    BooleanScope.execute(busy, () -> {
+                        shellControl.start();
+                        entry.get().get().setExpanded(true);
+                        var copy = new ArrayList<>(selected);
+                        for (var a : copy) {
+                            // If the user decided to remove the selected entry
+                            // while the scan is running, just return instantly
+                            if (!DataStorage.get().getStoreEntriesSet().contains(entry.get().get())) {
+                                return;
+                            }
+
+                            // Previous scan operation could have exited the shell
+                            shellControl.start();
+
+                            try {
+                                a.getScanner().run();
+                            } catch (Exception ex) {
+                                ErrorEvent.fromThrowable(ex).handle();
+                            }
+                        }
+                    });
+                } finally {
+                    shellControl.close();
+                    shellControl = null;
+                }
             });
         }
 
@@ -166,9 +172,16 @@ public class ScanAlert {
                     return;
                 }
 
-                ThreadHelper.runAsync(() -> {
+                ThreadHelper.runFailableAsync(() -> {
                     BooleanScope.execute(busy, () -> {
-                        var a = applicable.apply(entry.get().get());
+                        if (shellControl != null) {
+                            shellControl.close();
+                            shellControl = null;
+                        }
+
+                        shellControl = newValue.getStore().control();
+                        shellControl.start();
+                        var a = applicable.apply(entry.get().get(), shellControl);
 
                         Platform.runLater(() -> {
                             if (a == null) {
