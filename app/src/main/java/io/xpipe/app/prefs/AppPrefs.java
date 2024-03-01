@@ -428,6 +428,12 @@ public class AppPrefs {
             loadValue(globalStorageHandler, value);
         }
 
+        // How can this happen?
+        // Set to default if corrupted
+        if (storageDirectory.get() == null) {
+            storageDirectory.setValue(DEFAULT_STORAGE_DIR);
+        }
+
         vaultStorageHandler = new AppPrefsStorageHandler(storageDirectory().getValue().resolve("preferences.json"));
     }
 
@@ -458,10 +464,18 @@ public class AppPrefs {
     public void save() {
         for (Mapping<?> m : mapping) {
             AppPrefsStorageHandler handler = m.isVaultSpecific() ? vaultStorageHandler : globalStorageHandler;
+            // It might be possible that we save while the vault handler is not initialized yet / has no file or directory
+            if (!handler.isInitialized()) {
+                continue;
+            }
             handler.updateObject(m.getKey(), m.getProperty().getValue());
         }
-        vaultStorageHandler.save();
-        globalStorageHandler.save();
+        if (vaultStorageHandler.isInitialized()) {
+            vaultStorageHandler.save();
+        }
+        if (globalStorageHandler.isInitialized()) {
+            globalStorageHandler.save();
+        }
     }
 
     public void selectCategory(int selected) {

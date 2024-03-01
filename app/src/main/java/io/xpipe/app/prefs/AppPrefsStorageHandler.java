@@ -25,11 +25,19 @@ public class AppPrefsStorageHandler {
         this.file = file;
     }
 
+    boolean isInitialized() {
+        return content != null;
+    }
+
     private JsonNode getContent(String key) {
+        loadIfNeeded();
+        return content.get(key);
+    }
+
+    private void loadIfNeeded() {
         if (content == null) {
             content = JsonConfigHelper.readConfigObject(file);
         }
-        return content.get(key);
     }
 
     private void setContent(String key, JsonNode value) {
