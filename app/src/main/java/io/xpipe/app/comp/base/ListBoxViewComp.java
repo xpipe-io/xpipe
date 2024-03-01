@@ -34,11 +34,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         this.compFunction = compFunction;
     }
 
-    public ListBoxViewComp<T> withLimit(int limit) {
-        this.limit = limit;
-        return this;
-    }
-
     @Override
     public CompStructure<ScrollPane> createBase() {
         Map<T, Region> cache = new IdentityHashMap<>();

@@ -109,7 +109,6 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                             .augment(this.augment)
                             .build();
                 })
-                .withLimit(100)
                 .minHeight(0)
                 .hgrow();
 

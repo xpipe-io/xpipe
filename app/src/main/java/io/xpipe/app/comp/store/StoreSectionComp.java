@@ -75,7 +75,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
         var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
                     return StoreSection.customSection(e, false).apply(GrowAugment.create(true, false));
                 })
-                .withLimit(100)
+                .minHeight(0)
                 .hgrow();
 
         var expanded = Bindings.createBooleanBinding(
@@ -95,7 +95,7 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                                 .apply(struc -> struc.get().setFillHeight(true))
                                 .hide(BindingsHelper.persist(Bindings.or(
                                         Bindings.not(section.getWrapper().getExpanded()),
-                                        Bindings.size(section.getAllChildren()).isEqualTo(0))))))
+                                        Bindings.size(section.getShownChildren()).isEqualTo(0))))))
                 .styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
