@@ -8,6 +8,10 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -19,6 +23,17 @@ public class AskpassAlert {
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
+
+                    // Link to help page for double prompt
+                    if (!SecretManager.shouldCacheForPrompt(prompt)) {
+                        var type = new ButtonType("Help", ButtonBar.ButtonData.HELP);
+                        alert.getButtonTypes().add(type);
+                        var button = (Button)alert.getDialogPane().lookupButton(type);
+                        button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                            Hyperlinks.open(Hyperlinks.DOUBLE_PROMPT);
+                            event.consume();
+                        });
+                    }
 
                     var text = new SecretFieldComp(prop).createStructure().get();
                     alert.getDialogPane().setContent(new StackPane(text));
