@@ -8,6 +8,7 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.PasswordLockSecretValue;
@@ -22,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 import lombok.Value;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -156,6 +158,8 @@ public class AppPrefs {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
+        INSTANCE.fixInvalidLocalValues();
+        INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(INSTANCE.storageDirectory().getValue().resolve("preferences.json"));
     }
 
     public static void initSharedRemote() {
@@ -427,14 +431,20 @@ public class AppPrefs {
 
             loadValue(globalStorageHandler, value);
         }
+    }
 
-        // How can this happen?
-        // Set to default if corrupted
+    private void fixInvalidLocalValues() {
+        // You can set the directory to empty in the settings
         if (storageDirectory.get() == null) {
             storageDirectory.setValue(DEFAULT_STORAGE_DIR);
         }
 
-        vaultStorageHandler = new AppPrefsStorageHandler(storageDirectory().getValue().resolve("preferences.json"));
+        try {
+            Files.createDirectories(storageDirectory.get());
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).build().handle();
+            storageDirectory.setValue(DEFAULT_STORAGE_DIR);
+        }
     }
 
     private void loadSharedRemote() {
