@@ -20,7 +20,7 @@ public class LocalShell {
 
     public static ShellControl getLocalPowershell() throws Exception {
         if (ShellDialects.isPowershell(getShell())) {
-            return local.start();
+            return local;
         }
 
         if (localPowershell == null) {
