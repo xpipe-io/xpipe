@@ -8,7 +8,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
@@ -28,7 +27,7 @@ public class AskpassAlert {
                     if (!SecretManager.shouldCacheForPrompt(prompt)) {
                         var type = new ButtonType("Help", ButtonBar.ButtonData.HELP);
                         alert.getButtonTypes().add(type);
-                        var button = (Button)alert.getDialogPane().lookupButton(type);
+                        var button = alert.getDialogPane().lookupButton(type);
                         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                             Hyperlinks.open(Hyperlinks.DOUBLE_PROMPT);
                             event.consume();
