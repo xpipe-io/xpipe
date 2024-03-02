@@ -114,7 +114,7 @@ public interface SecretRetrievalStrategy {
                 public SecretQueryResult query(String prompt) {
                     var cmd = AppPrefs.get().passwordManagerString(key);
                     if (cmd == null) {
-                        return null;
+                        return new SecretQueryResult(null, true);
                     }
 
                     try (var cc = new LocalStore().control().command(cmd).start()) {
