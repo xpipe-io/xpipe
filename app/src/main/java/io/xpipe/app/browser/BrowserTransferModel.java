@@ -152,14 +152,13 @@ public class BrowserTransferModel {
             this.name = name;
             this.fileEntry = fileEntry;
             this.localFile = localFile;
-            this.progress =
-                    new SimpleObjectProperty<>(BrowserTransferProgress.empty(fileEntry.getName(), fileEntry.getSize()));
+            this.progress = new SimpleObjectProperty<>();
         }
 
         public ObservableBooleanValue downloadFinished() {
             return Bindings.createBooleanBinding(
                     () -> {
-                        return progress.getValue().done();
+                        return progress.getValue() != null && progress.getValue().done();
                     },
                     progress);
         }

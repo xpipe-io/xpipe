@@ -335,6 +335,7 @@ public class FileSystemHelper {
                     throw ex;
                 }
 
+                progress.accept(BrowserTransferProgress.finished(sourceFile.getName(), transferred.get()));
                 Exception exception = null;
                 try {
                     inputStream.close();
