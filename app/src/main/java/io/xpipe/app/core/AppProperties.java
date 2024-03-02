@@ -38,6 +38,7 @@ public class AppProperties {
     boolean debugThreads;
     Path dataDir;
     boolean showcase;
+    AppVersion canonicalVersion;
 
     public AppProperties() {
         image = ModuleHelper.isImage();
@@ -63,6 +64,7 @@ public class AppProperties {
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
+        canonicalVersion = AppVersion.parse(version).orElse(null);
     }
 
     public static void logSystemProperties() {
@@ -116,5 +118,9 @@ public class AppProperties {
         }
 
         return AppPrefs.get().developerMode().getValue();
+    }
+
+    public Optional<AppVersion> getCanonicalVersion() {
+        return Optional.ofNullable(canonicalVersion);
     }
 }
