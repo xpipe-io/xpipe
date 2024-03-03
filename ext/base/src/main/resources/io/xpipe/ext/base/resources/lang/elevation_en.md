@@ -4,9 +4,8 @@ The process of elevation is operating system specific.
 
 ### Linux & macOS
 
-Any elevated command is executed with `sudo`.
-If this is done on your local system, the optional `sudo` password is queried via XPipe itself.
-For remote systems, the `sudo` password is determined from the connection information, i.e. the used login password.
+Any elevated command is executed with `sudo`. The optional `sudo` password is queried via XPipe when needed.
+You have the ability to adjust the elevation behavior in the settings to control whether you want to enter your password every time it is needed or if you want to cache it for the current session.
 
 ### Windows
 
