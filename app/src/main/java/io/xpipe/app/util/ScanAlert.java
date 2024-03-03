@@ -158,7 +158,7 @@ public class ScanAlert {
                     .addComp(Comp.of(() -> stackPane).vgrow())
                     .buildComp()
                     .prefWidth(500)
-                    .prefHeight(650)
+                    .prefHeight(680)
                     .apply(struc -> {
                         VBox.setVgrow(struc.get().getChildren().get(1), ALWAYS);
                     })
