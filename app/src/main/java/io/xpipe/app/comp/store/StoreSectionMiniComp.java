@@ -18,26 +18,34 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
-import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-@Builder
 public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     public static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd-depth");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even-depth");
+    private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
+    private static final PseudoClass TOP = PseudoClass.getPseudoClass("top");
+    private static final PseudoClass SUB = PseudoClass.getPseudoClass("sub");
+
+
     private final StoreSection section;
+    private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
+    private final boolean condensedStyle;
 
-    @Builder.Default
-    private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (section1, buttonComp) -> {};
+    public StoreSectionMiniComp(StoreSection section, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, boolean condensedStyle) {
+        this.section = section;
+        this.augment = augment;
+        this.condensedStyle = condensedStyle;
+    }
 
-    public static Comp<?> createList(StoreSection top, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment) {
-        return new StoreSectionMiniComp(top, augment);
+    public static Comp<?> createList(StoreSection top, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, boolean condensedStyle) {
+        return new StoreSectionMiniComp(top, augment, condensedStyle);
     }
 
     @Override
@@ -104,10 +112,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         section.getAllChildren())
                 : section.getShownChildren();
         var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
-                    return StoreSectionMiniComp.builder()
-                            .section(e)
-                            .augment(this.augment)
-                            .build();
+            return new StoreSectionMiniComp(e, this.augment, this.condensedStyle);
                 })
                 .minHeight(0)
                 .hgrow();
@@ -119,9 +124,12 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         Bindings.not(expanded),
                         Bindings.size(section.getAllChildren()).isEqualTo(0)))));
 
-        return new VerticalComp(list)
+        var vert = new VerticalComp(list);
+        if (condensedStyle) {
+            vert.styleClass("condensed");
+        }
+        return vert
                 .styleClass("store-section-mini-comp")
-                .styleClass(section.getWrapper() != null ? "sub" : "top")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
                     SimpleChangeListener.apply(expanded, val -> {
@@ -129,6 +137,9 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     });
                     struc.get().pseudoClassStateChanged(EVEN, section.getDepth() % 2 == 0);
                     struc.get().pseudoClassStateChanged(ODD, section.getDepth() % 2 != 0);
+                    struc.get().pseudoClassStateChanged(ROOT, section.getDepth() == 0);
+                    struc.get().pseudoClassStateChanged(TOP, section.getDepth() == 1);
+                    struc.get().pseudoClassStateChanged(SUB, section.getDepth() > 1);
                 })
                 .apply(struc -> {
                     if (section.getWrapper() != null) {
