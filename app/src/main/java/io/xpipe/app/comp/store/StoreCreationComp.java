@@ -35,6 +35,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 import java.util.List;
 import java.util.Objects;
@@ -397,6 +398,9 @@ public class StoreCreationComp extends DialogComp {
         var top = new VBox(providerChoice.createRegion(), new Spacer(7, Orientation.VERTICAL), sep);
         top.getStyleClass().add("top");
         layout.setTop(top);
-        return layout;
+
+        var valSp = new GraphicDecorationStackPane();
+        valSp.getChildren().add(layout);
+        return valSp;
     }
 }
