@@ -137,7 +137,7 @@ public class FileNames {
     }
 
     public static String relativize(String from, String to) {
-        return normalize(to).substring(normalize(from).length());
+        return normalize(to).substring(FileNames.toDirectory(normalize(from)).length());
     }
 
     public static String normalize(String file) {
