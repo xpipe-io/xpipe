@@ -28,7 +28,6 @@ testing {
                         systemProperty "io.xpipe.app.dataDir", "$projectDir/local/"
                         systemProperty "io.xpipe.app.logLevel", "trace"
                         systemProperty "io.xpipe.app.writeSysOut", "true"
-                        systemProperty "io.xpipe.app.mode", "tray"
                     }
                 }
             }
