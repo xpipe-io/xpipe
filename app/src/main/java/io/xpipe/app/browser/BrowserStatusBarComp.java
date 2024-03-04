@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
+import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.HumanReadableFormat;
 import javafx.beans.binding.Bindings;
@@ -46,16 +47,16 @@ public class BrowserStatusBarComp extends SimpleComp {
         var transferredCount = PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
                     return HumanReadableFormat.byteCount(
-                            model.getProgress().getValue().getTransferred());
+                            model.getProgress().getValue().getTransferred(), false);
                 },
                 model.getProgress()));
         var allCount = PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
                     return HumanReadableFormat.byteCount(
-                            model.getProgress().getValue().getTotal());
+                            model.getProgress().getValue().getTotal(), true);
                 },
                 model.getProgress()));
-        var progressComp = new LabelComp(Bindings.createStringBinding(
+        var progressComp = new LabelComp(BindingsHelper.persist(Bindings.createStringBinding(
                 () -> {
                     if (model.getProgress().getValue() == null
                             || model.getProgress().getValue().done()) {
@@ -69,7 +70,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 },
                 transferredCount,
                 allCount,
-                model.getProgress()));
+                model.getProgress())));
         return progressComp;
     }
 

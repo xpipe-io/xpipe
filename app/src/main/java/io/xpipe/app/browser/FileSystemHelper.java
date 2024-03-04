@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 public class FileSystemHelper {
 
-    private static final int DEFAULT_BUFFER_SIZE = 16384;
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
     private static FileSystem localFileSystem;
 
     public static String adjustPath(OpenFileSystemModel model, String path) {

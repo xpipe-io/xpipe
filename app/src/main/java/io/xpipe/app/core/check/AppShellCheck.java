@@ -22,9 +22,8 @@ public class AppShellCheck {
                     The most likely causes are:
                     - On Windows, an AntiVirus program might block required programs and commands
                     - The system shell is restricted or blocked
-                    - The operating system is not supported
 
-                    You can reach out to us if you want to properly diagnose the cause individually and hopefully fix it.
+                    You can try to switch to the fallback shell by going to Settings -> Local Shell -> Enable Fallback Shell and restart.
                     """
                             .formatted(
                                     ProcessControlProvider.get()
