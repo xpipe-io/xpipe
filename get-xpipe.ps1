@@ -106,7 +106,7 @@ function Uninstall {
 
     Write-Host "Looking for previous $ProductName installations ..."
 
-    $cim = Get-CimInstance Win32_Product | Where {$_.Name -match "$ProductName" } | Select-Object -First 1
+    $cim = Get-CimInstance Win32_Product | Where {$_.Name -eq "$ProductName" } | Select-Object -First 1
     if ($cim) {
         $message = @(
             "Uninstalling existing $ProductName $($cim.Version) installation ..."
