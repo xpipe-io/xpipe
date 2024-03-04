@@ -16,7 +16,7 @@ public final class HumanReadableFormat {
     public static final DateTimeFormatter DAY_OF_WEEK = DateTimeFormatter.ofPattern("EEE");
     public static final DateTimeFormatter HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static String byteCount(long bytes) {
+    public static String byteCount(long bytes, boolean precise) {
         if (-1024 < bytes && bytes < 1024) {
             return bytes + " B";
         }
@@ -25,7 +25,8 @@ public final class HumanReadableFormat {
             bytes /= 1024;
             ci.next();
         }
-        return String.format("%.1f %cB", bytes / 1024.0, ci.current());
+        var f = precise ? "%.1f" : "%.0f";
+        return String.format(f + " %cB", bytes / 1024.0, ci.current());
     }
 
     public static String date(LocalDateTime x) {

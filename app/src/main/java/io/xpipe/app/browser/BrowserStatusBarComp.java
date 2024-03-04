@@ -46,13 +46,13 @@ public class BrowserStatusBarComp extends SimpleComp {
         var transferredCount = PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
                     return HumanReadableFormat.byteCount(
-                            model.getProgress().getValue().getTransferred());
+                            model.getProgress().getValue().getTransferred(), false);
                 },
                 model.getProgress()));
         var allCount = PlatformThread.sync(Bindings.createStringBinding(
                 () -> {
                     return HumanReadableFormat.byteCount(
-                            model.getProgress().getValue().getTotal());
+                            model.getProgress().getValue().getTotal(), true);
                 },
                 model.getProgress()));
         var progressComp = new LabelComp(Bindings.createStringBinding(
