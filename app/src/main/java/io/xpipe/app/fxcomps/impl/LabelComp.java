@@ -8,6 +8,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.util.Subscription;
+
+import java.util.concurrent.Flow;
 
 public class LabelComp extends Comp<CompStructure<Label>> {
 
@@ -18,13 +21,15 @@ public class LabelComp extends Comp<CompStructure<Label>> {
     }
 
     public LabelComp(ObservableValue<String> text) {
-        this.text = PlatformThread.sync(text);
+        this.text = text;
     }
 
     @Override
     public CompStructure<Label> createBase() {
         var label = new Label();
-        label.textProperty().bind(text);
+        text.subscribe(t -> {
+            PlatformThread.runLaterIfNeeded(() -> label.setText(t));
+        });
         label.setAlignment(Pos.CENTER);
         return new SimpleCompStructure<>(label);
     }

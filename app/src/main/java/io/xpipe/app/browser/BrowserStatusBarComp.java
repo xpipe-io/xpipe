@@ -44,33 +44,21 @@ public class BrowserStatusBarComp extends SimpleComp {
     }
 
     private Comp<?> createProgressStatus() {
-        var transferredCount = PlatformThread.sync(Bindings.createStringBinding(
-                () -> {
-                    return HumanReadableFormat.byteCount(
-                            model.getProgress().getValue().getTransferred(), false);
-                },
-                model.getProgress()));
-        var allCount = PlatformThread.sync(Bindings.createStringBinding(
-                () -> {
-                    return HumanReadableFormat.byteCount(
-                            model.getProgress().getValue().getTotal(), true);
-                },
-                model.getProgress()));
-        var progressComp = new LabelComp(BindingsHelper.persist(Bindings.createStringBinding(
-                () -> {
-                    if (model.getProgress().getValue() == null
-                            || model.getProgress().getValue().done()) {
-                        return null;
-                    } else {
-                        var name = (model.getProgress().getValue().getName() != null
-                                ? " @ " + model.getProgress().getValue().getName() + " "
-                                : "");
-                        return transferredCount.getValue() + " / " + allCount.getValue() + name;
-                    }
-                },
-                transferredCount,
-                allCount,
-                model.getProgress())));
+        var text = BindingsHelper.map(model.getProgress(), p -> {
+            if (p == null || p.done()) {
+                return null;
+            } else {
+                var transferred = HumanReadableFormat.byteCount(
+                        p.getTransferred(), false);
+                var all = HumanReadableFormat.byteCount(
+                        p.getTotal(), true);
+                var name = (p.getName() != null
+                        ? " @ " + p.getName() + " "
+                        : "");
+                return transferred + " / " + all + name;
+            }
+        });
+        var progressComp = new LabelComp(text);
         return progressComp;
     }
 
