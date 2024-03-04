@@ -63,8 +63,8 @@ public class BrowserStatusBarComp extends SimpleComp {
     }
 
     private Comp<?> createClipboardStatus() {
-        var cc = PlatformThread.sync(BrowserClipboard.currentCopyClipboard);
-        var ccCount = Bindings.createStringBinding(
+        var cc = BrowserClipboard.currentCopyClipboard;
+        var ccCount = (BindingsHelper.persist(Bindings.createStringBinding(
                 () -> {
                     if (cc.getValue() != null && cc.getValue().getEntries().size() > 0) {
                         return cc.getValue().getEntries().size() + " file"
@@ -73,25 +73,25 @@ public class BrowserStatusBarComp extends SimpleComp {
                         return null;
                     }
                 },
-                cc);
+                cc)));
         return new LabelComp(ccCount);
     }
 
     private Comp<?> createSelectionStatus() {
-        var selectedCount = PlatformThread.sync(Bindings.createIntegerBinding(
+        var selectedCount = Bindings.createIntegerBinding(
                 () -> {
                     return model.getFileList().getSelection().size();
                 },
-                model.getFileList().getSelection()));
+                model.getFileList().getSelection());
 
-        var allCount = PlatformThread.sync(Bindings.createIntegerBinding(
+        var allCount = Bindings.createIntegerBinding(
                 () -> {
                     return (int) model.getFileList().getAll().getValue().stream()
                             .filter(entry -> !entry.isSynthetic())
                             .count();
                 },
-                model.getFileList().getAll()));
-        var selectedComp = new LabelComp(Bindings.createStringBinding(
+                model.getFileList().getAll());
+        var selectedComp = new LabelComp(BindingsHelper.persist(Bindings.createStringBinding(
                 () -> {
                     if (selectedCount.getValue().intValue() == 0) {
                         return null;
@@ -100,7 +100,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                     }
                 },
                 selectedCount,
-                allCount));
+                allCount)));
         return selectedComp;
     }
 
