@@ -32,35 +32,35 @@
 }
 
 .scan-list {
--fx-background-radius: 4px;
- -fx-border-width: 0.05em;
--fx-border-radius: 4px;
--fx-padding: 1em;
--fx-background-color: -color-bg-default;
--fx-border-color: -color-neutral-emphasis;
+    -fx-background-radius: 4px;
+    -fx-border-width: 0.05em;
+    -fx-border-radius: 4px;
+    -fx-padding: 1em;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-neutral-emphasis;
 }
 
 .text {
-   -fx-font-smoothing-type: gray;
+    -fx-font-smoothing-type: gray;
 }
 
 .radio-button {
--fx-background-color:transparent;
+    -fx-background-color: transparent;
 }
 
 .icon-button-comp {
- -fx-padding: 0.05em;
+    -fx-padding: 0.05em;
 }
 
 .scroll-pane {
--fx-background-color:transparent;
+    -fx-background-color: transparent;
 }
 
 .root:light .loading-comp {
-    -fx-background-color: rgba(100,100,100,0.5);
+    -fx-background-color: rgba(100, 100, 100, 0.5);
 }
 
 .root:dark .loading-comp {
-    -fx-background-color: rgba(0,0,0,0.5);
+    -fx-background-color: rgba(0, 0, 0, 0.5);
 }
 

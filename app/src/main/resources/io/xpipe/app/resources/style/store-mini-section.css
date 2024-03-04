@@ -96,7 +96,7 @@
 
 .store-section-mini-comp:top {
     -fx-border-radius: 4 0 0 4;
-    -fx-border-width:  1 1 1 1;
+    -fx-border-width: 1 1 1 1;
     -fx-border-color: -color-border-default;
 }
 

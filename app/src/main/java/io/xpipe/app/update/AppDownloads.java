@@ -127,7 +127,9 @@ public class AppDownloads {
             // If we are currently running a prerelease, always return this as the suitable release!
             if (preIncluding.isPresent()
                     && preIncluding.get().isPrerelease()
-                    && AppProperties.get().getVersion().equals(preIncluding.get().getTagName())) {
+                    && AppProperties.get()
+                            .getVersion()
+                            .equals(preIncluding.get().getTagName())) {
                 return preIncluding;
             }
 

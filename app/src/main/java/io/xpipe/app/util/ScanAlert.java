@@ -65,7 +65,8 @@ public class ScanAlert {
     }
 
     private static void show(
-            DataStoreEntry initialStore, BiFunction<DataStoreEntry, ShellControl,List<ScanProvider.ScanOperation>> applicable) {
+            DataStoreEntry initialStore,
+            BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
         DialogComp.showWindow(
                 "scanAlertTitle",
                 stage -> new Dialog(stage, initialStore != null ? initialStore.ref() : null, applicable));
@@ -85,7 +86,7 @@ public class ScanAlert {
         private Dialog(
                 Stage window,
                 DataStoreEntryRef<ShellStore> entry,
-                BiFunction<DataStoreEntry, ShellControl,List<ScanProvider.ScanOperation>> applicable) {
+                BiFunction<DataStoreEntry, ShellControl, List<ScanProvider.ScanOperation>> applicable) {
             this.window = window;
             this.initialStore = entry;
             this.entry = new SimpleObjectProperty<>(entry);
@@ -110,13 +111,14 @@ public class ScanAlert {
                     });
 
                     BooleanScope.execute(busy, () -> {
-                        shellControl.start();
                         entry.get().get().setExpanded(true);
                         var copy = new ArrayList<>(selected);
                         for (var a : copy) {
                             // If the user decided to remove the selected entry
                             // while the scan is running, just return instantly
-                            if (!DataStorage.get().getStoreEntriesSet().contains(entry.get().get())) {
+                            if (!DataStorage.get()
+                                    .getStoreEntriesSet()
+                                    .contains(entry.get().get())) {
                                 return;
                             }
 
@@ -200,7 +202,10 @@ public class ScanAlert {
                                 }
 
                                 var suffix = LicenseProvider.get().getFeature(s.getLicensedFeatureId());
-                                return n + suffix.getDescriptionSuffix().map(d -> " (" + d + ")").orElse("");
+                                return n
+                                        + suffix.getDescriptionSuffix()
+                                                .map(d -> " (" + d + ")")
+                                                .orElse("");
                             };
                             var r = new ListSelectorComp<>(
                                             a,

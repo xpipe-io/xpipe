@@ -94,7 +94,8 @@ final class BrowserBookmarkComp extends SimpleComp {
                             event.consume();
                         });
                     });
-                }, true);
+                },
+                true);
         var category = new DataStoreCategoryChoiceComp(
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),

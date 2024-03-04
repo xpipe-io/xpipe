@@ -1,16 +1,16 @@
 .combo-box {
--fx-focus-color: transparent;
+    -fx-focus-color: transparent;
 }
 
 .choice-comp-content > .top {
--fx-padding: 0.5em 1em 0.5em 1em;
--fx-background-color: -color-neutral-subtle;
- -fx-border-width: 1 0 1 0;
- -fx-border-color: -color-border-default;
+    -fx-padding: 0.5em 1em 0.5em 1em;
+    -fx-background-color: -color-neutral-subtle;
+    -fx-border-width: 1 0 1 0;
+    -fx-border-color: -color-border-default;
 }
 
 .choice-comp .filter-comp {
- -fx-border-width: 1px;
--fx-background-color: -color-bg-default;
--fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
 }

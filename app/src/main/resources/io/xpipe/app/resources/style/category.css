@@ -1,5 +1,5 @@
 .category-button {
--fx-opacity: 0.8;
+    -fx-opacity: 0.8;
     -fx-border-width: 0;
     -fx-background-color: transparent;
     -fx-padding: 0 0 0 2;
@@ -11,29 +11,29 @@
 }
 
 .category-button .settings {
--fx-opacity: 1.0;
+    -fx-opacity: 1.0;
 }
 
- .category-button:hover,  .category-button:focused {
-     -fx-background-color: -color-bg-default;
+.category-button:hover, .category-button:focused {
+    -fx-background-color: -color-bg-default;
 }
 
 .category:selected .category-button {
--fx-opacity: 1.0;
--fx-background-radius: 4px;
--fx-border-radius: 4px;
--fx-border-width: 1px;
--fx-border-color: -color-border-default;
--fx-background-color: -color-bg-default;
+    -fx-opacity: 1.0;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-default;
 }
 
-.category .separator{
+.category .separator {
     -fx-padding: 0 5 0 5;
 }
 
 
 .category .separator .line {
--fx-pref-height: 1;
+    -fx-pref-height: 1;
     -fx-background-color: -color-fg-default;
     -fx-opacity: 0.5;
 }

@@ -124,7 +124,11 @@ public class BrowserTransferModel {
                 try {
                     try (var b = new BooleanScope(downloading).start()) {
                         FileSystemHelper.dropFilesInto(
-                                FileSystemHelper.getLocal(TEMP), List.of(item.getFileEntry()), true, false, progress -> {
+                                FileSystemHelper.getLocal(TEMP),
+                                List.of(item.getFileEntry()),
+                                true,
+                                false,
+                                progress -> {
                                     item.getProgress().setValue(progress);
                                     item.getOpenFileSystemModel().getProgress().setValue(progress);
                                 });
@@ -158,7 +162,8 @@ public class BrowserTransferModel {
         public ObservableBooleanValue downloadFinished() {
             return Bindings.createBooleanBinding(
                     () -> {
-                        return progress.getValue() != null && progress.getValue().done();
+                        return progress.getValue() != null
+                                && progress.getValue().done();
                     },
                     progress);
         }

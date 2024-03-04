@@ -95,7 +95,8 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                                 .apply(struc -> struc.get().setFillHeight(true))
                                 .hide(BindingsHelper.persist(Bindings.or(
                                         Bindings.not(section.getWrapper().getExpanded()),
-                                        Bindings.size(section.getShownChildren()).isEqualTo(0))))))
+                                        Bindings.size(section.getShownChildren())
+                                                .isEqualTo(0))))))
                 .styleClass("store-entry-section-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);

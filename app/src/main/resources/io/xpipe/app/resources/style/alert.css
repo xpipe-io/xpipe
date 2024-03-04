@@ -18,7 +18,7 @@
 }
 
 .dialog-pane:header .header-panel {
--fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default;
     -fx-padding: 1.5em;
 }
 
@@ -27,9 +27,9 @@
 }
 
 .dialog-pane:header > .content {
--fx-border-width: 2px 0 0 0;
--fx-border-color:-color-accent-fg;
--fx-background-color: -color-bg-default;
+    -fx-border-width: 2px 0 0 0;
+    -fx-border-color: -color-accent-fg;
+    -fx-background-color: -color-bg-default;
     -fx-border-insets: 0 1.5em 1.5em 1.5em;
     -fx-padding: 1.5em 0 0 0;
 }
@@ -48,6 +48,6 @@
     -fx-text-fill: -color-fg-default;
 }
 
-.dialog-pane:header > *.label.content{
+.dialog-pane:header > *.label.content {
     -fx-font-size: 0.8em;
 }

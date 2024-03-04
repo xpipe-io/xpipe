@@ -1,8 +1,8 @@
 .filter-comp .text-field {
--fx-padding: 0.15em 0.3em 0.15em 0.3em;
--fx-background-color: transparent;
+    -fx-padding: 0.15em 0.3em 0.15em 0.3em;
+    -fx-background-color: transparent;
 }
 
 .filter-comp .input-line {
--fx-opacity: 0.2;
+    -fx-opacity: 0.2;
 }

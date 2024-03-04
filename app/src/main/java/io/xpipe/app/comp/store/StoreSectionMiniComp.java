@@ -33,18 +33,21 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
     private static final PseudoClass TOP = PseudoClass.getPseudoClass("top");
     private static final PseudoClass SUB = PseudoClass.getPseudoClass("sub");
 
-
     private final StoreSection section;
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
     private final boolean condensedStyle;
 
-    public StoreSectionMiniComp(StoreSection section, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, boolean condensedStyle) {
+    public StoreSectionMiniComp(
+            StoreSection section,
+            BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
+            boolean condensedStyle) {
         this.section = section;
         this.augment = augment;
         this.condensedStyle = condensedStyle;
     }
 
-    public static Comp<?> createList(StoreSection top, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, boolean condensedStyle) {
+    public static Comp<?> createList(
+            StoreSection top, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, boolean condensedStyle) {
         return new StoreSectionMiniComp(top, augment, condensedStyle);
     }
 
@@ -112,7 +115,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         section.getAllChildren())
                 : section.getShownChildren();
         var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
-            return new StoreSectionMiniComp(e, this.augment, this.condensedStyle);
+                    return new StoreSectionMiniComp(e, this.augment, this.condensedStyle);
                 })
                 .minHeight(0)
                 .hgrow();
@@ -128,8 +131,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
         if (condensedStyle) {
             vert.styleClass("condensed");
         }
-        return vert
-                .styleClass("store-section-mini-comp")
+        return vert.styleClass("store-section-mini-comp")
                 .apply(struc -> {
                     struc.get().setFillWidth(true);
                     SimpleChangeListener.apply(expanded, val -> {

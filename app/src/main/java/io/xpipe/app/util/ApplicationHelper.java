@@ -70,8 +70,8 @@ public class ApplicationHelper {
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!isInPath(processControl, executable)) {
-            throw ErrorEvent.expected(new IOException(displayName + " executable " + executable
-                    + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));
+            throw ErrorEvent.expected(new IOException(displayName + " executable " + executable + " not found in PATH"
+                    + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
 

@@ -123,8 +123,7 @@ public class FileSystemHelper {
         }
 
         if (!model.getFileSystem().directoryExists(path)) {
-            throw ErrorEvent.expected(
-                    new IllegalArgumentException(String.format("Directory %s does not exist", path)));
+            throw ErrorEvent.expected(new IllegalArgumentException(String.format("Directory %s does not exist", path)));
         }
 
         try {
@@ -153,7 +152,11 @@ public class FileSystemHelper {
     }
 
     public static void dropLocalFilesInto(
-            FileSystem.FileEntry entry, List<Path> files, Consumer<BrowserTransferProgress> progress, boolean checkConflicts) throws Exception {
+            FileSystem.FileEntry entry,
+            List<Path> files,
+            Consumer<BrowserTransferProgress> progress,
+            boolean checkConflicts)
+            throws Exception {
         var entries = files.stream()
                 .map(path -> {
                     try {
@@ -202,7 +205,8 @@ public class FileSystemHelper {
         AtomicReference<BrowserAlerts.FileConflictChoice> lastConflictChoice = new AtomicReference<>();
         for (var file : files) {
             if (file.getFileSystem().equals(target.getFileSystem())) {
-                dropFileAcrossSameFileSystem(target, file, explicitCopy, lastConflictChoice, files.size() > 1, checkConflicts);
+                dropFileAcrossSameFileSystem(
+                        target, file, explicitCopy, lastConflictChoice, files.size() > 1, checkConflicts);
                 progress.accept(BrowserTransferProgress.finished(file.getName(), file.getSize()));
             } else {
                 dropFileAcrossFileSystems(target, file, progress, lastConflictChoice, files.size() > 1, checkConflicts);
@@ -297,8 +301,12 @@ public class FileSystemHelper {
             if (sourceFile.getKind() == FileKind.DIRECTORY) {
                 target.getFileSystem().mkdirs(targetFile);
             } else if (sourceFile.getKind() == FileKind.FILE) {
-                if (checkConflicts && !handleChoice(
-                        lastConflictChoice, target.getFileSystem(), targetFile, multiple || flatFiles.size() > 1)) {
+                if (checkConflicts
+                        && !handleChoice(
+                                lastConflictChoice,
+                                target.getFileSystem(),
+                                targetFile,
+                                multiple || flatFiles.size() > 1)) {
                     continue;
                 }
 

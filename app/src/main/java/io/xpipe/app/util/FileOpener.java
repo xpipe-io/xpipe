@@ -72,7 +72,8 @@ public class FileOpener {
             editor.launch(Path.of(localFile).toRealPath());
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e)
-                    .description("Unable to launch editor " + editor.toTranslatedString().getValue()
+                    .description("Unable to launch editor "
+                            + editor.toTranslatedString().getValue()
                             + ".\nMaybe try to use a different editor in the settings.")
                     .expected()
                     .handle();

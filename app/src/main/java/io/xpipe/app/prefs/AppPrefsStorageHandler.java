@@ -59,7 +59,10 @@ public class AppPrefsStorageHandler {
     public <T> T loadObject(String id, Class<T> type, T defaultObject) {
         var tree = getContent(id);
         if (tree == null) {
-            TrackEvent.withDebug("Preferences value not found").tag("id", id).tag("default", defaultObject).handle();
+            TrackEvent.withDebug("Preferences value not found")
+                    .tag("id", id)
+                    .tag("default", defaultObject)
+                    .handle();
             return defaultObject;
         }
 

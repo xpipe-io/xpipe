@@ -20,8 +20,11 @@ public class DataStoreFormatter {
                     return null;
                 }
 
-                if (s.getShellDialect() != null && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                    return s.getOsName() != null ? s.getOsName() : s.getShellDialect().getDisplayName();
+                if (s.getShellDialect() != null
+                        && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                    return s.getOsName() != null
+                            ? s.getOsName()
+                            : s.getShellDialect().getDisplayName();
                 }
 
                 return s.isRunning() ? s.getOsName() : "Connection failed";

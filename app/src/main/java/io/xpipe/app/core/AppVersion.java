@@ -8,6 +8,10 @@ import java.util.Optional;
 @Value
 public class AppVersion implements Comparable<AppVersion> {
 
+    int major;
+    int minor;
+    int patch;
+
     public static Optional<AppVersion> parse(String version) {
         try {
             var releaseSplit = version.split("-");
@@ -22,10 +26,6 @@ public class AppVersion implements Comparable<AppVersion> {
             return Optional.empty();
         }
     }
-
-    int major;
-    int minor;
-    int patch;
 
     public boolean greaterThan(AppVersion other) {
         return compareTo(other) > 0;

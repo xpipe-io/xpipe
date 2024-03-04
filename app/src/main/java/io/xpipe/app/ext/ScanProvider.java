@@ -38,7 +38,8 @@ public abstract class ScanProvider {
         FailableRunnable<Exception> scanner;
         String licenseFeatureId;
 
-        public ScanOperation(String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Exception> scanner) {
+        public ScanOperation(
+                String nameKey, boolean disabled, boolean defaultSelected, FailableRunnable<Exception> scanner) {
             this.nameKey = nameKey;
             this.disabled = disabled;
             this.defaultSelected = defaultSelected;

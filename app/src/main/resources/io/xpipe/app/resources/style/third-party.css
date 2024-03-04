@@ -3,8 +3,9 @@
 }
 
 .third-party-dependency-list-comp .titled-pane {
--fx-background-color: transparent;
+    -fx-background-color: transparent;
 }
+
 .titled-pane .content {
-      -fx-padding: 0em ;
-  }
+    -fx-padding: 0em;
+}

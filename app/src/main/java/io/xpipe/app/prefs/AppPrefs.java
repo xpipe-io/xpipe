@@ -60,8 +60,8 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(false), "disableCertutilUse", Boolean.class);
     public final BooleanProperty useLocalFallbackShell =
             map(new SimpleBooleanProperty(false), "useLocalFallbackShell", Boolean.class);
-    public final BooleanProperty disableTerminalRemotePasswordPreparation =
-            mapVaultSpecific(new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class);
+    public final BooleanProperty disableTerminalRemotePasswordPreparation = mapVaultSpecific(
+            new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class);
     public final Property<Boolean> alwaysConfirmElevation =
             mapVaultSpecific(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class);
     public final BooleanProperty dontCachePasswords =
@@ -95,7 +95,6 @@ public class AppPrefs {
             map(new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class);
     final ObjectProperty<Path> storageDirectory =
             map(new SimpleObjectProperty<>(DEFAULT_STORAGE_DIR), "storageDirectory", Path.class);
-    private AppPrefsStorageHandler vaultStorageHandler;
     final BooleanProperty developerMode = map(new SimpleBooleanProperty(false), "developerMode", Boolean.class);
     final BooleanProperty developerDisableUpdateVersionCheck =
             map(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class);
@@ -107,30 +106,24 @@ public class AppPrefs {
             bindDeveloperTrue(developerDisableGuiRestrictions);
     private final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class);
-
     @Getter
     private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();
-
     @Getter
     private final StringProperty lockCrypt =
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
-
     private final IntegerProperty editorReloadTimeout =
             map(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class);
     private final BooleanProperty confirmDeletions =
             map(new SimpleBooleanProperty(true), "confirmDeletions", Boolean.class);
-
     @Getter
     private final List<AppPrefsCategory> categories;
-
     private final AppPrefsStorageHandler globalStorageHandler = new AppPrefsStorageHandler(
             AppProperties.get().getDataDir().resolve("settings").resolve("preferences.json"));
     private final Map<Mapping<?>, Comp<?>> customEntries = new LinkedHashMap<>();
-
     @Getter
     private final Property<AppPrefsCategory> selectedCategory;
-
     private final PrefsHandler extensionHandler = new PrefsHandlerImpl();
+    private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {
         this.categories = List.of(
@@ -159,7 +152,8 @@ public class AppPrefs {
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
         INSTANCE.fixInvalidLocalValues();
-        INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(INSTANCE.storageDirectory().getValue().resolve("preferences.json"));
+        INSTANCE.vaultStorageHandler = new AppPrefsStorageHandler(
+                INSTANCE.storageDirectory().getValue().resolve("preferences.json"));
     }
 
     public static void initSharedRemote() {
@@ -474,7 +468,8 @@ public class AppPrefs {
     public void save() {
         for (Mapping<?> m : mapping) {
             AppPrefsStorageHandler handler = m.isVaultSpecific() ? vaultStorageHandler : globalStorageHandler;
-            // It might be possible that we save while the vault handler is not initialized yet / has no file or directory
+            // It might be possible that we save while the vault handler is not initialized yet / has no file or
+            // directory
             if (!handler.isInitialized()) {
                 continue;
             }

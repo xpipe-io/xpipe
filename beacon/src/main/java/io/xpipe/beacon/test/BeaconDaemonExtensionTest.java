@@ -11,7 +11,8 @@ public class BeaconDaemonExtensionTest {
     @BeforeAll
     public static void setup() throws Exception {
         JacksonMapper.initModularized(ModuleLayer.boot());
-        BeaconDaemonController.start(OsType.getLocal().equals(OsType.WINDOWS) ? XPipeDaemonMode.TRAY : XPipeDaemonMode.BACKGROUND);
+        BeaconDaemonController.start(
+                OsType.getLocal().equals(OsType.WINDOWS) ? XPipeDaemonMode.TRAY : XPipeDaemonMode.BACKGROUND);
     }
 
     @AfterAll

@@ -52,7 +52,11 @@ public class AppFileWatcher {
         try {
             watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to initialize file watcher. Watching and updating files in the file browser will be unavailable.", e).expected().handle();
+            ErrorEvent.fromThrowable(
+                            "Unable to initialize file watcher. Watching and updating files in the file browser will be unavailable.",
+                            e)
+                    .expected()
+                    .handle();
             return;
         }
 

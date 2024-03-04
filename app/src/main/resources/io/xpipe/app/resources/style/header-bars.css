@@ -1,183 +1,183 @@
 
 .bar {
--fx-padding: 0.8em 1.0em 0.8em 1.0em;
--fx-background-color: -color-bg-subtle;
--fx-border-color: -color-border-default;
+    -fx-padding: 0.8em 1.0em 0.8em 1.0em;
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: -color-border-default;
 }
 
 .root:pretty .bar {
- -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 3px, 0.5, 0, 1);
 }
 
 .store-header-bar {
--fx-background-radius: 0 0 4px 0;
--fx-border-radius: 0 0 4px 0;
- -fx-border-width: 0 0.05em 0.05em 0;
--fx-spacing: 0.8em;
+    -fx-background-radius: 0 0 4px 0;
+    -fx-border-radius: 0 0 4px 0;
+    -fx-border-width: 0 0.05em 0.05em 0;
+    -fx-spacing: 0.8em;
 }
 
 .root.nord .store-header-bar {
- -fx-background-radius: 0;
- -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .root.nord .bar {
- -fx-background-radius: 0;
- -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .bar .filter-bar .text-field {
--fx-padding: 0.35em;
--fx-text-fill: -color-fg-default;
+    -fx-padding: 0.35em;
+    -fx-text-fill: -color-fg-default;
 }
 
 .store-header-bar .menu-button {
--fx-background-radius: 3px;
- -fx-border-radius: 3px;
- -fx-border-width: 1px;
- -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(208, 220, 252) 40%, rgba(219, 219, 255, 1) 50%, rgb(250, 242, 242) 100%);
--fx-border-color: transparent;
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
+    -fx-border-width: 1px;
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(208, 220, 252) 40%, rgba(219, 219, 255, 1) 50%, rgb(250, 242, 242) 100%);
+    -fx-border-color: transparent;
 }
 
 .root:light .store-header-bar .menu-button {
- -fx-background-color: linear-gradient(from 100% 0% to 0% 100% , rgb(12, 11, 11) 40%, rgb(32, 32, 40) 50%, rgb(35, 29, 29) 100%);
+    -fx-background-color: linear-gradient(from 100% 0% to 0% 100%, rgb(12, 11, 11) 40%, rgb(32, 32, 40) 50%, rgb(35, 29, 29) 100%);
 }
 
 .root:light .store-header-bar .menu-button:hover, .root:dark .store-header-bar .menu-button:hover {
- -fx-background-color: -color-bg-default;
- -fx-border-color: -color-fg-default;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-fg-default;
 }
 
 .store-header-bar .menu-button > * {
- -fx-text-fill: -color-bg-default;
+    -fx-text-fill: -color-bg-default;
 }
 
 .store-header-bar .menu-button > * > .ikonli-font-icon {
- -fx-icon-color: -color-bg-default;
+    -fx-icon-color: -color-bg-default;
 }
 
 .store-header-bar .menu-button .arrow {
- -fx-border-color: -color-bg-default;
- -fx-border-width: 4;
+    -fx-border-color: -color-bg-default;
+    -fx-border-width: 4;
 }
 
 .store-header-bar .menu-button:hover > * {
- -fx-text-fill: -color-fg-default;
+    -fx-text-fill: -color-fg-default;
 }
 
 .store-header-bar .menu-button:hover > * > .ikonli-font-icon {
- -fx-icon-color: -color-fg-default;
+    -fx-icon-color: -color-fg-default;
 }
 
 .store-header-bar .menu-button:hover .arrow {
- -fx-border-color: -color-fg-default;
- -fx-border-width: 4;
+    -fx-border-color: -color-fg-default;
+    -fx-border-width: 4;
 }
 
 .store-header-bar .menu-button .context-menu > * > * {
--fx-padding: 5px 10px 5px 10px;
+    -fx-padding: 5px 10px 5px 10px;
 }
 
 .store-header-bar .menu-button .context-menu > * {
--fx-padding: 0;
+    -fx-padding: 0;
 }
 
 .store-header-bar .menu-button .context-menu {
--fx-padding: 3px;
--fx-background-radius: 4px;
--fx-border-radius: 4px;
--fx-border-color: -color-neutral-muted;
+    -fx-padding: 3px;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
+    -fx-border-color: -color-neutral-muted;
 }
 
 .store-creation-bar, .store-sort-bar, .store-category-bar {
--fx-background-radius: 0 4px 4px 0;
--fx-border-radius: 0 4px 4px 0;
- -fx-border-width: 0.05em 0.05em 0.05em 0;
--fx-spacing: 0.2em;
+    -fx-background-radius: 0 4px 4px 0;
+    -fx-border-radius: 0 4px 4px 0;
+    -fx-border-width: 0.05em 0.05em 0.05em 0;
+    -fx-spacing: 0.2em;
 }
 
 .root.nord .store-creation-bar, .root.nord .store-sort-bar, .root.nord .store-category-bar {
- -fx-background-radius: 0;
- -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
 }
 
 .store-category-bar {
--fx-padding: 0.8em 0.5em 0.8em 0.5em;
--fx-background-color: -color-bg-subtle;
--fx-border-color: -color-border-default;
+    -fx-padding: 0.8em 0.5em 0.8em 0.5em;
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: -color-border-default;
 }
 
 .store-sort-bar {
--fx-background-radius: 0 4px 4px 0;
--fx-border-radius: 0 4px 4px 0;
- -fx-border-width: 0.05em 0.05em 0.05em 0;
--fx-spacing: 0.2em;
+    -fx-background-radius: 0 4px 4px 0;
+    -fx-border-radius: 0 4px 4px 0;
+    -fx-border-width: 0.05em 0.05em 0.05em 0;
+    -fx-spacing: 0.2em;
 }
 
 .filler-bar {
--fx-background-radius: 0 4px 0 0;
--fx-border-radius: 0 4px 0 0;
- -fx-border-width: 0.05em 0.05em 0 0;
+    -fx-background-radius: 0 4px 0 0;
+    -fx-border-radius: 0 4px 0 0;
+    -fx-border-width: 0.05em 0.05em 0 0;
 }
 
 .sidebar {
--fx-spacing: 0.4em;
--fx-background-color: transparent;
+    -fx-spacing: 0.4em;
+    -fx-background-color: transparent;
 }
 
 .bar .button-comp {
--fx-padding: 0.2em 0em 0.2em 0em;
+    -fx-padding: 0.2em 0em 0.2em 0em;
 }
 
 .collections-bar {
--fx-background-radius: 0 0 4px 0;
--fx-border-radius: 0 0 4px 0;
- -fx-border-width: 0 4px 4px 0;
+    -fx-background-radius: 0 0 4px 0;
+    -fx-border-radius: 0 0 4px 0;
+    -fx-border-width: 0 4px 4px 0;
 }
 
 .entry-bar {
--fx-background-radius: 0 0 4px 4px;
--fx-border-radius: 0 0 4px 4px;
- -fx-border-width: 0 4px 4px 4px;
--fx-background-color: -color-neutral-muted;
+    -fx-background-radius: 0 0 4px 4px;
+    -fx-border-radius: 0 0 4px 4px;
+    -fx-border-width: 0 4px 4px 4px;
+    -fx-background-color: -color-neutral-muted;
 }
 
 .entry-bar .horizontal-comp {
--fx-spacing: 5px;
+    -fx-spacing: 5px;
 }
 
 .bar .icon-button-comp {
--fx-text-fill: -color-fg-default;
+    -fx-text-fill: -color-fg-default;
 }
 
 .bar .name {
- -fx-font-weight: BOLD;
--fx-text-fill: -color-fg-default;
+    -fx-font-weight: BOLD;
+    -fx-text-fill: -color-fg-default;
 }
 
 .bar .count-comp {
- -fx-font-weight: BOLD;
--fx-padding: 0.0em 0em 0.0em 0.4em;
- -fx-text-fill: -color-fg-muted;
+    -fx-font-weight: BOLD;
+    -fx-padding: 0.0em 0em 0.0em 0.4em;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .bar .filter-bar .text-field {
--fx-text-fill: -color-fg-default;
+    -fx-text-fill: -color-fg-default;
 }
 
 .bar .filter-bar {
--fx-background-radius: 3px;
- -fx-background-color: -color-bg-default;
- -fx-border-color: -color-fg-default;
- -fx-border-width: 0.05em;
--fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-fg-default;
+    -fx-border-width: 0.05em;
+    -fx-border-radius: 3px;
 }
 
 
 .bar .filter-bar .filter-background {
--fx-opacity: 0.7;
+    -fx-opacity: 0.7;
 }
 
 .filter-bar .input-line {
--fx-opacity: 0.2;
+    -fx-opacity: 0.2;
 }

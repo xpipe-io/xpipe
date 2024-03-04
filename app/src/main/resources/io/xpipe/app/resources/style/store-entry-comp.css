@@ -8,28 +8,31 @@
 /* Grid */
 
 .store-entry-grid .date, .store-entry-grid .summary {
--fx-text-fill: -color-fg-muted;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .store-entry-grid:failed .jfx-text-field {
--fx-text-fill: #ee4829;
+    -fx-text-fill: #ee4829;
 }
 
 .store-entry-grid:incomplete .name {
--fx-text-fill: #ee4829;
+    -fx-text-fill: #ee4829;
 }
+
 .store-entry-grid:incomplete .summary {
--fx-text-fill: #ee4829;
+    -fx-text-fill: #ee4829;
 }
+
 .store-entry-grid:incomplete .information {
--fx-text-fill: #ee4829;
+    -fx-text-fill: #ee4829;
 }
+
 .store-entry-grid:incomplete .icon {
--fx-opacity: 0.5;
+    -fx-opacity: 0.5;
 }
 
 .store-entry-grid .icon {
--fx-background-color: -color-bg-overlay;
+    -fx-background-color: -color-bg-overlay;
     -fx-background-radius: 5px;
 }
 
@@ -38,18 +41,18 @@
 }
 
 .store-entry-grid {
--fx-padding: 6px 6px 6px 6px;
+    -fx-padding: 6px 6px 6px 6px;
 }
 
 .store-entry-grid.dense {
--fx-padding: 1px 6px 1px 6px;
+    -fx-padding: 1px 6px 1px 6px;
 }
 
 /* Entry */
 
 .store-entry-comp {
--fx-border-color: transparent;
--fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
     -fx-background-radius: 4px;
 }
 
@@ -58,7 +61,7 @@
 }
 
 .store-entry-comp:hover:armed {
--fx-background-color: derive(-color-neutral-muted, 25%);
+    -fx-background-color: derive(-color-neutral-muted, 25%);
 }
 
 .store-entry-comp:hover, .store-entry-comp:focused {
@@ -66,49 +69,49 @@
 }
 
 .store-entry-comp .button-bar, .store-entry-comp .dropdown-comp {
--fx-opacity: 0.65;
+    -fx-opacity: 0.65;
 }
 
 .store-entry-comp:hover .button-bar, .store-entry-comp:hover .dropdown-comp {
--fx-opacity: 1.0;
+    -fx-opacity: 1.0;
 }
 
-.expand-button:hover,.expand-button:focused  {
--fx-background-color: -color-neutral-muted;
+.expand-button:hover, .expand-button:focused {
+    -fx-background-color: -color-neutral-muted;
 }
 
 .expand-button:disabled {
--fx-opacity: 0.2;
+    -fx-opacity: 0.2;
 }
 
 .root:pretty .store-entry-comp .button-bar, .root:pretty .store-entry-comp .dropdown-comp {
--fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.25, 0, 1);
 }
 
 .store-entry-comp .button-bar .button {
--fx-padding: 6px;
+    -fx-padding: 6px;
 }
 
 /* Section */
 
 .store-entry-section-comp .separator {
--fx-padding: 0 12px 0 35px;
--fx-border-insets: 0px;
+    -fx-padding: 0 12px 0 35px;
+    -fx-border-insets: 0px;
 }
 
 .store-entry-section-comp > .content {
--fx-padding: 5px 0 5px 25px;
+    -fx-padding: 5px 0 5px 25px;
 }
 
 .store-entry-section-comp .separator .line {
--fx-padding: 0;
--fx-border-insets: 0px;
--fx-background-color: -color-border-subtle;
--fx-pref-height: 1;
+    -fx-padding: 0;
+    -fx-border-insets: 0px;
+    -fx-background-color: -color-border-subtle;
+    -fx-pref-height: 1;
 }
 
 .root:pretty .top > .store-entry-section-comp {
--fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.5, 0, 1);
+    -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 2px, 0.5, 0, 1);
 }
 
 .store-entry-section-comp:root {
@@ -128,7 +131,7 @@
 }
 
 .store-entry-section-comp .list-box-view-comp .content {
--fx-spacing: 0.2em;
+    -fx-spacing: 0.2em;
 }
 
 .store-entry-section-comp.none {

@@ -100,7 +100,8 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         if (!applicable.test(s.getWrapper())) {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
-                    }, false);
+                    },
+                    false);
             var category = new DataStoreCategoryChoiceComp(
                             initialCategory != null ? initialCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),

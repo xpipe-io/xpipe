@@ -216,7 +216,9 @@ public class StoreEntryWrapper {
             return true;
         }
 
-        if (entry.getValidity().isUsable() && entry.getProvider().getSearchableTerms(entry.getStore()).stream().anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
+        if (entry.getValidity().isUsable()
+                && entry.getProvider().getSearchableTerms(entry.getStore()).stream()
+                        .anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
             return true;
         }
 

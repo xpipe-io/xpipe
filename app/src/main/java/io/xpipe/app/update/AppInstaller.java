@@ -66,20 +66,29 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var shellProcessControl = new LocalStore().control().start();
-                var exec = (AppProperties.get().isDevelopmentEnvironment() ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath()) :
-                        XPipeInstallation.getCurrentInstallationBasePath())
-                        .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())).toString();
+                var exec = (AppProperties.get().isDevelopmentEnvironment()
+                                ? Path.of(XPipeInstallation.getLocalDefaultInstallationBasePath())
+                                : XPipeInstallation.getCurrentInstallationBasePath())
+                        .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
+                        .toString();
                 var logsDir = FileNames.join(XPipeInstallation.getDataDir().toString(), "logs");
                 var logFile = FileNames.join(logsDir, "installer_" + FileNames.getFileName(file) + ".log");
-                var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) ?
-                                getCmdCommand(file, logFile, exec) : getPowershellCommand(file, logFile, exec);
-                var toRun = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD) ?
-                        "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\"" :
-                        "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\"" + ScriptHelper.createLocalExecScript(command) + "`\"\"";
+                var command = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
+                        ? getCmdCommand(file, logFile, exec)
+                        : getPowershellCommand(file, logFile, exec);
+                var toRun = LocalShell.getShell().getShellDialect().equals(ShellDialects.CMD)
+                        ? "start \"XPipe Updater\" /min cmd /c \"" + ScriptHelper.createLocalExecScript(command) + "\""
+                        : "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
+                                + ScriptHelper.createLocalExecScript(command) + "`\"\"";
                 shellProcessControl.executeSimpleCommand(toRun);
             }
 
-            private String getCmdCommand(String file,  String logFile, String exec) {
+            @Override
+            public String getExtension() {
+                return ".msi";
+            }
+
+            private String getCmdCommand(String file, String logFile, String exec) {
                 return String.format(
                         """
                         echo Installing %s ...
@@ -93,7 +102,7 @@ public class AppInstaller {
                         file, file, logFile, file, logFile, exec, exec);
             }
 
-            private String getPowershellCommand(String file,  String logFile, String exec) {
+            private String getPowershellCommand(String file, String logFile, String exec) {
                 return String.format(
                         """
                         echo Installing %s ...
@@ -106,11 +115,6 @@ public class AppInstaller {
                         """,
                         file, file, logFile, file, logFile, exec, exec);
             }
-
-            @Override
-            public String getExtension() {
-                return ".msi";
-            }
         }
 
         @JsonTypeName("debian")
@@ -119,7 +123,8 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = String.format("""
+                var command = String.format(
+                        """
                                              function exec {
                                                  echo "+ sudo apt install \\"%s\\""
                                                  DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy "%s" || return 1
@@ -128,7 +133,8 @@ public class AppInstaller {
 
                                              cd ~
                                              exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                             """, file, file, name);
+                                             """,
+                        file, file, name);
                 TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
             }
 
@@ -143,7 +149,8 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = String.format("""
+                var command = String.format(
+                        """
                                              function exec {
                                                  echo "+ sudo rpm -U -v --force \\"%s\\""
                                                  sudo rpm -U -v --force "%s" || return 1
@@ -152,7 +159,8 @@ public class AppInstaller {
 
                                              cd ~
                                              exec || read -rsp "Update failed ..."$'\\n' -n 1 key
-                                             """, file, file, name);
+                                             """,
+                        file, file, name);
                 TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
             }
 
@@ -167,7 +175,8 @@ public class AppInstaller {
             @Override
             public void installLocal(String file) throws Exception {
                 var name = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-                var command = String.format("""
+                var command = String.format(
+                        """
                                            function exec {
                                                echo "+ sudo installer -verboseR -allowUntrusted -pkg \\"%s\\" -target /"
                                                sudo installer -verboseR -allowUntrusted -pkg "%s" -target / || return 1
@@ -176,7 +185,8 @@ public class AppInstaller {
 
                                            cd ~
                                            exec || echo "Update failed ..." && read -rs -k 1 key
-                                           """, file, file, name);
+                                           """,
+                        file, file, name);
                 TerminalLauncher.openDirect("XPipe Updater", LocalShell.getShell(), command);
             }
 

@@ -1,19 +1,19 @@
 
 .bookmark-list > .categories {
--fx-padding: 0.7em 1em 0.7em 1em;
--fx-background-color: -color-bg-subtle;
- -fx-border-color: -color-border-default;
- -fx-border-width: 0 0 1 0;
+    -fx-padding: 0.7em 1em 0.7em 1em;
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 0 0 1 0;
 }
 
 .bookmark-list .filter-comp {
- -fx-border-width: 1;
--fx-border-radius: 0 4px 4px 0;
--fx-background-radius: 0 4px 4px 0;
--fx-background-color: -color-bg-default;
--fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 0 4px 4px 0;
+    -fx-background-radius: 0 4px 4px 0;
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
 }
 
 .bookmark-list .store-section-mini-comp .item:selected {
- -fx-font-weight: BOLD;
+    -fx-font-weight: BOLD;
 }

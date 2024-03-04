@@ -171,7 +171,11 @@ public class StandardStorage extends DataStorage {
                     local.deleteFromDisk();
                     hasFixedLocal = false;
                 } catch (IOException ex) {
-                    ErrorEvent.fromThrowable(ex).terminal(true).expected().build().handle();
+                    ErrorEvent.fromThrowable(ex)
+                            .terminal(true)
+                            .expected()
+                            .build()
+                            .handle();
                 }
             }
         }

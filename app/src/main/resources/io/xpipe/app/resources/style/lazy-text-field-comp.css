@@ -3,13 +3,13 @@
 }
 
 .lazy-text-field-comp:disabled {
--fx-opacity: 1.0;
+    -fx-opacity: 1.0;
 }
 
 .lazy-text-field-comp:disabled.text-field .input-line {
--fx-opacity: 0;
+    -fx-opacity: 0;
 }
 
 .lazy-text-field-comp .input-line {
--fx-opacity: 0.0;
+    -fx-opacity: 0.0;
 }
