@@ -147,6 +147,7 @@
 .browser .status-bar {
     -fx-border-width: 1 0 0 0;
 -fx-border-color: -color-border-default;
+    -fx-font-family: Roboto;
 }
 
 .browser .breadcrumbs >.divider {
