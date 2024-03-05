@@ -26,7 +26,7 @@ public interface ActionProvider {
         }
     }
 
-    default void init() {}
+    default void init() throws Exception {}
 
     default String getId() {
         return null;

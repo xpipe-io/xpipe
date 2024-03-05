@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.util.FailableSupplier;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -34,6 +35,12 @@ public class ShellControlCache {
 
     public void setIfAbsent(String key, Supplier<Object> value) {
         multiPurposeCache.computeIfAbsent(key, s -> value.get());
+    }
+
+    public void setIfAbsentFailable(String key, FailableSupplier<Object> value) throws Exception {
+        if (multiPurposeCache.get(key) == null) {
+            multiPurposeCache.put(key, value.get());
+        }
     }
 
     public boolean isApplicationInPath(String app) {

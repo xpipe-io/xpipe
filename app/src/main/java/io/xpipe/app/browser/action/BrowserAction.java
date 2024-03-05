@@ -31,7 +31,7 @@ public interface BrowserAction {
                 .orElseThrow();
     }
 
-    default void init(OpenFileSystemModel model) {}
+    default void init(OpenFileSystemModel model) throws Exception {}
 
     default String getProFeatureId() {
         return null;

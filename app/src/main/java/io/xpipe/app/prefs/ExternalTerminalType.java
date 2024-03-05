@@ -141,7 +141,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) {
+        protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {
             // A weird behavior in Windows Terminal causes the trailing
             // backslash of a filepath to escape the closing quote in the title argument
             // So just remove that slash
@@ -894,6 +894,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             launch(configuration.getColoredTitle(), args);
         }
 
-        protected abstract CommandBuilder toCommand(LaunchConfiguration configuration);
+        protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
 }

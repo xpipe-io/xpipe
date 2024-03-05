@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileNames;
@@ -35,12 +36,12 @@ public class ShellTemp {
 
         var systemTemp = proc.getOsType().getTempDirectory(proc);
         if (!d.directoryExists(proc, systemTemp).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp)) {
-            throw new IOException("No permissions to access %s".formatted(systemTemp));
+            throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(systemTemp)));
         }
 
         var home = proc.getOsType().getHomeDirectory(proc);
         if (!d.directoryExists(proc, home).executeAndCheck() || !checkDirectoryPermissions(proc, home)) {
-            throw new IOException("No permissions to access %s".formatted(home));
+            throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(home)));
         }
 
         // Always delete legacy directory and do not care whether it partially fails

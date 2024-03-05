@@ -133,7 +133,9 @@ public class ScanAlert {
                         }
                     });
                 } finally {
-                    shellControl.close();
+                    if (shellControl != null) {
+                        shellControl.close();
+                    }
                     shellControl = null;
                 }
             });

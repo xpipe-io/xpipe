@@ -19,8 +19,9 @@ public class LocalShell {
     }
 
     public static ShellControl getLocalPowershell() throws Exception {
-        if (ShellDialects.isPowershell(getShell())) {
-            return local;
+        var s = getShell();
+        if (ShellDialects.isPowershell(s)) {
+            return s;
         }
 
         if (localPowershell == null) {
@@ -29,18 +30,18 @@ public class LocalShell {
                     .subShell(ShellDialects.POWERSHELL)
                     .start();
         }
-        return localPowershell;
+        return localPowershell.start();
     }
 
     public static boolean isLocalShellInitialized() {
         return local != null;
     }
 
-    public static ShellControl getShell() {
+    public static ShellControl getShell() throws Exception {
         if (local == null) {
             throw new IllegalStateException("Local shell not initialized yet");
         }
 
-        return local;
+        return local.start();
     }
 }

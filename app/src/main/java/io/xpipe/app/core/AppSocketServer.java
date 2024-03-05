@@ -239,7 +239,8 @@ public class AppSocketServer {
             }
         } catch (SocketException ex) {
             // Omit it, as this might happen often
-            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+            // This is expected if you kill a running xpipe CLI process
+            ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
         } catch (Throwable ex) {
             ErrorEvent.fromThrowable(ex).build().handle();
         } finally {
