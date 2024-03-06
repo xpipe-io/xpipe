@@ -96,8 +96,10 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         }
                     },
                     storeEntryWrapper -> {
-                        selected.setValue(storeEntryWrapper.getEntry().ref());
-                        popover.hide();
+                        if (applicable.test(storeEntryWrapper)) {
+                            selected.setValue(storeEntryWrapper.getEntry().ref());
+                            popover.hide();
+                        }
                     },
                     false);
             var category = new DataStoreCategoryChoiceComp(
@@ -184,23 +186,15 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         button.apply(struc -> {
                     struc.get().setMaxWidth(2000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
-                    struc.get()
-                            .setGraphic(PrettyImageHelper.ofSvg(
-                                            Bindings.createStringBinding(
-                                                    () -> {
-                                                        if (selected.getValue() == null) {
-                                                            return null;
-                                                        }
+                    Comp<?> graphic = PrettyImageHelper.ofSvg(Bindings.createStringBinding(() -> {
+                        if (selected.getValue() == null) {
+                            return null;
+                        }
 
-                                                        return selected.getValue()
-                                                                .get()
-                                                                .getProvider()
-                                                                .getDisplayIconFileName(selected.getValue()
-                                                                        .getStore());
-                                                    },
-                                                    selected),
-                                            16,
-                                            16)
+                        return selected.getValue().get().getProvider().getDisplayIconFileName(selected.getValue().getStore());
+                    }, selected), 16, 16);
+                    struc.get()
+                            .setGraphic(graphic
                                     .createRegion());
                     struc.get().setOnAction(event -> {
                         getPopover().show(struc.get());
