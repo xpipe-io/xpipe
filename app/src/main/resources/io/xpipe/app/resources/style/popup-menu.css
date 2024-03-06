@@ -52,7 +52,7 @@
     -fx-border-color: -color-border-default;
 }
 
-.context-menu * .context-menu {
+.context-menu * .context-menu, .context-menu.condensed {
     -fx-padding: 0;
     -fx-background-radius: 0;
     -fx-border-radius: 0;

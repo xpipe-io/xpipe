@@ -76,11 +76,11 @@
     -fx-opacity: 1.0;
 }
 
-.expand-button:hover, .expand-button:focused {
+.expand-button:hover, .expand-button:focused, .quick-access-button:hover, .quick-access-button:focused {
     -fx-background-color: -color-neutral-muted;
 }
 
-.expand-button:disabled {
+.expand-button:disabled, .quick-access-button:disabled {
     -fx-opacity: 0.2;
 }
 

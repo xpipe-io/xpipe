@@ -20,6 +20,7 @@
     -fx-padding: 0.25em 0.4em 0.25em 0.4em;
     -fx-border-color: transparent;
     -fx-background-color: transparent;
+    -fx-background-radius: 0;
 }
 
 .store-section-mini-comp .item:hover, .store-section-mini-comp .item:focused {
@@ -44,6 +45,25 @@
     -fx-opacity: 0.2;
 }
 
+.store-section-mini-comp.condensed .expand-button {
+    -fx-background-radius: 0;
+}
+
+.store-section-mini-comp .expand-button {
+    -fx-background-radius: 4 0 0 4;
+}
+
+.store-section-mini-comp .quick-access-button:hover, .store-section-mini-comp .quick-access-button:focused {
+    -fx-background-color: -color-neutral-muted;
+}
+
+.store-section-mini-comp .quick-access-button:disabled {
+    -fx-opacity: 0.2;
+}
+
+.store-section-mini-comp .quick-access-button {
+    -fx-background-radius: 0;
+}
 
 .store-section-mini-comp .separator {
     -fx-padding: 0 0.75em 0 0.75em;

@@ -87,19 +87,17 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                         && e.getValidity().isUsable()
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
-            var section = StoreSectionMiniComp.createList(
+            var section = new StoreSectionMiniComp(
                     StoreSection.createTopLevel(
                             StoreViewState.get().getAllEntries(), applicable, filterText, selectedCategory),
                     (s, comp) -> {
-                        comp.apply(struc -> struc.get().setOnAction(event -> {
-                            selected.setValue(s.getWrapper().getEntry().ref());
-                            popover.hide();
-                            event.consume();
-                        }));
-
                         if (!applicable.test(s.getWrapper())) {
                             comp.disable(new SimpleBooleanProperty(true));
                         }
+                    },
+                    storeEntryWrapper -> {
+                        selected.setValue(storeEntryWrapper.getEntry().ref());
+                        popover.hide();
                     },
                     false);
             var category = new DataStoreCategoryChoiceComp(

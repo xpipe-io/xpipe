@@ -57,11 +57,11 @@ public interface DataStoreProvider {
         return false;
     }
 
-    default Comp<?> customEntryComp(StoreSection s, boolean preferLarge) {
+    default StoreEntryComp customEntryComp(StoreSection s, boolean preferLarge) {
         return StoreEntryComp.create(s.getWrapper(), null, preferLarge);
     }
 
-    default Comp<?> customSectionComp(StoreSection section, boolean topLevel) {
+    default StoreSectionComp customSectionComp(StoreSection section, boolean topLevel) {
         return new StoreSectionComp(section, topLevel);
     }
 

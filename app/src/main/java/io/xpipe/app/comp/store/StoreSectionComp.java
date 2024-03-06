@@ -10,15 +10,15 @@ import io.xpipe.app.fxcomps.impl.VerticalComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
@@ -37,9 +37,32 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
 
     @Override
     public CompStructure<VBox> createBase() {
-        var root = StoreEntryComp.customSection(section, topLevel)
-                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
-        var button = new IconButtonComp(
+        var expanded = BindingsHelper.persist(Bindings.createBooleanBinding(
+                () -> {
+                    return section.getWrapper().getExpanded().get()
+                            && section.getShownChildren().size() > 0;
+                },
+                section.getWrapper().getExpanded(),
+                section.getShownChildren()));
+        var root = StoreEntryComp.customSection(section, topLevel);
+
+        var quickAccessDisabled = BindingsHelper.persist(Bindings.createBooleanBinding(
+                () -> {
+                    return section.getShownChildren().isEmpty();
+                },
+                section.getShownChildren()));
+        Consumer<StoreEntryWrapper> quickAccessAction = w -> {
+            ThreadHelper.runFailableAsync(() -> {
+                w.executeDefaultAction();
+            });
+        };
+        var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction).vgrow()
+                .styleClass("quick-access-button")
+                .apply(struc -> struc.get().setMinWidth(30))
+                .apply(struc -> struc.get().setPrefWidth(30))
+                .maxHeight(100)
+                .disable(quickAccessDisabled);
+        var expandButton = new IconButtonComp(
                         Bindings.createStringBinding(
                                 () -> section.getWrapper().getExpanded().get()
                                                 && section.getShownChildren().size() > 0
@@ -60,9 +83,16 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                         section.getWrapper().getName()))
                 .disable(BindingsHelper.persist(
                         Bindings.size(section.getShownChildren()).isEqualTo(0)))
-                .grow(false, true)
-                .styleClass("expand-button");
-        List<Comp<?>> topEntryList = List.of(button, root);
+                .styleClass("expand-button")
+                .maxHeight(100)
+                .vgrow();
+        var buttonList = new ArrayList<Comp<?>>();
+        if (root.isFullSize()) {
+            buttonList.add(quickAccessButton);
+        }
+        buttonList.add(expandButton);
+        var buttons = new VerticalComp(buttonList);
+        List<Comp<?>> topEntryList = List.of(buttons, root.hgrow());
 
         // Optimization for large sections. If there are more than 20 children, only add the nodes to the scene if the
         // section is actually expanded
@@ -77,14 +107,6 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 })
                 .minHeight(0)
                 .hgrow();
-
-        var expanded = Bindings.createBooleanBinding(
-                () -> {
-                    return section.getWrapper().getExpanded().get()
-                            && section.getShownChildren().size() > 0;
-                },
-                section.getWrapper().getExpanded(),
-                section.getShownChildren());
 
         return new VerticalComp(List.of(
                         new HorizontalComp(topEntryList)

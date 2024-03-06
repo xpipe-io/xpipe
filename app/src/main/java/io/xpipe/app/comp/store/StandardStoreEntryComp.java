@@ -12,6 +12,11 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         super(entry, content);
     }
 
+    @Override
+    public boolean isFullSize() {
+        return true;
+    }
+
     protected Region createContent() {
         var name = createName().createRegion();
 

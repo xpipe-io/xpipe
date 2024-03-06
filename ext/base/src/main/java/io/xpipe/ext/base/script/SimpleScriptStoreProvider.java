@@ -4,10 +4,7 @@ import io.xpipe.app.comp.base.DropdownComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.StoreToggleComp;
 import io.xpipe.app.comp.base.SystemStateComp;
-import io.xpipe.app.comp.store.DenseStoreEntryComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
@@ -55,7 +52,7 @@ public class SimpleScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public Comp<?> customEntryComp(StoreSection sec, boolean preferLarge) {
+    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         SimpleScriptStore s = sec.getWrapper().getEntry().getStore().asNeeded();
         if (sec.getWrapper().getValidity().getValue() != DataStoreEntry.Validity.COMPLETE) {
             return new DenseStoreEntryComp(sec.getWrapper(), true, null);

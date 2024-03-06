@@ -55,6 +55,11 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         return information;
     }
 
+    @Override
+    public boolean isFullSize() {
+        return false;
+    }
+
     protected Region createContent() {
         var grid = new GridPane();
         grid.setHgap(8);

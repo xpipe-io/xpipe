@@ -6,6 +6,8 @@ import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.comp.store.StoreSectionMiniComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFont;
+import io.xpipe.app.fxcomps.Comp;
+import io.xpipe.app.fxcomps.CompStructure;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.FilterComp;
 import io.xpipe.app.fxcomps.impl.HorizontalComp;
@@ -23,6 +25,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
 import javafx.scene.input.DragEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -30,6 +33,8 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 final class BrowserBookmarkComp extends SimpleComp {
@@ -55,46 +60,40 @@ final class BrowserBookmarkComp extends SimpleComp {
         };
         var selectedCategory = new SimpleObjectProperty<>(
                 StoreViewState.get().getActiveCategory().getValue());
-        var section = StoreSectionMiniComp.createList(
+
+        BooleanProperty busy = new SimpleBooleanProperty(false);
+        Consumer<StoreEntryWrapper> action = w -> {
+            ThreadHelper.runFailableAsync(() -> {
+                var entry = w.getEntry();
+                if (!entry.getValidity().isUsable()) {
+                    return;
+                }
+
+                if (entry.getStore() instanceof ShellStore fileSystem) {
+                    model.openFileSystemAsync(entry.ref(), null, busy);
+                } else if (entry.getStore() instanceof FixedHierarchyStore) {
+                    BooleanScope.execute(busy, () -> {
+                        w.refreshChildren();
+                    });
+                }
+            });
+        };
+        BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (s, comp) -> {
+            comp.disable(Bindings.createBooleanBinding(() -> {
+                return busy.get() || !applicable.test(s.getWrapper());
+            }, busy));
+            comp.apply(struc -> {
+                open.addListener((observable, oldValue, newValue) -> {
+                    struc.get().pseudoClassStateChanged(SELECTED, newValue != null && newValue.getEntry().get().equals(s.getWrapper().getEntry()));
+                });
+            });
+        };
+
+        var section = new StoreSectionMiniComp(
                 StoreSection.createTopLevel(
                         StoreViewState.get().getAllEntries(), storeEntryWrapper -> true, filterText, selectedCategory),
-                (s, comp) -> {
-                    BooleanProperty busy = new SimpleBooleanProperty(false);
-                    comp.disable(Bindings.createBooleanBinding(
-                            () -> {
-                                return busy.get() || !applicable.test(s.getWrapper());
-                            },
-                            busy));
-                    comp.apply(struc -> {
-                        open.addListener((observable, oldValue, newValue) -> {
-                            struc.get()
-                                    .pseudoClassStateChanged(
-                                            SELECTED,
-                                            newValue != null
-                                                    && newValue.getEntry()
-                                                            .get()
-                                                            .equals(s.getWrapper()
-                                                                    .getEntry()));
-                        });
-                        struc.get().setOnAction(event -> {
-                            ThreadHelper.runFailableAsync(() -> {
-                                var entry = s.getWrapper().getEntry();
-                                if (!entry.getValidity().isUsable()) {
-                                    return;
-                                }
-
-                                if (entry.getStore() instanceof ShellStore fileSystem) {
-                                    model.openFileSystemAsync(entry.ref(), null, busy);
-                                } else if (entry.getStore() instanceof FixedHierarchyStore) {
-                                    BooleanScope.execute(busy, () -> {
-                                        s.getWrapper().refreshChildren();
-                                    });
-                                }
-                            });
-                            event.consume();
-                        });
-                    });
-                },
+                augment,
+                action,
                 true);
         var category = new DataStoreCategoryChoiceComp(
                         StoreViewState.get().getAllConnectionsCategory(),

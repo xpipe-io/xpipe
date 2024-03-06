@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
@@ -35,20 +36,17 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     private final StoreSection section;
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
+    private final Consumer<StoreEntryWrapper> action;
     private final boolean condensedStyle;
 
     public StoreSectionMiniComp(
             StoreSection section,
-            BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
+            BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, Consumer<StoreEntryWrapper> action,
             boolean condensedStyle) {
         this.section = section;
         this.augment = augment;
+        this.action = action;
         this.condensedStyle = condensedStyle;
-    }
-
-    public static Comp<?> createList(
-            StoreSection top, BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, boolean condensedStyle) {
-        return new StoreSectionMiniComp(top, augment, condensedStyle);
     }
 
     @Override
@@ -70,6 +68,12 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     })
                     .apply(struc -> {
                         struc.get().setAlignment(Pos.CENTER_LEFT);
+                    })
+                    .apply(struc -> {
+                        struc.get().setOnAction(event -> {
+                            action.accept(section.getWrapper());
+                            event.consume();
+                        });
                     })
                     .grow(true, false)
                     .apply(struc -> struc.get().setMnemonicParsing(false))
@@ -99,8 +103,27 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                             Bindings.size(section.getAllChildren()).isEqualTo(0)))
                     .grow(false, true)
                     .styleClass("expand-button");
-            List<Comp<?>> topEntryList = List.of(button, root);
-            list.add(new HorizontalComp(topEntryList).apply(struc -> struc.get().setFillHeight(true)));
+
+            var quickAccessDisabled = BindingsHelper.persist(Bindings.createBooleanBinding(
+                    () -> {
+                        return section.getShownChildren().isEmpty();
+                    },
+                    section.getShownChildren()));
+            Consumer<StoreEntryWrapper> quickAccessAction = w -> {
+                action.accept(w);
+            };
+            var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction).vgrow()
+                    .styleClass("quick-access-button")
+                    .maxHeight(100)
+                    .disable(quickAccessDisabled);
+
+            var buttonList = new ArrayList<Comp<?>>();
+            buttonList.add(button);
+            buttonList.add(root);
+            if (section.getDepth() == 1) {
+                buttonList.add(quickAccessButton);
+            }
+            list.add(new HorizontalComp(buttonList).apply(struc -> struc.get().setFillHeight(true)));
         } else {
             expanded = new SimpleBooleanProperty(true);
         }
@@ -115,7 +138,7 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                         section.getAllChildren())
                 : section.getShownChildren();
         var content = new ListBoxViewComp<>(listSections, section.getAllChildren(), (StoreSection e) -> {
-                    return new StoreSectionMiniComp(e, this.augment, this.condensedStyle);
+                    return new StoreSectionMiniComp(e, this.augment, this.action, this.condensedStyle);
                 })
                 .minHeight(0)
                 .hgrow();

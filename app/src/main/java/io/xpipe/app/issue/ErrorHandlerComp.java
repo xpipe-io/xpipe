@@ -54,10 +54,11 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         // Unhandled platform exceptions usually means that we will have trouble displaying another window
-        if (event.isUnhandled() && Platform.isFxApplicationThread()) {
-            ErrorAction.ignore().handle(event);
-            return;
-        }
+        // Let's just hope that this is not the case
+//        if (event.isUnhandled() && Platform.isFxApplicationThread()) {
+//            ErrorAction.ignore().handle(event);
+//            return;
+//        }
 
         if (Platform.isFxApplicationThread()) {
             showAndWaitWithPlatformThread(event, forceWait);
