@@ -712,9 +712,9 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             WEZ_WINDOWS,
             WINDOWS_TERMINAL_PREVIEW,
             WINDOWS_TERMINAL,
+            CMD,
             PWSH,
-            POWERSHELL,
-            CMD);
+            POWERSHELL);
     List<ExternalTerminalType> LINUX_TERMINALS = List.of(
             WEZ_LINUX,
             KONSOLE,
