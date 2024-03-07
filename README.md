@@ -5,10 +5,11 @@ XPipe is a new type of shell connection hub and remote file manager that allows 
 XPipe fully integrates with your tools such as your favourite text/code editors, terminals, shells, command-line tools and more. The platform is designed to be extensible, allowing anyone to add easily support for more tools or to implement custom functionality through a modular extension system.
 
 It currently supports:
-- [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
-- [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
 - [SSH](https://www.ssh.com/academy/ssh/protocol) connections, config files, and tunnels
+- [Docker](https://www.docker.com/), [Podman](https://podman.io/), and [LXD](https://linuxcontainers.org/lxd/introduction/) container instances located on any host
 - [Windows Subsystem for Linux](https://ubuntu.com/wsl), [Cygwin](https://www.cygwin.com/), and [MSYS2](https://www.msys2.org/) instances
+- [Proxmox PVE](https://www.proxmox.com/en/proxmox-virtual-environment/overview) virtual machines and containers
+- [Kubernetes](https://kubernetes.io/) clusters, pods, and containers
 - [Powershell Remote Sessions](https://learn.microsoft.com/en-us/powershell/scripting/learn/remoting/running-remote-commands?view=powershell-7.3)
 - Any other custom remote connection methods that work through the command-line
 
