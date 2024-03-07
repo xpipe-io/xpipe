@@ -85,16 +85,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
             return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-EncodedCommand").add(sc -> {
                 // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-                String script;
-                if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
-                    script = ScriptHelper.createLocalExecScript(
-                            "set \"PSModulePath=\"\r\n" + configuration.getDialectLaunchCommand().buildCommandBase(sc));
-                } else {
-                    script = ScriptHelper.createLocalExecScript(
-                            "$env:PSModulePath=\"\"\r\n" + configuration.getDialectLaunchCommand().buildCommandBase(sc));
-                }
-                var base64 = Base64.getEncoder().encodeToString(configuration.withScriptFile(script)
-                        .getDialectLaunchCommand().buildCommandBase(sc).getBytes(StandardCharsets.UTF_16LE));
+                var c = "$env:PSModulePath=\"\";" + configuration.getDialectLaunchCommand().buildCommandBase(sc);
+                var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
                 return "\"" + base64 + "\"";
             });
         }
