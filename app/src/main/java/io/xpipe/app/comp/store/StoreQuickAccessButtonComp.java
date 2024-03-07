@@ -18,13 +18,14 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
     private final StoreSection section;
     private final Consumer<StoreEntryWrapper> action;
 
-    public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreEntryWrapper> action) {this.section = section;
+    public StoreQuickAccessButtonComp(StoreSection section, Consumer<StoreEntryWrapper> action) {
+        this.section = section;
         this.action = action;
     }
 
     @Override
     protected Region createSimple() {
-        var button = new IconButtonComp("mdi2p-play-speed");
+        var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
             struc.get().setOnAction(event -> {
                 showMenu(struc.get());

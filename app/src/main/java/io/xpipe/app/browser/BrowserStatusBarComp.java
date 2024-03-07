@@ -8,7 +8,6 @@ import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
-import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.HumanReadableFormat;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ToolBar;
@@ -58,7 +57,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return transferred + " / " + all + name;
             }
         });
-        var progressComp = new LabelComp(text);
+        var progressComp = new LabelComp(text).styleClass("progress");
         return progressComp;
     }
 

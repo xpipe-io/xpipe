@@ -10,7 +10,7 @@
 }
 
 .context-menu > * > * {
-    -fx-padding: 5px 15 5px 15;
+    -fx-padding: 3px 10px 3px 10px;
     -fx-background-radius: 1px;
     -fx-spacing: 20px;
 }
@@ -38,7 +38,7 @@
 
 
 .context-menu .accelerator-text {
-    -fx-padding: 3px 0px 3px 50px;
+    -fx-padding: 0px 0px 0px 50px;
 }
 
 .context-menu > * {

@@ -147,6 +147,9 @@
 .browser .status-bar {
     -fx-border-width: 1 0 0 0;
     -fx-border-color: -color-border-default;
+}
+
+.browser .status-bar .progress {
     -fx-font-family: Roboto;
 }
 
@@ -154,23 +157,8 @@
     -fx-padding: 0;
 }
 
-.browser .overview .context-menu > * > * {
-    -fx-padding: 3px 10px 3px 10px;
-    -fx-background-radius: 1px;
-    -fx-spacing: 20px;
-}
-
-.browser .overview .context-menu .separator {
-    -fx-padding: 0;
-}
-
 .browser .breadcrumbs {
     -fx-padding: 2px 10px 2px 10px;
-}
-
-.browser .overview .context-menu .separator .line {
-    -fx-padding: 0;
-    -fx-border-insets: 0px;
 }
 
 .browser .breadcrumbs {
@@ -198,21 +186,6 @@
     -fx-border-width: 0;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-}
-
-.browser .overview .context-menu .accelerator-text {
-    -fx-padding: 3px 0px 3px 50px;
-}
-
-.browser .overview .context-menu > * {
-    -fx-padding: 0;
-}
-
-.browser .overview .context-menu {
-    -fx-padding: 12 0 12 0;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
-    -fx-border-color: -color-border-default;
 }
 
 .browser .tab-pane {
