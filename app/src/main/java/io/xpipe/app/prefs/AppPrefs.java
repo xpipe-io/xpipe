@@ -404,9 +404,7 @@ public class AppPrefs {
         if (externalEditor.get() == null) {
             ExternalEditorType.detectDefault();
         }
-        if (terminalType.get() == null) {
-            terminalType.set(ExternalTerminalType.determineDefault());
-        }
+        terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
     }
 
     public Comp<?> getCustomComp(String id) {

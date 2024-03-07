@@ -33,7 +33,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
             if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
-                return CommandBuilder.of().add("/c").add(configuration.getScriptFile());
+                return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
             }
 
             return CommandBuilder.of().add("/c").add(configuration.getDialectLaunchCommand());
@@ -58,7 +58,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return CommandBuilder.of()
                         .add("-ExecutionPolicy", "Bypass")
                         .add("-File")
-                        .add(configuration.getScriptFile());
+                        .addFile(configuration.getScriptFile());
             }
 
             return CommandBuilder.of().add("-Command").add(configuration.getDialectLaunchCommand());
@@ -83,7 +83,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 return CommandBuilder.of()
                         .add("-ExecutionPolicy", "Bypass")
                         .add("-File")
-                        .add(configuration.getScriptFile());
+                        .addFile(configuration.getScriptFile());
             }
 
             // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
@@ -754,7 +754,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             })
             .get();
 
-    static ExternalTerminalType determineDefault() {
+    static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
+        // Check for incompatibility with fallback shell
+        if (ExternalTerminalType.CMD.equals(existing) && !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)) {
+            return ExternalTerminalType.POWERSHELL;
+        }
+
+        if (existing != null) {
+            return existing;
+        }
+
         return ALL.stream()
                 .filter(externalTerminalType -> !externalTerminalType.equals(CUSTOM))
                 .filter(terminalType -> terminalType.isAvailable())
