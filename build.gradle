@@ -130,7 +130,6 @@ def replaceVariablesInFile(String f, Map<String, String> replacements) {
 
 def testTasks = [
         project(':core').getTasksByName('test', true),
-        project(':api').getTasksByName('test', true),
         project(':app').getTasksByName('test', true),
         project(':base').getTasksByName('localTest', true),
         project(':jdbc').getTasksByName('localTest', true),

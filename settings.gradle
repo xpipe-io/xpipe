@@ -1,6 +1,5 @@
 rootProject.name = 'xpipe'
 
-include 'api'
 include 'core'
 include 'beacon'
 
