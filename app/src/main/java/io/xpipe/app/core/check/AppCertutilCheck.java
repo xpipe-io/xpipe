@@ -9,7 +9,7 @@ public class AppCertutilCheck {
 
     private static boolean getResult() {
         var fc = new ProcessBuilder(System.getenv("WINDIR") + "\\System32\\certutil")
-                .redirectError(ProcessBuilder.Redirect.DISCARD);
+                .redirectErrorStream(true);
         try {
             var proc = fc.start();
             var out = new String(proc.getInputStream().readAllBytes());
