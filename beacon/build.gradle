@@ -7,9 +7,6 @@ plugins {
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 
-dependencies {
-}
-
 version = rootProject.versionString
 group = 'io.xpipe'
 archivesBaseName = 'xpipe-beacon'

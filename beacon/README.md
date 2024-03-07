@@ -10,7 +10,7 @@ of different operations.
 ### Inner Workings
 
 - The underlying inter-process communication is realized through
-  TCP sockets on port `21721` on Windows and `21722` on Linux.
+  TCP sockets on port `21721` on Windows and `21723` on Linux/macOS.
 
 - The data structures and exchange protocols are specified in the
   [io.xpipe.beacon.exchange package](src/main/java/io/xpipe/beacon/exchange).
@@ -59,6 +59,3 @@ By passing the property `io.xpipe.beacon.launchDebugDaemon=true`, the daemon is 
 i.e. will log more information and enable a few other options.
 By passing the property `io.xpipe.beacon.attachDebuggerToDaemon=true`, it is possible to launch a daemon
 in a mode where it is waiting to attach to a debugger first prior to starting up.
-
-
-
