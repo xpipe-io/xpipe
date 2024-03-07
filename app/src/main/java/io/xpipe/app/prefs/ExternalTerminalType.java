@@ -11,6 +11,7 @@ import lombok.Value;
 import lombok.With;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -61,7 +62,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .addFile(configuration.getScriptFile());
             }
 
-            return CommandBuilder.of().add("-Command").add(configuration.getDialectLaunchCommand());
+            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-EncodedCommand").add(sc -> {
+                var base64 = Base64.getEncoder().encodeToString(configuration.getDialectLaunchCommand().buildCommandBase(sc).getBytes(StandardCharsets.UTF_16LE));
+                return "\"" + base64 + "\"";
+            });
         }
     };
 
@@ -79,19 +83,20 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL_CORE)) {
-                return CommandBuilder.of()
-                        .add("-ExecutionPolicy", "Bypass")
-                        .add("-File")
-                        .addFile(configuration.getScriptFile());
-            }
-
-            // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-            var script = ScriptHelper.createLocalExecScript(
-                    "set \"PSModulePath=\"\r\n& \"" + configuration.getScriptFile() + "\"");
-            return CommandBuilder.of()
-                    .add("-Command")
-                    .add(configuration.withScriptFile(script).getDialectLaunchCommand());
+            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-EncodedCommand").add(sc -> {
+                // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
+                String script;
+                if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
+                    script = ScriptHelper.createLocalExecScript(
+                            "set \"PSModulePath=\"\r\n" + configuration.getDialectLaunchCommand().buildCommandBase(sc));
+                } else {
+                    script = ScriptHelper.createLocalExecScript(
+                            "$env:PSModulePath=\"\"\r\n" + configuration.getDialectLaunchCommand().buildCommandBase(sc));
+                }
+                var base64 = Base64.getEncoder().encodeToString(configuration.withScriptFile(script)
+                        .getDialectLaunchCommand().buildCommandBase(sc).getBytes(StandardCharsets.UTF_16LE));
+                return "\"" + base64 + "\"";
+            });
         }
     };
 
