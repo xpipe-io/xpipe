@@ -47,13 +47,19 @@ public class SecretManager {
         return p;
     }
 
-    public static boolean shouldCacheForPrompt(String prompt) {
+    public static boolean isSpecialPrompt(String prompt) {
         var l = prompt.toLowerCase(Locale.ROOT);
+        // 2FA
         if (l.contains("passcode") || l.contains("verification code")) {
-            return false;
+            return true;
         }
 
-        return true;
+        // SSH host key trust prompt
+        if (l.contains("authenticity of host") || l.contains("please type 'yes', 'no' or the fingerprint")) {
+            return true;
+        }
+
+        return false;
     }
 
     public static SecretValue retrieve(SecretRetrievalStrategy strategy, String prompt, UUID secretId, int sub) {

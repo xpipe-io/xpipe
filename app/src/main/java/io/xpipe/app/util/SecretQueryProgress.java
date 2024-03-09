@@ -115,7 +115,7 @@ public class SecretQueryProgress {
 
     private boolean shouldCache(SecretQuery query, String prompt) {
         var shouldCache = query.cache()
-                && SecretManager.shouldCacheForPrompt(prompt)
+                && !SecretManager.isSpecialPrompt(prompt)
                 && (!query.respectDontCacheSetting()
                         || !AppPrefs.get().dontCachePasswords().get());
         return shouldCache;
