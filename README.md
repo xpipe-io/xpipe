@@ -83,7 +83,9 @@ If you don't like installers, you can also use a portable version that is packag
 
 - [Windows .zip Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
 
-Alternatively, you can also use [choco](https://community.chocolatey.org/packages/xpipe) to install it with `choco install xpipe`.
+Alternatively, you can also use the following package managers:
+- [choco](https://community.chocolatey.org/packages/xpipe) to install it with `choco install xpipe`.
+- [winget](https://github.com/microsoft/winget-cli) to install it with `winget install xpipe-io.xpipe --source winget`.
 
 ## Linux
 
