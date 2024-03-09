@@ -19,7 +19,7 @@ publishing {
                 url = 'https://github.com/xpipe-io/xpipe/beacon'
                 licenses {
                     license {
-                        name = 'The MIT License (MIT)'
+                        name = 'Apache License 2.0'
                         url = 'https://github.com/xpipe-io/xpipe/LICENSE.md'
                     }
                 }
