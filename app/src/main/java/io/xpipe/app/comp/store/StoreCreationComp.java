@@ -40,14 +40,14 @@ import net.synedra.validatorfx.GraphicDecorationStackPane;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class StoreCreationComp extends DialogComp {
 
     Stage window;
-    Consumer<DataStoreEntry> consumer;
+    BiConsumer<DataStoreEntry, Boolean> consumer;
     Property<DataStoreProvider> provider;
     Property<DataStore> store;
     Predicate<DataStoreProvider> filter;
@@ -64,7 +64,7 @@ public class StoreCreationComp extends DialogComp {
 
     public StoreCreationComp(
             Stage window,
-            Consumer<DataStoreEntry> consumer,
+            BiConsumer<DataStoreEntry, Boolean> consumer,
             Property<DataStoreProvider> provider,
             Property<DataStore> store,
             Predicate<DataStoreProvider> filter,
@@ -148,7 +148,7 @@ public class StoreCreationComp extends DialogComp {
                 e.getProvider(),
                 e.getStore(),
                 v -> true,
-                newE -> {
+                (newE, validated) -> {
                     ThreadHelper.runAsync(() -> {
                         if (!DataStorage.get().getStoreEntries().contains(e)) {
                             DataStorage.get().addStoreEntryIfNotPresent(newE);
@@ -171,7 +171,7 @@ public class StoreCreationComp extends DialogComp {
                 base != null ? DataStoreProviders.byStore(base) : null,
                 base,
                 dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()),
-                e -> {
+                (e, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
                         if (e.getProvider().shouldHaveChildren()
@@ -193,7 +193,7 @@ public class StoreCreationComp extends DialogComp {
             DataStoreProvider provider,
             DataStore s,
             Predicate<DataStoreProvider> filter,
-            Consumer<DataStoreEntry> con,
+            BiConsumer<DataStoreEntry, Boolean> con,
             boolean staticDisplay,
             DataStoreEntry existingEntry) {
         var prop = new SimpleObjectProperty<>(provider);
@@ -223,7 +223,7 @@ public class StoreCreationComp extends DialogComp {
     protected List<Comp<?>> customButtons() {
         return List.of(new ButtonComp(AppI18n.observable("skip"), null, () -> {
                     if (showInvalidConfirmAlert()) {
-                        commit();
+                        commit(false);
                     } else {
                         finish();
                     }
@@ -248,7 +248,7 @@ public class StoreCreationComp extends DialogComp {
 
         // We didn't change anything
         if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            commit();
+            commit(false);
             return;
         }
 
@@ -274,7 +274,7 @@ public class StoreCreationComp extends DialogComp {
             try (var b = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
                 entry.getValue().validateOrThrow();
-                commit();
+                commit(true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
                     ErrorEvent.expected(ex);
@@ -349,14 +349,14 @@ public class StoreCreationComp extends DialogComp {
                 .build();
     }
 
-    private void commit() {
+    private void commit(boolean validated) {
         if (finished.get()) {
             return;
         }
         finished.setValue(true);
 
         if (entry.getValue() != null) {
-            consumer.accept(entry.getValue());
+            consumer.accept(entry.getValue(), validated);
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
