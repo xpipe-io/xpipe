@@ -563,6 +563,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
+        
         @Override
         public boolean supportsTabs() {
             return true;
@@ -575,27 +576,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
-            if (!MacOsPermissions.waitForAccessibilityPermissions()) {
-                return;
-            }
-
-            try (ShellControl pc = LocalShell.getShell()) {
-                pc.osascriptCommand(String.format(
-                                """
-                        tell application "Warp" to activate
-                        tell application "System Events" to tell process "Warp" to keystroke "t" using command down
-                        delay 1
-                        tell application "System Events"
-                            tell process "Warp"
-                                keystroke "%s"
-                                delay 0.01
-                                key code 36
-                            end tell
-                        end tell
-                        """,
-                                configuration.getScriptFile().replaceAll("\"", "\\\\\"")))
-                        .execute();
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("Warp.app")
+                            .addFile(configuration.getScriptFile()));
         }
     };
     ExternalTerminalType TABBY_MAC_OS = new MacOsType("app.tabby", "Tabby") {
