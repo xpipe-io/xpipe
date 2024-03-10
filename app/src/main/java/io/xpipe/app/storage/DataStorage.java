@@ -294,7 +294,7 @@ public abstract class DataStorage {
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
 
-        newEntry.finalizeEntry();
+        entry.finalizeEntry();
 
         var children = getDeepStoreChildren(entry);
         if (!sameParent) {
