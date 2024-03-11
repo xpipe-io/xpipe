@@ -101,7 +101,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
                             popover.hide();
                         }
                     },
-                    false);
+                    true);
             var category = new DataStoreCategoryChoiceComp(
                             initialCategory != null ? initialCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
