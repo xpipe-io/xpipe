@@ -1,6 +1,5 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.charsetter.NewLine;
 import io.xpipe.core.process.OsType;
 
 import java.io.PrintWriter;

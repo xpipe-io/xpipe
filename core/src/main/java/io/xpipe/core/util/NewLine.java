@@ -1,4 +1,4 @@
-package io.xpipe.core.charsetter;
+package io.xpipe.core.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

@@ -1,6 +1,5 @@
-package io.xpipe.core.charsetter;
+package io.xpipe.core.util;
 
-import io.xpipe.core.util.Identifiers;
 import lombok.Value;
 
 import java.io.InputStream;

@@ -1,7 +1,7 @@
 package io.xpipe.core.dialog;
 
-import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.util.NewLine;
+import io.xpipe.core.util.StreamCharset;
 import io.xpipe.core.util.SecretValue;
 
 import java.net.URI;

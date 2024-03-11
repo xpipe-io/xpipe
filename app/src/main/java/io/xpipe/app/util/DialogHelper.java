@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.util.NewLine;
+import io.xpipe.core.util.StreamCharset;
 import io.xpipe.core.dialog.Dialog;
 import io.xpipe.core.dialog.QueryConverter;
 import io.xpipe.core.store.*;

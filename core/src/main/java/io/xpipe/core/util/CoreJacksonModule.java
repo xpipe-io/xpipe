@@ -12,8 +12,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.ArrayType;
-import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.charsetter.StreamCharset;
 import io.xpipe.core.dialog.BaseQueryElement;
 import io.xpipe.core.dialog.BusyElement;
 import io.xpipe.core.dialog.ChoiceElement;

@@ -1,7 +1,7 @@
 package io.xpipe.core.store;
 
-import io.xpipe.core.charsetter.NewLine;
-import io.xpipe.core.charsetter.StreamCharset;
+import io.xpipe.core.util.NewLine;
+import io.xpipe.core.util.StreamCharset;
 
 public interface KnownFormatStreamDataStore extends StreamDataStore {
 
