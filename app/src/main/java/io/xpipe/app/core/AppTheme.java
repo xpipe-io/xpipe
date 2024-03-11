@@ -74,7 +74,7 @@ public class AppTheme {
 
         try {
             if (AppPrefs.get().theme.getValue() == null) {
-                setDefault(Platform.getPreferences().getColorScheme());
+                setDefault();
             }
 
             Platform.getPreferences().colorSchemeProperty().addListener((observableValue, colorScheme, t1) -> {
@@ -105,10 +105,16 @@ public class AppTheme {
         init = true;
     }
 
-    private static void setDefault(ColorScheme colorScheme) {
-        if (colorScheme == ColorScheme.DARK) {
-            AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
-        } else {
+    private static void setDefault() {
+        try {
+            var colorScheme = Platform.getPreferences().getColorScheme();
+            if (colorScheme == ColorScheme.DARK) {
+                AppPrefs.get().theme.setValue(Theme.getDefaultDarkTheme());
+            } else {
+                AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
+            }
+        } catch (Exception ex) {
+            // The color scheme query can fail if the toolkit is not initialized properly
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());
         }
     }
