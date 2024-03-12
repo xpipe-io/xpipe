@@ -394,6 +394,10 @@ public final class OpenFileSystemModel {
                 this.customScriptsStartIndex =
                         fs.getShell().get().getInitCommands().size();
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+
+                fs.getShell().get().onKill(() -> {
+                    browserModel.closeFileSystemAsync(this);
+                });
             }
             fs.open();
             this.fileSystem = fs;

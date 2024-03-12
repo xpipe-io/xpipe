@@ -62,7 +62,7 @@ public interface ShellControl extends ProcessControl {
     }
 
     default <T extends ShellStoreState> ShellControl withShellStateFail(StatefulDataStore<T> store) {
-        return onFail(shellControl -> {
+        return onStartupFail(shellControl -> {
             var s = store.getState();
             s.setRunning(false);
             store.setState(s);
@@ -71,7 +71,9 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl onExit(Consumer<ShellControl> pc);
 
-    ShellControl onFail(Consumer<Throwable> t);
+    ShellControl onKill(Runnable pc);
+
+    ShellControl onStartupFail(Consumer<Throwable> t);
 
     ShellControl withExceptionConverter(ExceptionConverter converter);
 
