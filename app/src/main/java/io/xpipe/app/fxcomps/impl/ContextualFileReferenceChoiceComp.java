@@ -85,8 +85,8 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
 
             try {
                 var data = DataStorage.get().getDataDir();
-                var f = data.resolve(FileNames.getFileName(filePath.getValue()));
-                var source = Path.of(filePath.getValue());
+                var f = data.resolve(FileNames.getFileName(filePath.getValue().trim()));
+                var source = Path.of(filePath.getValue().trim());
                 if (Files.exists(source)) {
                     var shouldCopy = AppWindowHelper.showBlockingAlert(alert -> {
                                 alert.setTitle(AppI18n.get("confirmGitShareTitle"));
