@@ -115,7 +115,7 @@ public class StoreCreationComp extends DialogComp {
                             DataStorage.get().getSelectedCategory().getUuid(),
                             name.getValue(),
                             store.getValue());
-                    var p = provider.getValue().getDisplayParent(testE);
+                    var p =  DataStorage.get().getDefaultDisplayParent(testE).orElse(null);
 
                     var targetCategory = p != null
                             ? p.getCategoryUuid()
@@ -271,6 +271,11 @@ public class StoreCreationComp extends DialogComp {
         }
 
         ThreadHelper.runAsync(() -> {
+            // Might have changed since last time
+            if (entry.getValue() == null) {
+                return;
+            }
+
             try (var b = new BooleanScope(busy).start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
                 entry.getValue().validateOrThrow();
