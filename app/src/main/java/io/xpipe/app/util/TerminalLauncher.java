@@ -57,7 +57,7 @@ public class TerminalLauncher {
             type.launch(config);
             latch.await();
         } catch (Exception ex) {
-            ErrorEvent.expected(new IOException(
+            throw ErrorEvent.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + ex.getMessage()
                             + ".\nMaybe try to use a different terminal in the settings.",
                     ex));
