@@ -41,8 +41,8 @@ public class DataStoreListChoiceComp<T extends DataStore> extends SimpleComp {
                     }
 
                     var label = new LabelComp(t.get().getName()).apply(struc -> struc.get()
-                            .setGraphic(PrettyImageHelper.ofFixedSmallSquare(
-                                            t.get().getProvider().getDisplayIconFileName(t.getStore()))
+                            .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                            t.get().getProvider().getDisplayIconFileName(t.getStore()), 16)
                                     .createRegion()));
                     var delete = new IconButtonComp("mdal-delete_outline", () -> {
                         selectedList.remove(t);

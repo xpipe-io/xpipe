@@ -9,6 +9,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.LabelComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.JfxHelper;
@@ -42,7 +43,7 @@ public class BrowserWelcomeComp extends SimpleComp {
         var vbox = new VBox(welcome, new Spacer(4, Orientation.VERTICAL));
         vbox.setAlignment(Pos.CENTER_LEFT);
 
-        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Hips.svg"), 50, 75)
+        var img = new PrettySvgComp(new SimpleStringProperty("Hips.svg"), 50, 75)
                 .padding(new Insets(5, 0, 0, 0))
                 .createRegion();
         var hbox = new HBox(img, vbox);

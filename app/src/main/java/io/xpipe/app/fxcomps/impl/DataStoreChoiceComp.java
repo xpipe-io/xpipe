@@ -186,7 +186,7 @@ public class DataStoreChoiceComp<T extends DataStore> extends SimpleComp {
         button.apply(struc -> {
                     struc.get().setMaxWidth(2000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
-                    Comp<?> graphic = PrettyImageHelper.ofSvg(Bindings.createStringBinding(() -> {
+                    Comp<?> graphic = new PrettySvgComp(Bindings.createStringBinding(() -> {
                         if (selected.getValue() == null) {
                             return null;
                         }

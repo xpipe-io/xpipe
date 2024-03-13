@@ -25,13 +25,13 @@ public class FileIconManager {
 
         var r = entry.resolved();
         if (r.getKind() != FileKind.DIRECTORY) {
-            for (var f : FileType.ALL) {
+            for (var f : BrowserIconFileType.ALL) {
                 if (f.matches(r)) {
                     return getIconPath(f.getIcon());
                 }
             }
         } else {
-            for (var f : DirectoryType.ALL) {
+            for (var f : BrowserIconDirectoryType.ALL) {
                 if (f.matches(r)) {
                     return getIconPath(f.getIcon(r, open));
                 }

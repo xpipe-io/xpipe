@@ -3,7 +3,7 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.ExecuteApplicationAction;
-import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
 
@@ -44,7 +44,7 @@ public class UnzipAction extends ExecuteApplicationAction implements FileTypeAct
     }
 
     @Override
-    public FileType getType() {
-        return FileType.byId("zip");
+    public BrowserIconFileType getType() {
+        return BrowserIconFileType.byId("zip");
     }
 }

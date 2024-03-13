@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.MultiExecuteAction;
-import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.process.ShellControl;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class JarAction extends MultiExecuteAction implements JavaAction, FileTyp
     }
 
     @Override
-    public FileType getType() {
-        return FileType.byId("jar");
+    public BrowserIconFileType getType() {
+        return BrowserIconFileType.byId("jar");
     }
 }

@@ -1,7 +1,7 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.browser.icon.DirectoryType;
-import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FileSystem;
@@ -13,8 +13,8 @@ public class BrowserEntry {
     private final BrowserFileListModel model;
     private final FileSystem.FileEntry rawFileEntry;
     private final boolean synthetic;
-    private final FileType fileType;
-    private final DirectoryType directoryType;
+    private final BrowserIconFileType fileType;
+    private final BrowserIconDirectoryType directoryType;
 
     public BrowserEntry(FileSystem.FileEntry rawFileEntry, BrowserFileListModel model, boolean synthetic) {
         this.rawFileEntry = rawFileEntry;
@@ -24,12 +24,12 @@ public class BrowserEntry {
         this.directoryType = directoryType(rawFileEntry);
     }
 
-    private static FileType fileType(FileSystem.FileEntry rawFileEntry) {
+    private static BrowserIconFileType fileType(FileSystem.FileEntry rawFileEntry) {
         if (rawFileEntry.getKind() == FileKind.DIRECTORY) {
             return null;
         }
 
-        for (var f : FileType.ALL) {
+        for (var f : BrowserIconFileType.ALL) {
             if (f.matches(rawFileEntry)) {
                 return f;
             }
@@ -38,12 +38,12 @@ public class BrowserEntry {
         return null;
     }
 
-    private static DirectoryType directoryType(FileSystem.FileEntry rawFileEntry) {
+    private static BrowserIconDirectoryType directoryType(FileSystem.FileEntry rawFileEntry) {
         if (rawFileEntry.getKind() != FileKind.DIRECTORY) {
             return null;
         }
 
-        for (var f : DirectoryType.ALL) {
+        for (var f : BrowserIconDirectoryType.ALL) {
             if (f.matches(rawFileEntry)) {
                 return f;
             }

@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.PrettyImageComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
 import io.xpipe.core.process.OsNameState;
@@ -55,7 +55,7 @@ public class OsLogoComp extends SimpleComp {
         var hide = BindingsHelper.map(img, s -> s != null);
         return new StackComp(List.of(
                         new SystemStateComp(state).hide(hide),
-                        PrettyImageHelper.ofRasterized(img, 24, 24).visible(hide)))
+                        new PrettyImageComp(img, 24, 24).visible(hide)))
                 .createRegion();
     }
 

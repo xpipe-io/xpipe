@@ -14,7 +14,6 @@ public interface ShellStore extends DataStore, LaunchableStore, FileSystemStore,
         return new ConnectionFileSystem(control(), this);
     }
 
-    @Override
     default ProcessControl prepareLaunchCommand() {
         return control();
     }

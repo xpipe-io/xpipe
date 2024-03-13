@@ -4,6 +4,7 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.StandaloneFileBrowser;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
@@ -79,6 +80,16 @@ public class ContextualFileReferenceChoiceComp extends SimpleComp {
                 filePath,
                 AppPrefs.get().enableGitStorage()));
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
+            if (!AppPrefs.get().enableGitStorage().get()) {
+                AppLayoutModel.get().selectSettings();
+                AppPrefs.get().selectCategory(3);
+                return;
+            }
+
+            if (filePath.getValue() == null || ContextualFileReference.of(filePath.getValue()).isInDataDirectory()) {
+                return;
+            }
+
             if (filePath.getValue() == null || filePath.getValue().isBlank() || !canGitShare.get()) {
                 return;
             }

@@ -4,7 +4,7 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.SimpleComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.fxcomps.impl.PrettySvgComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanAlert;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,7 +35,7 @@ public class StoreIntroComp extends SimpleComp {
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
-        var img = PrettyImageHelper.ofSvg(new SimpleStringProperty("Wave.svg"), 80, 150)
+        var img = new PrettySvgComp(new SimpleStringProperty("Wave.svg"), 80, 150)
                 .createRegion();
         var text = new VBox(title, introDesc);
         text.setSpacing(5);

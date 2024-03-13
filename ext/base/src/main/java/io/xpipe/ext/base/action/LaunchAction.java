@@ -40,7 +40,7 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<LaunchableStore> o) {
-                return o.get().getValidity().isUsable() && o.getStore().canLaunch();
+                return o.get().getValidity().isUsable();
             }
 
             @Override
@@ -71,7 +71,7 @@ public class LaunchAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<LaunchableStore> o) {
-                return o.get().getValidity().isUsable() && o.getStore().canLaunch();
+                return o.get().getValidity().isUsable();
             }
         };
     }
@@ -95,12 +95,7 @@ public class LaunchAction implements ActionProvider {
             }
 
             if (entry.getStore() instanceof LaunchableStore s) {
-                var command = s.prepareLaunchCommand();
-                if (command == null) {
-                    return;
-                }
-
-                TerminalLauncher.open(entry, storeName, null, command);
+                s.launch();
             }
         }
     }

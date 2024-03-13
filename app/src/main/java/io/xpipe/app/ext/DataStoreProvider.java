@@ -201,6 +201,7 @@ public interface DataStoreProvider {
         COMMAND,
         TUNNEL,
         SCRIPT,
-        CLUSTER
+        CLUSTER,
+        VISUAL;
     }
 }

@@ -4,7 +4,7 @@ import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BrowserActionFormatter;
 import io.xpipe.app.browser.action.ToFileCommandAction;
-import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
 
 import java.util.List;
 
@@ -26,8 +26,8 @@ public class JavapAction extends ToFileCommandAction implements FileTypeAction, 
     }
 
     @Override
-    public FileType getType() {
-        return FileType.byId("class");
+    public BrowserIconFileType getType() {
+        return BrowserIconFileType.byId("class");
     }
 
     @Override

@@ -52,7 +52,7 @@ public class BrowserSelectionListComp extends SimpleComp {
     protected Region createSimple() {
         var c = new ListBoxViewComp<>(list, list, entry -> {
                     return Comp.of(() -> {
-                        var wv = PrettyImageHelper.ofFixedSquare(FileIconManager.getFileIcon(entry, false), 20)
+                        var wv = PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(entry, false), 20)
                                 .createRegion();
                         var l = new Label(null, wv);
                         l.setTextOverrun(OverrunStyle.CENTER_ELLIPSIS);
