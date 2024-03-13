@@ -47,11 +47,6 @@ public class RunAction extends MultiExecuteAction {
             return true;
         }
 
-        if (!OsType.getLocal().equals(OsType.WINDOWS)) {
-            var attribs = e.getMode();
-            return attribs.contains("x");
-        }
-
         return false;
     }
 
