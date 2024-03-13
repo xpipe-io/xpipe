@@ -37,11 +37,11 @@ public class ApplicationHelper {
     }
 
     public static String createDetachCommand(ShellControl pc, String command) {
-        if (pc.getShellDialect().equals(ShellDialects.POWERSHELL)) {
+        if (ShellDialects.isPowershell(pc)) {
             var script = ScriptHelper.createExecScript(pc, command);
             return String.format(
-                    "Start-Process -FilePath powershell.exe -ArgumentList \"-NoProfile\", \"-File\", %s",
-                    ShellDialects.POWERSHELL.fileArgument(script));
+                    "Start-Process -FilePath %s -ArgumentList \"-NoProfile\", \"-File\", %s",
+                    pc.getShellDialect().getExecutableName(), pc.getShellDialect().fileArgument(script));
         }
 
         if (pc.getOsType().equals(OsType.WINDOWS)) {

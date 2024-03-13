@@ -154,7 +154,7 @@ public class ScriptHelper {
         var scriptType = parent.getShellDialect();
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
-        if (forceExecutable && parent.getShellDialect().equals(ShellDialects.POWERSHELL)) {
+        if (forceExecutable && ShellDialects.isPowershell(parent)) {
             scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
         }
 
