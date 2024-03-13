@@ -51,7 +51,7 @@ public class AskpassAlert {
                             }
 
                             long elapsed = (now - lastRun) / 1_000_000;
-                            if (elapsed < 1000) {
+                            if (elapsed < 500) {
                                 return;
                             }
 

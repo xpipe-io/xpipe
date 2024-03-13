@@ -42,6 +42,11 @@ public interface SecretQuery {
                     return r;
                 }
 
+                var ask = AppPrefs.get().alwaysConfirmElevation().getValue();
+                if (!ask) {
+                    return r;
+                }
+
                 var inPlace = r.getSecret().inPlace();
                 return AskpassAlert.queryRaw(prompt, inPlace);
             }
