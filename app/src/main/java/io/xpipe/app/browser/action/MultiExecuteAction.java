@@ -41,7 +41,7 @@ public abstract class MultiExecuteAction implements BranchAction {
                     @Override
                     public String getName(OpenFileSystemModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
-                        return "in " + (t != null ? t.toTranslatedString() : "?");
+                        return "in " + (t != null ? t.toTranslatedString().getValue() : "?");
                     }
 
                     @Override
