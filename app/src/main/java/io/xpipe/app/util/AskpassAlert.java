@@ -42,9 +42,14 @@ public class AskpassAlert {
                     var anim = new AnimationTimer() {
 
                         private long lastRun = 0;
+                        private int regainedFocusCount;
 
                         @Override
                         public void handle(long now) {
+                            if (regainedFocusCount >= 2) {
+                                return;
+                            }
+
                             if (lastRun == 0) {
                                 lastRun = now;
                                 return;
@@ -55,6 +60,10 @@ public class AskpassAlert {
                                 return;
                             }
 
+                            var hasFocus = stage.isFocused();
+                            if (!hasFocus) {
+                                regainedFocusCount++;
+                            }
                             stage.requestFocus();
                             lastRun = now;
                         }
