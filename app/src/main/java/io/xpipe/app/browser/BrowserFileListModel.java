@@ -61,7 +61,6 @@ public final class BrowserFileListModel {
             var l = Stream.concat(
                             parent != null ? Stream.of(new BrowserEntry(parent, this, true)) : Stream.of(),
                             s.filter(entry -> entry != null)
-                                    .limit(5000)
                                     .map(entry -> new BrowserEntry(entry, this, false)))
                     .toList();
             all.setValue(l);
