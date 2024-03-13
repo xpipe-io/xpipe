@@ -4,11 +4,18 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.SecretReference;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public interface SecretQuery {
 
-    static SecretQuery elevation(UUID secretId) {
+    static SecretQuery confirmElevationIfNeeded(SecretQuery original, boolean needed) {
+        if (!needed) {
+            return original;
+        }
+
+        return confirmElevation(original);
+    }
+
+    static SecretQuery confirmElevation(SecretQuery original) {
         return new SecretQuery() {
 
             @Override
@@ -30,7 +37,13 @@ public interface SecretQuery {
 
             @Override
             public SecretQueryResult query(String prompt) {
-                return AskpassAlert.queryRaw(prompt, null);
+                var r = original.query(prompt);
+                if (r.isCancelled()) {
+                    return r;
+                }
+
+                var inPlace = r.getSecret().inPlace();
+                return AskpassAlert.queryRaw(prompt, inPlace);
             }
 
             @Override

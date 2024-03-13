@@ -33,6 +33,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var nameCC = new ColumnConstraints();
         nameCC.setMinWidth(100);
         nameCC.setHgrow(Priority.ALWAYS);
+        nameCC.setPrefWidth(100);
         grid.getColumnConstraints().addAll(nameCC);
 
         grid.add(createInformation(), 2, 0, 1, 2);

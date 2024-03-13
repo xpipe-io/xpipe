@@ -10,13 +10,10 @@ public interface ShellDialectAskpass {
     String prepareFixedContent(ShellControl sc, String fileName, List<String> s) throws Exception;
 
     String elevateDumbCommand(
-            ShellControl shellControl,
-            CommandConfiguration command,
-            UUID requestId,
-            CountDown countDown,
-            String message)
+            ShellControl shellControl, UUID requestId, ElevationHandler handler, CountDown countDown, String message, CommandConfiguration command
+    )
             throws Exception;
 
-    String elevateTerminalCommandWithPreparedAskpass(ShellControl shellControl, String command, String prefix)
+    String elevateTerminalCommandWithPreparedAskpass(ShellControl shellControl, ElevationHandler handler, String command, String prefix)
             throws Exception;
 }

@@ -16,7 +16,9 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
-    UUID getElevationSecretId();
+    ElevationHandler getElevationHandler();
+
+    void setElevationHandler(ElevationHandler ref);
 
     List<UUID> getExitUuids();
 

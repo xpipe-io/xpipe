@@ -28,18 +28,6 @@ public class SecretManager {
                 .findFirst();
     }
 
-    public static synchronized SecretQueryProgress expectElevationPrompt(
-            UUID request, UUID secretId, CountDown countDown, boolean askIfNeeded) {
-        var p = new SecretQueryProgress(
-                request,
-                secretId,
-                List.of(askIfNeeded ? SecretQuery.elevation(secretId) : SecretQuery.prompt(true)),
-                SecretQuery.prompt(false),
-                countDown);
-        progress.add(p);
-        return p;
-    }
-
     public static synchronized SecretQueryProgress expectAskpass(
             UUID request, UUID storeId, List<SecretQuery> suppliers, SecretQuery fallback, CountDown countDown) {
         var p = new SecretQueryProgress(request, storeId, suppliers, fallback, countDown);

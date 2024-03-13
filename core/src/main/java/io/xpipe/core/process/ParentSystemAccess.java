@@ -5,6 +5,11 @@ public interface ParentSystemAccess {
     static ParentSystemAccess none() {
         return new ParentSystemAccess() {
             @Override
+            public boolean supportsSameUsers() {
+                return false;
+            }
+
+            @Override
             public boolean supportsFileSystemAccess() {
                 return false;
             }
@@ -33,6 +38,10 @@ public interface ParentSystemAccess {
 
     static ParentSystemAccess identity() {
         return new ParentSystemAccess() {
+            @Override
+            public boolean supportsSameUsers() {
+                return true;
+            }
 
             @Override
             public boolean supportsFileSystemAccess() {
@@ -63,6 +72,10 @@ public interface ParentSystemAccess {
 
     static ParentSystemAccess combine(ParentSystemAccess a1, ParentSystemAccess a2) {
         return new ParentSystemAccess() {
+            @Override
+            public boolean supportsSameUsers() {
+                return a1.supportsSameUsers() && a2.supportsSameUsers();
+            }
 
             @Override
             public boolean supportsFileSystemAccess() {
@@ -94,6 +107,8 @@ public interface ParentSystemAccess {
     default boolean supportsAnyAccess() {
         return supportsFileSystemAccess();
     }
+
+    boolean supportsSameUsers();
 
     boolean supportsFileSystemAccess();
 
