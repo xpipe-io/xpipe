@@ -36,10 +36,10 @@ public class SecretQueryProgress {
         this.seenPrompts = new ArrayList<>();
     }
 
-    public void advance(int count) {
+    public void preAdvance(int count) {
         for (int i = 0; i < count; i++) {
-            seenPrompts.add(null);
-            suppliers.add(SecretQuery.prompt(false));
+            seenPrompts.addFirst(null);
+            suppliers.addFirst(SecretQuery.prompt(false));
         }
     }
 

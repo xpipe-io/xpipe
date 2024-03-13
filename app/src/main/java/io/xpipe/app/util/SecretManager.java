@@ -57,7 +57,7 @@ public class SecretManager {
 
         var uuid = UUID.randomUUID();
         var p = expectAskpass(uuid, secretId, List.of(strategy.query()), SecretQuery.prompt(false), CountDown.of());
-        p.advance(sub);
+        p.preAdvance(sub);
         var r = p.process(prompt);
         completeRequest(uuid);
         return r;
