@@ -111,6 +111,11 @@ public class SentryErrorHandler implements ErrorHandler {
 
     private static void fillScope(ErrorEvent ee, IScope s) {
         if (ee.isShouldSendDiagnostics()) {
+            // Write all buffered output to log files to ensure that we get all information
+            if (AppLogs.get() != null) {
+                AppLogs.get().flush();
+            }
+
             var atts = ee.getAttachments().stream()
                     .map(d -> {
                         try {
