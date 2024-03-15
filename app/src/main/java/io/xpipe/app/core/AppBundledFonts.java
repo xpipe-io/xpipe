@@ -2,6 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
+import javafx.scene.text.Font;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +13,7 @@ public class AppBundledFonts {
             return;
         }
 
-        if (hasFonts()) {
+        if (hasFonts() && canLoadFonts()) {
             return;
         }
 
@@ -28,6 +29,16 @@ public class AppBundledFonts {
             var out = new String(proc.getInputStream().readAllBytes());
             proc.waitFor(1, TimeUnit.SECONDS);
             return proc.exitValue() == 0 && !out.isBlank();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static boolean canLoadFonts() {
+        try {
+            // This can fail if the found fonts can somehow not be loaded
+            Font.getDefault();
+            return true;
         } catch (Exception e) {
             return false;
         }
