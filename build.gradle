@@ -97,6 +97,16 @@ project.ext {
             file("$rootDir/dist/changelogs/${versionString}.md") :
             file("$rootDir/dist/changelogs/${canonicalVersionString}.md")
     incrementalChangelogFile = file("$rootDir/dist/changelogs/${canonicalVersionString}_incremental.md")
+    signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : System.getenv('GPG_KEY_ID')
+    signingPassword = project.hasProperty('signingKeyPassword') ? project.property("signingKeyPassword") : System.getenv('GPG_KEY_PASSWORD')
+    if (signingPassword == null) {
+        signingPassword = ''
+    }
+    signingKeyRingFile = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")) : null
+    if (signingKeyRingFile == null || !signingKeyRingFile.exists()) {
+        signingKeyRingFile = file("$rootDir/dist/tools/secring.gpg")
+    }
+    signingKey = signingKeyRingFile.exists() ? signingKeyRingFile.text : System.getenv('GPG_KEY')
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {

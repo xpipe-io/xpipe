@@ -5,6 +5,7 @@ plugins {
     id 'org.jreleaser' version '1.8.0'
     id("com.netflix.nebula.ospackage") version "11.4.0"
     id 'org.gradle.crypto.checksum' version '1.4.0'
+    id 'signing'
 }
 
 repositories {
@@ -36,7 +37,7 @@ task createChecksums(type: Checksum) {
     doLast {
         def artifactChecksumsSha256Hex = new HashMap<String, String>()
         for (final def file in outputDirectory.get().getAsFileTree().files) {
-            if (file.toString().endsWith('mapping.map')) {
+            if (file.toString().endsWith('mapping.map') || file.toString().endsWith('.asc')) {
                 continue
             }
 
@@ -90,4 +91,18 @@ if (rootProject.fullVersion) {
     apply from: 'choco.gradle'
     apply from: 'winget.gradle'
     apply from: 'install.gradle'
+
+    signing {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    }
+
+    task signArtifacts(type: Sign) {
+        def dir = layout.buildDirectory.dir("dist/artifacts").get()
+        dir.asFileTree.files.forEach {sign(it)}
+    }
+
+    task signChecksums(type: Sign) {
+        def checksums = layout.buildDirectory.file("dist/checksums/sha256sums.txt").get().asFile
+        sign(checksums)
+    }
 }
