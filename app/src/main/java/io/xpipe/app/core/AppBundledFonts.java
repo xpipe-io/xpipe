@@ -36,10 +36,10 @@ public class AppBundledFonts {
 
     private static boolean canLoadFonts() {
         try {
-            // This can fail if the found fonts can somehow not be loaded
+            // This can fail if the found system fonts can somehow not be loaded
             Font.getDefault();
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return false;
         }
     }

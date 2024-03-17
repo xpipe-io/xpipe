@@ -72,10 +72,12 @@ public enum PlatformState {
             // Maybe related to https://bugs.openjdk.org/browse/JDK-8318129 as it prints the same error if not called
             // The headless check is not needed though but still done
             GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        } catch (HeadlessException e) {
-            TrackEvent.warn(e.getMessage());
+
+            // Catch more than just the headless exception in case the graphics environment initialization completely fails
+        } catch (Throwable t) {
+            TrackEvent.warn(t.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);
-            return Optional.of(e);
+            return Optional.of(t);
         }
 
         // Check if we have no fonts and set properties to load bundled ones
