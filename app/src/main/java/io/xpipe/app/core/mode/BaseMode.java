@@ -50,8 +50,8 @@ public class BaseMode extends OperationMode {
         AppCertutilCheck.check();
         AppAvCheck.check();
         LocalShell.init();
-        XPipeDistributionType.init();
         AppShellCheck.check();
+        XPipeDistributionType.init();
         AppPrefs.setDefaults();
         // Initialize socket server as we should be prepared for git askpass commands
         AppSocketServer.init();

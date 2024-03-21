@@ -18,6 +18,18 @@ public class LocalShell {
         localCache = new ShellControlCache(local);
     }
 
+    public static void reset() {
+        if (local != null) {
+            local.kill();
+            local = null;
+        }
+        localCache = null;
+        if (localPowershell != null) {
+            localPowershell.kill();
+            localPowershell = null;
+        }
+    }
+
     public static ShellControl getLocalPowershell() throws Exception {
         var s = getShell();
         if (ShellDialects.isPowershell(s)) {
