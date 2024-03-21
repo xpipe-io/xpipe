@@ -45,7 +45,7 @@ public class FileOpener {
 
     public static void openInTextEditor(FileSystem.FileEntry entry) {
         var editor = AppPrefs.get().externalEditor().getValue();
-        if (editor == null || !editor.isSelectable()) {
+        if (editor == null) {
             return;
         }
 

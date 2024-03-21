@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.ExternalTerminalType;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ProcessControl;

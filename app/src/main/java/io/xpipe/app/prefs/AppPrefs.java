@@ -10,6 +10,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.ApplicationHelper;
 import io.xpipe.app.util.PasswordLockSecretValue;
 import io.xpipe.core.util.InPlaceSecretValue;

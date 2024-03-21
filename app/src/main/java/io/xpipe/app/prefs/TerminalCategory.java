@@ -7,6 +7,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.impl.ChoiceComp;
 import io.xpipe.app.fxcomps.impl.StackComp;
 import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.TerminalLauncher;
 import io.xpipe.app.util.ThreadHelper;

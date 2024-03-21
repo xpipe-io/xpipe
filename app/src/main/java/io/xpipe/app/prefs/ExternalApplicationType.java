@@ -25,8 +25,6 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
 
     public abstract boolean isAvailable();
 
-    public abstract boolean isSelectable();
-
     @Override
     public String getId() {
         return id;

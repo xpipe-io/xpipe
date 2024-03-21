@@ -41,6 +41,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.browser;
     exports io.xpipe.app.browser.icon;
     exports io.xpipe.app.core.check;
+    exports io.xpipe.app.terminal;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

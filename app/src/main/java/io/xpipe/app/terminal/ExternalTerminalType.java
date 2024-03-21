@@ -1,18 +1,21 @@
-package io.xpipe.app.prefs;
+package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.*;
+import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.MacOsPermissions;
+import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.*;
-import io.xpipe.core.store.FileNames;
 import lombok.Getter;
 import lombok.Value;
 import lombok.With;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
@@ -89,69 +92,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                 var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
                 return "\"" + base64 + "\"";
             });
-        }
-    };
-
-    ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new ExternalTerminalType() {
-
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
-            // A weird behavior in Windows Terminal causes the trailing
-            // backslash of a filepath to escape the closing quote in the title argument
-            // So just remove that slash
-            var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .addFile(getPath().toString())
-                            .add("-w", "1", "nt", "--title")
-                            .addQuoted(fixedName)
-                            .addFile(configuration.getScriptFile()));
-        }
-
-        private Path getPath() {
-            var local = System.getenv("LOCALAPPDATA");
-            return Path.of(local)
-                    .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe");
-        }
-
-        @Override
-        public boolean isAvailable() {
-            return Files.exists(getPath());
-        }
-
-        @Override
-        public String getId() {
-            return "app.windowsTerminalPreview";
-        }
-    };
-
-    ExternalTerminalType WINDOWS_TERMINAL = new SimplePathType("app.windowsTerminal", "wt.exe") {
-
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {
-            // A weird behavior in Windows Terminal causes the trailing
-            // backslash of a filepath to escape the closing quote in the title argument
-            // So just remove that slash
-            var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
-            var toExec = !ShellDialects.isPowershell(LocalShell.getShell())
-                    ? CommandBuilder.of().addFile(configuration.getScriptFile())
-                    : CommandBuilder.of()
-                            .add("powershell", "-ExecutionPolicy", "Bypass", "-File")
-                            .addQuoted(configuration.getScriptFile());
-            return CommandBuilder.of()
-                    .add("-w", "1", "nt", "--title")
-                    .addQuoted(fixedName)
-                    .add(toExec);
         }
     };
 
@@ -692,8 +632,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TABBY_WINDOWS,
             ALACRITTY_WINDOWS,
             WEZ_WINDOWS,
-            WINDOWS_TERMINAL_PREVIEW,
-            WINDOWS_TERMINAL,
+            WindowsTerminalType.WINDOWS_TERMINAL_PREVIEW,
+            WindowsTerminalType.WINDOWS_TERMINAL,
             CMD,
             PWSH,
             POWERSHELL);
@@ -845,11 +785,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public boolean isAvailable() {
             return true;
         }
-
-        @Override
-        public boolean isSelectable() {
-            return true;
-        }
     }
 
     abstract class MacOsType extends ExternalApplicationType.MacApplication implements ExternalTerminalType {
@@ -864,11 +799,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         public PathCheckType(String id, String executable) {
             super(id, executable);
-        }
-
-        @Override
-        public boolean isSelectable() {
-            return true;
         }
     }
 
@@ -887,4 +817,5 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
+
 }
