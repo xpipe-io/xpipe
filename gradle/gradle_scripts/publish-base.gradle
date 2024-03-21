@@ -28,13 +28,8 @@ publishing {
     }
 }
 
-def signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : System.getenv('GPG_KEY_ID')
-def signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : System.getenv('GPG_KEY')
-def signingPassword = project.hasProperty('signingPassword') ? project.property("signingPassword") : System.getenv('GPG_KEY_PASSWORD')
-
 signing {
-    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword != null ? signingPassword : '')
-
+    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     sign publishing.publications.mavenJava
 }
 
