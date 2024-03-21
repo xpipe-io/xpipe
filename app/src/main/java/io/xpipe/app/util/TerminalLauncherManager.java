@@ -3,7 +3,9 @@ package io.xpipe.app.util;
 import io.xpipe.beacon.ClientException;
 import io.xpipe.beacon.ServerException;
 import io.xpipe.core.process.ProcessControl;
+import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.core.util.FailableFunction;
 import lombok.Setter;
 import lombok.Value;
 import lombok.experimental.NonFinal;
@@ -20,9 +22,21 @@ public class TerminalLauncherManager {
 
     private static void prepare(
             ProcessControl processControl, TerminalInitScriptConfig config, String directory, Entry entry) {
+        FailableFunction<ShellControl, String, Exception> workingDirectory = sc -> {
+            if (directory == null) {
+                return null;
+            }
+
+            if (!sc.getShellDialect().directoryExists(sc,directory).executeAndCheck()) {
+                return sc.getOsType().getFallbackWorkingDirectory();
+            }
+
+            return directory;
+        };
+
         try {
             var file = ScriptHelper.createLocalExecScript(
-                    processControl.prepareTerminalOpen(config, directory != null ? var1 -> directory : null));
+                    processControl.prepareTerminalOpen(config, workingDirectory));
             entry.setResult(new ResultSuccess(Path.of(file)));
         } catch (Exception e) {
             entry.setResult(new ResultFailure(e));
