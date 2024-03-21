@@ -7,7 +7,9 @@ import io.xpipe.core.store.FileNames;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -15,20 +17,41 @@ public class ShellTemp {
 
     public static Path getLocalTempDataDirectory(String sub) {
         var temp = FileUtils.getTempDirectory().toPath().resolve("xpipe");
+        // On macOS, we already have user specific temp directories
         if (OsType.getLocal().equals(OsType.LINUX)) {
             var user = System.getenv("USER");
             temp = temp.resolve(user != null ? user : "user");
         }
+
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            try {
+                // We did not set this in earlier versions. If we are running as a different user, it might fail
+                Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).omit().expected().handle();
+            }
+        }
+
         return temp.resolve(sub);
     }
 
-    public static String getUserSpecificTempDataDirectory(ShellControl proc, String sub) {
-        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
-            var user = System.getenv("USER");
-            return FileNames.join("/tmp", "xpipe", user, sub);
+    public static String getUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
+        String base;
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            base = FileNames.join("/tmp", "xpipe");
+            // We have to make sure that also other users can create files here
+            // This command should work in all shells on unix systems
+            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+            // Use user-specific directories on anything else than macOS as that one already has that
+            if (!proc.getOsType().equals(OsType.MACOS)) {
+                var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
+                base = FileNames.join(base, user);
+            }
+        } else {
+            var temp = proc.getSystemTemporaryDirectory();
+            base = FileNames.join(temp, "xpipe");
         }
-        var temp = proc.getSystemTemporaryDirectory();
-        return FileNames.join(temp, "xpipe", sub);
+        return FileNames.join(base, sub);
     }
 
     public static void checkTempDirectory(ShellControl proc) throws Exception {
@@ -39,15 +62,11 @@ public class ShellTemp {
             throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(systemTemp)));
         }
 
-        var home = proc.getOsType().getHomeDirectory(proc);
-        if (!d.directoryExists(proc, home).executeAndCheck() || !checkDirectoryPermissions(proc, home)) {
-            throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(home)));
-        }
-
         // Always delete legacy directory and do not care whether it partially fails
         // This system xpipe temp directory might contain other files on the local machine, so only clear the exec
         d.deleteFileOrDirectory(proc, FileNames.join(systemTemp, "xpipe", "exec"))
                 .executeAndCheck();
+        var home = proc.getOsType().getHomeDirectory(proc);
         d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "temp")).executeAndCheck();
         d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "system_id"))
                 .executeAndCheck();
