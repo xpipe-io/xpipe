@@ -13,35 +13,48 @@ public class AppShellCheck {
     public static void check() throws Exception {
         var err = selfTestErrorCheck();
 
-        var canFallback = OsType.getLocal() != OsType.WINDOWS &&
-                !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ProcessControlProvider.get().getFallbackDialect());
+        var canFallback = !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ProcessControlProvider.get().getFallbackDialect());
         if (err.isPresent() && canFallback) {
+            var msg = formatMessage(err.get());
+            ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
             enableFallback();
             err = selfTestErrorCheck();
         }
 
         if (err.isPresent()) {
-            var msg =
-                    """
-                    Shell self-test failed for %s:
-                    %s
-
-                    This indicates that something is seriously wrong and certain shell functionality will not work as expected.
-
-                    The most likely causes are:
-                    - On Windows, an AntiVirus program might block required programs and commands
-                    - The system shell is restricted or blocked
-                    - Some elementary command-line tools are not available or not working correctly
-
-                    You can try to switch to the fallback shell by going to Settings -> Local Shell -> Enable Fallback Shell and restart.
-                    """
-                            .formatted(
-                                    ProcessControlProvider.get()
-                                            .getEffectiveLocalDialect()
-                                            .getDisplayName(),
-                                    err.get());
+            var msg = formatMessage(err.get());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
         }
+    }
+
+    private static String modifyOutput(String output) {
+        if (OsType.getLocal().equals(OsType.WINDOWS) && output.contains("is not recognized as an internal or external command") && output.contains("exec-")) {
+            return "Unable to create temporary script files";
+        }
+
+        return output;
+    }
+
+    private static String formatMessage(String output) {
+        return
+                """
+                Shell self-test failed for %s:
+                %s
+
+                This indicates that something is seriously wrong and certain shell functionality will not work as expected.
+
+                The most likely causes are:
+                - On Windows, an AntiVirus program might block required programs and commands
+                - The system shell is restricted or blocked
+                - Some elementary command-line tools are not available or not working correctly
+
+                XPipe will now attempt to fall back to another shell.
+                """
+                        .formatted(
+                                ProcessControlProvider.get()
+                                        .getEffectiveLocalDialect()
+                                        .getDisplayName(),
+                                modifyOutput(output));
     }
 
     private static void enableFallback() throws Exception {
