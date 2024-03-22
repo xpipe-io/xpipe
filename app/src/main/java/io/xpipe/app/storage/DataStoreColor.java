@@ -7,16 +7,16 @@ import lombok.Getter;
 @Getter
 public enum DataStoreColor {
     @JsonProperty("red")
-    RED("red", "\uD83D\uDD34", Color.RED),
+    RED("red", "\uD83D\uDD34", Color.DARKRED),
 
     @JsonProperty("green")
-    GREEN("green", "\uD83D\uDFE2", Color.GREEN),
+    GREEN("green", "\uD83D\uDFE2", Color.DARKGREEN),
 
     @JsonProperty("yellow")
-    YELLOW("yellow", "\uD83D\uDFE1", Color.YELLOW),
+    YELLOW("yellow", "\uD83D\uDFE1", Color.web("#999922")),
 
     @JsonProperty("blue")
-    BLUE("blue", "\uD83D\uDD35", Color.BLUE);
+    BLUE("blue", "\uD83D\uDD35", Color.DARKBLUE);
 
     private final String id;
     private final String emoji;
