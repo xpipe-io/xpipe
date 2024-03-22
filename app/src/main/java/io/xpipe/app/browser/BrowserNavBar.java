@@ -73,9 +73,11 @@ public class BrowserNavBar extends SimpleComp {
                     });
 
                     SimpleChangeListener.apply(model.getInOverview(), val -> {
-                        struc.get()
-                                .pseudoClassStateChanged(
-                                        INVISIBLE, !val && !struc.get().isFocused());
+                        // Pseudo classes do not apply if set instantly before shown
+                        // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
+                        Platform.runLater(() -> {
+                            struc.get().pseudoClassStateChanged(INVISIBLE, !val && !struc.get().isFocused());
+                        });
                     });
 
                     struc.get().setPromptText("Overview of " + model.getName());
