@@ -49,15 +49,8 @@ public interface StoreSortMode {
     StoreSortMode DATE_DESC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
-            var c = comparator();
-            return Stream.of(
-                            s.getShownChildren().stream()
-                                    .max((o1, o2) -> {
-                                        return c.compare(representative(o1), representative(o2));
-                                    })
-                                    .orElse(s),
-                            s)
-                    .max(c)
+            return Stream.concat(s.getShownChildren().stream().map(this::representative), Stream.of(s))
+                    .max(Comparator.comparing(section -> section.getWrapper().getEntry().getLastAccess()))
                     .orElseThrow();
         }
 
@@ -69,25 +62,15 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.comparing(e -> {
-                return flatten(e)
-                        .map(entry -> entry.getLastAccess())
-                        .max(Comparator.naturalOrder())
-                        .orElseThrow();
+                return e.getWrapper().getEntry().getLastAccess();
             });
         }
     };
     StoreSortMode DATE_ASC = new StoreSortMode() {
         @Override
         public StoreSection representative(StoreSection s) {
-            var c = comparator();
-            return Stream.of(
-                            s.getShownChildren().stream()
-                                    .min((o1, o2) -> {
-                                        return c.compare(representative(o1), representative(o2));
-                                    })
-                                    .orElse(s),
-                            s)
-                    .min(c)
+            return Stream.concat(s.getShownChildren().stream().map(this::representative), Stream.of(s))
+                    .max(Comparator.comparing(section -> section.getWrapper().getEntry().getLastAccess()))
                     .orElseThrow();
         }
 
@@ -99,10 +82,7 @@ public interface StoreSortMode {
         @Override
         public Comparator<StoreSection> comparator() {
             return Comparator.<StoreSection, Instant>comparing(e -> {
-                        return flatten(e)
-                                .map(entry -> entry.getLastAccess())
-                                .max(Comparator.naturalOrder())
-                                .orElseThrow();
+                        return e.getWrapper().getEntry().getLastAccess();
                     })
                     .reversed();
         }

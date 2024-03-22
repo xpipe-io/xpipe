@@ -47,14 +47,15 @@ public abstract class StorageElement {
 
     public abstract Path[] getShareableFiles();
 
-    public void updateLastUsed() {
-        this.lastUsed = Instant.now();
-        this.dirty = true;
-        notifyUpdate();
-    }
-
-    protected void notifyUpdate() {
-        lastModified = Instant.now();
+    public void notifyUpdate(boolean used, boolean modified) {
+        if (used) {
+            lastUsed = Instant.now();
+            dirty = true;
+        }
+        if (modified) {
+            lastModified = Instant.now();
+            dirty = true;
+        }
         listeners.forEach(l -> l.onUpdate());
     }
 
@@ -86,9 +87,7 @@ public abstract class StorageElement {
         }
 
         this.name = name;
-        this.dirty = true;
-        this.lastModified = Instant.now();
-        notifyUpdate();
+        notifyUpdate(false, true);
     }
 
     public interface Listener {

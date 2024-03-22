@@ -116,8 +116,7 @@ public class DataStoreCategory extends StorageElement {
         var changed = this.sortMode != sortMode;
         if (changed) {
             this.sortMode = sortMode;
-            this.dirty = true;
-            notifyUpdate();
+            notifyUpdate(false, true);
         }
     }
 
@@ -125,15 +124,13 @@ public class DataStoreCategory extends StorageElement {
         var changed = share != newShare;
         if (changed) {
             this.share = newShare;
-            this.dirty = true;
-            notifyUpdate();
+            notifyUpdate(false, true);
         }
     }
 
     public void setParentCategory(UUID parentCategory) {
         this.parentCategory = parentCategory;
-        this.dirty = true;
-        notifyUpdate();
+        notifyUpdate(false, true);
     }
 
     public boolean canShare() {

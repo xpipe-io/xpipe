@@ -199,7 +199,7 @@ public class StoreEntryWrapper {
         }
 
         var found = getDefaultActionProvider().getValue();
-        entry.updateLastUsed();
+        entry.notifyUpdate(true, false);
         if (found != null) {
             found.createAction(entry.ref()).execute();
         } else {

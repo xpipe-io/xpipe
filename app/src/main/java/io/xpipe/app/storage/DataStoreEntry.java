@@ -214,11 +214,11 @@ public class DataStoreEntry extends StorageElement {
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
-                .orElse(Instant.now());
+                .orElse(Instant.EPOCH);
         var lastModified = Optional.ofNullable(stateJson.get("lastModified"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
-                .orElse(Instant.now());
+                .orElse(Instant.EPOCH);
         var configuration = Optional.ofNullable(json.get("configuration"))
                 .map(node -> {
                     try {
@@ -281,7 +281,7 @@ public class DataStoreEntry extends StorageElement {
         var changed = inRefresh != newRefresh;
         if (changed) {
             this.inRefresh = newRefresh;
-            notifyUpdate();
+            notifyUpdate(false, false);
         }
     }
 
@@ -291,7 +291,7 @@ public class DataStoreEntry extends StorageElement {
 
     public void setStoreCache(String key, Object value) {
         if (!Objects.equals(storeCache.put(key, value), value)) {
-            notifyUpdate();
+            notifyUpdate(false, false);
         }
     }
 
@@ -321,21 +321,18 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
-            this.dirty = true;
-            notifyUpdate();
+            notifyUpdate(false, true);
         }
     }
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-        this.dirty = true;
-        notifyUpdate();
+        notifyUpdate(false, true);
     }
 
     public void setCategoryUuid(UUID categoryUuid) {
-        this.dirty = true;
         this.categoryUuid = categoryUuid;
-        notifyUpdate();
+        notifyUpdate(false, true);
     }
 
     @Override
@@ -376,8 +373,7 @@ public class DataStoreEntry extends StorageElement {
         var changed = expanded != this.expanded;
         this.expanded = expanded;
         if (changed) {
-            dirty = true;
-            notifyUpdate();
+            notifyUpdate(false, true);
         }
     }
 
@@ -385,8 +381,7 @@ public class DataStoreEntry extends StorageElement {
         var changed = !Objects.equals(color, newColor);
         this.color = newColor;
         if (changed) {
-            dirty = true;
-            notifyUpdate();
+            notifyUpdate(false, true);
         }
     }
 
@@ -399,14 +394,12 @@ public class DataStoreEntry extends StorageElement {
         storeNode = e.storeNode;
         store = e.store;
         validity = e.validity;
-        lastModified = Instant.now();
-        dirty = true;
         provider = e.provider;
         childrenCache = null;
         validity = store == null ? Validity.LOAD_FAILED : store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE;
         storePersistentState = e.storePersistentState;
         storePersistentStateNode = e.storePersistentStateNode;
-        notifyUpdate();
+        notifyUpdate(false, true);
     }
 
     public void setStoreInternal(DataStore store, boolean updateTime) {
@@ -475,7 +468,8 @@ public class DataStoreEntry extends StorageElement {
         }
 
         validity = Validity.COMPLETE;
-        notifyUpdate();
+        // Don't count this as modification as this is done always
+        notifyUpdate(false, false);
         return true;
     }
 
@@ -500,7 +494,7 @@ public class DataStoreEntry extends StorageElement {
         }
 
         validity = Validity.INCOMPLETE;
-        notifyUpdate();
+        notifyUpdate(false, false);
         return true;
     }
 
@@ -509,14 +503,14 @@ public class DataStoreEntry extends StorageElement {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
                 inRefresh = true;
-                notifyUpdate();
+                notifyUpdate(false, false);
                 lifecycleStore.initializeValidate();
                 inRefresh = false;
             } catch (Exception e) {
                 inRefresh = false;
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
-                notifyUpdate();
+                notifyUpdate(false, false);
             }
         }
     }
@@ -526,12 +520,12 @@ public class DataStoreEntry extends StorageElement {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {
                 inRefresh = true;
-                notifyUpdate();
+                notifyUpdate(false, false);
                 lifecycleStore.finalizeValidate();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             } finally {
-                notifyUpdate();
+                notifyUpdate(false, false);
             }
         }
     }
