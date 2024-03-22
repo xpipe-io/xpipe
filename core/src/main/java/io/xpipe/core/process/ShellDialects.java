@@ -26,6 +26,7 @@ public class ShellDialects {
     public static ShellDialect CISCO;
     public static ShellDialect MIKROTIK;
     public static ShellDialect RBASH;
+    public static ShellDialect OVH_BASTION;
 
     public static List<ShellDialect> getStartableDialects() {
         return ALL.stream()
@@ -75,6 +76,7 @@ public class ShellDialects {
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
             RBASH = byId("rbash");
+            OVH_BASTION = byId("ovhBastion");
         }
 
         @Override
