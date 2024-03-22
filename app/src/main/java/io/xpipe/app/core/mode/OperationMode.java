@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.Main;
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppTempCheck;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -111,7 +112,7 @@ public abstract class OperationMode {
             AppUserDirectoryCheck.check();
             AppTempCheck.check();
             AppLogs.init();
-            AppDebugModeNotice.printIfNeeded();
+            AppDebugModeCheck.printIfNeeded();
             AppProperties.logArguments(args);
             AppProperties.logSystemProperties();
             AppProperties.logPassedProperties();

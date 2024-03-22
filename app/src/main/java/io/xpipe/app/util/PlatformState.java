@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppBundledFonts;
+import io.xpipe.app.core.check.AppBundledFontCheck;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -81,7 +81,7 @@ public enum PlatformState {
         }
 
         // Check if we have no fonts and set properties to load bundled ones
-        AppBundledFonts.init();
+        AppBundledFontCheck.init();
 
         if (AppPrefs.get() != null) {
             var s = AppPrefs.get().uiScale().getValue();

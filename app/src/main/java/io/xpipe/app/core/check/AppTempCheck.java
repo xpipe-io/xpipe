@@ -21,6 +21,7 @@ public class AppTempCheck {
             ErrorEvent.fromThrowable(new IOException("Specified temporary directory " + tmpdir
                             + ", set via the environment variable %TEMP% is invalid."))
                     .term()
+                    .expected()
                     .handle();
         }
     }

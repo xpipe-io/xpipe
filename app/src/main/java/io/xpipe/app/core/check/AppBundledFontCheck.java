@@ -1,4 +1,4 @@
-package io.xpipe.app.core;
+package io.xpipe.app.core.check;
 
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
@@ -6,7 +6,7 @@ import javafx.scene.text.Font;
 
 import java.util.concurrent.TimeUnit;
 
-public class AppBundledFonts {
+public class AppBundledFontCheck {
 
     public static void init() {
         if (OsType.getLocal() != OsType.LINUX) {

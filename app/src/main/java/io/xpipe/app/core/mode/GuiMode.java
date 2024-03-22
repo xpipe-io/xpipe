@@ -3,6 +3,7 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppGreetings;
 import io.xpipe.app.core.AppMainWindow;
+import io.xpipe.app.core.check.AppPtbCheck;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -31,6 +32,7 @@ public class GuiMode extends PlatformMode {
         super.onSwitchTo();
 
         AppGreetings.showIfNeeded();
+        AppPtbCheck.check();
 
         TrackEvent.info("Waiting for window setup completion ...");
         PlatformThread.runLaterIfNeededBlocking(() -> {
