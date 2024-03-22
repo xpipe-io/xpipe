@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.util.BindingsHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import javafx.beans.binding.Bindings;
@@ -167,6 +168,10 @@ public class StoreSection {
         while (current != null) {
             if (categoryWrapper.getCategory().getUuid().equals(current.getCategory().getUuid())) {
                 return true;
+            }
+
+            if (!AppPrefs.get().showChildCategoriesInParentCategory().get()) {
+                break;
             }
 
             current = current.getParent();
