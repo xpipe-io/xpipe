@@ -68,7 +68,7 @@ All code for handling external editors can be found [here](https://github.com/xp
 
 ### Implementing support for a new terminal
 
-All code for handling external terminals can be found [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/prefs/ExternalTerminalType.java). There you will find plenty of working examples that you can use as a base for your own implementation.
+All code for handling external terminals can be found [here](https://github.com/xpipe-io/xpipe/blob/master/app/src/main/java/io/xpipe/app/terminal/ExternalTerminalType.java). There you will find plenty of working examples that you can use as a base for your own implementation.
 
 ### Adding more file icons for specific types
 
