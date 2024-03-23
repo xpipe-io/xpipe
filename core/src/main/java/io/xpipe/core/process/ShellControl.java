@@ -22,6 +22,8 @@ public interface ShellControl extends ProcessControl {
 
     List<UUID> getExitUuids();
 
+    void setWorkingDirectory(FailableFunction<ShellControl, String, Exception> workingDirectory);
+
     Optional<ShellStore> getSourceStore();
 
     ShellControl withSourceStore(ShellStore store);

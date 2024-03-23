@@ -17,7 +17,7 @@ public class LaunchExchangeImpl extends LaunchExchange
         var store = getStoreEntryById(msg.getId(), false);
         if (store.getStore() instanceof LaunchableStore s) {
             var command = s.prepareLaunchCommand()
-                    .prepareTerminalOpen(TerminalInitScriptConfig.ofName(store.getName()), null);
+                    .prepareTerminalOpen(TerminalInitScriptConfig.ofName(store.getName()), sc -> null);
             return Response.builder().command(split(command)).build();
         }
 

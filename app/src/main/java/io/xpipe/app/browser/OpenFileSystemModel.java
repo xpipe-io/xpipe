@@ -45,7 +45,6 @@ public final class OpenFileSystemModel {
     private FileSystem fileSystem;
     private OpenFileSystemSavedState savedState;
     private OpenFileSystemCache cache;
-    private int customScriptsStartIndex;
 
     public OpenFileSystemModel(BrowserModel browserModel, DataStoreEntryRef<? extends FileSystemStore> entry) {
         this.browserModel = browserModel;
@@ -391,10 +390,7 @@ public final class OpenFileSystemModel {
         BooleanScope.execute(busy, () -> {
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
-                this.customScriptsStartIndex =
-                        fs.getShell().get().getInitCommands().size();
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
-
                 fs.getShell().get().onKill(() -> {
                     browserModel.closeFileSystemAsync(this);
                 });
