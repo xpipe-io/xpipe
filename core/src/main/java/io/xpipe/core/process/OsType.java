@@ -28,8 +28,6 @@ public interface OsType {
         }
     }
 
-    String getFallbackWorkingDirectory();
-
     List<String> determineInterestingPaths(ShellControl pc) throws Exception;
 
     String getHomeDirectory(ShellControl pc) throws Exception;
@@ -55,11 +53,6 @@ public interface OsType {
             permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd {}
 
     final class Windows implements OsType, Local, Any {
-
-        @Override
-        public String getFallbackWorkingDirectory() {
-            return "C:\\";
-        }
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -122,11 +115,6 @@ public interface OsType {
     }
 
     class Unix implements OsType {
-
-        @Override
-        public String getFallbackWorkingDirectory() {
-            return "/";
-        }
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {
@@ -209,11 +197,6 @@ public interface OsType {
     final class Bsd extends Unix implements Any {}
 
     final class MacOs implements OsType, Local, Any {
-
-        @Override
-        public String getFallbackWorkingDirectory() {
-            return "/";
-        }
 
         @Override
         public List<String> determineInterestingPaths(ShellControl pc) throws Exception {

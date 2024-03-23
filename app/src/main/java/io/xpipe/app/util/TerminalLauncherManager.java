@@ -28,7 +28,7 @@ public class TerminalLauncherManager {
             }
 
             if (!sc.getShellDialect().directoryExists(sc,directory).executeAndCheck()) {
-                return sc.getOsType().getFallbackWorkingDirectory();
+                return null;
             }
 
             return directory;
