@@ -2,18 +2,17 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
-import javafx.scene.text.Font;
 
 import java.util.concurrent.TimeUnit;
 
-public class AppBundledFontCheck {
+public class AppSystemFontCheck {
 
     public static void init() {
         if (OsType.getLocal() != OsType.LINUX) {
             return;
         }
 
-        if (hasFonts() && canLoadFonts()) {
+        if (hasFonts()) {
             return;
         }
 
@@ -30,16 +29,6 @@ public class AppBundledFontCheck {
             proc.waitFor(1, TimeUnit.SECONDS);
             return proc.exitValue() == 0 && !out.isBlank();
         } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private static boolean canLoadFonts() {
-        try {
-            // This can fail if the found system fonts can somehow not be loaded
-            Font.getDefault();
-            return true;
-        } catch (Throwable e) {
             return false;
         }
     }
