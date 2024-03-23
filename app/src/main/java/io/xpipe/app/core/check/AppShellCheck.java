@@ -36,6 +36,7 @@ public class AppShellCheck {
     }
 
     private static String formatMessage(String output) {
+        var fallback = !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ProcessControlProvider.get().getFallbackDialect()) ? "XPipe will now attempt to fall back to another shell." : "";
         return
                 """
                 Shell self-test failed for %s:
@@ -48,13 +49,13 @@ public class AppShellCheck {
                 - The system shell is restricted or blocked
                 - Some elementary command-line tools are not available or not working correctly
 
-                XPipe will now attempt to fall back to another shell.
+                %s
                 """
                         .formatted(
                                 ProcessControlProvider.get()
                                         .getEffectiveLocalDialect()
                                         .getDisplayName(),
-                                modifyOutput(output));
+                                modifyOutput(output), fallback);
     }
 
     private static void enableFallback() throws Exception {
@@ -70,9 +71,9 @@ public class AppShellCheck {
                 return Optional.of("Expected \"test\", got \"" + out + "\"");
             }
         } catch (ProcessOutputException ex) {
-            return Optional.ofNullable(ex.getOutput());
+            return Optional.of(ex.getOutput() != null ? ex.getOutput() : ex.toString());
         } catch (Throwable t) {
-            return Optional.ofNullable(t.getMessage());
+            return Optional.of(t.getMessage() != null ? t.getMessage() : t.toString());
         }
         return Optional.empty();
     }
