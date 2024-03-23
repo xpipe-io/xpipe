@@ -111,7 +111,7 @@ public enum PlatformState {
             try {
                 latch.await();
                 // Check if we have no fonts and set properties to load bundled ones
-                AppFontLoadingCheck.init();
+                AppFontLoadingCheck.check();
                 PlatformState.setCurrent(PlatformState.RUNNING);
                 return Optional.empty();
             } catch (InterruptedException e) {
