@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
+import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
@@ -16,7 +17,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import lombok.Value;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -42,11 +45,15 @@ public class ModalOverlayComp extends SimpleComp {
             }
 
             if (newValue != null) {
-                var l = new Label(AppI18n.get(newValue.titleKey));
+                var graphic = new FontIcon("mdomz-warning");
+                graphic.setIconColor(Color.RED);
+                var l = new Label(AppI18n.get(newValue.titleKey), graphic);
+                l.setGraphicTextGap(6);
+                AppFont.normal(l);
                 var r = newValue.content.createRegion();
                 var box = new VBox(l, r);
-                box.setSpacing(15);
-                box.setPadding(new Insets(15));
+                box.setSpacing(10);
+                box.setPadding(new Insets(10, 15, 15, 15));
 
                 if (newValue.finishKey != null) {
                     var finishButton = new Button(AppI18n.get(newValue.finishKey));
