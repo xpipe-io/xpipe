@@ -102,7 +102,7 @@ public class StoreSection {
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
-                            || inCategory(category.getValue(),section.getWrapper());
+                            || inCategory(category.getValue(), section.getWrapper());
                     return showFilter && matchesSelector && sameCategory;
                 },
                 category,
@@ -141,7 +141,7 @@ public class StoreSection {
                     var matchesSelector = section.anyMatches(entryFilter);
                     var sameCategory = category == null
                             || category.getValue() == null
-                            || inCategory(category.getValue(),section.getWrapper());
+                            || inCategory(category.getValue(), section.getWrapper());
                     // If this entry is already shown as root due to a different category than parent, don't show it
                     // again here
                     var notRoot =
@@ -153,20 +153,13 @@ public class StoreSection {
         return new StoreSection(e, cached, filtered, depth);
     }
 
-    public boolean shouldShow(String filter) {
-        return anyMatches(storeEntryWrapper -> storeEntryWrapper.shouldShow(filter));
-    }
-
-    public boolean anyMatches(Predicate<StoreEntryWrapper> c) {
-        return c == null
-                || c.test(wrapper)
-                || allChildren.stream().anyMatch(storeEntrySection -> storeEntrySection.anyMatches(c));
-    }
-
     private static boolean inCategory(StoreCategoryWrapper categoryWrapper, StoreEntryWrapper entryWrapper) {
         var current = entryWrapper.getCategory().getValue();
         while (current != null) {
-            if (categoryWrapper.getCategory().getUuid().equals(current.getCategory().getUuid())) {
+            if (categoryWrapper
+                    .getCategory()
+                    .getUuid()
+                    .equals(current.getCategory().getUuid())) {
                 return true;
             }
 
@@ -177,5 +170,15 @@ public class StoreSection {
             current = current.getParent();
         }
         return false;
+    }
+
+    public boolean shouldShow(String filter) {
+        return anyMatches(storeEntryWrapper -> storeEntryWrapper.shouldShow(filter));
+    }
+
+    public boolean anyMatches(Predicate<StoreEntryWrapper> c) {
+        return c == null
+                || c.test(wrapper)
+                || allChildren.stream().anyMatch(storeEntrySection -> storeEntrySection.anyMatches(c));
     }
 }

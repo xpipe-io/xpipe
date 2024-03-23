@@ -107,22 +107,29 @@ public class AppPrefs {
             bindDeveloperTrue(developerDisableGuiRestrictions);
     private final ObjectProperty<SupportedLocale> language =
             map(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class);
+
     @Getter
     private final Property<InPlaceSecretValue> lockPassword = new SimpleObjectProperty<>();
+
     @Getter
     private final StringProperty lockCrypt =
             mapVaultSpecific(new SimpleStringProperty(), "workspaceLock", String.class);
+
     private final IntegerProperty editorReloadTimeout =
             map(new SimpleIntegerProperty(1000), "editorReloadTimeout", Integer.class);
     private final BooleanProperty confirmDeletions =
             map(new SimpleBooleanProperty(true), "confirmDeletions", Boolean.class);
+
     @Getter
     private final List<AppPrefsCategory> categories;
+
     private final AppPrefsStorageHandler globalStorageHandler = new AppPrefsStorageHandler(
             AppProperties.get().getDataDir().resolve("settings").resolve("preferences.json"));
     private final Map<Mapping<?>, Comp<?>> customEntries = new LinkedHashMap<>();
+
     @Getter
     private final Property<AppPrefsCategory> selectedCategory;
+
     private final PrefsHandler extensionHandler = new PrefsHandlerImpl();
     private AppPrefsStorageHandler vaultStorageHandler;
 

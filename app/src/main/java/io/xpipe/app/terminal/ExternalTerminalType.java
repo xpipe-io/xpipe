@@ -65,10 +65,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                         .addFile(configuration.getScriptFile());
             }
 
-            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-EncodedCommand").add(sc -> {
-                var base64 = Base64.getEncoder().encodeToString(configuration.getDialectLaunchCommand().buildCommandBase(sc).getBytes(StandardCharsets.UTF_16LE));
-                return "\"" + base64 + "\"";
-            });
+            return CommandBuilder.of()
+                    .add("-ExecutionPolicy", "Bypass")
+                    .add("-EncodedCommand")
+                    .add(sc -> {
+                        var base64 = Base64.getEncoder()
+                                .encodeToString(configuration
+                                        .getDialectLaunchCommand()
+                                        .buildCommandBase(sc)
+                                        .getBytes(StandardCharsets.UTF_16LE));
+                        return "\"" + base64 + "\"";
+                    });
         }
     };
 
@@ -86,12 +93,16 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(LaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-ExecutionPolicy", "Bypass").add("-EncodedCommand").add(sc -> {
-                // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
-                var c = "$env:PSModulePath=\"\";" + configuration.getDialectLaunchCommand().buildCommandBase(sc);
-                var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
-                return "\"" + base64 + "\"";
-            });
+            return CommandBuilder.of()
+                    .add("-ExecutionPolicy", "Bypass")
+                    .add("-EncodedCommand")
+                    .add(sc -> {
+                        // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
+                        var c = "$env:PSModulePath=\"\";"
+                                + configuration.getDialectLaunchCommand().buildCommandBase(sc);
+                        var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
+                        return "\"" + base64 + "\"";
+                    });
         }
     };
 
@@ -503,7 +514,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType WARP = new MacOsType("app.warp", "Warp") {
-        
+
         @Override
         public boolean supportsTabs() {
             return true;
@@ -678,7 +689,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
         // Check for incompatibility with fallback shell
-        if (ExternalTerminalType.CMD.equals(existing) && !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)) {
+        if (ExternalTerminalType.CMD.equals(existing)
+                && !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)) {
             return ExternalTerminalType.POWERSHELL;
         }
 
@@ -817,5 +829,4 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception;
     }
-
 }

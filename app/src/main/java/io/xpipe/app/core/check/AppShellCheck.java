@@ -13,7 +13,9 @@ public class AppShellCheck {
     public static void check() throws Exception {
         var err = selfTestErrorCheck();
 
-        var canFallback = !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ProcessControlProvider.get().getFallbackDialect());
+        var canFallback = !ProcessControlProvider.get()
+                .getEffectiveLocalDialect()
+                .equals(ProcessControlProvider.get().getFallbackDialect());
         if (err.isPresent() && canFallback) {
             var msg = formatMessage(err.get());
             ErrorEvent.fromThrowable(new IllegalStateException(msg)).handle();
@@ -28,7 +30,9 @@ public class AppShellCheck {
     }
 
     private static String modifyOutput(String output) {
-        if (OsType.getLocal().equals(OsType.WINDOWS) && output.contains("is not recognized as an internal or external command") && output.contains("exec-")) {
+        if (OsType.getLocal().equals(OsType.WINDOWS)
+                && output.contains("is not recognized as an internal or external command")
+                && output.contains("exec-")) {
             return "Unable to create temporary script files";
         }
 
@@ -36,9 +40,12 @@ public class AppShellCheck {
     }
 
     private static String formatMessage(String output) {
-        var fallback = !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ProcessControlProvider.get().getFallbackDialect()) ? "XPipe will now attempt to fall back to another shell." : "";
-        return
-                """
+        var fallback = !ProcessControlProvider.get()
+                        .getEffectiveLocalDialect()
+                        .equals(ProcessControlProvider.get().getFallbackDialect())
+                ? "XPipe will now attempt to fall back to another shell."
+                : "";
+        return """
                 Shell self-test failed for %s:
                 %s
 
@@ -51,11 +58,10 @@ public class AppShellCheck {
 
                 %s
                 """
-                        .formatted(
-                                ProcessControlProvider.get()
-                                        .getEffectiveLocalDialect()
-                                        .getDisplayName(),
-                                modifyOutput(output), fallback);
+                .formatted(
+                        ProcessControlProvider.get().getEffectiveLocalDialect().getDisplayName(),
+                        modifyOutput(output),
+                        fallback);
     }
 
     private static void enableFallback() throws Exception {

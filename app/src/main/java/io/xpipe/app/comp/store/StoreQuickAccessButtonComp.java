@@ -42,13 +42,14 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
 
         cm.show(anchor, Side.RIGHT, 0, 0);
 
-//        App.getApp().getStage().getScene().addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
-//            var stages = Stage.getWindows().stream().filter(window -> window instanceof ContextMenu).toList();
-//            var hovered = stages.stream().anyMatch(window -> window.getScene().getRoot().hoverProperty().get());
-//            if (!hovered) {
-//                stages.forEach(window -> window.hide());
-//            }
-//        });
+        //        App.getApp().getStage().getScene().addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
+        //            var stages = Stage.getWindows().stream().filter(window -> window instanceof ContextMenu).toList();
+        //            var hovered = stages.stream().anyMatch(window ->
+        // window.getScene().getRoot().hoverProperty().get());
+        //            if (!hovered) {
+        //                stages.forEach(window -> window.hide());
+        //            }
+        //        });
     }
 
     private ContextMenu createMenu() {
@@ -67,11 +68,12 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
     private MenuItem recurse(ContextMenu contextMenu, StoreSection section) {
         var c = section.getShownChildren();
         var w = section.getWrapper();
-        var graphic = w.getEntry()
-                .getProvider()
-                .getDisplayIconFileName(w.getEntry().getStore());
+        var graphic =
+                w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.isEmpty()) {
-            var item = new MenuItem(w.getName().getValue(), PrettyImageHelper.ofFixedSquare(graphic, 16).createRegion());
+            var item = new MenuItem(
+                    w.getName().getValue(),
+                    PrettyImageHelper.ofFixedSquare(graphic, 16).createRegion());
             item.setOnAction(event -> {
                 action.accept(w);
                 contextMenu.hide();
@@ -88,7 +90,9 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
 
             items.add(recurse(contextMenu, sub));
         }
-        var m = new Menu(w.getName().getValue(), PrettyImageHelper.ofFixedSquare(graphic, 16).createRegion());
+        var m = new Menu(
+                w.getName().getValue(),
+                PrettyImageHelper.ofFixedSquare(graphic, 16).createRegion());
         m.getItems().setAll(items);
         m.setOnAction(event -> {
             if (event.getTarget() == m) {

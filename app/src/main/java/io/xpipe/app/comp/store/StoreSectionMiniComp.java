@@ -41,7 +41,8 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
 
     public StoreSectionMiniComp(
             StoreSection section,
-            BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment, Consumer<StoreEntryWrapper> action,
+            BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
+            Consumer<StoreEntryWrapper> action,
             boolean condensedStyle) {
         this.section = section;
         this.augment = augment;
@@ -112,7 +113,8 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
             Consumer<StoreEntryWrapper> quickAccessAction = w -> {
                 action.accept(w);
             };
-            var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction).vgrow()
+            var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
+                    .vgrow()
                     .styleClass("quick-access-button")
                     .maxHeight(100)
                     .disable(quickAccessDisabled);

@@ -355,7 +355,10 @@ final class BrowserFileListComp extends SimpleComp {
                 }
 
                 if (fileList.getFileSystemModel().getFileSystem() != null) {
-                    var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+                    var shell = fileList.getFileSystemModel()
+                            .getFileSystem()
+                            .getShell()
+                            .orElseThrow();
                     var hasAttributes = !OsType.WINDOWS.equals(shell.getOsType());
                     if (!hasAttributes) {
                         table.getColumns().remove(modeCol);

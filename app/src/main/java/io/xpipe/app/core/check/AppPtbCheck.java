@@ -11,18 +11,15 @@ public class AppPtbCheck {
             return;
         }
 
-        AppWindowHelper.showBlockingAlert(
-                alert -> {
-                    alert.setAlertType(Alert.AlertType.INFORMATION);
-                    alert.setHeaderText("Notice for the public test build");
-                    alert.getDialogPane()
-                            .setContent(
-                                    AppWindowHelper.alertContentText(
-                                            "You are running a PTB build of XPipe." +
-                                                    " This version is unstable and might contain bugs." +
-                                                    " You should not use it as a daily driver." +
-                                                    " It will also not receive regular updates." +
-                                                    " You will have to install and launch the normal XPipe release for that."));
-                });
+        AppWindowHelper.showBlockingAlert(alert -> {
+            alert.setAlertType(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Notice for the public test build");
+            alert.getDialogPane()
+                    .setContent(AppWindowHelper.alertContentText("You are running a PTB build of XPipe."
+                            + " This version is unstable and might contain bugs."
+                            + " You should not use it as a daily driver."
+                            + " It will also not receive regular updates."
+                            + " You will have to install and launch the normal XPipe release for that."));
+        });
     }
 }

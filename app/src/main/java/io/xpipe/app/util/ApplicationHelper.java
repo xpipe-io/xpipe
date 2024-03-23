@@ -41,7 +41,8 @@ public class ApplicationHelper {
             var script = ScriptHelper.createExecScript(pc, command);
             return String.format(
                     "Start-Process -FilePath %s -ArgumentList \"-NoProfile\", \"-File\", %s",
-                    pc.getShellDialect().getExecutableName(), pc.getShellDialect().fileArgument(script));
+                    pc.getShellDialect().getExecutableName(),
+                    pc.getShellDialect().fileArgument(script));
         }
 
         if (pc.getOsType().equals(OsType.WINDOWS)) {

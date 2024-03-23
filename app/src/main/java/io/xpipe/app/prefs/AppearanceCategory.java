@@ -23,7 +23,10 @@ public class AppearanceCategory extends AppPrefsCategory {
                 .addTitle("uiOptions")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("theme")
-                        .addComp(ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false).styleClass("theme-switcher"), prefs.theme)
+                        .addComp(
+                                ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
+                                        .styleClass("theme-switcher"),
+                                prefs.theme)
                         .nameAndDescription("performanceMode")
                         .addToggle(prefs.performanceMode)
                         .nameAndDescription("uiScale")

@@ -79,12 +79,20 @@ final class BrowserBookmarkComp extends SimpleComp {
             });
         };
         BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (s, comp) -> {
-            comp.disable(Bindings.createBooleanBinding(() -> {
-                return busy.get() || !applicable.test(s.getWrapper());
-            }, busy));
+            comp.disable(Bindings.createBooleanBinding(
+                    () -> {
+                        return busy.get() || !applicable.test(s.getWrapper());
+                    },
+                    busy));
             comp.apply(struc -> {
                 open.addListener((observable, oldValue, newValue) -> {
-                    struc.get().pseudoClassStateChanged(SELECTED, newValue != null && newValue.getEntry().get().equals(s.getWrapper().getEntry()));
+                    struc.get()
+                            .pseudoClassStateChanged(
+                                    SELECTED,
+                                    newValue != null
+                                            && newValue.getEntry()
+                                                    .get()
+                                                    .equals(s.getWrapper().getEntry()));
                 });
             });
         };

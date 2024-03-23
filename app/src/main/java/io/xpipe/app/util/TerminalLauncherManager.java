@@ -27,7 +27,7 @@ public class TerminalLauncherManager {
                 return null;
             }
 
-            if (!sc.getShellDialect().directoryExists(sc,directory).executeAndCheck()) {
+            if (!sc.getShellDialect().directoryExists(sc, directory).executeAndCheck()) {
                 return null;
             }
 
@@ -35,8 +35,7 @@ public class TerminalLauncherManager {
         };
 
         try {
-            var file = ScriptHelper.createLocalExecScript(
-                    processControl.prepareTerminalOpen(config, workingDirectory));
+            var file = ScriptHelper.createLocalExecScript(processControl.prepareTerminalOpen(config, workingDirectory));
             entry.setResult(new ResultSuccess(Path.of(file)));
         } catch (Exception e) {
             entry.setResult(new ResultFailure(e));

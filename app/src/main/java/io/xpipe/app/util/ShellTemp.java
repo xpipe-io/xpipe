@@ -41,7 +41,8 @@ public class ShellTemp {
             base = FileNames.join("/tmp", "xpipe");
             // We have to make sure that also other users can create files here
             // This command should work in all shells on unix systems
-            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
+                    .executeAndCheck();
             // Use user-specific directories on anything else than macOS as that one already has that
             if (!proc.getOsType().equals(OsType.MACOS)) {
                 var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();

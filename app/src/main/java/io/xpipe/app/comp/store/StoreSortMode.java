@@ -50,7 +50,8 @@ public interface StoreSortMode {
         @Override
         public StoreSection representative(StoreSection s) {
             return Stream.concat(s.getShownChildren().stream().map(this::representative), Stream.of(s))
-                    .max(Comparator.comparing(section -> section.getWrapper().getEntry().getLastAccess()))
+                    .max(Comparator.comparing(
+                            section -> section.getWrapper().getEntry().getLastAccess()))
                     .orElseThrow();
         }
 
@@ -70,7 +71,8 @@ public interface StoreSortMode {
         @Override
         public StoreSection representative(StoreSection s) {
             return Stream.concat(s.getShownChildren().stream().map(this::representative), Stream.of(s))
-                    .max(Comparator.comparing(section -> section.getWrapper().getEntry().getLastAccess()))
+                    .max(Comparator.comparing(
+                            section -> section.getWrapper().getEntry().getLastAccess()))
                     .orElseThrow();
         }
 

@@ -47,13 +47,9 @@ public class BrowserStatusBarComp extends SimpleComp {
             if (p == null || p.done()) {
                 return null;
             } else {
-                var transferred = HumanReadableFormat.byteCount(
-                        p.getTransferred(), false);
-                var all = HumanReadableFormat.byteCount(
-                        p.getTotal(), true);
-                var name = (p.getName() != null
-                        ? " @ " + p.getName() + " "
-                        : "");
+                var transferred = HumanReadableFormat.byteCount(p.getTransferred(), false);
+                var all = HumanReadableFormat.byteCount(p.getTotal(), true);
+                var name = (p.getName() != null ? " @ " + p.getName() + " " : "");
                 return transferred + " / " + all + name;
             }
         });

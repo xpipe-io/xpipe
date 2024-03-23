@@ -76,7 +76,9 @@ public class BrowserNavBar extends SimpleComp {
                         // Pseudo classes do not apply if set instantly before shown
                         // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
                         Platform.runLater(() -> {
-                            struc.get().pseudoClassStateChanged(INVISIBLE, !val && !struc.get().isFocused());
+                            struc.get()
+                                    .pseudoClassStateChanged(
+                                            INVISIBLE, !val && !struc.get().isFocused());
                         });
                     });
 

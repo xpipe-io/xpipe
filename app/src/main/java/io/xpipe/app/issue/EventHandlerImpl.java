@@ -50,15 +50,15 @@ public class EventHandlerImpl extends EventHandler {
         }
     }
 
-    private void handleOnShutdown(ErrorEvent ee) {
-        ErrorAction.ignore().handle(ee);
-        handle(fromErrorEvent(ee));
-    }
-
     @Override
     public void modify(ErrorEvent ee) {
         if (AppLogs.get() != null && AppLogs.get().getSessionLogsDirectory() != null) {
             ee.addAttachment(AppLogs.get().getSessionLogsDirectory());
         }
+    }
+
+    private void handleOnShutdown(ErrorEvent ee) {
+        ErrorAction.ignore().handle(ee);
+        handle(fromErrorEvent(ee));
     }
 }

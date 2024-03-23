@@ -56,7 +56,8 @@ public class StoreSectionComp extends Comp<CompStructure<VBox>> {
                 w.executeDefaultAction();
             });
         };
-        var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction).vgrow()
+        var quickAccessButton = new StoreQuickAccessButtonComp(section, quickAccessAction)
+                .vgrow()
                 .styleClass("quick-access-button")
                 .apply(struc -> struc.get().setMinWidth(30))
                 .apply(struc -> struc.get().setPrefWidth(30))

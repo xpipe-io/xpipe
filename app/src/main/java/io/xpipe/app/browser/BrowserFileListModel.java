@@ -60,8 +60,7 @@ public final class BrowserFileListModel {
             var parent = fileSystemModel.getCurrentParentDirectory();
             var l = Stream.concat(
                             parent != null ? Stream.of(new BrowserEntry(parent, this, true)) : Stream.of(),
-                            s.filter(entry -> entry != null)
-                                    .map(entry -> new BrowserEntry(entry, this, false)))
+                            s.filter(entry -> entry != null).map(entry -> new BrowserEntry(entry, this, false)))
                     .toList();
             all.setValue(l);
             refreshShown();

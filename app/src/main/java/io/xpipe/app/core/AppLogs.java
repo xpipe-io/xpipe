@@ -80,12 +80,6 @@ public class AppLogs {
         hookUpSystemErr();
     }
 
-    public void flush() {
-        if (outFileStream != null) {
-            outFileStream.flush();
-        }
-    }
-
     private static boolean shouldWriteLogs() {
         if (System.getProperty(WRITE_LOGS_PROP) != null) {
             return Boolean.parseBoolean(System.getProperty(WRITE_LOGS_PROP));
@@ -190,6 +184,12 @@ public class AppLogs {
         }
 
         return DEFAULT_LOG_LEVEL;
+    }
+
+    public void flush() {
+        if (outFileStream != null) {
+            outFileStream.flush();
+        }
     }
 
     private void close() {

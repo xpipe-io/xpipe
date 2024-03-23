@@ -1,10 +1,10 @@
 package io.xpipe.core.process;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.xpipe.core.util.NewLine;
-import io.xpipe.core.util.StreamCharset;
 import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.util.NewLine;
 import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.StreamCharset;
 
 import java.nio.charset.Charset;
 import java.util.List;

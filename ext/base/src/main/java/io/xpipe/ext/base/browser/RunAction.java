@@ -37,9 +37,8 @@ public class RunAction extends MultiExecuteAction {
             return true;
         }
 
-
-        if (ShellDialects.isPowershell(shell.get()) && Stream.of("ps1")
-                .anyMatch(s -> e.getPath().endsWith(s))) {
+        if (ShellDialects.isPowershell(shell.get())
+                && Stream.of("ps1").anyMatch(s -> e.getPath().endsWith(s))) {
             return true;
         }
 

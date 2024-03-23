@@ -115,7 +115,7 @@ public class StoreCreationComp extends DialogComp {
                             DataStorage.get().getSelectedCategory().getUuid(),
                             name.getValue(),
                             store.getValue());
-                    var p =  DataStorage.get().getDefaultDisplayParent(testE).orElse(null);
+                    var p = DataStorage.get().getDefaultDisplayParent(testE).orElse(null);
 
                     var targetCategory = p != null
                             ? p.getCategoryUuid()
@@ -174,7 +174,8 @@ public class StoreCreationComp extends DialogComp {
                 (e, validated) -> {
                     try {
                         DataStorage.get().addStoreEntryIfNotPresent(e);
-                        if (validated && e.getProvider().shouldHaveChildren()
+                        if (validated
+                                && e.getProvider().shouldHaveChildren()
                                 && AppPrefs.get()
                                         .openConnectionSearchWindowOnConnectionCreation()
                                         .get()) {

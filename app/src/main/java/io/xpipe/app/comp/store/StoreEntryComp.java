@@ -54,8 +54,6 @@ public abstract class StoreEntryComp extends SimpleComp {
         this.content = content;
     }
 
-    public abstract boolean isFullSize();
-
     public static StoreEntryComp create(StoreEntryWrapper entry, Comp<?> content, boolean preferLarge) {
         var forceCondensed = AppPrefs.get() != null
                 && AppPrefs.get().condenseConnectionDisplay().get();
@@ -78,6 +76,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                     : new StandardStoreEntryComp(e.getWrapper(), null);
         }
     }
+
+    public abstract boolean isFullSize();
 
     @Override
     protected final Region createSimple() {

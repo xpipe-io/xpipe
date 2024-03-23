@@ -1,8 +1,8 @@
 package io.xpipe.core.dialog;
 
 import io.xpipe.core.util.NewLine;
-import io.xpipe.core.util.StreamCharset;
 import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.util.StreamCharset;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -73,7 +73,8 @@ public enum PlatformState {
             // The headless check is not needed though but still done
             GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
-            // Catch more than just the headless exception in case the graphics environment initialization completely fails
+            // Catch more than just the headless exception in case the graphics environment initialization completely
+            // fails
         } catch (Throwable t) {
             TrackEvent.warn(t.getMessage());
             PlatformState.setCurrent(PlatformState.EXITED);

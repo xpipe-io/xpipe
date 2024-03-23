@@ -10,43 +10,42 @@ import java.nio.file.Path;
 
 public class WindowsTerminalType {
 
+    public static final ExternalTerminalType WINDOWS_TERMINAL =
+            new ExternalTerminalType.SimplePathType("app.windowsTerminal", "wt.exe") {
 
-    public static final ExternalTerminalType WINDOWS_TERMINAL = new ExternalTerminalType.SimplePathType("app.windowsTerminal", "wt.exe") {
+                @Override
+                protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {
+                    return WindowsTerminalType.toCommand(configuration);
+                }
 
-        @Override
-        protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {
-            return WindowsTerminalType.toCommand(configuration);
-        }
+                @Override
+                public boolean supportsTabs() {
+                    return true;
+                }
 
-        @Override
-        public boolean supportsTabs() {
-            return true;
-        }
-
-        @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-    };
+                @Override
+                public boolean supportsColoredTitle() {
+                    return false;
+                }
+            };
 
     public static final ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new ExternalTerminalType() {
 
         @Override
-        public boolean supportsColoredTitle() {
-            return false;
-        }
-        
-        @Override
         public boolean supportsTabs() {
             return true;
+        }
+
+        @Override
+        public boolean supportsColoredTitle() {
+            return false;
         }
 
         @Override
         public void launch(ExternalTerminalType.LaunchConfiguration configuration) throws Exception {
             LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .addFile(getPath().toString())
-                            .add(toCommand(configuration)));
+                    .executeSimpleCommand(
+                            CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
         }
 
         private Path getPath() {
@@ -72,9 +71,11 @@ public class WindowsTerminalType {
         // So just remove that slash
         var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
 
-        var toExec = !ShellDialects.isPowershell(LocalShell.getShell()) ?
-                CommandBuilder.of().addFile(configuration.getScriptFile()) :
-                CommandBuilder.of().add("powershell", "-ExecutionPolicy", "Bypass", "-File").addQuoted(configuration.getScriptFile());
+        var toExec = !ShellDialects.isPowershell(LocalShell.getShell())
+                ? CommandBuilder.of().addFile(configuration.getScriptFile())
+                : CommandBuilder.of()
+                        .add("powershell", "-ExecutionPolicy", "Bypass", "-File")
+                        .addQuoted(configuration.getScriptFile());
         var cmd = CommandBuilder.of().add("-w", "1", "nt");
 
         if (configuration.getColor() != null) {
