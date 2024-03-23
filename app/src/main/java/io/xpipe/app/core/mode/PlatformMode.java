@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.check.AppFontLoadingCheck;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.UpdateAvailableAlert;
@@ -25,6 +26,8 @@ public abstract class PlatformMode extends OperationMode {
 
         TrackEvent.info("Platform mode initial setup");
         PlatformState.initPlatformOrThrow();
+        // Check if we can load system fonts or fail
+        AppFontLoadingCheck.check();
         AppFont.init();
         AppTheme.init();
         AppStyle.init();

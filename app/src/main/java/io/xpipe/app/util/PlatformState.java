@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.check.AppSystemFontCheck;
-import io.xpipe.app.core.check.AppFontLoadingCheck;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -110,8 +109,6 @@ public enum PlatformState {
             });
             try {
                 latch.await();
-                // Check if we have no fonts and set properties to load bundled ones
-                AppFontLoadingCheck.check();
                 PlatformState.setCurrent(PlatformState.RUNNING);
                 return Optional.empty();
             } catch (InterruptedException e) {
