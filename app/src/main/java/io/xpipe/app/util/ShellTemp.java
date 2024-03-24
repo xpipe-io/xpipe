@@ -17,7 +17,8 @@ public class ShellTemp {
 
     public static Path getLocalTempDataDirectory(String sub) {
         var temp = FileUtils.getTempDirectory().toPath().resolve("xpipe");
-        // On macOS, we already have user specific temp directories
+        // On Windows and macOS, we already have user specific temp directories
+        // Even on macOS as root we will have a unique directory (in contrast to shell controls)
         if (OsType.getLocal().equals(OsType.LINUX)) {
             var user = System.getenv("USER");
             temp = temp.resolve(user != null ? user : "user");
@@ -35,17 +36,16 @@ public class ShellTemp {
 
     public static String getUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
         String base;
-        if (OsType.getLocal() != OsType.WINDOWS) {
-            base = FileNames.join("/tmp", "xpipe");
+        // On Windows and macOS, we already have user specific temp directories
+        // Even on macOS as root it is technically unique as only root will use /tmp
+        if (!proc.getOsType().equals(OsType.WINDOWS) && !proc.getOsType().equals(OsType.MACOS)) {
+            var temp = proc.getSystemTemporaryDirectory();
+            base = FileNames.join(temp, "xpipe");
             // We have to make sure that also other users can create files here
-            // This command should work in all shells on unix systems
-            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
-                    .executeAndCheck();
-            // Use user-specific directories on anything else than macOS as that one already has that
-            if (!proc.getOsType().equals(OsType.MACOS)) {
-                var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
-                base = FileNames.join(base, user);
-            }
+            // This command should work in all shells
+            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+            var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
+            base = FileNames.join(base, user);
         } else {
             var temp = proc.getSystemTemporaryDirectory();
             base = FileNames.join(temp, "xpipe");
@@ -56,7 +56,7 @@ public class ShellTemp {
     public static void checkTempDirectory(ShellControl proc) throws Exception {
         var d = proc.getShellDialect();
 
-        var systemTemp = proc.getOsType().getTempDirectory(proc);
+        var systemTemp = proc.getSystemTemporaryDirectory();
         if (!d.directoryExists(proc, systemTemp).executeAndCheck() || !checkDirectoryPermissions(proc, systemTemp)) {
             throw ErrorEvent.expected(new IOException("No permissions to access %s".formatted(systemTemp)));
         }
