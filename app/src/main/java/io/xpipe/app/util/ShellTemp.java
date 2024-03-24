@@ -26,7 +26,7 @@ public class ShellTemp {
             try {
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).omit().expected().handle();
             }
         }
