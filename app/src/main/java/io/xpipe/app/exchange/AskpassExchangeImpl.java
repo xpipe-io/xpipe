@@ -1,8 +1,5 @@
 package io.xpipe.app.exchange;
 
-import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.AppTheme;
-import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.beacon.BeaconHandler;
 import io.xpipe.beacon.exchange.AskpassExchange;
@@ -18,13 +15,6 @@ public class AskpassExchangeImpl extends AskpassExchange
         if (found.isEmpty()) {
             return Response.builder().build();
         }
-
-        if (!PlatformState.initPlatformIfNeeded()) {
-            return Response.builder().build();
-        }
-
-        AppStyle.init();
-        AppTheme.init();
 
         var p = found.get();
         var secret = p.process(msg.getPrompt());

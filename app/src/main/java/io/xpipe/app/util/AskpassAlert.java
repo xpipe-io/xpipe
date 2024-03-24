@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppStyle;
+import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.core.AppWindowHelper;
 import io.xpipe.app.fxcomps.impl.SecretFieldComp;
 import io.xpipe.core.util.InPlaceSecretValue;
@@ -17,6 +19,13 @@ import javafx.stage.Stage;
 public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
+        if (!PlatformState.initPlatformIfNeeded()) {
+            return new SecretQueryResult(null, true);
+        }
+
+        AppStyle.init();
+        AppTheme.init();
+
         var prop = new SimpleObjectProperty<>(secretValue);
         var r = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
