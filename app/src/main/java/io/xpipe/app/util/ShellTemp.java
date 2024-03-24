@@ -21,9 +21,7 @@ public class ShellTemp {
         if (OsType.getLocal().equals(OsType.LINUX)) {
             var user = System.getenv("USER");
             temp = temp.resolve(user != null ? user : "user");
-        }
 
-        if (OsType.getLocal() != OsType.WINDOWS) {
             try {
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
