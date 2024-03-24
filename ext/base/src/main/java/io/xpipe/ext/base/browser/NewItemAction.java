@@ -63,6 +63,7 @@ public class NewItemAction implements BrowserAction, BranchAction {
                                             creationName.textProperty().bindBidirectional(name);
                                             return creationName;
                                         }),
+                                        null,
                                         "finish",
                                         () -> {
                                             model.createFileAsync(name.getValue());
@@ -91,6 +92,7 @@ public class NewItemAction implements BrowserAction, BranchAction {
                                             creationName.textProperty().bindBidirectional(name);
                                             return creationName;
                                         }),
+                                        null,
                                         "finish",
                                         () -> {
                                             model.createDirectoryAsync(name.getValue());
@@ -116,15 +118,13 @@ public class NewItemAction implements BrowserAction, BranchAction {
                                 .setValue(new ModalOverlayComp.OverlayContent(
                                         "base.newLink",
                                         new OptionsBuilder()
-                                                .spacer(10)
                                                 .name("linkName")
                                                 .addString(linkName)
-                                                .spacer(10)
                                                 .name("targetPath")
                                                 .addString(target)
                                                 .buildComp()
-                                                .prefWidth(400)
-                                                .prefHeight(130),
+                                                .prefWidth(350),
+                                        null,
                                         "finish",
                                         () -> {
                                             model.createLinkAsync(linkName.getValue(), target.getValue());

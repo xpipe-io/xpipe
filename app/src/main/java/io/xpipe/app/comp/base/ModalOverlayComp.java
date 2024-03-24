@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.fxcomps.Comp;
@@ -17,9 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import lombok.Value;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -35,6 +32,7 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
+        AppFont.small(modal);
         modal.getStyleClass().add("modal-overlay-comp");
         var pane = new StackPane(bgRegion, modal);
         pane.setPickOnBounds(false);
@@ -45,9 +43,7 @@ public class ModalOverlayComp extends SimpleComp {
             }
 
             if (newValue != null) {
-                var graphic = new FontIcon("mdomz-warning");
-                graphic.setIconColor(Color.RED);
-                var l = new Label(AppI18n.get(newValue.titleKey), graphic);
+                var l = new Label(AppI18n.get(newValue.titleKey), newValue.graphic != null ? newValue.graphic.createRegion() : null);
                 l.setGraphicTextGap(6);
                 AppFont.normal(l);
                 var r = newValue.content.createRegion();
@@ -58,7 +54,6 @@ public class ModalOverlayComp extends SimpleComp {
                 if (newValue.finishKey != null) {
                     var finishButton = new Button(AppI18n.get(newValue.finishKey));
                     finishButton.setDefaultButton(true);
-                    Styles.toggleStyleClass(finishButton, Styles.FLAT);
                     finishButton.setOnAction(event -> {
                         newValue.onFinish.run();
                         overlayContent.setValue(null);
@@ -97,6 +92,7 @@ public class ModalOverlayComp extends SimpleComp {
 
         String titleKey;
         Comp<?> content;
+        Comp<?> graphic;
         String finishKey;
         Runnable onFinish;
     }

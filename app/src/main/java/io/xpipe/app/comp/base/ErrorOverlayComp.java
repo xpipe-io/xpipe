@@ -7,8 +7,11 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ErrorOverlayComp extends SimpleComp {
@@ -34,7 +37,11 @@ public class ErrorOverlayComp extends SimpleComp {
                     l.setEditable(false);
                     return l;
                 });
-                content.set(new ModalOverlayComp.OverlayContent("error", comp, null, () -> {}));
+                content.set(new ModalOverlayComp.OverlayContent("error", comp, Comp.of(() -> {
+                    var graphic = new FontIcon("mdomz-warning");
+                    graphic.setIconColor(Color.RED);
+                    return new StackPane(graphic);
+                }), null, () -> {}));
             });
         });
         content.addListener((observable, oldValue, newValue) -> {

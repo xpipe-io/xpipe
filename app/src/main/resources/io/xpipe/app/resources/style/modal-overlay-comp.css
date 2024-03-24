@@ -3,16 +3,10 @@
     -fx-background-radius: 6;
 }
 
-.modal-overlay-comp {
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
-}
-
-.modal-overlay-comp .titled-pane > * {
-    -fx-border-radius: 0;
-}
-
-.modal-overlay-comp .titled-pane > * {
-    -fx-background-radius: 0;
+.modal-overlay-comp .modal-box .button {
+    -fx-padding: 6 12 6 12;
+    -fx-border-width: 1px;
+    -fx-border-radius: 2px;
+    -fx-background-radius: 2px;
 }
 
