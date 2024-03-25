@@ -150,8 +150,6 @@ open module io.xpipe.app {
             TerminalWaitExchangeImpl,
             TerminalLaunchExchangeImpl,
             QueryStoreExchangeImpl,
-            WriteStreamExchangeImpl,
-            ReadStreamExchangeImpl,
             InstanceExchangeImpl,
             VersionExchangeImpl;
 }

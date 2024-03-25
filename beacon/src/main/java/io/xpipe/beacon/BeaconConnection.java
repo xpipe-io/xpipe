@@ -1,6 +1,5 @@
 package io.xpipe.beacon;
 
-import io.xpipe.beacon.exchange.WriteStreamExchange;
 import io.xpipe.core.util.FailableBiConsumer;
 import io.xpipe.core.util.FailableConsumer;
 import lombok.Getter;
@@ -169,10 +168,6 @@ public abstract class BeaconConnection implements AutoCloseable {
         } catch (Exception e) {
             throw unwrapException(e);
         }
-    }
-
-    public void writeStream(String name, InputStream in) {
-        performOutputExchange(WriteStreamExchange.Request.builder().name(name).build(), in::transferTo);
     }
 
     private BeaconException unwrapException(Exception exception) {
