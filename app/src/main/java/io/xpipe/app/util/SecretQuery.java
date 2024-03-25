@@ -42,7 +42,8 @@ public interface SecretQuery {
                     return r;
                 }
 
-                var ask = AppPrefs.get().alwaysConfirmElevation().getValue();
+                // Don't confirm if we already had user interaction
+                var ask = AppPrefs.get().alwaysConfirmElevation().getValue() && !original.requiresUserInteraction();
                 if (!ask) {
                     return r;
                 }
@@ -59,6 +60,11 @@ public interface SecretQuery {
             @Override
             public boolean retryOnFail() {
                 return true;
+            }
+
+            @Override
+            public boolean requiresUserInteraction() {
+                return original.requiresUserInteraction() || AppPrefs.get().alwaysConfirmElevation().getValue();
             }
         };
     }
@@ -79,6 +85,11 @@ public interface SecretQuery {
             public boolean retryOnFail() {
                 return true;
             }
+
+            @Override
+            public boolean requiresUserInteraction() {
+                return true;
+            }
         };
     }
 
@@ -92,6 +103,8 @@ public interface SecretQuery {
     boolean cache();
 
     boolean retryOnFail();
+
+    boolean requiresUserInteraction();
 
     default boolean respectDontCacheSetting() {
         return true;

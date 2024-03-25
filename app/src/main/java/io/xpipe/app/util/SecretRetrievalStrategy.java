@@ -71,6 +71,11 @@ public interface SecretRetrievalStrategy {
                 public boolean retryOnFail() {
                     return false;
                 }
+
+                @Override
+                public boolean requiresUserInteraction() {
+                    return false;
+                }
             };
         }
     }
@@ -93,6 +98,11 @@ public interface SecretRetrievalStrategy {
 
                 @Override
                 public boolean retryOnFail() {
+                    return true;
+                }
+
+                @Override
+                public boolean requiresUserInteraction() {
                     return true;
                 }
             };
@@ -135,6 +145,11 @@ public interface SecretRetrievalStrategy {
                 public boolean retryOnFail() {
                     return false;
                 }
+
+                @Override
+                public boolean requiresUserInteraction() {
+                    return false;
+                }
             };
         }
     }
@@ -168,6 +183,11 @@ public interface SecretRetrievalStrategy {
 
                 @Override
                 public boolean retryOnFail() {
+                    return false;
+                }
+
+                @Override
+                public boolean requiresUserInteraction() {
                     return false;
                 }
             };
