@@ -2,12 +2,11 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.ApplicationHelper;
+import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -95,10 +94,12 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
     public abstract static class PathApplication extends ExternalApplicationType {
 
         protected final String executable;
+        protected final boolean explicityAsync;
 
-        public PathApplication(String id, String executable) {
+        public PathApplication(String id, String executable, boolean explicityAsync) {
             super(id);
             this.executable = executable;
+            this.explicityAsync = explicityAsync;
         }
 
         public boolean isAvailable() {
@@ -110,32 +111,21 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             }
         }
 
-        protected void launch(String title, String args) throws Exception {
+        protected void launch(String title, CommandBuilder args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
-                if (!ApplicationHelper.isInPath(pc, executable)) {
+                if (!CommandSupport.isInPath(pc, executable)) {
                     throw ErrorEvent.expected(
                             new IOException(
                                     "Executable " + executable
                                             + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
                 }
 
-                if (ShellDialects.isPowershell(pc)) {
-                    var cmd = CommandBuilder.of()
-                            .add("Start-Process", "-FilePath")
-                            .addFile(executable)
-                            .add("-ArgumentList")
-                            .add(pc.getShellDialect().literalArgument(args));
-                    pc.executeSimpleCommand(cmd);
-                    return;
-                }
-
-                var toExecute = executable + " " + args;
-                if (pc.getOsType().equals(OsType.WINDOWS)) {
-                    toExecute = "start \"" + title + "\" " + toExecute;
+                args.add(0, executable);
+                if (explicityAsync) {
+                    ExternalApplicationHelper.startAsync(args);
                 } else {
-                    toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";
+                    pc.executeSimpleCommand(args);
                 }
-                pc.executeSimpleCommand(toExecute);
             }
         }
     }

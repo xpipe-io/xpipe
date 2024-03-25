@@ -11,7 +11,7 @@ import java.nio.file.Path;
 public class WindowsTerminalType {
 
     public static final ExternalTerminalType WINDOWS_TERMINAL =
-            new ExternalTerminalType.SimplePathType("app.windowsTerminal", "wt.exe") {
+            new ExternalTerminalType.SimplePathType("app.windowsTerminal", "wt.exe", false) {
 
                 @Override
                 protected CommandBuilder toCommand(LaunchConfiguration configuration) throws Exception {

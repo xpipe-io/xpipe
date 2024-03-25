@@ -3,6 +3,7 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.MultiExecuteAction;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -69,8 +70,7 @@ public class RunAction extends MultiExecuteAction {
         return entries.stream().allMatch(entry -> isExecutable(entry.getRawFileEntry()));
     }
 
-    @Override
-    protected String createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
-        return sc.getShellDialect().runScriptCommand(sc, entry.getRawFileEntry().getPath());
+    protected CommandBuilder createCommand(ShellControl sc, OpenFileSystemModel model, BrowserEntry entry) {
+        return CommandBuilder.of().add(sc.getShellDialect().runScriptCommand(sc, entry.getRawFileEntry().getPath()));
     }
 }
