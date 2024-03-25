@@ -6,6 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppAvCheck;
 import io.xpipe.app.core.check.AppCertutilCheck;
 import io.xpipe.app.core.check.AppShellCheck;
+import io.xpipe.app.core.check.AppSidCheck;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -49,6 +50,7 @@ public class BaseMode extends OperationMode {
         AppPrefs.initLocal();
         AppCertutilCheck.check();
         AppAvCheck.check();
+        AppSidCheck.check();
         LocalShell.init();
         AppShellCheck.check();
         XPipeDistributionType.init();

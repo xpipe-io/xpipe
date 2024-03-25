@@ -92,6 +92,7 @@ project.ext {
             "-Dapple.awt.application.appearance=system"
     ]
     useBundledJavaFx = fullVersion
+    useBundledJna = fullVersion
     announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
     changelogFile = file("$rootDir/dist/changelogs/${versionString}.md").exists() ?
             file("$rootDir/dist/changelogs/${versionString}.md") :

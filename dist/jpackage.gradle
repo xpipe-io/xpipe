@@ -1,4 +1,5 @@
 apply from: "$rootDir/gradle/gradle_scripts/javafx.gradle"
+apply from: "$rootDir/gradle/gradle_scripts/jna.gradle"
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
@@ -10,7 +11,9 @@ def releaseArguments = distJvmArgs + [
         "-Dio.xpipe.app.buildId=$rootProject.buildId",
         "-Dio.xpipe.app.fullVersion=$rootProject.fullVersion",
         "-Dio.xpipe.app.staging=$rootProject.isStage",
-        '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279'
+        '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279',
+        '-Djna.nosys=false',
+        '-Djna.nounpack=true'
 ]
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
@@ -27,6 +30,11 @@ dependencies {
     implementation project(':app')
     if (!useBundledJavaFx) {
         configurations.javafx.getAsFileTree().getFiles().forEach {
+            implementation files(it)
+        }
+    }
+    if (!useBundledJavaFx) {
+        configurations.jna.getAsFileTree().getFiles().forEach {
             implementation files(it)
         }
     }
@@ -50,6 +58,9 @@ jlink {
 
     if (useBundledJavaFx) {
         addExtraModulePath(layout.projectDirectory.dir("javafx/${platformName}/${arch}").toString())
+    }
+    if (useBundledJna) {
+        addExtraModulePath(layout.projectDirectory.dir("jna/${platformName}/${arch}").toString())
     }
 
     launcher {

@@ -1,0 +1,8 @@
+configurations {
+    jna
+}
+
+dependencies {
+    jna 'net.java.dev.jna:jna-jpms:5.14.0'
+    jna 'net.java.dev.jna:jna-platform-jpms:5.14.0'
+}
