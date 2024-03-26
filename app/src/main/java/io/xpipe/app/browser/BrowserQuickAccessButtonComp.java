@@ -4,10 +4,12 @@ import io.xpipe.app.browser.icon.FileIconManager;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.impl.IconButtonComp;
 import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
+import io.xpipe.app.util.BooleanTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FileSystem;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -16,19 +18,19 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BrowserQuickAccessButtonComp extends SimpleComp {
 
-    private final Supplier<FileSystem.FileEntry> base;
+    private final Supplier<BrowserEntry> base;
     private final OpenFileSystemModel model;
-    private final Consumer<FileSystem.FileEntry> action;
 
-    public BrowserQuickAccessButtonComp(Supplier<FileSystem.FileEntry> base, OpenFileSystemModel model, Consumer<FileSystem.FileEntry> action) {
+    public BrowserQuickAccessButtonComp(Supplier<BrowserEntry> base, OpenFileSystemModel model) {
         this.base = base;
         this.model = model;
-        this.action = action;
     }
 
     @Override
@@ -43,15 +45,6 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
     }
 
     private void showMenu(Node anchor) {
-        ThreadHelper.runFailableAsync(() -> {
-            var children = model.getFileSystem().listFiles(base.get().getPath());
-            try (var s = children) {
-                var list = s.toList();
-                if (list.isEmpty()) {
-                    return;
-                }
-
-                Platform.runLater(() -> {
                     var cm = new ContextMenu();
                     cm.addEventHandler(Menu.ON_SHOWING, e -> {
                         Node content = cm.getSkin().getNode();
@@ -62,48 +55,94 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                     });
                     cm.setAutoHide(true);
                     cm.getStyleClass().add("condensed");
-                    cm.getItems().addAll(list.stream().map(e -> recurse(cm, e)).toList());
-                    cm.show(anchor, Side.RIGHT, 0, 0);
-                });
-            }
-        });
+
+                    ThreadHelper.runFailableAsync(() -> {
+                                var fileEntry = base.get().getRawFileEntry();
+                                if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                                    return;
+                                }
+
+                                var r = new Menu();
+                                var newItems = updateMenuItems(cm, r, fileEntry, true);
+                                Platform.runLater(() -> {
+                                    cm.getItems().addAll(r.getItems());
+                                    cm.show(anchor, Side.RIGHT, 0, 0);
+                                });
+                            });
     }
 
-    private MenuItem recurse(ContextMenu contextMenu, FileSystem.FileEntry fileEntry) {
+    private MenuItem createItem(ContextMenu contextMenu, FileSystem.FileEntry fileEntry) {
+        var browserCm = new BrowserContextMenu(model, new BrowserEntry(fileEntry,model.getFileList(), false));
+
         if (fileEntry.getKind() != FileKind.DIRECTORY) {
-            var m = new MenuItem(
+            var m = new Menu(
                     fileEntry.getName(),
-                    PrettyImageHelper.ofFixedSquare(FileIconManager.getFileIcon(fileEntry,false), 16).createRegion());
+                    PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(fileEntry,false), 24).createRegion());
             m.setMnemonicParsing(false);
             m.setOnAction(event -> {
-                action.accept(fileEntry);
-                event.consume();
+                if (event.getTarget() != m) {
+                    return;
+                }
+
+                browserCm.show(m.getStyleableNode(), Side.RIGHT, 0, 0);
             });
             return m;
         }
 
         var m = new Menu(
                 fileEntry.getName(),
-                PrettyImageHelper.ofFixedSquare(FileIconManager.getFileIcon(fileEntry,false), 16).createRegion());
+                PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(fileEntry,false), 24).createRegion());
         m.setMnemonicParsing(false);
-        m.setOnAction(event -> {
-            if (event.getTarget() == m) {
-                if (m.isShowing()) {
-                    event.consume();
-                    return;
-                }
+        var empty = new MenuItem("...");
+        m.getItems().add(empty);
 
-                ThreadHelper.runFailableAsync(() -> {
-                    updateMenuItems(m, fileEntry);
-                });
-                action.accept(fileEntry);
-                event.consume();
+        var hover = new SimpleBooleanProperty();
+        m.setOnShowing(event -> {
+            browserCm.hide();
+            hover.set(true);
+            event.consume();
+        });
+        m.setOnHiding(event -> {
+            browserCm.hide();
+            hover.set(false);
+            event.consume();
+        });
+        new BooleanTimer(hover,500, () -> {
+            if (m.isShowing() && !m.getItems().getFirst().equals(empty)) {
+                return;
             }
+
+            List<MenuItem> newItems = null;
+            try {
+                newItems = updateMenuItems(contextMenu, m, fileEntry, false);
+                m.getItems().setAll(newItems);
+                if (!browserCm.isShowing()) {
+                    m.hide();
+                    m.show();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+        m.setOnAction(event -> {
+            if (event.getTarget() != m) {
+                return;
+            }
+
+            if (browserCm.isShowing()) {
+                browserCm.hide();
+                m.show();
+                return;
+            }
+
+            m.hide();
+            browserCm.show(m.getStyleableNode(), Side.RIGHT, 0, 0);
+            event.consume();
         });
         return m;
     }
 
-    private void updateMenuItems(Menu m, FileSystem.FileEntry fileEntry) throws Exception {
+    private List<MenuItem> updateMenuItems(ContextMenu contextMenu, Menu m, FileSystem.FileEntry fileEntry, boolean updateInstantly) throws Exception {
         var newFiles = model.getFileSystem().listFiles(fileEntry.getPath());
         try (var s = newFiles) {
             var list = s.toList();
@@ -111,19 +150,26 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
             var newItems = new ArrayList<MenuItem>();
             if (list.isEmpty()) {
                 newItems.add(new MenuItem("<empty>"));
-            } else if (list.size() == 1 && list.getFirst().getKind() == FileKind.DIRECTORY) {
-                var subMenu = recurse(m.getParentPopup(),list.getFirst());
-                updateMenuItems(m, list.getFirst());
-                newItems.add(subMenu);
             } else {
-                newItems.addAll(list.stream().map(e -> recurse(m.getParentPopup(), e)).toList());
+                var menus = list.stream().sorted((o1, o2) -> {
+                    if (o1.getKind() == FileKind.DIRECTORY && o2.getKind() != FileKind.DIRECTORY) {
+                        return -1;
+                    }
+                    if (o2.getKind() == FileKind.DIRECTORY && o1.getKind() != FileKind.DIRECTORY) {
+                        return 1;
+                    }
+                    return o1.getName().compareToIgnoreCase(o2.getName());
+                }).collect(Collectors.toMap(e -> e, e -> createItem(contextMenu, e), (v1, v2) -> v2, LinkedHashMap::new));
+                var dirs = list.stream().filter(e -> e.getKind() == FileKind.DIRECTORY).toList();
+                if (dirs.size() == 1) {
+                    updateMenuItems(contextMenu, (Menu) menus.get(dirs.getFirst()), list.getFirst(), updateInstantly);
+                }
+                newItems.addAll(menus.values());
             }
-
-            Platform.runLater(() -> {
+            if (updateInstantly) {
                 m.getItems().setAll(newItems);
-                m.hide();
-                m.show();
-            });
+            }
+            return newItems;
         }
     }
 }

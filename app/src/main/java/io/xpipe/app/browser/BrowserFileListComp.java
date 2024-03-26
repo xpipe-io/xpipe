@@ -498,7 +498,7 @@ final class BrowserFileListComp extends SimpleComp {
             setAccessibleRole(AccessibleRole.TEXT);
 
             var textField = new LazyTextFieldComp(text).minWidth(USE_PREF_SIZE).createStructure().get();
-            var quickAccess = new BrowserQuickAccessButtonComp(() -> getTableRow().getItem().getRawFileEntry(), fileList.getFileSystemModel(), fileEntry -> {})
+            var quickAccess = new BrowserQuickAccessButtonComp(() -> getTableRow().getItem(), fileList.getFileSystemModel())
                     .hide(Bindings.createBooleanBinding(() -> {
                 var notDir = getTableRow().getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY;
                 var isParentLink = getTableRow()
