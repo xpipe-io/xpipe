@@ -61,7 +61,7 @@ public interface LeafAction extends BrowserAction {
         return b;
     }
 
-    default MenuItem toItem(OpenFileSystemModel model, List<BrowserEntry> selected, UnaryOperator<String> nameFunc) {
+    default MenuItem toMenuItem(OpenFileSystemModel model, List<BrowserEntry> selected, UnaryOperator<String> nameFunc) {
         var name = nameFunc.apply(getName(model, selected));
         var mi = new MenuItem(name);
         mi.setOnAction(event -> {

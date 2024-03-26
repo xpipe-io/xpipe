@@ -45,39 +45,43 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
     }
 
     private void showMenu(Node anchor) {
-                    var cm = new ContextMenu();
-                    cm.addEventHandler(Menu.ON_SHOWING, e -> {
-                        Node content = cm.getSkin().getNode();
-                        if (content instanceof Region r) {
-                            r.setMaxWidth(500);
-                            r.setMaxHeight(600);
-                        }
-                    });
-                    cm.setAutoHide(true);
-                    cm.getStyleClass().add("condensed");
+        var cm = new ContextMenu();
+        cm.addEventHandler(Menu.ON_SHOWING, e -> {
+            Node content = cm.getSkin().getNode();
+            if (content instanceof Region r) {
+                r.setMaxWidth(500);
+                r.setMaxHeight(600);
+            }
+        });
+        cm.setAutoHide(true);
+        cm.getStyleClass().add("condensed");
 
-                    ThreadHelper.runFailableAsync(() -> {
-                                var fileEntry = base.get().getRawFileEntry();
-                                if (fileEntry.getKind() != FileKind.DIRECTORY) {
-                                    return;
-                                }
+        ThreadHelper.runFailableAsync(() -> {
+            var fileEntry = base.get().getRawFileEntry();
+            if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                return;
+            }
 
-                                var r = new Menu();
-                                var newItems = updateMenuItems(cm, r, fileEntry, true);
-                                Platform.runLater(() -> {
-                                    cm.getItems().addAll(r.getItems());
-                                    cm.show(anchor, Side.RIGHT, 0, 0);
-                                });
-                            });
+            var r = new Menu();
+            var newItems = updateMenuItems(cm, r, fileEntry, true);
+            Platform.runLater(() -> {
+                cm.getItems().addAll(r.getItems());
+                cm.show(anchor, Side.RIGHT, 0, 0);
+            });
+        });
     }
 
     private MenuItem createItem(ContextMenu contextMenu, FileSystem.FileEntry fileEntry) {
-        var browserCm = new BrowserContextMenu(model, new BrowserEntry(fileEntry,model.getFileList(), false));
+        var browserCm = new BrowserContextMenu(model, new BrowserEntry(fileEntry, model.getFileList(), false));
+        browserCm.setOnAction(e -> {
+            contextMenu.hide();
+        });
 
         if (fileEntry.getKind() != FileKind.DIRECTORY) {
             var m = new Menu(
                     fileEntry.getName(),
-                    PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(fileEntry,false), 24).createRegion());
+                    PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(fileEntry, false), 24)
+                            .createRegion());
             m.setMnemonicParsing(false);
             m.setOnAction(event -> {
                 if (event.getTarget() != m) {
@@ -91,7 +95,8 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
 
         var m = new Menu(
                 fileEntry.getName(),
-                PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(fileEntry,false), 24).createRegion());
+                PrettyImageHelper.ofFixedSizeSquare(FileIconManager.getFileIcon(fileEntry, false), 24)
+                        .createRegion());
         m.setMnemonicParsing(false);
         var empty = new MenuItem("...");
         m.getItems().add(empty);
@@ -107,23 +112,24 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
             hover.set(false);
             event.consume();
         });
-        new BooleanTimer(hover,500, () -> {
-            if (m.isShowing() && !m.getItems().getFirst().equals(empty)) {
-                return;
-            }
+        new BooleanTimer(hover, 500, () -> {
+                    if (m.isShowing() && !m.getItems().getFirst().equals(empty)) {
+                        return;
+                    }
 
-            List<MenuItem> newItems = null;
-            try {
-                newItems = updateMenuItems(contextMenu, m, fileEntry, false);
-                m.getItems().setAll(newItems);
-                if (!browserCm.isShowing()) {
-                    m.hide();
-                    m.show();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }).start();
+                    List<MenuItem> newItems = null;
+                    try {
+                        newItems = updateMenuItems(contextMenu, m, fileEntry, false);
+                        m.getItems().setAll(newItems);
+                        if (!browserCm.isShowing()) {
+                            m.hide();
+                            m.show();
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .start();
         m.setOnAction(event -> {
             if (event.getTarget() != m) {
                 return;
@@ -142,7 +148,8 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
         return m;
     }
 
-    private List<MenuItem> updateMenuItems(ContextMenu contextMenu, Menu m, FileSystem.FileEntry fileEntry, boolean updateInstantly) throws Exception {
+    private List<MenuItem> updateMenuItems(
+            ContextMenu contextMenu, Menu m, FileSystem.FileEntry fileEntry, boolean updateInstantly) throws Exception {
         var newFiles = model.getFileSystem().listFiles(fileEntry.getPath());
         try (var s = newFiles) {
             var list = s.toList();
@@ -151,16 +158,21 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
             if (list.isEmpty()) {
                 newItems.add(new MenuItem("<empty>"));
             } else {
-                var menus = list.stream().sorted((o1, o2) -> {
-                    if (o1.getKind() == FileKind.DIRECTORY && o2.getKind() != FileKind.DIRECTORY) {
-                        return -1;
-                    }
-                    if (o2.getKind() == FileKind.DIRECTORY && o1.getKind() != FileKind.DIRECTORY) {
-                        return 1;
-                    }
-                    return o1.getName().compareToIgnoreCase(o2.getName());
-                }).collect(Collectors.toMap(e -> e, e -> createItem(contextMenu, e), (v1, v2) -> v2, LinkedHashMap::new));
-                var dirs = list.stream().filter(e -> e.getKind() == FileKind.DIRECTORY).toList();
+                var menus = list.stream()
+                        .sorted((o1, o2) -> {
+                            if (o1.getKind() == FileKind.DIRECTORY && o2.getKind() != FileKind.DIRECTORY) {
+                                return -1;
+                            }
+                            if (o2.getKind() == FileKind.DIRECTORY && o1.getKind() != FileKind.DIRECTORY) {
+                                return 1;
+                            }
+                            return o1.getName().compareToIgnoreCase(o2.getName());
+                        })
+                        .collect(Collectors.toMap(
+                                e -> e, e -> createItem(contextMenu, e), (v1, v2) -> v2, LinkedHashMap::new));
+                var dirs = list.stream()
+                        .filter(e -> e.getKind() == FileKind.DIRECTORY)
+                        .toList();
                 if (dirs.size() == 1) {
                     updateMenuItems(contextMenu, (Menu) menus.get(dirs.getFirst()), list.getFirst(), updateInstantly);
                 }

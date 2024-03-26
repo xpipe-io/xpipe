@@ -74,7 +74,7 @@ final class BrowserContextMenu extends ContextMenu {
             for (BrowserAction a : all) {
                 var used = resolveIfNeeded(a, selected);
                 if (a instanceof LeafAction la) {
-                    getItems().add(la.toItem(model, used, s -> s));
+                    getItems().add(la.toMenuItem(model, used, s -> s));
                 }
 
                 if (a instanceof BranchAction la) {
@@ -84,7 +84,7 @@ final class BrowserContextMenu extends ContextMenu {
                         if (!sub.isApplicable(model, subUsed)) {
                             continue;
                         }
-                        m.getItems().add(sub.toItem(model, subUsed, s -> s));
+                        m.getItems().add(sub.toMenuItem(model, subUsed, s -> s));
                     }
                     var graphic = a.getIcon(model, used);
                     if (graphic != null) {
