@@ -213,9 +213,6 @@
 }
 
 .browser .table-view {
-    -color-header-bg: -color-bg-default;
-    -color-cell-bg-selected: -color-neutral-emphasis;
-    -color-cell-fg-selected: -color-fg-emphasis;
     -fx-border-width: 0;
 }
 
