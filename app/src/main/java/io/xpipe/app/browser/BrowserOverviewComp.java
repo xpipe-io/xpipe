@@ -72,7 +72,7 @@ public class BrowserOverviewComp extends SimpleComp {
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview);
 
-        var vbox = new VerticalComp(List.of(commonPane, rootsPane, recentPane)).styleClass("overview");
+        var vbox = new VerticalComp(List.of(recentPane, commonPane, rootsPane)).styleClass("overview");
         return vbox.createRegion();
     }
 }

@@ -41,15 +41,6 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
         }
 
         cm.show(anchor, Side.RIGHT, 0, 0);
-
-        //        App.getApp().getStage().getScene().addEventFilter(MouseEvent.MOUSE_MOVED, event -> {
-        //            var stages = Stage.getWindows().stream().filter(window -> window instanceof ContextMenu).toList();
-        //            var hovered = stages.stream().anyMatch(window ->
-        // window.getScene().getRoot().hoverProperty().get());
-        //            if (!hovered) {
-        //                stages.forEach(window -> window.hide());
-        //            }
-        //        });
     }
 
     private ContextMenu createMenu() {

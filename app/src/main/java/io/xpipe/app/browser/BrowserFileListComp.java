@@ -1,5 +1,6 @@
 package io.xpipe.app.browser;
 
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.icon.FileIconManager;
@@ -36,7 +37,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -485,8 +485,6 @@ final class BrowserFileListComp extends SimpleComp {
 
         private final StringProperty img = new SimpleStringProperty();
         private final StringProperty text = new SimpleStringProperty();
-        private final StackPane textField =
-                new LazyTextFieldComp(text).createStructure().get();
 
         private final BooleanProperty updating = new SimpleBooleanProperty();
 
@@ -498,6 +496,17 @@ final class BrowserFileListComp extends SimpleComp {
                             },
                             itemProperty()));
             setAccessibleRole(AccessibleRole.TEXT);
+
+            var textField = new LazyTextFieldComp(text).minWidth(USE_PREF_SIZE).createStructure().get();
+            var quickAccess = new BrowserQuickAccessButtonComp(() -> getTableRow().getItem().getRawFileEntry(), fileList.getFileSystemModel(), fileEntry -> {})
+                    .hide(Bindings.createBooleanBinding(() -> {
+                var notDir = getTableRow().getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY;
+                var isParentLink = getTableRow()
+                        .getItem()
+                        .getRawFileEntry()
+                        .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
+                return notDir || isParentLink;
+            }, itemProperty())).createRegion();
 
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
@@ -518,10 +527,13 @@ final class BrowserFileListComp extends SimpleComp {
             text.addListener(listener);
 
             Node imageView = new PrettySvgComp(img, 24, 24).createRegion();
-            HBox graphic = new HBox(imageView, textField);
-            graphic.setSpacing(10);
-            graphic.setAlignment(Pos.CENTER_LEFT);
+            HBox graphic = new HBox(imageView,
+                    new Spacer(7),
+                    quickAccess,
+                    new Spacer(3),
+                    textField);
             HBox.setHgrow(textField, Priority.ALWAYS);
+            graphic.setAlignment(Pos.CENTER_LEFT);
             setGraphic(graphic);
         }
 
