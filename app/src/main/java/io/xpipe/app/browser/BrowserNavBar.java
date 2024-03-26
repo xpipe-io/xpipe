@@ -6,10 +6,7 @@ import io.xpipe.app.fxcomps.Comp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.impl.HorizontalComp;
-import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
-import io.xpipe.app.fxcomps.impl.StackComp;
-import io.xpipe.app.fxcomps.impl.TextFieldComp;
+import io.xpipe.app.fxcomps.impl.*;
 import io.xpipe.app.fxcomps.util.SimpleChangeListener;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
@@ -96,7 +93,7 @@ public class BrowserNavBar extends SimpleComp {
                             : "home_icon.svg";
                 },
                 model.getCurrentPath());
-        var breadcrumbsGraphic = PrettyImageHelper.ofSvg(graphic, 16, 16)
+        var breadcrumbsGraphic = new PrettySvgComp(graphic, 16, 16)
                 .padding(new Insets(0, 0, 1, 0))
                 .styleClass("path-graphic")
                 .createRegion();

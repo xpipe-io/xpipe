@@ -82,7 +82,7 @@ public class StoreCreationMenu {
         });
         sub.forEach(dataStoreProvider -> {
             var item = new MenuItem(dataStoreProvider.getDisplayName());
-            item.setGraphic(PrettyImageHelper.ofFixedSmallSquare(dataStoreProvider.getDisplayIconFileName(null))
+            item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
                     .createRegion());
             item.setOnAction(event -> {
                 StoreCreationComp.showCreation(dataStoreProvider, category);

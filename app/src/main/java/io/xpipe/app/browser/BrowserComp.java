@@ -3,9 +3,9 @@ package io.xpipe.app.browser;
 import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import io.xpipe.app.browser.icon.DirectoryType;
+import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.FileIconManager;
-import io.xpipe.app.browser.icon.FileType;
+import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.SideSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
@@ -52,8 +52,8 @@ public class BrowserComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        FileType.loadDefinitions();
-        DirectoryType.loadDefinitions();
+        BrowserIconFileType.loadDefinitions();
+        BrowserIconDirectoryType.loadDefinitions();
         ThreadHelper.runAsync(() -> {
             FileIconManager.loadIfNecessary();
         });
@@ -269,7 +269,7 @@ public class BrowserComp extends SimpleComp {
                 .get()
                 .getProvider()
                 .getDisplayIconFileName(model.getEntry().getStore());
-        var logo = PrettyImageHelper.ofFixedSquare(image, 16).createRegion();
+        var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
 
         tab.graphicProperty()
                 .bind(Bindings.createObjectBinding(

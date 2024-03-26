@@ -59,12 +59,12 @@ public class StoreSectionMiniComp extends Comp<CompStructure<VBox>> {
                     .apply(struc -> {
                         var provider = section.getWrapper().getEntry().getProvider();
                         struc.get()
-                                .setGraphic(PrettyImageHelper.ofFixedSmallSquare(
+                                .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
                                                 provider != null
                                                         ? provider.getDisplayIconFileName(section.getWrapper()
                                                                 .getEntry()
                                                                 .getStore())
-                                                        : null)
+                                                        : null, 16)
                                         .createRegion());
                     })
                     .apply(struc -> {

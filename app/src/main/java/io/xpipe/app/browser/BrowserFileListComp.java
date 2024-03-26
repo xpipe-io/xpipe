@@ -8,7 +8,7 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.fxcomps.SimpleComp;
 import io.xpipe.app.fxcomps.SimpleCompStructure;
 import io.xpipe.app.fxcomps.augment.ContextMenuAugment;
-import io.xpipe.app.fxcomps.impl.PrettySvgComp;
+import io.xpipe.app.fxcomps.impl.PrettyImageHelper;
 import io.xpipe.app.fxcomps.util.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.HumanReadableFormat;
@@ -526,12 +526,13 @@ final class BrowserFileListComp extends SimpleComp {
             };
             text.addListener(listener);
 
-            Node imageView = new PrettySvgComp(img, 24, 24).createRegion();
+            Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).createRegion();
             HBox graphic = new HBox(imageView,
                     new Spacer(7),
                     quickAccess,
                     new Spacer(3),
                     textField);
+            graphic.setAlignment(Pos.CENTER_LEFT);
             HBox.setHgrow(textField, Priority.ALWAYS);
             graphic.setAlignment(Pos.CENTER_LEFT);
             setGraphic(graphic);
@@ -550,8 +551,8 @@ final class BrowserFileListComp extends SimpleComp {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
-
-                    // Use opacity instead of visibility as visibility is kinda bugged with web views
+                    
+                    // Visibility seems to be bugged, so use opacity
                     setOpacity(0.0);
                 } else {
                     var isParentLink = getTableRow()
@@ -580,8 +581,7 @@ final class BrowserFileListComp extends SimpleComp {
                             && (getTableRow().getItem().getRawFileEntry().isHidden() || fileName.startsWith("."));
                     getTableRow().pseudoClassStateChanged(HIDDEN, hidden);
                     text.set(fileName);
-
-                    // Use opacity instead of visibility as visibility is kinda bugged with web views
+                    // Visibility seems to be bugged, so use opacity
                     setOpacity(1.0);
                 }
             }

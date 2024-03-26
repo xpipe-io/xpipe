@@ -62,9 +62,7 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
         var graphic =
                 w.getEntry().getProvider().getDisplayIconFileName(w.getEntry().getStore());
         if (c.isEmpty()) {
-            var item = new MenuItem(
-                    w.getName().getValue(),
-                    PrettyImageHelper.ofFixedSquare(graphic, 16).createRegion());
+            var item = new MenuItem(w.getName().getValue(), PrettyImageHelper.ofFixedSizeSquare(graphic, 16).createRegion());
             item.setOnAction(event -> {
                 action.accept(w);
                 contextMenu.hide();
@@ -81,9 +79,7 @@ public class StoreQuickAccessButtonComp extends SimpleComp {
 
             items.add(recurse(contextMenu, sub));
         }
-        var m = new Menu(
-                w.getName().getValue(),
-                PrettyImageHelper.ofFixedSquare(graphic, 16).createRegion());
+        var m = new Menu(w.getName().getValue(), PrettyImageHelper.ofFixedSizeSquare(graphic, 16).createRegion());
         m.getItems().setAll(items);
         m.setOnAction(event -> {
             if (event.getTarget() == m) {

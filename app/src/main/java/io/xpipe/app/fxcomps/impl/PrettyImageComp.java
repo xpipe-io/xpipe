@@ -23,7 +23,7 @@ public class PrettyImageComp extends SimpleComp {
     private final double width;
     private final double height;
 
-    PrettyImageComp(ObservableValue<String> value, double width, double height) {
+    public PrettyImageComp(ObservableValue<String> value, double width, double height) {
         this.value = value;
         this.width = width;
         this.height = height;
@@ -74,13 +74,14 @@ public class PrettyImageComp extends SimpleComp {
                                 return null;
                             }
 
-                            if (AppImages.hasNormalImage(image.getValue())) {
-                                return AppImages.image(image.getValue());
-                            } else if (AppImages.hasNormalImage(image.getValue().replace("-dark", ""))) {
-                                return AppImages.image(image.getValue().replace("-dark", ""));
+                            var value = image.getValue();
+                            if (AppImages.hasNormalImage(value)) {
+                                return AppImages.image(value);
+                            } else if (AppImages.hasNormalImage(value.replace("-dark", ""))) {
+                                return AppImages.image(value.replace("-dark", ""));
                             } else {
                                 TrackEvent.withWarn("Image file not found")
-                                        .tag("file", image.getValue())
+                                        .tag("file", value)
                                         .handle();
                                 return null;
                             }
