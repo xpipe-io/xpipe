@@ -43,7 +43,8 @@ public class ShellTemp {
             base = FileNames.join(temp, "xpipe");
             // We have to make sure that also other users can create files here
             // This command should work in all shells
-            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base)).executeAndCheck();
+            proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
+                    .executeAndCheck();
             var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
             base = FileNames.join(base, user);
         } else {

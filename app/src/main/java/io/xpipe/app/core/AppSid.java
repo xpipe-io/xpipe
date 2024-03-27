@@ -18,7 +18,9 @@ public class AppSid {
             return;
         }
 
-        var checkProcess = new ProcessBuilder("which", "setsid").redirectErrorStream(true).redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        var checkProcess = new ProcessBuilder("which", "setsid")
+                .redirectErrorStream(true)
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD);
         try {
             var p = checkProcess.start();
             if (p.waitFor(1000, TimeUnit.MILLISECONDS)) {
@@ -34,7 +36,8 @@ public class AppSid {
         }
 
         // Don't set this in development mode or debug mode
-        if (AppProperties.get().isDevelopmentEnvironment() || AppLogs.get().getLogLevel().equals("trace")) {
+        if (AppProperties.get().isDevelopmentEnvironment()
+                || AppLogs.get().getLogLevel().equals("trace")) {
             return;
         }
 

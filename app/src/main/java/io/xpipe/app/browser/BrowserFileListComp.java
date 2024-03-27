@@ -497,16 +497,27 @@ final class BrowserFileListComp extends SimpleComp {
                             itemProperty()));
             setAccessibleRole(AccessibleRole.TEXT);
 
-            var textField = new LazyTextFieldComp(text).minWidth(USE_PREF_SIZE).createStructure().get();
-            var quickAccess = new BrowserQuickAccessButtonComp(() -> getTableRow().getItem(), fileList.getFileSystemModel())
-                    .hide(Bindings.createBooleanBinding(() -> {
-                var notDir = getTableRow().getItem().getRawFileEntry().getKind() != FileKind.DIRECTORY;
-                var isParentLink = getTableRow()
-                        .getItem()
-                        .getRawFileEntry()
-                        .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
-                return notDir || isParentLink;
-            }, itemProperty())).createRegion();
+            var textField = new LazyTextFieldComp(text)
+                    .minWidth(USE_PREF_SIZE)
+                    .createStructure()
+                    .get();
+            var quickAccess = new BrowserQuickAccessButtonComp(
+                            () -> getTableRow().getItem(), fileList.getFileSystemModel())
+                    .hide(Bindings.createBooleanBinding(
+                            () -> {
+                                var notDir = getTableRow()
+                                                .getItem()
+                                                .getRawFileEntry()
+                                                .getKind()
+                                        != FileKind.DIRECTORY;
+                                var isParentLink = getTableRow()
+                                        .getItem()
+                                        .getRawFileEntry()
+                                        .equals(fileList.getFileSystemModel().getCurrentParentDirectory());
+                                return notDir || isParentLink;
+                            },
+                            itemProperty()))
+                    .createRegion();
 
             editing.addListener((observable, oldValue, newValue) -> {
                 if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
@@ -527,11 +538,7 @@ final class BrowserFileListComp extends SimpleComp {
             text.addListener(listener);
 
             Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).createRegion();
-            HBox graphic = new HBox(imageView,
-                    new Spacer(5),
-                    quickAccess,
-                    new Spacer(1),
-                    textField);
+            HBox graphic = new HBox(imageView, new Spacer(5), quickAccess, new Spacer(1), textField);
             quickAccess.prefHeightProperty().bind(graphic.heightProperty());
             graphic.setAlignment(Pos.CENTER_LEFT);
             graphic.setPrefHeight(34);
@@ -553,7 +560,7 @@ final class BrowserFileListComp extends SimpleComp {
                     // Don't set image as that would trigger image comp update
                     // and cells are emptied on each change, leading to unnecessary changes
                     // img.set(null);
-                    
+
                     // Visibility seems to be bugged, so use opacity
                     setOpacity(0.0);
                 } else {

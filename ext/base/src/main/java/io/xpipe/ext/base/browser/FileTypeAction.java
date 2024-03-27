@@ -3,8 +3,8 @@ package io.xpipe.ext.base.browser;
 import io.xpipe.app.browser.BrowserEntry;
 import io.xpipe.app.browser.OpenFileSystemModel;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.app.browser.icon.BrowserIcons;
 import javafx.scene.Node;
 
 import java.util.List;

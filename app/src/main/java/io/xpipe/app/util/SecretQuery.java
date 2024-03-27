@@ -64,7 +64,8 @@ public interface SecretQuery {
 
             @Override
             public boolean requiresUserInteraction() {
-                return original.requiresUserInteraction() || AppPrefs.get().alwaysConfirmElevation().getValue();
+                return original.requiresUserInteraction()
+                        || AppPrefs.get().alwaysConfirmElevation().getValue();
             }
         };
     }

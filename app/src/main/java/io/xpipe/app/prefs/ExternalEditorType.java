@@ -257,8 +257,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             if (location.isEmpty()) {
                 location = determineInstallation();
                 if (location.isEmpty()) {
-                    throw ErrorEvent.expected(
-                            new IOException("Unable to find installation of " + toTranslatedString().getValue()));
+                    throw ErrorEvent.expected(new IOException("Unable to find installation of "
+                            + toTranslatedString().getValue()));
                 }
             }
 

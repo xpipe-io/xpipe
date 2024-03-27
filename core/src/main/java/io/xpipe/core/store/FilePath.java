@@ -31,7 +31,7 @@ public final class FilePath {
         return value.contains(" ") ? "\"" + value + "\"" : value;
     }
 
-    public  FilePath toDirectory() {
+    public FilePath toDirectory() {
         if (value.endsWith("/") || value.endsWith("\\")) {
             return new FilePath(value);
         }
@@ -43,7 +43,7 @@ public final class FilePath {
         return new FilePath(value + "/");
     }
 
-    public  FilePath removeTrailingSlash() {
+    public FilePath removeTrailingSlash() {
         if (value.equals("/")) {
             return new FilePath(value);
         }
@@ -83,7 +83,7 @@ public final class FilePath {
         return list;
     }
 
-    public  String getBaseName() {
+    public String getBaseName() {
         var split = value.lastIndexOf(".");
         if (split == -1) {
             return value;
@@ -91,7 +91,7 @@ public final class FilePath {
         return value.substring(0, split);
     }
 
-    public  String getExtension() {
+    public String getExtension() {
         var name = FileNames.getFileName(value);
         var split = name.split("\\.");
         if (split.length == 0) {
@@ -129,12 +129,14 @@ public final class FilePath {
         return new FilePath(value.substring(0, value.length() - getFileName().length() - 1));
     }
 
-    public  boolean startsWith(FilePath start) {
+    public boolean startsWith(FilePath start) {
         return normalize().startsWith(start.normalize());
     }
 
     public FilePath relativize(FilePath base) {
-        return new FilePath(normalize().toString().substring(base.normalize().toDirectory().toString().length()));
+        return new FilePath(normalize()
+                .toString()
+                .substring(base.normalize().toDirectory().toString().length()));
     }
 
     public FilePath normalize() {
@@ -147,14 +149,14 @@ public final class FilePath {
         return Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
     }
 
-    public  String toUnix() {
+    public String toUnix() {
         var joined = String.join("/", split());
         var prefix = value.startsWith("/") ? "/" : "";
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "/" : "";
         return prefix + joined + suffix;
     }
 
-    public  String toWindows() {
+    public String toWindows() {
         var suffix = value.endsWith("/") || value.endsWith("\\") ? "\\" : "";
         return String.join("\\", split()) + suffix;
     }

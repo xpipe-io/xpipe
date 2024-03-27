@@ -43,7 +43,9 @@ public class ModalOverlayComp extends SimpleComp {
             }
 
             if (newValue != null) {
-                var l = new Label(AppI18n.get(newValue.titleKey), newValue.graphic != null ? newValue.graphic.createRegion() : null);
+                var l = new Label(
+                        AppI18n.get(newValue.titleKey),
+                        newValue.graphic != null ? newValue.graphic.createRegion() : null);
                 l.setGraphicTextGap(6);
                 AppFont.normal(l);
                 var r = newValue.content.createRegion();

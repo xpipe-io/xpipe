@@ -56,7 +56,7 @@ public class LauncherCommand implements Callable<Integer> {
             return 1;
         });
         cmd.setParameterExceptionHandler((ex, args1) -> {
-            var event = ErrorEvent.fromThrowable(ex).term().build();
+            var event = ErrorEvent.fromThrowable(ex).term().expected().build();
             // Print error in case we launched from the command-line
             new LogErrorHandler().handle(event);
             event.handle();

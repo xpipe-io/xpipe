@@ -74,7 +74,8 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
         });
     }
 
-    private MenuItem createItem(ContextMenu contextMenu, FileSystem.FileEntry fileEntry, AtomicReference<ContextMenu> showingActionsMenu) {
+    private MenuItem createItem(
+            ContextMenu contextMenu, FileSystem.FileEntry fileEntry, AtomicReference<ContextMenu> showingActionsMenu) {
         var browserCm = new BrowserContextMenu(model, new BrowserEntry(fileEntry, model.getFileList(), false));
         browserCm.setOnAction(e -> {
             contextMenu.hide();
@@ -165,7 +166,12 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
     }
 
     private List<MenuItem> updateMenuItems(
-            ContextMenu contextMenu, Menu m, FileSystem.FileEntry fileEntry, boolean updateInstantly, AtomicReference<ContextMenu> showingActionsMenu) throws Exception {
+            ContextMenu contextMenu,
+            Menu m,
+            FileSystem.FileEntry fileEntry,
+            boolean updateInstantly,
+            AtomicReference<ContextMenu> showingActionsMenu)
+            throws Exception {
         var newFiles = model.getFileSystem().listFiles(fileEntry.getPath());
         try (var s = newFiles) {
             var list = s.toList();
@@ -187,12 +193,20 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                             return o1.getName().compareToIgnoreCase(o2.getName());
                         })
                         .collect(Collectors.toMap(
-                                e -> e, e -> createItem(contextMenu, e, showingActionsMenu), (v1, v2) -> v2, LinkedHashMap::new));
+                                e -> e,
+                                e -> createItem(contextMenu, e, showingActionsMenu),
+                                (v1, v2) -> v2,
+                                LinkedHashMap::new));
                 var dirs = list.stream()
                         .filter(e -> e.getKind() == FileKind.DIRECTORY)
                         .toList();
                 if (dirs.size() == 1) {
-                    updateMenuItems(contextMenu, (Menu) menus.get(dirs.getFirst()), list.getFirst(), updateInstantly, showingActionsMenu);
+                    updateMenuItems(
+                            contextMenu,
+                            (Menu) menus.get(dirs.getFirst()),
+                            list.getFirst(),
+                            updateInstantly,
+                            showingActionsMenu);
                 }
                 newItems.addAll(menus.values());
             }

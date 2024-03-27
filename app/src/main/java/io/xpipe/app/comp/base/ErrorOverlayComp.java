@@ -37,11 +37,16 @@ public class ErrorOverlayComp extends SimpleComp {
                     l.setEditable(false);
                     return l;
                 });
-                content.set(new ModalOverlayComp.OverlayContent("error", comp, Comp.of(() -> {
-                    var graphic = new FontIcon("mdomz-warning");
-                    graphic.setIconColor(Color.RED);
-                    return new StackPane(graphic);
-                }), null, () -> {}));
+                content.set(new ModalOverlayComp.OverlayContent(
+                        "error",
+                        comp,
+                        Comp.of(() -> {
+                            var graphic = new FontIcon("mdomz-warning");
+                            graphic.setIconColor(Color.RED);
+                            return new StackPane(graphic);
+                        }),
+                        null,
+                        () -> {}));
             });
         });
         content.addListener((observable, oldValue, newValue) -> {
