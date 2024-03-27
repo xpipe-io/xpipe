@@ -16,17 +16,34 @@ public final class HumanReadableFormat {
     public static final DateTimeFormatter DAY_OF_WEEK = DateTimeFormatter.ofPattern("EEE");
     public static final DateTimeFormatter HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static String byteCount(long bytes, boolean precise) {
-        if (-1024 < bytes && bytes < 1024) {
+    public static String byteCount(long bytes) {
+        var b = 1024;
+        if (-b < bytes && bytes < b) {
             return bytes + " B";
         }
         CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -1024 * 1024 || bytes >= 1024 * 1024) {
-            bytes /= 1024;
+        var mb = b * b;
+        while (bytes <= -mb || bytes >= mb) {
+            bytes /= b;
             ci.next();
         }
-        var f = precise ? "%.1f" : "%.0f";
-        return String.format(f + " %cB", bytes / 1024.0, ci.current());
+        var f = "%.1f";
+        return String.format(f + " %cB", bytes / (double) b, ci.current());
+    }
+
+    public static String progressByteCount(long bytes) {
+        var b = 1024;
+        if (-b < bytes && bytes < b) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        var mb = b * b;
+        while (bytes <= -mb || bytes >= mb) {
+            bytes /= b;
+            ci.next();
+        }
+        var f = ci.getIndex() >= 2 ? "%.3f" : "%.0f";
+        return String.format(f + " %cB", bytes / (double) b, ci.current());
     }
 
     public static String date(LocalDateTime x) {

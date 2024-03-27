@@ -445,7 +445,7 @@ final class BrowserFileListComp extends SimpleComp {
                 if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
                     setText("");
                 } else {
-                    setText(byteCount(fileSize.longValue(), true));
+                    setText(byteCount(fileSize.longValue()));
                 }
             }
         }
