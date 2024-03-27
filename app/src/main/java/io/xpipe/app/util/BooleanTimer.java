@@ -24,7 +24,7 @@ public class BooleanTimer {
                 if (timer.get() == null) {
                     timer.set(new AnimationTimer() {
 
-                        long init =0;
+                        long init = 0;
 
                         @Override
                         public void handle(long now) {
@@ -33,7 +33,7 @@ public class BooleanTimer {
                             }
 
                             var nowMs = now;
-                            if ((nowMs - init) > duration * 1000L) {
+                            if ((nowMs - init) > duration * 1_000_000L) {
                                 toExecute.run();
                                 stop();
                             }

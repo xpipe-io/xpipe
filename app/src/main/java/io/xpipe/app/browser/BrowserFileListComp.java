@@ -528,11 +528,13 @@ final class BrowserFileListComp extends SimpleComp {
 
             Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).createRegion();
             HBox graphic = new HBox(imageView,
-                    new Spacer(7),
+                    new Spacer(5),
                     quickAccess,
-                    new Spacer(3),
+                    new Spacer(1),
                     textField);
+            quickAccess.prefHeightProperty().bind(graphic.heightProperty());
             graphic.setAlignment(Pos.CENTER_LEFT);
+            graphic.setPrefHeight(34);
             HBox.setHgrow(textField, Priority.ALWAYS);
             graphic.setAlignment(Pos.CENTER_LEFT);
             setGraphic(graphic);

@@ -28,7 +28,11 @@ public final class HumanReadableFormat {
             ci.next();
         }
         var f = "%.1f";
-        return String.format(f + " %cB", bytes / (double) b, ci.current());
+        var r = String.format(f + " %cB", bytes / (double) b, ci.current());
+        if (r.endsWith(".0")) {
+            r = r.substring(0, r.length() - 2);
+        }
+        return r;
     }
 
     public static String progressByteCount(long bytes) {
