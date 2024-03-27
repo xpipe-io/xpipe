@@ -729,7 +729,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             if (location.isEmpty()) {
                 location = determineInstallation();
                 if (location.isEmpty()) {
-                    throw new IOException("Unable to find installation of " + toTranslatedString());
+                    throw new IOException("Unable to find installation of " + toTranslatedString().getValue());
                 }
             }
 
