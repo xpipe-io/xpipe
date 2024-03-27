@@ -43,6 +43,7 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                 event.consume();
             });
         });
+        button.styleClass("quick-access-button");
         return button.createRegion();
     }
 
@@ -52,7 +53,6 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
             Node content = cm.getSkin().getNode();
             if (content instanceof Region r) {
                 r.setMaxWidth(500);
-                r.setMaxHeight(600);
             }
         });
         cm.setAutoHide(true);
@@ -94,6 +94,7 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
                 browserCm.show(m.getStyleableNode(), Side.RIGHT, 0, 0);
                 showingActionsMenu.set(browserCm);
             });
+            m.getStyleClass().add("leaf");
             return m;
         }
 
@@ -168,6 +169,8 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
         var newFiles = model.getFileSystem().listFiles(fileEntry.getPath());
         try (var s = newFiles) {
             var list = s.toList();
+            // Wait until all files are listed, i.e. do not skip the stream elements
+            list = list.subList(0, Math.min(list.size(), 150));
 
             var newItems = new ArrayList<MenuItem>();
             if (list.isEmpty()) {

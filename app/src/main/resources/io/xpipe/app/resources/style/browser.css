@@ -53,67 +53,8 @@
     -fx-border-radius: 1px;
 }
 
-.bookmark-list .tree-cell:filled:hover {
-    -fx-background-color: -color-accent-muted;
-}
-
 *:drag-over .download-background {
     -fx-background-color: -color-success-muted;
-}
-
-.bookmark-list .tree-cell:drag-over {
-    -fx-background-color: -color-success-muted;
-}
-
-.bookmark-list .tree-cell:disabled {
-    -fx-opacity: 0.5;
-}
-
-.bookmark-list .tree-cell {
-    -fx-background-radius: 5px;
-    -fx-padding: 8px 8px 8px 3px;
-    -fx-background-insets: 5px 5px 5px 5px;
-}
-
-.bookmark-list .tree-cell.first {
-    -fx-padding: 12px 8px 8px 3px;
-    -fx-background-insets: 9px 5px 5px 5px;
-}
-
-.bookmark-list .combo-box {
-    -fx-padding: 0px;
-}
-
-.bookmark-list .item {
-    -fx-border-width: 0;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-background-color: transparent;
-}
-
-.bookmark-list .item:selected {
-    -fx-padding: 5px;
-}
-
-.browser .bookmark-tree {
-    -fx-border-width: 0;
-    -fx-padding: 5px;
-    -fx-spacing: 5px;
-}
-
-.browser .bookmark-list *.scroll-bar:horizontal,
-.browser .bookmark-list *.scroll-bar:horizontal *.track,
-.browser .bookmark-list *.scroll-bar:horizontal *.track-background,
-.browser .bookmark-list *.scroll-bar:horizontal *.thumb,
-.browser .bookmark-list *.scroll-bar:horizontal *.increment-button,
-.browser .bookmark-list *.scroll-bar:horizontal *.decrement-button,
-.browser .bookmark-list *.scroll-bar:horizontal *.increment-arrow,
-.browser .bookmark-list *.scroll-bar:horizontal *.decrement-arrow {
-    -fx-background-color: null;
-    -fx-background-radius: 0;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
-    -fx-shape: null;
 }
 
 .browser .top-bar {
@@ -266,3 +207,9 @@
 .browser .tab:selected {
     -fx-opacity: 1.0;
 }
+
+
+.browser .quick-access-button .context-menu .leaf .arrow {
+    -fx-opacity: 0;
+}
+
