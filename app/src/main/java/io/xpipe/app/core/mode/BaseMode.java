@@ -49,6 +49,7 @@ public class BaseMode extends OperationMode {
         AppPrefs.initLocal();
         AppCertutilCheck.check();
         AppAvCheck.check();
+        AppSid.init();
         LocalShell.init();
         AppShellCheck.check();
         XPipeDistributionType.init();
